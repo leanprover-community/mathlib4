@@ -89,6 +89,13 @@ example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by rel_congr
 -- another priority test
 example {k m n : ℤ}  (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by rel_congr
 
+-- test of behaviour when no lemmas are applicable
+example (n k : ℕ) (H : n ^ k + 1 ≤ k ^ n + 1) : n ^ k ≤ k ^ n := by
+  success_if_fail_with_msg
+    "rel_congr did not make progress"
+    (rel_congr)
+  linarith
+
 example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
   success_if_fail_with_msg "rel failed, goal not a relation" (rel [hx])
   exact h

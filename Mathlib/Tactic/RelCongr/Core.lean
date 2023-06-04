@@ -214,13 +214,13 @@ partial def _root_.Lean.MVarId.relCongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
     (side_goal_discharger : MVarId → MetaM Unit)
     (main_goal_discharger : MVarId → MetaM Unit := fun g => g.assumption) :
-    MetaM (List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
+    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
     -- `main_goal_discharger`, and continue on if this fails.
-    try main_goal_discharger g; return (names, #[])
+    try main_goal_discharger g; return (true, names, #[])
     catch _ => pure ()
   | some tpl =>
     -- B. If there is a template:
@@ -229,8 +229,8 @@ partial def _root_.Lean.MVarId.relCongr
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
-        try main_goal_discharger g; return (names, #[])
-        catch _ => return (names, #[g])
+        try main_goal_discharger g; return (true, names, #[])
+        catch _ => return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
@@ -238,10 +238,10 @@ partial def _root_.Lean.MVarId.relCongr
   let some relName := rel.getAppFn.constName?
     | throwError "rel_congr failed, relation head {rel} is not a constant"
   let (some lhsHead, lhsArgs) := lhs.withApp fun e a => (e.constName?, a)
-    | if template.isNone then return (names, #[g])
+    | if template.isNone then return (false, names, #[g])
       throwError "rel_congr failed, {lhs} is not a constant"
   let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName?, a)
-    | if template.isNone then return (names, #[g])
+    | if template.isNone then return (false, names, #[g])
       throwError "rel_congr failed, {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
@@ -267,7 +267,7 @@ partial def _root_.Lean.MVarId.relCongr
   else
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
       -- (if not, stop and report the existing goal)
-      return (names, #[g])
+      return (false, names, #[g])
     -- and also build a array of booleans according to which arguments `_ ... _` to the head
     -- function differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
@@ -319,7 +319,7 @@ partial def _root_.Lean.MVarId.relCongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.relCongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (names2, subgoals2) :=
+        let (_, names2, subgoals2) :=
           ← mvarId.relCongr tpl names2 side_goal_discharger main_goal_discharger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
@@ -330,11 +330,11 @@ partial def _root_.Lean.MVarId.relCongr
           try side_goal_discharger g
           catch _ => out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
-      return (names, out ++ subgoals)
+      return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[rel_congr]` lemma which matched the goal,
   -- report this goal back.
   if template.isNone then
-    return (names, #[g])
+    return (false, names, #[g])
   let some (sErr, e) := ex?
     -- B. If there is a template, and there was no `@[rel_congr]` lemma which matched the template,
     -- fail.
@@ -454,7 +454,11 @@ elab "rel_congr" template:(colGt term)?
     -- run `Lean.MVarId.relCongrForward` on each one
     g.relCongrForward hs
   -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
-  replaceMainGoal (← g.relCongr template names disch assum).2.toList
+  let (progress, _, unsolvedGoalStates) ← g.relCongr template names disch assum
+  if progress then
+    replaceMainGoal unsolvedGoalStates.toList
+  else
+    throwError "rel_congr did not make progress"
 
 /-- The `rel` tactic applies "relational congruence" rules to solve a relational goal by
 "substitution".  For example,
@@ -499,7 +503,7 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.relCongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
-    let (_, unsolvedGoalStates) ← g.relCongr none [] disch assum
+    let (_, _, unsolvedGoalStates) ← g.relCongr none [] disch assum
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
