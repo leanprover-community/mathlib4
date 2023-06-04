@@ -71,8 +71,8 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 
 @[simp]
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  simp_rw [affineSegment, line_map_same, AffineMap.coe_const,
-    (set.nonempty_Icc.mpr zero_le_one).image_const]
+  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const,
+    (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
 
 variable {R}
