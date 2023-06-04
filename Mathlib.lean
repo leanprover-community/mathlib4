@@ -203,6 +203,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Matrix
