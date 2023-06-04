@@ -40,6 +40,9 @@ namespace Lean.MVarId
 def synthInstance (g : MVarId) : MetaM Unit := do
   g.assign (← Lean.Meta.synthInstance (← g.getType))
 
+def synthInstances (goals : Array MVarId) : MetaM Unit :=
+  goals.forM fun g => do unless ← g.isAssigned do g.synthInstance
+
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
 The new hypothesis is given the same user name as the original,
