@@ -133,14 +133,14 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
-@[ext, nolint has_nonempty_instance]
+@[ext] -- porting note: was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type _) [TopologicalSpace H] extends
     LocalEquiv H E where
   source_eq : source = univ
-  unique_diff' : UniqueDiffOn 𝕜 to_local_equiv.target
-  continuous_toFun : Continuous to_fun := by continuity
-  continuous_invFun : Continuous inv_fun := by continuity
+  unique_diff' : UniqueDiffOn 𝕜 toLocalEquiv.target
+  continuous_toFun : Continuous toFun := by continuity
+  continuous_invFun : Continuous invFun := by continuity
 #align model_with_corners ModelWithCorners
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
@@ -168,8 +168,12 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
 
 namespace ModelWithCorners
 
-instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E :=
-  ⟨fun e => e.toFun⟩
+/-- Coercion of a model with corners to a function. We don't use `e.toFun` because it is actually
+`e.toLocalEquiv.toFun`, so `simp` will apply lemmas about `toLocalEquiv`. While we may want to
+switch to this behavior later, doing it mid-port will break a lot of proofs. -/
+@[coe] def toFun' (e : ModelWithCorners 𝕜 E H) : H → E := e.toFun
+
+instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 
 /-- The inverse to a model with corners, only registered as a local equiv. -/
 protected def symm : LocalEquiv E H :=
@@ -184,14 +188,12 @@ def Simps.apply (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _) [Nor
 #align model_with_corners.simps.apply ModelWithCorners.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _) [NormedAddCommGroup E]
+def Simps.symm_apply (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type _) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
   I.symm
-#align model_with_corners.simps.symm_apply ModelWithCorners.Simps.symmApply
+#align model_with_corners.simps.symm_apply ModelWithCorners.Simps.symm_apply
 
-initialize_simps_projections ModelWithCorners (to_local_equiv_to_fun → apply,
-  to_local_equiv_inv_fun → symm_apply, toLocalEquiv_source → source, toLocalEquiv_target → target,
-  -toLocalEquiv)
+initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_apply)
 
 -- Register a few lemmas to make sure that `simp` puts expressions in normal form
 @[simp, mfld_simps]
@@ -222,11 +224,11 @@ protected theorem continuous : Continuous I :=
 #align model_with_corners.continuous ModelWithCorners.continuous
 
 protected theorem continuousAt {x} : ContinuousAt I x :=
-  I.Continuous.ContinuousAt
+  I.continuous.continuousAt
 #align model_with_corners.continuous_at ModelWithCorners.continuousAt
 
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
-  I.ContinuousAt.ContinuousWithinAt
+  I.continuousAt.continuousWithinAt
 #align model_with_corners.continuous_within_at ModelWithCorners.continuousWithinAt
 
 @[continuity]
@@ -235,20 +237,21 @@ theorem continuous_symm : Continuous I.symm :=
 #align model_with_corners.continuous_symm ModelWithCorners.continuous_symm
 
 theorem continuousAt_symm {x} : ContinuousAt I.symm x :=
-  I.continuous_symm.ContinuousAt
+  I.continuous_symm.continuousAt
 #align model_with_corners.continuous_at_symm ModelWithCorners.continuousAt_symm
 
 theorem continuousWithinAt_symm {s x} : ContinuousWithinAt I.symm s x :=
-  I.continuous_symm.ContinuousWithinAt
+  I.continuous_symm.continuousWithinAt
 #align model_with_corners.continuous_within_at_symm ModelWithCorners.continuousWithinAt_symm
 
 theorem continuousOn_symm {s} : ContinuousOn I.symm s :=
-  I.continuous_symm.ContinuousOn
+  I.continuous_symm.continuousOn
 #align model_with_corners.continuous_on_symm ModelWithCorners.continuousOn_symm
 
 @[simp, mfld_simps]
-theorem target_eq : I.target = range (I : H → E) := by rw [← image_univ, ← I.source_eq];
-  exact I.to_local_equiv.image_source_eq_target.symm
+theorem target_eq : I.target = range (I : H → E) := by
+  rw [← image_univ, ← I.source_eq]
+  exact I.image_source_eq_target.symm
 #align model_with_corners.target_eq ModelWithCorners.target_eq
 
 protected theorem unique_diff : UniqueDiffOn 𝕜 (range I) :=
@@ -264,47 +267,47 @@ protected theorem leftInverse : LeftInverse I.symm I :=
 #align model_with_corners.left_inverse ModelWithCorners.leftInverse
 
 theorem injective : Injective I :=
-  I.LeftInverse.Injective
+  I.leftInverse.injective
 #align model_with_corners.injective ModelWithCorners.injective
 
 @[simp, mfld_simps]
 theorem symm_comp_self : I.symm ∘ I = id :=
-  I.LeftInverse.comp_eq_id
+  I.leftInverse.comp_eq_id
 #align model_with_corners.symm_comp_self ModelWithCorners.symm_comp_self
 
 protected theorem rightInvOn : RightInvOn I.symm I (range I) :=
-  I.LeftInverse.rightInvOn_range
+  I.leftInverse.rightInvOn_range
 #align model_with_corners.right_inv_on ModelWithCorners.rightInvOn
 
 @[simp, mfld_simps]
 protected theorem right_inv {x : E} (hx : x ∈ range I) : I (I.symm x) = x :=
-  I.RightInvOn hx
+  I.rightInvOn hx
 #align model_with_corners.right_inv ModelWithCorners.right_inv
 
 theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
-  I.Injective.preimage_image s
+  I.injective.preimage_image s
 #align model_with_corners.preimage_image ModelWithCorners.preimage_image
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by
-  refine' (I.to_local_equiv.image_eq_target_inter_inv_preimage _).trans _
+  refine' (I.toLocalEquiv.image_eq_target_inter_inv_preimage _).trans _
   · rw [I.source_eq]; exact subset_univ _
-  · rw [inter_comm, I.target_eq, I.to_local_equiv_coe_symm]
+  · rw [inter_comm, I.target_eq, I.toLocalEquiv_coe_symm]
 #align model_with_corners.image_eq ModelWithCorners.image_eq
 
 protected theorem closedEmbedding : ClosedEmbedding I :=
-  I.LeftInverse.ClosedEmbedding I.continuous_symm I.Continuous
+  I.leftInverse.closedEmbedding I.continuous_symm I.continuous
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
 theorem closed_range : IsClosed (range I) :=
-  I.ClosedEmbedding.closed_range
+  I.closedEmbedding.closed_range
 #align model_with_corners.closed_range ModelWithCorners.closed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
-  I.ClosedEmbedding.toEmbedding.map_nhds_eq x
+  I.closedEmbedding.toEmbedding.map_nhds_eq x
 #align model_with_corners.map_nhds_eq ModelWithCorners.map_nhds_eq
 
 theorem map_nhdsWithin_eq (s : Set H) (x : H) : map I (𝓝[s] x) = 𝓝[I '' s] I x :=
-  I.ClosedEmbedding.toEmbedding.map_nhdsWithin_eq s x
+  I.closedEmbedding.toEmbedding.map_nhdsWithin_eq s x
 #align model_with_corners.map_nhds_within_eq ModelWithCorners.map_nhdsWithin_eq
 
 theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s ∈ 𝓝[range I] I x :=
@@ -312,7 +315,7 @@ theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s �
 #align model_with_corners.image_mem_nhds_within ModelWithCorners.image_mem_nhdsWithin
 
 theorem symm_map_nhdsWithin_image {x : H} {s : Set H} : map I.symm (𝓝[I '' s] I x) = 𝓝[s] x := by
-  rw [← I.map_nhds_within_eq, map_map, I.symm_comp_self, map_id]
+  rw [← I.map_nhdsWithin_eq, map_map, I.symm_comp_self, map_id]
 #align model_with_corners.symm_map_nhds_within_image ModelWithCorners.symm_map_nhdsWithin_image
 
 theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = 𝓝 x := by
@@ -320,8 +323,9 @@ theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = �
 #align model_with_corners.symm_map_nhds_within_range ModelWithCorners.symm_map_nhdsWithin_range
 
 theorem unique_diff_preimage {s : Set H} (hs : IsOpen s) :
-    UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by rw [inter_comm];
-  exact I.unique_diff.inter (hs.preimage I.continuous_inv_fun)
+    UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by
+  rw [inter_comm]
+  exact I.unique_diff.inter (hs.preimage I.continuous_invFun)
 #align model_with_corners.unique_diff_preimage ModelWithCorners.unique_diff_preimage
 
 theorem unique_diff_preimage_source {β : Type _} [TopologicalSpace β] {e : LocalHomeomorph H β} :
@@ -337,20 +341,18 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
     {x : H} :
     ContinuousWithinAt (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) ↔ ContinuousWithinAt f s x := by
   refine' ⟨fun h => _, fun h => _⟩
-  · have := h.comp I.continuous_within_at (maps_to_preimage _ _)
+  · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this 
     rwa [Function.comp.assoc, I.symm_comp_self] at this 
-  · rw [← I.left_inv x] at h ; exact h.comp I.continuous_within_at_symm (inter_subset_left _ _)
+  · rw [← I.left_inv x] at h ; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
 protected theorem locally_compact [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
     LocallyCompactSpace H := by
-  have :
-    ∀ x : H,
-      (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (I x) ∧ IsCompact s) fun s => I.symm '' (s ∩ range ⇑I) := by
-    intro x
-    rw [← I.symm_map_nhds_within_range]
+  have : ∀ x : H, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (I x) ∧ IsCompact s)
+      fun s => I.symm '' (s ∩ range I) := fun x ↦ by
+    rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
   refine' locallyCompactSpace_of_hasBasis this _
   rintro x s ⟨-, hsc⟩
@@ -361,7 +363,7 @@ open TopologicalSpace
 
 protected theorem secondCountableTopology [SecondCountableTopology E] (I : ModelWithCorners 𝕜 E H) :
     SecondCountableTopology H :=
-  I.ClosedEmbedding.toEmbedding.SecondCountableTopology
+  I.closedEmbedding.toEmbedding.secondCountableTopology
 #align model_with_corners.second_countable_topology ModelWithCorners.secondCountableTopology
 
 end ModelWithCorners
@@ -397,22 +399,20 @@ corners `I.prod I'` on `(E × E', model_prod H H')`. This appears in particular 
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `model_prod H H'`
 vs `H × H'`. -/
-@[simps (config := lemmasOnly)]
+@[simps (config := .lemmasOnly)]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
     {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
     ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
-  {
-    I.toLocalEquiv.Prod
-      I'.toLocalEquiv with
+  { I.toLocalEquiv.prod I'.toLocalEquiv with
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
-    source_eq := by simp only [set_of_true, mfld_simps]
-    unique_diff' := I.unique_diff'.Prod I'.unique_diff'
-    continuous_toFun := I.continuous_toFun.Prod_map I'.continuous_toFun
-    continuous_invFun := I.continuous_invFun.Prod_map I'.continuous_invFun }
+    source_eq := by simp only [setOf_true, mfld_simps]
+    unique_diff' := I.unique_diff'.prod I'.unique_diff'
+    continuous_toFun := I.continuous_toFun.prod_map I'.continuous_toFun
+    continuous_invFun := I.continuous_invFun.prod_map I'.continuous_invFun }
 #align model_with_corners.prod ModelWithCorners.prod
 
 /-- Given a finite family of `model_with_corners` `I i` on `(E i, H i)`, we define the model with
@@ -425,7 +425,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   toLocalEquiv := LocalEquiv.pi fun i => (I i).toLocalEquiv
   source_eq := by simp only [Set.pi_univ, mfld_simps]
   unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
-  continuous_toFun := continuous_pi fun i => (I i).Continuous.comp (continuous_apply i)
+  continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 #align model_with_corners.pi ModelWithCorners.pi
 
@@ -435,7 +435,7 @@ as the model to tangent bundles. -/
 def ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
-  I.Prod 𝓘(𝕜, E)
+  I.prod 𝓘(𝕜, E)
 #align model_with_corners.tangent ModelWithCorners.tangent
 
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
@@ -447,28 +447,27 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
 
 @[simp, mfld_simps]
 theorem modelWithCorners_prod_toLocalEquiv :
-    (I.Prod J).toLocalEquiv = I.toLocalEquiv.Prod J.toLocalEquiv :=
+    (I.prod J).toLocalEquiv = I.toLocalEquiv.prod J.toLocalEquiv :=
   rfl
 #align model_with_corners_prod_to_local_equiv modelWithCorners_prod_toLocalEquiv
 
 @[simp, mfld_simps]
 theorem modelWithCorners_prod_coe (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H') :
-    (I.Prod I' : _ × _ → _ × _) = Prod.map I I' :=
+    (I.prod I' : _ × _ → _ × _) = Prod.map I I' :=
   rfl
 #align model_with_corners_prod_coe modelWithCorners_prod_coe
 
 @[simp, mfld_simps]
 theorem modelWithCorners_prod_coe_symm (I : ModelWithCorners 𝕜 E H)
     (I' : ModelWithCorners 𝕜 E' H') :
-    ((I.Prod I').symm : _ × _ → _ × _) = Prod.map I.symm I'.symm :=
+    ((I.prod I').symm : _ × _ → _ × _) = Prod.map I.symm I'.symm :=
   rfl
 #align model_with_corners_prod_coe_symm modelWithCorners_prod_coe_symm
 
-theorem modelWithCornersSelf_prod : 𝓘(𝕜, E × F) = 𝓘(𝕜, E).Prod 𝓘(𝕜, F) := by ext1; simp
+theorem modelWithCornersSelf_prod : 𝓘(𝕜, E × F) = 𝓘(𝕜, E).prod 𝓘(𝕜, F) := by ext1 <;> simp
 #align model_with_corners_self_prod modelWithCornersSelf_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem ModelWithCorners.range_prod : range (I.Prod J) = range I ×ˢ range J := by
+theorem ModelWithCorners.range_prod : range (I.prod J) = range I ×ˢ range J := by
   simp_rw [← ModelWithCorners.target_eq]; rfl
 #align model_with_corners.range_prod ModelWithCorners.range_prod
 
@@ -494,7 +493,7 @@ instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormed
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
     [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-    [I'.Boundaryless] : (I.Prod I').Boundaryless := by
+    [I'.Boundaryless] : (I.prod I').Boundaryless := by
   constructor
   dsimp [ModelWithCorners.prod, ModelProd]
   rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
@@ -519,23 +518,22 @@ the maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
   Pregroupoid.groupoid
     { property := fun f s => ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-      comp := fun f g u v hf hg hu hv huv => by
+      comp := fun {f g u v} hf hg _ _ _ => by
         have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
-        rw [this]
-        apply ContDiffOn.comp hg _
+        simp only [this]
+        refine hg.comp (hf.mono ?_) ?_
         · rintro x ⟨hx1, hx2⟩
+          exact ⟨hx1.1, hx2⟩
+        · rintro x ⟨hx1, _⟩
           simp only [mfld_simps] at hx1 ⊢
           exact hx1.2
-        · refine' hf.mono _
-          rintro x ⟨hx1, hx2⟩
-          exact ⟨hx1.1, hx2⟩
       id_mem := by
-        apply ContDiffOn.congr cont_diff_id.cont_diff_on
-        rintro x ⟨hx1, hx2⟩
+        apply ContDiffOn.congr contDiff_id.contDiffOn
+        rintro x ⟨_, hx2⟩
         rcases mem_range.1 hx2 with ⟨y, hy⟩
         rw [← hy]
         simp only [mfld_simps]
-      locality := fun f u hu H => by
+      locality := fun {f u} _ H => by
         apply contDiffOn_of_locally_contDiffOn
         rintro y ⟨hy1, hy2⟩
         rcases mem_range.1 hy2 with ⟨x, hx⟩
@@ -548,7 +546,7 @@ def contDiffGroupoid : StructureGroupoid H :=
           rw [inter_comm]
         rw [this] at hv 
         exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
-      congr := fun f g u hu fg hf => by
+      congr := fun {f g u} _ fg hf => by
         apply hf.congr
         rintro y ⟨hy1, hy2⟩
         rcases mem_range.1 hy2 with ⟨x, hx⟩
@@ -572,17 +570,17 @@ theorem contDiffGroupoid_le (h : m ≤ n) : contDiffGroupoid n I ≤ contDiffGro
 local homeomorphisms -/
 theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H := by
   apply le_antisymm le_top
-  intro u hu
+  intro u _
   -- we have to check that every local homeomorphism belongs to `cont_diff_groupoid 0 I`,
   -- by unfolding its definition
   change u ∈ contDiffGroupoid 0 I
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
   simp only [contDiffOn_zero]
   constructor
-  · refine' I.continuous.comp_continuous_on (u.continuous_on.comp I.continuous_on_symm _)
-    exact (maps_to_preimage _ _).mono_left (inter_subset_left _ _)
-  · refine' I.continuous.comp_continuous_on (u.symm.continuous_on.comp I.continuous_on_symm _)
-    exact (maps_to_preimage _ _).mono_left (inter_subset_left _ _)
+  · refine' I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
+    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
+  · refine' I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm _)
+    exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
 #align cont_diff_groupoid_zero_eq contDiffGroupoid_zero_eq
 
 variable (n)
@@ -593,7 +591,7 @@ theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
   · simp [h]
-  have : ContDiffOn 𝕜 n id (univ : Set E) := cont_diff_id.cont_diff_on
+  have : ContDiffOn 𝕜 n id (univ : Set E) := contDiff_id.contDiffOn
   exact this.congr_mono (fun x hx => by simp [hx.2]) (subset_univ _)
 #align of_set_mem_cont_diff_groupoid ofSet_mem_contDiffGroupoid
 
@@ -611,7 +609,7 @@ variable {E' H' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topolog
 /-- The product of two smooth local homeomorphisms is smooth. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : LocalHomeomorph H H} {e' : LocalHomeomorph H' H'} (he : e ∈ contDiffGroupoid ⊤ I)
-    (he' : e' ∈ contDiffGroupoid ⊤ I') : e.Prod e' ∈ contDiffGroupoid ⊤ (I.Prod I') := by
+    (he' : e' ∈ contDiffGroupoid ⊤ I') : e.prod e' ∈ contDiffGroupoid ⊤ (I.prod I') := by
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm 
@@ -630,7 +628,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply structure_groupoid.le_iff.mpr
+      apply StructureGroupoid.le_iff.mpr
       rintro e ⟨s, hs, hes⟩
       apply (contDiffGroupoid n I).eq_on_source' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
@@ -721,8 +719,8 @@ instance prod {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [Norme
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type _} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} (M : Type _) [TopologicalSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] (M' : Type _) [TopologicalSpace M'] [ChartedSpace H' M']
-    [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.Prod I') (M × M')
-    where compatible := by
+    [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
+  compatible := by
     rintro f g ⟨f1, f2, hf1, hf2, rfl⟩ ⟨g1, g2, hg1, hg2, rfl⟩
     rw [LocalHomeomorph.prod_symm, LocalHomeomorph.prod_trans]
     have h1 := HasGroupoid.compatible (contDiffGroupoid ⊤ I) hf1 hg1
@@ -758,7 +756,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] (s : Opens M)
 
 instance : SmoothManifoldWithCorners I s :=
-  { s.HasGroupoid (contDiffGroupoid ∞ I) with }
+  { s.hasGroupoid (contDiffGroupoid ∞ I) with }
 
 end TopologicalSpace.Opens
 
@@ -802,17 +800,18 @@ theorem extend_source : (f.extend I).source = f.source := by
   rw [extend, LocalEquiv.trans_source, I.source_eq, preimage_univ, inter_univ]
 #align local_homeomorph.extend_source LocalHomeomorph.extend_source
 
-theorem isOpen_extend_source : IsOpen (f.extend I).source := by rw [extend_source];
+theorem isOpen_extend_source : IsOpen (f.extend I).source := by
+  rw [extend_source]
   exact f.open_source
 #align local_homeomorph.is_open_extend_source LocalHomeomorph.isOpen_extend_source
 
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
-  simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.to_local_equiv_coe_symm, inter_comm]
+  simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toLocalEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target LocalHomeomorph.extend_target
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
-  rw [maps_to', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
+  rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_subset _ (inter_subset_right _ _)
 #align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
@@ -830,13 +829,13 @@ theorem extend_source_mem_nhdsWithin {x : M} (h : x ∈ f.source) : (f.extend I)
 #align local_homeomorph.extend_source_mem_nhds_within LocalHomeomorph.extend_source_mem_nhdsWithin
 
 theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := by
-  refine' I.continuous.comp_continuous_on _
+  refine' I.continuous.comp_continuousOn _
   rw [extend_source]
-  exact f.continuous_on
+  exact f.continuousOn
 #align local_homeomorph.continuous_on_extend LocalHomeomorph.continuousOn_extend
 
 theorem continuousAt_extend {x : M} (h : x ∈ f.source) : ContinuousAt (f.extend I) x :=
-  (continuousOn_extend f I).ContinuousAt <| extend_source_mem_nhds f I h
+  (continuousOn_extend f I).continuousAt <| extend_source_mem_nhds f I h
 #align local_homeomorph.continuous_at_extend LocalHomeomorph.continuousAt_extend
 
 theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
@@ -861,7 +860,7 @@ theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
 
 theorem continuousAt_extend_symm' {x : E} (h : x ∈ (f.extend I).target) :
     ContinuousAt (f.extend I).symm x :=
-  ContinuousAt.comp (f.continuousAt_symm h.2) I.continuous_symm.ContinuousAt
+  ContinuousAt.comp (f.continuousAt_symm h.2) I.continuous_symm.continuousAt
 #align local_homeomorph.continuous_at_extend_symm' LocalHomeomorph.continuousAt_extend_symm'
 
 theorem continuousAt_extend_symm {x : M} (h : x ∈ f.source) :
@@ -870,14 +869,14 @@ theorem continuousAt_extend_symm {x : M} (h : x ∈ f.source) :
 #align local_homeomorph.continuous_at_extend_symm LocalHomeomorph.continuousAt_extend_symm
 
 theorem continuousOn_extend_symm : ContinuousOn (f.extend I).symm (f.extend I).target := fun y hy =>
-  (continuousAt_extend_symm' _ _ hy).ContinuousWithinAt
+  (continuousAt_extend_symm' _ _ hy).continuousWithinAt
 #align local_homeomorph.continuous_on_extend_symm LocalHomeomorph.continuousOn_extend_symm
 
 theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {g : M → X}
     {s : Set M} {x : M} :
     ContinuousWithinAt (g ∘ (f.extend I).symm) ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I x) ↔
       ContinuousWithinAt (g ∘ f.symm) (f.symm ⁻¹' s) (f x) :=
-  by convert I.symm_continuous_within_at_comp_right_iff <;> rfl
+  by convert I.symm_continuousWithinAt_comp_right_iff <;> rfl
 #align local_homeomorph.extend_symm_continuous_within_at_comp_right_iff LocalHomeomorph.extend_symm_continuousWithinAt_comp_right_iff
 
 theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
@@ -894,43 +893,43 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
   set e := f.extend I <;>
     calc
       map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
-        congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhds_within f I hy)).symm
+        congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f I hy)).symm
       _ = 𝓝[e '' (e.source ∩ s)] e y :=
-        ((f.extend I).LeftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq
+        ((f.extend I).leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq
           ((f.extend I).left_inv <| by rwa [f.extend_source])
-          (continuous_at_extend_symm f I hy).ContinuousWithinAt
-          (continuous_at_extend f I hy).ContinuousWithinAt
+          (continuousAt_extend_symm f I hy).continuousWithinAt
+          (continuousAt_extend f I hy).continuousWithinAt
       
 #align local_homeomorph.map_extend_nhds_within_eq_image LocalHomeomorph.map_extend_nhdsWithin_eq_image
 
 theorem map_extend_nhdsWithin {y : M} (hy : y ∈ f.source) :
     map (f.extend I) (𝓝[s] y) = 𝓝[(f.extend I).symm ⁻¹' s ∩ range I] f.extend I y := by
-  rw [map_extend_nhds_within_eq_image f I hy, nhdsWithin_inter, ←
-    nhds_within_extend_target_eq _ _ hy, ← nhdsWithin_inter, (f.extend I).image_source_inter_eq',
+  rw [map_extend_nhdsWithin_eq_image f I hy, nhdsWithin_inter, ←
+    nhdsWithin_extend_target_eq _ _ hy, ← nhdsWithin_inter, (f.extend I).image_source_inter_eq',
     inter_comm]
 #align local_homeomorph.map_extend_nhds_within LocalHomeomorph.map_extend_nhdsWithin
 
 theorem map_extend_symm_nhdsWithin {y : M} (hy : y ∈ f.source) :
     map (f.extend I).symm (𝓝[(f.extend I).symm ⁻¹' s ∩ range I] f.extend I y) = 𝓝[s] y := by
-  rw [← map_extend_nhds_within f I hy, map_map, map_congr, map_id]
-  exact (f.extend I).LeftInvOn.EqOn.eventuallyEq_of_mem (extend_source_mem_nhds_within _ _ hy)
+  rw [← map_extend_nhdsWithin f I hy, map_map, map_congr, map_id]
+  exact (f.extend I).leftInvOn.EqOn.eventuallyEq_of_mem (extend_source_mem_nhdsWithin _ _ hy)
 #align local_homeomorph.map_extend_symm_nhds_within LocalHomeomorph.map_extend_symm_nhdsWithin
 
 theorem map_extend_symm_nhdsWithin_range {y : M} (hy : y ∈ f.source) :
     map (f.extend I).symm (𝓝[range I] f.extend I y) = 𝓝 y := by
-  rw [← nhdsWithin_univ, ← map_extend_symm_nhds_within f I hy, preimage_univ, univ_inter]
+  rw [← nhdsWithin_univ, ← map_extend_symm_nhdsWithin f I hy, preimage_univ, univ_inter]
 #align local_homeomorph.map_extend_symm_nhds_within_range LocalHomeomorph.map_extend_symm_nhdsWithin_range
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
 theorem extend_preimage_mem_nhdsWithin {x : M} (h : x ∈ f.source) (ht : t ∈ 𝓝[s] x) :
     (f.extend I).symm ⁻¹' t ∈ 𝓝[(f.extend I).symm ⁻¹' s ∩ range I] f.extend I x := by
-  rwa [← map_extend_symm_nhds_within f I h, mem_map] at ht 
+  rwa [← map_extend_symm_nhdsWithin f I h, mem_map] at ht 
 #align local_homeomorph.extend_preimage_mem_nhds_within LocalHomeomorph.extend_preimage_mem_nhdsWithin
 
 theorem extend_preimage_mem_nhds {x : M} (h : x ∈ f.source) (ht : t ∈ 𝓝 x) :
     (f.extend I).symm ⁻¹' t ∈ 𝓝 (f.extend I x) := by
-  apply (continuous_at_extend_symm f I h).preimage_mem_nhds
+  apply (continuousAt_extend_symm f I h).preimage_mem_nhds
   rwa [(f.extend I).left_inv]
   rwa [f.extend_source]
 #align local_homeomorph.extend_preimage_mem_nhds LocalHomeomorph.extend_preimage_mem_nhds
@@ -952,8 +951,8 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
     skip
     rw [← @univ_inter _ (_ ∩ _)]
   refine' (eventually_eq_univ.mpr _).symm.inter eventually_eq.rfl
-  refine' I.continuous_at_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.maps_to hx]
+  refine' I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
+  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq_aux LocalHomeomorph.extend_symm_preimage_inter_range_eventuallyEq_aux
 
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
@@ -985,17 +984,17 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
     ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] x := by
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
-  refine' I.image_mem_nhds_within _
+  refine' I.image_mem_nhdsWithin _
   refine' (LocalHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within LocalHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
-theorem extend_coord_change_source_mem_nhds_within' {x : M} (hxf : x ∈ f.source)
+theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
     (hxf' : x ∈ f'.source) : ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] f.extend I x :=
   by
-  apply extend_coord_change_source_mem_nhds_within
+  apply extend_coord_change_source_mem_nhdsWithin
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf, hxf'⟩
-#align local_homeomorph.extend_coord_change_source_mem_nhds_within' LocalHomeomorph.extend_coord_change_source_mem_nhds_within'
+#align local_homeomorph.extend_coord_change_source_mem_nhds_within' LocalHomeomorph.extend_coord_change_source_mem_nhdsWithin'
 
 variable {f f'}
 
@@ -1011,16 +1010,16 @@ theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtl
 theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
-  apply (cont_diff_on_extend_coord_change I hf hf' x hx).mono_of_mem
+  apply (contDiffOn_extend_coord_change I hf hf' x hx).mono_of_mem
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
-  exact I.image_mem_nhds_within ((LocalHomeomorph.open_source _).mem_nhds hz)
+  exact I.image_mem_nhdsWithin ((LocalHomeomorph.open_source _).mem_nhds hz)
 #align local_homeomorph.cont_diff_within_at_extend_coord_change LocalHomeomorph.contDiffWithinAt_extend_coord_change
 
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine' cont_diff_within_at_extend_coord_change I hf hf' _
+  refine' contDiffWithinAt_extend_coord_change I hf hf' _
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 #align local_homeomorph.cont_diff_within_at_extend_coord_change' LocalHomeomorph.contDiffWithinAt_extend_coord_change'
@@ -1081,10 +1080,10 @@ theorem extChartAt_source_mem_nhds : (extChartAt I x).source ∈ 𝓝 x :=
   extChartAt_source_mem_nhds' I x (mem_ext_chart_source I x)
 #align ext_chart_at_source_mem_nhds extChartAt_source_mem_nhds
 
-theorem extChartAt_source_mem_nhds_within' {x' : M} (h : x' ∈ (extChartAt I x).source) :
+theorem extChartAt_source_mem_nhdsWithin' {x' : M} (h : x' ∈ (extChartAt I x).source) :
     (extChartAt I x).source ∈ 𝓝[s] x' :=
   mem_nhdsWithin_of_mem_nhds (extChartAt_source_mem_nhds' I x h)
-#align ext_chart_at_source_mem_nhds_within' extChartAt_source_mem_nhds_within'
+#align ext_chart_at_source_mem_nhds_within' extChartAt_source_mem_nhdsWithin'
 
 theorem extChartAt_source_mem_nhdsWithin : (extChartAt I x).source ∈ 𝓝[s] x :=
   mem_nhdsWithin_of_mem_nhds (extChartAt_source_mem_nhds I x)
@@ -1112,13 +1111,13 @@ theorem map_extChartAt_nhds : map (extChartAt I x) (𝓝 x) = 𝓝[range I] extC
   map_extChartAt_nhds' I <| mem_ext_chart_source I x
 #align map_ext_chart_at_nhds map_extChartAt_nhds
 
-theorem extChartAt_target_mem_nhds_within' {y : M} (hy : y ∈ (extChartAt I x).source) :
+theorem extChartAt_target_mem_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
   extend_target_mem_nhdsWithin _ _ <| by rwa [← extChartAt_source I]
-#align ext_chart_at_target_mem_nhds_within' extChartAt_target_mem_nhds_within'
+#align ext_chart_at_target_mem_nhds_within' extChartAt_target_mem_nhdsWithin'
 
 theorem extChartAt_target_mem_nhdsWithin : (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
-  extChartAt_target_mem_nhds_within' I x (mem_ext_chart_source I x)
+  extChartAt_target_mem_nhdsWithin' I x (mem_ext_chart_source I x)
 #align ext_chart_at_target_mem_nhds_within extChartAt_target_mem_nhdsWithin
 
 theorem extChartAt_target_subset_range : (extChartAt I x).target ⊆ range I := by
@@ -1150,7 +1149,7 @@ theorem continuousAt_extChartAt_symm : ContinuousAt (extChartAt I x).symm ((extC
 #align continuous_at_ext_chart_at_symm continuousAt_extChartAt_symm
 
 theorem continuousOn_extChartAt_symm : ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
-  fun y hy => (continuousAt_extChartAt_symm'' _ _ hy).ContinuousWithinAt
+  fun y hy => (continuousAt_extChartAt_symm'' _ _ hy).continuousWithinAt
 #align continuous_on_ext_chart_at_symm continuousOn_extChartAt_symm
 
 theorem isOpen_extChartAt_preimage' {s : Set E} (hs : IsOpen s) :
@@ -1175,21 +1174,21 @@ theorem map_extChartAt_nhdsWithin_eq_image :
   map_extChartAt_nhdsWithin_eq_image' I x (mem_ext_chart_source I x)
 #align map_ext_chart_at_nhds_within_eq_image map_extChartAt_nhdsWithin_eq_image
 
-theorem map_extChartAt_nhds_within' {y : M} (hy : y ∈ (extChartAt I x).source) :
+theorem map_extChartAt_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
     map (extChartAt I x) (𝓝[s] y) = 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x y :=
   map_extend_nhdsWithin _ _ <| by rwa [← extChartAt_source I]
-#align map_ext_chart_at_nhds_within' map_extChartAt_nhds_within'
+#align map_ext_chart_at_nhds_within' map_extChartAt_nhdsWithin'
 
 theorem map_extChartAt_nhdsWithin :
     map (extChartAt I x) (𝓝[s] x) = 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x x :=
-  map_extChartAt_nhds_within' I x (mem_ext_chart_source I x)
+  map_extChartAt_nhdsWithin' I x (mem_ext_chart_source I x)
 #align map_ext_chart_at_nhds_within map_extChartAt_nhdsWithin
 
-theorem map_extChartAt_symm_nhds_within' {y : M} (hy : y ∈ (extChartAt I x).source) :
+theorem map_extChartAt_symm_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
     map (extChartAt I x).symm (𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x y) =
       𝓝[s] y :=
   map_extend_symm_nhdsWithin _ _ <| by rwa [← extChartAt_source I]
-#align map_ext_chart_at_symm_nhds_within' map_extChartAt_symm_nhds_within'
+#align map_ext_chart_at_symm_nhds_within' map_extChartAt_symm_nhdsWithin'
 
 theorem map_extChartAt_symm_nhdsWithin_range' {y : M} (hy : y ∈ (extChartAt I x).source) :
     map (extChartAt I x).symm (𝓝[range I] extChartAt I x y) = 𝓝 y :=
@@ -1199,7 +1198,7 @@ theorem map_extChartAt_symm_nhdsWithin_range' {y : M} (hy : y ∈ (extChartAt I 
 theorem map_extChartAt_symm_nhdsWithin :
     map (extChartAt I x).symm (𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x x) =
       𝓝[s] x :=
-  map_extChartAt_symm_nhds_within' I x (mem_ext_chart_source I x)
+  map_extChartAt_symm_nhdsWithin' I x (mem_ext_chart_source I x)
 #align map_ext_chart_at_symm_nhds_within map_extChartAt_symm_nhdsWithin
 
 theorem map_extChartAt_symm_nhdsWithin_range :
@@ -1209,17 +1208,17 @@ theorem map_extChartAt_symm_nhdsWithin_range :
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
-theorem extChartAt_preimage_mem_nhds_within' {x' : M} (h : x' ∈ (extChartAt I x).source)
+theorem extChartAt_preimage_mem_nhdsWithin' {x' : M} (h : x' ∈ (extChartAt I x).source)
     (ht : t ∈ 𝓝[s] x') :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x' := by
-  rwa [← map_extChartAt_symm_nhds_within' I x h, mem_map] at ht 
-#align ext_chart_at_preimage_mem_nhds_within' extChartAt_preimage_mem_nhds_within'
+  rwa [← map_extChartAt_symm_nhdsWithin' I x h, mem_map] at ht 
+#align ext_chart_at_preimage_mem_nhds_within' extChartAt_preimage_mem_nhdsWithin'
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of the
 base point is a neighborhood of the preimage, within a set. -/
 theorem extChartAt_preimage_mem_nhdsWithin (ht : t ∈ 𝓝[s] x) :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
-  extChartAt_preimage_mem_nhds_within' I x (mem_ext_chart_source I x) ht
+  extChartAt_preimage_mem_nhdsWithin' I x (mem_ext_chart_source I x) ht
 #align ext_chart_at_preimage_mem_nhds_within extChartAt_preimage_mem_nhdsWithin
 
 theorem extChartAt_preimage_mem_nhds' {x' : M} (h : x' ∈ (extChartAt I x).source) (ht : t ∈ 𝓝 x') :
@@ -1297,7 +1296,7 @@ theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y
 variable {𝕜}
 
 theorem extChartAt_prod (x : M × M') :
-    extChartAt (I.Prod I') x = (extChartAt I x.1).Prod (extChartAt I' x.2) := by
+    extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
 #align ext_chart_at_prod extChartAt_prod
 
