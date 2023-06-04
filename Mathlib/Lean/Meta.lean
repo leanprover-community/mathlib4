@@ -13,6 +13,26 @@ import Std.Data.List.Basic
 
 open Lean Meta
 
+namespace Lean.Meta
+
+/-- Given `hs : Array α` (usually `Expr`) and `bs : Array BinderInfo`, return
+`(explicit, implicit, instImplicit)`, where `explicit` consists of the elements of `hs` for which
+the corresponding element of `bs` is `.explicit`, etc. This collapses the distinction between
+`.implicit` and `.strictImplicit`. This function panics if `hs` is not at least as big as `bs`. -/
+def groupByBinderInfo [Inhabited α] (hs : Array α) (bs : Array BinderInfo)
+    : Array α × Array α × Array α := Id.run do
+  let mut explicit     := #[]
+  let mut implicit     := #[]
+  let mut instImplicit := #[]
+  for i in [: bs.size] do
+    match bs[i]! with
+    | .default                    => explicit     := explicit.push hs[i]!
+    | .implicit | .strictImplicit => implicit     := implicit.push hs[i]!
+    | .instImplicit               => instImplicit := instImplicit.push hs[i]!
+  return (explicit, implicit, instImplicit)
+
+end Lean.Meta
+
 namespace Lean.MVarId
 
 /-- Solve a goal by synthesizing an instance. -/
@@ -210,22 +230,6 @@ and then builds the lambda telescope term for the new term.
 -/
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
-
-/-- Given `hs : Array α` (usually `Expr`) and `bs : Array BinderInfo`, return
-`(explicit, implicit, instImplicit)`, where `explicit` consists of the elements of `hs` for which
-the corresponding element of `bs` is `.explicit`, etc. This collapses the distinction between
-`.implicit` and `.strictImplicit`. This function panics if `hs` is not at least as big as `bs`. -/
-def groupByBinderInfo [Inhabited α] (hs : Array α) (bs : Array BinderInfo)
-    : Array α × Array α × Array α := Id.run do
-  let mut explicit     := #[]
-  let mut implicit     := #[]
-  let mut instImplicit := #[]
-  for i in [: bs.size] do
-    match bs[i]! with
-    | .default                    => explicit     := explicit.push hs[i]!
-    | .implicit | .strictImplicit => implicit     := implicit.push hs[i]!
-    | .instImplicit               => instImplicit := instImplicit.push hs[i]!
-  return (explicit, implicit, instImplicit)
 
 end Lean.Meta
 
