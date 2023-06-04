@@ -248,7 +248,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [Nat.succ_eq_add_one, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_bind₁]
   simp only [map_rename, map_wittPolynomial, wittPolynomial_zMod_self]
   rw [key]; clear key IH
-  rw [bind₁, aeval_wittPolynomial, RingHom.map_sum, RingHom.map_sum, Finset.sum_congr rfl]
+  rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
   simp only [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← mul_sub, ←
@@ -272,16 +272,15 @@ variable (p)
 theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     map (Int.castRingHom ℚ) (wittStructureInt p Φ n) =
       wittStructureRat p (map (Int.castRingHom ℚ) Φ) n := by
-  apply Nat.strong_induction_on n; clear n
-  intro n IH
-  rw [wittStructureInt, map_map_range_eq_iff, Int.coe_castRingHom]
+  induction n using Nat.strong_induction_on with | h n IH => ?_
+  rw [wittStructureInt, map_mapRange_eq_iff, Int.coe_castRingHom]
   intro c
   rw [wittStructureRat_rec, coeff_C_mul, mul_comm, mul_div_assoc', mul_one]
   have sum_induction_steps :
-    map (Int.castRingHom ℚ) (∑ i in range n, C (p ^ i : ℤ) * wittStructureInt p Φ i ^ p ^ (n - i)) =
+    map (Int.castRingHom ℚ) (∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i)) =
       ∑ i in range n,
-        C (p ^ i : ℚ) * wittStructureRat p (map (Int.castRingHom ℚ) Φ) i ^ p ^ (n - i) := by
-    rw [RingHom.map_sum]
+        C ((p : ℚ) ^ i) * wittStructureRat p (map (Int.castRingHom ℚ) Φ) i ^ p ^ (n - i) := by
+    rw [map_sum]
     apply Finset.sum_congr rfl
     intro i hi
     rw [Finset.mem_range] at hi
@@ -289,14 +288,12 @@ theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     rfl
   simp only [← sum_induction_steps, ← map_wittPolynomial p (Int.castRingHom ℚ), ← map_rename, ←
     map_bind₁, ← RingHom.map_sub, coeff_map]
-  rw [show (p : ℚ) ^ n = ((p ^ n : ℕ) : ℤ) by norm_cast]
+  rw [show (p : ℚ) ^ n = ((↑(p ^ n) : ℤ) : ℚ) by norm_cast]
   rw [← Rat.den_eq_one_iff, eq_intCast, Rat.den_div_cast_eq_one_iff]
-  swap; · exact_mod_cast pow_ne_zero n hp.1.NeZero
+  swap; · exact_mod_cast pow_ne_zero n hp.1.ne_zero
   revert c; rw [← C_dvd_iff_dvd_coeff]
-  exact c_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum Φ n IH
+  exact C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum Φ n IH
 #align map_witt_structure_int map_wittStructureInt
-
-variable (p)
 
 theorem wittStructureInt_prop (Φ : MvPolynomial idx ℤ) (n) :
     bind₁ (wittStructureInt p Φ) (wittPolynomial p ℤ n) =
