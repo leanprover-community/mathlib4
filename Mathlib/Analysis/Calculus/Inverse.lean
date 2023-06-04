@@ -43,7 +43,8 @@ differentiability implies strict differentiability; this is false over a general
 `ℝ` or `ℂ` and implemented here assuming `IsROrC 𝕂`.
 
 Some related theorems, providing the derivative and higher regularity assuming that we already know
-the inverse function, are formulated in the `Analysis/Calculus/FDeriv` and `Analysis/Calculus/Deriv` folders, and in `ContDiff.lean`.
+the inverse function, are formulated in the `Analysis/Calculus/FDeriv` and `Analysis/Calculus/Deriv`
+folders, and in `ContDiff.lean`.
 
 ## Notations
 
