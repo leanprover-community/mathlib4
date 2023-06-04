@@ -205,7 +205,7 @@ example : ∃ Ω : Type u, ∀ A : Type u, Nonempty (Set A ≃ (A ⟶ Ω)) := by
   · intro
     simp
 
--- 3.11. Draw the relevant diagrams and define composition and identities for thecategory C^A,B
+-- 3.11. Draw the relevant diagrams and define composition and identities for the category C^A,B
 -- mentioned in Example 3.9. Do the same for the category C^α,β mentioned in Example 3.10.
 -- [§5.5, 5.12]
 def example39_up {C : Type _} [hC : Category C] (A B : C) :
