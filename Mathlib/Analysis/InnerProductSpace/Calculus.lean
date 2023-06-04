@@ -28,6 +28,7 @@ and from the equivalence of norms in finite dimensions.
 The last part of the file should be generalized to `pi_Lp`.
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 noncomputable section
 
@@ -43,7 +44,6 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 variable (𝕜) [NormedSpace ℝ E]
@@ -58,29 +58,30 @@ theorem fderivInnerClm_apply (p x : E × E) : fderivInnerClm 𝕜 p x = ⟪p.1, 
   rfl
 #align fderiv_inner_clm_apply fderivInnerClm_apply
 
+variable {𝕜} -- porting note: Lean 3 magically switches back to `{𝕜}` here
+
 theorem contDiff_inner {n} : ContDiff ℝ n fun p : E × E => ⟪p.1, p.2⟫ :=
-  isBoundedBilinearMap_inner.ContDiff
+  isBoundedBilinearMap_inner.contDiff
 #align cont_diff_inner contDiff_inner
 
 theorem contDiffAt_inner {p : E × E} {n} : ContDiffAt ℝ n (fun p : E × E => ⟪p.1, p.2⟫) p :=
-  contDiff_inner.ContDiffAt
+  ContDiff.contDiffAt contDiff_inner
 #align cont_diff_at_inner contDiffAt_inner
 
 theorem differentiable_inner : Differentiable ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
-  isBoundedBilinearMap_inner.DifferentiableAt
+  isBoundedBilinearMap_inner.differentiableAt
 #align differentiable_inner differentiable_inner
 
+variable (𝕜)
 variable {G : Type _} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
   {s : Set G} {x : G} {n : ℕ∞}
 
-include 𝕜
-
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :
     ContDiffWithinAt ℝ n (fun x => ⟪f x, g x⟫) s x :=
-  contDiffAt_inner.comp_contDiffWithinAt x (hf.Prod hg)
+  contDiffAt_inner.comp_contDiffWithinAt x (hf.prod hg)
 #align cont_diff_within_at.inner ContDiffWithinAt.inner
 
-theorem ContDiffAt.inner (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) :
+nonrec theorem ContDiffAt.inner (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) :
     ContDiffAt ℝ n (fun x => ⟪f x, g x⟫) x :=
   hf.inner 𝕜 hg
 #align cont_diff_at.inner ContDiffAt.inner
@@ -91,47 +92,47 @@ theorem ContDiffOn.inner (hf : ContDiffOn ℝ n f s) (hg : ContDiffOn ℝ n g s)
 
 theorem ContDiff.inner (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => ⟪f x, g x⟫ :=
-  contDiff_inner.comp (hf.Prod hg)
+  contDiff_inner.comp (hf.prod hg)
 #align cont_diff.inner ContDiff.inner
 
 theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
-    HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.Prod g') s
+    HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') s
       x :=
-  (isBoundedBilinearMap_inner.HasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.Prod hg)
+  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 #align has_fderiv_within_at.inner HasFDerivWithinAt.inner
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
-    HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.Prod g') x :=
-  (isBoundedBilinearMap_inner.HasStrictFDerivAt (f x, g x)).comp x (hf.Prod hg)
+    HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') x :=
+  (isBoundedBilinearMap_inner.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
 #align has_strict_fderiv_at.inner HasStrictFDerivAt.inner
 
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.Prod g') x :=
-  (isBoundedBilinearMap_inner.HasFDerivAt (f x, g x)).comp x (hf.Prod hg)
+    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerClm 𝕜 (f x, g x)).comp <| f'.prod g') x :=
+  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 #align has_fderiv_at.inner HasFDerivAt.inner
 
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :
     HasDerivWithinAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) s x := by
-  simpa using (hf.has_fderiv_within_at.inner 𝕜 hg.has_fderiv_within_at).HasDerivWithinAt
+  simpa using (hf.hasFDerivWithinAt.inner 𝕜 hg.hasFDerivWithinAt).hasDerivWithinAt
 #align has_deriv_within_at.inner HasDerivWithinAt.inner
 
 theorem HasDerivAt.inner {f g : ℝ → E} {f' g' : E} {x : ℝ} :
-    HasDerivAt f f' x →
-      HasDerivAt g g' x → HasDerivAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) x :=
+    HasDerivAt f f' x → HasDerivAt g g' x →
+      HasDerivAt (fun t => ⟪f t, g t⟫) (⟪f x, g'⟫ + ⟪f', g x⟫) x :=
   by simpa only [← hasDerivWithinAt_univ] using HasDerivWithinAt.inner 𝕜
 #align has_deriv_at.inner HasDerivAt.inner
 
 theorem DifferentiableWithinAt.inner (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) : DifferentiableWithinAt ℝ (fun x => ⟪f x, g x⟫) s x :=
-  ((differentiable_inner _).HasFDerivAt.comp_hasFDerivWithinAt x
-      (hf.Prod hg).HasFDerivWithinAt).DifferentiableWithinAt
+  ((differentiable_inner _).hasFDerivAt.comp_hasFDerivWithinAt x
+      (hf.prod hg).hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.inner DifferentiableWithinAt.inner
 
 theorem DifferentiableAt.inner (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) :
     DifferentiableAt ℝ (fun x => ⟪f x, g x⟫) x :=
-  (differentiable_inner _).comp x (hf.Prod hg)
+  (differentiable_inner _).comp x (hf.prod hg)
 #align differentiable_at.inner DifferentiableAt.inner
 
 theorem DifferentiableOn.inner (hf : DifferentiableOn ℝ f s) (hg : DifferentiableOn ℝ g s) :
@@ -144,18 +145,18 @@ theorem Differentiable.inner (hf : Differentiable ℝ f) (hg : Differentiable �
 
 theorem fderiv_inner_apply (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) (y : G) :
     fderiv ℝ (fun t => ⟪f t, g t⟫) x y = ⟪f x, fderiv ℝ g x y⟫ + ⟪fderiv ℝ f x y, g x⟫ := by
-  rw [(hf.has_fderiv_at.inner 𝕜 hg.has_fderiv_at).fderiv]; rfl
+  rw [(hf.hasFDerivAt.inner 𝕜 hg.hasFDerivAt).fderiv]; rfl
 #align fderiv_inner_apply fderiv_inner_apply
 
 theorem deriv_inner_apply {f g : ℝ → E} {x : ℝ} (hf : DifferentiableAt ℝ f x)
     (hg : DifferentiableAt ℝ g x) :
     deriv (fun t => ⟪f t, g t⟫) x = ⟪f x, deriv g x⟫ + ⟪deriv f x, g x⟫ :=
-  (hf.HasDerivAt.inner 𝕜 hg.HasDerivAt).deriv
+  (hf.hasDerivAt.inner 𝕜 hg.hasDerivAt).deriv
 #align deriv_inner_apply deriv_inner_apply
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
-  simp only [sq, ← @inner_self_eq_norm_mul_norm 𝕜]
-  exact (re_clm : 𝕜 →L[ℝ] ℝ).ContDiff.comp (cont_diff_id.inner 𝕜 contDiff_id)
+  convert (reClm : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
+  exact (inner_self_eq_norm_sq _).symm
 #align cont_diff_norm_sq contDiff_norm_sq
 
 theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => ‖f x‖ ^ 2 :=
@@ -164,16 +165,16 @@ theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => ‖f 
 
 theorem ContDiffWithinAt.norm_sq (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun y => ‖f y‖ ^ 2) s x :=
-  (contDiff_norm_sq 𝕜).ContDiffAt.comp_contDiffWithinAt x hf
+  (contDiff_norm_sq 𝕜).contDiffAt.comp_contDiffWithinAt x hf
 #align cont_diff_within_at.norm_sq ContDiffWithinAt.norm_sq
 
-theorem ContDiffAt.norm_sq (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n (fun y => ‖f y‖ ^ 2) x :=
-  hf.normSq 𝕜
+nonrec theorem ContDiffAt.norm_sq (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n (‖f ·‖ ^ 2) x :=
+  hf.norm_sq 𝕜
 #align cont_diff_at.norm_sq ContDiffAt.norm_sq
 
 theorem contDiffAt_norm {x : E} (hx : x ≠ 0) : ContDiffAt ℝ n norm x := by
-  have : ‖id x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_pos_iff.2 hx).ne'
-  simpa only [id, sqrt_sq, norm_nonneg] using (cont_diff_at_id.norm_sq 𝕜).sqrt this
+  have : ‖id x‖ ^ 2 ≠ 0 := pow_ne_zero 2 (norm_pos_iff.2 hx).ne'
+  simpa only [id, sqrt_sq, norm_nonneg] using (contDiffAt_id.norm_sq 𝕜).sqrt this
 #align cont_diff_at_norm contDiffAt_norm
 
 theorem ContDiffAt.norm (hf : ContDiffAt ℝ n f x) (h0 : f x ≠ 0) :
@@ -182,7 +183,8 @@ theorem ContDiffAt.norm (hf : ContDiffAt ℝ n f x) (h0 : f x ≠ 0) :
 #align cont_diff_at.norm ContDiffAt.norm
 
 theorem ContDiffAt.dist (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (hne : f x ≠ g x) :
-    ContDiffAt ℝ n (fun y => dist (f y) (g y)) x := by simp only [dist_eq_norm];
+    ContDiffAt ℝ n (fun y => dist (f y) (g y)) x := by
+  simp only [dist_eq_norm]
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 #align cont_diff_at.dist ContDiffAt.dist
 
@@ -197,7 +199,7 @@ theorem ContDiffWithinAt.dist (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiff
 #align cont_diff_within_at.dist ContDiffWithinAt.dist
 
 theorem ContDiffOn.norm_sq (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun y => ‖f y‖ ^ 2) s :=
-  fun x hx => (hf x hx).normSq 𝕜
+  fun x hx => (hf x hx).norm_sq 𝕜
 #align cont_diff_on.norm_sq ContDiffOn.norm_sq
 
 theorem ContDiffOn.norm (hf : ContDiffOn ℝ n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
@@ -210,34 +212,31 @@ theorem ContDiffOn.dist (hf : ContDiffOn ℝ n f s) (hg : ContDiffOn ℝ n g s)
 #align cont_diff_on.dist ContDiffOn.dist
 
 theorem ContDiff.norm (hf : ContDiff ℝ n f) (h0 : ∀ x, f x ≠ 0) : ContDiff ℝ n fun y => ‖f y‖ :=
-  contDiff_iff_contDiffAt.2 fun x => hf.ContDiffAt.norm 𝕜 (h0 x)
+  contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.norm 𝕜 (h0 x)
 #align cont_diff.norm ContDiff.norm
 
 theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀ x, f x ≠ g x) :
     ContDiff ℝ n fun y => dist (f y) (g y) :=
-  contDiff_iff_contDiffAt.2 fun x => hf.ContDiffAt.dist 𝕜 hg.ContDiffAt (hne x)
+  contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.dist 𝕜 hg.contDiffAt (hne x)
 #align cont_diff.dist ContDiff.dist
 
-omit 𝕜
-
+-- porting note: use `2 •` instead of `bit0`
 theorem hasStrictFDerivAt_norm_sq (x : F) :
-    HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (bit0 (innerSL ℝ x)) x := by
+    HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
   convert (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
   ext y
-  simp [bit0, real_inner_comm]
-#align has_strict_fderiv_at_norm_sq hasStrictFDerivAt_norm_sq
-
-include 𝕜
+  simp [two_smul, real_inner_comm]
+#align has_strict_fderiv_at_norm_sq hasStrictFDerivAt_norm_sqₓ
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
-  ((contDiffAt_id.normSq 𝕜).DifferentiableAt le_rfl).comp x hf
+  ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm_sq DifferentiableAt.norm_sq
 
 theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
     DifferentiableAt ℝ (fun y => ‖f y‖) x :=
-  ((contDiffAt_norm 𝕜 h0).DifferentiableAt le_rfl).comp x hf
+  ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
@@ -246,7 +245,7 @@ theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : Differentiab
 #align differentiable_at.dist DifferentiableAt.dist
 
 theorem Differentiable.norm_sq (hf : Differentiable ℝ f) : Differentiable ℝ fun y => ‖f y‖ ^ 2 :=
-  fun x => (hf x).normSq 𝕜
+  fun x => (hf x).norm_sq 𝕜
 #align differentiable.norm_sq Differentiable.norm_sq
 
 theorem Differentiable.norm (hf : Differentiable ℝ f) (h0 : ∀ x, f x ≠ 0) :
@@ -260,22 +259,23 @@ theorem Differentiable.dist (hf : Differentiable ℝ f) (hg : Differentiable ℝ
 
 theorem DifferentiableWithinAt.norm_sq (hf : DifferentiableWithinAt ℝ f s x) :
     DifferentiableWithinAt ℝ (fun y => ‖f y‖ ^ 2) s x :=
-  ((contDiffAt_id.normSq 𝕜).DifferentiableAt le_rfl).comp_differentiableWithinAt x hf
+  ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp_differentiableWithinAt x hf
 #align differentiable_within_at.norm_sq DifferentiableWithinAt.norm_sq
 
 theorem DifferentiableWithinAt.norm (hf : DifferentiableWithinAt ℝ f s x) (h0 : f x ≠ 0) :
     DifferentiableWithinAt ℝ (fun y => ‖f y‖) s x :=
-  ((contDiffAt_id.norm 𝕜 h0).DifferentiableAt le_rfl).comp_differentiableWithinAt x hf
+  ((contDiffAt_id.norm 𝕜 h0).differentiableAt le_rfl).comp_differentiableWithinAt x hf
 #align differentiable_within_at.norm DifferentiableWithinAt.norm
 
 theorem DifferentiableWithinAt.dist (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (hne : f x ≠ g x) :
-    DifferentiableWithinAt ℝ (fun y => dist (f y) (g y)) s x := by simp only [dist_eq_norm];
+    DifferentiableWithinAt ℝ (fun y => dist (f y) (g y)) s x := by
+  simp only [dist_eq_norm]
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 #align differentiable_within_at.dist DifferentiableWithinAt.dist
 
 theorem DifferentiableOn.norm_sq (hf : DifferentiableOn ℝ f s) :
-    DifferentiableOn ℝ (fun y => ‖f y‖ ^ 2) s := fun x hx => (hf x hx).normSq 𝕜
+    DifferentiableOn ℝ (fun y => ‖f y‖ ^ 2) s := fun x hx => (hf x hx).norm_sq 𝕜
 #align differentiable_on.norm_sq DifferentiableOn.norm_sq
 
 theorem DifferentiableOn.norm (hf : DifferentiableOn ℝ f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
@@ -360,36 +360,32 @@ end PiLike
 
 section DiffeomorphUnitBall
 
-open Metric hiding mem_nhds_iffₓ
+open Metric hiding mem_nhds_iff
 
 variable {n : ℕ∞} {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 theorem contDiff_homeomorphUnitBall : ContDiff ℝ n fun x : E => (homeomorphUnitBall x : E) := by
-  suffices ContDiff ℝ n fun x => (1 + ‖x‖ ^ 2).sqrt⁻¹ by exact this.smul contDiff_id
-  have h : ∀ x : E, 0 < 1 + ‖x‖ ^ 2 := fun x => by positivity
-  refine' ContDiff.inv _ fun x => real.sqrt_ne_zero'.mpr (h x)
-  exact (cont_diff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).Ne.symm
+  suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ by exact this.smul contDiff_id
+  have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
+  refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
+  exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 #align cont_diff_homeomorph_unit_ball contDiff_homeomorphUnitBall
 
 theorem contDiffOn_homeomorphUnitBall_symm {f : E → E}
     (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = homeomorphUnitBall.symm ⟨y, hy⟩) :
-    ContDiffOn ℝ n f <| ball 0 1 := by
-  intro y hy
+    ContDiffOn ℝ n f <| ball 0 1 := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
-  have hf : f =ᶠ[𝓝 y] fun y => (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E) := by
-    rw [eventually_eq_iff_exists_mem]
-    refine'
-      ⟨ball (0 : E) 1, mem_nhds_iff.mpr ⟨ball (0 : E) 1, Set.Subset.refl _, is_open_ball, hy⟩,
-        fun z hz => _⟩
+  have hf : f =ᶠ[𝓝 y] fun y => ((1 : ℝ) - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E) := by
+    filter_upwards [isOpen_ball.mem_nhds hy] with z hz
     rw [h z hz]
     rfl
   refine' ContDiffAt.congr_of_eventuallyEq _ hf
-  suffices ContDiffAt ℝ n (fun y => (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹) y by exact this.smul contDiffAt_id
-  have h : 0 < 1 - ‖(y : E)‖ ^ 2 := by
-    rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy 
-  refine' ContDiffAt.inv _ (real.sqrt_ne_zero'.mpr h)
-  refine' ContDiffAt.comp _ (cont_diff_at_sqrt h.ne.symm) _
-  exact cont_diff_at_const.sub (contDiff_norm_sq ℝ).ContDiffAt
+  suffices ContDiffAt ℝ n (fun y => ((1 : ℝ) - ‖(y : E)‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
+  have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
+    rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
+  refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
+  refine' (contDiffAt_sqrt h.ne').comp y _
+  exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 #align cont_diff_on_homeomorph_unit_ball_symm contDiffOn_homeomorphUnitBall_symm
 
 end DiffeomorphUnitBall
