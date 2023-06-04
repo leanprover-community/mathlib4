@@ -21,7 +21,7 @@ function in the series is and additionally suitable uniform summable bounds are 
 More specifically,
 * `continuous_tsum` ensures that a series of continuous functions is continuous.
 * `differentiable_tsum` ensures that a series of differentiable functions is differentiable.
-* `cont_diff_tsum` ensures that a series of smooth functions is smooth.
+* `contDiff_tsum` ensures that a series of smooth functions is smooth.
 
 We also give versions of these statements which are localized to a set.
 -/
