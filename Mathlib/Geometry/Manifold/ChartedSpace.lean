@@ -593,7 +593,7 @@ variable (M)
 
 theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
-  obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ (⋃ (x) (_hx : x ∈ s), (chartAt H x).source) = univ :=
+  obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ (⋃ (x) (_h : x ∈ s), (chartAt H x).source) = univ :=
     countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
 #align charted_space.second_countable_of_sigma_compact ChartedSpace.secondCountable_of_sigma_compact
