@@ -11,8 +11,8 @@ structure ShortComplex₄ [HasZeroMorphisms C] where
   f : X₁ ⟶ X₂
   g : X₂ ⟶ X₃
   h : X₃ ⟶ X₄
-  zero₁ : f ≫ g = 0
-  zero₂ : g ≫ h = 0
+  zero₁ : f ≫ g = 0 := by aesop_cat
+  zero₂ : g ≫ h = 0 := by aesop_cat
 
 namespace ShortComplex₄
 

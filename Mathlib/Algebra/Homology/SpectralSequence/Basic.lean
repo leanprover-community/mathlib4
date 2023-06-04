@@ -29,16 +29,16 @@ lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
 variable (C : Type _) [Category C] [Abelian C] (degrees : ℤ → ℤ × ℤ) (r₀ : ℤ)
 
 structure SpectralSequence where
-  page (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) : C
-  d (r : ℤ) (hr : r₀ ≤ r) (pq pq' : ℤ × ℤ) (h : pq + degrees r = pq') :
-    page r hr pq ⟶ page r hr pq'
-  d_comp_d (r : ℤ) (hr : r₀ ≤ r) (pq₁ pq₂ pq₃ : ℤ × ℤ)
+  page' (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) : C
+  d' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : ℤ × ℤ) (h : pq + degrees r = pq') :
+    page' r hr pq ⟶ page' r hr pq'
+  d_comp_d' (r : ℤ) (hr : r₀ ≤ r) (pq₁ pq₂ pq₃ : ℤ × ℤ)
     (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃) :
-      d r hr _ _ h₁₂ ≫ d r hr _ _ h₂₃ = 0
+      d' r hr _ _ h₁₂ ≫ d' r hr _ _ h₂₃ = 0
   iso' (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r + 1 = r') (pq₁ pq₂ pq₃ : ℤ × ℤ)
     (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃) :
-      (ShortComplex.mk _ _ (d_comp_d r hr pq₁ pq₂ pq₃ h₁₂ h₂₃)).homology ≅
-        page r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right])) pq₂
+      (ShortComplex.mk _ _ (d_comp_d' r hr pq₁ pq₂ pq₃ h₁₂ h₂₃)).homology ≅
+        page' r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right])) pq₂
 
 abbrev CohomologicalSpectralSequence :=
   SpectralSequence C (fun r => ⟨r, 1-r⟩)
@@ -64,80 +64,163 @@ abbrev E₁HomologicalSpectralSequence :=
 abbrev E₂HomologicalSpectralSequence :=
   HomologicalSpectralSequence C 2
 
+
 namespace SpectralSequence
 
 variable {C r₀ degrees}
 variable (E : SpectralSequence C degrees r₀)
 
+class HasPage (E : SpectralSequence C degrees r₀) (r : ℤ) : Prop where
+  le' : r₀ ≤ r
+
+pp_extended_field_notation HasPage
+
+instance : E.HasPage r₀ where
+  le' := by rfl
+
+lemma le_of_hasPage (r : ℤ) [h : E.HasPage r] : r₀ ≤ r :=
+  h.le'
+
+lemma hasPage_of_le (r₁ r₂ : ℤ) (h : r₁ ≤ r₂) [E.HasPage r₁] : E.HasPage r₂ where
+  le' := (E.le_of_hasPage r₁).trans h
+
+instance [E.HasPage 0] : E.HasPage 1 := E.hasPage_of_le 0 1 (by simp)
+instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_le 1 2 (by simp)
+instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_le 2 3 (by simp)
+instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_le 3 4 (by simp)
+instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_le 4 5 (by simp)
+
+def page (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ):= E.page' r (E.le_of_hasPage r) pq
+
+pp_extended_field_notation page
+
+def d (r : ℤ) [E.HasPage r] (pq pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') :
+    E.page r pq ⟶ E.page r pq' :=
+  E.d' r (E.le_of_hasPage r) pq pq' hpq'
+
+pp_extended_field_notation d
+
+@[reassoc (attr := simp)]
+lemma d_comp_d (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ : ℤ × ℤ)
+    (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃) :
+    E.d r pq₁ pq₂ h₁₂ ≫ E.d r pq₂ pq₃ h₂₃ = 0 := by apply E.d_comp_d'
+
 @[simps]
-def shortComplex' (r : ℤ) (hr : r₀ ≤ r) (pq₁ pq₂ pq₃ : ℤ × ℤ)
+def shortComplex' (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ : ℤ × ℤ)
     (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃) : ShortComplex C :=
-  (ShortComplex.mk _ _ (E.d_comp_d r hr pq₁ pq₂ pq₃ h₁₂ h₂₃))
+  (ShortComplex.mk _ _ (E.d_comp_d r pq₁ pq₂ pq₃ h₁₂ h₂₃))
 
 @[simps!]
-def shortComplex (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) : ShortComplex C :=
-  E.shortComplex' r hr (pq - degrees r) pq (pq + degrees r) (by simp) (by simp)
+def shortComplex'Iso (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ pq₁' pq₂' pq₃' : ℤ × ℤ)
+    (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃)
+    (h₁₂' : pq₁' + degrees r = pq₂') (h₂₃' : pq₂' + degrees r = pq₃')
+    (h₂ : pq₂ = pq₂') :
+    E.shortComplex' r pq₁ pq₂ pq₃ h₁₂ h₂₃ ≅
+      E.shortComplex' r pq₁' pq₂' pq₃' h₁₂' h₂₃' := by
+  refine' ShortComplex.isoMk
+    (eqToIso (by dsimp ; congr ; rw [← add_left_inj (degrees r), h₁₂, h₁₂', h₂]))
+    (eqToIso (by dsimp ; congr)) (eqToIso (by dsimp ; congr ; rw [← h₂₃, ← h₂₃', h₂])) _ _
+  . subst h₂
+    obtain rfl : pq₁ = pq₁' := by simpa only [add_left_inj] using h₁₂.trans h₁₂'.symm
+    dsimp
+    rw [id_comp, comp_id]
+  . subst h₂
+    obtain rfl : pq₃ = pq₃' := h₂₃.symm.trans h₂₃'
+    dsimp
+    rw [id_comp, comp_id]
 
-def iso (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r + 1 = r') (pq : ℤ × ℤ) :
-  (E.shortComplex r hr pq).homology ≅
-    E.page r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right])) pq :=
-  E.iso'  r r' hr hr' _ pq _ _ _
+@[simps!]
+def shortComplex (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ) : ShortComplex C :=
+  E.shortComplex' r (pq - degrees r) pq (pq + degrees r) (by simp) (by simp)
+
+def iso (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr' : r + 1 = r') (pq : ℤ × ℤ) :
+  (E.shortComplex r pq).homology ≅ E.page r' pq :=
+  E.iso' r r' (E.le_of_hasPage r) hr' _ pq _ _ _
+
+pp_extended_field_notation iso
 
 /-- This means that the differential to an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
-class HasEdgeMonoAt (pq : ℤ × ℤ) (r : ℤ) : Prop where
-  le : r₀ ≤ r
-  zero : ∀ (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq), E.d r le pq' pq hpq' = 0
+class HasEdgeMonoAt (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] : Prop where
+  zero : ∀ (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq), E.d r pq' pq hpq' = 0
 
 @[simp]
 lemma d_eq_zero_of_hasEdgeMonoAt (r : ℤ) (pq pq' : ℤ × ℤ)
-    (hpq' : pq' + degrees r = pq) [E.HasEdgeMonoAt pq r] :
-    E.d r (HasEdgeMonoAt.le E pq) pq' pq hpq' = 0 :=
+    (hpq' : pq' + degrees r = pq) [E.HasPage r] [E.HasEdgeMonoAt pq r] :
+    E.d r pq' pq hpq' = 0 :=
   HasEdgeMonoAt.zero _ _
 
-noncomputable def edgeMonoStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasEdgeMonoAt pq r] :
-  E.page r' ((HasEdgeMonoAt.le E pq).trans
-    (show r ≤ r' by simp only [← hr, le_add_iff_nonneg_right])) pq ⟶
-    E.page r (HasEdgeMonoAt.le E pq) pq :=
-      (E.iso r r' (HasEdgeMonoAt.le E pq) hr pq).inv ≫ (ShortComplex.asIsoHomologyπ  _
+noncomputable def edgeMonoStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+  [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
+  E.page r' pq ⟶ E.page r pq :=
+      (E.iso r r' hr pq).inv ≫ (ShortComplex.asIsoHomologyπ  _
           (by apply E.d_eq_zero_of_hasEdgeMonoAt)).inv ≫ ShortComplex.iCycles _
 
-instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasEdgeMonoAt pq r] :
+pp_extended_field_notation edgeMonoStep
+
+instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeMonoAt pq r] :
     Mono (E.edgeMonoStep pq r r' hr) := by
   dsimp [edgeMonoStep]
   infer_instance
 
+@[reassoc (attr := simp)]
+lemma edgeMonoStep_comp_d (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeMonoAt pq r] (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') :
+    E.edgeMonoStep pq r r' hr ≫ E.d r pq pq' hpq' = 0 := by
+  subst hpq'
+  dsimp [edgeMonoStep]
+  erw [assoc, assoc, (E.shortComplex r pq).iCycles_g, comp_zero, comp_zero]
+
+noncomputable def edgeMonoStepSortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r]
+    (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') : ShortComplex C :=
+  ShortComplex.mk _ _ (E.edgeMonoStep_comp_d pq r r' hr pq' hpq')
+
 /-- This means that the differential from an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
-class HasEdgeEpiAt (pq : ℤ × ℤ) (r : ℤ) : Prop where
-  le : r₀ ≤ r
-  zero : ∀ (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq'), E.d r le pq pq' hpq' = 0
+class HasEdgeEpiAt (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] : Prop where
+  zero : ∀ (pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq'), E.d r pq pq' hpq' = 0
 
 @[simp]
 lemma d_eq_zero_of_hasEdgeEpiAt (r : ℤ) (pq pq' : ℤ × ℤ)
-    (hpq' : pq + degrees r = pq') [E.HasEdgeEpiAt pq r] :
-    E.d r (HasEdgeEpiAt.le E pq) pq pq' hpq' = 0 :=
+    (hpq' : pq + degrees r = pq') [E.HasPage r] [E.HasEdgeEpiAt pq r] :
+    E.d r pq pq' hpq' = 0 :=
   HasEdgeEpiAt.zero _ _
 
-noncomputable def edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasEdgeEpiAt pq r] :
-  E.page r (HasEdgeEpiAt.le E pq) pq ⟶
-    E.page r' ((HasEdgeEpiAt.le E pq).trans
-      (show r ≤ r' by simp only [← hr, le_add_iff_nonneg_right])) pq :=
-    (E.shortComplex r (HasEdgeEpiAt.le E pq) pq).pCyclesCo ≫ (ShortComplex.asIsoHomologyι _
-      (by apply E.d_eq_zero_of_hasEdgeEpiAt)).inv ≫ (E.iso r r' (HasEdgeEpiAt.le E pq) hr pq).hom
+noncomputable def edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r]
+    [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
+    E.page r pq ⟶
+      E.page r' pq :=
+      (E.shortComplex r pq).pCyclesCo ≫ (ShortComplex.asIsoHomologyι _
+        (by apply E.d_eq_zero_of_hasEdgeEpiAt)).inv ≫ (E.iso r r' hr pq).hom
 
-instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasEdgeEpiAt pq r] :
-    Epi (E.edgeEpiStep pq r r' hr) := by
+pp_extended_field_notation edgeEpiStep
+
+instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeEpiAt pq r] : Epi (E.edgeEpiStep pq r r' hr) := by
   dsimp [edgeEpiStep]
   apply epi_comp
 
-def pageIsoOfEq (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r = r') (pq : ℤ × ℤ) :
-    E.page r hr pq ≅ E.page r' (hr.trans (by rw [hr'])) pq :=
-  eqToIso (by congr)
+@[reassoc (attr := simp)]
+lemma d_comp_edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeEpiAt pq r] (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq) :
+    E.d r pq' pq hpq' ≫ E.edgeEpiStep pq r r' hr = 0 := by
+  obtain rfl : pq' = pq - degrees r := by rw [← hpq', add_sub_cancel]
+  dsimp [edgeEpiStep]
+  erw [(E.shortComplex r pq).f_pCyclesCo_assoc, zero_comp]
+
+noncomputable def edgeEpiStepSortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
+    [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeEpiAt pq r] (pq' : ℤ × ℤ) (hpq' : pq' + degrees r = pq) : ShortComplex C :=
+  ShortComplex.mk _ _ (E.d_comp_edgeEpiStep pq r r' hr pq' hpq')
+
+def pageIsoOfEq (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr' : r = r') (pq : ℤ × ℤ) :
+    E.page r pq ≅ E.page r' pq := eqToIso (by congr)
 
 def hasEdgeMonoSet (pq : ℤ × ℤ) : Set ℤ :=
-  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeMonoAt pq r'
+  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeMonoAt pq r'
 
 def hasEdgeEpiSet (pq : ℤ × ℤ) : Set ℤ :=
-  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeEpiAt pq r'
+  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeEpiAt pq r'
 
 class HasInfinityPageAt (pq : ℤ × ℤ) : Prop where
   nonempty_hasEdgeMonoSet': (E.hasEdgeMonoSet pq).Nonempty
@@ -154,48 +237,62 @@ lemma nonempty_hasEdgeEpiSet : (E.hasEdgeEpiSet pq).Nonempty :=
 
 noncomputable def rToMin : ℤ :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeMonoSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose
+    (fun x hx => (hx x (by rfl)).choose.le')).choose
 
 lemma rToMin_mem : E.rToMin pq ∈ E.hasEdgeMonoSet pq :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeMonoSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose_spec.choose
+    (fun x hx => (hx x (by rfl)).choose.le')).choose_spec.choose
 
 lemma rToMin_le (r : ℤ) (hr : r ∈ E.hasEdgeMonoSet pq) :
     E.rToMin pq ≤ r :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeMonoSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose_spec.choose_spec r hr
+    (fun x hx => (hx x (by rfl)).choose.le')).choose_spec.choose_spec r hr
 
 lemma le_rToMin :
     r₀ ≤ E.rToMin pq :=
-  ((E.rToMin_mem pq) _ (by rfl)).le
+  ((E.rToMin_mem pq) _ (by rfl)).choose.le'
 
-lemma d_to_eq_zero (r : ℤ) (hr : E.rToMin pq ≤ r) (pq' : ℤ × ℤ)
+lemma hasPage_of_rToMin_le (r : ℤ) (hr : E.rToMin pq ≤ r) :
+    E.HasPage r :=
+  ((E.rToMin_mem pq) r hr).choose
+
+instance : E.HasPage (E.rToMin pq) :=
+  E.hasPage_of_rToMin_le pq _ (by rfl)
+
+lemma d_to_eq_zero (r : ℤ) [E.HasPage r] (hr : E.rToMin pq ≤ r) (pq' : ℤ × ℤ)
     (hpq' : pq' + degrees r = pq) :
-      E.d r ((E.le_rToMin pq).trans hr) pq' pq hpq' = 0 := by
-  have := (E.rToMin_mem pq) r hr
+      E.d r pq' pq hpq' = 0 := by
+  have := ((E.rToMin_mem pq) r hr).choose_spec
   rw [d_eq_zero_of_hasEdgeMonoAt]
 
 noncomputable def rFromMin : ℤ :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeEpiSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose
+    (fun x hx => (hx x (by rfl)).choose.le')).choose
 
 lemma rFromMin_mem : E.rFromMin pq ∈ E.hasEdgeEpiSet pq :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeEpiSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose_spec.choose
+    (fun x hx => (hx x (by rfl)).choose.le')).choose_spec.choose
 
 lemma rFromMin_le (r : ℤ) (hr : r ∈ E.hasEdgeEpiSet pq) :
     E.rFromMin pq ≤ r :=
   (Set.has_min_of_ℤ _ (E.nonempty_hasEdgeEpiSet pq) r₀
-    (fun x hx => (hx x (by rfl)).le)).choose_spec.choose_spec r hr
+    (fun x hx => (hx x (by rfl)).choose.le')).choose_spec.choose_spec r hr
 
 lemma le_rFromMin :
     r₀ ≤ E.rFromMin pq :=
-  ((E.rFromMin_mem pq) _ (by rfl)).le
+  ((E.rFromMin_mem pq) _ (by rfl)).choose.le'
 
-lemma d_from_eq_zero (r : ℤ) (hr : E.rFromMin pq ≤ r) (pq' : ℤ × ℤ)
+lemma hasPage_of_rFromMin_le (r : ℤ) (hr : E.rFromMin pq ≤ r) :
+    E.HasPage r :=
+  ((E.rFromMin_mem pq) r hr).choose
+
+instance : E.HasPage (E.rFromMin pq) :=
+  E.hasPage_of_rFromMin_le pq _ (by rfl)
+
+lemma d_from_eq_zero (r : ℤ) [E.HasPage r] (hr : E.rFromMin pq ≤ r) (pq' : ℤ × ℤ)
     (hpq' : pq + degrees r = pq') :
-      E.d r ((E.le_rFromMin pq).trans hr) pq pq' hpq' = 0 := by
-  have := (E.rFromMin_mem pq) r hr
+      E.d r pq pq' hpq' = 0 := by
+  have := ((E.rFromMin_mem pq) r hr).choose_spec
   rw [d_eq_zero_of_hasEdgeEpiAt]
 
 noncomputable def rMin : ℤ := max (E.rToMin pq) (E.rFromMin pq)
@@ -208,57 +305,68 @@ lemma le_rMin :
     r₀ ≤ E.rMin pq :=
   (E.le_rFromMin pq).trans (E.rFromMin_le_rMin pq)
 
-noncomputable def isoPageSucc (r r' : ℤ)
+instance : E.HasPage (E.rMin pq) :=
+  E.hasPage_of_rToMin_le pq _ (E.rToMin_le_rMin pq)
+
+noncomputable def isoPageSucc (r r' : ℤ) [E.HasPage r] [E.HasPage r']
   (hr : E.rMin pq ≤ r) (hr' : r + 1 = r') :
-    E.page r ((E.le_rMin pq).trans hr) pq ≅
-      E.page r' (((E.le_rMin pq).trans hr).trans
-        (by simp only [← hr', le_add_iff_nonneg_right])) pq := by
-    refine' Iso.symm _ ≪≫ E.iso r r' ((E.le_rMin pq).trans hr) hr' pq
+    E.page r pq ≅
+      E.page r' pq := by
+    refine' Iso.symm _ ≪≫ E.iso r r' hr' pq
     refine' (ShortComplex.HomologyData.ofZeros _ _ _).left.homologyIso
     . exact E.d_to_eq_zero pq r ((E.rToMin_le_rMin pq).trans hr) _ _
     . exact E.d_from_eq_zero pq r ((E.rFromMin_le_rMin pq).trans hr) _ _
 
-noncomputable def isoPageOfAddNat (r : ℤ) (hr : E.rMin pq ≤ r) (k : ℕ) :
-    E.page r ((E.le_rMin pq).trans hr) pq ≅
-      E.page (r+k) (((E.le_rMin pq).trans hr).trans (by simp)) pq := by
+instance [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
+  E.hasPage_of_le r (r+k) (by simp only [le_add_iff_nonneg_right, Nat.cast_nonneg])
+
+noncomputable def isoPageOfAddNat (r : ℤ) [E.HasPage r] (hr : E.rMin pq ≤ r) (k : ℕ) :
+    E.page r pq ≅
+      E.page (r+k) pq := by
   induction' k with _ e
-  . exact E.pageIsoOfEq _ _ _ (by simp) _
+  . exact E.pageIsoOfEq _ _ (by simp) _
   . exact e ≪≫ E.isoPageSucc _ _ _ (hr.trans (by simp))
       (by simp only [Nat.cast_succ, add_assoc])
 
+noncomputable def isoPageOfLE'
+    (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr : E.rMin pq ≤ r) (k : ℕ) (hk : r + k = r') :
+    E.page r pq ≅ E.page r' pq :=
+  E.isoPageOfAddNat pq r hr k ≪≫ E.pageIsoOfEq _ _ hk _
+
 noncomputable def isoPageOfLE
-    (r r' : ℤ) (hr : E.rMin pq ≤ r) (hr' : r ≤ r') :
-    E.page r ((E.le_rMin pq).trans hr) pq ≅
-      E.page r' (((E.le_rMin pq).trans hr).trans hr') pq :=
-  E.isoPageOfAddNat pq r hr
-    (Int.eq_ofNat_of_zero_le (show 0 ≤ r' - r by linarith)).choose ≪≫
-      E.pageIsoOfEq _ _ _
-        (by linarith [(Int.eq_ofNat_of_zero_le (show 0 ≤ r' - r by linarith)).choose_spec]) _
+    (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr : E.rMin pq ≤ r) (hr' : r ≤ r') :
+    E.page r pq ≅ E.page r' pq :=
+  E.isoPageOfLE' pq r r' hr _ (Int.eq_add_ofNat_of_le hr').choose_spec.symm
 
 lemma isoPageOfLE_eq
-    (r r' : ℤ) (hr : E.rMin pq ≤ r) (k : ℕ) (hr' : r + k = r') :
+    (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr : E.rMin pq ≤ r) (k : ℕ) (hr' : r + k = r') :
     E.isoPageOfLE pq r r' hr
       (by simp only [← hr', le_add_iff_nonneg_right, Nat.cast_nonneg]) =
-      E.isoPageOfAddNat pq r hr k ≪≫ E.pageIsoOfEq _ _ _ hr' _ := by
-  have : 0 ≤ r' - r := by simp only [← hr', add_sub_cancel', Nat.cast_nonneg]
-  obtain rfl : (Int.eq_ofNat_of_zero_le this).choose = k := by
-    linarith [(Int.eq_ofNat_of_zero_le this).choose_spec]
-  rfl
+    E.isoPageOfLE' pq r r' hr k hr' := by
+  dsimp only [isoPageOfLE]
+  congr
+  linarith [(Int.eq_add_ofNat_of_le (show r ≤ r' by linarith)).choose_spec]
 
 end
 
 noncomputable def pageInfinity (pq : ℤ × ℤ) : C := by
   by_cases E.HasInfinityPageAt pq
-  . exact E.page (E.rMin pq) (E.le_rMin pq) pq
+  . exact E.page (E.rMin pq) pq
   . exact 0
 
+pp_extended_field_notation pageInfinity
+
 noncomputable def pageInfinityIso (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] :
-    E.pageInfinity pq ≅ E.page (E.rMin pq) (E.le_rMin pq) pq := eqToIso (dif_pos _)
+    E.pageInfinity pq ≅ E.page (E.rMin pq) pq := eqToIso (dif_pos _)
+
+pp_extended_field_notation pageInfinityIso
 
 noncomputable def isoPageInfinityOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
-    (r : ℤ) (hr : E.rMin pq ≤ r) :
-    E.page r ((E.le_rMin pq).trans hr) pq ≅ E.pageInfinity pq :=
+    (r : ℤ) (hr : E.rMin pq ≤ r) [E.HasPage r] :
+    E.page r pq ≅ E.pageInfinity pq :=
   Iso.symm (E.pageInfinityIso pq ≪≫ E.isoPageOfLE pq _ _ (by rfl) hr)
+
+pp_extended_field_notation isoPageInfinityOfLE
 
 structure ConvergenceStripes where
   stripe : ℤ × ℤ → ℤ
@@ -661,85 +769,70 @@ abbrev StronglyConvergesTo (X : ℤ → C) :=
   SpectralSequence.StronglyConvergesTo E cohomologicalStripes X
 
 class IsFirstQuadrant : Prop :=
-  isZero (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r hr pq)
+  isZero (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ) (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r pq)
 
 section IsFirstQuadrant
 
 variable [E.IsFirstQuadrant]
 
-lemma isZero_of_isFirstQuadrant (r : ℤ) (hr : r₀ ≤ r)
-    (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r hr pq) := IsFirstQuadrant.isZero _ _ _ hpq
+lemma isZero_of_isFirstQuadrant (r : ℤ) [E.HasPage r]
+    (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r pq) := IsFirstQuadrant.isZero _ _ hpq
+
+lemma hasEdgeMonoAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] (h : pq.1 + 1 ≤ r) :
+    E.HasEdgeMonoAt pq r where
+  zero := by
+    rintro pq' rfl
+    refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ (Or.inl _)) _ _
+    dsimp at h
+    linarith
+
+lemma hasEdgeEpiAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] (h : pq.2 + 2 ≤ r) :
+    E.HasEdgeEpiAt pq r where
+  zero := by
+    rintro pq' rfl
+    refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ (Or.inr _)) _ _
+    dsimp
+    linarith
 
 instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
   nonempty_hasEdgeEpiSet' := by
     by_cases pq.2 < 0
     . refine' ⟨max r₀ 1, _⟩
       intro r' hr'
-      refine' ⟨(le_max_left _ _).trans hr', _⟩
-      rintro pq' rfl
-      refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
-      dsimp
-      linarith [(le_max_right _ _).trans hr']
+      have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
+      exact ⟨this, ⟨fun pq' hpq' =>
+        IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ (Or.inr h)) _ _⟩⟩
     . refine' ⟨max r₀ (pq.2 + 2), _⟩
-      rintro r' hr'
-      refine' ⟨(le_max_left _ _).trans hr', _⟩
-      rintro pq' rfl
-      refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
-      dsimp
-      linarith [(le_max_right _ _ ).trans hr']
+      intro r' hr'
+      have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
+      exact ⟨this, E.hasEdgeEpiAt_of_isFirstQuadrant pq r' ((le_max_right _ _).trans hr')⟩
   nonempty_hasEdgeMonoSet' := by
     by_cases pq.1 < 0
     . refine' ⟨max r₀ 0, _⟩
       intro r' hr'
-      refine' ⟨(le_max_left _ _).trans hr', _⟩
-      rintro pq' hpq'
-      obtain rfl := hpq'.symm
-      refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
-      dsimp at h
-      linarith [(le_max_right _ _ ).trans hr']
-    . refine' ⟨max r₀ (pq.fst + 1), _⟩
+      have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
+      refine' ⟨this, ⟨fun pq' hpq' =>
+        IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ (Or.inl h)) _ _⟩⟩
+    . refine' ⟨max r₀ (pq.1 + 1), _⟩
       intro r' hr'
-      refine' ⟨(le_max_left _ _).trans hr', _⟩
-      rintro pq' hpq'
-      obtain rfl := hpq'.symm
-      refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
-      dsimp at h hr'
-      linarith [(le_max_right _ _ ).trans hr']
-
-lemma hasEdgeMonoAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) (hr : r₀ ≤ r)
-  (h : pq.1 + 1 ≤ r) :
-  E.HasEdgeMonoAt pq r where
-    le := hr
-    zero := by
-      rintro pq' rfl
-      refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
-      dsimp at h
-      linarith
-
-lemma hasEdgeEpiAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) (hr : r₀ ≤ r)
-  (h : pq.2 + 2 ≤ r) :
-  E.HasEdgeEpiAt pq r where
-    le := hr
-    zero := by
-      rintro pq' rfl
-      refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
-      dsimp at h
-      dsimp
-      linarith
+      have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
+      exact ⟨this, E.hasEdgeMonoAt_of_isFirstQuadrant pq r' ((le_max_right _ _).trans hr')⟩
 
 lemma rToMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
     E.rToMin pq ≤ max r₀ (pq.1 + 1) :=
   E.rToMin_le _ _ (fun r hr => by
+    have : E.HasPage r := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr)
+    refine' ⟨this, _⟩
     apply hasEdgeMonoAt_of_isFirstQuadrant
-    . exact (le_max_left _ _ ).trans hr
-    . exact (le_max_right _ _ ).trans hr)
+    exact (le_max_right _ _ ).trans hr)
 
 lemma rFromMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
     E.rFromMin pq ≤ max r₀ (pq.2 + 2) :=
   E.rFromMin_le _ _ (fun r hr => by
+    have : E.HasPage r := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr)
+    refine' ⟨this, _⟩
     apply hasEdgeEpiAt_of_isFirstQuadrant
-    . exact (le_max_left _ _ ).trans hr
-    . exact (le_max_right _ _ ).trans hr)
+    exact (le_max_right _ _ ).trans hr)
 
 lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
     E.rMin pq ≤ max r₀ (max (pq.1 + 1) (pq.2 + 2)) := by
@@ -755,7 +848,7 @@ lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
 
 lemma isZero_pageInfinity_of_isFirstQuadrant (pq : ℤ × ℤ)
     (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.pageInfinity pq) :=
-  IsZero.of_iso (E.isZero_of_isFirstQuadrant _ _ hpq)
+  IsZero.of_iso (E.isZero_of_isFirstQuadrant _ hpq)
     (E.isoPageInfinityOfLE pq (E.rMin pq) (by rfl)).symm
 
 end IsFirstQuadrant

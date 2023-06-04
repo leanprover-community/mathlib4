@@ -12,9 +12,9 @@ structure ShortComplex₅ [HasZeroMorphisms C] where
   g : X₂ ⟶ X₃
   h : X₃ ⟶ X₄
   i : X₄ ⟶ X₅
-  zero₁ : f ≫ g = 0
-  zero₂ : g ≫ h = 0
-  zero₃ : h ≫ i = 0
+  zero₁ : f ≫ g = 0 := by aesop_cat
+  zero₂ : g ≫ h = 0 := by aesop_cat
+  zero₃ : h ≫ i = 0 := by aesop_cat
 
 namespace ShortComplex₅
 
