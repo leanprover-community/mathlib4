@@ -71,8 +71,7 @@ fail if any *new* metavariables are present. -/
 private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Expr)
     (mvars instMVars : Array MVarId) : MetaM Expr := do
   instMVars.forM fun mvarId => do
-    let mvarDecl ← mvarId.getDecl
-    let mvarVal  ← synthInstance mvarDecl.type
+    let mvarVal ← synthInstance (← mvarId.getType)
     mvarId.assign mvarVal
   let result ← instantiateMVars (mkAppN f args)
   unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
@@ -85,8 +84,7 @@ private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array 
     (mvars instMVars : Array MVarId) : MetaM (Expr × Array MVarId × Array MVarId) := do
   instMVars.forM fun mvarId => tryM do
     unless ← mvarId.isAssigned do
-      let mvarVal  ← synthInstance (← mvarId.getType)
-      mvarId.assign mvarVal
+      mvarId.assign (← synthInstance (← mvarId.getType))
   let result ← instantiateMVars (mkAppN f args)
   return (result, ← mvars.filterM (notM ·.isAssigned), ← instMVars.filterM (notM ·.isAssigned))
 
