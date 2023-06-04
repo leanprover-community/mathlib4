@@ -52,29 +52,49 @@ You will need to make a PR after committing the changes to this file.
 
 ## Using `mathlib4` as a dependency
 
-To start a new project that uses mathlib4 as a dependency:
+### In a new project
 
-1. Open a folder that contains no file named `lean-toolchain`.
-2. Update your default toolchain to one that is sufficiently recent with `elan default leanprover/lean4:nightly-2023-02-04`
+To start a new project that uses mathlib4 as a dependency, run `elan run leanprover/lean4:nightly-2023-02-04 lake new <your_project_name> math`.
+This uses the Lake version with the most recent `new math` implementation independent of your default `elan` toolchain.
+You now have a folder named `your_project_name` that contains a new Lake project.
+The `lakefile.lean` file is configured with the `mathlib4` dependency.
+`lean-toolchain` points to the same version of Lean 4 as used by mathlib4.
+Continue with "Getting started" below.
 
-3. Run `lake new <your_project_name> math`.
-4. You now have a folder named `your_project_name` that contains a new `lake` project. The `lakefile.lean` folder is configured with the `mathlib4` dependency.
-5. Change your current directory to the project folder and run `lake update`. This step downloads `mathlib4` as well as its dependencies.
-6. Run `cp lake-packages/mathlib/lean-toolchain .` to make sure your new project uses the same Lean version as `mathlib4`.
-7. (Optional) In order to save time compiling all of mathlib and its dependencies, run `lake exe cache get`. This step requires that you have `curl 7.69`  or higher.
-8. Run `lake build`. If you have get no build errors, you are good to go!
+### In an existing project
 
-
-If you already have a project and you want to use `mathlib4`, add these lines to your `lakefile.lean`:
+If you already have a project and you want to use mathlib4, add these lines to your `lakefile.lean`:
 ```
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
+  "https://github.com/leanprover-community/mathlib4"
 ```
-Where `<REVISION>` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
+Then run
+```
+curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain -o lean-toolchain
+```
+in order to set your project's Lean 4 version to the one used by mathlib4.
 
-Either way, make sure that your project uses the same Lean 4 toolchain as the one used in `mathlib4`.
+### Getting started
 
-### Using `lake exe cache` on your project
+In order to save time compiling all of mathlib and its dependencies, run `lake exe cache get`.
+This should output a line like
+```
+Decompressing 2342 file(s)
+```
+with a similar or larger number.
+Now try adding `import Mathlib` or a more specific import to a project file.
+This should take insignificant time and not rebuild any mathlib files.
+
+### Updating `mathlib4`
+
+Run these commands in sequence:
+```
+lake update
+curl -L https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain -o lean-toolchain
+lake exe cache get
+```
+
+### More on `lake exe cache`
 
 Lake projects inherit executables declared with `lean_exe` from their dependencies.
 It means that you can call `lake exe cache` on your project if you're using `mathlib4` as a dependency.

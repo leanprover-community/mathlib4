@@ -1230,5 +1230,4 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- assert_not_exists multiset
+assert_not_exists Multiset

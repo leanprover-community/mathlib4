@@ -220,15 +220,15 @@ protected noncomputable def lim (c : CU X) (x : X) : ℝ :=
 
 theorem tendsto_approx_atTop (c : CU X) (x : X) :
     Tendsto (fun n => c.approx n x) atTop (𝓝 <| c.lim x) :=
-  tendsto_atTop_csupᵢ (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
+  tendsto_atTop_ciSup (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
 #align urysohns.CU.tendsto_approx_at_top Urysohns.CU.tendsto_approx_atTop
 
 theorem lim_of_mem_C (c : CU X) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
-  simp only [CU.lim, approx_of_mem_C, h, csupᵢ_const]
+  simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
 #align urysohns.CU.lim_of_mem_C Urysohns.CU.lim_of_mem_C
 
 theorem lim_of_nmem_U (c : CU X) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
-  simp only [CU.lim, approx_of_nmem_U c _ h, csupᵢ_const]
+  simp only [CU.lim, approx_of_nmem_U c _ h, ciSup_const]
 #align urysohns.CU.lim_of_nmem_U Urysohns.CU.lim_of_nmem_U
 
 theorem lim_eq_midpoint (c : CU X) (x : X) :
@@ -239,7 +239,7 @@ theorem lim_eq_midpoint (c : CU X) (x : X) :
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
 
 theorem approx_le_lim (c : CU X) (x : X) (n : ℕ) : c.approx n x ≤ c.lim x :=
-  le_csupᵢ (c.bddAbove_range_approx x) _
+  le_ciSup (c.bddAbove_range_approx x) _
 #align urysohns.CU.approx_le_lim Urysohns.CU.approx_le_lim
 
 theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
@@ -247,7 +247,7 @@ theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
 #align urysohns.CU.lim_nonneg Urysohns.CU.lim_nonneg
 
 theorem lim_le_one (c : CU X) (x : X) : c.lim x ≤ 1 :=
-  csupᵢ_le fun _ => c.approx_le_one _ _
+  ciSup_le fun _ => c.approx_le_one _ _
 #align urysohns.CU.lim_le_one Urysohns.CU.lim_le_one
 
 theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=

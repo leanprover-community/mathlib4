@@ -286,7 +286,6 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
-set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
@@ -483,26 +482,15 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        -- porting note: the new `convert` sucks, it's way too dumb without using the type
-        -- of the goal to figure out how to match things up. The rest of this proof was:
-        /- convert
+        convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        show tendsto _ _ _
+        -- Porting note: `show` used to select a goal to work on
+        rotate_right
+        show Tendsto _ _ _
         exact tendsto_const_nhds
-        simp -/
-        rw [←zero_add 0]
-        refine Tendsto.add ?_ ?_
-        · rw [←mul_zero (‖x.fst‖)]
-          refine Filter.Tendsto.mul ?_ ?_
-          · exact (continuous_fst.tendsto x).norm
-          · rw [←norm_zero (E := α), ←sub_self x.snd]
-            exact ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm
-        · rw [←zero_mul (‖x.snd‖)]
-          refine' Filter.Tendsto.mul _ tendsto_const_nhds
-          rw [←norm_zero (E := α), ←sub_self x.fst]
-          exact ((continuous_fst.tendsto x).sub tendsto_const_nhds).norm⟩
+        simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -689,7 +677,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
-normed; in particular, the `padic`s exhibit this fact. -/
+normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
@@ -1007,7 +995,6 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
-set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
@@ -1024,12 +1011,10 @@ namespace SubringClass
 
 variable {S R : Type _} [SetLike S R]
 
-set_option synthInstance.etaExperiment true in
 instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
-set_option synthInstance.etaExperiment true in
 instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing
@@ -1045,8 +1030,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- porting note: add this back in once `assert_not_exists` is ported
-/-
 -- Guard again import creep.
 assert_not_exists RestrictScalars
--/

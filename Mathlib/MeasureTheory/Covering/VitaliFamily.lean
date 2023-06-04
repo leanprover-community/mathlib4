@@ -151,9 +151,9 @@ theorem covering_mem_family {p : α × Set α} (hp : p ∈ h.index) : h.covering
   (h.exists_disjoint_covering_ae.choose_spec.2.2.1 p hp).1
 #align vitali_family.fine_subfamily_on.covering_mem_family VitaliFamily.FineSubfamilyOn.covering_mem_family
 
-theorem measure_diff_bunionᵢ : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
+theorem measure_diff_biUnion : μ (s \ ⋃ p ∈ h.index, h.covering p) = 0 :=
   h.exists_disjoint_covering_ae.choose_spec.2.2.2
-#align vitali_family.fine_subfamily_on.measure_diff_bUnion VitaliFamily.FineSubfamilyOn.measure_diff_bunionᵢ
+#align vitali_family.fine_subfamily_on.measure_diff_bUnion VitaliFamily.FineSubfamilyOn.measure_diff_biUnion
 
 theorem index_countable [SecondCountableTopology α] : h.index.Countable :=
   h.covering_disjoint.countable_of_nonempty_interior fun _ hx =>
@@ -173,8 +173,8 @@ theorem measure_le_tsum_of_absolutelyContinuous [SecondCountableTopology α] {ρ
     _ ≤ ρ (s \ ⋃ p ∈ h.index, h.covering p) + ρ (⋃ p ∈ h.index, h.covering p) :=
       (measure_union_le _ _)
     _ = ∑' p : h.index, ρ (h.covering p) := by
-      rw [hρ h.measure_diff_bunionᵢ, zero_add,
-        measure_bunionᵢ h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
+      rw [hρ h.measure_diff_biUnion, zero_add,
+        measure_biUnion h.index_countable h.covering_disjoint fun x hx => h.measurableSet_u hx]
 #align vitali_family.fine_subfamily_on.measure_le_tsum_of_absolutely_continuous VitaliFamily.FineSubfamilyOn.measure_le_tsum_of_absolutelyContinuous
 
 theorem measure_le_tsum [SecondCountableTopology α] : μ s ≤ ∑' x : h.index, μ (h.covering x) :=
@@ -225,7 +225,7 @@ def filterAt (x : α) : Filter (Set α) :=
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
   simp only [filterAt, exists_prop, gt_iff_lt]
-  rw [mem_binfᵢ_of_directed]
+  rw [mem_biInf_of_directed]
   · simp only [subset_def, and_imp, exists_prop, mem_sep_iff, mem_Ioi, mem_principal]
   · simp only [DirectedOn, exists_prop, ge_iff_le, le_principal_iff, mem_Ioi, Order.Preimage,
       mem_principal]

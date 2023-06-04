@@ -107,7 +107,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
         ⟨⋃₀c, fun x ⟨p, hpc, hxp⟩ y ⟨q, hqc, hyq⟩ i hi =>
           (hcc.total hpc hqc).elim (fun h => hc hqc x (h hxp) y hyq i hi) fun h =>
             hc hpc x hxp y (h hyq) i hi,
-          fun _ => subset_unionₛ_of_mem⟩
+          fun _ => subset_sUnion_of_mem⟩
   let ⟨i, e⟩ :=
     show ∃ i, ∀ y, ∃ x ∈ s, (x : ∀ i, β i) i = y from
       Classical.by_contradiction fun h =>

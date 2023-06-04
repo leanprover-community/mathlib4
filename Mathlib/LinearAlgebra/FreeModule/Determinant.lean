@@ -24,7 +24,6 @@ free (finite) modules over any commutative ring.
 -/
 
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 @[simp]
 theorem LinearMap.det_zero'' {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Free R M] [Module.Finite R M] [Nontrivial M] : LinearMap.det (0 : M →ₗ[R] M) = 0 := by

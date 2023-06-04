@@ -262,7 +262,7 @@ example (h : a > 0) : a / 5 > 0 := by
   exact h
 ```
 -/
-syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
+syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
 
 open Elab Tactic
 

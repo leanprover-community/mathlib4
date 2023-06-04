@@ -13,7 +13,7 @@ These classes are part of an incomplete refactor described
 However a subset of them are widely used in mathlib3,
 and it has been tricky to clean this up as this file was in core Lean 3.
 
-By themselves, these classes are not good replacements for the `monoid` / `group` etc structures
+By themselves, these classes are not good replacements for the `Monoid` / `Group` etc structures
 provided by mathlib, as they are not discoverable by `simp` unlike the current lemmas due to there
 being little to index on.
 
@@ -324,7 +324,7 @@ end ExplicitRelationVariants
 
 end
 
--- Porting note: the `StrictWeakOrder` section has been ommitted.
+-- Porting note: the `StrictWeakOrder` section has been omitted.
 
 -- namespace StrictWeakOrder
 

@@ -136,6 +136,9 @@ class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sor
   coe_injective' : Function.Injective coe
 #align fun_like FunLike
 
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% FunLike.coe
+
 section Dependent
 
 /-! ### `FunLike F α β` where `β` depends on `a : α` -/

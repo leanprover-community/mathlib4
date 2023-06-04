@@ -430,9 +430,6 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup M₂]
 
--- Porting note: this requires slightly more time to synthesize an instance.
--- I couldn't see what was wrong with turning on tracing.
-set_option synthInstance.maxHeartbeats 30000 in
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 

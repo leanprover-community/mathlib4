@@ -1982,7 +1982,7 @@ alias isLittleO_iff_exists_eq_mul ↔ IsLittleO.exists_eq_mul _
 
 end ExistsMulEq
 
-/-! ### Miscellanous lemmas -/
+/-! ### Miscellaneous lemmas -/
 
 
 theorem div_isBoundedUnder_of_isBigO {α : Type _} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :

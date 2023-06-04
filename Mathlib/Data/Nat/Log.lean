@@ -10,7 +10,6 @@ Ported by: Rémy Degenne
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pow
-import Mathlib.Tactic.ByContra
 
 /-!
 # Natural number logarithms
