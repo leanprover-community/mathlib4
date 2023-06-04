@@ -2361,12 +2361,12 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
     ext1 y
-    /- Porting note: the two blocks of `rw`s below were
-    ```
-    simp only [ContinuousLinearMap.compL_apply, Function.comp_apply,
-      ContinuousLinearMap.coe_comp', LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
-      LinearIsometryEquiv.apply_symm_apply]
-    ``` -/
+    -- Porting note: the two blocks of `rw`s below were
+    -- ```
+    -- simp only [ContinuousLinearMap.compL_apply, Function.comp_apply,
+    --   ContinuousLinearMap.coe_comp', LinearIsometryEquiv.coe_coe'',
+    --   ContinuousLinearMap.flip_apply, LinearIsometryEquiv.apply_symm_apply]
+    -- ```
     rw [hBu]
     iterate 2 rw [ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
       Function.comp_apply]
