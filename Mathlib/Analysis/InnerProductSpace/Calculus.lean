@@ -15,17 +15,17 @@ import Mathlib.Analysis.SpecialFunctions.Sqrt
 # Calculus in inner product spaces
 
 In this file we prove that the inner product and square of the norm in an inner space are
-infinitely `ℝ`-smooth. In order to state these results, we need a `normed_space ℝ E`
-instance. Though we can deduce this structure from `inner_product_space 𝕜 E`, this instance may be
-not definitionally equal to some other “natural” instance. So, we assume `[normed_space ℝ E]`.
+infinitely `ℝ`-smooth. In order to state these results, we need a `NormedSpace ℝ E`
+instance. Though we can deduce this structure from `InnerProductSpace 𝕜 E`, this instance may be
+not definitionally equal to some other “natural” instance. So, we assume `[NormedSpace ℝ E]`.
 
-We also prove that functions to a `euclidean_space` are (higher) differentiable if and only if
+We also prove that functions to a `EuclideanSpace` are (higher) differentiable if and only if
 their components are. This follows from the corresponding fact for finite product of normed spaces,
 and from the equivalence of norms in finite dimensions.
 
 ## TODO
 
-The last part of the file should be generalized to `pi_Lp`.
+The last part of the file should be generalized to `PiLp`.
 -/
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
