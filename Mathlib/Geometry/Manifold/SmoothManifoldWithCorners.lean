@@ -982,8 +982,8 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within LocalHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
 theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
-    (hxf' : x ∈ f'.source) : ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] f.extend I x :=
-  by
+    (hxf' : x ∈ f'.source) :
+    ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] f.extend I x := by
   apply extend_coord_change_source_mem_nhdsWithin
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf, hxf'⟩
