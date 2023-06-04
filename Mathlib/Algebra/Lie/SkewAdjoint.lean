@@ -24,10 +24,10 @@ results for the Lie algebra of square matrices.
 
 ## Main definitions
 
-  * `skew_adjoint_lie_subalgebra`
-  * `skew_adjoint_lie_subalgebra_equiv`
-  * `skew_adjoint_matrices_lie_subalgebra`
-  * `skew_adjoint_matrices_lie_subalgebra_equiv`
+  * `skewAdjointLieSubalgebra`
+  * `skewAdjointLieSubalgebraEquiv`
+  * `skewAdjointMatricesLieSubalgebra`
+  * `skewAdjointMatricesLieSubalgebraEquiv`
 
 ## Tags
 
@@ -45,14 +45,14 @@ variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (B : BilinForm R M)
 
-theorem BilinForm.is_skew_adjoint_bracket (f g : Module.End R M) (hf : f ∈ B.skewAdjointSubmodule)
+theorem BilinForm.is_skewAdjoint_bracket (f g : Module.End R M) (hf : f ∈ B.skewAdjointSubmodule)
     (hg : g ∈ B.skewAdjointSubmodule) : ⁅f, g⁆ ∈ B.skewAdjointSubmodule := by
   rw [mem_skew_adjoint_submodule] at *
   have hfg : is_adjoint_pair B B (f * g) (g * f) := by rw [← neg_mul_neg g f]; exact hf.mul hg
   have hgf : is_adjoint_pair B B (g * f) (f * g) := by rw [← neg_mul_neg f g]; exact hg.mul hf
   change BilinForm.IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
   exact hfg.sub hgf
-#align bilin_form.is_skew_adjoint_bracket BilinForm.is_skew_adjoint_bracket
+#align bilin_form.is_skew_adjoint_bracket BilinForm.is_skewAdjoint_bracket
 
 /-- Given an `R`-module `M`, equipped with a bilinear form, the skew-adjoint endomorphisms form a
 Lie subalgebra of the Lie algebra of endomorphisms. -/
@@ -98,18 +98,18 @@ theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, A�
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
 #align matrix.lie_transpose Matrix.lie_transpose
 
-theorem Matrix.is_skew_adjoint_bracket (A B : Matrix n n R)
+theorem Matrix.is_skewAdjoint_bracket (A B : Matrix n n R)
     (hA : A ∈ skewAdjointMatricesSubmodule J) (hB : B ∈ skewAdjointMatricesSubmodule J) :
     ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
   simp only [mem_skewAdjointMatricesSubmodule] at *
   change ⁅A, B⁆ᵀ ⬝ J = J ⬝ (-⁅A, B⁆); change Aᵀ ⬝ J = J ⬝ (-A) at hA ;
-  change Bᵀ ⬝ J = J ⬝ (-B) at hB 
+  change Bᵀ ⬝ J = J ⬝ (-B) at hB
   simp only [← Matrix.mul_eq_mul] at *
   rw [Matrix.lie_transpose, LieRing.of_associative_ring_bracket,
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc, ←
     mul_assoc, hA, hB]
   noncomm_ring
-#align matrix.is_skew_adjoint_bracket Matrix.is_skew_adjoint_bracket
+#align matrix.is_skew_adjoint_bracket Matrix.is_skewAdjoint_bracket
 
 /-- The Lie subalgebra of skew-adjoint square matrices corresponding to a square matrix `J`. -/
 def skewAdjointMatricesLieSubalgebra : LieSubalgebra R (Matrix n n R) :=
@@ -175,4 +175,3 @@ theorem mem_skewAdjointMatricesLieSubalgebra_unit_smul (u : Rˣ) (J A : Matrix n
 #align mem_skew_adjoint_matrices_lie_subalgebra_unit_smul mem_skewAdjointMatricesLieSubalgebra_unit_smul
 
 end SkewAdjointMatrices
-
