@@ -661,7 +661,7 @@ theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type _} [NontriviallyNor
     (h : ∀ e e' : LocalHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 ⊤ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     SmoothManifoldWithCorners I M where
-  compatible' := by
+  compatible := by
     haveI : HasGroupoid M (contDiffGroupoid ∞ I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 #align smooth_manifold_with_corners_of_cont_diff_on smoothManifoldWithCorners_of_contDiffOn
@@ -715,11 +715,11 @@ instance prod {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [Norme
     {I' : ModelWithCorners 𝕜 E' H'} (M : Type _) [TopologicalSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] (M' : Type _) [TopologicalSpace M'] [ChartedSpace H' M']
     [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
-  compatible' := by
+  compatible := by
     rintro f g ⟨f1, f2, hf1, hf2, rfl⟩ ⟨g1, g2, hg1, hg2, rfl⟩
     rw [LocalHomeomorph.prod_symm, LocalHomeomorph.prod_trans]
-    have h1 := HasGroupoid.compatible (contDiffGroupoid ⊤ I) hf1 hg1
-    have h2 := HasGroupoid.compatible (contDiffGroupoid ⊤ I') hf2 hg2
+    have h1 := (contDiffGroupoid ⊤ I).compatible hf1 hg1
+    have h2 := (contDiffGroupoid ⊤ I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 #align smooth_manifold_with_corners.prod SmoothManifoldWithCorners.prod
 
@@ -1292,6 +1292,9 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
+  -- Porting note: `simp` can't use `LocalEquiv.prod_trans` here because of a type
+  -- synonym
+  rw [LocalEquiv.prod_trans]
 #align ext_chart_at_prod extChartAt_prod
 
 end ExtendedCharts
