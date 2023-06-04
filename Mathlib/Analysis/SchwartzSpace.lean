@@ -8,13 +8,13 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.ContDiff
-import Mathbin.Analysis.Calculus.IteratedDeriv
-import Mathbin.Analysis.LocallyConvex.WithSeminorms
-import Mathbin.Topology.Algebra.UniformFilterBasis
-import Mathbin.Topology.ContinuousFunction.Bounded
-import Mathbin.Tactic.Positivity
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Tactic.Positivity
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Schwartz space
@@ -92,8 +92,7 @@ namespace SchwartzMap
 instance : Coe 𝓢(E, F) (E → F) :=
   ⟨toFun⟩
 
-instance funLike : FunLike 𝓢(E, F) E fun _ => F
-    where
+instance funLike : FunLike 𝓢(E, F) E fun _ => F where
   coe f := f.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
 #align schwartz_map.fun_like SchwartzMap.funLike
@@ -104,8 +103,7 @@ instance : CoeFun 𝓢(E, F) fun _ => E → F :=
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
-    ∃ (C : ℝ) (hC : 0 < C), ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C :=
-  by
+    ∃ (C : ℝ) (hC : 0 < C), ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
   rcases f.decay' k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 #align schwartz_map.decay SchwartzMap.decay
@@ -144,8 +142,7 @@ variable (f : 𝓢(E, F))
 
 /-- Auxiliary lemma, used in proving the more general result `is_O_cocompact_zpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ (-k : ℤ) :=
-  by
+    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ (-k : ℤ) := by
   obtain ⟨d, hd, hd'⟩ := f.decay k 0
   simp_rw [norm_iteratedFDeriv_zero] at hd' 
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
@@ -156,8 +153,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
 #align schwartz_map.is_O_cocompact_zpow_neg_nat SchwartzMap.isBigO_cocompact_zpow_neg_nat
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ s :=
-  by
+    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ s := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine' (is_O_cocompact_zpow_neg_nat f k).trans _
@@ -196,8 +192,7 @@ theorem bounds_bddBelow (k n : ℕ) (f : 𝓢(E, F)) :
 
 theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (f + g) x‖ ≤
-      ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ :=
-  by
+      ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
   refine' mul_le_mul_of_nonneg_left _ (by positivity)
   convert norm_add_le _ _
@@ -205,8 +200,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
 #align schwartz_map.decay_add_le_aux SchwartzMap.decay_add_le_aux
 
 theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
-    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ :=
-  by
+    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
   nth_rw 4 [← norm_neg]
   congr
   exact iteratedFDeriv_neg_apply
@@ -258,8 +252,7 @@ instance : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • f
       smooth' := (f.smooth _).const_smul c
-      decay' := fun k n =>
-        by
+      decay' := fun k n => by
         refine' ⟨f.seminorm_aux k n * (‖c‖ + 1), fun x => _⟩
         have hc : 0 ≤ ‖c‖ := by positivity
         refine' le_trans _ ((mul_le_mul_of_nonneg_right (f.le_seminorm_aux k n x) hc).trans _)
@@ -281,8 +274,7 @@ instance [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
-    (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n :=
-  by
+    (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
   refine'
     (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminorm_aux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).le.trans _
@@ -294,8 +286,7 @@ instance hasNsmul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • f
       smooth' := (f.smooth _).const_smul c
-      decay' :=
-        by
+      decay' := by
         have : c • (f : E → F) = (c : ℝ) • f := by ext x;
           simp only [Pi.smul_apply, ← nsmul_eq_smul_cast]
         simp only [this]
@@ -306,8 +297,7 @@ instance hasZsmul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • f
       smooth' := (f.smooth _).const_smul c
-      decay' :=
-        by
+      decay' := by
         have : c • (f : E → F) = (c : ℝ) • f := by ext x;
           simp only [Pi.smul_apply, ← zsmul_eq_smul_cast]
         simp only [this]
@@ -463,8 +453,7 @@ theorem seminorm_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
 
 Variant for functions `𝓢(ℝ, F)`. -/
 theorem seminorm_le_bound' (k n : ℕ) (f : 𝓢(ℝ, F)) {M : ℝ} (hMp : 0 ≤ M)
-    (hM : ∀ x, |x| ^ k * ‖iteratedDeriv n f x‖ ≤ M) : Seminorm 𝕜 k n f ≤ M :=
-  by
+    (hM : ∀ x, |x| ^ k * ‖iteratedDeriv n f x‖ ≤ M) : Seminorm 𝕜 k n f ≤ M := by
   refine' seminorm_le_bound 𝕜 k n f hMp _
   simpa only [Real.norm_eq_abs, norm_iteratedFDeriv_eq_norm_iteratedDeriv]
 #align schwartz_map.seminorm_le_bound' SchwartzMap.seminorm_le_bound'
@@ -479,28 +468,24 @@ theorem le_seminorm (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
 
 Variant for functions `𝓢(ℝ, F)`. -/
 theorem le_seminorm' (k n : ℕ) (f : 𝓢(ℝ, F)) (x : ℝ) :
-    |x| ^ k * ‖iteratedDeriv n f x‖ ≤ Seminorm 𝕜 k n f :=
-  by
+    |x| ^ k * ‖iteratedDeriv n f x‖ ≤ Seminorm 𝕜 k n f := by
   have := le_seminorm 𝕜 k n f x
   rwa [← Real.norm_eq_abs, ← norm_iteratedFDeriv_eq_norm_iteratedDeriv]
 #align schwartz_map.le_seminorm' SchwartzMap.le_seminorm'
 
 theorem norm_iteratedFDeriv_le_seminorm (f : 𝓢(E, F)) (n : ℕ) (x₀ : E) :
-    ‖iteratedFDeriv ℝ n f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 n) f :=
-  by
+    ‖iteratedFDeriv ℝ n f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 n) f := by
   have := SchwartzMap.le_seminorm 𝕜 0 n f x₀
   rwa [pow_zero, one_mul] at this 
 #align schwartz_map.norm_iterated_fderiv_le_seminorm SchwartzMap.norm_iteratedFDeriv_le_seminorm
 
 theorem norm_pow_mul_le_seminorm (f : 𝓢(E, F)) (k : ℕ) (x₀ : E) :
-    ‖x₀‖ ^ k * ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 k 0) f :=
-  by
+    ‖x₀‖ ^ k * ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 k 0) f := by
   have := SchwartzMap.le_seminorm 𝕜 k 0 f x₀
   rwa [norm_iteratedFDeriv_zero] at this 
 #align schwartz_map.norm_pow_mul_le_seminorm SchwartzMap.norm_pow_mul_le_seminorm
 
-theorem norm_le_seminorm (f : 𝓢(E, F)) (x₀ : E) : ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 0) f :=
-  by
+theorem norm_le_seminorm (f : 𝓢(E, F)) (x₀ : E) : ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 0) f := by
   have := norm_pow_mul_le_seminorm 𝕜 f 0 x₀
   rwa [pow_zero, one_mul] at this 
 #align schwartz_map.norm_le_seminorm SchwartzMap.norm_le_seminorm
@@ -532,8 +517,7 @@ Note that the constant is far from optimal. -/
 theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m.1) (hn : n ≤ m.2)
     (f : 𝓢(E, F)) (x : E) :
     (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤
-      2 ^ m.1 * (Finset.Iic m).sup (fun m => Seminorm 𝕜 m.1 m.2) f :=
-  by
+      2 ^ m.1 * (Finset.Iic m).sup (fun m => Seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
   simp only [one_pow, mul_one, Finset.sum_congr, Finset.sum_mul]
   norm_cast
@@ -570,8 +554,7 @@ variable (𝕜 E F)
 instance : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).ModuleFilterBasis.topology'
 
-theorem schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) :=
-  by
+theorem schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
   rw [A]
@@ -580,8 +563,7 @@ theorem schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F)
 
 variable {𝕜 E F}
 
-instance : ContinuousSMul 𝕜 𝓢(E, F) :=
-  by
+instance : ContinuousSMul 𝕜 𝓢(E, F) := by
   rw [(schwartz_withSeminorms 𝕜 E F).withSeminorms_eq]
   exact (schwartzSeminormFamily 𝕜 E F).ModuleFilterBasis.ContinuousSMul
 
@@ -616,8 +598,7 @@ def Function.HasTemperateGrowth (f : E → F) : Prop :=
 theorem Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ) (hC : 0 ≤ C),
-      ∀ (N : ℕ) (hN : N ≤ n) (x : E), ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k :=
-  by
+      ∀ (N : ℕ) (hN : N ≤ n) (x : E), ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
@@ -662,8 +643,7 @@ def mkLm (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
           ∀ (f : 𝓢(D, E)) (x : F),
             ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤
               C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
-    𝓢(D, E) →ₛₗ[σ] 𝓢(F, G)
-    where
+    𝓢(D, E) →ₛₗ[σ] 𝓢(F, G) where
   toFun f :=
     { toFun := A f
       smooth' := hsmooth f
@@ -688,8 +668,7 @@ def mkClm [RingHomIsometric σ] (A : (D → E) → F → G)
           ∀ (f : 𝓢(D, E)) (x : F),
             ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤
               C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
-    𝓢(D, E) →SL[σ] 𝓢(F, G)
-    where
+    𝓢(D, E) →SL[σ] 𝓢(F, G) where
   cont := by
     change Continuous (mk_lm A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine'
@@ -826,8 +805,7 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
       use Finset.Iic (k', n), (1 + Cg) ^ (k + l * n) * ((C + 1) ^ n * n ! * 2 ^ k'), by positivity
       intro f x
       let seminorm_f := ((Finset.Iic (k', n)).sup (schwartzSeminormFamily 𝕜 _ _)) f
-      have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' :=
-        by
+      have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' := by
         rw [pow_mul, ← mul_pow]
         refine' pow_le_pow_of_le_left (by positivity) _ _
         rw [add_mul]
@@ -836,8 +814,7 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
         refine' mul_le_mul (le_refl _) (one_le_pow_of_one_le _ _) zero_le_one zero_le_one
         simp only [le_add_iff_nonneg_right, norm_nonneg]
       have hbound :
-        ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' :=
-        by
+        ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
         intro i hi
         have hpos : 0 < (1 + ‖g x‖) ^ k' := by positivity
         rw [le_div_iff' hpos]
@@ -845,8 +822,7 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
         exact one_add_le_sup_seminorm_apply le_rfl hi _ _
       have hgrowth' :
         ∀ (N : ℕ) (hN₁ : 1 ≤ N) (hN₂ : N ≤ n),
-          ‖iteratedFDeriv ℝ N g x‖ ≤ ((C + 1) * (1 + ‖x‖) ^ l) ^ N :=
-        by
+          ‖iteratedFDeriv ℝ N g x‖ ≤ ((C + 1) * (1 + ‖x‖) ^ l) ^ N := by
         intro N hN₁ hN₂
         refine' (hgrowth N hN₂ x).trans _
         rw [mul_pow]
@@ -869,8 +845,7 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
       rw [rearrange]
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper'' 
-      have hpos : 0 ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f :=
-        by
+      have hpos : 0 ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
         have : 0 ≤ seminorm_f := map_nonneg _ _
         positivity
       refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
@@ -954,8 +929,7 @@ theorem iteratedPderiv_succ_left {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, 
 #align schwartz_map.iterated_pderiv_succ_left SchwartzMap.iteratedPderiv_succ_left
 
 theorem iteratedPderiv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
-    iteratedPderiv 𝕜 m f = iteratedPderiv 𝕜 (Fin.init m) (pderivClm 𝕜 (m (Fin.last n)) f) :=
-  by
+    iteratedPderiv 𝕜 m f = iteratedPderiv 𝕜 (Fin.init m) (pderivClm 𝕜 (m (Fin.last n)) f) := by
   induction' n with n IH
   · rw [iterated_pderiv_zero, iterated_pderiv_one]
     rfl
@@ -998,8 +972,7 @@ variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a linear map. -/
-def toBoundedContinuousFunctionLm : 𝓢(E, F) →ₗ[𝕜] E →ᵇ F
-    where
+def toBoundedContinuousFunctionLm : 𝓢(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f.toBoundedContinuousFunction
   map_add' f g := by ext; exact add_apply
   map_smul' a f := by ext; exact smul_apply
