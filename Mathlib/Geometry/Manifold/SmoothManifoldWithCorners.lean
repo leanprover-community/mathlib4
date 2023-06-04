@@ -1046,9 +1046,9 @@ theorem isOpen_extChartAt_source : IsOpen (extChartAt I x).source :=
   isOpen_extend_source _ _
 #align is_open_ext_chart_at_source isOpen_extChartAt_source
 
-theorem mem_ext_chart_source : x ∈ (extChartAt I x).source := by
+theorem mem_extChartAt_source : x ∈ (extChartAt I x).source := by
   simp only [extChartAt_source, mem_chart_source]
-#align mem_ext_chart_source mem_ext_chart_source
+#align mem_ext_chart_source mem_extChartAt_source
 
 theorem extChartAt_target (x : M) :
     (extChartAt I x).target = I.symm ⁻¹' (chartAt H x).target ∩ range I :=
@@ -1056,7 +1056,7 @@ theorem extChartAt_target (x : M) :
 #align ext_chart_at_target extChartAt_target
 
 theorem extChartAt_to_inv : (extChartAt I x).symm ((extChartAt I x) x) = x :=
-  (extChartAt I x).left_inv (mem_ext_chart_source I x)
+  (extChartAt I x).left_inv (mem_extChartAt_source I x)
 #align ext_chart_at_to_inv extChartAt_to_inv
 
 theorem mapsTo_extChartAt (hs : s ⊆ (chartAt H x).source) :
@@ -1070,7 +1070,7 @@ theorem extChartAt_source_mem_nhds' {x' : M} (h : x' ∈ (extChartAt I x).source
 #align ext_chart_at_source_mem_nhds' extChartAt_source_mem_nhds'
 
 theorem extChartAt_source_mem_nhds : (extChartAt I x).source ∈ 𝓝 x :=
-  extChartAt_source_mem_nhds' I x (mem_ext_chart_source I x)
+  extChartAt_source_mem_nhds' I x (mem_extChartAt_source I x)
 #align ext_chart_at_source_mem_nhds extChartAt_source_mem_nhds
 
 theorem extChartAt_source_mem_nhdsWithin' {x' : M} (h : x' ∈ (extChartAt I x).source) :
@@ -1086,13 +1086,13 @@ theorem continuousOn_extChartAt : ContinuousOn (extChartAt I x) (extChartAt I x)
   continuousOn_extend _ _
 #align continuous_on_ext_chart_at continuousOn_extChartAt
 
-theorem continuousAt_ext_chart_at' {x' : M} (h : x' ∈ (extChartAt I x).source) :
+theorem continuousAt_extChartAt' {x' : M} (h : x' ∈ (extChartAt I x).source) :
     ContinuousAt (extChartAt I x) x' :=
   continuousAt_extend _ _ <| by rwa [← extChartAt_source I]
-#align continuous_at_ext_chart_at' continuousAt_ext_chart_at'
+#align continuous_at_ext_chart_at' continuousAt_extChartAt'
 
 theorem continuousAt_extChartAt : ContinuousAt (extChartAt I x) x :=
-  continuousAt_ext_chart_at' _ _ (mem_ext_chart_source I x)
+  continuousAt_extChartAt' _ _ (mem_extChartAt_source I x)
 #align continuous_at_ext_chart_at continuousAt_extChartAt
 
 theorem map_extChartAt_nhds' {x y : M} (hy : y ∈ (extChartAt I x).source) :
@@ -1101,7 +1101,7 @@ theorem map_extChartAt_nhds' {x y : M} (hy : y ∈ (extChartAt I x).source) :
 #align map_ext_chart_at_nhds' map_extChartAt_nhds'
 
 theorem map_extChartAt_nhds : map (extChartAt I x) (𝓝 x) = 𝓝[range I] extChartAt I x x :=
-  map_extChartAt_nhds' I <| mem_ext_chart_source I x
+  map_extChartAt_nhds' I <| mem_extChartAt_source I x
 #align map_ext_chart_at_nhds map_extChartAt_nhds
 
 theorem extChartAt_target_mem_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
@@ -1110,7 +1110,7 @@ theorem extChartAt_target_mem_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).s
 #align ext_chart_at_target_mem_nhds_within' extChartAt_target_mem_nhdsWithin'
 
 theorem extChartAt_target_mem_nhdsWithin : (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
-  extChartAt_target_mem_nhdsWithin' I x (mem_ext_chart_source I x)
+  extChartAt_target_mem_nhdsWithin' I x (mem_extChartAt_source I x)
 #align ext_chart_at_target_mem_nhds_within extChartAt_target_mem_nhdsWithin
 
 theorem extChartAt_target_subset_range : (extChartAt I x).target ⊆ range I := by
@@ -1124,7 +1124,7 @@ theorem nhdsWithin_extChartAt_target_eq' {y : M} (hy : y ∈ (extChartAt I x).so
 
 theorem nhdsWithin_extChartAt_target_eq :
     𝓝[(extChartAt I x).target] (extChartAt I x) x = 𝓝[range I] (extChartAt I x) x :=
-  nhdsWithin_extChartAt_target_eq' I x (mem_ext_chart_source I x)
+  nhdsWithin_extChartAt_target_eq' I x (mem_extChartAt_source I x)
 #align nhds_within_ext_chart_at_target_eq nhdsWithin_extChartAt_target_eq
 
 theorem continuousAt_extChartAt_symm'' {y : E} (h : y ∈ (extChartAt I x).target) :
@@ -1138,7 +1138,7 @@ theorem continuousAt_extChartAt_symm' {x' : M} (h : x' ∈ (extChartAt I x).sour
 #align continuous_at_ext_chart_at_symm' continuousAt_extChartAt_symm'
 
 theorem continuousAt_extChartAt_symm : ContinuousAt (extChartAt I x).symm ((extChartAt I x) x) :=
-  continuousAt_extChartAt_symm' I x (mem_ext_chart_source I x)
+  continuousAt_extChartAt_symm' I x (mem_extChartAt_source I x)
 #align continuous_at_ext_chart_at_symm continuousAt_extChartAt_symm
 
 theorem continuousOn_extChartAt_symm : ContinuousOn (extChartAt I x).symm (extChartAt I x).target :=
@@ -1165,7 +1165,7 @@ theorem map_extChartAt_nhdsWithin_eq_image' {y : M} (hy : y ∈ (extChartAt I x)
 theorem map_extChartAt_nhdsWithin_eq_image :
     map (extChartAt I x) (𝓝[s] x) =
       𝓝[extChartAt I x '' ((extChartAt I x).source ∩ s)] extChartAt I x x :=
-  map_extChartAt_nhdsWithin_eq_image' I x (mem_ext_chart_source I x)
+  map_extChartAt_nhdsWithin_eq_image' I x (mem_extChartAt_source I x)
 #align map_ext_chart_at_nhds_within_eq_image map_extChartAt_nhdsWithin_eq_image
 
 theorem map_extChartAt_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
@@ -1175,7 +1175,7 @@ theorem map_extChartAt_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) 
 
 theorem map_extChartAt_nhdsWithin :
     map (extChartAt I x) (𝓝[s] x) = 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x x :=
-  map_extChartAt_nhdsWithin' I x (mem_ext_chart_source I x)
+  map_extChartAt_nhdsWithin' I x (mem_extChartAt_source I x)
 #align map_ext_chart_at_nhds_within map_extChartAt_nhdsWithin
 
 theorem map_extChartAt_symm_nhdsWithin' {y : M} (hy : y ∈ (extChartAt I x).source) :
@@ -1192,12 +1192,12 @@ theorem map_extChartAt_symm_nhdsWithin_range' {y : M} (hy : y ∈ (extChartAt I 
 theorem map_extChartAt_symm_nhdsWithin :
     map (extChartAt I x).symm (𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] extChartAt I x x) =
       𝓝[s] x :=
-  map_extChartAt_symm_nhdsWithin' I x (mem_ext_chart_source I x)
+  map_extChartAt_symm_nhdsWithin' I x (mem_extChartAt_source I x)
 #align map_ext_chart_at_symm_nhds_within map_extChartAt_symm_nhdsWithin
 
 theorem map_extChartAt_symm_nhdsWithin_range :
     map (extChartAt I x).symm (𝓝[range I] extChartAt I x x) = 𝓝 x :=
-  map_extChartAt_symm_nhdsWithin_range' I x (mem_ext_chart_source I x)
+  map_extChartAt_symm_nhdsWithin_range' I x (mem_extChartAt_source I x)
 #align map_ext_chart_at_symm_nhds_within_range map_extChartAt_symm_nhdsWithin_range
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
@@ -1212,7 +1212,7 @@ theorem extChartAt_preimage_mem_nhdsWithin' {x' : M} (h : x' ∈ (extChartAt I x
 base point is a neighborhood of the preimage, within a set. -/
 theorem extChartAt_preimage_mem_nhdsWithin (ht : t ∈ 𝓝[s] x) :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
-  extChartAt_preimage_mem_nhdsWithin' I x (mem_ext_chart_source I x) ht
+  extChartAt_preimage_mem_nhdsWithin' I x (mem_extChartAt_source I x) ht
 #align ext_chart_at_preimage_mem_nhds_within extChartAt_preimage_mem_nhdsWithin
 
 theorem extChartAt_preimage_mem_nhds' {x' : M} (h : x' ∈ (extChartAt I x).source) (ht : t ∈ 𝓝 x') :
@@ -1225,7 +1225,7 @@ is a neighborhood of the preimage. -/
 theorem extChartAt_preimage_mem_nhds (ht : t ∈ 𝓝 x) :
     (extChartAt I x).symm ⁻¹' t ∈ 𝓝 ((extChartAt I x) x) := by
   apply (continuousAt_extChartAt_symm I x).preimage_mem_nhds
-  rwa [(extChartAt I x).left_inv (mem_ext_chart_source _ _)]
+  rwa [(extChartAt I x).left_inv (mem_extChartAt_source _ _)]
 #align ext_chart_at_preimage_mem_nhds extChartAt_preimage_mem_nhds
 
 /-- Technical lemma to rewrite suitably the preimage of an intersection under an extended chart, to
