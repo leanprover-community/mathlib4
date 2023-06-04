@@ -112,8 +112,13 @@ section PPrime
 
 variable (p) [hp : Fact p.Prime]
 
+-- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
 scoped[Witt] notation "W_" => wittPolynomial p
+
+-- Notation with ring of coefficients implicit
+set_option quotPrecheck false in
+scoped[Witt] notation "W" => wittPolynomial p _
 
 /-- `witt_structure_rat Φ` is a family of polynomials `ℕ → mv_polynomial (idx × ℕ) ℚ`
 that are uniquely characterised by the property that
@@ -264,6 +269,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   apply dvd_sub_pow_of_dvd_sub
   rw [← C_eq_coe_nat, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_expand, RingHom.map_pow,
     MvPolynomial.expand_zMod]
+set_option linter.uppercaseLean3 false in
 #align C_p_pow_dvd_bind₁_rename_witt_polynomial_sub_sum C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum
 
 variable (p)
@@ -310,7 +316,9 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   funext k
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [map_wittStructureInt]
-  refine' congr_fun _ k
+  -- Porting note: was `refine' congr_fun _ k`
+  revert k
+  refine' congr_fun _
   apply ExistsUnique.unique (witt_structure_rat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n
@@ -348,33 +356,33 @@ theorem wittStructureInt_rename {σ : Type _} (Φ : MvPolynomial idx ℤ) (f : i
 @[simp]
 theorem constantCoeff_wittStructureRat_zero (Φ : MvPolynomial idx ℚ) :
     constantCoeff (wittStructureRat p Φ 0) = constantCoeff Φ := by
-  simp only [wittStructureRat, bind₁, map_aeval, xInTermsOfW_zero, constant_coeff_rename,
-    constantCoeff_wittPolynomial, aeval_X, constant_coeff_comp_algebra_map, eval₂Hom_zero'_apply,
+  simp only [wittStructureRat, bind₁, map_aeval, xInTermsOfW_zero, constantCoeff_rename,
+    constantCoeff_wittPolynomial, aeval_X, constantCoeff_comp_algebraMap, eval₂Hom_zero'_apply,
     RingHom.id_apply]
 #align constant_coeff_witt_structure_rat_zero constantCoeff_wittStructureRat_zero
 
 theorem constantCoeff_wittStructureRat (Φ : MvPolynomial idx ℚ) (h : constantCoeff Φ = 0) (n : ℕ) :
     constantCoeff (wittStructureRat p Φ n) = 0 := by
-  simp only [wittStructureRat, eval₂Hom_zero'_apply, h, bind₁, map_aeval, constant_coeff_rename,
-    constantCoeff_wittPolynomial, constant_coeff_comp_algebra_map, RingHom.id_apply,
+  simp only [wittStructureRat, eval₂Hom_zero'_apply, h, bind₁, map_aeval, constantCoeff_rename,
+    constantCoeff_wittPolynomial, constantCoeff_comp_algebraMap, RingHom.id_apply,
     constantCoeff_xInTermsOfW]
 #align constant_coeff_witt_structure_rat constantCoeff_wittStructureRat
 
 @[simp]
 theorem constantCoeff_wittStructureInt_zero (Φ : MvPolynomial idx ℤ) :
     constantCoeff (wittStructureInt p Φ 0) = constantCoeff Φ := by
-  have inj : Function.Injective (Int.castRingHom ℚ) := by intro m n; exact int.cast_inj.mp
+  have inj : Function.Injective (Int.castRingHom ℚ) := by intro m n; exact Int.cast_inj.mp
   apply inj
-  rw [← constant_coeff_map, map_wittStructureInt, constantCoeff_wittStructureRat_zero,
-    constant_coeff_map]
+  rw [← constantCoeff_map, map_wittStructureInt, constantCoeff_wittStructureRat_zero,
+    constantCoeff_map]
 #align constant_coeff_witt_structure_int_zero constantCoeff_wittStructureInt_zero
 
 theorem constantCoeff_wittStructureInt (Φ : MvPolynomial idx ℤ) (h : constantCoeff Φ = 0) (n : ℕ) :
     constantCoeff (wittStructureInt p Φ n) = 0 := by
-  have inj : Function.Injective (Int.castRingHom ℚ) := by intro m n; exact int.cast_inj.mp
+  have inj : Function.Injective (Int.castRingHom ℚ) := by intro m n; exact Int.cast_inj.mp
   apply inj
-  rw [← constant_coeff_map, map_wittStructureInt, constantCoeff_wittStructureRat, RingHom.map_zero]
-  rw [constant_coeff_map, h, RingHom.map_zero]
+  rw [← constantCoeff_map, map_wittStructureInt, constantCoeff_wittStructureRat, RingHom.map_zero]
+  rw [constantCoeff_map, h, RingHom.map_zero]
 #align constant_coeff_witt_structure_int constantCoeff_wittStructureInt
 
 variable (R)
