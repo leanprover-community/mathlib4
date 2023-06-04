@@ -447,9 +447,9 @@ variable (R M)
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
-def reindex (e : ι ≃ ι₂) : (⨂[R] _i : ι, M) ≃ₗ[R] ⨂[R] _i : ι₂, M :=
-  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _i : ι₂, M))))
-    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _i : ι, M))))
+def reindex (e : ι ≃ ι₂) : (⨂[R] _ : ι, M) ≃ₗ[R] ⨂[R] _ : ι₂, M :=
+  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
+    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _ : ι, M))))
     (by
       refine ext ?_
       ext
@@ -479,7 +479,7 @@ theorem reindex_tprod (e : ι ≃ ι₂) (f : ∀ _, M) :
 
 @[simp]
 theorem reindex_comp_tprod (e : ι ≃ ι₂) :
-    (reindex R M e : (⨂[R] _i : ι, M) →ₗ[R] ⨂[R] _i : ι₂, M).compMultilinearMap (tprod R) =
+    (reindex R M e : (⨂[R] _ : ι, M) →ₗ[R] ⨂[R] _ : ι₂, M).compMultilinearMap (tprod R) =
       (tprod R : MultilinearMap R (fun _ ↦ M) _).domDomCongr e.symm :=
   MultilinearMap.ext <| reindex_tprod e
 #align pi_tensor_product.reindex_comp_tprod PiTensorProduct.reindex_comp_tprod
@@ -493,7 +493,7 @@ theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ : ι�
 #align pi_tensor_product.lift_comp_reindex PiTensorProduct.lift_comp_reindex
 
 @[simp]
-theorem lift_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ ↦ M) E) (x : ⨂[R] _i, M) :
+theorem lift_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ ↦ M) E) (x : ⨂[R] _, M) :
     lift φ (reindex R M e x) = lift (φ.domDomCongr e.symm) x :=
   LinearMap.congr_fun (lift_comp_reindex e φ) x
 #align pi_tensor_product.lift_reindex PiTensorProduct.lift_reindex
@@ -511,7 +511,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
 #align pi_tensor_product.reindex_trans PiTensorProduct.reindex_trans
 
 @[simp]
-theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] _i, M) :
+theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] _, M) :
     reindex R M e' (reindex R M e x) = reindex R M (e.trans e') x :=
   LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R M (e.trans e')) x
 #align pi_tensor_product.reindex_reindex PiTensorProduct.reindex_reindex
@@ -532,7 +532,7 @@ variable (ι)
 
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
-def isEmptyEquiv [IsEmpty ι] : (⨂[R] _i : ι, M) ≃ₗ[R] R where
+def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
   toFun := lift (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
@@ -563,7 +563,7 @@ variable {ι}
 Tensor product of `M` over a singleton set is equivalent to `M`
 -/
 @[simps symm_apply]
-def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _i : ι, M) ≃ₗ[R] M where
+def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[R] M where
   toFun := lift (MultilinearMap.ofSubsingleton R M i₀)
   invFun m := tprod R fun _ ↦ m
   left_inv x := by
@@ -595,7 +595,7 @@ theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) 
 section Tmul
 
 /-- Collapse a `TensorProduct` of `PiTensorProduct`s. -/
-private def tmul : ((⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M) →ₗ[R] ⨂[R] _i : Sum ι ι₂, M :=
+private def tmul : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) →ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
   TensorProduct.lift
     { toFun := fun a ↦
         PiTensorProduct.lift <|
@@ -610,7 +610,7 @@ private theorem tmul_apply (a : ι → M) (b : ι₂ → M) :
   rfl
 
 /-- Expand `PiTensorProduct` into a `TensorProduct` of two factors. -/
-private def tmulSymm : (⨂[R] _i : Sum ι ι₂, M) →ₗ[R] (⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M :=
+private def tmulSymm : (⨂[R] _ : Sum ι ι₂, M) →ₗ[R] (⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M :=
   -- by using tactic mode, we avoid the need for a lot of `@`s and `_`s
   PiTensorProduct.lift <| MultilinearMap.domCoprod (tprod R) (tprod R)
 
@@ -627,7 +627,7 @@ attribute [local ext] TensorProduct.ext
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
-def tmulEquiv : ((⨂[R] _i : ι, M) ⊗[R] ⨂[R] _i : ι₂, M) ≃ₗ[R] ⨂[R] _i : Sum ι ι₂, M :=
+def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R] _ : Sum ι ι₂, M :=
   LinearEquiv.ofLinear tmul tmulSymm (by
     refine ext (MultilinearMap.ext (fun (x : ι ⊕ ι₂ → M) => ?_))
     show tmul (tmulSymm (tprod R x)) = tprod R x
