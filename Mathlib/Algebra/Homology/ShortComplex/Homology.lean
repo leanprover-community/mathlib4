@@ -981,6 +981,31 @@ lemma isZero_homology_of_isZero_X₂ (hS : IsZero S.X₂) [S.HasHomology] :
   IsZero.of_iso hS (HomologyData.ofZeros S (hS.eq_of_tgt _ _)
     (hS.eq_of_src _ _)).left.homologyIso
 
+
+lemma isIso_homologyπ (hf : S.f = 0) [S.HasHomology] :
+    IsIso S.homologyπ := by
+  have := S.isIso_leftHomologyπ hf
+  dsimp only [homologyπ]
+  infer_instance
+
+lemma isIso_homologyι (hg : S.g = 0) [S.HasHomology] :
+    IsIso S.homologyι := by
+  have := S.isIso_rightHomologyι hg
+  dsimp only [homologyι]
+  infer_instance
+
+@[simps! hom]
+noncomputable def asIsoHomologyπ (hf : S.f = 0) [S.HasHomology] :
+    S.cycles ≅ S.homology := by
+  have := S.isIso_homologyπ hf
+  exact asIso S.homologyπ
+
+@[simps! hom]
+noncomputable def asIsoHomologyι (hg : S.g = 0) [S.HasHomology] :
+    S.homology ≅ S.cyclesCo := by
+  have := S.isIso_homologyι hg
+  exact asIso S.homologyι
+
 end ShortComplex
 
 end CategoryTheory

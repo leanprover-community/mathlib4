@@ -1052,7 +1052,22 @@ lemma isIso_i_of_zero_g (h : LeftHomologyData S) (hg : S.g = 0) : IsIso h.i :=
   ⟨⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
     by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩⟩
 
+lemma isIso_π_of_zero_f (h : LeftHomologyData S) (hf : S.f = 0) : IsIso h.π := by
+  have ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
+    (by rw [← cancel_mono h.i, comp_id, f'_i, zero_comp, hf])
+  dsimp at hφ
+  exact ⟨φ, hφ, by rw [← cancel_epi h.π, reassoc_of% hφ, comp_id]⟩
+
 end LeftHomologyData
+
+lemma isIso_leftHomologyπ (hf : S.f = 0) [S.HasLeftHomology] :
+    IsIso S.leftHomologyπ := LeftHomologyData.isIso_π_of_zero_f _ hf
+
+@[simps! hom]
+noncomputable def asIsoLeftHomologyπ (hf : S.f = 0) [S.HasLeftHomology] :
+    S.cycles ≅ S.leftHomology := by
+  have := S.isIso_leftHomologyπ hf
+  exact asIso S.leftHomologyπ
 
 end ShortComplex
 
