@@ -82,7 +82,7 @@ section NormedAddCommGroup
 theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
     {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
-  haveI : FiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   hasFiniteIntegral_of_bounded hf
 #align measure_theory.has_finite_integral_restrict_of_bounded MeasureTheory.hasFiniteIntegral_restrict_of_bounded
 
@@ -368,7 +368,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   refine' memℒp_one_iff_integrable.mp _
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
-  haveI hμ_finite : FiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
+  haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
   exact ((Lp.memℒp _).restrict s).memℒp_of_exponent_le hp
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integrable_on_Lp_of_measure_ne_top MeasureTheory.integrableOn_Lp_of_measure_ne_top
@@ -552,7 +552,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [Op
 #align continuous_on.ae_strongly_measurable_of_is_compact ContinuousOn.aestronglyMeasurable_of_isCompact
 
 theorem ContinuousOn.integrableAt_nhdsWithin_of_isSeparable [TopologicalSpace α]
-    [PseudoMetrizableSpace α] [OpensMeasurableSpace α] {μ : Measure α} [LocallyFiniteMeasure μ]
+    [PseudoMetrizableSpace α] [OpensMeasurableSpace α] {μ : Measure α} [IsLocallyFiniteMeasure μ]
     {a : α} {t : Set α} {f : α → E} (hft : ContinuousOn f t) (ht : MeasurableSet t)
     (h't : TopologicalSpace.IsSeparable t) (ha : a ∈ t) : IntegrableAtFilter f (𝓝[t] a) μ :=
   haveI : (𝓝[t] a).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
@@ -563,7 +563,7 @@ theorem ContinuousOn.integrableAt_nhdsWithin_of_isSeparable [TopologicalSpace α
 
 theorem ContinuousOn.integrableAt_nhdsWithin [TopologicalSpace α]
     [SecondCountableTopologyEither α E] [OpensMeasurableSpace α] {μ : Measure α}
-    [LocallyFiniteMeasure μ] {a : α} {t : Set α} {f : α → E} (hft : ContinuousOn f t)
+    [IsLocallyFiniteMeasure μ] {a : α} {t : Set α} {f : α → E} (hft : ContinuousOn f t)
     (ht : MeasurableSet t) (ha : a ∈ t) : IntegrableAtFilter f (𝓝[t] a) μ :=
   haveI : (𝓝[t] a).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
   (hft a ha).integrableAtFilter ⟨_, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩
@@ -571,7 +571,7 @@ theorem ContinuousOn.integrableAt_nhdsWithin [TopologicalSpace α]
 #align continuous_on.integrable_at_nhds_within ContinuousOn.integrableAt_nhdsWithin
 
 theorem Continuous.integrableAt_nhds [TopologicalSpace α] [SecondCountableTopologyEither α E]
-    [OpensMeasurableSpace α] {μ : Measure α} [LocallyFiniteMeasure μ] {f : α → E}
+    [OpensMeasurableSpace α] {μ : Measure α} [IsLocallyFiniteMeasure μ] {f : α → E}
     (hf : Continuous f) (a : α) : IntegrableAtFilter f (𝓝 a) μ := by
   rw [← nhdsWithin_univ]
   exact hf.continuousOn.integrableAt_nhdsWithin MeasurableSet.univ (mem_univ a)
