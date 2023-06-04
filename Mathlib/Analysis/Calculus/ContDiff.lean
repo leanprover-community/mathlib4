@@ -2249,8 +2249,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       ‖B‖ * ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   /- We argue by induction on `n`. The bound is trivial for `n = 0`. For `n + 1`, we write
-    the `(n+1)`-th derivative as the `n`-th derivative of the derivative `B f g' + B f' g`, and apply
-    the inductive assumption to each of those two terms. For this induction to make sense,
+    the `(n+1)`-th derivative as the `n`-th derivative of the derivative `B f g' + B f' g`, and
+    apply the inductive assumption to each of those two terms. For this induction to make sense,
     the spaces of linear maps that appear in the induction should be in the same universe as the
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
