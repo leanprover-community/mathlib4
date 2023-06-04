@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.UniformLimitsDeriv
-import Mathbin.Analysis.Calculus.ContDiff
-import Mathbin.Data.Nat.Cast.WithTop
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Data.Nat.Cast.WithTop
 
 /-!
 # Smoothness of series
@@ -42,8 +42,7 @@ Version relative to a set, with general index set. -/
 theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set β}
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     TendstoUniformlyOn (fun t : Finset α => fun x => ∑ n in t, f n x) (fun x => ∑' n, f n x) atTop
-      s :=
-  by
+      s := by
   refine' tendsto_uniformly_on_iff.2 fun ε εpos => _
   filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos]with t ht x hx
   have A : Summable fun n => ‖f n x‖ :=
@@ -93,8 +92,7 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/
 theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i, Continuous (f i))
-    (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x :=
-  by
+    (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
   simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x hx => hfu n x
 #align continuous_tsum continuous_tsum
@@ -112,8 +110,7 @@ derivatives, then the series converges everywhere on the set. -/
 theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable fun n => f n x₀) {x : E}
-    (hx : x ∈ s) : Summable fun n => f n x :=
-  by
+    (hx : x ∈ s) : Summable fun n => f n x := by
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) at_top s :=
     (tendstoUniformlyOn_tsum hu hf').UniformCauchySeqOn
@@ -131,8 +128,7 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (hx : x ∈ s) : HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
   classical
     have A :
-      ∀ x : E, x ∈ s → tendsto (fun t : Finset α => ∑ n in t, f n x) at_top (𝓝 (∑' n, f n x)) :=
-      by
+      ∀ x : E, x ∈ s → tendsto (fun t : Finset α => ∑ n in t, f n x) at_top (𝓝 (∑' n, f n x)) := by
       intro y hy
       apply Summable.hasSum
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
@@ -146,8 +142,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series converges everywhere. -/
 theorem summable_of_summable_hasFDerivAt (hu : Summable u)
     (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x) (hf' : ∀ n x, ‖f' n x‖ ≤ u n)
-    (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x :=
-  by
+    (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x := by
   let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
   apply
     summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ
@@ -160,8 +155,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
-    HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x :=
-  by
+    HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
   let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
   exact
     hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ is_connected_univ.is_preconnected
@@ -173,8 +167,7 @@ with a summable bound on the derivatives, then the series is differentiable.
 Note that our assumptions do not ensure the pointwise convergence, but if there is no pointwise
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
-    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y :=
-  by
+    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y := by
   by_cases h : ∃ x₀, Summable fun n => f n x₀
   · rcases h with ⟨x₀, hf0⟩
     intro x
@@ -206,8 +199,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) :
-    (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x :=
-  by
+    (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   induction' k with k IH
   · ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
@@ -241,8 +233,7 @@ class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th 
 for each `k ≤ N`. Then the series is also `C^N`. -/
 theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
-    ContDiff 𝕜 N fun x => ∑' i, f i x :=
-  by
+    ContDiff 𝕜 N fun x => ∑' i, f i x := by
   rw [contDiff_iff_continuous_differentiable]
   constructor
   · intro m hm
@@ -281,8 +272,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     have ht : Set.Finite t :=
       haveI A :
         ∀ᶠ i in (Filter.cofinite : Filter α),
-          ∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i :=
-        by
+          ∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i := by
         rw [eventually_all_finset]
         intro i hi
         apply h'f
