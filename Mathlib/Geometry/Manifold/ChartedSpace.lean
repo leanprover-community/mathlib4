@@ -860,13 +860,8 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 groupoid. -/
 class HasGroupoid {H : Type _} [TopologicalSpace H] (M : Type _) [TopologicalSpace M]
     [ChartedSpace H M] (G : StructureGroupoid H) : Prop where
-  compatible' : ∀ {e e' : LocalHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
+  compatible : ∀ {e e' : LocalHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
 #align has_groupoid HasGroupoid
-
-theorem HasGroupoid.compatible {H : Type _} [TopologicalSpace H] {M : Type _} [TopologicalSpace M]
-    [ChartedSpace H M] (G : StructureGroupoid H) [HasGroupoid M G] {e e'} (he : e ∈ atlas H M)
-    (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
-  HasGroupoid.compatible' he he'
 
 /-- Reformulate in the `StructureGroupoid` namespace the compatibility condition of charts in a
 charted space admitting a structure groupoid, to make it more easily accessible with dot
@@ -874,7 +869,7 @@ notation. -/
 theorem StructureGroupoid.compatible {H : Type _} [TopologicalSpace H] (G : StructureGroupoid H)
     {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
     {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
-  HasGroupoid.compatible G he he'
+  HasGroupoid.compatible he he'
 #align structure_groupoid.compatible StructureGroupoid.compatible
 
 theorem hasGroupoid_of_le {G₁ G₂ : StructureGroupoid H} (h : HasGroupoid M G₁) (hle : G₁ ≤ G₂) :
@@ -891,7 +886,7 @@ theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : LocalHo
 /-- The trivial charted space structure on the model space is compatible with any groupoid. -/
 instance hasGroupoid_model_space (H : Type _) [TopologicalSpace H] (G : StructureGroupoid H) :
     HasGroupoid H G where
-  compatible' {e e'} he he' := by
+  compatible {e e'} he he' := by
     rw [chartedSpaceSelf_atlas] at he he'
     simp [he, he', StructureGroupoid.id_mem]
 #align has_groupoid_model_space hasGroupoid_model_space
@@ -1016,7 +1011,7 @@ groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
   { e.singletonChartedSpace h with
-    compatible' := by
+    compatible := by
       intro e' e'' he' he''
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
@@ -1072,7 +1067,7 @@ protected instance instChartedSpace : ChartedSpace H s where
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
 protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G where
-  compatible' := by
+  compatible := by
     rintro e e' ⟨_, ⟨x, hc⟩, he⟩ ⟨_, ⟨x', hc'⟩, he'⟩
     haveI : Nonempty s := ⟨x⟩
     have asdf := he
@@ -1109,7 +1104,7 @@ def Structomorph.refl (M : Type _) [TopologicalSpace M] [ChartedSpace H M] [HasG
     mem_groupoid := fun c c' hc hc' ↦ by
       change LocalHomeomorph.symm c ≫ₕ LocalHomeomorph.refl M ≫ₕ c' ∈ G
       rw [LocalHomeomorph.refl_trans]
-      exact HasGroupoid.compatible G hc hc' }
+      exact G.compatible hc hc' }
 #align structomorph.refl Structomorph.refl
 
 /-- The inverse of a structomorphism is a structomorphism. -/
