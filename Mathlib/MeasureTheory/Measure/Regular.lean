@@ -154,7 +154,7 @@ variable {α : Type _} {m : MeasurableSpace α} {μ : Measure α} {p q : Set α 
   {ε : ℝ≥0∞}
 
 theorem measure_eq_iSup (H : InnerRegular μ p q) (hU : q U) :
-    μ U = ⨆ (K) (_h : K ⊆ U) (_hK : p K), μ K := by
+    μ U = ⨆ (K) (_ : K ⊆ U) (_ : p K), μ K := by
   refine'
     le_antisymm (le_of_forall_lt fun r hr => _) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
@@ -253,7 +253,7 @@ theorem _root_.Set.exists_isOpen_lt_of_lt [OuterRegular μ] (A : Set α) (r : �
 /-- For an outer regular measure, the measure of a set is the infimum of the measures of open sets
 containing it. -/
 theorem _root_.Set.measure_eq_iInf_isOpen (A : Set α) (μ : Measure α) [OuterRegular μ] :
-    μ A = ⨅ (U : Set α) (_h : A ⊆ U) (_h2 : IsOpen U), μ U := by
+    μ A = ⨅ (U : Set α) (_ : A ⊆ U) (_ : IsOpen U), μ U := by
   refine' le_antisymm (le_iInf₂ fun s hs => le_iInf fun _ => μ.mono hs) _
   refine' le_of_forall_lt' fun r hr => _
   simpa only [iInf_lt_iff, exists_prop] using A.exists_isOpen_lt_of_lt r hr
@@ -479,7 +479,7 @@ theorem _root_.IsOpen.exists_lt_isCompact [Regular μ] ⦃U : Set α⦄ (hU : Is
 
 /-- The measure of an open set is the supremum of the measures of compact sets it contains. -/
 theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
-    [Regular μ] : μ U = ⨆ (K : Set α) (_h : K ⊆ U) (_h2 : IsCompact K), μ K :=
+    [Regular μ] : μ U = ⨆ (K : Set α) (_ : K ⊆ U) (_ : IsCompact K), μ K :=
   Regular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_compact IsOpen.measure_eq_iSup_isCompact
 
@@ -527,7 +527,7 @@ theorem _root_.MeasurableSet.exists_lt_isCompact_of_ne_top [Regular μ] ⦃A : S
 /-- Given a regular measure, any measurable set of finite mass can be approximated from
 inside by compact sets. -/
 theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [Regular μ] ⦃A : Set α⦄
-    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_h : K ⊆ A) (_h : IsCompact K), μ K :=
+    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_ : K ⊆ A) (_ : IsCompact K), μ K :=
   Regular.innerRegular_measurable.measure_eq_iSup ⟨hA, h'A⟩
 #align measurable_set.measure_eq_supr_is_compact_of_ne_top MeasurableSet.measure_eq_iSup_isCompact_of_ne_top
 
@@ -568,7 +568,7 @@ theorem _root_.IsOpen.exists_lt_isClosed [WeaklyRegular μ] ⦃U : Set α⦄ (hU
 
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
 theorem _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
-    [WeaklyRegular μ] : μ U = ⨆ (F) (_h : F ⊆ U) (_h : IsClosed F), μ F :=
+    [WeaklyRegular μ] : μ U = ⨆ (F) (_ : F ⊆ U) (_ : IsClosed F), μ F :=
   WeaklyRegular.innerRegular.measure_eq_iSup hU
 #align is_open.measure_eq_supr_is_closed IsOpen.measure_eq_iSup_isClosed
 
@@ -607,7 +607,7 @@ theorem _root_.MeasurableSet.exists_lt_isClosed_of_ne_top [WeaklyRegular μ] ⦃
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
 inside by closed sets. -/
 theorem _root_.MeasurableSet.measure_eq_iSup_isClosed_of_ne_top [WeaklyRegular μ] ⦃A : Set α⦄
-    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_h : K ⊆ A) (_h : IsClosed K), μ K :=
+    (hA : MeasurableSet A) (h'A : μ A ≠ ∞) : μ A = ⨆ (K) (_ : K ⊆ A) (_ : IsClosed K), μ K :=
   innerRegular_measurable.measure_eq_iSup ⟨hA, h'A⟩
 #align measurable_set.measure_eq_supr_is_closed_of_ne_top MeasurableSet.measure_eq_iSup_isClosed_of_ne_top
 

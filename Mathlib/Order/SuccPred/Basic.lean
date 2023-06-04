@@ -574,7 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [SuccOrder α]
 
-theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
+theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
   refine' le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) _
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
@@ -922,7 +922,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [PredOrder α]
 
-theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
+theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
   refine' le_antisymm _ (iSup_le fun b => iSup_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]

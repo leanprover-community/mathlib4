@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 
 ! This file was ported from Lean 3 source module analysis.special_functions.exp_deriv
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
+! leanprover-community/mathlib commit 6a5c85000ab93fe5dcfdf620676f614ba8e18c26
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,8 +61,8 @@ theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
-  apply contDiff_all_iff_nat.2
-  intro n
+  -- porting note: added `@` due to `∀ {n}` weirdness above
+  refine' @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
     · exact contDiff_zero.2 continuous_exp
