@@ -400,6 +400,10 @@ theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
 
+@[simp]
+theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
+  toNNReal_coe_nat n
+
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
   GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>

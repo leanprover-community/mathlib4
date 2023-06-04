@@ -172,7 +172,7 @@ theorem add_haar_submodule {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ 
     SetLike.mem_coe]
   intro y hym hyn
   have A : (c ^ n - c ^ m) • x ∈ s := by
-    convert s.sub_mem hym hyn
+    convert s.sub_mem hym hyn using 1
     simp only [sub_smul, neg_sub_neg, add_sub_add_right_eq_sub]
   have H : c ^ n - c ^ m ≠ 0 := by
     simpa only [sub_eq_zero, Ne.def] using (strictAnti_pow cpos cone).injective.ne hmn.symm
@@ -428,8 +428,8 @@ theorem add_haar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
 theorem add_haar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
   rcases LE.le.eq_or_lt hr with (h | h)
-  · simp only [← h, zero_pow finrank_pos, measure_empty, zero_mul, ENNReal.ofReal_zero,
-      ball_zero]
+  · simp only [← h, zero_pow (finrank_pos (K := ℝ) (V := E)), measure_empty, zero_mul,
+      ENNReal.ofReal_zero, ball_zero]
   · exact add_haar_ball_mul_of_pos μ x h s
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.add_haar_ball_mul
 
@@ -463,9 +463,9 @@ theorem add_haar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
 theorem add_haar_closed_unit_ball_eq_add_haar_unit_ball :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
-  have A :
-    Tendsto (fun r : ℝ => ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall (0 : E) 1)) (𝓝[<] 1)
-      (𝓝 (ENNReal.ofReal (1 ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
+  have A : Tendsto
+      (fun r : ℝ => ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall (0 : E) 1)) (𝓝[<] 1)
+        (𝓝 (ENNReal.ofReal ((1 : ℝ) ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
     refine' ENNReal.Tendsto.mul _ (by simp) tendsto_const_nhds (by simp)
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
   simp only [one_pow, one_mul, ENNReal.ofReal_one] at A 
@@ -506,13 +506,11 @@ theorem add_haar_sphere [Nontrivial E] (x : E) (r : ℝ) : μ (sphere x r) = 0 :
 theorem add_haar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 0) (x y : E)
     (s t : Set E) : μ ({x} + r • s) / μ ({y} + r • t) = μ s / μ t :=
   calc
-    μ ({x} + r • s) / μ ({y} + r • t) =
-        ENNReal.ofReal (|r| ^ finrank ℝ E) * μ s * (ENNReal.ofReal (|r| ^ finrank ℝ E) * μ t)⁻¹ :=
-      by
+    μ ({x} + r • s) / μ ({y} + r • t) = ENNReal.ofReal (|r| ^ finrank ℝ E) * μ s *
+        (ENNReal.ofReal (|r| ^ finrank ℝ E) * μ t)⁻¹ := by
       simp only [div_eq_mul_inv, add_haar_smul, image_add_left, measure_preimage_add, abs_pow,
         singleton_add]
-    _ =
-        ENNReal.ofReal (|r| ^ finrank ℝ E) * (ENNReal.ofReal (|r| ^ finrank ℝ E))⁻¹ *
+    _ = ENNReal.ofReal (|r| ^ finrank ℝ E) * (ENNReal.ofReal (|r| ^ finrank ℝ E))⁻¹ *
           (μ s * (μ t)⁻¹) := by
       rw [ENNReal.mul_inv]
       · ring
@@ -530,7 +528,7 @@ instance (priority := 100) isUnifLocDoublingMeasureOfIsAddHaarMeasure :
   filter_upwards [self_mem_nhdsWithin] with r hr x
   rw [add_haar_closedBall_mul μ x zero_le_two (le_of_lt hr), add_haar_closedBall_center μ x,
     ENNReal.ofReal, Real.toNNReal_pow zero_le_two]
-  simp only [Real.toNNReal_bit0, Real.toNNReal_one, le_refl]
+  simp only [Real.toNNReal_ofNat, le_refl]
 #align measure_theory.measure.is_unif_loc_doubling_measure_of_is_add_haar_measure MeasureTheory.Measure.isUnifLocDoublingMeasureOfIsAddHaarMeasure
 
 section
