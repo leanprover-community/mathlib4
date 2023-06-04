@@ -8,8 +8,8 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Braided
-import Mathbin.Algebra.Category.Module.Monoidal.Basic
+import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.Algebra.Category.Module.Monoidal.Basic
 
 /-!
 # The symmetric monoidal structure on `Module R`.
@@ -37,8 +37,7 @@ namespace MonoidalCategory
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
-    (f ⊗ g) ≫ (Y₁.braiding Y₂).Hom = (X₁.braiding X₂).Hom ≫ (g ⊗ f) :=
-  by
+    (f ⊗ g) ≫ (Y₁.braiding Y₂).Hom = (X₁.braiding X₂).Hom ≫ (g ⊗ f) := by
   apply TensorProduct.ext'
   intro x y
   rfl
@@ -49,8 +48,7 @@ theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ �
 @[simp]
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).Hom ≫ (braiding X _).Hom ≫ (α_ Y Z X).Hom =
-      ((braiding X Y).Hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).Hom ≫ (𝟙 Y ⊗ (braiding X Z).Hom) :=
-  by
+      ((braiding X Y).Hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).Hom ≫ (𝟙 Y ⊗ (braiding X Z).Hom) := by
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -61,8 +59,7 @@ theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
 @[simp]
 theorem hexagon_reverse (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).inv ≫ (braiding _ Z).Hom ≫ (α_ Z X Y).inv =
-      (𝟙 X ⊗ (Y.braiding Z).Hom) ≫ (α_ X Z Y).inv ≫ ((X.braiding Z).Hom ⊗ 𝟙 Y) :=
-  by
+      (𝟙 X ⊗ (Y.braiding Z).Hom) ≫ (α_ X Z Y).inv ≫ ((X.braiding Z).Hom ⊗ 𝟙 Y) := by
   apply (cancel_epi (α_ X Y Z).Hom).1
   apply TensorProduct.ext_threefold
   intro x y z
@@ -72,8 +69,7 @@ theorem hexagon_reverse (X Y Z : ModuleCat.{u} R) :
 attribute [local ext] TensorProduct.ext
 
 /-- The symmetric monoidal structure on `Module R`. -/
-instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R)
-    where
+instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
   braiding_naturality' X₁ X₂ Y₁ Y₂ f g := braiding_naturality f g
   hexagon_forward' := hexagon_forward
