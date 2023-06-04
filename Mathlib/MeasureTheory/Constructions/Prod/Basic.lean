@@ -361,6 +361,12 @@ instance prod.instIsOpenPosMeasure {X Y : Type _} [TopologicalSpace X] [Topologi
   · exact v_open.measure_pos ν ⟨y, yv⟩
 #align measure_theory.measure.prod.is_open_pos_measure MeasureTheory.Measure.prod.instIsOpenPosMeasure
 
+instance {X Y : Type _}
+    [TopologicalSpace X] [MeasureSpace X] [IsOpenPosMeasure (volume : Measure X)]
+    [TopologicalSpace Y] [MeasureSpace Y] [IsOpenPosMeasure (volume : Measure Y)]
+    [SigmaFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
+  prod.instIsOpenPosMeasure
+
 instance prod.instIsFiniteMeasure {α β : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     IsFiniteMeasure (μ.prod ν) := by
@@ -369,11 +375,20 @@ instance prod.instIsFiniteMeasure {α β : Type _} {mα : MeasurableSpace α} {m
   exact mul_lt_top (measure_lt_top _ _).ne (measure_lt_top _ _).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure MeasureTheory.Measure.prod.instIsFiniteMeasure
 
+instance {α β : Type _} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
+    [IsFiniteMeasure (volume : Measure β)] : IsFiniteMeasure (volume : Measure (α × β)) :=
+  prod.instIsFiniteMeasure _ _
+
 instance prod.instIsProbabilityMeasure {α β : Type _} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] : IsProbabilityMeasure (μ.prod ν) :=
   ⟨by rw [← univ_prod_univ, prod_prod, measure_univ, measure_univ, mul_one]⟩
 #align measure_theory.measure.prod.measure_theory.is_probability_measure MeasureTheory.Measure.prod.instIsProbabilityMeasure
+
+instance {α β : Type _} [MeasureSpace α] [MeasureSpace β]
+    [IsProbabilityMeasure (volume : Measure α)] [IsProbabilityMeasure (volume : Measure β)] :
+    IsProbabilityMeasure (volume : Measure (α × β)) :=
+  prod.instIsProbabilityMeasure _ _
 
 instance prod.instIsFiniteMeasureOnCompacts {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β)
@@ -391,6 +406,12 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type _} [TopologicalSpace �
     mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
       (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
+
+instance {X Y : Type _}
+    [TopologicalSpace X] [MeasureSpace X] [IsFiniteMeasureOnCompacts (volume : Measure X)]
+    [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)]
+    [SigmaFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
+  prod.instIsFiniteMeasureOnCompacts _ _
 
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
@@ -459,6 +480,10 @@ variable [SigmaFinite μ]
 instance prod.instSigmaFinite : SigmaFinite (μ.prod ν) :=
   (μ.toFiniteSpanningSetsIn.prod ν.toFiniteSpanningSetsIn).sigmaFinite
 #align measure_theory.measure.prod.sigma_finite MeasureTheory.Measure.prod.instSigmaFinite
+
+instance {α β} [MeasureSpace α] [SigmaFinite (volume : Measure α)]
+    [MeasureSpace β] [SigmaFinite (volume : Measure β)] : SigmaFinite (volume : Measure (α × β)) :=
+  prod.instSigmaFinite
 
 /-- A measure on a product space equals the product measure if they are equal on rectangles
   with as sides sets that generate the corresponding σ-algebras. -/
