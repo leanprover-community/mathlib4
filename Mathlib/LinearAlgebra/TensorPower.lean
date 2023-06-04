@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.PiTensorProduct
-import Mathbin.Logic.Equiv.Fin
-import Mathbin.Algebra.DirectSum.Algebra
+import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Tensor power of a semimodule over a commutative semirings
@@ -56,8 +56,7 @@ are equal after a canonical reindexing. -/
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type _} {ι : ιι → Type _} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] i : ι ii, M} (h : a.fst = b.fst),
       reindex R M (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
-  | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R M _ a = b) =>
-    by
+  | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R M _ a = b) => by
     subst hi
     simpa using h
 #align pi_tensor_product.graded_monoid_eq_of_reindex_cast PiTensorProduct.gradedMonoid_eq_of_reindex_cast
@@ -145,16 +144,14 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : (⨂[R]^i) M) :
 
 @[ext]
 theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] i : Fin n, M} (h : a.fst = b.fst)
-    (h2 : cast R M h a.snd = b.snd) : a = b :=
-  by
+    (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine' graded_monoid_eq_of_reindex_cast h _
   rw [cast] at h2 
   rw [← Fin.cast_to_equiv, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
 
 -- named to match `fin.cast_eq_cast`
-theorem cast_eq_cast {i j} (h : i = j) : ⇑(cast R M h) = cast (congr_arg _ h) :=
-  by
+theorem cast_eq_cast {i j} (h : i = j) : ⇑(cast R M h) = cast (congr_arg _ h) := by
   subst h
   rw [cast_refl]
   rfl
@@ -165,8 +162,7 @@ variable (R)
 include R
 
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
-    tprod R a ₜ* tprod R b = tprod R (Fin.append a b) :=
-  by
+    tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
   dsimp [ghas_mul_def, MulEquiv]
   rw [tmul_equiv_apply R M a b]
   refine' (reindex_tprod _ _).trans _
@@ -180,8 +176,7 @@ omit R
 
 variable {R}
 
-theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :=
-  by
+theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [ghas_mul_def, ghas_one_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
   · dsimp only at a 
@@ -194,8 +189,7 @@ theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a
   · rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
 #align tensor_power.one_mul TensorPower.one_mul
 
-theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :=
-  by
+theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
   rw [ghas_mul_def, ghas_one_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
   · dsimp only at a 
@@ -209,8 +203,7 @@ theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a
 #align tensor_power.mul_one TensorPower.mul_one
 
 theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R]^nc) M) :
-    cast R M (add_assoc _ _ _) (a ₜ* b ₜ* c) = a ₜ* (b ₜ* c) :=
-  by
+    cast R M (add_assoc _ _ _) (a ₜ* b ₜ* c) = a ₜ* (b ₜ* c) := by
   let mul : ∀ n m : ℕ, (⨂[R]^n) M →ₗ[R] (⨂[R]^m) M →ₗ[R] (⨂[R]^(n + m)) M := fun n m =>
     (TensorProduct.mk R _ _).compr₂ ↑(MulEquiv : _ ≃ₗ[R] (⨂[R]^(n + m)) M)
   -- replace `a`, `b`, `c` with `tprod R a`, `tprod R b`, `tprod R c`
@@ -269,8 +262,7 @@ theorem mul_algebraMap₀ {n} (r : R) (a : (⨂[R]^n) M) :
 #align tensor_power.mul_algebra_map₀ TensorPower.mul_algebraMap₀
 
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
-    cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) :=
-  by
+    cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) := by
   rw [← smul_eq_mul, LinearEquiv.map_smul]
   exact algebra_map₀_mul r (@algebra_map₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
@@ -291,8 +283,7 @@ example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 /-- The tensor powers form a graded algebra.
 
 Note that this instance implies `algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `direct_sum.algebra`. -/
-instance galgebra : DirectSum.GAlgebra R fun i => (⨂[R]^i) M
-    where
+instance galgebra : DirectSum.GAlgebra R fun i => (⨂[R]^i) M where
   toFun := (algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M).toLinearMap.toAddMonoidHom
   map_one := algebraMap₀_one
   map_mul r s :=
