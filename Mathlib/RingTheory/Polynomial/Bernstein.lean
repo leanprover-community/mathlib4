@@ -308,8 +308,8 @@ open Polynomial
 
 open MvPolynomial hiding X
 
-theorem sum_smul (n : ℕ) : (∑ ν in Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X :=
-  by
+theorem sum_smul (n : ℕ) :
+    (∑ ν in Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
   -- We'll work in `mv_polynomial bool R`.
