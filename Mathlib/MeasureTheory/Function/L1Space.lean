@@ -177,7 +177,8 @@ theorem hasFiniteIntegral_const_iff {c : β} :
     or_iff_not_imp_left]
 #align measure_theory.has_finite_integral_const_iff MeasureTheory.hasFiniteIntegral_const_iff
 
-theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) : HasFiniteIntegral (fun _ : α => c) μ :=
+theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
+    HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 (Or.inr <| measure_lt_top _ _)
 #align measure_theory.has_finite_integral_const MeasureTheory.hasFiniteIntegral_const
 

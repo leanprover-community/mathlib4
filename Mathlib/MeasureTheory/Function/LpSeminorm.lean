@@ -1105,8 +1105,8 @@ theorem snorm'_le_snormEssSup (hq_pos : 0 < q) {f : α → F} [IsProbabilityMeas
   le_trans (snorm'_le_snormEssSup_mul_rpow_measure_univ hq_pos) (le_of_eq (by simp [measure_univ]))
 #align measure_theory.snorm'_le_snorm_ess_sup MeasureTheory.snorm'_le_snormEssSup
 
-theorem snorm_le_snorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ] {f : α → E}
-    (hf : AEStronglyMeasurable f μ) : snorm f p μ ≤ snorm f q μ :=
+theorem snorm_le_snorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ]
+    {f : α → E} (hf : AEStronglyMeasurable f μ) : snorm f p μ ≤ snorm f q μ :=
   (snorm_le_snorm_mul_rpow_measure_univ hpq hf).trans (le_of_eq (by simp [measure_univ]))
 #align measure_theory.snorm_le_snorm_of_exponent_le MeasureTheory.snorm_le_snorm_of_exponent_le
 

@@ -442,8 +442,8 @@ theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] 
 
 -- Without this lemma, `singularPart_neg` in `MeasureTheory.Decomposition.Lebesgue` is
 -- extremely slow
-theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ = ν) :
-    μ.toSignedMeasure = ν.toSignedMeasure := by
+theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
 #align measure_theory.measure.to_signed_measure_congr MeasureTheory.Measure.toSignedMeasure_congr
 
@@ -516,8 +516,8 @@ theorem toEnnrealVectorMeasure_add (μ ν : Measure α) :
     toEnnrealVectorMeasure_apply_measurable hi, toEnnrealVectorMeasure_apply_measurable hi]
 #align measure_theory.measure.to_ennreal_vector_measure_add MeasureTheory.Measure.toEnnrealVectorMeasure_add
 
-theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν] {i : Set α}
-    (hi : MeasurableSet i) :
+theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    {i : Set α} (hi : MeasurableSet i) :
     (μ.toSignedMeasure - ν.toSignedMeasure) i = (μ i).toReal - (ν i).toReal := by
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
     Measure.toSignedMeasure_apply_measurable hi, sub_eq_add_neg]

@@ -684,14 +684,16 @@ namespace Measure
 /-- A measure on an additive group is an additive Haar measure if it is left-invariant, and gives
 finite mass to compact sets and positive mass to open sets. -/
 class IsAddHaarMeasure {G : Type _} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ : Prop
+  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
+  Prop
 #align measure_theory.measure.is_add_haar_measure MeasureTheory.Measure.IsAddHaarMeasure
 
 /-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to compact
 sets and positive mass to open sets. -/
 @[to_additive existing]
 class IsHaarMeasure {G : Type _} [Group G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ : Prop
+  (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
+  Prop
 #align measure_theory.measure.is_haar_measure MeasureTheory.Measure.IsHaarMeasure
 
 /-- Record that a Haar measure on a locally compact space is locally finite. This is needed as the

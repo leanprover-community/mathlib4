@@ -3919,8 +3919,9 @@ instance locallyIsFiniteMeasureSmulNnreal [TopologicalSpace α] (μ : Measure α
     ENNReal.coe_ofNNRealHom, Ne.def, not_false_iff]
 #align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.locallyIsFiniteMeasureSmulNnreal
 
-protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α] (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] : TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
+protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
+    (μ : Measure α) [IsLocallyFiniteMeasure μ] :
+    TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
   refine' TopologicalSpace.isTopologicalBasis_of_open_of_nhds (fun s hs => hs.1) _
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
