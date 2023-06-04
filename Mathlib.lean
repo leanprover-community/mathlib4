@@ -479,6 +479,7 @@ import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Between
@@ -607,6 +608,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
