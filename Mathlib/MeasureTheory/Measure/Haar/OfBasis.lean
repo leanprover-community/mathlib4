@@ -238,10 +238,10 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 #align basis.add_haar Basis.addHaar
 
--- Porting note: `is_add_haar_measure` is now called `AddHaarMeasure` in Mathlib4
-instance AddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : AddHaarMeasure b.addHaar := by
+-- Porting note: `is_add_haar_measure` is now called `IsAddHaarMeasure` in Mathlib4
+instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
   rw [Basis.addHaar]; exact Measure.addHaarMeasure_addHaarMeasure _
-#align is_add_haar_measure_basis_add_haar AddHaarMeasure_basis_addHaar
+#align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self

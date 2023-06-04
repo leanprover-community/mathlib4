@@ -396,7 +396,7 @@ instance regular [LocallyCompactSpace G] : μ.measure.Regular := by
     rcases hr with ⟨U, hUo, hAU, hr⟩
     rw [← μ.outerMeasure_of_isOpen U hUo, ← μ.measure_apply hUo.measurableSet] at hr
     exact ⟨U, hAU, hUo, hr⟩
-  have : FiniteMeasureOnCompacts μ.measure := by
+  have : IsFiniteMeasureOnCompacts μ.measure := by
     refine' ⟨fun K hK => _⟩
     rw [measure_apply _ hK.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK

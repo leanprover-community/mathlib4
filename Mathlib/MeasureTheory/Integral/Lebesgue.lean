@@ -186,13 +186,13 @@ theorem set_lintegral_const (s : Set α) (c : ℝ≥0∞) : (∫⁻ _a in s, c �
 theorem set_lintegral_one (s) : (∫⁻ _a in s, 1 ∂μ) = μ s := by rw [set_lintegral_const, one_mul]
 #align measure_theory.set_lintegral_one MeasureTheory.set_lintegral_one
 
-theorem set_lintegral_const_lt_top [FiniteMeasure μ] (s : Set α) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+theorem set_lintegral_const_lt_top [IsFiniteMeasure μ] (s : Set α) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     (∫⁻ _a in s, c ∂μ) < ∞ := by
   rw [lintegral_const]
   exact ENNReal.mul_lt_top hc (measure_ne_top (μ.restrict s) univ)
 #align measure_theory.set_lintegral_const_lt_top MeasureTheory.set_lintegral_const_lt_top
 
-theorem lintegral_const_lt_top [FiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : (∫⁻ _a, c ∂μ) < ∞ := by
+theorem lintegral_const_lt_top [IsFiniteMeasure μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : (∫⁻ _a, c ∂μ) < ∞ := by
   simpa only [Measure.restrict_univ] using set_lintegral_const_lt_top (univ : Set α) hc
 #align measure_theory.lintegral_const_lt_top MeasureTheory.lintegral_const_lt_top
 
@@ -1529,14 +1529,14 @@ theorem set_lintegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurable
   set_lintegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.set_lintegral_lt_top_of_isCompact
 
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type _}
-    [MeasurableSpace α] (μ : Measure α) [μ_fin : FiniteMeasure μ] {f : α → ℝ≥0∞}
+theorem _root_.IsIsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type _}
+    [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : (∫⁻ x, f x ∂μ) < ∞ := by
   cases' f_bdd with c hc
   apply lt_of_le_of_lt (@lintegral_mono _ _ μ _ _ hc)
   rw [lintegral_const]
   exact ENNReal.mul_lt_top ENNReal.coe_lt_top.ne μ_fin.measure_univ_lt_top.ne
-#align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
+#align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsIsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
 
 /-- Given a measure `μ : Measure α` and a function `f : α → ℝ≥0∞`, `μ.withDensity f` is the
 measure such that for a measurable set `s` we have `μ.withDensity f s = ∫⁻ a in s, f a ∂μ`. -/
@@ -1599,11 +1599,11 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
   rfl
 #align measure_theory.with_density_smul' MeasureTheory.withDensity_smul'
 
-theorem finiteMeasure_withDensity {f : α → ℝ≥0∞} (hf : (∫⁻ a, f a ∂μ) ≠ ∞) :
-    FiniteMeasure (μ.withDensity f) :=
+theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : (∫⁻ a, f a ∂μ) ≠ ∞) :
+    IsFiniteMeasure (μ.withDensity f) :=
   { measure_univ_lt_top := by
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ, lt_top_iff_ne_top] }
-#align measure_theory.is_finite_measure_with_density MeasureTheory.finiteMeasure_withDensity
+#align measure_theory.is_finite_measure_with_density MeasureTheory.isFiniteMeasure_withDensity
 
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
@@ -2098,12 +2098,12 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
 #align measure_theory.exists_lt_lintegral_simple_func_of_lt_lintegral MeasureTheory.exists_lt_lintegral_simpleFunc_of_lt_lintegral
 
 /-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_finiteMeasure {m : MeasurableSpace α} (μ : Measure α)
-    [SigmaFinite μ] : ∃ ν : Measure α, FiniteMeasure ν ∧ μ ≪ ν := by
+theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
+    [SigmaFinite μ] : ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
   obtain ⟨g, gpos, gmeas, hg⟩ :
     ∃ g : α → ℝ≥0, (∀ x : α, 0 < g x) ∧ Measurable g ∧ (∫⁻ x : α, ↑(g x) ∂μ) < 1 :=
     exists_pos_lintegral_lt_of_sigmaFinite μ one_ne_zero
-  refine' ⟨μ.withDensity fun x => g x, finiteMeasure_withDensity hg.ne_top, _⟩
+  refine' ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, _⟩
   have : μ = (μ.withDensity fun x => g x).withDensity fun x => (g x)⁻¹ := by
     have A : ((fun x : α => (g x : ℝ≥0∞)) * fun x : α => (g x : ℝ≥0∞)⁻¹) = 1 := by
       ext1 x
@@ -2112,7 +2112,7 @@ theorem exists_absolutelyContinuous_finiteMeasure {m : MeasurableSpace α} (μ :
       withDensity_one]
   nth_rw 1 [this]
   exact withDensity_absolutelyContinuous _ _
-#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_finiteMeasure
+#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
 end SigmaFinite
 
