@@ -347,6 +347,7 @@ partial def _root_.Lean.MVarId.relCongr
 
 open Elab Tactic
 
+-- TODO remove this after https://github.com/leanprover/std4/pull/137 is merged
 def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   let .true ← isDefEq (← g.getType) (← inferType e) | failure
   g.checkNotAssigned `myExact
