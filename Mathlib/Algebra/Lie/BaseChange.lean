@@ -18,8 +18,8 @@ Lie algebras have a well-behaved theory of extension and restriction of scalars.
 
 ## Main definitions
 
- * `lie_algebra.extend_scalars.lie_algebra`
- * `lie_algebra.restrict_scalars.lie_algebra`
+ * `LieAlgebra.ExtendScalars.lieAlgebra`
+ * `LieAlgebra.RestrictScalars.lieAlgebra`
 
 ## Tags
 
@@ -65,7 +65,7 @@ theorem bracket_tmul (s t : A) (x y : L) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = 
 
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
-  apply x.induction_on
+  refine' x.induction_on _ _ _
   · simp only [LinearMap.map_zero, eq_self_iff_true, LinearMap.zero_apply]
   · intro a l
     simp only [bracket'_tmul, TensorProduct.tmul_zero, eq_self_iff_true, lie_self]
@@ -73,9 +73,9 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     suffices bracket' R A L z₁ z₂ + bracket' R A L z₂ z₁ = 0 by
       rw [LinearMap.map_add, LinearMap.map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
         zero_add, add_zero, add_comm, this]
-    apply z₁.induction_on
+    refine' z₁.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
-    · intro a₁ l₁; apply z₂.induction_on
+    · intro a₁ l₁; refine' z₂.induction_on _ _ _
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
@@ -85,16 +85,17 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     · intro y₁ y₂ hy₁ hy₂
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, LinearMap.map_add]
 
-private theorem bracket_leibniz_lie (x y z : A ⊗[R] L) : ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ :=
-  by
+set_option maxHeartbeats 1500000 in
+private theorem bracket_leibniz_lie (x y z : A ⊗[R] L) :
+    ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]
-  apply x.induction_on
+  refine' x.induction_on _ _ _
   · simp only [LinearMap.map_zero, add_zero, eq_self_iff_true, LinearMap.zero_apply]
   · intro a₁ l₁
-    apply y.induction_on
+    refine' y.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, eq_self_iff_true, LinearMap.zero_apply]
     · intro a₂ l₂
-      apply z.induction_on
+      refine' z.induction_on _ _ _
       · simp only [LinearMap.map_zero, add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
@@ -112,9 +113,9 @@ instance : LieRing (A ⊗[R] L) where
   leibniz_lie := bracket_leibniz_lie R A L
 
 private theorem bracket_lie_smul (a : A) (x y : A ⊗[R] L) : ⁅x, a • y⁆ = a • ⁅x, y⁆ := by
-  apply x.induction_on
+  refine' x.induction_on _ _ _
   · simp only [zero_lie, smul_zero]
-  · intro a₁ l₁; apply y.induction_on
+  · intro a₁ l₁; refine' y.induction_on _ _ _
     · simp only [lie_zero, smul_zero]
     · intro a₂ l₂
       simp only [bracket_def, bracket', TensorProduct.smul_tmul', mul_left_comm a₁ a a₂,
@@ -137,21 +138,16 @@ open RestrictScalars
 
 variable [h : LieRing L]
 
-include h
-
 instance : LieRing (RestrictScalars R A L) :=
   h
 
 variable [CommRing A] [LieAlgebra A L]
 
-instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L)
-    where lie_smul t x y :=
-    (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
-        (RestrictScalars.addEquiv R A L y) :
-      _)
+instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
+  lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
+    (RestrictScalars.addEquiv R A L y) : _)
 #align lie_algebra.restrict_scalars.lie_algebra LieAlgebra.RestrictScalars.lieAlgebra
 
 end RestrictScalars
 
 end LieAlgebra
-
