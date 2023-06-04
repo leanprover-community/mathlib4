@@ -925,8 +925,7 @@ end Order
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
     let step : ∀ (c : α),
-      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b :=
-    by
+      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b := by
       intro c hc
       let ⟨d, hd⟩ := (Quotient.exact hc).symm
       exact ⟨↑d * c,
@@ -1231,5 +1230,4 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- assert_not_exists multiset
+assert_not_exists Multiset

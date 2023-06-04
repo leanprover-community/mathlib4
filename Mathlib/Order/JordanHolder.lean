@@ -20,7 +20,7 @@ import Mathlib.Data.Fintype.Card
 This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
 this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
 `Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
-seperately for both groups and modules, the proof in this file can be applied to both.
+separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
@@ -414,8 +414,7 @@ theorem bot_eraseTop (s : CompositionSeries X) : s.eraseTop.bot = s.bot :=
 theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ s.top) (hxs : x ∈ s) :
     x ∈ s.eraseTop := by
   rcases hxs with ⟨i, rfl⟩
-  have hi : (i : ℕ) < (s.length - 1).succ :=
-    by
+  have hi : (i : ℕ) < (s.length - 1).succ := by
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
   refine' ⟨Fin.castSucc i, _⟩
@@ -549,9 +548,9 @@ def snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) : Composit
   series := Fin.snoc s x
   step' i := by
     refine' Fin.lastCases _ _ i
-    · rwa [Fin.snoc_cast_succ, Fin.succ_last, Fin.snoc_last, ← top]
+    · rwa [Fin.snoc_castSucc, Fin.succ_last, Fin.snoc_last, ← top]
     · intro i
-      rw [Fin.snoc_cast_succ, ← Fin.castSucc_fin_succ, Fin.snoc_cast_succ]
+      rw [Fin.snoc_castSucc, ← Fin.castSucc_fin_succ, Fin.snoc_castSucc]
       exact s.step _
 #align composition_series.snoc CompositionSeries.snoc
 
@@ -570,7 +569,7 @@ theorem snoc_last (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
 @[simp]
 theorem snoc_castSucc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x)
     (i : Fin (s.length + 1)) : snoc s x hsat (Fin.castSucc i) = s i :=
-  Fin.snoc_cast_succ (α := fun _ => X) _ _ _
+  Fin.snoc_castSucc (α := fun _ => X) _ _ _
 #align composition_series.snoc_cast_succ CompositionSeries.snoc_castSucc
 
 @[simp]
@@ -773,11 +772,8 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
           (isMaximal_eraseTop_top h0s) hm
       use snoc t x hmtx
       refine' ⟨by simp [htb], by simp [htl], by simp, _⟩
-      have :
-        s.Equivalent
-          ((snoc t s.eraseTop.top (htt.symm ▸ imxs)).snoc s.top
-            (by simpa using isMaximal_eraseTop_top h0s)) :=
-        by
+      have : s.Equivalent ((snoc t s.eraseTop.top (htt.symm ▸ imxs)).snoc s.top
+          (by simpa using isMaximal_eraseTop_top h0s)) := by
         conv_lhs => rw [eq_snoc_eraseTop h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseTop_top h0s).iso_refl)
       refine' this.trans _

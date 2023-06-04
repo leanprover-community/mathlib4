@@ -38,7 +38,7 @@ namespace List
 
 variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
-/-! ### `disjoint` -/
+/-! ### `Disjoint` -/
 
 
 section Disjoint
@@ -266,8 +266,7 @@ theorem count_bagInter {a : α} :
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp
-  | b :: l₁, l₂ =>
-    by
+  | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂ <;> simp only [h, cons_bagInter_of_pos, cons_bagInter_of_neg, not_false_iff]
     · exact (bagInter_sublist_left _ _).cons_cons _
     · apply sublist_cons_of_sublist

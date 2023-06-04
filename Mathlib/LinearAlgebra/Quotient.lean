@@ -19,11 +19,6 @@ import Mathlib.LinearAlgebra.Span
 
 -/
 
-section deinstance_nonassocring
--- porting note: because we're missing lean4#2074 we need this, see:
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearAlgebra.2ESpan.20!4.232248
-attribute [-instance] Ring.toNonAssocRing
-
 -- For most of this file we work over a noncommutative ring
 section Ring
 
@@ -37,7 +32,7 @@ open LinearMap QuotientAddGroup
 
 /-- The equivalence relation associated to a submodule `p`, defined by `x ≈ y` iff `-x + y ∈ p`.
 
-Note this is equivalent to `y - x ∈ p`, but defined this way to be be defeq to the `add_subgroup`
+Note this is equivalent to `y - x ∈ p`, but defined this way to be be defeq to the `AddSubgroup`
 version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
@@ -91,8 +86,11 @@ protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y �
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 #align submodule.quotient.eq Submodule.Quotient.eq
 
-instance : Zero (M ⧸ p) :=
-  ⟨mk 0⟩
+instance : Zero (M ⧸ p) where
+  -- Use Quotient.mk'' instead of mk here because mk is not reducible.
+  -- This would lead to non-defeq diamonds.
+  -- See also the same comment at the One instance for Con.
+  zero := Quotient.mk'' 0
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
@@ -223,7 +221,7 @@ instance module (P : Submodule R M) : Module R (M ⧸ P) :=
 variable (S)
 
 /-- The quotient of `P` as an `S`-submodule is the same as the quotient of `P` as an `R`-submodule,
-where `P : submodule R M`.
+where `P : Submodule R M`.
 -/
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
@@ -291,8 +289,7 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
 #align submodule.subsingleton_quotient_iff_eq_top Submodule.subsingleton_quotient_iff_eq_top
 
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
-   by
+  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h), by
     rintro rfl
     exact ⟨QuotientTop.unique⟩⟩
 #align submodule.unique_quotient_iff_eq_top Submodule.unique_quotient_iff_eq_top
@@ -338,7 +335,7 @@ end
 
 variable {R₂ M₂ : Type _} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
 
-/-- Two `linear_map`s from a quotient module are equal if their compositions with
+/-- Two `LinearMap`s from a quotient module are equal if their compositions with
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
@@ -510,8 +507,7 @@ theorem comapMkQOrderEmbedding_eq (p' : Submodule R (M ⧸ p)) :
 theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {s : Set M₂} (h₀ : s.Nonempty)
     (h₁ : s ⊆ range f) : span R (f ⁻¹' s) = (span R₂ s).comap f := by
   suffices (span R₂ s).comap f ≤ span R (f ⁻¹' s) by exact le_antisymm (span_preimage_le f s) this
-  have hk : ker f ≤ span R (f ⁻¹' s) :=
-    by
+  have hk : ker f ≤ span R (f ⁻¹' s) := by
     let y := Classical.choose h₀
     have hy : y ∈ s := Classical.choose_spec h₀
     rw [ker_le_iff]
@@ -536,8 +532,7 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
           hx with
     toFun := P.mapQ Q (f : M →ₗ[R] N) fun x hx => hf ▸ Submodule.mem_map_of_mem hx
     invFun :=
-      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx =>
-        by
+      Q.mapQ P (f.symm : N →ₗ[R] M) fun x hx => by
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
@@ -643,9 +638,7 @@ theorem coe_quotEquivOfEqBot_symm (hp : p = ⊥) :
 
 /-- Quotienting by equal submodules gives linearly equivalent quotients. -/
 def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
-  {
-    @Quotient.congr _ _ (quotientRel p) (quotientRel p') (Equiv.refl _) fun a b =>
-      by
+  { @Quotient.congr _ _ (quotientRel p) (quotientRel p') (Equiv.refl _) fun a b => by
       subst h
       rfl with
     map_add' := by
@@ -697,5 +690,3 @@ def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q
 end Submodule
 
 end CommRing
-
-end deinstance_nonassocring

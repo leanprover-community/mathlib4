@@ -189,8 +189,7 @@ protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
 
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F) :
-    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) :=
-  by
+    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
 #align multiset.noncomm_prod_map Multiset.noncommProd_map
@@ -264,8 +263,7 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
 
 @[to_additive (attr := simp)]
 theorem noncommProd_toFinset [DecidableEq α] (l : List α) (f : α → β) (comm) (hl : l.Nodup) :
-    noncommProd l.toFinset f comm = (l.map f).prod :=
-  by
+    noncommProd l.toFinset f comm = (l.map f).prod := by
   rw [← List.dedup_eq_self] at hl
   simp [noncommProd, hl]
 #align finset.noncomm_prod_to_finset Finset.noncommProd_toFinset

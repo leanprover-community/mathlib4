@@ -95,8 +95,8 @@ the domain of `f` is `b`'s relation to the image of `f`.
 Thus, if `a` is not already in `f`, then we can extend `f` by sending `a` to `b`.
 -/
 theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β]
-    (f : PartialIso α β) (a : α) : ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b :=
-  by
+    (f : PartialIso α β) (a : α) :
+    ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b := by
   by_cases h : ∃ b, (a, b) ∈ f.val
   · cases' h with b hb
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩

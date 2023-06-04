@@ -663,8 +663,8 @@ theorem comp_assoc {R : Type _} [CommSemiring R] (φ ψ χ : R[X]) :
 #align polynomial.comp_assoc Polynomial.comp_assoc
 
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
-    coeff (p.comp q) (natDegree p * natDegree q) = leadingCoeff p * leadingCoeff q ^ natDegree p :=
-  by
+    coeff (p.comp q) (natDegree p * natDegree q) =
+    leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
   -- Porting note: `convert` → `refine`
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
@@ -755,7 +755,7 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
 #align polynomial.coe_map_ring_hom Polynomial.coe_mapRingHom
 
--- This is protected to not clash with the global `map_nat_cast`.
+-- This is protected to not clash with the global `map_natCast`.
 @[simp]
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n

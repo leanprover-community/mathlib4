@@ -123,9 +123,7 @@ theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ 
 
 theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
     PreservesMonomorphisms G :=
-  {
-    preserves := fun {X} {Y} f h =>
-      by
+  { preserves := fun {X} {Y} f h => by
       haveI : Mono (F.map f ≫ (α.app Y).hom) := mono_comp _ _
       convert (mono_comp _ _ : Mono ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
@@ -138,9 +136,7 @@ theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
 
 theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (α : F ≅ G) :
     PreservesEpimorphisms G :=
-  {
-    preserves := fun {X} {Y} f h =>
-      by
+  { preserves := fun {X} {Y} f h => by
       haveI : Epi (F.map f ≫ (α.app Y).hom) := epi_comp _ _
       convert (epi_comp _ _ : Epi ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
@@ -153,8 +149,7 @@ theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
 
 theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (α : F ≅ G) :
     ReflectsMonomorphisms G :=
-  {
-    reflects := fun {X} {Y} f h => by
+  { reflects := fun {X} {Y} f h => by
       apply F.mono_of_mono_map
       haveI : Mono (G.map f ≫ (α.app Y).inv) := mono_comp _ _
       convert (mono_comp _ _ : Mono ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
@@ -168,8 +163,7 @@ theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
 
 theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α : F ≅ G) :
     ReflectsEpimorphisms G :=
-  {
-    reflects := fun {X} {Y} f h => by
+  { reflects := fun {X} {Y} f h => by
       apply F.epi_of_epi_map
       haveI : Epi (G.map f ≫ (α.app Y).inv) := epi_comp _ _
       convert (epi_comp _ _ : Epi ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
@@ -183,8 +177,7 @@ theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
 
 theorem preservesEpimorphsisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     PreservesEpimorphisms F :=
-  {
-    preserves := fun {X} {Y} f hf =>
+  { preserves := fun {X} {Y} f hf =>
       ⟨by
         intro Z g h H
         replace H := congr_arg (adj.homEquiv X Z) H
@@ -199,8 +192,7 @@ instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) 
 
 theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     PreservesMonomorphisms G :=
-  {
-    preserves := fun {X} {Y} f hf =>
+  { preserves := fun {X} {Y} f hf =>
       ⟨by
         intro Z g h H
         replace H := congr_arg (adj.homEquiv Z Y).symm H

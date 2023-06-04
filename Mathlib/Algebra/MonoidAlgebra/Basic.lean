@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,8 +33,8 @@ in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
 ```
-polynomial α := add_monoid_algebra ℕ α
-mv_polynomial σ α := add_monoid_algebra (σ →₀ ℕ) α
+Polynomial α := AddMonoidAlgebra ℕ α
+MvPolynomial σ α := AddMonoidAlgebra (σ →₀ ℕ) α
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.
@@ -394,9 +394,8 @@ instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSM
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (MonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
@@ -438,8 +437,8 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ in f.support, ∑ a₂ in g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p in f.support ×ᶠ g.support, F p := Finset.sum_product.symm
-        _ = ∑ p in (f.support ×ᶠ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p in f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p in (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
         _ = ∑ p in s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
           (sum_congr
@@ -448,8 +447,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
               simp only [mem_filter, mem_product, hs, and_comm])
             fun _ _ => rfl)
         _ = ∑ p in s, f p.1 * g p.2 :=
-          sum_subset (filter_subset _ _) fun p hps hp =>
-            by
+          sum_subset (filter_subset _ _) fun p hps hp => by
             simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp⊢
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
@@ -1483,8 +1481,8 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
   Finsupp.distribMulAction G k
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
 
-instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
-    [Nonempty G] : FaithfulSMul R (AddMonoidAlgebra k G) :=
+instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
+    FaithfulSMul R (AddMonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
@@ -1492,18 +1490,17 @@ instance module [Semiring R] [Semiring k] [Module R k] : Module R (AddMonoidAlge
   Finsupp.module G k
 #align add_monoid_algebra.module AddMonoidAlgebra.module
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (AddMonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (AddMonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align add_monoid_algebra.is_scalar_tower AddMonoidAlgebra.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (AddMonoidAlgebra k G) :=
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S (AddMonoidAlgebra k G) :=
   Finsupp.smulCommClass G k
 #align add_monoid_algebra.smul_comm_tower AddMonoidAlgebra.smulCommClass
 
-instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (AddMonoidAlgebra k G) :=
   Finsupp.isCentralScalar G k
 #align add_monoid_algebra.is_central_scalar AddMonoidAlgebra.isCentralScalar
@@ -1703,7 +1700,7 @@ end AddMonoidAlgebra
 We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just contruct the ring isomorphisms using `RingEquiv.refl _`.
+but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
 

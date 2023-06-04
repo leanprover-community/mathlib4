@@ -13,7 +13,6 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Data.Rat.Cast
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Star monoids, rings, and modules
@@ -44,9 +43,8 @@ positive cone which is the closure of the sums of elements `star r * r`. A weake
 advantage of not requiring a topology.
 -/
 
--- Porting note: `assert_not_exists` not implemented yet
---assert_not_exists finset
---assert_not_exists subgroup
+assert_not_exists Finset
+assert_not_exists Subgroup
 
 universe u v
 
@@ -57,6 +55,9 @@ open MulOpposite
 class Star (R : Type u) where
   star : R → R
 #align has_star Star
+
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Star.star
 
 variable {R : Type u}
 
@@ -353,8 +354,6 @@ theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
   star_natCast _
 
 section
--- Porting note: This takes too long
-set_option maxHeartbeats 0
 
 @[simp, norm_cast]
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=

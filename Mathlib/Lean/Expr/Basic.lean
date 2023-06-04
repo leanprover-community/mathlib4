@@ -340,6 +340,30 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   mkDirectProjection e fieldName
 
+/-- Returns true if `e` contains a name `n` where `p n` is true. -/
+def containsConst (e : Expr) (p : Name → Bool) : Bool :=
+  Option.isSome <| e.find? fun | .const n _ => p n | _ => false
+
+/--
+Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
+
+Rewrites with a fresh metavariable as the ambient goal.
+Fails if the rewrite produces any subgoals.
+-/
+def rewrite (e eq : Expr) : MetaM Expr := do
+  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
+    | throwError "Expr.rewrite may not produce subgoals."
+  return eq'
+
+/--
+Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
+
+Rewrites with a fresh metavariable as the ambient goal.
+Fails if the rewrite produces any subgoals.
+-/
+def rewriteType (e eq : Expr) : MetaM Expr := do
+  mkEqMP (← (← inferType e).rewrite eq) e
+
 end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,

@@ -290,13 +290,12 @@ theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) :
 
 @[simp]
 theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
-   (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (F.μ m₁ (𝟙_ M ⊗ m₂)).app X ≫
-   (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (F.μIso (m₁ ⊗ 𝟙_ M) m₂).inv.app X =
-      (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
-        (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) :=
-  by
+    (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (F.μ m₁ (𝟙_ M ⊗ m₂)).app X ≫
+    (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (F.μIso (m₁ ⊗ 𝟙_ M) m₂).inv.app X =
+    (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
+    (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) := by
   rw [← obj_ε_inv_app_assoc, ← Functor.map_comp]
-  congr ; simp
+  congr; simp
 #align category_theory.obj_μ_zero_app CategoryTheory.obj_μ_zero_app
 
 /-- If `m ⊗ n ≅ 𝟙_M`, then `F.obj m` is a left inverse of `F.obj n`. -/

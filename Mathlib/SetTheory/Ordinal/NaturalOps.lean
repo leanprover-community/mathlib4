@@ -9,7 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Tactic.SolveByElim
+
 /-!
 # Natural operations on ordinals
 
@@ -271,8 +271,7 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
 #align ordinal.blsub_nadd_of_mono Ordinal.blsub_nadd_of_mono
 
 theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
-  | a, b, c =>
-    by
+  | a, b, c => by
     rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
     · congr <;> ext (d hd) <;> apply nadd_assoc
     · exact fun  _ _ h => nadd_le_nadd_left h a

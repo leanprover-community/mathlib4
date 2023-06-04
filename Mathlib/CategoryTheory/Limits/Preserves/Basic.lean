@@ -800,13 +800,10 @@ def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w,
 /-- A fully faithful functor reflects colimits. -/
 def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F
     where reflectsColimitsOfShape {J} 𝒥₁ :=
-    {
-      reflectsColimit := fun {K} =>
-        {
-          reflects := fun {c} t =>
+    { reflectsColimit := fun {K} =>
+        { reflects := fun {c} t =>
             (IsColimit.mkCoconeMorphism fun s =>
-                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <|
-              by
+                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.image_preimage]

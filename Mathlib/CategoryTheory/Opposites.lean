@@ -190,6 +190,8 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ
   map := @fun X Y f => (F.map f.unop).op
 #align category_theory.functor.op CategoryTheory.Functor.op
 
+pp_extended_field_notation op
+
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
@@ -248,6 +250,8 @@ protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D
   map := @fun X Y f => (F.map f.unop).unop
 #align category_theory.functor.left_op CategoryTheory.Functor.leftOp
 
+pp_extended_field_notation Functor.leftOp
+
 /--
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
@@ -258,6 +262,8 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ
   obj X := op (F.obj (op X))
   map := @fun X Y f => (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
+
+pp_extended_field_notation Functor.rightOp
 
 instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
 
@@ -569,13 +575,13 @@ end Equivalence
 adjunctions.
 Note that this (definitionally) gives variants
 ```
-def opEquiv' (A : C) (B : Cᵒᵖ) : (opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
+def opEquiv' (A : C) (B : Cᵒᵖ) : (Opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
 opEquiv _ _
 
-def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ opposite.op B) ≃ (B ⟶ A.unop) :=
+def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ Opposite.op B) ≃ (B ⟶ A.unop) :=
 opEquiv _ _
 
-def opEquiv''' (A B : C) : (opposite.op A ⟶ opposite.op B) ≃ (B ⟶ A) :=
+def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
 opEquiv _ _
 ```
 -/
@@ -599,9 +605,9 @@ instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : D
 /-- The equivalence between isomorphisms of the form `A ≅ B` and `B.unop ≅ A.unop`.
 
 Note this is definitionally the same as the other three variants:
-* `(opposite.op A ≅ B) ≃ (B.unop ≅ A)`
-* `(A ≅ opposite.op B) ≃ (B ≅ A.unop)`
-* `(opposite.op A ≅ opposite.op B) ≃ (B ≅ A)`
+* `(Opposite.op A ≅ B) ≃ (B.unop ≅ A)`
+* `(A ≅ Opposite.op B) ≃ (B ≅ A.unop)`
+* `(Opposite.op A ≅ Opposite.op B) ≃ (B ≅ A)`
 -/
 @[simps]
 def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop)

@@ -660,8 +660,8 @@ theorem isLittleO_sup : f =o[l ⊔ l'] g ↔ f =o[l] g ∧ f =o[l'] g :=
 #align asymptotics.is_o_sup Asymptotics.isLittleO_sup
 
 theorem isBigOWith_insert [TopologicalSpace α] {x : α} {s : Set α} {C : ℝ} {g : α → E} {g' : α → F}
-    (h : ‖g x‖ ≤ C * ‖g' x‖) : IsBigOWith C (𝓝[insert x s] x) g g' ↔ IsBigOWith C (𝓝[s] x) g g' :=
-  by
+    (h : ‖g x‖ ≤ C * ‖g' x‖) : IsBigOWith C (𝓝[insert x s] x) g g' ↔
+    IsBigOWith C (𝓝[s] x) g g' := by
   simp_rw [IsBigOWith_def, nhdsWithin_insert, eventually_sup, eventually_pure, h, true_and_iff]
 #align asymptotics.is_O_with_insert Asymptotics.isBigOWith_insert
 
@@ -1326,8 +1326,8 @@ theorem isLittleO_one_iff : f' =o[l] (fun _x => 1 : α → F) ↔ Tendsto f' l (
 #align asymptotics.is_o_one_iff Asymptotics.isLittleO_one_iff
 
 @[simp]
-theorem isBigO_one_iff : f =O[l] (fun _x => 1 : α → F) ↔ IsBoundedUnder (· ≤ ·) l fun x => ‖f x‖ :=
-  by
+theorem isBigO_one_iff : f =O[l] (fun _x => 1 : α → F) ↔
+    IsBoundedUnder (· ≤ ·) l fun x => ‖f x‖ := by
   simp only [isBigO_iff, norm_one, mul_one]
   rfl
 #align asymptotics.is_O_one_iff Asymptotics.isBigO_one_iff
@@ -1388,9 +1388,8 @@ theorem isBigO_const_of_ne {c : F''} (hc : c ≠ 0) :
   ⟨fun h => h.isBoundedUnder_le, fun h => h.isBigO_const hc⟩
 #align asymptotics.is_O_const_of_ne Asymptotics.isBigO_const_of_ne
 
-theorem isBigO_const_iff {c : F''} :
-    (f'' =O[l] fun _x => c) ↔ (c = 0 → f'' =ᶠ[l] 0) ∧ IsBoundedUnder (· ≤ ·) l fun x => ‖f'' x‖ :=
-  by
+theorem isBigO_const_iff {c : F''} : (f'' =O[l] fun _x => c) ↔
+    (c = 0 → f'' =ᶠ[l] 0) ∧ IsBoundedUnder (· ≤ ·) l fun x => ‖f'' x‖ := by
   refine' ⟨fun h => ⟨fun hc => isBigO_zero_right_iff.1 (by rwa [← hc]), h.isBoundedUnder_le⟩, _⟩
   rintro ⟨hcf, hf⟩
   rcases eq_or_ne c 0 with (hc | hc)
@@ -1983,7 +1982,7 @@ alias isLittleO_iff_exists_eq_mul ↔ IsLittleO.exists_eq_mul _
 
 end ExistsMulEq
 
-/-! ### Miscellanous lemmas -/
+/-! ### Miscellaneous lemmas -/
 
 
 theorem div_isBoundedUnder_of_isBigO {α : Type _} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :

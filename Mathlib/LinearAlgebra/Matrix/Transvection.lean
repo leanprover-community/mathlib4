@@ -611,11 +611,9 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
   refine'
     ⟨L₀.map (sumInl Unit) ++ L₁, L₁' ++ L₀'.map (sumInl Unit),
       Sum.elim D₀ fun _ => M' (inr unit) (inr unit), _⟩
-  suffices
-    (L₀.map (toMatrix ∘ sumInl Unit)).prod ⬝ M' ⬝ (L₀'.map (toMatrix ∘ sumInl Unit)).prod =
-      diagonal (Sum.elim D₀ fun _ => c)
-    by
-      simpa [Matrix.mul_assoc]
+  suffices (L₀.map (toMatrix ∘ sumInl Unit)).prod ⬝ M' ⬝ (L₀'.map (toMatrix ∘ sumInl Unit)).prod =
+      diagonal (Sum.elim D₀ fun _ => c) by
+    simpa [Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
     -- porting note: simplyfied proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]

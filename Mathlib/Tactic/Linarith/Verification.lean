@@ -160,7 +160,7 @@ def addNegEqProofs : List Expr → MetaM (List Expr)
 def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
-  synthesizeUsing q($e = 0) tac
+  synthesizeUsing' q($e = 0) tac
 
 /-! #### The main method -/
 

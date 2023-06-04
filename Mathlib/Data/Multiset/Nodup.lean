@@ -95,8 +95,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nod
 #align multiset.count_eq_one_of_mem Multiset.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
-    count a s = if a ∈ s then 1 else 0 :=
-  by
+    count a s = if a ∈ s then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
   · exact count_eq_zero_of_not_mem h
@@ -188,7 +187,7 @@ theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ 
   (h.mem_erase_iff.1 ha).1 rfl
 #align multiset.nodup.not_mem_erase Multiset.Nodup.not_mem_erase
 
-protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (product s t) :=
+protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 #align multiset.nodup.product Multiset.Nodup.product
 

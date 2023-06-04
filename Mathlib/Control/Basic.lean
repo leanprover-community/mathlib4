@@ -9,8 +9,8 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.SimpSet
-import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Mathlib.Tactic.CasesM
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -182,7 +182,7 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
--- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+-- [todo] add notation for `Functor.mapConst` and port `Functor.mapConstRev`
 /-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
@@ -268,11 +268,9 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
-      by
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
-    _ = (fun b a => f a b) <$> b <*> a :=
-      by
-        rw [@CommApplicative.commutative_prod m h] <;>
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
+    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
+    _ = (fun b a => f a b) <$> b <*> a := by
+      rw [@CommApplicative.commutative_prod m h] <;>
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

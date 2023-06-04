@@ -198,7 +198,7 @@ def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
 #align category_theory.presieve.functor_pushforward CategoryTheory.Presieve.functorPushforward
 
 --porting note: removed @[nolint hasNonemptyInstance]
-/-- An auxillary definition in order to fix the choice of the preimages between various definitions.
+/-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where
   /-- an object in the source category -/
@@ -327,12 +327,12 @@ instance : CompleteLattice (Sieve X)
       downward_closed := False.elim }
   sup := Sieve.union
   inf := Sieve.inter
-  supₛ := Sieve.sup
-  infₛ := Sieve.inf
-  le_supₛ 𝒮 S hS Y f hf := ⟨S, hS, hf⟩
-  supₛ_le := fun s a ha Y f ⟨b, hb, hf⟩ => (ha b hb) _ hf
-  infₛ_le _ _ hS _ _ h := h _ hS
-  le_infₛ _ _ hS _ _ hf _ hR := hS _ hR _ hf
+  sSup := Sieve.sup
+  sInf := Sieve.inf
+  le_sSup 𝒮 S hS Y f hf := ⟨S, hS, hf⟩
+  sSup_le := fun s a ha Y f ⟨b, hb, hf⟩ => (ha b hb) _ hf
+  sInf_le _ _ hS _ _ h := h _ hS
+  le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
   le_sup_left _ _ _ _ := Or.inl
   le_sup_right _ _ _ _ := Or.inr
   sup_le _ _ _ h₁ h₂ _ f := by--ℰ S hS Y f := by
@@ -351,16 +351,16 @@ instance sieveInhabited : Inhabited (Sieve X) :=
 #align category_theory.sieve.sieve_inhabited CategoryTheory.Sieve.sieveInhabited
 
 @[simp]
-theorem infₛ_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
-    infₛ Ss f ↔ ∀ (S : Sieve X) (_ : S ∈ Ss), S f :=
+theorem sInf_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
+    sInf Ss f ↔ ∀ (S : Sieve X) (_ : S ∈ Ss), S f :=
   Iff.rfl
-#align category_theory.sieve.Inf_apply CategoryTheory.Sieve.infₛ_apply
+#align category_theory.sieve.Inf_apply CategoryTheory.Sieve.sInf_apply
 
 @[simp]
-theorem supₛ_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
-    supₛ Ss f ↔ ∃ (S : Sieve X)(_ : S ∈ Ss), S f := by
-  simp [supₛ, Sieve.sup, setOf]
-#align category_theory.sieve.Sup_apply CategoryTheory.Sieve.supₛ_apply
+theorem sSup_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
+    sSup Ss f ↔ ∃ (S : Sieve X)(_ : S ∈ Ss), S f := by
+  simp [sSup, Sieve.sup, setOf]
+#align category_theory.sieve.Sup_apply CategoryTheory.Sieve.sSup_apply
 
 @[simp]
 theorem inter_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊓ S) f ↔ R f ∧ S f :=
@@ -402,8 +402,7 @@ def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) :
 open Order Lattice
 
 theorem sets_iff_generate (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
-  ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f =>
-    by
+  ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
 #align category_theory.sieve.sets_iff_generate CategoryTheory.Sieve.sets_iff_generate

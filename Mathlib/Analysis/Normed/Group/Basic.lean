@@ -490,21 +490,26 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
-/- porting note: meta code, do not port
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
+open Lean Meta Qq Function
 
-/-- Extension for the `positivity` tactic: norms are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_norm : expr → tactic strictness
-  | q(‖$(a)‖) =>
-    nonnegative <$> mk_app `` norm_nonneg [a] <|> nonnegative <$> mk_app `` norm_nonneg' [a]
-  | _ => failed
-#align tactic.positivity_norm tactic.positivity_norm
+/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
+`norm_nonneg'`. -/
+@[positivity Norm.norm _]
+def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg' #[a]
+  pure (.nonnegative p)
 
-end
--/
+/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
+@[positivity Norm.norm _]
+def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ a ← whnfR e | throwError "not ‖ ⬝ ‖"
+  let p ← mkAppM ``norm_nonneg #[a]
+  pure (.nonnegative p)
+
+end Mathlib.Meta.Positivity
 
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
@@ -1295,7 +1300,7 @@ theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
     {l : Filter ι} {l' : Filter κ} :
     UniformCauchySeqOnFilter f l l' ↔
-      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) l' := by
+      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
   refine' ⟨fun hf u hu => _, fun hf u hu => _⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine'
@@ -1314,7 +1319,7 @@ theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_on
 theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ}
     {l : Filter ι} :
     UniformCauchySeqOn f l s ↔
-      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) s := by
+      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter,
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]
@@ -1491,8 +1496,8 @@ theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : 
 
 @[to_additive]
 theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ}
-    (h : ∀ b ∈ s, dist (f b) (a b) ≤ d b) : dist (∏ b in s, f b) (∏ b in s, a b) ≤ ∑ b in s, d b :=
-  by
+    (h : ∀ b ∈ s, dist (f b) (a b) ≤ d b) :
+    dist (∏ b in s, f b) (∏ b in s, a b) ≤ ∑ b in s, d b := by
   simp only [dist_eq_norm_div, ← Finset.prod_div_distrib] at *
   exact norm_prod_le_of_le s h
 #align dist_prod_prod_le_of_le dist_prod_prod_le_of_le
@@ -1518,7 +1523,7 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 #align add_mem_closed_ball_iff_norm add_mem_closedBall_iff_norm
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplifiy
+-- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
@@ -1526,7 +1531,7 @@ theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ba
 #align preimage_add_ball preimage_add_ball
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplifiy
+-- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (· * ·) b ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
@@ -1556,8 +1561,8 @@ theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a�
 #align nnnorm_nsmul_le nnnorm_nsmul_le
 
 @[to_additive]
-theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) : a ^ n ∈ closedBall (b ^ n) (n • r) :=
-  by
+theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
+    a ^ n ∈ closedBall (b ^ n) (n • r) := by
   simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h⊢
   refine' (norm_pow_le_mul_norm n (a / b)).trans _
   simpa only [nsmul_eq_mul] using mul_le_mul_of_nonneg_left h n.cast_nonneg
@@ -1615,8 +1620,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
   obtain ⟨u : ℕ → E, u_in : ∀ n, u n ∈ s, lim_u : Tendsto u atTop (𝓝 a)⟩ :=
     mem_closure_iff_seq_limit.mp hg
   obtain ⟨n₀, hn₀⟩ : ∃ n₀, ∀ n ≥ n₀, ‖u n / a‖ < b 0 :=
-    haveI : { x | ‖x / a‖ < b 0 } ∈ 𝓝 a :=
-      by
+    haveI : { x | ‖x / a‖ < b 0 } ∈ 𝓝 a := by
       simp_rw [← dist_eq_norm_div]
       exact Metric.ball_mem_nhds _ (b_pos _)
     Filter.tendsto_atTop'.mp lim_u _ this
@@ -1931,10 +1935,10 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.to_topologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
   inferInstance
-#align seminormed_comm_group.to_topological_group SeminormedCommGroup.to_topologicalGroup
-#align seminormed_add_comm_group.to_topological_add_group SeminormedAddCommGroup.to_topologicalAddGroup
+#align seminormed_comm_group.to_topological_group SeminormedCommGroup.toTopologicalGroup
+#align seminormed_add_comm_group.to_topological_add_group SeminormedAddCommGroup.toTopologicalAddGroup
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)

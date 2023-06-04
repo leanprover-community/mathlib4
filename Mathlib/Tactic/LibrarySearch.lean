@@ -6,7 +6,6 @@ Authors: Gabriel Ebner, Scott Morrison
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.Pickle
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
@@ -46,10 +45,29 @@ A "modifier" for a declaration.
 -/
 inductive DeclMod
 | none | symm | mp | mpr
-deriving DecidableEq
+deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
   toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
+
+/-- Prepare the discrimination tree entries for a lemma. -/
+def processLemma (name : Name) (constInfo : ConstantInfo) :
+    MetaM (Array (Array (DiscrTree.Key true) × (Name × DeclMod))) := do
+  if constInfo.isUnsafe then return #[]
+  if ← name.isBlackListed then return #[]
+  withNewMCtxDepth do withReducible do
+    let (_, _, type) ← forallMetaTelescope constInfo.type
+    let keys ← DiscrTree.mkPath type
+    let mut r := #[(keys, (name, .none))]
+    match type.getAppFnArgs with
+    | (``Eq, #[_, lhs, rhs]) => do
+      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+      return r.push (keys_symm, (name, .symm))
+    | (``Iff, #[lhs, rhs]) => do
+      let keys_mp ← DiscrTree.mkPath rhs
+      let keys_mpr ← DiscrTree.mkPath lhs
+      return r.push (keys_mp, (name, .mp)) |>.push (keys_mpr, (name, .mpr))
+    | _ => return r
 
 /-- Insert a lemma into the discrimination tree. -/
 -- Recall that `library_search` caches the discrimination tree on disk.
@@ -58,25 +76,22 @@ instance : ToString DeclMod where
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
-  if constInfo.isUnsafe then return lemmas
-  if ← name.isBlackListed then return lemmas
-  withNewMCtxDepth do withReducible do
-    let (_, _, type) ← forallMetaTelescope constInfo.type
-    let keys ← DiscrTree.mkPath type
-    let lemmas := lemmas.insertIfSpecific keys (name, .none)
-    match type.getAppFnArgs with
-    | (``Eq, #[_, lhs, rhs]) => do
-      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-      pure (lemmas.insertIfSpecific keys_symm (name, .symm))
-    | (``Iff, #[lhs, rhs]) => do
-      let keys_mp ← DiscrTree.mkPath rhs
-      let keys_mpr ← DiscrTree.mkPath lhs
-      pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
-    | _ => pure lemmas
+  let mut lemmas := lemmas
+  for (key, value) in ← processLemma name constInfo do
+    lemmas := lemmas.insertIfSpecific key value
+  return lemmas
 
 /-- Construct the discrimination tree of all lemmas. -/
-def buildDiscrTree : IO (DeclCache (DiscrTree (Name × DeclMod) true)) :=
-  DeclCache.mk "librarySearch: init cache" {} addLemma
+def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
+  DiscrTreeCache.mk "librarySearch: init cache" processLemma
+    -- Sort so lemmas with longest names come first.
+    -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
+    -- means that the results come in "batches", with more specific matches *later*.
+    -- Thus we're going to call reverse on the result of `DiscrTree.getMatch`,
+    -- so if we want to try lemmas with shorter names first,
+    -- we need to put them into the `DiscrTree` backwards.
+    (post? := some fun A =>
+      A.map (fun (n, m) => (n.toString.length, n, m)) |>.qsort (fun p q => p.1 > q.1) |>.map (·.2))
 
 open System (FilePath)
 
@@ -86,27 +101,18 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
-/--
-A structure that holds the cached discrimination tree,
-and possibly a pointer to a memory region, if we unpickled the tree from disk.
--/
-structure CachedData where
-  pointer? : Option CompactedRegion
-  cache : DeclCache (DiscrTree (Name × DeclMod) true)
-deriving Nonempty
-
-initialize cachedData : CachedData ← unsafe do
+initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
-    return ⟨r, (← Cache.mk (pure d), addLemma)⟩
+    return ⟨r, ← DiscrTreeCache.mk "librarySearch: using cache" processLemma (init := some d)⟩
   else
     return ⟨none, ← buildDiscrTree⟩
 
 /--
 Retrieve the current current of lemmas.
 -/
-def librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) := cachedData.cache
+def librarySearchLemmas : DiscrTreeCache (Name × DeclMod) := cachedData.cache
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) (depth) := do
@@ -118,7 +124,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
-Try applying the given lemma (with symmetry modifer) to the goal,
+Try applying the given lemma (with symmetry modifier) to the goal,
 then try to close subsequent goals using `solveByElim`.
 If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
 otherwise the full list of subgoals.
@@ -148,11 +154,11 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
 Returns a lazy list of the results of applying a library lemma,
 then calling `solveByElim` on the resulting goals.
 -/
-def librarySearchCore (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s)
+def librarySearchCore (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) : ListM MetaM (MetavarContext × List MVarId) :=
   .squash do
     let ty ← goal.getType
-    let lemmas := (← lemmas.getMatch ty).toList
+    let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
@@ -203,7 +209,7 @@ unless the goal was completely solved.)
 (Note that if `solveByElim` solves some but not all subsidiary goals,
 this is not currently tracked.)
 -/
-def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (required : List Expr)
+def librarySearch (goal : MVarId) (required : List Expr)
     (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
   let librarySearchEmoji := fun
     | .error _ => bombEmoji
@@ -215,7 +221,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
     _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return none) <|>
   (do
-    let results ← librarySearchCore goal lemmas required solveByElimDepth
+    let results ← librarySearchCore goal required solveByElimDepth
       -- Don't use too many heartbeats.
       |>.whileAtLeastHeartbeatsPercent 10
       -- Stop if we find something that closes the goal
@@ -226,12 +232,6 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree (Name × DeclMod) s) (requ
     | some (ctx, _) => do
       setMCtx ctx
       return none)
-
-/-- Log a message if it looks like we ran out of time. -/
-def reportOutOfHeartbeats (stx : Syntax) : MetaM Unit := do
-  if (← heartbeatsPercent) ≥ 90 then
-    logInfoAt stx ("`library_search` stopped because it was running out of time.\n" ++
-      "You may get better results using `set_option maxHeartbeats 0`.")
 
 open Lean.Parser.Tactic
 
@@ -247,16 +247,16 @@ syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?) => do
+elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required],*]?) => do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
-    if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
-      reportOutOfHeartbeats tk
+    if let some suggestions ← librarySearch goal required then
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addRefineSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
       if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else
@@ -267,8 +267,8 @@ elab tk:"library_search%" : term <= expectedType => do
   let goal ← mkFreshExprMVar expectedType
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
-    if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) [] then
-      reportOutOfHeartbeats tk
+    if let some suggestions ← librarySearch introdGoal [] then
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
@@ -286,7 +286,8 @@ If `hp` is omitted, then the placeholder `this` is used.
 
 The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
 This may be particularly useful to speed up proofs. -/
-syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
+syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
+  (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
@@ -297,8 +298,8 @@ elab_rules : tactic |
   withMainContext do
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
-    if let some _ ← librarySearch goal (← librarySearchLemmas.get) [] then
-      reportOutOfHeartbeats tk
+    if let some _ ← librarySearch goal [] then
+      reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
@@ -308,9 +309,9 @@ elab_rules : tactic |
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
-@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
 @[inherit_doc observe]
-macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)

@@ -11,7 +11,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Prime numbers
@@ -283,8 +282,8 @@ theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
 open List
 
 /-- If `p` is a prime factor of `a` then `p` is also a prime factor of `a * b` for any `b > 0` -/
-theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) : p ∈ (a * b).factors :=
-  by
+theorem mem_factors_mul_left {p a b : ℕ} (hpa : p ∈ a.factors) (hb : b ≠ 0) :
+    p ∈ (a * b).factors := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp at hpa
   apply (mem_factors_mul ha hb).2 (Or.inl hpa)
@@ -308,5 +307,4 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 end Nat
 
--- Porting note: `assert_not_exists` is not implemented yet.
---assert_not_exists Multiset
+assert_not_exists Multiset

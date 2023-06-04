@@ -651,10 +651,8 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
 instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X) :=
   -- It will suffice to consider some morphism e : X ⟶ R such that
-    -- pullback.fst ≫ e = 0 and show that e = 0.
-    epi_of_cancel_zero
-    _ fun {R} e h =>
-    by
+  -- pullback.fst ≫ e = 0 and show that e = 0.
+  epi_of_cancel_zero _ fun {R} e h => by
     -- Consider the morphism u := (e, 0) : X ⊞ Y ⟶ R.
     let u := biprod.desc e (0 : Y ⟶ R)
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.

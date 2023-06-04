@@ -683,8 +683,7 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun s => 0
-          fac := fun s =>
-            by
+          fac := fun s => by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _) (by simp)
                 (by simpa using PushoutCocone.condition s)
@@ -897,8 +896,8 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
 
 /-- If `f f' : X ⟶ Y`, `g : Y ⟶ Z` forms a pushout square, then `g` is the coequalizer of
 `f` and `f'`. -/
-noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) : IsColimit (Cofork.ofπ g H.w) :=
-  by
+noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
+    IsColimit (Cofork.ofπ g H.w) := by
   fapply Cofork.IsColimit.mk
   · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
   · exact fun s => H.isColimit.fac _ WalkingSpan.left

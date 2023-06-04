@@ -61,9 +61,8 @@ theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 #align matrix.rank_zero Matrix.rank_zero
 
-set_option synthInstance.etaExperiment true in
-theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card n :=
-  by
+theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) :
+    A.rank ≤ Fintype.card n := by
   haveI : Module.Finite R (n → R) := Module.Finite.pi
   haveI : Module.Free R (n → R) := Module.Free.pi _ _
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
@@ -105,7 +104,6 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
   exact rank_unit A
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
 
-set_option synthInstance.etaExperiment true in
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
     (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
@@ -149,9 +147,8 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCom
     LinearMap.coe_single, toLin_self, LinearEquiv.map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
-set_option synthInstance.etaExperiment true in
-theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
-  by
+theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) :
+    A.rank ≤ Fintype.card m := by
   haveI : Module.Finite R (m → R) := Module.Finite.pi
   haveI : Module.Free R (m → R) := Module.Free.pi _ _
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
@@ -174,12 +171,12 @@ end CommRing
 This section contains lemmas about the rank of `Matrix.transpose` and `Matrix.conjTranspose`.
 
 Unfortunately the proofs are essentially duplicated between the two; `ℚ` is a linearly-ordered ring
-but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open_locale complex_order`) but
+but can't be a star-ordered ring, while `ℂ` is star-ordered (with `open ComplexOrder`) but
 not linearly ordered. For now we don't prove the transpose case for `ℂ`.
 
 TODO: the lemmas `Matrix.rank_transpose` and `Matrix.rank_conjTranspose` current follow a short
 proof that is a simple consequence of `Matrix.rank_transpose_mul_self` and
-`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unecessary assumptions on `R`, and should
+`Matrix.rank_conjTranspose_mul_self`. This proof pulls in unnecessary assumptions on `R`, and should
 be replaced with a proof that uses Gaussian reduction or argues via linear combinations.
 -/
 
@@ -203,9 +200,6 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_conj_transpose_mul_self Matrix.ker_mulVecLin_conjTranspose_mul_self
 
--- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
-set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
@@ -216,7 +210,6 @@ theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ ⬝ A).rank = A.r
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 #align matrix.rank_conj_transpose_mul_self Matrix.rank_conjTranspose_mul_self
 
-set_option synthInstance.etaExperiment true in
 -- this follows the proof here https://math.stackexchange.com/a/81903/1896
 /-- TODO: prove this in greater generality. -/
 @[simp]
@@ -251,9 +244,6 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     rw [h, mulVec_zero]
 #align matrix.ker_mul_vec_lin_transpose_mul_self Matrix.ker_mulVecLin_transpose_mul_self
 
--- Porting note: using `LinearMap.finrank_range_add_finrank_ker` is very slow
-set_option synthInstance.etaExperiment true in
-set_option maxHeartbeats 300000 in
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank := by
   dsimp only [rank]
   refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _
@@ -264,7 +254,6 @@ theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ ⬝ A).rank = A.rank 
   · simp only [LinearMap.finrank_range_add_finrank_ker]
 #align matrix.rank_transpose_mul_self Matrix.rank_transpose_mul_self
 
-set_option synthInstance.etaExperiment true in
 /-- TODO: prove this in greater generality. -/
 @[simp]
 theorem rank_transpose (A : Matrix m n R) : Aᵀ.rank = A.rank :=

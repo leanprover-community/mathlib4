@@ -106,7 +106,6 @@ section Mul
 
 variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
@@ -116,7 +115,6 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
   exact hfg.sum_smul_sum_le_card_smul_sum
 #align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/

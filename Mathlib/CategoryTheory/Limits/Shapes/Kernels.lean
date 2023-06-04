@@ -32,7 +32,7 @@ Besides the definition and lifts, we prove
 * `kernel.liftMono`: the lift of a monomorphism `k : W ⟶ X` such that `k ≫ f = 0`
   is still a monomorphism
 * `kernel.isLimitConeZeroCone`: if our category has a zero object, then the map from the zero
-  obect is a kernel map of any monomorphism
+  object is a kernel map of any monomorphism
 * `kernel.ιOfZero`: `kernel.ι (0 : X ⟶ Y)` is an isomorphism
 
 and the corresponding dual statements.
@@ -192,6 +192,18 @@ def isKernelOfComp {W : C} (g : Y ⟶ W) (h : X ⟶ W) {c : KernelFork h} (i : I
     (fun s => by simp only [KernelFork.ι_ofι, Fork.IsLimit.lift_ι]) fun s m h => by
     apply Fork.IsLimit.hom_ext i; simpa using h
 #align category_theory.limits.is_kernel_of_comp CategoryTheory.Limits.isKernelOfComp
+
+/-- `X` identifies to the kernel of a zero map `X ⟶ Y`. -/
+def KernelFork.IsLimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
+    IsLimit (KernelFork.ofι (𝟙 X) (show 𝟙 X ≫ f = 0 by rw [hf, comp_zero])) :=
+  KernelFork.IsLimit.ofι _ _ (fun x _ => x) (fun _ _ => Category.comp_id _)
+    (fun _ _ _ hb => by simp only [← hb, Category.comp_id])
+
+/-- Any zero object identifies to the kernel of a given monomorphisms. -/
+def KernelFork.IsLimit.ofMonoOfIsZero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
+    (hf : Mono f) (h : IsZero c.pt) : IsLimit c :=
+  isLimitAux _ (fun s => 0) (fun s => by rw [zero_comp, ← cancel_mono f, zero_comp, s.condition])
+    (fun _ _ _ => h.eq_of_tgt _ _)
 
 end
 
@@ -400,12 +412,11 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
     HasKernel (f ≫ g)
     where exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
-        isLimit :=
-          isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat)) (by aesop_cat) fun s m w =>
-            by
-            simp_rw [← w]
-            apply equalizer.hom_ext
-            simp }⟩
+        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
+            (by aesop_cat) fun s m w => by
+          simp_rw [← w]
+          apply equalizer.hom_ext
+          simp }⟩
 #align category_theory.limits.has_kernel_iso_comp CategoryTheory.Limits.hasKernel_iso_comp
 
 /-- When `f` is an isomorphism, the kernel of `f ≫ g` is isomorphic to the kernel of `g`.
@@ -472,10 +483,9 @@ def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f)
     IsLimit
       (KernelFork.ofι (Fork.ι s) <| show Fork.ι s ≫ l = 0 by simp [← i.comp_inv_eq.2 h.symm]) :=
   Fork.IsLimit.mk _ (fun s => hs.lift <| KernelFork.ofι (Fork.ι s) <| by simp [← h])
-    (fun s => by simp) fun s m h =>
-    by
-    apply Fork.IsLimit.hom_ext hs
-    simpa using h
+    (fun s => by simp) fun s m h => by
+      apply Fork.IsLimit.hom_ext hs
+      simpa using h
 #align category_theory.limits.is_kernel.of_comp_iso CategoryTheory.Limits.IsKernel.ofCompIso
 
 /-- If `i` is an isomorphism such that `l ≫ i.hom = f`, then the kernel of `f` is a kernel of `l`.-/
@@ -623,11 +633,22 @@ theorem isCokernelEpiComp_desc {c : CokernelCofork f} (i : IsColimit c) {W} (g :
 def isCokernelOfComp {W : C} (g : W ⟶ X) (h : W ⟶ Y) {c : CokernelCofork h} (i : IsColimit c)
     (hf : f ≫ c.π = 0) (hfg : g ≫ f = h) : IsColimit (CokernelCofork.ofπ c.π hf) :=
   Cofork.IsColimit.mk _ (fun s => i.desc (CokernelCofork.ofπ s.π (by simp [← hfg])))
-    (fun s => by simp only [CokernelCofork.π_ofπ, Cofork.IsColimit.π_desc]) fun s m h =>
-    by
-    apply Cofork.IsColimit.hom_ext i
-    simpa using h
+    (fun s => by simp only [CokernelCofork.π_ofπ, Cofork.IsColimit.π_desc]) fun s m h => by
+      apply Cofork.IsColimit.hom_ext i
+      simpa using h
 #align category_theory.limits.is_cokernel_of_comp CategoryTheory.Limits.isCokernelOfComp
+
+/-- `Y` identifies to the cokernel of a zero map `X ⟶ Y`. -/
+def CokernelCofork.IsColimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
+    IsColimit (CokernelCofork.ofπ (𝟙 Y) (show f ≫ 𝟙 Y = 0 by rw [hf, zero_comp])) :=
+  CokernelCofork.IsColimit.ofπ  _ _ (fun x _ => x) (fun _ _ => Category.id_comp _)
+    (fun _ _ _ hb => by simp only [← hb, Category.id_comp])
+
+/-- Any zero object identifies to the cokernel of a given epimorphisms. -/
+def CokernelCofork.IsColimit.ofEpiOfIsZero {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
+    (hf : Epi f) (h : IsZero c.pt) : IsColimit c :=
+  isColimitAux _ (fun s => 0) (fun s => by rw [comp_zero, ← cancel_epi f, comp_zero, s.condition])
+    (fun _ _ _ => h.eq_of_src _ _)
 
 end
 
@@ -1008,10 +1029,9 @@ def IsCokernel.ofIsoComp {Z : C} (l : Z ⟶ Y) (i : X ≅ Z) (h : i.hom ≫ l = 
     IsColimit
       (CokernelCofork.ofπ (Cofork.π s) <| show l ≫ Cofork.π s = 0 by simp [i.eq_inv_comp.2 h]) :=
   Cofork.IsColimit.mk _ (fun s => hs.desc <| CokernelCofork.ofπ (Cofork.π s) <| by simp [← h])
-    (fun s => by simp) fun s m h =>
-    by
-    apply Cofork.IsColimit.hom_ext hs
-    simpa using h
+    (fun s => by simp) fun s m h => by
+      apply Cofork.IsColimit.hom_ext hs
+      simpa using h
 #align category_theory.limits.is_cokernel.of_iso_comp CategoryTheory.Limits.IsCokernel.ofIsoComp
 
 /-- If `i` is an isomorphism such that `i.hom ≫ l = f`, then the cokernel of `f` is a cokernel of

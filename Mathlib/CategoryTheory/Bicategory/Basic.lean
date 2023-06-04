@@ -18,7 +18,7 @@ In this file we define typeclass for bicategories.
 A bicategory `B` consists of
 * objects `a : B`,
 * 1-morphisms `f : a ⟶ b` between objects `a b : B`, and
-* 2-morphisms `η : f ⟶ g` beween 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
+* 2-morphisms `η : f ⟶ g` between 1-morphisms `f g : a ⟶ b` between objects `a b : B`.
 
 We use `u`, `v`, and `w` as the universe variables for objects, 1-morphisms, and 2-morphisms,
 respectively.
@@ -263,8 +263,7 @@ theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
 @[reassoc (attr := simp)]
 theorem pentagon_inv_inv_hom_hom_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom =
-      f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv :=
-  by
+    f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv := by
   rw [← cancel_epi (f ◁ (α_ g h i).inv), ← cancel_mono (α_ (f ≫ g) h i).inv]
   simp
 #align category_theory.bicategory.pentagon_inv_inv_hom_hom_inv CategoryTheory.Bicategory.pentagon_inv_inv_hom_hom_inv
@@ -293,8 +292,7 @@ theorem pentagon_hom_hom_inv_hom_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
 @[reassoc (attr := simp)]
 theorem pentagon_hom_inv_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f g (h ≫ i)).hom ≫ f ◁ (α_ g h i).inv ≫ (α_ f (g ≫ h) i).inv =
-      (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i :=
-  by
+    (α_ (f ≫ g) h i).inv ≫ (α_ f g h).hom ▷ i := by
   rw [← cancel_epi (α_ f g (h ≫ i)).inv, ← cancel_mono ((α_ f g h).inv ▷ i)]
   simp
 #align category_theory.bicategory.pentagon_hom_inv_inv_inv_hom CategoryTheory.Bicategory.pentagon_hom_inv_inv_inv_hom

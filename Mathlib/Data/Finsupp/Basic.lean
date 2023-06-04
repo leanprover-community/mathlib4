@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit 57911c5a05a1b040598e1e15b189f035ac5cc33c
+! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -24,7 +24,7 @@ import Mathlib.Data.Rat.BigOperators
 * `Finsupp.mapDomain`: maps the domain of a `Finsupp` by a function and by summing.
 * `Finsupp.comapDomain`: postcomposition of a `Finsupp` with a function injective on the preimage
   of its support.
-* `Finsupp.some`: restrict a finitely supported function on `option α` to a finitely supported
+* `Finsupp.some`: restrict a finitely supported function on `Option α` to a finitely supported
   function on `α`.
 * `Finsupp.filter`: `filter p f` is the finitely supported function that is `f a` if `p a` is true
   and 0 otherwise.
@@ -500,8 +500,8 @@ theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f 
 #align finsupp.map_domain_add Finsupp.mapDomain_add
 
 @[simp]
-theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) : mapDomain f x a = x (f.symm a) :=
-  by
+theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
+    mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
   exact mapDomain_apply f.injective _ _
 #align finsupp.map_domain_equiv_apply Finsupp.mapDomain_equiv_apply
@@ -539,8 +539,8 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.bunionᵢ_mono fun a _ => support_single_subset) <| by
-      rw [Finset.bunionᵢ_singleton]
+    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+      rw [Finset.biUnion_singleton]
 #align finsupp.map_domain_support Finsupp.mapDomain_support
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -560,8 +560,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
-  Finset.Subset.antisymm mapDomain_support <|
-    by
+  Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
     simp only [mem_image, exists_prop, mem_support_iff, Ne.def] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
@@ -799,12 +798,12 @@ end FInjective
 
 end ComapDomain
 
-/-! ### Declarations about finitely supported functions whose support is an `option` type -/
+/-! ### Declarations about finitely supported functions whose support is an `Option` type -/
 
 
 section Option
 
-/-- Restrict a finitely supported function on `option α` to a finitely supported function on `α`. -/
+/-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
 def some [Zero M] (f : Option α →₀ M) : α →₀ M :=
   f.comapDomain Option.some fun _ => by simp
 #align finsupp.some Finsupp.some
@@ -875,7 +874,8 @@ section Zero
 variable [Zero M] (p : α → Prop) (f : α →₀ M)
 
 /--
-`filter p f` is the finitely supported function that is `f a` if `p a` is true and 0 otherwise. -/
+`Finsupp.filter p f` is the finitely supported function that is `f a` if `p a` is true and `0`
+otherwise. -/
 def filter (p : α → Prop) (f : α →₀ M) : α →₀ M
     where
   toFun a :=
@@ -1214,8 +1214,7 @@ protected def curry (f : α × β →₀ M) : α →₀ β →₀ M :=
 @[simp]
 theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := by
   classical
-    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 :=
-      by
+    have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
       rintro ⟨b₁, b₂⟩
       simp [single_apply, ite_apply, Prod.ext_iff, ite_and]
       split_ifs <;> simp [single_apply, *]
@@ -1282,14 +1281,14 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
 
 theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.bunionᵢ_singleton]
+  rw [← Finset.biUnion_singleton]
   refine' Finset.Subset.trans support_sum _
-  refine' Finset.bunionᵢ_mono fun a _ => support_single_subset
+  refine' Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
 end CurryUncurry
 
-/-! ### Declarations about finitely supported functions whose support is a `sum` type -/
+/-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
 
 section Sum
@@ -1554,7 +1553,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 
 variable {α M}
 
-theorem support_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] {b : R} {g : α →₀ M} :
+theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
   simp only [smul_apply, mem_support_iff, Ne.def]
   exact mt fun h => h.symm ▸ smul_zero _

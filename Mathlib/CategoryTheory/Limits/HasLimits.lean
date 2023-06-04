@@ -174,7 +174,7 @@ theorem limit.w (F : J ⥤ C) [HasLimit F] {j j' : J} (f : j ⟶ j') :
   (limit.cone F).w f
 #align category_theory.limits.limit.w CategoryTheory.Limits.limit.w
 
-/-- Evidence that the arbitrary choice of cone provied by `limit.cone F` is a limit cone. -/
+/-- Evidence that the arbitrary choice of cone provided by `limit.cone F` is a limit cone. -/
 def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (limit.cone F) :=
   (getLimitCone F).isLimit
 #align category_theory.limits.limit.is_limit CategoryTheory.Limits.limit.isLimit
@@ -319,8 +319,7 @@ theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit :=
         { lift := fun s => limit.lift F ((Cones.postcompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cones.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, ← Category.assoc,
               limit.lift_π]
             simp
@@ -396,8 +395,8 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
 @[simp]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
-    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j = limit.π G (e.functor.obj j) ≫ w.hom.app j :=
-  by
+    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
+    limit.π G (e.functor.obj j) ≫ w.hom.app j := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
   dsimp
   simp
@@ -894,8 +893,7 @@ theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColim
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit :=
         { desc := fun s => colimit.desc F ((Cocones.precompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cocones.precompose_obj_ι, NatTrans.comp_app, colimit.cocone_ι]
             rw [Category.assoc, colimit.ι_desc, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
           uniq := fun s m w => by
@@ -1037,8 +1035,8 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 #align category_theory.limits.colimit.post CategoryTheory.Limits.colimit.post
 
 @[reassoc (attr := simp)]
-theorem colimit.ι_post (j : J) : colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) :=
-  by
+theorem colimit.ι_post (j : J) :
+    colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
   erw [IsColimit.fac]
   rfl
 #align category_theory.limits.colimit.ι_post CategoryTheory.Limits.colimit.ι_post

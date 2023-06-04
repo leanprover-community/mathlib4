@@ -279,8 +279,8 @@ noncomputable def coreprW : coyoneda.obj (op F.coreprX) ≅ F :=
   asIso F.coreprF
 #align category_theory.functor.corepr_w CategoryTheory.Functor.coreprW
 
-theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) : (F.coreprW.app X).hom f = F.map f F.coreprx :=
-  by
+theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
+    (F.coreprW.app X).hom f = F.map f F.coreprx := by
   change F.coreprF.app X f = (F.coreprF.app F.coreprX ≫ F.map f) (𝟙 F.coreprX)
   rw [← F.coreprF.naturality]
   dsimp

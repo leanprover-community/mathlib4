@@ -85,10 +85,8 @@ theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.c
 deals with two different index types. -/
 theorem Finset.centerMass_segment' (s : Finset ι) (t : Finset ι') (ws : ι → R) (zs : ι → E)
     (wt : ι' → R) (zt : ι' → E) (hws : (∑ i in s, ws i) = 1) (hwt : (∑ i in t, wt i) = 1) (a b : R)
-    (hab : a + b = 1) :
-    a • s.centerMass ws zs + b • t.centerMass wt zt =
-      (s.disjSum t).centerMass (Sum.elim (fun i => a * ws i) fun j => b * wt j) (Sum.elim zs zt) :=
-  by
+    (hab : a + b = 1) : a • s.centerMass ws zs + b • t.centerMass wt zt = (s.disjSum t).centerMass
+    (Sum.elim (fun i => a * ws i) fun j => b * wt j) (Sum.elim zs zt) := by
   rw [s.centerMass_eq_of_sum_1 _ hws, t.centerMass_eq_of_sum_1 _ hwt, smul_sum, smul_sum, ←
     Finset.sum_sum_elim, Finset.centerMass_eq_of_sum_1]
   · congr with ⟨⟩ <;> simp only [Sum.elim_inl, Sum.elim_inr, mul_smul]
@@ -99,8 +97,8 @@ theorem Finset.centerMass_segment' (s : Finset ι) (t : Finset ι') (ws : ι →
 works if two centers of mass share the set of original points. -/
 theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι → E)
     (hw₁ : (∑ i in s, w₁ i) = 1) (hw₂ : (∑ i in s, w₂ i) = 1) (a b : R) (hab : a + b = 1) :
-    a • s.centerMass w₁ z + b • s.centerMass w₂ z = s.centerMass (fun i => a * w₁ i + b * w₂ i) z :=
-  by
+    a • s.centerMass w₁ z + b • s.centerMass w₂ z =
+    s.centerMass (fun i => a * w₁ i + b * w₂ i) z := by
   have hw : (∑ i in s, (a * w₁ i + b * w₂ i)) = 1 := by
     simp only [mul_sum.symm, sum_add_distrib, mul_one, *]
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
@@ -366,14 +364,14 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · rw [_root_.convexHull_eq]
     -- Porting note: We have to specify the universe of `ι`
     rintro x ⟨ι : Type u_1, t, w, z, hw₀, hw₁, hz, rfl⟩
-    simp only [mem_unionᵢ]
+    simp only [mem_iUnion]
     refine' ⟨t.image z, _, _⟩
     · rw [coe_image, Set.image_subset_iff]
       exact hz
     · apply t.centerMass_mem_convexHull hw₀
       · simp only [hw₁, zero_lt_one]
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
-  · exact unionᵢ_subset fun i => unionᵢ_subset convexHull_mono
+  · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 #align convex_hull_eq_union_convex_hull_finite_subsets convexHull_eq_union_convexHull_finite_subsets
 
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
@@ -382,8 +380,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
   -- Porting note: We have to specify the universe of `ι` and `κ`
   obtain ⟨ι : Type u_1, a, w, S, hw, hw', hS, hSp⟩ := hx
   obtain ⟨κ : Type u_1, b, v, T, hv, hv', hT, hTp⟩ := hy
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
-  have h_sum : (∑ i : ι × κ in a ×ᶠ b, w i.fst * v i.snd) = 1 := by
+  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
     ext i
@@ -393,9 +390,8 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
       simp [mul_comm]
     rw [this, ← Finset.sum_mul, hv']
     simp
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
   refine'
-    ⟨ι × κ, a ×ᶠ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
+    ⟨ι × κ, a ×ˢ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
       fun p hp => _, _⟩
   · rw [mem_product] at hp
     exact mul_nonneg (hw p.1 hp.1) (hv p.2 hp.2)

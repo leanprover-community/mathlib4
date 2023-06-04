@@ -124,8 +124,8 @@ theorem disjoint_conj (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹)
 theorem Disjoint.conj (H : Disjoint f g) (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) :=
   (disjoint_conj h).2 H
 
-theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g) : Disjoint f l.prod :=
-  by
+theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g) :
+    Disjoint f l.prod := by
   induction' l with g l ih
   · exact disjoint_one_right _
   · rw [List.prod_cons]
@@ -170,8 +170,7 @@ theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
 theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
     ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
   | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
-  | Int.negSucc n =>
-    by
+  | Int.negSucc n => by
     rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ, eq_comm,
       inv_eq_iff_eq, ← mul_apply, ← pow_succ', @eq_comm _ x, or_comm]
     exact pow_apply_eq_of_apply_apply_eq_self hffx _
@@ -663,8 +662,7 @@ end support
 @[simp]
 theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     ((f.subtypePerm h : Perm { x // x ∈ s }).support)  =
-    (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) :=
-  by
+    (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
   ext
   simp [Subtype.ext_iff]
 #align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm

@@ -54,18 +54,18 @@ variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
 def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : ↑k > n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 #align polynomial.degree_le Polynomial.degreeLE
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLT (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLT
 
 variable {R}
 
 theorem mem_degreeLE {n : WithBot ℕ} {f : R[X]} : f ∈ degreeLE R n ↔ degree f ≤ n := by
-  simp only [degreeLE, Submodule.mem_infᵢ, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
+  simp only [degreeLE, Submodule.mem_iInf, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
 #align polynomial.mem_degree_le Polynomial.mem_degreeLE
 
 @[mono]
@@ -96,8 +96,8 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.degree_le_eq_span_X_pow Polynomial.degreeLE_eq_span_X_pow
 
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
-  rw [degreeLT, Submodule.mem_infᵢ]
-  conv_lhs => intro i; rw [Submodule.mem_infᵢ]
+  rw [degreeLT, Submodule.mem_iInf]
+  conv_lhs => intro i; rw [Submodule.mem_iInf]
   rw [degree, Finset.max_eq_sup_coe]
   rw [Finset.sup_lt_iff ?_]
   rotate_left
@@ -447,19 +447,15 @@ section ModByMonic
 
 variable {q : R[X]}
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
-theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
-#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
+#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem ker_modByMonicHom (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_mod_by_monic hq).trans Ideal.mem_span_singleton.symm
+  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 #align polynomial.ker_mod_by_monic_hom Polynomial.ker_modByMonicHom
 
 end ModByMonic
@@ -551,9 +547,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
 set_option linter.uppercaseLean3 false in
 #align ideal.mem_map_C_iff Ideal.mem_map_C_iff
 
-
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
--- set_option synthInstance.etaExperiment true in fails
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
     LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
   ext
@@ -606,7 +599,7 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
 #align ideal.leading_coeff_nth_mono Ideal.leadingCoeffNth_mono
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
-  rw [leadingCoeff, Submodule.mem_supᵢ_of_directed]
+  rw [leadingCoeff, Submodule.mem_iSup_of_directed]
   simp only [mem_leadingCoeffNth]
   · constructor
     · rintro ⟨i, p, hpI, _, rfl⟩
@@ -672,8 +665,6 @@ section CommRing
 
 variable [CommRing R]
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) ↔ IsPrime P := by
@@ -715,8 +706,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
-        obtain hi | hj : i < m ∨ j < n :=
-          by
+        obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
           rintro (hmi | rfl)
           · rw [← not_le]
@@ -740,7 +730,7 @@ set_option linter.uppercaseLean3 false in
 #align ideal.is_prime_map_C_of_is_prime Ideal.isPrime_map_C_of_isPrime
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
-    Submodule.Fg (I.degreeLE n) :=
+    Submodule.FG (I.degreeLE n) :=
   isNoetherian_submodule_left.1
     -- porting note: times out without explicit `R`.
     (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow (R := R)).symm⟩) _
@@ -892,7 +882,6 @@ instance (priority := 100) {R : Type _} [CommRing R] [IsDomain R] [WfDvdMonoid R
 
 end Polynomial
 
-set_option synthInstance.etaExperiment true in
 /-- Hilbert basis theorem: a polynomial ring over a noetherian ring is a noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
@@ -914,72 +903,62 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         hs ▸ fun hx =>
           Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
             (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
-      ⟨s,
-        le_antisymm
-            (Ideal.span_le.2 fun x hx =>
-              have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
-              this.2) <|
-          by
-          have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
-          rw [this]
-          intro p hp
-          generalize hn : p.natDegree = k
-          induction' k using Nat.strong_induction_on with k ih generalizing p
-          cases' le_or_lt k N with h h
-          · subst k
-            refine'
-              hs2
-                ⟨Polynomial.mem_degreeLE.2
-                    (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h),
-                  hp⟩
-          · have hp0 : p ≠ 0 := by
-              rintro rfl
-              cases hn
-              exact Nat.not_lt_zero _ h
-            have : (0 : R) ≠ 1 := by
-              intro h
-              apply hp0
-              ext i
-              refine' (mul_one _).symm.trans _
-              rw [← h, MulZeroClass.mul_zero]
-              rfl
-            haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
-            have : p.leadingCoeff ∈ I.leadingCoeffNth N :=
-              by
-              rw [HN]
-              exact
-                hm2 k
-                  ((I.mem_leadingCoeffNth _ _).2
-                    ⟨_, hp, hn ▸ Polynomial.degree_le_natDegree, rfl⟩)
-            rw [I.mem_leadingCoeffNth] at this
-            rcases this with ⟨q, hq, hdq, hlqp⟩
-            have hq0 : q ≠ 0 := by
-              intro H
-              rw [← Polynomial.leadingCoeff_eq_zero] at H
-              rw [hlqp, Polynomial.leadingCoeff_eq_zero] at H
-              exact hp0 H
-            have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree :=
-              by
-              rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
-              rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
-              rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
-                add_tsub_cancel_of_le, hn]
-              · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
-              rw [Polynomial.leadingCoeff_X_pow, mul_one]
-              exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
-            have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
-              rw [← hlqp, Polynomial.leadingCoeff_mul_X_pow]
-            have := Polynomial.degree_sub_lt h1 hp0 h2
-            rw [Polynomial.degree_eq_natDegree hp0] at this
-            rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
-            refine' (Ideal.span ↑s).add_mem _ ((Ideal.span ↑s).mul_mem_right _ _)
-            · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
-              · rw [hpq]
-                exact Ideal.zero_mem _
-              refine' ih _ _ (I.sub_mem hp (I.mul_mem_right _ hq)) rfl
-              rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot,
-                WithBot.coe_lt_coe, hn] at this
-            exact hs2 ⟨Polynomial.mem_degreeLE.2 hdq, hq⟩⟩⟩
+      ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
+          have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
+          this.2) <| by
+        have : Submodule.span R[X] ↑s = Ideal.span ↑s := by rfl
+        rw [this]
+        intro p hp
+        generalize hn : p.natDegree = k
+        induction' k using Nat.strong_induction_on with k ih generalizing p
+        cases' le_or_lt k N with h h
+        · subst k
+          refine' hs2 ⟨Polynomial.mem_degreeLE.2
+            (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
+        · have hp0 : p ≠ 0 := by
+            rintro rfl
+            cases hn
+            exact Nat.not_lt_zero _ h
+          have : (0 : R) ≠ 1 := by
+            intro h
+            apply hp0
+            ext i
+            refine' (mul_one _).symm.trans _
+            rw [← h, MulZeroClass.mul_zero]
+            rfl
+          haveI : Nontrivial R := ⟨⟨0, 1, this⟩⟩
+          have : p.leadingCoeff ∈ I.leadingCoeffNth N := by
+            rw [HN]
+            exact hm2 k ((I.mem_leadingCoeffNth _ _).2
+              ⟨_, hp, hn ▸ Polynomial.degree_le_natDegree, rfl⟩)
+          rw [I.mem_leadingCoeffNth] at this
+          rcases this with ⟨q, hq, hdq, hlqp⟩
+          have hq0 : q ≠ 0 := by
+            intro H
+            rw [← Polynomial.leadingCoeff_eq_zero] at H
+            rw [hlqp, Polynomial.leadingCoeff_eq_zero] at H
+            exact hp0 H
+          have h1 : p.degree = (q * Polynomial.X ^ (k - q.natDegree)).degree := by
+            rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
+            rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
+            rw [Nat.cast_withBot, Nat.cast_withBot, Nat.cast_withBot, ← WithBot.coe_add,
+              add_tsub_cancel_of_le, hn]
+            · refine' le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
+            rw [Polynomial.leadingCoeff_X_pow, mul_one]
+            exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
+          have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
+            rw [← hlqp, Polynomial.leadingCoeff_mul_X_pow]
+          have := Polynomial.degree_sub_lt h1 hp0 h2
+          rw [Polynomial.degree_eq_natDegree hp0] at this
+          rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
+          refine' (Ideal.span ↑s).add_mem _ ((Ideal.span ↑s).mul_mem_right _ _)
+          · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
+            · rw [hpq]
+              exact Ideal.zero_mem _
+            refine' ih _ _ (I.sub_mem hp (I.mul_mem_right _ hq)) rfl
+            rwa [Polynomial.degree_eq_natDegree hpq, Nat.cast_withBot, Nat.cast_withBot,
+              WithBot.coe_lt_coe, hn] at this
+          exact hs2 ⟨Polynomial.mem_degreeLE.2 hdq, hq⟩⟩⟩
 #align polynomial.is_noetherian_ring Polynomial.isNoetherianRing
 
 attribute [instance] Polynomial.isNoetherianRing
@@ -1004,8 +983,6 @@ theorem exists_irreducible_of_natDegree_ne_zero {R : Type u} [CommRing R] [IsDom
   exists_irreducible_of_natDegree_pos <| Nat.pos_of_ne_zero hf
 #align polynomial.exists_irreducible_of_nat_degree_ne_zero Polynomial.exists_irreducible_of_natDegree_ne_zero
 
--- Porting note: failed to synthesize  HPow (M →ₗ[R] M) ℕ ?m
-set_option synthInstance.etaExperiment true in
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]
@@ -1098,8 +1075,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
 
 /-- The multivariate polynomial ring in finitely many variables over a noetherian ring
 is itself a noetherian ring. -/
-instance isNoetherianRing [Finite σ] [IsNoetherianRing R] : IsNoetherianRing (MvPolynomial σ R) :=
-  by
+instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
+    IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ
   exact
     @isNoetherianRing_of_ringEquiv (MvPolynomial (Fin (Fintype.card σ)) R) _ _ _
@@ -1138,13 +1115,11 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
     obtain ⟨t, q, rfl⟩ := exists_finset_rename q
     have :
-      rename (Subtype.map id (Finset.subset_union_left s t) : { x // x ∈ s } → { x // x ∈ s ∪ t })
-            p *
-          rename
-            (Subtype.map id (Finset.subset_union_right s t) : { x // x ∈ t } → { x // x ∈ s ∪ t })
-            q =
-        0 :=
-      by
+        rename (Subtype.map id (Finset.subset_union_left s t) :
+          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
+        rename (Subtype.map id (Finset.subset_union_right s t) :
+          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
+        0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
     letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }

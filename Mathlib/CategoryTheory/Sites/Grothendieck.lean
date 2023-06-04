@@ -104,11 +104,11 @@ We prove this explicitly rather than deriving it so that it is in terms of the c
 the projection `.sieves`.
 -/
 @[ext]
-theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) : J₁ = J₂ :=
-  by
-    cases J₁
-    cases J₂
-    congr
+theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
+    J₁ = J₂ := by
+  cases J₁
+  cases J₂
+  congr
 #align category_theory.grothendieck_topology.ext CategoryTheory.GrothendieckTopology.ext
 
 /-
@@ -232,8 +232,7 @@ def trivial : GrothendieckTopology C where
   pullback_stable' X Y S f hf := by
     rw [Set.mem_singleton_iff] at hf⊢
     simp [hf]
-  transitive' X S hS R hR :=
-    by
+  transitive' X S hS R hR := by
     rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS
     simpa using hR hS
 #align category_theory.grothendieck_topology.trivial CategoryTheory.GrothendieckTopology.trivial
@@ -273,8 +272,8 @@ instance : PartialOrder (GrothendieckTopology C) :=
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 instance : InfSet (GrothendieckTopology C)
-    where infₛ T :=
-    { sieves := infₛ (sieves '' T)
+    where sInf T :=
+    { sieves := sInf (sieves '' T)
       top_mem' := by
         rintro X S ⟨⟨_, J, hJ, rfl⟩, rfl⟩
         simp
@@ -287,21 +286,21 @@ instance : InfSet (GrothendieckTopology C)
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-theorem isGLB_infₛ (s : Set (GrothendieckTopology C)) : IsGLB s (infₛ s) := by
+theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine' @IsGLB.of_image _ _ _ _ sieves _ _ _ _
   · intros
     rfl
-  · exact _root_.isGLB_infₛ _
-#align category_theory.grothendieck_topology.is_glb_Inf CategoryTheory.GrothendieckTopology.isGLB_infₛ
+  · exact _root_.isGLB_sInf _
+#align category_theory.grothendieck_topology.is_glb_Inf CategoryTheory.GrothendieckTopology.isGLB_sInf
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
 definitionally equal to the bottom and top respectively.
 -/
 instance : CompleteLattice (GrothendieckTopology C) :=
-  CompleteLattice.copy (completeLatticeOfInf _ isGLB_infₛ) _ rfl (discrete C)
+  CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
-      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_infₛ) (discrete C)
+      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_sInf) (discrete C)
       · intro X S _
         apply Set.mem_univ)
     (trivial C)
@@ -310,8 +309,8 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · refine' @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_infₛ) (trivial C))
-    _ rfl _ rfl _ rfl infₛ rfl
+      · refine' @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+    _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
   ⟨⊤⟩

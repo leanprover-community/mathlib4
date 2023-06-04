@@ -64,8 +64,7 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
 theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
-    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' :=
-  by
+    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
   induction' xs with y ys IH
   · cases x_mem
   cases' ys with z zs
@@ -78,8 +77,7 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
     . simpa using x_ne
 #align list.next_or_eq_next_or_of_mem_of_ne List.nextOr_eq_nextOr_of_mem_of_ne
 
-theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs :=
-  by
+theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction' xs with y ys IH
   · simp at h
   cases' ys with z zs
@@ -90,8 +88,7 @@ theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x
       simpa [hx] using IH h
 #align list.mem_of_next_or_ne List.mem_of_nextOr_ne
 
-theorem nextOr_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (xs ++ [x]) x d = d :=
-  by
+theorem nextOr_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (xs ++ [x]) x d = d := by
   induction' xs with z zs IH
   · simp
   · obtain ⟨hz, hzs⟩ := not_or.mp (mt mem_cons.2 h)
@@ -113,7 +110,7 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   · exact ih fun _ h => hxs' _ (mem_cons_of_mem _ h)
 #align list.next_or_mem List.nextOr_mem
 
-/-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the next
+/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the next
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
@@ -128,7 +125,7 @@ def next (l : List α) (x : α) (h : x ∈ l) : α :=
   nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
 #align list.next List.next
 
-/-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the previous
+/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the previous
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
@@ -185,8 +182,7 @@ theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
 #align list.next_cons_concat List.next_cons_concat
 
 theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
-    (hx : x = getLast (y :: l) (cons_ne_nil _ _)) (hl : Nodup l) : next (y :: l) x h = y :=
-  by
+    (hx : x = getLast (y :: l) (cons_ne_nil _ _)) (hl : Nodup l) : next (y :: l) x h = y := by
   rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx
   intro H
@@ -335,8 +331,7 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
         List.get]
     · rw [prev_ne_cons_cons]
       · convert hl n.succ y h.of_cons (Nat.le_of_succ_le_succ hn) using 1
-        have : ∀ k hk, (y :: l).nthLe k hk = (x :: y :: l).nthLe (k + 1) (Nat.succ_lt_succ hk) :=
-          by
+        have : ∀ k hk, (y :: l).nthLe k hk = (x :: y :: l).nthLe (k + 1) (Nat.succ_lt_succ hk) := by
           intros
           simp [List.nthLe]
         rw [this]
@@ -370,8 +365,7 @@ theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l
 
 set_option linter.deprecated false in
 theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
-    (l.pmap l.prev fun _ h => h) = l.rotate (l.length - 1) :=
-  by
+    (l.pmap l.prev fun _ h => h) = l.rotate (l.length - 1) := by
   apply List.ext_nthLe
   · simp
   · intro n hn hn'
@@ -380,8 +374,7 @@ theorem pmap_prev_eq_rotate_length_sub_one (h : Nodup l) :
 
 set_option linter.deprecated false in
 theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    prev l (next l x hx) (next_mem _ _ _) = x :=
-  by
+    prev l (next l x hx) (next_mem _ _ _) = x := by
   obtain ⟨n, hn, rfl⟩ := nthLe_of_mem hx
   simp only [next_nthLe, prev_nthLe, h, Nat.mod_add_mod]
   cases' l with hd tl
@@ -394,8 +387,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
 
 set_option linter.deprecated false in
 theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    next l (prev l x hx) (prev_mem _ _ _) = x :=
-  by
+    next l (prev l x hx) (prev_mem _ _ _) = x := by
   obtain ⟨n, hn, rfl⟩ := nthLe_of_mem hx
   simp only [next_nthLe, prev_nthLe, h, Nat.mod_add_mod]
   cases' l with hd tl
@@ -408,8 +400,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
 
 set_option linter.deprecated false in
 theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    prev l.reverse x (mem_reverse'.mpr hx) = next l x hx :=
-  by
+    prev l.reverse x (mem_reverse'.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
   have key : l.length - 1 - k < l.length :=
@@ -427,16 +418,14 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    next l.reverse x (mem_reverse'.mpr hx) = prev l x hx :=
-  by
+    next l.reverse x (mem_reverse'.mpr hx) = prev l x hx := by
   convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x ((mem_reverse _ _).mpr hx)).symm
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
 set_option linter.deprecated false in
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
-    l.next x hx = l'.next x (h.mem_iff.mp hx) :=
-  by
+    l.next x hx = l'.next x (h.mem_iff.mp hx) := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   obtain ⟨n, rfl⟩ := id h
   rw [next_nthLe _ hn]
@@ -446,8 +435,7 @@ theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α}
 #align list.is_rotated_next_eq List.isRotated_next_eq
 
 theorem isRotated_prev_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
-    l.prev x hx = l'.prev x (h.mem_iff.mp hx) :=
-  by
+    l.prev x hx = l'.prev x (h.mem_iff.mp hx) := by
   rw [← next_reverse_eq_prev _ hn, ← next_reverse_eq_prev _ (h.nodup_iff.mp hn)]
   exact isRotated_next_eq h.reverse (nodup_reverse.mpr hn) _
 #align list.is_rotated_prev_eq List.isRotated_prev_eq
@@ -619,8 +607,7 @@ theorem subsingleton_reverse_iff {s : Cycle α} : s.reverse.Subsingleton ↔ s.S
 #align cycle.subsingleton_reverse_iff Cycle.subsingleton_reverse_iff
 
 theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
-    ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y :=
-  by
+    ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
   induction' s using Quot.inductionOn with l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
     length_eq_zero, length_eq_one, Nat.not_lt_zero, false_or_iff] at h
@@ -634,8 +621,7 @@ def Nontrivial (s : Cycle α) : Prop :=
 
 @[simp]
 theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
-    Nontrivial (l : Cycle α) ↔ 2 ≤ l.length :=
-  by
+    Nontrivial (l : Cycle α) ↔ 2 ≤ l.length := by
   rw [Nontrivial]
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp
@@ -682,8 +668,7 @@ theorem nodup_reverse_iff {s : Cycle α} : s.reverse.Nodup ↔ s.Nodup :=
   Quot.inductionOn s fun _ => nodup_reverse
 #align cycle.nodup_reverse_iff Cycle.nodup_reverse_iff
 
-theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s :=
-  by
+theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
   induction' s using Quot.inductionOn with l
   cases' l with hd tl
   · simp
@@ -691,8 +676,7 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s :=
     simp [this]
 #align cycle.subsingleton.nodup Cycle.Subsingleton.nodup
 
-theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s :=
-  by
+theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s := by
   rw [length_subsingleton_iff]
   induction s using Quotient.inductionOn'
   simp only [mk''_eq_coe, nodup_coe_iff] at h
@@ -889,8 +873,7 @@ nonrec theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : 
   apply next_mem; assumption
 #align cycle.next_mem Cycle.next_mem
 
-theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev hs x hx ∈ s :=
-  by
+theorem prev_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.prev hs x hx ∈ s := by
   rw [← next_reverse_eq_prev, ← mem_reverse_iff]
   apply next_mem
 #align cycle.prev_mem Cycle.prev_mem

@@ -361,8 +361,7 @@ theorem colimit_eq {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} {x' : F.o
 
 theorem jointly_surjective (F : J ⥤ TypeMax.{v, u}) {t : Cocone F} (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x := by
-  suffices (fun x : t.pt => ULift.up (∃ j y, t.ι.app j y = x)) = fun _ => ULift.up.{max v u} True
-    by
+  suffices (fun x : t.pt => ULift.up (∃ j y, t.ι.app j y = x)) = fun _ => ULift.up.{max v u} True by
     have := congr_fun this x
     simpa using congr_arg ULift.down this
   refine' h.hom_ext _

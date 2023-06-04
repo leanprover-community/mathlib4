@@ -5,6 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Logic.Nonempty
+import Mathlib.Lean.Meta.DiscrTree
 
 /-!
 # Once-per-file cache for tactics
@@ -93,27 +94,34 @@ def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT B
 Cached fold over the environment's declarations,
 where a given function is applied to `α` for every constant.
 -/
-def DeclCache (α : Type) :=
-  Cache α × (Name → ConstantInfo → α → MetaM α)
-
-instance : Nonempty (DeclCache α) :=
-  inferInstanceAs <| Nonempty (_ × _)
+structure DeclCache (α : Type) where mk' ::
+  /-- The cached data. -/
+  cache : Cache α
+  /-- Function for adding a declaration from the current file to the cache. -/
+  addDecl : Name → ConstantInfo → α → MetaM α
+  /-- Function for adding a declaration from the library to the cache.
+  Defaults to the same behaviour as adding a declaration from the current file. -/
+  addLibraryDecl : Name → ConstantInfo → α → MetaM α := addDecl
+deriving Nonempty
 
 /--
 Creates a `DeclCache`.
 The cached structure `α` is initialized with `empty`,
-and then `addDecl` is called for every constant in the environment.
-Calls to `addDecl` for imported constants are cached.
+and then `addLibraryDecl` is called for every imported constant, and the result is cached.
+After all imported constants have been added, we run `post`.
+When `get` is called, `addDecl` is also called for every constant in the current file.
 -/
 def DeclCache.mk (profilingName : String) (empty : α)
-    (addDecl : Name → ConstantInfo → α → MetaM α) : IO (DeclCache α) := do
+    (addDecl : Name → ConstantInfo → α → MetaM α)
+    (addLibraryDecl : Name → ConstantInfo → α → MetaM α := addDecl)
+    (post : α → MetaM α := fun a => pure a) : IO (DeclCache α) := do
   let cache ← Cache.mk do
     profileitM Exception profilingName (← getOptions) do
     let mut a := empty
     for (n, c) in (← getEnv).constants.map₁.toList do
-      a ← addDecl n c a
-    return a
-  pure (cache, addDecl)
+      a ← addLibraryDecl n c a
+    return (← post a)
+  pure { cache := cache, addDecl := addDecl }
 
 /--
 Access the cache.
@@ -122,7 +130,61 @@ will initialize the cache with the function
 provided in the constructor.
 -/
 def DeclCache.get (cache : DeclCache α) : MetaM α := do
-  let mut a ← cache.1.get
+  let mut a ← cache.cache.get
   for (n, c) in (← getEnv).constants.map₂.toList do
-    a ← cache.2 n c a
+    a ← cache.addDecl n c a
   return a
+
+/--
+A type synonym for a `DeclCache` containing a pair of discrimination trees.
+The first will store declarations in the current file,
+the second will store declarations from imports (and will hopefully be "read-only" after creation).
+-/
+@[reducible] def DiscrTreeCache (α : Type) : Type :=
+  DeclCache (DiscrTree α true × DiscrTree α true)
+
+/--
+Build a `DiscrTreeCache`,
+from a function that returns a collection of keys and values for each declaration.
+-/
+def DiscrTreeCache.mk [BEq α] (profilingName : String)
+    (processDecl : Name → ConstantInfo → MetaM (Array (Array (DiscrTree.Key true) × α)))
+    (post? : Option (Array α → Array α) := none)
+    (init : Option (DiscrTree α true) := none) :
+    IO (DiscrTreeCache α) :=
+  let updateTree := fun name constInfo tree => do
+    return (← processDecl name constInfo).foldl (fun t (k, v) => t.insertIfSpecific k v) tree
+  let addDecl := fun name constInfo (tree₁, tree₂) => do
+    return (← updateTree name constInfo tree₁, tree₂)
+  let addLibraryDecl := fun name constInfo (tree₁, tree₂) => do
+    return (tree₁, ← updateTree name constInfo tree₂)
+  let post := match post? with
+  | some f => fun (T₁, T₂) => return (T₁, T₂.mapArrays f)
+  | none => fun T => pure T
+  match init with
+  | some t => return ⟨← Cache.mk (pure ({}, t)), addDecl, addLibraryDecl⟩
+  | none => DeclCache.mk profilingName ({}, {}) addDecl addLibraryDecl (post := post)
+
+/--
+Get matches from both the discrimination tree for declarations in the current file,
+and for the imports.
+
+Note that if you are calling this multiple times with the same environment,
+it will rebuild the discrimination tree for the current file multiple times,
+and it would be more efficient to call `c.get` once,
+and then call `DiscrTree.getMatch` multiple times.
+-/
+def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α) := do
+  let (locals, imports) ← c.get
+  -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
+  -- Hence we reverse this list, so we try out more specific lemmas earlier.
+  return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse
+
+/--
+A structure that holds the cached discrimination tree,
+and possibly a pointer to a memory region, if we unpickled the tree from disk.
+-/
+structure CachedData (α : Type) where
+  pointer? : Option CompactedRegion
+  cache : DiscrTreeCache α
+deriving Nonempty

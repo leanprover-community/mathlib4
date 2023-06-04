@@ -172,10 +172,10 @@ theorem hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (F : C ⥤ D) 
 #align category_theory.has_limits_of_shape_of_has_limits_of_shape_creates_limits_of_shape CategoryTheory.hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
 
 /-- If `F` creates limits, and `D` has all limits, then `C` has all limits. -/
-theorem has_limits_of_has_limits_creates_limits (F : C ⥤ D) [HasLimitsOfSize.{w, w'} D]
+theorem hasLimits_of_hasLimits_createsLimits (F : C ⥤ D) [HasLimitsOfSize.{w, w'} D]
     [CreatesLimitsOfSize.{w, w'} F] : HasLimitsOfSize.{w, w'} C :=
   ⟨fun _ _ => hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape F⟩
-#align category_theory.has_limits_of_has_limits_creates_limits CategoryTheory.has_limits_of_has_limits_creates_limits
+#align category_theory.has_limits_of_has_limits_creates_limits CategoryTheory.hasLimits_of_hasLimits_createsLimits
 
 -- Interface to the `CreatesColimit` class.
 /-- `liftColimit t` is the cocone for `K` given by lifting the colimit `t` for `K ⋙ F`. -/
@@ -213,10 +213,10 @@ theorem hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (F : C �
 #align category_theory.has_colimits_of_shape_of_has_colimits_of_shape_creates_colimits_of_shape CategoryTheory.hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape
 
 /-- If `F` creates colimits, and `D` has all colimits, then `C` has all colimits. -/
-theorem has_colimits_of_has_colimits_creates_colimits (F : C ⥤ D) [HasColimitsOfSize.{w, w'} D]
+theorem hasColimits_of_hasColimits_createsColimits (F : C ⥤ D) [HasColimitsOfSize.{w, w'} D]
     [CreatesColimitsOfSize.{w, w'} F] : HasColimitsOfSize.{w, w'} C :=
   ⟨fun _ _ => hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape F⟩
-#align category_theory.has_colimits_of_has_colimits_creates_colimits CategoryTheory.has_colimits_of_has_colimits_creates_colimits
+#align category_theory.has_colimits_of_has_colimits_creates_colimits CategoryTheory.hasColimits_of_hasColimits_createsColimits
 
 instance (priority := 10) reflectsLimitsOfShapeOfCreatesLimitsOfShape (F : C ⥤ D)
     [CreatesLimitsOfShape J F] : ReflectsLimitsOfShape J F where
@@ -275,8 +275,7 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
         let f : d ⟶ d' := hd'.liftConeMorphism d
         have : (Cones.functoriality K F).map f = i.inv :=
           (hd.ofIsoLimit i.symm).uniq_cone_morphism
-        haveI : IsIso ((Cones.functoriality K F).map f) :=
-          by
+        haveI : IsIso ((Cones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI : IsIso f := isIso_of_reflects_iso f (Cones.functoriality K F)
@@ -383,8 +382,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
         let f : d' ⟶ d := hd'.descCoconeMorphism d
         have : (Cocones.functoriality K F).map f = i.hom :=
           (hd.ofIsoColimit i.symm).uniq_cocone_morphism
-        haveI : IsIso ((Cocones.functoriality K F).map f) :=
-          by
+        haveI : IsIso ((Cocones.functoriality K F).map f) := by
           rw [this]
           infer_instance
         haveI := isIso_of_reflects_iso f (Cocones.functoriality K F)

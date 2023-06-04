@@ -557,7 +557,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
--- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
+-- `simpNF` complains about this being provable by `IsROrC.star_def` even
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
@@ -924,8 +924,8 @@ private theorem abs_mul (z w : ℂ) : (abs z * w) = (abs z) * abs w := by
   rw [normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
 
 private theorem abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
-  (mul_self_le_mul_self_iff (abs_nonneg' (z + w)) (add_nonneg (abs_nonneg' z) (abs_nonneg' w))).2 <|
-    by
+  (mul_self_le_mul_self_iff (abs_nonneg' (z + w))
+      (add_nonneg (abs_nonneg' z) (abs_nonneg' w))).2 <| by
     rw [mul_self_abs, add_mul_self_eq, mul_self_abs, mul_self_abs, add_right_comm, normSq_add,
       add_le_add_iff_left, mul_assoc, mul_le_mul_left (zero_lt_two' ℝ), ←
       Real.sqrt_mul <| normSq_nonneg z, ← normSq_conj w, ← map_mul]

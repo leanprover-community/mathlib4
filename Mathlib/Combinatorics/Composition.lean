@@ -11,7 +11,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Tactic.WLOG
 
 /-!
 # Compositions
@@ -360,8 +359,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
 `Fin (c.blocks_fun (c.index j))` through the canonical increasing bijection. -/
 def invEmbedding (j : Fin n) : Fin (c.blocksFun (c.index j)) :=
-  ⟨j - c.sizeUpTo (c.index j),
-    by
+  ⟨j - c.sizeUpTo (c.index j), by
     rw [tsub_lt_iff_right, add_comm, ← sizeUpTo_succ']
     · exact lt_sizeUpTo_index_succ _ _
     · exact sizeUpTo_index_le _ _⟩
@@ -950,8 +948,7 @@ theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
   induction' i with i IH
   · simp
-  have A : i < c.blocks.length :=
-    by
+  have A : i < c.blocks.length := by
     rw [c.card_boundaries_eq_succ_length] at h
     simp [blocks, Nat.lt_of_succ_lt_succ h]
   have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length, Nat.sub_le])
@@ -1019,8 +1016,7 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
     c.toCompositionAsSet.blocks = c.blocks := by
   let d := c.toCompositionAsSet
   change d.blocks = c.blocks
-  have length_eq : d.blocks.length = c.blocks.length :=
-    by
+  have length_eq : d.blocks.length = c.blocks.length := by
     convert c.toCompositionAsSet_length
     simp [CompositionAsSet.blocks]
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum

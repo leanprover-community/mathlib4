@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Tactic.Set
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -731,7 +730,7 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
     (fun h : lcm a b = 0 => by
       have : Associated (a * b) 0 := (gcd_mul_lcm a b).symm.trans <| by rw [h, mul_zero]
       rwa [← mul_eq_zero, ← associated_zero_iff_eq_zero])
-    (by rintro (rfl | rfl) <;> [apply lcm_zero_left, apply lcm_zero_right])
+    (by rintro (rfl | rfl) <;> [apply lcm_zero_left; apply lcm_zero_right])
 #align lcm_eq_zero_iff lcm_eq_zero_iff
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
@@ -1022,16 +1021,14 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
   normUnit_zero := if_pos rfl
   normUnit_mul {a b} ha hb := by
     simp_rw [if_neg (mul_ne_zero ha hb), if_neg ha, if_neg hb, Units.ext_iff, Units.val_mul]
-    suffices
-      a * b * ↑(Classical.choose (associated_map_mk hinv (a * b))) =
+    suffices a * b * ↑(Classical.choose (associated_map_mk hinv (a * b))) =
         a * ↑(Classical.choose (associated_map_mk hinv a)) *
-          (b * ↑(Classical.choose (associated_map_mk hinv b)))
-      by
-        apply mul_left_cancel₀ (mul_ne_zero ha hb) _
-        -- Porting note: original `simpa` fails with `unexpected bound variable #1`
-        -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
-        rw [this, mul_assoc, ← mul_assoc _ b, mul_comm _ b, ← mul_assoc, ← mul_assoc,
-          mul_assoc (a * b)]
+        (b * ↑(Classical.choose (associated_map_mk hinv b))) by
+      apply mul_left_cancel₀ (mul_ne_zero ha hb) _
+      -- Porting note: original `simpa` fails with `unexpected bound variable #1`
+      -- simpa only [mul_assoc, mul_comm, mul_left_comm] using this
+      rw [this, mul_assoc, ← mul_assoc _ b, mul_comm _ b, ← mul_assoc, ← mul_assoc,
+        mul_assoc (a * b)]
     rw [map_mk_unit_aux hinv a, map_mk_unit_aux hinv (a * b), map_mk_unit_aux hinv b, ←
       MonoidHom.map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by

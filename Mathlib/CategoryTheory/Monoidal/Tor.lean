@@ -89,5 +89,4 @@ set_option linter.uppercaseLean3 false in
 
 end CategoryTheory
 
--- porting note: commented the following line
---assert_not_exists Module.abelian
+assert_not_exists Module.abelian

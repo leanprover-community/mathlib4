@@ -336,8 +336,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j  =>
-        by
+      fac := fun s j  => by
         have h := Subsingleton.elim j default
         subst h
         dsimp
@@ -370,8 +369,7 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isColimit :=
     { desc := fun s => s.ι.app default
-      fac := fun s j =>
-        by
+      fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
         apply Category.id_comp

@@ -474,8 +474,7 @@ theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [
 @[simp]
 theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
     typein r a < typein r b ↔ r a b :=
-  ⟨fun ⟨f⟩ =>
-    by
+  ⟨fun ⟨f⟩ => by
     have : f.top.1 = a := by
       let f' := PrincipalSeg.ofElement r a
       let g' := f.trans (PrincipalSeg.ofElement r b)
@@ -507,8 +506,7 @@ theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r 
   That is, `enum` maps an initial segment of the ordinals, those
   less than the order type of `r`, to the elements of `α`. -/
 def enum (r : α → α → Prop) [IsWellOrder α r] (o) : o < type r → α :=
-  Quot.recOn' o (fun ⟨β, s, _⟩ h => (Classical.choice h).top) fun ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨h⟩ =>
-    by
+  Quot.recOn' o (fun ⟨β, s, _⟩ h => (Classical.choice h).top) fun ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨h⟩ => by
     refine' funext fun H₂ : type t < type r => _
     have H₁ : type s < type r := by rwa [type_eq.2 ⟨h⟩]
     have : ∀ {o : Ordinal} {e : type s = o} (H : o < type r),
@@ -568,8 +566,7 @@ theorem lt_wf : @WellFounded Ordinal (· < ·) :=
           e ▸ this a⟩
       fun a =>
       Acc.recOn (wo.wf.apply a) fun x _ IH =>
-        ⟨_, fun o h =>
-          by
+        ⟨_, fun o h => by
           rcases typein_surj r (lt_trans h (typein_lt_type r _)) with ⟨b, rfl⟩
           exact IH _ ((typein_lt_typein r).1 h)⟩⟩
 #align ordinal.lt_wf Ordinal.lt_wf
@@ -922,7 +919,7 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
-  induction n <;> [rfl, simp only [card_add, card_one, Nat.cast_succ, *]]
+  induction n <;> [rfl; simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
@@ -964,8 +961,8 @@ instance add_swap_covariantClass_le :
                 intro a b
                 constructor <;> intro H
                 · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo], assumption]
-                · cases H <;> constructor <;> [rwa [fo], assumption]⟩
+                    [rwa [← fo]; assumption]
+                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
 #align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
@@ -991,12 +988,8 @@ instance linearOrder : LinearOrder Ordinal :=
         rw [← typein_top f, ← typein_top g, le_iff_lt_or_eq, le_iff_lt_or_eq,
                  typein_lt_typein, typein_lt_typein]
         rcases trichotomous_of (Sum.Lex r₁ r₂) g.top f.top with (h | h | h) <;>
-                [exact Or.inl (Or.inl h),
-                · left
-                  right
-                  rw [h],
-                  exact Or.inr (Or.inl h)]
-    decidable_le := Classical.decRel _ }
+          [exact Or.inl (Or.inl h); (left; right; rw [h]); exact Or.inr (Or.inl h)]
+    decidableLE := Classical.decRel _ }
 
 instance wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
@@ -1022,9 +1015,9 @@ theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
 #align ordinal.max_eq_zero Ordinal.max_eq_zero
 
 @[simp]
-theorem infₛ_empty : infₛ (∅ : Set Ordinal) = 0 :=
+theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
   dif_neg Set.not_nonempty_empty
-#align ordinal.Inf_empty Ordinal.infₛ_empty
+#align ordinal.Inf_empty Ordinal.sInf_empty
 
 -- ### Successor order properties
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
@@ -1232,7 +1225,7 @@ noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
     apply enum_le_enum'
 #align ordinal.enum_iso_out Ordinal.enumIsoOut
 
-/-- `o.out.α` is an `order_bot` whenever `0 < o`. -/
+/-- `o.out.α` is an `OrderBot` whenever `0 < o`. -/
 def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
   bot_le := enum_zero_le' ho
 #align ordinal.out_order_bot_of_pos Ordinal.outOrderBotOfPos
@@ -1271,8 +1264,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 /-- Principal segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
   `ordinal.{v}` as a principal segment when `u < v`. -/
 def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
-  ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v},
-    by
+  ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · rw [← lift_id (type s)] at h⊢
@@ -1341,10 +1333,10 @@ def ord (c : Cardinal) : Ordinal :=
       suffices : ∀ {α β}, α ≈ β → F α ≤ F β
       exact fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine' le_cinfᵢ_iff'.2 fun i => _
+      refine' le_ciInf_iff'.2 fun i => _
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
-        (cinfᵢ_le' _
+        (ciInf_le' _
               (Subtype.mk (f ⁻¹'o i.val)
                 (@RelEmbedding.isWellOrder _ _ _ _ (↑(RelIso.preimage f i.1)) i.2))).trans_eq
           (Quot.sound ⟨RelIso.preimage f i.1⟩))
@@ -1355,18 +1347,17 @@ theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
 theorem ord_eq (α) : ∃ (r : α → α → Prop)(wo : IsWellOrder α r), ord (#α) = @type α r wo :=
-  let ⟨r, wo⟩ := cinfᵢ_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
+  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord (#α) ≤ type r :=
-  cinfᵢ_le' _ (Subtype.mk r h)
+  ciInf_le' _ (Subtype.mk r h)
 #align cardinal.ord_le_type Cardinal.ord_le_type
 
 theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
   inductionOn c fun α =>
-    Ordinal.inductionOn o fun β s _ =>
-      by
+    Ordinal.inductionOn o fun β s _ => by
       let ⟨r, _, e⟩ := ord_eq α
       skip; simp only [card_type]; constructor <;> intro h
       · rw [e] at h

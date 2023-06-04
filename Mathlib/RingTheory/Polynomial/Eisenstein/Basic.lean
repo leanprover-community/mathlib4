@@ -65,10 +65,8 @@ section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
 
-set_option synthInstance.etaExperiment true
 
-theorem map {A : Type v} [CommRing A] (φ : R →+* A) : (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) :=
-  by
+theorem map {A : Type v} [CommRing A] (φ : R →+* A) : (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine' (IsWeaklyEisensteinAt_iff _ _).2 fun hn => _
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn (natDegree_map_le _ _)))
@@ -87,9 +85,8 @@ section Principal
 variable {p : R}
 
 theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo : f.Monic)
-    (hf : f.IsWeaklyEisensteinAt (Submodule.span R {p})) :
-    ∃ y ∈ adjoin R ({x} : Set S), (algebraMap R S) p * y = x ^ (f.map (algebraMap R S)).natDegree :=
-  by
+    (hf : f.IsWeaklyEisensteinAt (Submodule.span R {p})) : ∃ y ∈ adjoin R ({x} : Set S),
+    (algebraMap R S) p * y = x ^ (f.map (algebraMap R S)).natDegree := by
   rw [aeval_def, Polynomial.eval₂_eq_eval_map, eval_eq_sum_range, range_add_one,
     sum_insert not_mem_range_self, sum_range, (hmo.map (algebraMap R S)).coeff_natDegree,
     one_mul] at hx
