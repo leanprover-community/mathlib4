@@ -15,22 +15,22 @@ import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 
 /-! # Real differentiability of complex-differentiable functions
 
-`has_deriv_at.real_of_complex` expresses that, if a function on `ℂ` is differentiable (over `ℂ`),
+`HasDerivAt.real_of_complex` expresses that, if a function on `ℂ` is differentiable (over `ℂ`),
 then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the real part of the
 complex derivative.
 
-`differentiable_at.conformal_at` states that a real-differentiable function with a nonvanishing
+`DifferentiableAt.conformalAt` states that a real-differentiable function with a nonvanishing
 differential from the complex plane into an arbitrary complex-normed space is conformal at a point
 if it's holomorphic at that point. This is a version of Cauchy-Riemann equations.
 
-`conformal_at_iff_differentiable_at_or_differentiable_at_comp_conj` proves that a real-differential
+`conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj` proves that a real-differential
 function with a nonvanishing differential between the complex plane is conformal at a point if and
 only if it's holomorphic or antiholomorphic at that point.
 
 ## TODO
 
 * The classical form of Cauchy-Riemann equations
-* On a connected open set `u`, a function which is `conformal_at` each point is either holomorphic
+* On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
 throughout or antiholomorphic throughout.
 
 ## Warning
