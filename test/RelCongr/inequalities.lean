@@ -93,10 +93,11 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
   success_if_fail_with_msg "rel failed, goal not a relation" (rel [hx])
   exact h
 
-example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) : x ^ 2 * a + c ≤ x ^ 2 * b + d := by
+example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x * a + c ≤ x * b + d := by
   success_if_fail_with_msg
-    "rel failed, cannot prove goal by 'substituting' the listed relationships"
+    "rel failed, cannot prove goal by 'substituting' the listed relationships. The steps which could not be automatically justified were: \n0 ≤ x\nc ≤ d"
     (rel [h1])
+  have : 0 ≤ x := by linarith
   rel [h1, h2]
 
 /-! ## Non-finishing examples -/

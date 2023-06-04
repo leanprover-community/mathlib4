@@ -496,10 +496,13 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.relAssumption hyps
     -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
-    let (_, goals) ← g.relCongr none [] disch assum
-    match goals.toList with
+    let (_, unsolvedGoalStates) ← g.relCongr none [] disch assum
+    match unsolvedGoalStates.toList with
+    -- if no goals are unsolved, succeed!
     | [] => pure ()
-    | l => do
-      let g ← @List.mapM MetaM _ _ _ MVarId.getType l
+    -- if not, fail and report the unsolved goals
+    | unsolvedGoalStates => do
+      let unsolvedGoals ← @List.mapM MetaM _ _ _ MVarId.getType unsolvedGoalStates
+      let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. {""
-        }The steps which could not be automatically justified were: {g}"
+        }The steps which could not be automatically justified were: \n{g}"
