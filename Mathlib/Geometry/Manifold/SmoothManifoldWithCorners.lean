@@ -26,55 +26,55 @@ specific type class for `C^∞` manifolds as these are the most commonly used.
 
 ## Main definitions
 
-* `model_with_corners 𝕜 E H` :
+* `ModelWithCorners 𝕜 E H` :
   a structure containing informations on the way a space `H` embeds in a
   model vector space E over the field `𝕜`. This is all that is needed to
   define a smooth manifold with model space `H`, and model vector space `E`.
-* `model_with_corners_self 𝕜 E` :
+* `modelWithCornersSelf 𝕜 E` :
   trivial model with corners structure on the space `E` embedded in itself by the identity.
-* `cont_diff_groupoid n I` :
+* `contDiffGroupoid n I` :
   when `I` is a model with corners on `(𝕜, E, H)`, this is the groupoid of local homeos of `H`
   which are of class `C^n` over the normed field `𝕜`, when read in `E`.
-* `smooth_manifold_with_corners I M` :
+* `SmoothManifoldWithCorners I M` :
   a type class saying that the charted space `M`, modelled on the space `H`, has `C^∞` changes of
   coordinates with respect to the model with corners `I` on `(𝕜, E, H)`. This type class is just
-  a shortcut for `has_groupoid M (cont_diff_groupoid ∞ I)`.
-* `ext_chart_at I x`:
+  a shortcut for `HasGroupoid M (contDiffGroupoid ∞ I)`.
+* `extChartAt I x`:
   in a smooth manifold with corners with the model `I` on `(E, H)`, the charts take values in `H`,
   but often we may want to use their `E`-valued version, obtained by composing the charts with `I`.
   Since the target is in general not open, we can not register them as local homeomorphisms, but
-  we register them as local equivs. `ext_chart_at I x` is the canonical such local equiv around `x`.
+  we register them as local equivs. `extChartAt I x` is the canonical such local equiv around `x`.
 
 As specific examples of models with corners, we define (in the file `real_instances.lean`)
-* `model_with_corners_self ℝ (euclidean_space (fin n))` for the model space used to define
+* `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
   `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
-* `model_with_corners ℝ (euclidean_space (fin n)) (euclidean_half_space n)` for the model space
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_half_space n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `manifold`)
-* `model_with_corners ℝ (euclidean_space (fin n)) (euclidean_quadrant n)` for the model space used
+* `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (euclidean_quadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
 one could use
 
-  `variables {n : ℕ} {M : Type*} [topological_space M] [charted_space (euclidean_space (fin n)) M]
-   [smooth_manifold_with_corners (𝓡 n) M]`.
+  `variables {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
+   [SmoothManifoldWithCorners (𝓡 n) M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
-`(euclidean_space (fin n)) × (euclidean_space (fin n))` and not on `euclidean_space (fin (2 * n))`!
+`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin n))` and not on `EuclideanSpace (Fin (2 * n))`!
 In the same way, it would not apply to product manifolds, modelled on
-`(euclidean_space (fin n)) × (euclidean_space (fin m))`.
+`(EuclideanSpace (Fin n)) × (EuclideanSpace (Fin m))`.
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variables {E : Type*} [normed_add_comm_group E] [normed_space ℝ E] [finite_dimensional ℝ E]
-  {I : model_with_corners ℝ E E} [I.boundaryless]
-  {M : Type*} [topological_space M] [charted_space E M] [smooth_manifold_with_corners I M]`
+  `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {I : ModelWithCorners ℝ E E} [I.boundaryless]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
 Here, `I.boundaryless` is a typeclass property ensuring that there is no boundary (this is for
-instance the case for `model_with_corners_self`, or products of these). Note that one could consider
-as a natural assumption to only use the trivial model with corners `model_with_corners_self ℝ E`,
+instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
+as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
 one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
 important to use the above incantation to maximize the applicability of theorems.
@@ -86,24 +86,24 @@ boundary, modelled on a half space (or even manifolds with corners). For the lat
 we still want to define smooth functions, tangent bundles, and so on. As smooth functions are
 well defined on vector spaces or subsets of these, one could take for model space a subtype of a
 vector space. With the drawback that the whole vector space itself (which is the most basic
-example) is not directly a subtype of itself: the inclusion of `univ : set E` in `set E` would
+example) is not directly a subtype of itself: the inclusion of `univ : Set E` in `Set E` would
 show up in the definition, instead of `id`.
 
 A good abstraction covering both cases it to have a vector
 space `E` (with basic example the Euclidean space), a model space `H` (with basic example the upper
 half space), and an embedding of `H` into `E` (which can be the identity for `H = E`, or
-`subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
+`Subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
 model with corners, and we encompass all the relevant properties (in particular the fact that the
-image of `H` in `E` should have unique differentials) in the definition of `model_with_corners`.
+image of `H` in `E` should have unique differentials) in the definition of `ModelWithCorners`.
 
 We concentrate on `C^∞` manifolds: all the definitions work equally well for `C^n` manifolds, but
 later on it is a pain to carry all over the smoothness parameter, especially when one wants to deal
 with `C^k` functions as there would be additional conditions `k ≤ n` everywhere. Since one deals
 almost all the time with `C^∞` (or analytic) manifolds, this seems to be a reasonable choice that
 one could revisit later if needed. `C^k` manifolds are still available, but they should be called
-using `has_groupoid M (cont_diff_groupoid k I)` where `I` is the model with corners.
+using `HasGroupoid M (contDiffGroupoid k I)` where `I` is the model with corners.
 
-I have considered using the model with corners `I` as a typeclass argument, possibly `out_param`, to
+I have considered using the model with corners `I` as a typeclass argument, possibly `outParam`, to
 get lighter notations later on, but it did not turn out right, as on `E × F` there are two natural
 model with corners, the trivial (identity) one, and the product one, and they are not defeq and one
 needs to indicate to Lean which one we want to use.
@@ -395,9 +395,9 @@ end
 section ModelWithCornersProd
 
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
-corners `I.prod I'` on `(E × E', model_prod H H')`. This appears in particular for the manifold
+corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
-`(E × E, H × E)`. See note [Manifold type tags] for explanation about `model_prod H H'`
+`(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
 @[simps (config := .lemmasOnly)]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
@@ -415,9 +415,9 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_invFun := I.continuous_invFun.prod_map I'.continuous_invFun }
 #align model_with_corners.prod ModelWithCorners.prod
 
-/-- Given a finite family of `model_with_corners` `I i` on `(E i, H i)`, we define the model with
-corners `pi I` on `(Π i, E i, model_pi H)`. See note [Manifold type tags] for explanation about
-`model_pi H`. -/
+/-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
+corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
+`ModelPi H`. -/
 def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
@@ -571,7 +571,7 @@ local homeomorphisms -/
 theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H := by
   apply le_antisymm le_top
   intro u _
-  -- we have to check that every local homeomorphism belongs to `cont_diff_groupoid 0 I`,
+  -- we have to check that every local homeomorphism belongs to `contDiffGroupoid 0 I`,
   -- by unfolding its definition
   change u ∈ contDiffGroupoid 0 I
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
@@ -679,7 +679,7 @@ namespace SmoothManifoldWithCorners
 
 /- We restate in the namespace `smooth_manifolds_with_corners` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
-`cont_diff_groupoid ∞ I` explicitly. -/
+`contDiffGroupoid ∞ I` explicitly. -/
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type _)
   [TopologicalSpace M] [ChartedSpace H M]
@@ -769,8 +769,8 @@ variable {𝕜 E M H E' M' H' : Type _} [NontriviallyNormedField 𝕜] [NormedAd
 
 In a smooth manifold with corners, the model space is the space `H`. However, we will also
 need to use extended charts taking values in the model vector space `E`. These extended charts are
-not `local_homeomorph` as the target is not open in `E` in general, but we can still register them
-as `local_equiv`.
+not `LocalHomeomorph` as the target is not open in `E` in general, but we can still register them
+as `LocalEquiv`.
 -/
 
 
@@ -1236,7 +1236,7 @@ theorem extChartAt_preimage_inter_eq :
   by mfld_set_tac
 #align ext_chart_at_preimage_inter_eq extChartAt_preimage_inter_eq
 
-/-! We use the name `ext_coord_change` for `(ext_chart_at I x').symm ≫ ext_chart_at I x`. -/
+/-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 
 
 theorem ext_coord_change_source (x x' : M) :
