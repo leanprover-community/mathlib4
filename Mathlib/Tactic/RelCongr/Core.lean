@@ -206,30 +206,30 @@ initialize registerBuiltinAttribute {
 initialize registerTraceClass `Meta.rel
 
 /-- The core of the `rel_congr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
-look up any relevant @[rel_congr] lemmas, try to apply them, run the discharger on side goals which
-are generated and recursively run this same tactic on "main" goals which are generated. If there is
-a user-provided template, first check that the template asks us to descend this far into the match.
--/
+look up any relevant @[rel_congr] lemmas, try to apply them, recursively run the tactic itself on
+"main" goals which are generated, and run the discharger on side goals which are generated. If there
+is a user-provided template, first check that the template asks us to descend this far into the
+match. -/
 partial def _root_.Lean.MVarId.relCongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (discharger : MVarId → MetaM Unit)
-    (assumption : MVarId → MetaM Unit := fun g => g.assumption) :
+    (side_goal_discharger : MVarId → MetaM Unit)
+    (main_goal_discharger : MVarId → MetaM Unit := fun g => g.assumption) :
     MetaM (List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
   | none =>
-    -- A. If there is no template, try to resolve the goal by the provided `assumption` tactic, and
-    -- continue on if this fails.
-    try assumption g; return (names, #[])
+    -- A. If there is no template, try to resolve the goal by the provided tactic
+    -- `main_goal_discharger`, and continue on if this fails.
+    try main_goal_discharger g; return (names, #[])
     catch _ => pure ()
   | some tpl =>
     -- B. If there is a template:
     -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
-    -- then try to resolve the goal by the provided `assumption` tactic;
+    -- then try to resolve the goal by the provided tactic `main_goal_discharger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
-        try assumption g; return (names, #[])
+        try main_goal_discharger g; return (names, #[])
         catch _ => return (names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
@@ -319,14 +319,15 @@ partial def _root_.Lean.MVarId.relCongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.relCongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (names2, subgoals2) := ← mvarId.relCongr tpl names2 discharger assumption
+        let (names2, subgoals2) :=
+          ← mvarId.relCongr tpl names2 side_goal_discharger main_goal_discharger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
       -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try discharger g
+          try side_goal_discharger g
           catch _ => out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (names, out ++ subgoals)
@@ -436,11 +437,12 @@ elab "rel_congr" template:(colGt term)?
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
-  -- The core tactic `Lean.MVarId.relCongr` will be run with discharger `rel_congr_discharger`
+  -- The core tactic `Lean.MVarId.relCongr` will be run with side-goal discharger being
+  -- `rel_congr_discharger`
   let disch g := Term.TermElabM.run' do
     let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
       | failure
-  -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
+  -- The core tactic `Lean.MVarId.relCongr` will be run with main-goal discharger being the tactic
   -- consisting of running `Lean.MVarId.relCongrForward` (trying a term together with limited
   -- forward-reasoning on that term) on each nontrivial hypothesis.
   let assum g := do
@@ -487,18 +489,19 @@ elab_rules : tactic
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do
       throwError "rel failed, goal not a relation"
-    -- The core tactic `Lean.MVarId.relCongr` will be run with discharger `rel_congr_discharger`
+    -- The core tactic `Lean.MVarId.relCongr` will be run with side-goal discharger being
+    -- `rel_congr_discharger`
     let disch g := Term.TermElabM.run' do
       let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_discharger))
         | failure
-    -- The core tactic `Lean.MVarId.relCongr` will be run with "assumption tactic"
+    -- The core tactic `Lean.MVarId.relCongr` will be run with main-goal discharger being the tactic
     -- consisting of running `Lean.MVarId.relCongrForward` (trying a term together with limited
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.relCongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.relCongr`!
     let (_, unsolvedGoalStates) ← g.relCongr none [] disch assum
     match unsolvedGoalStates.toList with
-    -- if no goals are unsolved, succeed!
+    -- if all goals are solved, succeed!
     | [] => pure ()
     -- if not, fail and report the unsolved goals
     | unsolvedGoalStates => do
