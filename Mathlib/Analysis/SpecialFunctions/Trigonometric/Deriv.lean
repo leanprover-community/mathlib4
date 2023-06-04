@@ -38,7 +38,7 @@ namespace Complex
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
   convert ((((hasStrictDerivAt_id x).neg.mul_const I).cexp.sub
-    ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹
+    ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹ using 1
   simp only [Function.comp, id]
   rw [sub_mul, mul_assoc, mul_assoc, I_mul_I, neg_one_mul, neg_neg, mul_one, one_mul, mul_assoc,
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
@@ -71,7 +71,7 @@ theorem deriv_sin : deriv sin = cos :=
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
   convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
-    ((hasStrictDerivAt_id x).neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹
+    ((hasStrictDerivAt_id x).neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
   simp only [Function.comp, id]
   ring
 #align complex.has_strict_deriv_at_cos Complex.hasStrictDerivAt_cos
@@ -98,7 +98,7 @@ theorem deriv_cos {x : ℂ} : deriv cos x = -sin x :=
 
 @[simp]
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
-  funext fun x => deriv_cos
+  funext fun _ => deriv_cos
 #align complex.deriv_cos' Complex.deriv_cos'
 
 /-- The complex hyperbolic sine function is everywhere strictly differentiable, with the derivative
@@ -106,6 +106,7 @@ theorem deriv_cos' : deriv cos = fun x => -sin x :=
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
   convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
+    using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
 #align complex.has_strict_deriv_at_sinh Complex.hasStrictDerivAt_sinh
 
@@ -136,6 +137,7 @@ derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
   convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
+    using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
 #align complex.has_strict_deriv_at_cosh Complex.hasStrictDerivAt_cosh
 
@@ -745,7 +747,8 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 #align real.one_lt_cosh Real.one_lt_cosh
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
-  refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp) _
+  -- Porting note: `by simp; abel` wass just `by simp` in mathlib3.
+  refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
   refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
