@@ -277,9 +277,8 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         exact (WithTop.coe_le_coe.2 hi).trans hm
       eventually_cofinite.2 A
     let T : Finset α := ht.toFinset
-    have :
-      (fun x => ∑' i, f i x) = (fun x => ∑ i in T, f i x) + fun x => ∑' i : { i // i ∉ T }, f i x :=
-      by
+    have : (fun x => ∑' i, f i x) = (fun x => ∑ i in T, f i x) +
+        fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine' (sum_add_tsum_subtype_compl _ T).symm
       refine' summable_of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
