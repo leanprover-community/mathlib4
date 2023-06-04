@@ -8,8 +8,8 @@ Authors: Michael Jendrusch, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
-import Mathbin.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # The category of types is a symmetric monoidal category
