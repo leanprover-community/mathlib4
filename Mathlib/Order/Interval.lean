@@ -590,7 +590,7 @@ instance lattice : Lattice (Interval α) :=
         change s.toProd.snd ≤ t.toProd.snd at hb₂
         change c.toProd.fst ≤ s.toProd.fst at hc₁
         change s.toProd.snd ≤ c.toProd.snd at hc₂
-        -- Porting note: originially it just had `hb.1` etc. in this next line
+        -- Porting note: originally it just had `hb.1` etc. in this next line
         exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
 
 @[simp, norm_cast]
@@ -606,7 +606,7 @@ theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
       exact (inter_empty _).symm
     | some t =>
       refine' (_ : setLike.coe (dite
-        -- Porting note: Needed to fill this first `_` explicitely.
+        -- Porting note: Needed to fill this first `_` explicitly.
         (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
         _ _) = _).trans Icc_inter_Icc.symm
       split_ifs with h

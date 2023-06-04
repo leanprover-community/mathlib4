@@ -186,7 +186,7 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
   `h : ∀ (x : X) (y : Y), P x y (a x) (b x)` and
   `h' : ∀ (x : X) (y : Y), Q x y (a x) (b x)`.
 
-The `using hyp` part can be ommited,
+The `using hyp` part can be omitted,
 which will effectively cause `choose` to start with an `intro hyp`.
 
 Examples:
@@ -209,7 +209,7 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
+syntax (name := choose) "choose" "!"? (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
@@ -217,6 +217,6 @@ elab_rules : tactic
   replaceMainGoal [g]
 
 @[inherit_doc choose]
-syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
+syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
