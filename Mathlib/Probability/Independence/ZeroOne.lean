@@ -44,13 +44,13 @@ theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   exact Or.inr (Or.inl h_indep.symm)
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSet_self
 
-theorem measure_eq_zero_or_one_of_indepSetCat_self [FiniteMeasure μ] {t : Set Ω}
+theorem measure_eq_zero_or_one_of_indepSetCat_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   have h_0_1_top := measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
   simpa [measure_ne_top μ] using h_0_1_top
 #align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSetCat_self
 
-variable [ProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
+variable [IsProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
 
 open Filter
 
