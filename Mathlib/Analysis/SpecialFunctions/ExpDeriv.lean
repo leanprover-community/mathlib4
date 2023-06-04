@@ -61,8 +61,8 @@ theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
-  apply contDiff_all_iff_nat.2
-  intro n
+  -- porting note: added `@` due to `∀ {n}` weirdness above
+  refine' @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
     · exact contDiff_zero.2 continuous_exp
