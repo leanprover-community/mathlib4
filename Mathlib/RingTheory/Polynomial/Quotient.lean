@@ -145,7 +145,7 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit. -/
-theorem IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit P) :
+theorem _root_.Polynomial.IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
@@ -164,6 +164,12 @@ theorem IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit P) :
       exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
     exact hcoeff }
+
+/-- Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
+nilpotent, except its constant term which is a unit. -/
+theorem _root_.Polynomial.isUnit_iff_coeff_isUnit_isNilpotent (P : Polynomial R) :
+    IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
+  ⟨Polynomial.IsUnit.coeff_isUnit_isNilpotent, fun H => IsUnit.isUnit_of_isNilpotent H.1 H.2⟩
 
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
