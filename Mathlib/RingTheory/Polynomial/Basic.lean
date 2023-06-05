@@ -256,6 +256,13 @@ theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i in range n, (X : R[X]
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_geom_sum_X Polynomial.monic_geom_sum_X
 
+theorem IsNilpotent.C_mul_X_pow_isNilpotent {r : R} (n : ℕ) (hnil : IsNilpotent r) :
+    IsNilpotent ((C r) * X ^ n) := by
+  refine' Commute.isNilpotent_mul_left (commute_X_pow _ _).symm _
+  obtain ⟨m, hm⟩ := hnil
+  refine' ⟨m, _⟩
+  rw [← C_pow, hm, C_0]
+
 end Semiring
 
 section Ring
