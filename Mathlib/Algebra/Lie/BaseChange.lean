@@ -85,26 +85,29 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     · intro y₁ y₂ hy₁ hy₂
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, LinearMap.map_add]
 
-set_option maxHeartbeats 1500000 in
 private theorem bracket_leibniz_lie (x y z : A ⊗[R] L) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
+  -- Porting note: replaced some `simp`s by `rw`s to avoid raising heartbeats
   simp only [bracket_def]
   refine' x.induction_on _ _ _
-  · simp only [LinearMap.map_zero, add_zero, eq_self_iff_true, LinearMap.zero_apply]
+  · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
   · intro a₁ l₁
     refine' y.induction_on _ _ _
-    · simp only [LinearMap.map_zero, add_zero, eq_self_iff_true, LinearMap.zero_apply]
+    · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
     · intro a₂ l₂
       refine' z.induction_on _ _ _
-      · simp only [LinearMap.map_zero, add_zero]
+      · rw [LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero,
+          add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
       · intro u₁ u₂ h₁ h₂
-        simp only [add_add_add_comm, h₁, h₂, LinearMap.map_add]
+        rw [map_add, map_add, map_add, map_add, map_add, h₁, h₂, add_add_add_comm]
     · intro u₁ u₂ h₁ h₂
-      simp only [add_add_add_comm, h₁, h₂, LinearMap.add_apply, LinearMap.map_add]
+      rw [map_add, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add, map_add,
+        LinearMap.add_apply, h₁, h₂, add_add_add_comm]
   · intro u₁ u₂ h₁ h₂
-    simp only [add_add_add_comm, h₁, h₂, LinearMap.add_apply, LinearMap.map_add]
+    rw [map_add, LinearMap.add_apply, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add,
+      LinearMap.add_apply, h₁, h₂, add_add_add_comm]
 
 instance : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
