@@ -53,6 +53,7 @@ import Mathlib.Algebra.Category.ModuleCat.Images
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
@@ -205,11 +206,13 @@ import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
@@ -430,6 +433,7 @@ import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
+import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
@@ -624,6 +628,7 @@ import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Polynomials
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
@@ -882,6 +887,7 @@ import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
@@ -1081,6 +1087,7 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
@@ -1620,7 +1627,9 @@ import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Geometry.Manifold.ConformalGroupoid
+import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
+import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
@@ -1963,7 +1972,9 @@ import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.IntegrableOn
+import Mathlib.MeasureTheory.Integral.IntegralSimps
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 import Mathlib.MeasureTheory.Integral.MeanInequalities
@@ -2268,6 +2279,7 @@ import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.Dickson
@@ -2301,6 +2313,7 @@ import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.Quotient
+import Mathlib.RingTheory.WittVector.Defs
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
@@ -2364,6 +2377,8 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
