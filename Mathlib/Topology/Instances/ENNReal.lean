@@ -148,7 +148,7 @@ def ltTopHomeomorphNNReal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
   simp only [mem_setOf_eq, lt_top_iff_ne_top]
 #align ennreal.lt_top_homeomorph_nnreal ENNReal.ltTopHomeomorphNNReal
 
-theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_h : a ≠ ∞), 𝓟 (Ioi a) :=
+theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_ : a ≠ ∞), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
 #align ennreal.nhds_top ENNReal.nhds_top
 
@@ -193,7 +193,7 @@ theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
   tendsto_coe_nhds_top.2 tendsto_real_toNNReal_atTop
 #align ennreal.tendsto_of_real_at_top ENNReal.tendsto_ofReal_atTop
 
-theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_h : a ≠ 0), 𝓟 (Iio a) :=
+theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp [pos_iff_ne_zero, Iio]
 #align ennreal.nhds_zero ENNReal.nhds_zero
 
@@ -566,13 +566,13 @@ theorem iSup_add {ι : Sort _} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + 
 #align ennreal.supr_add ENNReal.iSup_add
 
 theorem biSup_add' {ι : Sort _} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
-    (⨆ (i) (_hi : p i), f i) + a = ⨆ (i) (_hi : p i), f i + a := by
+    (⨆ (i) (_ : p i), f i) + a = ⨆ (i) (_ : p i), f i + a := by
   haveI : Nonempty { i // p i } := nonempty_subtype.2 h
   simp only [iSup_subtype', iSup_add]
 #align ennreal.bsupr_add' ENNReal.biSup_add'
 
 theorem add_biSup' {ι : Sort _} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
-    (a + ⨆ (i) (_hi : p i), f i) = ⨆ (i) (_hi : p i), a + f i := by
+    (a + ⨆ (i) (_ : p i), f i) = ⨆ (i) (_ : p i), a + f i := by
   simp only [add_comm a, biSup_add' h]
 #align ennreal.add_bsupr' ENNReal.add_biSup'
 
@@ -601,7 +601,7 @@ theorem iSup_add_iSup_le {ι ι' : Sort _} [Nonempty ι] [Nonempty ι'] {f : ι 
 
 theorem biSup_add_biSup_le' {ι ι'} {p : ι → Prop} {q : ι' → Prop} (hp : ∃ i, p i) (hq : ∃ j, q j)
     {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → f i + g j ≤ a) :
-    ((⨆ (i) (_hi : p i), f i) + ⨆ (j) (_hj : q j), g j) ≤ a := by
+    ((⨆ (i) (_ : p i), f i) + ⨆ (j) (_ : q j), g j) ≤ a := by
   simp_rw [biSup_add' hp, add_biSup' hq]
   exact iSup₂_le fun i hi => iSup₂_le (h i hi)
 #align ennreal.bsupr_add_bsupr_le' ENNReal.biSup_add_biSup_le'
@@ -877,17 +877,17 @@ protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : (
 #align ennreal.lt_top_of_tsum_ne_top ENNReal.lt_top_of_tsum_ne_top
 
 @[simp]
-protected theorem tsum_top [Nonempty α] : (∑' _i : α, ∞) = ∞ :=
+protected theorem tsum_top [Nonempty α] : (∑' _ : α, ∞) = ∞ :=
   let ⟨a⟩ := ‹Nonempty α›
   ENNReal.tsum_eq_top_of_eq_top ⟨a, rfl⟩
 #align ennreal.tsum_top ENNReal.tsum_top
 
 theorem tsum_const_eq_top_of_ne_zero {α : Type _} [Infinite α] {c : ℝ≥0∞} (hc : c ≠ 0) :
-    (∑' _a : α, c) = ∞ := by
+    (∑' _ : α, c) = ∞ := by
   have A : Tendsto (fun n : ℕ => (n : ℝ≥0∞) * c) atTop (𝓝 (∞ * c)) := by
     apply ENNReal.Tendsto.mul_const tendsto_nat_nhds_top
     simp only [true_or_iff, top_ne_zero, Ne.def, not_false_iff]
-  have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _a : α, c := fun n => by
+  have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
     simpa [hs] using @ENNReal.sum_le_tsum α (fun _ => c) s
   simpa [hc] using le_of_tendsto' A B
@@ -917,7 +917,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
 #align ennreal.tsum_const_smul ENNReal.tsum_const_smul
 
 @[simp]
-theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _h : a = b, f b) = f a :=
+theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _ : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 #align ennreal.tsum_supr_eq ENNReal.tsum_iSup_eq
 
@@ -1042,7 +1042,7 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type _} {a : ι → ℝ≥0∞} (ts
   by_contra h
   have := Infinite.to_subtype h
   refine tsum_ne_top (top_unique ?_)
-  calc ⊤ = ∑' _i : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
+  calc ⊤ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
   _ ≤ ∑' i, a i := tsum_le_tsum_of_inj (↑) Subtype.val_injective (fun _ _ => zero_le _)
     (fun i => i.2) ENNReal.summable ENNReal.summable
 #align ennreal.finite_const_le_of_tsum_ne_top ENNReal.finite_const_le_of_tsum_ne_top

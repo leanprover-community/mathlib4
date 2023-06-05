@@ -807,7 +807,7 @@ theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) =
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 := by
+theorem ciSup_const_zero {α : Sort _} : (⨆ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
@@ -835,7 +835,7 @@ theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨅ i, f i) =
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ)) = 0 := by
+theorem ciInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
