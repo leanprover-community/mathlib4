@@ -143,6 +143,28 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
   rw [RingEquiv.symm_apply_apply, polynomialQuotientEquivQuotientPolynomial_symm_mk]
 #align ideal.polynomial_quotient_equiv_quotient_polynomial_map_mk Ideal.polynomialQuotientEquivQuotientPolynomial_map_mk
 
+/-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
+except its constant term which is a unit. -/
+theorem IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit P) :
+    IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
+  obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
+  constructor
+  { refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
+    have h := (mul_coeff_zero P Q).symm
+    rwa [hQ, coeff_one_zero] at h }
+  { intros n hn
+    rw [nilpotent_iff_mem_prime]
+    intros I hI
+    let f := mapRingHom (Ideal.Quotient.mk I)
+    have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
+      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
+    have hcoeff : (f P).coeff n = 0 := by
+      refine' coeff_eq_zero_of_degree_lt _
+      rw [hPQ.1]
+      exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
+    rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
+    exact hcoeff }
+
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
