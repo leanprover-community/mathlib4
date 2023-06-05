@@ -2245,6 +2245,9 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   exact toReal_mul_top _
 #align ennreal.to_real_top_mul ENNReal.toReal_top_mul
 
+theorem mul_eq_top_iff {a b : ℝ≥0∞} : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
+  WithTop.mul_eq_top_iff
+
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb

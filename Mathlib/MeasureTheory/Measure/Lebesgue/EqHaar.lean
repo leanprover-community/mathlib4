@@ -188,7 +188,7 @@ theorem add_haar_affineSubspace {E : Type _} [NormedAddCommGroup E] [NormedSpace
     (s : AffineSubspace ℝ E) (hs : s ≠ ⊤) : μ s = 0 := by
   rcases s.eq_bot_or_nonempty with (rfl | hne)
   · rw [AffineSubspace.bot_coe, measure_empty]
-  rw [Ne.def, ← AffineSubspace.direction_eq_top_iff_of_nonempty hne] at hs 
+  rw [Ne.def, ← AffineSubspace.direction_eq_top_iff_of_nonempty hne] at hs
   rcases hne with ⟨x, hx : x ∈ s⟩
   simpa only [AffineSubspace.coe_direction_eq_vsub_set_right hx, vsub_eq_sub, sub_eq_add_neg,
     image_add_right, neg_neg, measure_preimage_add_right] using add_haar_submodule μ s.direction hs
@@ -468,7 +468,7 @@ theorem add_haar_closed_unit_ball_eq_add_haar_unit_ball :
         (𝓝 (ENNReal.ofReal ((1 : ℝ) ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
     refine' ENNReal.Tendsto.mul _ (by simp) tendsto_const_nhds (by simp)
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
-  simp only [one_pow, one_mul, ENNReal.ofReal_one] at A 
+  simp only [one_pow, one_mul, ENNReal.ofReal_one] at A
   refine' le_of_tendsto A _
   refine' mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => _⟩
   dsimp
@@ -485,7 +485,7 @@ theorem add_haar_closedBall_eq_add_haar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
   by_cases h : r < 0
   · rw [Metric.closedBall_eq_empty.mpr h, Metric.ball_eq_empty.mpr h.le]
-  push_neg at h 
+  push_neg at h
   rw [add_haar_closedBall μ x h, add_haar_ball μ x h]
 #align measure_theory.measure.add_haar_closed_ball_eq_add_haar_ball MeasureTheory.Measure.add_haar_closedBall_eq_add_haar_ball
 
@@ -548,8 +548,10 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
     refine congr_arg _ <| funext fun i ↦ ?_
     exact (b.constr_basis ℕ v i).symm
-  rw [A, add_haar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b, ←
-    Basis.toMatrix_eq_toMatrix_constr]
+  rw [A, add_haar_image_linearMap]
+  -- Porting note: this used to be a big `rw`, but one intermediate `erw` was needed
+  erw [b.addHaar_self]
+  rw [mul_one, ← LinearMap.det_toMatrix b, ← Basis.toMatrix_eq_toMatrix_constr]
   rfl
 #align measure_theory.measure.add_haar_parallelepiped MeasureTheory.Measure.addHaar_parallelepiped
 
@@ -635,10 +637,13 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E
         μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)))
       (𝓝[>] 0) (𝓝 (0 * (μ (closedBall x 1) / μ ({x} + u)))) := by
     apply ENNReal.Tendsto.mul A _ B (Or.inr ENNReal.zero_ne_top)
-    simp only [ENNReal.div_eq_top, h'u, measure_closedBall_lt_top.ne, false_or_iff, image_add_left,
-      eq_self_iff_true, not_true, Ne.def, not_false_iff, measure_preimage_add, singleton_add,
-      and_false_iff, false_and_iff]
-  simp only [zero_mul] at C 
+    simp only [ne_eq, not_true, singleton_add, image_add_left, measure_preimage_add, false_or,
+      ENNReal.div_eq_top, h'u, false_or_iff, not_and, and_false_iff]
+    intro aux
+    exact (measure_closedBall_lt_top.ne aux).elim
+    -- Porting note: it used to be enough to pass `measure_closedBall_lt_top.ne` to `simp`
+    -- and avoid the `intro; exact` dance.
+  simp only [zero_mul] at C
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]
   rintro r (rpos : 0 < r)
@@ -672,7 +677,7 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E
       intro r rpos
       rw [mul_zero]
       exact mul_pos Rpos rpos
-  rw [mul_zero] at B 
+  rw [mul_zero] at B
   apply (A.comp B).congr' _
   filter_upwards [self_mem_nhdsWithin]
   rintro r -
@@ -713,7 +718,7 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     have : (⋂ n : ℕ, t \ closedBall 0 n) = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
         iUnion_closedBall_nat, compl_univ, inter_empty]
-    simp only [this, measure_empty] at A 
+    simp only [this, measure_empty] at A
     have I : 0 < ε / 2 * μ t := ENNReal.mul_pos (ENNReal.half_pos εpos.ne').ne' h't
     exact (Eventually.and (Ioi_mem_atTop 0) ((tendsto_order.1 A).2 _ I)).exists
   have L :
@@ -772,7 +777,7 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
       · exact (measure_closedBall_pos μ _ hr).ne'
       · exact measure_closedBall_lt_top.ne
     have B := ENNReal.Tendsto.sub A h (Or.inl ENNReal.one_ne_top)
-    simp only [tsub_self] at B 
+    simp only [tsub_self] at B
     apply B.congr' _
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
@@ -787,7 +792,7 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
     rintro r (rpos : 0 < r)
     rw [add_haar_singleton_add_smul_div_singleton_add_smul μ rpos.ne', ENNReal.div_self h't h''t]
   have := ENNReal.Tendsto.sub L'' L' (Or.inl ENNReal.one_ne_top)
-  simp only [tsub_zero] at this 
+  simp only [tsub_zero] at this
   apply this.congr' _
   filter_upwards [self_mem_nhdsWithin]
   rintro r (rpos : 0 < r)
@@ -795,7 +800,7 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
   · simp only [h't, abs_of_nonneg rpos.le, pow_pos rpos, add_haar_smul, image_add_left,
       ENNReal.ofReal_eq_zero, not_le, or_false_iff, Ne.def, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
-  · simp only [h''t, ENNReal.ofReal_ne_top, add_haar_smul, image_add_left, WithTop.mul_eq_top_iff,
+  · simp [h''t, ENNReal.ofReal_ne_top, add_haar_smul, image_add_left, ENNReal.mul_eq_top_iff,
       Ne.def, not_false_iff, measure_preimage_add, singleton_add, and_false_iff, false_and_iff,
       or_self_iff]
 #align measure_theory.measure.tendsto_add_haar_inter_smul_one_of_density_one_aux MeasureTheory.Measure.tendsto_add_haar_inter_smul_one_of_density_one_aux
@@ -843,7 +848,7 @@ theorem eventually_nonempty_inter_smul_of_density_one (s : Set E) (x : E)
       0 zero_lt_one]
   intro r hr
   have : μ (s ∩ ({x} + r • t')) ≠ 0 := fun h' => by
-    simpa only [ENNReal.not_lt_zero, ENNReal.zero_div, h'] using hr
+    simp only [ENNReal.not_lt_zero, ENNReal.zero_div, h'] at hr
   have : (s ∩ ({x} + r • t')).Nonempty := nonempty_of_measure_ne_zero this
   apply this.mono (inter_subset_inter Subset.rfl _)
   exact add_subset_add Subset.rfl (smul_set_mono t't)
@@ -852,4 +857,3 @@ theorem eventually_nonempty_inter_smul_of_density_one (s : Set E) (x : E)
 end Measure
 
 end MeasureTheory
-
