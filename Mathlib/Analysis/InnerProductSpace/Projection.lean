@@ -1288,37 +1288,43 @@ open DirectSum
 
 /-- If `x` lies within an orthogonal family `v`, it can be expressed as a sum of projections. -/
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
-    [∀ i, CompleteSpace ↥(V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x :=
-  by
-  refine' Submodule.iSup_induction _ hx (fun i x hx => _) _ fun x y hx hy => _
-  · refine'
+    [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
+    (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
+  -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
+  -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
+  induction hx using Submodule.iSup_induction' with
+  | hp i x hx =>
+    refine'
       (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => _).trans
-        (orthogonal_projection_eq_self_iff.mpr hx)
+        (orthogonalProjection_eq_self_iff.mpr hx)
     rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.coe_zero]
-    exact hV.is_ortho hij.symm hx
-  · simp_rw [map_zero, Submodule.coe_zero, Finset.sum_const_zero]
-  · simp_rw [map_add, Submodule.coe_add, Finset.sum_add_distrib]
+    exact hV.isOrtho hij.symm hx
+  | h0 =>
+    simp_rw [map_zero, Submodule.coe_zero, Finset.sum_const_zero]
+  | hadd x y _ _ hx hy =>
+    simp_rw [map_add, Submodule.coe_add, Finset.sum_add_distrib]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.sum_projection_of_mem_supr OrthogonalFamily.sum_projection_of_mem_iSup
 
 /-- If a family of submodules is orthogonal, then the `orthogonal_projection` on a direct sum
 is just the coefficient of that direct sum. -/
-theorem OrthogonalFamily.projection_directSum_coe_add_hom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
+theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
-    [CompleteSpace ↥(V i)] : orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i :=
+    [CompleteSpace (V i)] : orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i :=
   by
   induction' x using DirectSum.induction_on with j x x y hx hy
   · simp
-  · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of, Dfinsupp.singleAddHom_apply]
+  · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
+    -- porting note: was in the previous `simp_rw`, no longer works
+    rw [Dfinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, Dfinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         Dfinsupp.single_eq_of_ne hij.symm]
-      exact hV.is_ortho hij.symm x.prop
+      exact hV.isOrtho hij.symm x.prop
   · simp_rw [map_add, Dfinsupp.add_apply]
     exact congr_arg₂ (· + ·) hx hy
-#align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coe_add_hom
+#align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
 
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.
@@ -1328,7 +1334,7 @@ The projection function is `decompose V x i = orthogonal_projection (V i) x`.
 See note [reducible non-instances]. -/
 @[reducible]
 def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
-    [∀ i, CompleteSpace ↥(V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
+    [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (h : iSup V = ⊤) : DirectSum.Decomposition V
     where
   decompose' x := Dfinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
@@ -1338,12 +1344,12 @@ def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Sub
     rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, Dfinsupp.liftAddHom_apply,
       Dfinsupp.sumAddHom_apply, Dfinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
-      exact hV.sum_projection_of_mem_supr _ ((h.ge : _) Submodule.mem_top)
+      exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
     · intro i
       exact map_zero _
   right_inv x := by
     dsimp only
-    simp_rw [hV.projection_direct_sum_coe_add_hom, Dfinsupp.equivFunOnFintype_symm_coe]
+    simp_rw [hV.projection_directSum_coeAddHom, Dfinsupp.equivFunOnFintype_symm_coe]
 #align orthogonal_family.decomposition OrthogonalFamily.decomposition
 
 end OrthogonalFamily
