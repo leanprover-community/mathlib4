@@ -635,7 +635,7 @@ instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
     (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
 #align ideal.cancel_comm_monoid_with_zero Ideal.cancelCommMonoidWithZero
 
--- Porting note: TODO
+-- Porting note: Lean can infer all it needs by itself
 instance Ideal.isDomain : IsDomain (Ideal A) := { }
 #align ideal.is_domain Ideal.isDomain
 
