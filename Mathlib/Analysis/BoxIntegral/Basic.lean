@@ -89,8 +89,8 @@ theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
   rw [π.tag_biUnionTagged hJ hJ']
 #align box_integral.integral_sum_bUnion_tagged BoxIntegral.integralSum_biUnionTagged
 
-theorem integralSum_biUnion_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I)
-    (πi : ∀ J, Prepartition J) (hπi : ∀ J ∈ π, (πi J).IsPartition) :
+theorem integralSum_biUnion_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
+    (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) (hπi : ∀ J ∈ π, (πi J).IsPartition) :
     integralSum f vol (π.biUnionPrepartition πi) = integralSum f vol π := by
   refine' (π.sum_biUnion_boxes _ _).trans (sum_congr rfl fun J hJ => _)
   calc
@@ -764,13 +764,13 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     HasIntegral I l f vol (g I) := by
   /- We choose `r x` differently for `x ∈ s` and `x ∉ s`.
 
-    For `x ∈ s`, we choose `εs` such that `∑' x : s, εs x < ε / 2 / 2 ^ #ι`, then choose `r x` so that
-    `dist (vol J (f x)) (g J) ≤ εs x` for `J` in the `r x`-neighborhood of `x`. This guarantees that
-    the sum of these distances over boxes `J` such that `π.tag J ∈ s` is less than `ε / 2`. We need an
-    additional multiplier `2 ^ #ι` because different boxes can have the same tag.
+    For `x ∈ s`, we choose `εs` such that `∑' x : s, εs x < ε / 2 / 2 ^ #ι`, then choose `r x` so
+    that `dist (vol J (f x)) (g J) ≤ εs x` for `J` in the `r x`-neighborhood of `x`. This guarantees
+    that the sum of these distances over boxes `J` such that `π.tag J ∈ s` is less than `ε / 2`. We
+    need an additional multiplier `2 ^ #ι` because different boxes can have the same tag.
 
-    For `x ∉ s`, we choose `r x` so that `dist (vol (J (f x))) (g J) ≤ (ε / 2 / B I) * B J` for a box
-    `J` in the `δ`-neighborhood of `x`. -/
+    For `x ∉ s`, we choose `r x` so that `dist (vol (J (f x))) (g J) ≤ (ε / 2 / B I) * B J` for a
+    box `J` in the `δ`-neighborhood of `x`. -/
   refine' ((l.hasBasis_toFilteriUnion_top _).tendsto_iff Metric.nhds_basis_closedBall).2 _
   intro ε ε0
   simp only [← exists_prop, gt_iff_lt, Subtype.exists'] at H₁ H₂
