@@ -87,8 +87,8 @@ variable {k l : ℕ+}
 def rootsOfUnity (k : ℕ+) (M : Type _) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ (k : ℕ) = 1}
   one_mem' := one_pow _
-  mul_mem' ζ ξ hζ hξ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
-  inv_mem' ζ hζ := by simp_all only [Set.mem_setOf_eq, inv_pow, inv_one]
+  mul_mem' _ _ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
+  inv_mem' _ := by simp_all only [Set.mem_setOf_eq, inv_pow, inv_one]
 #align roots_of_unity rootsOfUnity
 
 @[simp]
@@ -100,16 +100,18 @@ theorem mem_roots_of_unity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ 
   rw [mem_rootsOfUnity]; norm_cast
 #align mem_roots_of_unity' mem_roots_of_unity'
 
-theorem rootsOfUnity.coe_injective {n : ℕ+} : Function.Injective (coe : rootsOfUnity n M → M) :=
-  Units.ext.comp fun x y => Subtype.ext
+theorem rootsOfUnity.coe_injective {n : ℕ+} :
+    Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
+  Units.ext.comp fun _ _ => Subtype.eq
 #align roots_of_unity.coe_injective rootsOfUnity.coe_injective
 
 /-- Make an element of `roots_of_unity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/
-@[simps coe_coe]
+@[simps! coe_val]
 def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) : rootsOfUnity n M :=
-  ⟨Units.ofPowEqOne ζ n h n.NeZero, Units.pow_ofPowEqOne _ _⟩
+  ⟨Units.ofPowEqOne ζ n h n.ne_zero, Units.pow_ofPowEqOne _ _⟩
 #align roots_of_unity.mk_of_pow_eq rootsOfUnity.mkOfPowEq
+#align roots_of_unity.mk_of_pow_eq_coe_coe rootsOfUnity.mkOfPowEq_coe_val
 
 @[simp]
 theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) :
@@ -408,7 +410,7 @@ theorem pow_of_coprime (h : IsPrimitiveRoot ζ k) (i : ℕ) (hi : i.coprime k) :
     IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
   · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
-  rcases h.is_unit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
+  rcases h.isUnit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
   rw [← Units.val_pow_eq_pow_val]
   rw [coe_units_iff] at h ⊢
   refine'
@@ -426,7 +428,6 @@ theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p)
   h.pow_of_coprime p (hprime.coprime_iff_not_dvd.2 hdiv)
 #align is_primitive_root.pow_of_prime IsPrimitiveRoot.pow_of_prime
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
 theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
     IsPrimitiveRoot (ζ ^ i) k ↔ i.coprime k := by
   refine' ⟨_, h.pow_of_coprime i⟩
@@ -441,7 +442,7 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
 #align is_primitive_root.pow_iff_coprime IsPrimitiveRoot.pow_iff_coprime
 
 protected theorem orderOf (ζ : M) : IsPrimitiveRoot ζ (orderOf ζ) :=
-  ⟨pow_orderOf_eq_one ζ, fun l => orderOf_dvd_of_pow_eq_one⟩
+  ⟨pow_orderOf_eq_one ζ, fun _ => orderOf_dvd_of_pow_eq_one⟩
 #align is_primitive_root.order_of IsPrimitiveRoot.orderOf
 
 theorem unique {ζ : M} (hk : IsPrimitiveRoot ζ k) (hl : IsPrimitiveRoot ζ l) : k = l :=
@@ -457,7 +458,7 @@ protected theorem iff (hk : 0 < k) :
   refine'
     ⟨fun h => ⟨h.pow_eq_one, fun l hl' hl => _⟩, fun ⟨hζ, hl⟩ =>
       IsPrimitiveRoot.mk_of_lt ζ hk hζ hl⟩
-  rw [h.eq_order_of] at hl 
+  rw [h.eq_orderOf] at hl
   exact pow_ne_one_of_lt_orderOf' hl'.ne' hl
 #align is_primitive_root.iff IsPrimitiveRoot.iff
 
@@ -494,24 +495,24 @@ section Maps
 open Function
 
 theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
-    IsPrimitiveRoot (f ζ) k :=
-  { pow_eq_one := by rw [← map_pow, h.pow_eq_one, _root_.map_one]
-    dvd_of_pow_eq_one := by
-      rw [h.eq_order_of]
-      intro l hl
-      rw [← map_pow, ← map_one f] at hl 
-      exact orderOf_dvd_of_pow_eq_one (hf hl) }
+    IsPrimitiveRoot (f ζ) k where
+  pow_eq_one := by rw [← map_pow, h.pow_eq_one, _root_.map_one]
+  dvd_of_pow_eq_one := by
+    rw [h.eq_orderOf]
+    intro l hl
+    rw [← map_pow, ← map_one f] at hl 
+    exact orderOf_dvd_of_pow_eq_one (hf hl)
 #align is_primitive_root.map_of_injective IsPrimitiveRoot.map_of_injective
 
 theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k)
-    (hf : Injective f) : IsPrimitiveRoot ζ k :=
-  { pow_eq_one := by apply_fun f; rw [map_pow, _root_.map_one, h.pow_eq_one]
-    dvd_of_pow_eq_one := by
-      rw [h.eq_order_of]
-      intro l hl
-      apply_fun f at hl 
-      rw [map_pow, _root_.map_one] at hl 
-      exact orderOf_dvd_of_pow_eq_one hl }
+    (hf : Injective f) : IsPrimitiveRoot ζ k where
+  pow_eq_one := by apply_fun f; rw [map_pow, _root_.map_one, h.pow_eq_one]
+  dvd_of_pow_eq_one := by
+    rw [h.eq_orderOf]
+    intro l hl
+    apply_fun f at hl 
+    rw [map_pow, _root_.map_one] at hl 
+    exact orderOf_dvd_of_pow_eq_one hl
 #align is_primitive_root.of_map_of_injective IsPrimitiveRoot.of_map_of_injective
 
 theorem map_iff_of_injective [MonoidHomClass F M N] (hf : Injective f) :
@@ -542,8 +543,8 @@ section DivisionCommMonoid
 
 variable {ζ : G}
 
-theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by rw [zpow_ofNat];
-  exact h.pow_eq_one
+theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
+  rw [zpow_ofNat]; exact h.pow_eq_one
 #align is_primitive_root.zpow_eq_one IsPrimitiveRoot.zpow_eq_one
 
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
@@ -565,8 +566,8 @@ theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
 #align is_primitive_root.inv IsPrimitiveRoot.inv
 
 @[simp]
-theorem inv_iff : IsPrimitiveRoot ζ⁻¹ k ↔ IsPrimitiveRoot ζ k := by refine' ⟨_, fun h => inv h⟩;
-  intro h; rw [← inv_inv ζ]; exact inv h
+theorem inv_iff : IsPrimitiveRoot ζ⁻¹ k ↔ IsPrimitiveRoot ζ k := by
+  refine' ⟨_, fun h => inv h⟩; intro h; rw [← inv_inv ζ]; exact inv h
 #align is_primitive_root.inv_iff IsPrimitiveRoot.inv_iff
 
 theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 1) :
