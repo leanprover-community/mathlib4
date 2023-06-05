@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecificLimits.Basic
-import Mathbin.RingTheory.Polynomial.Bernstein
-import Mathbin.Topology.ContinuousFunction.Polynomial
-import Mathbin.Topology.ContinuousFunction.Compact
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.RingTheory.Polynomial.Bernstein
+import Mathlib.Topology.ContinuousFunction.Polynomial
+import Mathlib.Topology.ContinuousFunction.Compact
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -67,14 +67,12 @@ def bernstein (n ν : ℕ) : C(I, ℝ) :=
 
 @[simp]
 theorem bernstein_apply (n ν : ℕ) (x : I) :
-    bernstein n ν x = n.choose ν * x ^ ν * (1 - x) ^ (n - ν) :=
-  by
+    bernstein n ν x = n.choose ν * x ^ ν * (1 - x) ^ (n - ν) := by
   dsimp [bernstein, Polynomial.toContinuousMapOn, Polynomial.toContinuousMap, bernsteinPolynomial]
   simp
 #align bernstein_apply bernstein_apply
 
-theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x :=
-  by
+theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
   exact
     mul_nonneg (mul_nonneg (Nat.cast_nonneg _) (pow_nonneg (by unit_interval) _))
@@ -104,8 +102,7 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
 -- mathport name: «expr /ₙ»
 local postfix:90 "/ₙ" => z
 
-theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 :=
-  by
+theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this 
   simp [AlgHom.map_sum, Finset.sum_range] at this 
@@ -113,8 +110,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 #align bernstein.probability bernstein.probability
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
-    (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = x * (1 - x) / n :=
-  by
+    (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = x * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
   apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
@@ -189,8 +185,7 @@ def s (f : C(I, ℝ)) (ε : ℝ) (h : 0 < ε) (n : ℕ) (x : I) : Finset (Fin (n
 /-- If `k ∈ S`, then `f(k/n)` is close to `f x`.
 -/
 theorem lt_of_mem_s {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
-    (m : k ∈ s f ε h n x) : |f k/ₙ - f x| < ε / 2 :=
-  by
+    (m : k ∈ s f ε h n x) : |f k/ₙ - f x| < ε / 2 := by
   apply f.dist_lt_of_dist_lt_modulus (ε / 2) (half_pos h)
   simpa [S] using m
 #align bernstein_approximation.lt_of_mem_S bernsteinApproximation.lt_of_mem_s
@@ -199,8 +194,7 @@ theorem lt_of_mem_s {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k
 This particular formulation will be helpful later.
 -/
 theorem le_of_mem_s_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
-    (m : k ∈ s f ε h n xᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * (x - k/ₙ) ^ 2 :=
-  by
+    (m : k ∈ s f ε h n xᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * (x - k/ₙ) ^ 2 := by
   simp only [Finset.mem_compl, not_lt, Set.mem_toFinset, Set.mem_setOf_eq, S] at m 
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]
@@ -227,8 +221,7 @@ This is the proof given in [Richard Beals' *Analysis, an introduction*][beals-an
 and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
-    Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) :=
-  by
+    Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
   simp only [metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
   intro ε h
   let δ := δ f ε h
@@ -288,8 +281,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ = 2 * ‖f‖ * ∑ k in Sᶜ, bernstein n k x := by rw [Finset.mul_sum]
       _ ≤ 2 * ‖f‖ * ∑ k in Sᶜ, δ ^ (-2 : ℤ) * (x - k/ₙ) ^ 2 * bernstein n k x :=
         (mul_le_mul_of_nonneg_left
-          (Finset.sum_le_sum fun k m =>
-            by
+          (Finset.sum_le_sum fun k m => by
             conv_lhs => rw [← one_mul (bernstein _ _ _)]
             exact mul_le_mul_of_nonneg_right (le_of_mem_S_compl m) bernstein_nonneg)
           w₁)
