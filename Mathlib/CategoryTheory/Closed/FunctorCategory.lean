@@ -8,8 +8,8 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Closed.Monoidal
-import Mathbin.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functors from a groupoid into a monoidal closed category form a monoidal closed category.
