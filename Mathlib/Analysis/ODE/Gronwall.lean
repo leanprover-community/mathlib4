@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 # Grönwall's inequality
 
 The main technical result of this file is the Grönwall-like inequality
-`norm_le_gronwall_bound_of_norm_deriv_right_le`. It states that if `f : ℝ → E` satisfies `‖f a‖ ≤ δ`
+`norm_le_gronwallBound_of_norm_deriv_right_le`. It states that if `f : ℝ → E` satisfies `‖f a‖ ≤ δ`
 and `∀ x ∈ [a, b), ‖f' x‖ ≤ K * ‖f x‖ + ε`, then for all `x ∈ [a, b]` we have `‖f x‖ ≤ δ * exp (K *
 x) + (ε / K) * (exp (K * x) - 1)`.
 
@@ -22,7 +22,7 @@ Then we use this inequality to prove some estimates on the possible rate of grow
 between two approximate or exact solutions of an ordinary differential equation.
 
 The proofs are based on [Hubbard and West, *Differential Equations: A Dynamical Systems Approach*,
-Sec. 4.5][HubbardWest-ode], where `norm_le_gronwall_bound_of_norm_deriv_right_le` is called
+Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le` is called
 “Fundamental Inequality”.
 
 ## TODO
@@ -40,7 +40,7 @@ open Metric Set Asymptotics Filter Real
 
 open scoped Classical Topology NNReal
 
-/-! ### Technical lemmas about `gronwall_bound` -/
+/-! ### Technical lemmas about `gronwallBound` -/
 
 
 /-- Upper bound used in several Grönwall-like inequalities. -/
@@ -109,9 +109,9 @@ theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwa
 /-- A Grönwall-like inequality: if `f : ℝ → ℝ` is continuous on `[a, b]` and satisfies
 the inequalities `f a ≤ δ` and
 `∀ x ∈ [a, b), liminf_{z→x+0} (f z - f x)/(z - x) ≤ K * (f x) + ε`, then `f x`
-is bounded by `gronwall_bound δ K ε (x - a)` on `[a, b]`.
+is bounded by `gronwallBound δ K ε (x - a)` on `[a, b]`.
 
-See also `norm_le_gronwall_bound_of_norm_deriv_right_le` for a version bounding `‖f x‖`,
+See also `norm_le_gronwallBound_of_norm_deriv_right_le` for a version bounding `‖f x‖`,
 `f : ℝ → E`. -/
 theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε : ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b))
@@ -137,7 +137,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
 
 /-- A Grönwall-like inequality: if `f : ℝ → E` is continuous on `[a, b]`, has right derivative
 `f' x` at every point `x ∈ [a, b)`, and satisfies the inequalities `‖f a‖ ≤ δ`,
-`∀ x ∈ [a, b), ‖f' x‖ ≤ K * ‖f x‖ + ε`, then `‖f x‖` is bounded by `gronwall_bound δ K ε (x - a)`
+`∀ x ∈ [a, b), ‖f' x‖ ≤ K * ‖f x‖ + ε`, then `‖f x‖` is bounded by `gronwallBound δ K ε (x - a)`
 on `[a, b]`. -/
 theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε : ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
