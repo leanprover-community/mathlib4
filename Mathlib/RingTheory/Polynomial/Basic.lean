@@ -467,6 +467,30 @@ theorem ker_modByMonicHom (hq : q.Monic) :
 
 end ModByMonic
 
+/-- Let P be a polynomial over R. If its constant term is a unit and its other coefficients are
+nilpotent, then P is a unit. This is one implication of 'isUnit_iff'. -/
+theorem IsUnit.isUnit_of_isNilpotent {P : Polynomial R} (hunit : IsUnit (P.coeff 0))
+    (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
+  induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
+  by_cases hdeg : P.natDegree = 0
+  { rw [eq_C_of_natDegree_eq_zero hdeg]
+    exact hunit.map C }
+  set P₁ := P.eraseLead with hP₁
+  suffices IsUnit P₁ by
+    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial]
+    obtain ⟨Q, hQ⟩ := this
+    rw [← hP₁, ← hQ]
+    refine' Commute.IsNilpotent.add_isUnit (IsNilpotent.C_mul_X_pow_isNilpotent _ (hnil _ hdeg))
+      ((Commute.all _ _).mul_left (Commute.all _ _))
+  have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
+    (Nat.pos_of_ne_zero hdeg) zero_lt_one)
+  refine' hind P₁.natDegree _ _ (fun i hi => _) rfl
+  · simp_rw [← h, hdeg₂]
+  · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
+  · by_cases H : i ≤ P₁.natDegree
+    simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+
 end CommRing
 
 end Polynomial
