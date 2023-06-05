@@ -648,7 +648,7 @@ instance finite_biUnion' {ι : Type _} (s : Set ι) [Finite s] (t : ι → Set �
 (when given instances from `Data.Nat.Interval`).
 -/
 instance finite_biUnion'' {ι : Type _} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
-    [∀ i, Finite (t i)] : Finite (⋃ (x) (_h : p x), t x) :=
+    [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
   @Finite.Set.finite_biUnion' _ _ (setOf p) h t _
 #align finite.set.finite_bUnion'' Finite.Set.finite_biUnion''
 

@@ -823,7 +823,7 @@ theorem setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
   exact toSimpleFunc_indicatorConst hs hμs.ne x
 #align measure_theory.L1.simple_func.set_to_L1s_indicator_const MeasureTheory.L1.SimpleFunc.setToL1S_indicatorConst
 
-theorem setToL1S_const [FiniteMeasure μ] {T : Set α → E →L[ℝ] F}
+theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) (x : E) :
     setToL1S T (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) = T univ x :=
   setToL1S_indicatorConst h_zero h_add MeasurableSet.univ (measure_lt_top _ _) x
@@ -960,7 +960,7 @@ theorem norm_setToL1SCLM_le' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : Domi
   LinearMap.mkContinuous_norm_le' _ _
 #align measure_theory.L1.simple_func.norm_set_to_L1s_clm_le' MeasureTheory.L1.SimpleFunc.norm_setToL1SCLM_le'
 
-theorem setToL1SCLM_const [FiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C : ℝ}
+theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     setToL1SCLM α E μ hT (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) =
       T univ x :=
@@ -1156,7 +1156,7 @@ theorem setToL1_indicatorConstLp (hT : DominatedFinMeasAdditive μ T C) {s : Set
   exact setToL1_simpleFunc_indicatorConst hT hs hμs.lt_top x
 #align measure_theory.L1.set_to_L1_indicator_const_Lp MeasureTheory.L1.setToL1_indicatorConstLp
 
-theorem setToL1_const [FiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
+theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     setToL1 hT (indicatorConstLp 1 MeasurableSet.univ (measure_ne_top _ _) x) = T univ x :=
   setToL1_indicatorConstLp hT MeasurableSet.univ (measure_ne_top _ _) x
 #align measure_theory.L1.set_to_L1_const MeasureTheory.L1.setToL1_const
@@ -1457,7 +1457,7 @@ theorem setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set
   exact L1.setToL1_indicatorConstLp hT hs hμs x
 #align measure_theory.set_to_fun_indicator_const MeasureTheory.setToFun_indicator_const
 
-theorem setToFun_const [FiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
+theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
     (setToFun μ T hT fun _ => x) = T univ x := by
   have : (fun _ : α => x) = Set.indicator univ fun _ => x := (indicator_univ _).symm
   rw [this]

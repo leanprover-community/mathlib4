@@ -410,7 +410,7 @@ namespace Measure
 
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
-def toSignedMeasure (μ : Measure α) [hμ : FiniteMeasure μ] : SignedMeasure α where
+def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
   measureOf' := fun i : Set α => if MeasurableSet i then (μ.measureOf i).toReal else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
@@ -435,20 +435,20 @@ def toSignedMeasure (μ : Measure α) [hμ : FiniteMeasure μ] : SignedMeasure �
       exact measure_mono (Set.subset_univ _)
 #align measure_theory.measure.to_signed_measure MeasureTheory.Measure.toSignedMeasure
 
-theorem toSignedMeasure_apply_measurable {μ : Measure α} [FiniteMeasure μ] {i : Set α}
+theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
     (hi : MeasurableSet i) : μ.toSignedMeasure i = (μ i).toReal :=
   if_pos hi
 #align measure_theory.measure.to_signed_measure_apply_measurable MeasureTheory.Measure.toSignedMeasure_apply_measurable
 
 -- Without this lemma, `singularPart_neg` in `MeasureTheory.Decomposition.Lebesgue` is
 -- extremely slow
-theorem toSignedMeasure_congr {μ ν : Measure α} [FiniteMeasure μ] [FiniteMeasure ν] (h : μ = ν) :
-    μ.toSignedMeasure = ν.toSignedMeasure := by
+theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
 #align measure_theory.measure.to_signed_measure_congr MeasureTheory.Measure.toSignedMeasure_congr
 
-theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [FiniteMeasure μ]
-    [FiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
+theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
   refine' ⟨fun h => _, fun h => _⟩
   · ext1 i hi
     have : μ.toSignedMeasure i = ν.toSignedMeasure i := by rw [h]
@@ -465,7 +465,7 @@ theorem toSignedMeasure_zero : (0 : Measure α).toSignedMeasure = 0 := by
 #align measure_theory.measure.to_signed_measure_zero MeasureTheory.Measure.toSignedMeasure_zero
 
 @[simp]
-theorem toSignedMeasure_add (μ ν : Measure α) [FiniteMeasure μ] [FiniteMeasure ν] :
+theorem toSignedMeasure_add (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     (μ + ν).toSignedMeasure = μ.toSignedMeasure + ν.toSignedMeasure := by
   ext i
   intro hi
@@ -476,7 +476,7 @@ theorem toSignedMeasure_add (μ ν : Measure α) [FiniteMeasure μ] [FiniteMeasu
 #align measure_theory.measure.to_signed_measure_add MeasureTheory.Measure.toSignedMeasure_add
 
 @[simp]
-theorem toSignedMeasure_smul (μ : Measure α) [FiniteMeasure μ] (r : ℝ≥0) :
+theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0) :
     (r • μ).toSignedMeasure = r • μ.toSignedMeasure := by
   ext i
   intro hi
@@ -516,8 +516,8 @@ theorem toEnnrealVectorMeasure_add (μ ν : Measure α) :
     toEnnrealVectorMeasure_apply_measurable hi, toEnnrealVectorMeasure_apply_measurable hi]
 #align measure_theory.measure.to_ennreal_vector_measure_add MeasureTheory.Measure.toEnnrealVectorMeasure_add
 
-theorem toSignedMeasure_sub_apply {μ ν : Measure α} [FiniteMeasure μ] [FiniteMeasure ν] {i : Set α}
-    (hi : MeasurableSet i) :
+theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    {i : Set α} (hi : MeasurableSet i) :
     (μ.toSignedMeasure - ν.toSignedMeasure) i = (μ i).toReal - (ν i).toReal := by
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
     Measure.toSignedMeasure_apply_measurable hi, sub_eq_add_neg]
@@ -1383,7 +1383,7 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
 
 /-- `SignedMeasure.toMeasureOfZeroLE` is a finite measure. -/
 instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
-    FiniteMeasure (s.toMeasureOfZeroLE i hi₁ hi) where
+    IsFiniteMeasure (s.toMeasureOfZeroLE i hi₁ hi) where
   measure_univ_lt_top := by
     rw [toMeasureOfZeroLE_apply s hi hi₁ MeasurableSet.univ]
     exact ENNReal.coe_lt_top
@@ -1391,7 +1391,7 @@ instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
 
 /-- `SignedMeasure.toMeasureOfLEZero` is a finite measure. -/
 instance toMeasureOfLEZero_finite (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) :
-    FiniteMeasure (s.toMeasureOfLEZero i hi₁ hi) where
+    IsFiniteMeasure (s.toMeasureOfLEZero i hi₁ hi) where
   measure_univ_lt_top := by
     rw [toMeasureOfLEZero_apply s hi hi₁ MeasurableSet.univ]
     exact ENNReal.coe_lt_top
@@ -1417,7 +1417,7 @@ namespace Measure
 
 open VectorMeasure
 
-variable (μ : Measure α) [FiniteMeasure μ]
+variable (μ : Measure α) [IsFiniteMeasure μ]
 
 theorem zero_le_toSignedMeasure : 0 ≤ μ.toSignedMeasure := by
   rw [← le_restrict_univ_iff_le]

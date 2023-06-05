@@ -329,6 +329,26 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
 
 end ZMod
 
+/-- If `p` is a prime natural number and `x` is an integer number, then there exist natural numbers
+`a ≤ p / 2` and `b ≤ p / 2` such that `a ^ 2 + b ^ 2 ≡ x [ZMOD p]`. This is a version of
+`ZMod.sq_add_sq` with estimates on `a` and `b`. -/
+theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ (a : ℤ) ^ 2 + (b : ℤ) ^ 2 ≡ x [ZMOD p] := by
+  rcases ZMod.sq_add_sq p x with ⟨a, b, hx⟩
+  refine ⟨a.valMinAbs.natAbs, b.valMinAbs.natAbs, ZMod.natAbs_valMinAbs_le _,
+    ZMod.natAbs_valMinAbs_le _, ?_⟩
+  rw [← a.coe_valMinAbs, ← b.coe_valMinAbs] at hx
+  push_cast
+  rw [sq_abs, sq_abs, ← ZMod.int_cast_eq_int_cast_iff]
+  exact_mod_cast hx
+
+/-- If `p` is a prime natural number and `x` is a natural number, then there exist natural numbers
+`a ≤ p / 2` and `b ≤ p / 2` such that `a ^ 2 + b ^ 2 ≡ x [MOD p]`. This is a version of
+`ZMod.sq_add_sq` with estimates on `a` and `b`. -/
+theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
+    ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ a ^ 2 + b ^ 2 ≡ x [MOD p] := by
+  simpa only [← Int.coe_nat_modEq_iff] using Nat.sq_add_sq_zmodEq p x
+
 namespace CharP
 
 theorem sq_add_sq (R : Type _) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
