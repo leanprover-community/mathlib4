@@ -45,11 +45,11 @@ namespace Box
 
 variable (I : Box ι)
 
-theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
+theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ (Box.Icc I) < ∞ :=
   show μ (Icc I.lower I.upper) < ∞ from I.isCompact_Icc.measure_lt_top
 #align box_integral.box.measure_Icc_lt_top BoxIntegral.Box.measure_Icc_lt_top
 
-theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] : μ I < ∞ :=
+theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
   (measure_mono <| coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
 #align box_integral.box.measure_coe_lt_top BoxIntegral.Box.measure_coe_lt_top
 
@@ -86,7 +86,7 @@ theorem Ioo_ae_eq_Icc : Box.Ioo I =ᵐ[volume] Box.Icc I :=
 end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
-    (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] :
+    (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.PairwiseDisjoint]
   exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
@@ -105,7 +105,7 @@ namespace Measure
 /-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ (μ J).toReal` is a box-additive
 function. -/
 @[simps]
-def toBoxAdditive (μ : Measure (ι → ℝ)) [LocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
+def toBoxAdditive (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
   toFun J := (μ J).toReal
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
 #align measure_theory.measure.to_box_additive MeasureTheory.Measure.toBoxAdditive
@@ -133,8 +133,8 @@ theorem volume_apply' (I : Box ι) :
 
 theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
-      ∏ j, (I.upper j - I.lower j) :=
-  by simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
+      ∏ j, (I.upper j - I.lower j) := by
+  simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
 #align box_integral.box.volume_face_mul BoxIntegral.Box.volume_face_mul
 
 end Box
