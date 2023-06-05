@@ -230,7 +230,7 @@ on `C(s, β)` for `s` a compact subset of `α`.  The key point of the proof is t
 compact subsets of `α` is equal to the union of compact subsets of the compact subsets of `α`. -/
 theorem compactOpen_eq_sInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
-      ⨅ (s : Set α) (_hs : IsCompact s),
+      ⨅ (s : Set α) (_ : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
   · refine' le_iInf₂ _

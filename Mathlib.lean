@@ -465,10 +465,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDerivMeasurable
 import Mathlib.Analysis.Calculus.FDerivSymmetric
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
+import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.Analysis.Calculus.LocalExtr
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.Series
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
@@ -479,6 +482,7 @@ import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Between
@@ -607,6 +611,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
@@ -616,9 +621,11 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
@@ -855,9 +862,11 @@ import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic

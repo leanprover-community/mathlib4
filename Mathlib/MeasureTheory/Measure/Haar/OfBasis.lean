@@ -257,6 +257,10 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
 
+instance IsAddHaarMeasure [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
+  IsAddHaarMeasure_basis_addHaar _
+
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
 instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
