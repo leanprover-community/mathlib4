@@ -8,7 +8,7 @@ Authors: Kexing Ying, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Isometries with respect to quadratic forms
@@ -140,8 +140,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 /-- Given an orthogonal basis, a quadratic form is isometric with a weighted sum of squares. -/
 noncomputable def isometryWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V) (hv₁ : (associated Q).IsOrthoᵢ v) :
-    Q.Isometry (weightedSumSquares K fun i => Q (v i)) :=
-  by
+    Q.Isometry (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometry_basis_repr v
   refine' ⟨iso, fun m => _⟩
   convert iso.map_app m
@@ -160,8 +159,7 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
     (hQ : (associated Q).Nondegenerate) :
-    ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) :=
-  by
+    ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_is_symm _ Q)
   have hv₂ := hv₁.not_is_ortho_basis_self_of_nondegenerate hQ
   simp_rw [is_ortho, associated_eq_self_apply] at hv₂ 
