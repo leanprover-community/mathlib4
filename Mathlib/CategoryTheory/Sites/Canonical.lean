@@ -91,20 +91,19 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       -- using `by exact`
       have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
       simpa using this
-    -- porting note: this `change _ = _` is necessary until PR #3768 is merged
-    change _ = _
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
       rw [this]
       change s _ _ = s _ _
-      -- porting note: the proof was `by simp`; here, `congr 1 ; simp only [assoc]` would also work
-      conv_lhs => congr ; rw [assoc]
+      -- porting note: the proof was `by simp`
+      congr 1
+      simp only [assoc]
     · have h : s _ _ = _ := (ht hf _ hm).symm
       -- porting note: this was done by `simp only [assoc] at`
       conv_lhs at h => congr ; rw [assoc, assoc]
       rw [h]
-      simp
+      simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
   refine' ⟨hU.amalgamate t hT, _, _⟩
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
     rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
@@ -189,7 +188,7 @@ Construct the finest (largest) Grothendieck topology for which all the given pre
 This is equal to the construction of <https://stacks.math.columbia.edu/tag/00Z9>.
 -/
 def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
-  infₛ (finestTopologySingle '' Ps)
+  sInf (finestTopologySingle '' Ps)
 #align category_theory.sheaf.finest_topology CategoryTheory.Sheaf.finestTopology
 
 /-- Check that if `P ∈ Ps`, then `P` is indeed a sheaf for the finest topology on `Ps`. -/
@@ -199,7 +198,7 @@ theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) 
 #align category_theory.sheaf.sheaf_for_finest_topology CategoryTheory.Sheaf.sheaf_for_finestTopology
 
 /--
-Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `finest_topology Ps`.
+Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `finestTopology Ps`.
 -/
 theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
     (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
@@ -209,7 +208,7 @@ theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopol
   exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
 #align category_theory.sheaf.le_finest_topology CategoryTheory.Sheaf.le_finestTopology
 
-/-- The `canonical_topology` on a category is the finest (largest) topology for which every
+/-- The `canonicalTopology` on a category is the finest (largest) topology for which every
 representable presheaf is a sheaf.
 
 See <https://stacks.math.columbia.edu/tag/00ZA>
