@@ -17,28 +17,28 @@ for main goals (`@[rel_congr_forward]`). -/
 
 macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
 
-namespace Mathlib.Tactic.Rel
+namespace Mathlib.Tactic.RelCongr
 open Lean Meta
 
 /-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-@[rel_congr_forward] def exactRefl : RelCongrForwardExt where
+@[rel_congr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
     goal.exact (← mkAppOptM ``Eq.subst #[h, m])
     goal.rfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[rel_congr_forward] def exactLeOfLt : RelCongrForwardExt where
+@[rel_congr_forward] def exactLeOfLt : ForwardExt where
   eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[rel_congr_forward] def symmExact : RelCongrForwardExt where
+@[rel_congr_forward] def symmExact : ForwardExt where
   eval h goal := do (← goal.symm).exact h
 
-@[rel_congr_forward] def exact : RelCongrForwardExt where
+@[rel_congr_forward] def exact : ForwardExt where
   eval := MVarId.exact
 
-end Mathlib.Tactic.Rel
+end Mathlib.Tactic.RelCongr
 
 /-! # ≤, - -/
 

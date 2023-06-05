@@ -121,7 +121,7 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 The `rel` tactic is finishing-only: if fails if any main or side goals are not resolved.
 -/
 
-namespace Mathlib.Tactic.Rel
+namespace Mathlib.Tactic.RelCongr
 open Lean Meta
 
 /-- Structure recording the data for a "relational congruence" (`rel_congr`) lemma. -/
@@ -358,22 +358,22 @@ def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   g.assign e
 
 /-- An extension for `rel_congr_forward`. -/
-structure RelCongrForwardExt where
+structure ForwardExt where
   eval (h : Expr) (goal : MVarId) : MetaM Unit
 
 /-- Read a `rel_congr_forward` extension from a declaration of the right type. -/
-def mkRelCongrForwardExt (n : Name) : ImportM RelCongrForwardExt := do
+def mkForwardExt (n : Name) : ImportM ForwardExt := do
   let { env, opts, .. } ← read
-  IO.ofExcept <| unsafe env.evalConstCheck RelCongrForwardExt opts ``RelCongrForwardExt n
+  IO.ofExcept <| unsafe env.evalConstCheck ForwardExt opts ``ForwardExt n
 
 /-- Environment extensions for `relCongrForward` declarations -/
-initialize relCongrForwardExt : PersistentEnvExtension Name (Name × RelCongrForwardExt)
-    (List Name × List (Name × RelCongrForwardExt)) ←
+initialize forwardExt : PersistentEnvExtension Name (Name × ForwardExt)
+    (List Name × List (Name × ForwardExt)) ←
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
-        return (n, ← mkRelCongrForwardExt n) :: dt
+        return (n, ← mkForwardExt n) :: dt
       pure ([], dt)
     addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
     exportEntriesFn := fun s => s.1.reverse.toArray
@@ -391,8 +391,8 @@ initialize registerBuiltinAttribute {
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'rel_congr_forward', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
-      let ext ← mkRelCongrForwardExt declName
-      setEnv <| relCongrForwardExt.addEntry env (declName, ext)
+      let ext ← mkForwardExt declName
+      setEnv <| forwardExt.addEntry env (declName, ext)
     | _ => throwUnsupportedSyntax
 }
 
@@ -404,7 +404,7 @@ def _root_.Lean.MVarId.relCongrForward (hs : Array Expr) (g : MVarId) : MetaM Un
     let s ← saveState
     withTraceNode `Meta.rel (fun _ => return m!"rel_congr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
-    let tacs := (relCongrForwardExt.getState (← getEnv)).2
+    let tacs := (forwardExt.getState (← getEnv)).2
     for h in hs do
       try
         tacs.firstM fun (n, tac) =>
