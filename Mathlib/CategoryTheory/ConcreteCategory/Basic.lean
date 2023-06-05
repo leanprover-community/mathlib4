@@ -115,8 +115,8 @@ theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x =
   exact w x
 #align category_theory.concrete_category.hom_ext CategoryTheory.ConcreteCategory.hom_ext
 
--- Porting note: `forget_map_eq_coe` becomes a syntactic tautology.
-#noalign category_theory.forget_map_eq_coe
+theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
+#align category_theory.forget_map_eq_coe CategoryTheory.forget_map_eq_coe
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -142,7 +142,7 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) =
 #align category_theory.comp_apply CategoryTheory.comp_apply
 
 theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-  (forget C).map (f ≫ g) x = g (f x) := comp_apply f g x
+  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
