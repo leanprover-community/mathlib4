@@ -1330,16 +1330,16 @@ open scoped Classical
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
-    R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (factors I).count P :=
+    R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   IsDedekindDomain.quotientEquivPiOfProdEq _ _ _
-    (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.Prop))
-    (fun i j hij => Subtype.coe_injective.Ne hij)
+    (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
+    (fun i j hij => Subtype.coe_injective.ne hij)
     (calc
       (∏ P : (factors I).toFinset, (P : Ideal R) ^ (factors I).count (P : Ideal R)) =
           ∏ P in (factors I).toFinset, P ^ (factors I).count P :=
         (factors I).toFinset.prod_coe_sort fun P => P ^ (factors I).count P
-      _ = ((factors I).map fun P => P).Prod := (Finset.prod_multiset_map_count (factors I) id).symm
-      _ = (factors I).Prod := by rw [Multiset.map_id']
+      _ = ((factors I).map fun P => P).prod := (Finset.prod_multiset_map_count (factors I) id).symm
+      _ = (factors I).prod := by rw [Multiset.map_id']
       _ = I := (@associated_iff_eq (Ideal R) _ Ideal.uniqueUnits _ _).mp (factors_prod hI)
       )
 #align is_dedekind_domain.quotient_equiv_pi_factors IsDedekindDomain.quotientEquivPiFactors
@@ -1347,8 +1347,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
     IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun P =>
-      Ideal.Quotient.mk _ x :=
-  rfl
+      Ideal.Quotient.mk _ x := rfl
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
@@ -1358,7 +1357,6 @@ noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : 
     (Ideal.quotientInfEquivQuotientProd I J coprime)
 #align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i j «expr ∈ » s) -/
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i in s, P i ^ e i`, then `R ⧸ I` factors as `Π (i : s), R ⧸ (P i ^ e i)`.
 
@@ -1370,24 +1368,22 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type _} {
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : (∏ i in s, P i ^ e i) = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   IsDedekindDomain.quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
-    (fun i => Prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.Ne h))
-    (trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
+    (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
+    (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
 #align is_dedekind_domain.quotient_equiv_pi_of_finset_prod_eq IsDedekindDomain.quotientEquivPiOfFinsetProdEq
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i j «expr ∈ » s) -/
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,
 we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`.-/
 theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type _} {s : Finset ι}
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
     ∃ y, ∀ (i) (hi : i ∈ s), Ideal.Quotient.mk (P i ^ e i) y = x ⟨i, hi⟩ := by
-  let f := IsDedekindDomain.quotientEquivPiOfFinsetProdEq _ P e Prime coprime rfl
+  let f := IsDedekindDomain.quotientEquivPiOfFinsetProdEq _ P e prime coprime rfl
   obtain ⟨y, rfl⟩ := f.surjective x
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective y
   exact ⟨z, fun i hi => rfl⟩
 #align is_dedekind_domain.exists_representative_mod_finset IsDedekindDomain.exists_representative_mod_finset
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (i j «expr ∈ » s) -/
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R`,
 we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`.-/
 theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type _} {s : Finset ι} (P : ι → Ideal R)
@@ -1395,9 +1391,9 @@ theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type _} {s : Finset �
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
     ∃ y, ∀ (i) (hi : i ∈ s), y - x ⟨i, hi⟩ ∈ P i ^ e i := by
   obtain ⟨y, hy⟩ :=
-    IsDedekindDomain.exists_representative_mod_finset P e Prime coprime fun i =>
+    IsDedekindDomain.exists_representative_mod_finset P e prime coprime fun i =>
       Ideal.Quotient.mk _ (x i)
-  exact ⟨y, fun i hi => ideal.quotient.eq.mp (hy i hi)⟩
+  exact ⟨y, fun i hi => Ideal.Quotient.eq.mp (hy i hi)⟩
 #align is_dedekind_domain.exists_forall_sub_mem_ideal IsDedekindDomain.exists_forall_sub_mem_ideal
 
 end DedekindDomain
@@ -1408,7 +1404,9 @@ section PID
 
 open multiplicity UniqueFactorizationMonoid Ideal
 
-variable {R} [IsDomain R] [IsPrincipalIdealRing R]
+variable {R}
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     Ideal.span {a} ∣ Ideal.span ({b} : Set R) ↔ a ∣ b :=
@@ -1420,22 +1418,20 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
     [DecidableEq R] [DecidableEq (Ideal R)] {a b : R} (ha : a ∈ normalizedFactors b) :
     Ideal.span ({a} : Set R) ∈ normalizedFactors (Ideal.span ({b} : Set R)) := by
   by_cases hb : b = 0
-  · rw [ideal.span_singleton_eq_bot.mpr hb, bot_eq_zero, normalized_factors_zero]
-    rw [hb, normalized_factors_zero] at ha
-    simpa only [Multiset.not_mem_zero]
+  · rw [Ideal.span_singleton_eq_bot.mpr hb, bot_eq_zero, normalizedFactors_zero]
+    rw [hb, normalizedFactors_zero] at ha
+    exact absurd ha (Multiset.not_mem_zero a)
   · suffices Prime (Ideal.span ({a} : Set R)) by
-      obtain ⟨c, hc, hc'⟩ :=
-        exists_mem_normalized_factors_of_dvd _ this.irreducible
-          (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_mem_normalized_factors ha)))
+      obtain ⟨c, hc, hc'⟩ := exists_mem_normalizedFactors_of_dvd ?_ this.irreducible
+          (dvd_iff_le.mpr (span_singleton_le_span_singleton.mpr (dvd_of_mem_normalizedFactors ha)))
       rwa [associated_iff_eq.mp hc']
-      · by_contra
-        exact hb (span_singleton_eq_bot.mp h)
-    rw [prime_iff_is_prime]
-    exact
-      (span_singleton_prime (prime_of_normalized_factor a ha).NeZero).mpr
+    · by_contra h
+      exact hb (span_singleton_eq_bot.mp h)
+    rw [prime_iff_isPrime]
+    · exact (span_singleton_prime (prime_of_normalized_factor a ha).ne_zero).mpr
         (prime_of_normalized_factor a ha)
-    by_contra
-    exact (prime_of_normalized_factor a ha).NeZero (span_singleton_eq_bot.mp h)
+    · by_contra h
+      exact (prime_of_normalized_factor a ha).ne_zero (span_singleton_eq_bot.mp h)
 #align singleton_span_mem_normalized_factors_of_mem_normalized_factors singleton_span_mem_normalizedFactors_of_mem_normalizedFactors
 
 theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R → Prop)]
@@ -1443,57 +1439,48 @@ theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R �
     multiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine'
-        (multiplicity.unique
-            (show Ideal.span {a} ^ (multiplicity a b).get h ∣ Ideal.span {b} from _) _).symm <;>
+    refine (multiplicity.unique
+      (show Ideal.span {a} ^ (multiplicity a b).get h ∣ Ideal.span {b} from ?_) ?_).symm <;>
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
     exact pow_multiplicity_dvd h
-    ·
-      exact
-        multiplicity.is_greatest
-          ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
+    · exact multiplicity.is_greatest
+        ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
   · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
-    refine'
-      not_finite_iff_forall.mpr fun n => by
-        rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-        exact not_finite_iff_forall.mp h n
+    exact not_finite_iff_forall.mpr fun n => by
+      rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
+      exact not_finite_iff_forall.mp h n
 #align multiplicity_eq_multiplicity_span multiplicity_eq_multiplicity_span
 
 variable [DecidableEq R] [DecidableEq (Ideal R)] [NormalizationMonoid R]
 
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
     of `span {r}` -/
-@[simps]
+@[simps!]
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :
     { d : R | d ∈ normalizedFactors r } ≃
-      { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) } :=
-  Equiv.ofBijective
-    (fun d =>
-      ⟨Ideal.span {↑d}, singleton_span_mem_normalizedFactors_of_mem_normalizedFactors d.Prop⟩)
-    (by
-      constructor
-      · rintro ⟨a, ha⟩ ⟨b, hb⟩ h
-        rw [Subtype.mk_eq_mk, Ideal.span_singleton_eq_span_singleton, Subtype.coe_mk,
+      { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) } := by
+  refine Equiv.ofBijective ?_ ?_
+  · exact fun d =>
+      ⟨Ideal.span {↑d}, singleton_span_mem_normalizedFactors_of_mem_normalizedFactors d.prop⟩
+  · refine ⟨?_, ?_⟩
+    · rintro ⟨a, ha⟩ ⟨b, hb⟩ h
+      rw [Subtype.mk_eq_mk, Ideal.span_singleton_eq_span_singleton, Subtype.coe_mk,
           Subtype.coe_mk] at h
-        exact subtype.mk_eq_mk.mpr (mem_normalized_factors_eq_of_associated ha hb h)
-      · rintro ⟨i, hi⟩
-        letI : i.is_principal := inferInstance
-        letI : i.is_prime := is_prime_of_prime (prime_of_normalized_factor i hi)
-        obtain ⟨a, ha, ha'⟩ :=
-          exists_mem_normalized_factors_of_dvd hr
-            (Submodule.IsPrincipal.prime_generator_of_isPrime i
-                (prime_of_normalized_factor i hi).NeZero).Irreducible
-            _
-        · use ⟨a, ha⟩
-          simp only [Subtype.coe_mk, Subtype.mk_eq_mk, ← span_singleton_eq_span_singleton.mpr ha',
+      exact Subtype.mk_eq_mk.mpr (mem_normalizedFactors_eq_of_associated ha hb h)
+    · rintro ⟨i, hi⟩
+      have : i.IsPrime := isPrime_of_prime (prime_of_normalized_factor i hi)
+      have := exists_mem_normalizedFactors_of_dvd hr
+        (Submodule.IsPrincipal.prime_generator_of_isPrime i
+        (prime_of_normalized_factor i hi).ne_zero).irreducible ?_
+      · obtain ⟨a, ha, ha'⟩ := this
+        use ⟨a, ha⟩
+        simp only [Subtype.coe_mk, Subtype.mk_eq_mk, ← span_singleton_eq_span_singleton.mpr ha',
             Ideal.span_singleton_generator]
-        ·
-          exact
-            (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
-              ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalized_factors hi))
-                (mem_span_singleton.mpr (dvd_refl r))))
+      · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
+          ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))
+            (mem_span_singleton.mpr (dvd_refl r)))
 #align normalized_factors_equiv_span_normalized_factors normalizedFactorsEquivSpanNormalizedFactors
 
 variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
@@ -1515,7 +1502,7 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
     (hr : r ≠ 0) (I : { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) }) :
     multiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =
       multiplicity (I : Ideal R) (Ideal.span {r}) := by
-  obtain ⟨x, hx⟩ := (normalizedFactorsEquivSpanNormalizedFactors hr).Surjective I
+  obtain ⟨x, hx⟩ := (normalizedFactorsEquivSpanNormalizedFactors hr).surjective I
   obtain ⟨a, ha⟩ := x
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha, hx]
