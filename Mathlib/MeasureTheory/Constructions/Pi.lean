@@ -658,12 +658,6 @@ instance {X : ι → Type _} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpac
     IsFiniteMeasureOnCompacts (volume : Measure (∀ i, X i)) :=
   pi.isFiniteMeasureOnCompacts _
 
-instance {X : ι → Type _} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaFinite (volume : Measure (X i))]
-    [∀ i, FiniteMeasureOnCompacts (volume : Measure (X i))] :
-    FiniteMeasureOnCompacts (volume : Measure (∀ i, X i)) :=
-  pi.finiteMeasureOnCompacts _
-
 @[to_additive]
 instance pi.isHaarMeasure [∀ i, Group (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, IsHaarMeasure (μ i)] [∀ i, MeasurableMul (α i)] : IsHaarMeasure (Measure.pi μ) where
