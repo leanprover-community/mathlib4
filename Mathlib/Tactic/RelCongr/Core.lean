@@ -206,7 +206,7 @@ initialize registerBuiltinAttribute {
       ((relName, head, varyingArgs), { declName := decl, mainSubgoals, varyingArgs }) kind
 }
 
-initialize registerTraceClass `Meta.rel
+initialize registerTraceClass `Meta.relCongr
 
 /-- The core of the `rel_congr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant @[rel_congr] lemmas, try to apply them, recursively run the tactic itself on
@@ -218,7 +218,7 @@ partial def _root_.Lean.MVarId.relCongr
     (side_goal_discharger : MVarId → MetaM Unit)
     (main_goal_discharger : MVarId → MetaM Unit := fun g => g.assumption) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
-  withTraceNode `Meta.rel (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
+  withTraceNode `Meta.relCongr (fun _ => return m!"rel_congr: ⊢ {← g.getType}") do
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
@@ -402,13 +402,13 @@ these hypotheses. -/
 def _root_.Lean.MVarId.relCongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
   withReducible do
     let s ← saveState
-    withTraceNode `Meta.rel (fun _ => return m!"rel_congr_forward: ⊢ {← g.getType}") do
+    withTraceNode `Meta.relCongr (fun _ => return m!"rel_congr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
     let tacs := (forwardExt.getState (← getEnv)).2
     for h in hs do
       try
         tacs.firstM fun (n, tac) =>
-          withTraceNode `Meta.rel (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          withTraceNode `Meta.relCongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
             tac.eval h g
         return
       catch _ => s.restore
