@@ -19,9 +19,9 @@ in the sense that we've shown that the Bernstein approximations
 to a continuous function on `[0,1]` converge uniformly.
 
 Here we rephrase this more abstractly as
-`polynomial_functions_closure_eq_top' : (polynomial_functions I).topological_closure = ⊤`
+`polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topological_closure = ⊤`
 and then, by precomposing with suitable affine functions,
-`polynomial_functions_closure_eq_top : (polynomial_functions (set.Icc a b)).topological_closure = ⊤`
+`polynomialFunctions_closure_eq_top : (polynomialFunctions (Set.Icc a b)).topological_closure = ⊤`
 -/
 
 
