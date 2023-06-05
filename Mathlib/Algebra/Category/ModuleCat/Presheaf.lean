@@ -6,9 +6,24 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 
+/-!
+# Presheaves of modules over a presheaf of rings.
+
+We give a hands-on description of a presheaf of modules over a fixed presheaf of rings,
+as a presheaf of abelian groups with additional data.
+
+## Future work
+
+* Show that we can check the sheaf condition at the level of abelian groups.
+* Compare this to the definition as a presheaf of pairs `(R, M)` with specified first part.
+* Compare this to the definition as a module object of the presheaf of rings
+  thought of as a monoid object.
+
+-/
+
 open CategoryTheory
 
--- TODO: move these definitions to the linear algebra library.
+-- TODO: Porting note: move these definitions to the linear algebra library.
 -- They belong in `Mathlib.Algebra.Ring.CompTypeclasses`.
 
 class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
