@@ -12,7 +12,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
@@ -261,7 +260,7 @@ end ContinuousMap
 section GroupStructure
 
 /-!
-### Group stucture
+### Group structure
 
 In this section we show that continuous functions valued in a topological group inherit
 the structure of a group.
@@ -450,7 +449,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring stucture
+### Ring structure
 
 In this section we show that continuous functions valued in a topological semiring `R` inherit
 the structure of a ring.
@@ -557,7 +556,7 @@ attribute [local ext] Subtype.eq
 section ModuleStructure
 
 /-!
-### Semiodule stucture
+### Semiodule structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.

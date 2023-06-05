@@ -9,8 +9,8 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.SimpSet
-import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Mathlib.Tactic.CasesM
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -182,7 +182,7 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
--- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+-- [todo] add notation for `Functor.mapConst` and port `Functor.mapConstRev`
 /-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false

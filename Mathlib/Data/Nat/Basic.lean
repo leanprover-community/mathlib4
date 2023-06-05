@@ -11,9 +11,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
 
 /-!
 # Basic operations on the natural numbers

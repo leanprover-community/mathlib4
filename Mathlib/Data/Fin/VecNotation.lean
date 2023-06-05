@@ -11,8 +11,6 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
-import Mathlib.Tactic.ToExpr
-import Qq
 
 /-!
 # Matrix and vector notation
@@ -340,10 +338,11 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
-  cases n
-  · cases' i with i hi
+  cases n with
+  | zero =>
+    cases' i with i hi
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
-  case succ n =>
+  | succ n =>
     split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
     · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
       rw [Fin.val_mk] at h
@@ -536,7 +535,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 
 @[simp]
 theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
-  ext (i j)
+  ext i
   refine' Fin.cases _ _ i
   · rfl
   simp

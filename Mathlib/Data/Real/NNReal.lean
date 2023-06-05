@@ -45,7 +45,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   `↑(Real.toNNReal x) = 0` otherwise.
 
 We also define an instance `CanLift ℝ ℝ≥0`. This instance can be used by the `lift` tactic to
-replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurences
+replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurrences
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
@@ -935,7 +935,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ≥0)) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero
@@ -1072,27 +1072,23 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
 
 end Real
 
-/-
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
+open Lean Meta Qq Function
 
 private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
   NNReal.coe_pos.2
-#align tactic.nnreal_coe_pos tactic.nnreal_coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
-@[positivity]
-unsafe def positivity_coe_nnreal_real : expr → tactic strictness
-  | q(@coe _ _ $(inst) $(a)) => do
-    unify inst q(@coeToLift _ _ <| @coeBase _ _ NNReal.Real.hasCoe)
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` nnreal_coe_pos [p]
-      | _ => nonnegative <$> mk_app `` NNReal.coe_nonneg [a]
-  | e =>
-    pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ)` for `r : ℝ≥0`"
-#align tactic.positivity_coe_nnreal_real tactic.positivity_coe_nnreal_real
+@[positivity NNReal.toReal _]
+def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.toReal"
+  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(nnreal_coe_pos $pa) : Expr))
+  | _ => pure (.nonnegative (q(NNReal.coe_nonneg $a) : Expr))
 
-end Tactic
--/
+end Mathlib.Meta.Positivity

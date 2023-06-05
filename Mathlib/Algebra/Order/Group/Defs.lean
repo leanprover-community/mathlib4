@@ -1171,7 +1171,7 @@ namespace AddCommGroup
 
 /-- A collection of elements in an `AddCommGroup` designated as "non-negative".
 This is useful for constructing an `OrderedAddCommGroup`
-by choosing a positive cone in an exisiting `AddCommGroup`. -/
+by choosing a positive cone in an existing `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type _) [AddCommGroup α] where
   nonneg : α → Prop

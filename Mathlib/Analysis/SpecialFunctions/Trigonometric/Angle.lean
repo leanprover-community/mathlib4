@@ -771,7 +771,7 @@ theorem abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi {θ ψ : Angle}
   exact abs_cos_eq_abs_sin_of_two_nsmul_add_two_nsmul_eq_pi h
 #align real.angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi Real.Angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi
 
-/-- The tangent of a `real.angle`. -/
+/-- The tangent of a `Real.Angle`. -/
 def tan (θ : Angle) : ℝ :=
   sin θ / cos θ
 #align real.angle.tan Real.Angle.tan
@@ -846,7 +846,7 @@ theorem tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi {θ ψ : Angle}
   exact tan_eq_inv_of_two_nsmul_add_two_nsmul_eq_pi h
 #align real.angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi Real.Angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi
 
-/-- The sign of a `real.angle` is `0` if the angle is `0` or `π`, `1` if the angle is strictly
+/-- The sign of a `Real.Angle` is `0` if the angle is `0` or `π`, `1` if the angle is strictly
 between `0` and `π` and `-1` is the angle is strictly between `-π` and `0`. It is defined as the
 sign of the sine of the angle. -/
 def sign (θ : Angle) : SignType :=

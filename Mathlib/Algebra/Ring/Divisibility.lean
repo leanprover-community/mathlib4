@@ -12,7 +12,6 @@ Ported by: Matej Penciak
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
 
 /-!
 # Lemmas about divisibility in rings
