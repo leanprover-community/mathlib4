@@ -85,10 +85,9 @@ namespace DirectLimit
 -- Porting note : Instead of `Σi, G i`, we use the alias SigmaG which depends on `f`. This way,
 -- Lean can infer what `L` is in the `setoid` instance. Otherwise we have a
 -- "cannot find synthesization order" error. See the discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
-set_option linter.unusedVariables false
+set_option linter.unusedVariables false in
 /-- Alias for `Σi, G i`. -/
 def SigmaG (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σi, G i
-set_option linter.unusedVariables true
 
 def SigmaG.mk (i : ι) (x : G i) : SigmaG f := ⟨i, x⟩
 
