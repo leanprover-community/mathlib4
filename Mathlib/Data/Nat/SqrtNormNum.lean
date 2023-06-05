@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.NormNum
-import Mathbin.Data.Nat.Sqrt
+import Mathlib.Tactic.NormNum
+import Mathlib.Data.Nat.Sqrt
 
 /-! ### `norm_num` plugin for `sqrt`
 
