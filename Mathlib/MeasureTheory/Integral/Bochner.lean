@@ -542,12 +542,11 @@ theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f 
   setToL1S_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
 #align measure_theory.L1.simple_func.integral_add MeasureTheory.L1.SimpleFunc.integral_add
 
--- Porting note: why did this need to be added?
-instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := by
-  haveI : NormedSpace 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
-  haveI : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
-  haveI : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
-  infer_instance
+-- Porting note: finding `SMul 𝕜 (Lp.simpleFunc E 1 μ)` takes about twice the default
+-- `synthInstance.maxHeartbeats 20000`, so we provide some shortcut instances to speed it up.
+instance : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
+instance : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
+instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
 
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
   setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
