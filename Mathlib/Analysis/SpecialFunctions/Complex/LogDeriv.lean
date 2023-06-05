@@ -28,8 +28,8 @@ theorem isOpenMap_exp : IsOpenMap exp :=
   open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
-/-- `complex.exp` as a `local_homeomorph` with `source = {z | -π < im z < π}` and
-`target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `complex.log`
+/-- `Complex.exp` as a `LocalHomeomorph` with `source = {z | -π < im z < π}` and
+`target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
 noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
   LocalHomeomorph.ofContinuousOpen
