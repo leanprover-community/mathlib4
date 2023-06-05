@@ -799,7 +799,7 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
   · simp only [h't, abs_of_nonneg rpos.le, pow_pos rpos, add_haar_smul, image_add_left,
       ENNReal.ofReal_eq_zero, not_le, or_false_iff, Ne.def, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
-  · simp [h''t, ENNReal.ofReal_ne_top, add_haar_smul, image_add_left, ENNReal.mul_eq_top,
+  · simp [h''t, ENNReal.ofReal_ne_top, add_haar_smul, image_add_left, ENNReal.mul_eq_top_iff,
       Ne.def, not_false_iff, measure_preimage_add, singleton_add, and_false_iff, false_and_iff,
       or_self_iff]
 #align measure_theory.measure.tendsto_add_haar_inter_smul_one_of_density_one_aux MeasureTheory.Measure.tendsto_add_haar_inter_smul_one_of_density_one_aux
