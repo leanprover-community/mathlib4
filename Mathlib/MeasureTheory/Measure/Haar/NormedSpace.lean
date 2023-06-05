@@ -16,6 +16,7 @@ import Mathlib.MeasureTheory.Integral.Bochner
 
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 noncomputable section
 
@@ -23,14 +24,14 @@ open scoped NNReal ENNReal Pointwise BigOperators Topology
 
 open Inv Set Function MeasureTheory.Measure Filter
 
-open Measure FiniteDimensional
+open FiniteDimensional
 
 namespace MeasureTheory
 
 namespace Measure
 
-/- The instance `is_add_haar_measure.has_no_atoms` applies in particular to show that an additive
-Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
+/- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
+an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
 example {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
@@ -43,7 +44,7 @@ variable {𝕜 G H : Type _} [MeasurableSpace G] [MeasurableSpace H] [Nontrivial
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [T2Space H]
 
 instance MapContinuousLinearEquiv.isAddHaarMeasure (e : G ≃L[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  e.toAddEquiv.isAddHaarMeasure_map _ e.Continuous e.symm.Continuous
+  e.toAddEquiv.isAddHaarMeasure_map _ e.continuous e.symm.continuous
 #align measure_theory.measure.map_continuous_linear_equiv.is_add_haar_measure MeasureTheory.Measure.MapContinuousLinearEquiv.isAddHaarMeasure
 
 variable [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
@@ -59,7 +60,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type _} [NormedAddCommGroup F]
   [NormedSpace ℝ F] [CompleteSpace F]
 
-variable (μ) {s : Set E}
+variable {s : Set E}
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
@@ -70,20 +71,18 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
     · have : Subsingleton E := finrank_zero_iff.1 hE
-      have : f = fun x => f 0 := by ext x; rw [Subsingleton.elim x 0]
+      have : f = fun _ => f 0 := by ext x; rw [Subsingleton.elim x 0]
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
-      simp only [zero_pow hE, measure_univ_of_is_add_left_invariant, ENNReal.top_toReal, zero_smul,
+      simp only [zero_pow hE, measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
         inv_zero, abs_zero]
-  ·
-    calc
-      (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂measure.map (fun x => R • x) μ :=
-        (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).Unit).toMeasurableEquiv
+  · calc
+      (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
+        (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
             f).symm
       _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
         simp only [map_add_haar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
-      
 #align measure_theory.measure.integral_comp_smul MeasureTheory.Measure.integral_comp_smul
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
@@ -111,12 +110,12 @@ theorem integral_comp_inv_smul_of_nonneg (f : E → F) {R : ℝ} (hR : 0 ≤ R) 
 #align measure_theory.measure.integral_comp_inv_smul_of_nonneg MeasureTheory.Measure.integral_comp_inv_smul_of_nonneg
 
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
-  by simp_rw [← smul_eq_mul, measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+  by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a⁻¹ * x)) = |a| • ∫ y : ℝ, g y := by
-  simp_rw [← smul_eq_mul, measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
+  simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
 theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
@@ -141,15 +140,14 @@ theorem integrable_comp_smul_iff {E : Type _} [NormedAddCommGroup E] [NormedSpac
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (hg : integrable g μ) {S : ℝ} (hS : S ≠ 0), integrable (fun x => g (S • x)) μ by
+    ∀ {g : E → F} (hg : Integrable g μ) {S : ℝ} (hS : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine' ⟨fun hf => _, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
-    ext1 x
     rw [← mul_smul, mul_inv_cancel hR, one_smul]
   -- now prove
   intro g hg S hS
-  let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).Unit).toMeasurableEquiv : E ≃ᵐ E)
-  refine' (integrable_map_equiv t g).mp (_ : integrable g (map (SMul.smul S) μ))
+  let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
+  refine' (integrable_map_equiv t g).mp (_ : Integrable g (map (S • ·) μ))
   rwa [map_add_haar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
   simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
@@ -191,4 +189,3 @@ theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : 
 #align measure_theory.integrable.comp_div MeasureTheory.Integrable.comp_div
 
 end MeasureTheory
-
