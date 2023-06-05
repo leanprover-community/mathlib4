@@ -32,7 +32,7 @@ We prove the basic identities
 
 ## Notes
 
-See also `Analysis.SpecialFunctions.Bernstein`, which defines the Bernstein approximations
+See also `Mathlib.Analysis.SpecialFunctions.Bernstein`, which defines the Bernstein approximations
 of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly to `f`.
 -/
 
@@ -56,9 +56,10 @@ def bernsteinPolynomial (n ν : ℕ) : R[X] :=
 #align bernstein_polynomial bernsteinPolynomial
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by
-  -- Porting note: `norm_num` ignores arguments
+  -- Porting note: Originally was just `norm_num [bernsteinPolynomial, choose]; ring`,
+  -- but `norm_num` ignores arguments
   simp [bernsteinPolynomial, choose]
-  norm_num [bernsteinPolynomial, choose]
+  norm_num
   ring
 
 namespace bernsteinPolynomial
@@ -129,10 +130,10 @@ theorem derivative_succ_aux (n ν : ℕ) :
     norm_cast
     congr 1
     convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · rw [mul_comm, Nat.succ_sub_succ_eq_sub]
-      -- Porting note: was
+    · -- Porting note: was
       -- convert mul_comm _ _ using 2
       -- simp
+      rw [mul_comm, Nat.succ_sub_succ_eq_sub]
     · apply mul_comm
 #align bernstein_polynomial.derivative_succ_aux bernsteinPolynomial.derivative_succ_aux
 
