@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 
 import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lawson topology
@@ -91,6 +92,16 @@ instance : Preorder (WithLawsonTopology α) := ‹Preorder α›
 
 instance : TopologicalSpace (WithLawsonTopology α) := LawsonTopology'
 
+theorem isOpen_preimage_ofLawson (S : Set α) :
+    IsOpen (WithLawsonTopology.ofLawson ⁻¹' S) ↔
+      LawsonTopology'.IsOpen S :=
+  Iff.rfl
+
+theorem isOpen_def (T : Set (WithLawsonTopology α)) :
+    IsOpen T ↔
+      LawsonTopology'.IsOpen (WithLawsonTopology.toLawson ⁻¹' T) :=
+  Iff.rfl
+
 end WithLawsonTopology
 
 /--
@@ -120,11 +131,32 @@ variable {α}
 def withLawsonTopologyHomeomorph : WithLawsonTopology α ≃ₜ α :=
   WithLawsonTopology.ofLawson.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
+/-
+lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : LawsonTopology'.IsOpen u
+↔ (LowerTopology'.IsOpen u ∧ ScottTopology'.IsOpen u) := by
+-/
+
+
+
+lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : IsOpen (WithLawsonTopology.ofLawson ⁻¹' u) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := by
+  rw [WithLawsonTopology.isOpen_preimage_ofLawson]
+
+
+
 end preorder
 
 end LawsonTopology
 
 section csh
+
+
+lemma isOpen_iff_Lower_and_Scott_Open  (u : Set α) : IsOpen (WithLawsonTopology.toLawson u ) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := sorry
+
+lemma ScottLawsonCont' [Preorder α] : Continuous (WithScottTopology.toScott ∘ WithLawsonTopology.ofLawson : WithLawsonTopology α → _) := by
+  rw [continuous_def]
+  intro s hs
+  simp
+
 
 variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 
