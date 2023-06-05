@@ -24,10 +24,10 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
+-- porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
-@[simps]
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
       (N ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op M)).obj P) where
