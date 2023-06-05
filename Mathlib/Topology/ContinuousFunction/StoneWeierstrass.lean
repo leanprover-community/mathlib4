@@ -113,7 +113,6 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
 
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
     (f : C(X, ℝ)).abs ∈ A.topologicalClosure := by
-  let M := ‖f‖
   let f' := attachBound (f : C(X, ℝ))
   let abs : C(Set.Icc (-‖f‖) ‖f‖, ℝ) := { toFun := fun x : Set.Icc (-‖f‖) ‖f‖ => |(x : ℝ)| }
   change abs.comp f' ∈ A.topologicalClosure
@@ -254,12 +253,12 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- We rewrite into this particular form,
   -- so that simp lemmas about inequalities involving `finset.inf'` can fire.
   rw [show ∀ a b ε : ℝ, dist a b < ε ↔ a < b + ε ∧ b - ε < a by
-        intros; simp only [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm']]
+        intros; simp only [← Metric.mem_ball, Real.ball_eq_Ioo, Set.mem_Ioo, and_comm]]
   fconstructor
-  · dsimp [k]
+  · dsimp
     simp only [Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
-  · dsimp [k]
+  · dsimp
     simp only [Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
     intro x xm
     apply lt_h
@@ -362,10 +361,10 @@ theorem subalgebraConjInvariant {S : Set C(X, 𝕜)}
   · exact fun c => Subalgebra.algebraMap_mem _ (starRingEnd 𝕜 c)
   · intro f g hf hg
     convert Subalgebra.add_mem _ hf hg using 1
-    exact AlgHom.map_add _ f g
+    simp only [AlgEquiv.toAlgHom_eq_coe, map_add, RingHom.coe_coe]
   · intro f g hf hg
-    convert Subalgebra.mul_mem _ hf hg
-    exact AlgHom.map_mul _ f g
+    convert Subalgebra.mul_mem _ hf hg using 1
+    simp only [AlgEquiv.toAlgHom_eq_coe, map_mul, RingHom.coe_coe]
 #align continuous_map.subalgebra_conj_invariant ContinuousMap.subalgebraConjInvariant
 
 end ContinuousMap
