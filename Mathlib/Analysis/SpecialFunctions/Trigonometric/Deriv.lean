@@ -747,7 +747,7 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 #align real.one_lt_cosh Real.one_lt_cosh
 
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
-  -- Porting note: `by simp; abel` wass just `by simp` in mathlib3.
+  -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
   refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
   refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
   · exact (continuous_sinh.sub continuous_id).continuousOn
