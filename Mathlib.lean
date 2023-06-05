@@ -1691,6 +1691,7 @@ import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.Schreier
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Solvable
 import Mathlib.GroupTheory.SpecificGroups.Alternating
