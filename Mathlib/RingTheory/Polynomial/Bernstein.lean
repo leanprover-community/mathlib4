@@ -20,19 +20,19 @@ import Mathlib.Data.MvPolynomial.PDeriv
 
 The definition of the Bernstein polynomials
 ```
-bernstein_polynomial (R : Type*) [comm_ring R] (n ν : ℕ) : R[X] :=
+bernsteinPolynomial (R : Type*) [comm_ring R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
 and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.
 
 We prove the basic identities
-* `(finset.range (n + 1)).sum (λ ν, bernstein_polynomial R n ν) = 1`
-* `(finset.range (n + 1)).sum (λ ν, ν • bernstein_polynomial R n ν) = n • X`
-* `(finset.range (n + 1)).sum (λ ν, (ν * (ν-1)) • bernstein_polynomial R n ν) = (n * (n-1)) • X^2`
+* `(Finset.range (n + 1)).sum (λ ν, bernsteinPolynomial R n ν) = 1`
+* `(Finset.range (n + 1)).sum (λ ν, ν • bernsteinPolynomial R n ν) = n • X`
+* `(Finset.range (n + 1)).sum (λ ν, (ν * (ν-1)) • bernsteinPolynomial R n ν) = (n * (n-1)) • X^2`
 
 ## Notes
 
-See also `analysis.special_functions.bernstein`, which defines the Bernstein approximations
+See also `Analysis.SpecialFunctions.Bernstein`, which defines the Bernstein approximations
 of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly to `f`.
 -/
 
@@ -47,7 +47,7 @@ open scoped BigOperators Polynomial
 
 variable (R : Type _) [CommRing R]
 
-/-- `bernstein_polynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
+/-- `bernsteinPolynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
 
 Although the coefficients are integers, it is convenient to work over an arbitrary commutative ring.
 -/
@@ -108,12 +108,10 @@ theorem derivative_succ_aux (n ν : ℕ) :
     Polynomial.derivative (bernsteinPolynomial R (n + 1) (ν + 1)) =
       (n + 1) * (bernsteinPolynomial R n ν - bernsteinPolynomial R n (ν + 1)) := by
   rw [bernsteinPolynomial]
-  suffices
-    ((n + 1).choose (ν + 1) : R[X]) * ((↑(ν + 1 : ℕ) : R[X]) * X ^ ν) * (1 - X) ^ (n - ν) -
-        ((n + 1).choose (ν + 1) : R[X]) * X ^ (ν + 1) * ((↑(n - ν) : R[X]) * (1 - X) ^ (n - ν - 1)) =
-      (↑(n + 1) : R[X]) *
-        ((n.choose ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν) -
-          (n.choose (ν + 1) : R[X]) * X ^ (ν + 1) * (1 - X) ^ (n - (ν + 1))) by
+  suffices ((n + 1).choose (ν + 1) : R[X]) * ((↑(ν + 1 : ℕ) : R[X]) * X ^ ν) * (1 - X) ^ (n - ν) -
+      ((n + 1).choose (ν + 1) : R[X]) * X ^ (ν + 1) * ((↑(n - ν) : R[X]) * (1 - X) ^ (n - ν - 1)) =
+      (↑(n + 1) : R[X]) * ((n.choose ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν) -
+        (n.choose (ν + 1) : R[X]) * X ^ (ν + 1) * (1 - X) ^ (n - (ν + 1))) by
     simpa [Polynomial.derivative_pow, ← sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
       Polynomial.derivative_mul, Polynomial.derivative_nat_cast, MulZeroClass.zero_mul,
       Nat.cast_add, algebraMap.coe_one, Polynomial.derivative_X, mul_one, zero_add,
@@ -138,9 +136,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     · apply mul_comm
 #align bernstein_polynomial.derivative_succ_aux bernsteinPolynomial.derivative_succ_aux
 
-theorem derivative_succ (n ν : ℕ) :
-    Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
-      n * (bernsteinPolynomial R (n - 1) ν - bernsteinPolynomial R (n - 1) (ν + 1)) := by
+theorem derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
+    n * (bernsteinPolynomial R (n - 1) ν - bernsteinPolynomial R (n - 1) (ν + 1)) := by
   cases n
   · simp [bernsteinPolynomial]
   · rw [Nat.cast_succ]; apply derivative_succ_aux
@@ -285,10 +282,10 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
 
 /-- The Bernstein polynomials are linearly independent.
 
-We prove by induction that the collection of `bernstein_polynomial n ν` for `ν = 0, ..., k`
+We prove by induction that the collection of `bernsteinPolynomial n ν` for `ν = 0, ..., k`
 are linearly independent.
 The inductive step relies on the observation that the `(n-k)`-th derivative, evaluated at 1,
-annihilates `bernstein_polynomial n ν` for `ν < k`, but has a nonzero value at `ν = k`.
+annihilates `bernsteinPolynomial n ν` for `ν < k`, but has a nonzero value at `ν = k`.
 -/
 theorem linearIndependent (n : ℕ) :
     LinearIndependent ℚ fun ν : Fin (n + 1) => bernsteinPolynomial ℚ n ν :=
@@ -301,7 +298,6 @@ theorem sum (n : ℕ) : (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n
       rw [add_pow]
       simp only [bernsteinPolynomial, mul_comm, mul_assoc, mul_left_comm]
     _ = 1 := by simp
-
 #align bernstein_polynomial.sum bernsteinPolynomial.sum
 
 open Polynomial
@@ -312,7 +308,7 @@ theorem sum_smul (n : ℕ) :
     (∑ ν in Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
-  -- We'll work in `mv_polynomial bool R`.
+  -- We'll work in `MvPolynomial Bool R`.
   let x : MvPolynomial Bool R := MvPolynomial.X true
   let y : MvPolynomial Bool R := MvPolynomial.X false
   have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
@@ -323,11 +319,9 @@ theorem sum_smul (n : ℕ) :
   trans MvPolynomial.aeval e (pderiv true ((x + y) ^ n)) * X
   -- On the left hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
-    have w :
-      ∀ k : ℕ,
-        k • bernsteinPolynomial R n k =
-          (k : R[X]) * Polynomial.X ^ (k - 1) * (1 - Polynomial.X) ^ (n - k) * (n.choose k : R[X]) *
-            Polynomial.X := by
+    have w : ∀ k : ℕ, k • bernsteinPolynomial R n k =
+        (k : R[X]) * Polynomial.X ^ (k - 1) * (1 - Polynomial.X) ^ (n - k) * (n.choose k : R[X]) *
+          Polynomial.X := by
       rintro (_ | k)
       · simp
       · rw [bernsteinPolynomial]
@@ -352,7 +346,7 @@ theorem sum_mul_smul (n : ℕ) :
       (n * (n - 1)) • X ^ 2 := by
   -- We calculate the second `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
-  -- We'll work in `mv_polynomial bool R`.
+  -- We'll work in `MvPolynomial Bool R`.
   let x : MvPolynomial Bool R := MvPolynomial.X true
   let y : MvPolynomial Bool R := MvPolynomial.X false
   have pderiv_true_x : pderiv true x = 1 := by rw [pderiv_X]; rfl
@@ -363,13 +357,9 @@ theorem sum_mul_smul (n : ℕ) :
   trans MvPolynomial.aeval e (pderiv true (pderiv true ((x + y) ^ n))) * X ^ 2
   -- On the left hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
-    have w :
-      ∀ k : ℕ,
-        (k * (k - 1)) • bernsteinPolynomial R n k =
-          (n.choose k : R[X]) *
-          ((1 - Polynomial.X) ^ (n - k) *
-            ((k : R[X]) * ((↑(k - 1) : R[X]) * Polynomial.X ^ (k - 1 - 1)))) *
-          Polynomial.X ^ 2 := by
+    have w : ∀ k : ℕ, (k * (k - 1)) • bernsteinPolynomial R n k =
+        (n.choose k : R[X]) * ((1 - Polynomial.X) ^ (n - k) *
+          ((k : R[X]) * ((↑(k - 1) : R[X]) * Polynomial.X ^ (k - 1 - 1)))) * Polynomial.X ^ 2 := by
       rintro (_ | _ | k)
       · simp
       · simp
@@ -387,8 +377,7 @@ theorem sum_mul_smul (n : ℕ) :
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul, map_add]
   -- On the right hand side, we'll just simplify.
-  ·
-    simp only [pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
+  · simp only [pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
       (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero, mul_one,
       Derivation.map_smul_of_tower, map_nsmul, map_pow, map_add, Bool.cond_true, Bool.cond_false,
       MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow, smul_smul, smul_one_mul]
@@ -400,12 +389,10 @@ which we'll want later.
 theorem variance (n : ℕ) :
     (∑ ν in Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
       n • Polynomial.X * ((1 : R[X]) - Polynomial.X) := by
-  have p :
-    ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
-          (1 - (2 * n) • Polynomial.X) *
-            (Finset.range (n + 1)).sum fun ν => ν • bernsteinPolynomial R n ν) +
-        n ^ 2 • X ^ 2 * (Finset.range (n + 1)).sum fun ν => bernsteinPolynomial R n ν) =
-      _ :=
+  have p : ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
+      (1 - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν =>
+        ν • bernsteinPolynomial R n ν) + n ^ 2 • X ^ 2 *
+          (Finset.range (n + 1)).sum fun ν => bernsteinPolynomial R n ν) = _ :=
     rfl
   conv at p =>
     lhs
@@ -420,7 +407,6 @@ theorem variance (n : ℕ) :
     _ = _ := Finset.sum_congr rfl fun k m => ?_
     _ = _ := p
     _ = _ := ?_
-
   · congr 1; simp only [← nat_cast_mul, push_cast]
     cases k <;> · simp; ring
   · simp only [← nat_cast_mul, push_cast]
