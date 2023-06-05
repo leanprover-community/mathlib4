@@ -142,19 +142,16 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) =
   (forget _).map_comp f g
 #align category_theory.coe_comp CategoryTheory.coe_comp
 
--- Porting note: removed @[simp] since simp can prove this
-theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
+@[simp] theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
   congr_fun ((forget _).map_id X) x
 #align category_theory.id_apply CategoryTheory.id_apply
 
--- Porting note: removed @[simp] since simp can prove this
-theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+@[simp] theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   congr_fun ((forget _).map_comp _ _) x
 #align category_theory.comp_apply CategoryTheory.comp_apply
 
 theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) :=
-  congr_fun ((forget _).map_comp _ _) x
+  (forget C).map (f ≫ g) x = g (f x) := comp_apply f g x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
