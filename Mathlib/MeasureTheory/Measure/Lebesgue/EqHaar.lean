@@ -713,7 +713,7 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
         ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
-      refine' tendsto_measure_iInter (fun n => ht.diff measurableSet_closedBall) (fun m n hmn => _) N
+      refine' tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ _) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : (⋂ n : ℕ, t \ closedBall 0 n) = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
@@ -756,9 +756,8 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
     (x : E) (h : Tendsto (fun r => μ (s ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1))
     (t : Set E) (ht : MeasurableSet t) (h't : μ t ≠ 0) (h''t : μ t ≠ ∞) :
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 1) := by
-  have I :
-    ∀ u v, μ u ≠ 0 → μ u ≠ ∞ → MeasurableSet v → μ u / μ u - μ (vᶜ ∩ u) / μ u = μ (v ∩ u) / μ u :=
-    by
+  have I : ∀ u v, μ u ≠ 0 → μ u ≠ ∞ → MeasurableSet v →
+    μ u / μ u - μ (vᶜ ∩ u) / μ u = μ (v ∩ u) / μ u := by
     intro u v uzero utop vmeas
     simp_rw [div_eq_mul_inv]
     rw [← ENNReal.sub_mul]; swap
@@ -813,9 +812,8 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one (s : Set E) (x : E)
     (h : Tendsto (fun r => μ (s ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1)) (t : Set E)
     (ht : MeasurableSet t) (h't : μ t ≠ 0) (h''t : μ t ≠ ∞) :
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 1) := by
-  have :
-    Tendsto (fun r : ℝ => μ (toMeasurable μ s ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 1) :=
-    by
+  have : Tendsto (fun r : ℝ => μ (toMeasurable μ s ∩ ({x} + r • t)) / μ ({x} + r • t))
+    (𝓝[>] 0) (𝓝 1) := by
     apply
       tendsto_add_haar_inter_smul_one_of_density_one_aux μ _ (measurableSet_toMeasurable _ _) _ _
         t ht h't h''t

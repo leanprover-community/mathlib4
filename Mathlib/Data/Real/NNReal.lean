@@ -402,7 +402,8 @@ theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
 
 @[simp]
-theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
+theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+  Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
   toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
