@@ -26,7 +26,7 @@ namespace Functor
 
 variable (C : Type u) [Category.{v} C]
 /- Porting note: `aesop_cat` could not close any of the goals `tidy` did.
-Switched to more explict construction -/
+Switched to more explicit construction -/
 /-- Equivalence between two empty categories. -/
 def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty where
   functor :=

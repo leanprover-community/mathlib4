@@ -157,7 +157,7 @@ At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in 
 consisting of all "functions" that vanish on all of `t`.
 -/
 def vanishingIdeal (t : Set (PrimeSpectrum R)) : Ideal R :=
-  ⨅ (x : PrimeSpectrum R) (__ : x ∈ t), x.asIdeal
+  ⨅ (x : PrimeSpectrum R) (_ : x ∈ t), x.asIdeal
 #align prime_spectrum.vanishing_ideal PrimeSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :

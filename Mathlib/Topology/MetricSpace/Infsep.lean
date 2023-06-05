@@ -43,7 +43,7 @@ open Function
 
 /-- The "extended infimum separation" of a set with an edist function. -/
 noncomputable def einfsep [EDist α] (s : Set α) : ℝ≥0∞ :=
-  ⨅ (x ∈ s) (y ∈ s) (_hxy : x ≠ y), edist x y
+  ⨅ (x ∈ s) (y ∈ s) (_ : x ≠ y), edist x y
 #align set.einfsep Set.einfsep
 
 section EDist
@@ -145,7 +145,7 @@ theorem einfsep_anti (hst : s ⊆ t) : t.einfsep ≤ s.einfsep :=
   le_einfsep fun _x hx _y hy => einfsep_le_edist_of_mem (hst hx) (hst hy)
 #align set.einfsep_anti Set.einfsep_anti
 
-theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_hxy : x ≠ y), edist x y := by
+theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y), edist x y := by
   simp_rw [le_iInf_iff]
   refine' fun _ hy hxy => einfsep_le_edist_of_mem (mem_insert _ _) (mem_insert_of_mem _ hy) hxy
 #align set.einfsep_insert_le Set.einfsep_insert_le
@@ -221,7 +221,7 @@ theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := 
 #align set.einfsep_pair Set.einfsep_pair
 
 theorem einfsep_insert : einfsep (insert x s) =
-    (⨅ (y ∈ s) (_hxy : x ≠ y), edist x y) ⊓ s.einfsep := by
+    (⨅ (y ∈ s) (_ : x ≠ y), edist x y) ⊓ s.einfsep := by
   refine' le_antisymm (le_min einfsep_insert_le (einfsep_anti (subset_insert _ _))) _
   simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff]
   rintro y (rfl | hy) z (rfl | hz) hyz

@@ -32,7 +32,7 @@ especially once interactions between algebraic and order/topological/etc structu
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
-2. when there is a meaninful gain in simplicity by factoring out a common substructure.
+2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
 (As examples, at this point we don't have `Loop`, or `UnitalMagma`,
 but we do have `LieSubmodule` and `TopologicalField`!

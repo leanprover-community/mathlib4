@@ -717,7 +717,7 @@ theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
   intro u hu x hx
   rcases h u hu (g x) (hg hx) with ⟨a, ha, H⟩
   have : g ⁻¹' a ∈ 𝓝[t] x :=
-    (cg x hx).preimage_mem_nhds_within' (nhdsWithin_mono (g x) hg.image_subset ha)
+    (cg x hx).preimage_mem_nhdsWithin' (nhdsWithin_mono (g x) hg.image_subset ha)
   exact ⟨g ⁻¹' a, this, H.mono fun n hn y hy => hn _ hy⟩
 #align tendsto_locally_uniformly_on.comp TendstoLocallyUniformlyOn.comp
 
@@ -728,21 +728,24 @@ theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUn
   exact h.comp _ (mapsTo_univ _ _) cg
 #align tendsto_locally_uniformly.comp TendstoLocallyUniformly.comp
 
-open List in
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :
-    TFAE [TendstoLocallyUniformlyOn G g p s,
-          ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
-          ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] -- porting note: todo: use `tfae_have` or not?
-  · exact fun h K hKs hKc =>
-      (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hKc).mp (h.mono hKs)
+    List.TFAE [
+      TendstoLocallyUniformlyOn G g p s,
+      ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
+      ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
+  tfae_have 1 → 2
+  · rintro h K hK1 hK2
+    exact (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
+  tfae_have 2 → 3
   · rintro h x hx
-    obtain ⟨K, ⟨hK1, hK2⟩ ,hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
-    refine' ⟨K, nhdsWithin_le_nhds hK1 , h K hK3 hK2 ⟩
+    obtain ⟨K, ⟨hK1, hK2⟩, hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
+    refine' ⟨K, nhdsWithin_le_nhds hK1, h K hK3 hK2⟩
+  tfae_have 3 → 1
   · rintro h u hu x hx
     obtain ⟨v, hv1, hv2⟩ := h x hx
     exact ⟨v, hv1, hv2 u hu⟩
+  tfae_finish
 #align tendsto_locally_uniformly_on_tfae tendstoLocallyUniformlyOn_TFAE
 
 theorem tendstoLocallyUniformlyOn_iff_forall_isCompact [LocallyCompactSpace α] (hs : IsOpen s) :

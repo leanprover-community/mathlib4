@@ -525,7 +525,7 @@ def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
 
 @[simp]
 theorem LHom.map_constants_comp_sumInl {f : α → β} :
-    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext (n f R) <;> rfl
+    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext <;> rfl
 #align first_order.language.Lhom.map_constants_comp_sum_inl FirstOrder.Language.LHom.map_constants_comp_sumInl
 
 end

@@ -242,7 +242,7 @@ theorem span_smul_span : Ideal.span S • span R T = span R (⋃ (s ∈ S) (t �
 
 theorem ideal_span_singleton_smul (r : R) (N : Submodule R M) :
     (Ideal.span {r} : Ideal R) • N = r • N := by
-  have : span R (⋃ (t : M) (_x : t ∈ N), {r • t}) = r • N := by
+  have : span R (⋃ (t : M) (_ : t ∈ N), {r • t}) = r • N := by
     convert span_eq (r • N)
     exact (Set.image_eq_iUnion _ (N : Set M)).symm
   conv_lhs => rw [← span_eq N, span_smul_span]

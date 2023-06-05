@@ -260,7 +260,7 @@ end ContinuousMap
 section GroupStructure
 
 /-!
-### Group stucture
+### Group structure
 
 In this section we show that continuous functions valued in a topological group inherit
 the structure of a group.
@@ -449,7 +449,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring stucture
+### Ring structure
 
 In this section we show that continuous functions valued in a topological semiring `R` inherit
 the structure of a ring.
@@ -556,7 +556,7 @@ attribute [local ext] Subtype.eq
 section ModuleStructure
 
 /-!
-### Semiodule stucture
+### Semiodule structure
 
 In this section we show that continuous functions valued in a topological module `M` over a
 topological semiring `R` inherit the structure of a module.

@@ -40,7 +40,7 @@ restate_axiom A.a f
 example (z : A) : z.x = 1 := by rw A.f
 ```
 -/
-elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
+elab "restate_axiom " oldName:ident newName:(ppSpace ident)? : command => do
   let oldName ← resolveGlobalConstNoOverloadWithInfo oldName
   let newName : Name :=
     match newName with
