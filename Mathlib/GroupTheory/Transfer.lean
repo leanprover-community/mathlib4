@@ -239,7 +239,9 @@ variable [FiniteIndex (P : Subgroup G)]
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transfer_sylow_eq_pow_aux P hP g hg)⟩ :=
-  by apply transfer_eq_pow
+  @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
+    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
+      (transfer_sylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow :
@@ -255,11 +257,12 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
           (not_dvd_index_sylow P
             (mt index_eq_zero_of_relindex_eq_zero index_ne_zero_of_finite))).bijective
   rw [Function.Bijective, ← range_top_iff_surjective, restrict_range] at hf
-  have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans (map_le_range _ P)))
+  have := range_top_iff_surjective.mp (top_le_iff.mp (hf.2.ge.trans
+    (map_le_range (transferSylow P hP) P)))
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
-    ker_restrict, subgroup_of_map_subtype, Subgroup.map_bot, coe_top] at hf
-  exact is_complement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
+    ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
+  exact IsComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 #align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=
