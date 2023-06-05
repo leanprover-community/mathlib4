@@ -19,31 +19,31 @@ extending the integral on simple functions.
 
 ## Main definitions
 
-The Bochner integral is defined through the extension process described in the file `set_to_L1`,
+The Bochner integral is defined through the extension process described in the file `SetToL1`,
 which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weighted_smul μ s x = (μ s).to_real * x`.
-  `weighted_smul μ` is shown to be linear in the value `x` and `dominated_fin_meas_additive`
-  (defined in the file `set_to_L1`) with respect to the set `s`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = (μ s).toReal * x`.
+  `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
+  (defined in the file `SetToL1`) with respect to the set `s`.
 
-2. Define the integral on simple functions of the type `simple_func α E` (notation : `α →ₛ E`)
-  where `E` is a real normed space. (See `simple_func.integral` for details.)
+2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
+  where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
 
-3. Transfer this definition to define the integral on `L1.simple_func α E` (notation :
-  `α →₁ₛ[μ] E`), see `L1.simple_func.integral`. Show that this integral is a continuous linear
+3. Transfer this definition to define the integral on `L1.simpleFunc α E` (notation :
+  `α →₁ₛ[μ] E`), see `L1.simpleFunc.integral`. Show that this integral is a continuous linear
   map from `α →₁ₛ[μ] E` to `E`.
 
 4. Define the Bochner integral on L1 functions by extending the integral on integrable simple
-  functions `α →₁ₛ[μ] E` using `continuous_linear_map.extend` and the fact that the embedding of
+  functions `α →₁ₛ[μ] E` using `ContinuousLinearMap.extend` and the fact that the embedding of
   `α →₁ₛ[μ] E` into `α →₁[μ] E` is dense.
 
 5. Define the Bochner integral on functions as the Bochner integral of its equivalence class in L1
   space, if it is in L1, and 0 otherwise.
 
 The result of that construction is `∫ a, f a ∂μ`, which is definitionally equal to
-`set_to_fun (dominated_fin_meas_additive_weighted_smul μ) f`. Some basic properties of the integral
-(like linearity) are particular cases of the properties of `set_to_fun` (which are described in the
-file `set_to_L1`).
+`setToFun (dominatedFinMeasAdditive_weightedSMul μ) f`. Some basic properties of the integral
+(like linearity) are particular cases of the properties of `setToFun` (which are described in the
+file `SetToL1`).
 
 ## Main statements
 
@@ -77,10 +77,10 @@ file `set_to_L1`).
 
 4. `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `set_integral`) integration commutes with continuous linear maps.
+5. (In the file `SetIntegral`) integration commutes with continuous linear maps.
 
-  * `continuous_linear_map.integral_comp_comm`
-  * `linear_isometry.integral_comp_comm`
+  * `ContinuousLinearMap.integral_comp_comm`
+  * `LinearIsometry.integral_comp_comm`
 
 
 ## Notes
@@ -88,7 +88,7 @@ file `set_to_L1`).
 Some tips on how to prove a proposition if the API for the Bochner integral is not enough so that
 you need to unfold the definition of the Bochner integral and go back to simple functions.
 
-One method is to use the theorem `integrable.induction` in the file `simple_func_dense_lp` (or one
+One method is to use the theorem `Integrable.induction` in the file `SimpleFuncDenseLp` (or one
 of the related results, like `Lp.induction` for functions in `Lp`), which allows you to prove
 something for an arbitrary integrable function.
 
@@ -97,21 +97,21 @@ See `integral_eq_lintegral_max_sub_lintegral_min` for a complicated example, whi
 `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
 function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
 functions (called `lintegral`). The proof of `integral_eq_lintegral_max_sub_lintegral_min` is
-scattered in sections with the name `pos_part`.
+scattered in sections with the name `posPart`.
 
 Here are the usual steps of proving that a property `p`, say `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, holds for all
 functions :
 
 1. First go to the `L¹` space.
 
-   For example, if you see `ennreal.to_real (∫⁻ a, ennreal.of_real $ ‖f a‖)`, that is the norm of
+   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal $ ‖f a‖)`, that is the norm of
    `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
 
-2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `is_closed_eq`.
+2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.
 
 3. Show that the property holds for all simple functions `s` in `L¹` space.
 
-   Typically, you need to convert various notions to their `simple_func` counterpart, using lemmas
+   Typically, you need to convert various notions to their `SimpleFunc` counterpart, using lemmas
    like `L1.integral_coe_eq_integral`.
 
 4. Since simple functions are dense in `L¹`,
@@ -121,20 +121,20 @@ univ = closure {s simple}
      ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
      = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
 ```
-Use `is_closed_property` or `dense_range.induction_on` for this argument.
+Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notations
 
-* `α →ₛ E`  : simple functions (defined in `measure_theory/integration`)
+* `α →ₛ E`  : simple functions (defined in `MeasureTheory/Integration`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
-                `measure_theory/lp_space`)
+                `MeasureTheory/LpSpace`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
-                 functions (defined in `measure_theory/simple_func_dense`)
+                 functions (defined in `MeasureTheory/SimpleFuncDense`)
 * `∫ a, f a ∂μ` : integral of `f` with respect to a measure `μ`
 * `∫ a, f a` : integral of `f` with respect to `volume`, the default measure on the ambient type
 
 We also define notations for integral on a set, which are described in the file
-`measure_theory/set_integral`.
+`MeasureTheory/SetIntegral`.
 
 Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
@@ -163,8 +163,8 @@ open ContinuousLinearMap
 
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
 
-/-- Given a set `s`, return the continuous linear map `λ x, (μ s).to_real • x`. The extension of
-that set function through `set_to_L1` gives the Bochner integral of L1 functions. -/
+/-- Given a set `s`, return the continuous linear map `fun x => (μ s).toReal • x`. The extension
+of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
 def weightedSMul {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) : F →L[ℝ] F :=
   (μ s).toReal • ContinuousLinearMap.id ℝ F
 #align measure_theory.weighted_smul MeasureTheory.weightedSMul
@@ -306,8 +306,8 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : 
   [NormedAddCommGroup G] [NormedAddCommGroup F'] [NormedSpace ℝ F'] {m : MeasurableSpace α}
   {μ : Measure α}
 
-/-- Bochner integral of simple functions whose codomain is a real `normed_space`.
-This is equal to `∑ x in f.range, (μ (f ⁻¹' {x})).to_real • x` (see `integral_eq`). -/
+/-- Bochner integral of simple functions whose codomain is a real `NormedSpace`.
+This is equal to `∑ x in f.range, (μ (f ⁻¹' {x})).toReal • x` (see `integral_eq`). -/
 def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α →ₛ F) : F :=
   f.setToSimpleFunc (weightedSMul μ)
 #align measure_theory.simple_func.integral MeasureTheory.SimpleFunc.integral
@@ -376,8 +376,8 @@ theorem map_integral (f : α →ₛ E) (g : E → F) (hf : Integrable f μ) (hg 
   map_setToSimpleFunc _ weightedSMul_union hf hg
 #align measure_theory.simple_func.map_integral MeasureTheory.SimpleFunc.map_integral
 
-/-- `simple_func.integral` and `simple_func.lintegral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `normed_space`, we need some form of coercion.
+/-- `SimpleFunc.integral` and `SimpleFunc.lintegral` agree when the integrand has type
+    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion.
     See `integral_eq_lintegral` for a simpler version. -/
 theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : Integrable f μ) (hg0 : g 0 = 0)
     (ht : ∀ b, g b ≠ ∞) :
@@ -402,8 +402,8 @@ theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ
   setToSimpleFunc_congr (weightedSMul μ) (fun _ _ => weightedSMul_null) weightedSMul_union hf h
 #align measure_theory.simple_func.integral_congr MeasureTheory.SimpleFunc.integral_congr
 
-/-- `simple_func.bintegral` and `simple_func.integral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `normed_space`, we need some form of coercion. -/
+/-- `SimpleFunc.bintegral` and `SimpleFunc.integral` agree when the integrand has type
+    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion. -/
 theorem integral_eq_lintegral {f : α →ₛ ℝ} (hf : Integrable f μ) (h_pos : 0 ≤ᵐ[μ] f) :
     f.integral μ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal (f a) ∂μ) := by
   have : f =ᵐ[μ] f.map (ENNReal.toReal ∘ ENNReal.ofReal) :=
@@ -562,20 +562,20 @@ variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace
 variable (α E μ 𝕜)
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map. -/
-def integralClm' : (α →₁ₛ[μ] E) →L[𝕜] E :=
+def integralCLM' : (α →₁ₛ[μ] E) →L[𝕜] E :=
   LinearMap.mkContinuous ⟨⟨integral, integral_add⟩, integral_smul⟩ 1 fun f =>
     le_trans (norm_integral_le_norm _) <| by rw [one_mul]
-#align measure_theory.L1.simple_func.integral_clm' MeasureTheory.L1.SimpleFunc.integralClm'
+#align measure_theory.L1.simple_func.integral_clm' MeasureTheory.L1.SimpleFunc.integralCLM'
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map over ℝ. -/
-def integralClm : (α →₁ₛ[μ] E) →L[ℝ] E :=
-  integralClm' α E ℝ μ
-#align measure_theory.L1.simple_func.integral_clm MeasureTheory.L1.SimpleFunc.integralClm
+def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
+  integralCLM' α E ℝ μ
+#align measure_theory.L1.simple_func.integral_clm MeasureTheory.L1.SimpleFunc.integralCLM
 
 variable {α E μ 𝕜}
 
 -- mathport name: simple_func.integral_clm
-local notation "Integral" => integralClm α E μ
+local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
@@ -613,12 +613,12 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
 #align measure_theory.L1.simple_func.neg_part_to_simple_func MeasureTheory.L1.SimpleFunc.negPart_toSimpleFunc
 
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
-  -- Convert things in `L¹` to their `simple_func` counterpart
+  -- Convert things in `L¹` to their `SimpleFunc` counterpart
   have ae_eq₁ : (toSimpleFunc f).posPart =ᵐ[μ] (toSimpleFunc (posPart f)).map norm := by
     filter_upwards [posPart_toSimpleFunc f]with _ h
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.posPart_map_norm, SimpleFunc.map_apply]
-  -- Convert things in `L¹` to their `simple_func` counterpart
+  -- Convert things in `L¹` to their `SimpleFunc` counterpart
   have ae_eq₂ : (toSimpleFunc f).negPart =ᵐ[μ] (toSimpleFunc (negPart f)).map norm := by
     filter_upwards [negPart_toSimpleFunc f]with _ h
     rw [SimpleFunc.map_apply, h]
@@ -644,7 +644,7 @@ end SimpleFunc
 
 open SimpleFunc
 
-local notation "Integral" => @integralClm α E _ _ _ _ _ μ _
+local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 
 variable [NormedSpace ℝ E] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   [NormedSpace ℝ F] [CompleteSpace E]
@@ -658,25 +658,25 @@ open ContinuousLinearMap
 variable (𝕜)
 
 /-- The Bochner integral in L1 space as a continuous linear map. -/
-nonrec def integralClm' : (α →₁[μ] E) →L[𝕜] E :=
-  (integralClm' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
+nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
+  (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
     simpleFunc.uniformInducing
-#align measure_theory.L1.integral_clm' MeasureTheory.L1.integralClm'
+#align measure_theory.L1.integral_clm' MeasureTheory.L1.integralCLM'
 
 variable {𝕜}
 
 /-- The Bochner integral in L1 space as a continuous linear map over ℝ. -/
-def integralClm : (α →₁[μ] E) →L[ℝ] E :=
-  integralClm' ℝ
-#align measure_theory.L1.integral_clm MeasureTheory.L1.integralClm
+def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
+  integralCLM' ℝ
+#align measure_theory.L1.integral_clm MeasureTheory.L1.integralCLM
 
 -- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
 irreducible_def integral (f : α →₁[μ] E) : E :=
-  integralClm (E := E) f
+  integralCLM (E := E) f
 #align measure_theory.L1.integral MeasureTheory.L1.integral
 
-theorem integral_eq (f : α →₁[μ] E) : integral f = integralClm (E := E) f := by
+theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM (E := E) f := by
   simp only [integral]
 #align measure_theory.L1.integral_eq MeasureTheory.L1.integral_eq
 
@@ -697,46 +697,46 @@ variable (α E)
 @[simp]
 theorem integral_zero : integral (0 : α →₁[μ] E) = 0 := by
   simp only [integral]
-  exact map_zero integralClm
+  exact map_zero integralCLM
 #align measure_theory.L1.integral_zero MeasureTheory.L1.integral_zero
 
 variable {α E}
 
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
   simp only [integral]
-  exact map_add integralClm f g
+  exact map_add integralCLM f g
 #align measure_theory.L1.integral_add MeasureTheory.L1.integral_add
 
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
   simp only [integral]
-  exact map_neg integralClm f
+  exact map_neg integralCLM f
 #align measure_theory.L1.integral_neg MeasureTheory.L1.integral_neg
 
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
   simp only [integral]
-  exact map_sub integralClm f g
+  exact map_sub integralCLM f g
 #align measure_theory.L1.integral_sub MeasureTheory.L1.integral_sub
 
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integralClm' (E := E) 𝕜) (c • f) = c • (integralClm' (E := E) 𝕜) f
-  exact map_smul (integralClm' (E := E) 𝕜) c f
+  show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
+  exact map_smul (integralCLM' (E := E) 𝕜) c f
 #align measure_theory.L1.integral_smul MeasureTheory.L1.integral_smul
 
 -- mathport name: integral_clm
-local notation "Integral" => @integralClm α E _ _ μ _ _
+local notation "Integral" => @integralCLM α E _ _ μ _ _
 
 -- mathport name: simple_func.integral_clm'
-local notation "sIntegral" => @SimpleFunc.integralClm α E _ _ μ _
+local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
-theorem norm_Integral_le_one : ‖integralClm (α := α) (E := E) (μ := μ)‖ ≤ (1 : ℝ) :=
+theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ (1 : ℝ) :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
 #align measure_theory.L1.norm_Integral_le_one MeasureTheory.L1.norm_Integral_le_one
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
-    ‖integral f‖ = ‖integralClm (E := E) f‖ := by simp only [integral]
-    _ ≤ ‖integralClm (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_op_norm _ _)
+    ‖integral f‖ = ‖integralCLM (E := E) f‖ := by simp only [integral]
+    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_op_norm _ _)
     _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
@@ -744,14 +744,14 @@ theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
   simp only [integral]
-  exact L1.integralClm.continuous
+  exact L1.integralCLM.continuous
 #align measure_theory.L1.continuous_integral MeasureTheory.L1.continuous_integral
 
 section PosPart
 
 theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
     integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖ := by
-  -- Use `is_closed_property` and `is_closed_eq`
+  -- Use `isClosed_property` and `isClosed_eq`
   refine' @isClosed_property _ _ _ ((↑) : (α →₁ₛ[μ] ℝ) → α →₁[μ] ℝ)
       (fun f : α →₁[μ] ℝ => integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖)
       (simpleFunc.denseRange one_ne_top) (isClosed_eq _ _) _ f
