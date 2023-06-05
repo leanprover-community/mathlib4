@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.SmoothManifoldWithCorners
-import Mathbin.Topology.Paracompact
-import Mathbin.Topology.MetricSpace.Metrizable
+import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Topology.Paracompact
+import Mathlib.Topology.MetricSpace.Metrizable
 
 /-!
 # Metrizability of a σ-compact manifold
