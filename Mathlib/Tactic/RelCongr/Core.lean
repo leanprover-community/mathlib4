@@ -354,24 +354,22 @@ def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   g.checkNotAssigned `myExact
   g.assign e
 
-/-- Try a list of finishing tactics and fail if all of them fail. -/
-def firstFunM (goal : MVarId) (tacs : List (MVarId → MetaM Unit)) : MetaM Unit :=
-  match tacs with
-  | [] => failure
-  | f :: fs => f goal <|> (firstFunM goal fs)
+syntax "rel_congr_forward " term : tactic
 
-/-- The term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-def symmExact (h : Expr) (goal : MVarId) : MetaM Unit := goal.symm >>= fun g ↦ g.exact h
+macro_rules
+| `(tactic| rel_congr_forward $t) => `(tactic| exact $t)
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-def exactLeOfLt (h : Expr) (goal : MVarId) : MetaM Unit := do
-  goal.exact (← mkAppM ``le_of_lt #[h])
+macro_rules
+| `(tactic| rel_congr_forward $t) => `(tactic| exact le_of_lt $t)
+
+/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+macro_rules
+| `(tactic| rel_congr_forward $t) => `(tactic| symm ; exact le_of_lt $t)
 
 /-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-def exactRefl (h : Expr) (goal : MVarId) : MetaM Unit := do
-  let m ← mkFreshExprMVar none
-  goal.exact (← mkAppOptM ``Eq.subst #[h, m])
-  goal.rfl
+macro_rules
+| `(tactic| rel_congr_forward $t) => `(tactic| refine Eq.subst $t ?_ ; rfl)
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -383,8 +381,9 @@ def _root_.Lean.MVarId.relCongrForward (hs : Array Expr) (g : MVarId) : MetaM Un
     -- Iterate over a list of terms
     for h in hs do
       try
-        firstFunM g (List.map (fun f ↦ f h) [MVarId.exact, symmExact, exactLeOfLt, exactRefl])
-        return
+        Term.TermElabM.run' do
+          let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_forward h))
+            | failure
       catch _ => s.restore
     throwError "rel_congr_forward failed"
 
