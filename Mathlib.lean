@@ -865,6 +865,7 @@ import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
