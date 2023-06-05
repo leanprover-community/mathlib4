@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.SmoothManifoldWithCorners
-import Mathbin.Analysis.NormedSpace.Units
+import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Analysis.NormedSpace.Units
 
 /-!
 # Units of a normed algebra
