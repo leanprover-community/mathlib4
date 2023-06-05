@@ -106,15 +106,6 @@ def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.funLike
 
-/-
-/-- Usually a bundled hom structure already has a coercion to function
-that works with different universes. So we don't use this as a global instance. -/
-@[reducible]
-def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ⟨fun f => (forget _).map f⟩
-#align category_theory.concrete_category.has_coe_to_fun CategoryTheory.ConcreteCategory.hasCoeToFun
--/
-
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
 @[ext 900] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
