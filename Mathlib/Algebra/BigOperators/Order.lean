@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
-import Mathlib.Tactic.RelCongr.Core
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -126,17 +126,17 @@ add_decl_doc sum_le_sum
 equal to the corresponding factor `g i` of another finite product, then `s.prod f ≤ s.prod g`.
 
 This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod'`, convenient
-for the `rel_congr` tactic. -/
-@[to_additive (attr := rel_congr) RelCongr.sum_le_sum]
-theorem _root_.RelCongr.prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : s.prod f ≤ s.prod g :=
+for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_le_sum]
+theorem _root_.GCongr.prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : s.prod f ≤ s.prod g :=
   s.prod_le_prod' h
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
 or equal to the corresponding summand `g i` of another finite sum, then `s.sum f ≤ s.sum g`.
 
 This is a variant (beta-reduced) version of the standard lemma `Finset.sum_le_sum`, convenient
-for the `rel_congr` tactic. -/
-add_decl_doc RelCongr.sum_le_sum
+for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_le_sum
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i in s, f i :=
@@ -462,9 +462,9 @@ strictly less than the corresponding factor `g i` of another nontrivial finite p
 `s.prod f < s.prod g`.
 
 This is a variant (beta-reduced) version of the standard lemma `Finset.prod_lt_prod_of_nonempty'`,
-convenient for the `rel_congr` tactic. -/
-@[to_additive (attr := rel_congr) RelCongr.sum_lt_sum_of_nonempty]
-theorem _root_.RelCongr.prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
+convenient for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_lt_sum_of_nonempty]
+theorem _root_.GCongr.prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
     s.prod f < s.prod g :=
   s.prod_lt_prod_of_nonempty' hs Hlt
 
@@ -473,8 +473,8 @@ strictly less than the corresponding summand `g i` of another nontrivial finite 
 `s.sum f < s.sum g`.
 
 This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_sum_of_nonempty`,
-convenient for the `rel_congr` tactic. -/
-add_decl_doc RelCongr.sum_lt_sum_of_nonempty
+convenient for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_lt_sum_of_nonempty
 
 -- Porting note: TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
@@ -608,9 +608,9 @@ theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g 
 product of `f i` is less than or equal to the product of `g i`.
 
 This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod`, convenient
-for the `rel_congr` tactic. -/
-@[rel_congr]
-theorem _root_.RelCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
+for the `gcongr` tactic. -/
+@[gcongr]
+theorem _root_.GCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     s.prod f ≤ s.prod g :=
   s.prod_le_prod h0 h1
 

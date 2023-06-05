@@ -10,7 +10,7 @@ Authors: Chris Hughes
 -/
 import Std.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.RelCongr.Core
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
 
 /-!
@@ -140,18 +140,18 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left'
 #align int.modeq.mul_right' Int.ModEq.mul_right'
 
-@[rel_congr]
+@[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
   modEq_iff_dvd.2 <| by
     convert dvd_add h₁.dvd h₂.dvd using 1
     ring
 #align int.modeq.add Int.ModEq.add
 
-@[rel_congr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
+@[gcongr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
 #align int.modeq.add_left Int.ModEq.add_left
 
-@[rel_congr] protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [ZMOD n] :=
+@[gcongr] protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [ZMOD n] :=
   h.add ModEq.rfl
 #align int.modeq.add_right Int.ModEq.add_right
 
@@ -177,38 +177,38 @@ protected theorem add_right_cancel' (c : ℤ) (h : a + c ≡ b + c [ZMOD n]) : a
   ModEq.rfl.add_right_cancel h
 #align int.modeq.add_right_cancel' Int.ModEq.add_right_cancel'
 
-@[rel_congr] protected theorem neg (h : a ≡ b [ZMOD n]) : -a ≡ -b [ZMOD n] :=
+@[gcongr] protected theorem neg (h : a ≡ b [ZMOD n]) : -a ≡ -b [ZMOD n] :=
   h.add_left_cancel (by simp_rw [← sub_eq_add_neg, sub_self]; rfl)
 #align int.modeq.neg Int.ModEq.neg
 
-@[rel_congr]
+@[gcongr]
 protected theorem sub (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a - c ≡ b - d [ZMOD n] := by
   rw [sub_eq_add_neg, sub_eq_add_neg]
   exact h₁.add h₂.neg
 #align int.modeq.sub Int.ModEq.sub
 
-@[rel_congr] protected theorem sub_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c - a ≡ c - b [ZMOD n] :=
+@[gcongr] protected theorem sub_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c - a ≡ c - b [ZMOD n] :=
   ModEq.rfl.sub h
 #align int.modeq.sub_left Int.ModEq.sub_left
 
-@[rel_congr] protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [ZMOD n] :=
+@[gcongr] protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [ZMOD n] :=
   h.sub ModEq.rfl
 #align int.modeq.sub_right Int.ModEq.sub_right
 
-@[rel_congr] protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
+@[gcongr] protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
   h.mul_left'.of_dvd <| dvd_mul_left _ _
 #align int.modeq.mul_left Int.ModEq.mul_left
 
-@[rel_congr] protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
+@[gcongr] protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
   h.mul_right'.of_dvd <| dvd_mul_right _ _
 #align int.modeq.mul_right Int.ModEq.mul_right
 
-@[rel_congr]
+@[gcongr]
 protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * c ≡ b * d [ZMOD n] :=
   (h₂.mul_left _).trans (h₁.mul_right _)
 #align int.modeq.mul Int.ModEq.mul
 
-@[rel_congr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
+@[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction' m with d hd; · rfl
   rw [pow_succ, pow_succ]
   exact h.mul hd
