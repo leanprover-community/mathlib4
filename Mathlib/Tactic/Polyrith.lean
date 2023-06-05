@@ -312,7 +312,7 @@ given to `linear_combination`. If that tactic succeeds, the user is prompted
 to replace the call to `polyrith` with the appropriate call to
 `linear_combination`.
 
-This returns `none` if this was a "dry run" attempt that does not actually invoke sage.
+Returns `.error g` if this was a "dry run" attempt that does not actually invoke sage.
 -/
 def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     (traceOnly := false) : MetaM (Except MVarId (TSyntax `tactic)) := do
