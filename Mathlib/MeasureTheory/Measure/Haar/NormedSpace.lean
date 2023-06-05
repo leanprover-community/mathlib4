@@ -8,8 +8,8 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathbin.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
 # Basic properties of Haar measures on real vector spaces
@@ -65,8 +65,7 @@ variable (μ) {s : Set E}
 integral of `f`. The formula we give works even when `f` is not integrable or `R = 0`
 thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
-    (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ :=
-  by
+    (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
@@ -139,12 +138,10 @@ variable {F : Type _} [NormedAddCommGroup F]
 
 theorem integrable_comp_smul_iff {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
-    (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ :=
-  by
+    (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (hg : integrable g μ) {S : ℝ} (hS : S ≠ 0), integrable (fun x => g (S • x)) μ
-    by
+    ∀ {g : E → F} (hg : integrable g μ) {S : ℝ} (hS : S ≠ 0), integrable (fun x => g (S • x)) μ by
     refine' ⟨fun hf => _, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
     ext1 x
