@@ -60,7 +60,7 @@ variable [Group G] [MeasurableMul G]
 /-- Translating a function by left-multiplication does not change its `MeasureTheory.lintegral`
 with respect to a left-invariant measure. -/
 @[to_additive
-      "Translating a function by left-addition does not change its `measure_theory.lintegral` with
+      "Translating a function by left-addition does not change its `MeasureTheory.lintegral` with
       respect to a left-invariant measure."]
 theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
@@ -72,7 +72,7 @@ theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞
 /-- Translating a function by right-multiplication does not change its `MeasureTheory.lintegral`
 with respect to a right-invariant measure. -/
 @[to_additive
-      "Translating a function by right-addition does not change its `measure_theory.lintegral` with
+      "Translating a function by right-addition does not change its `MeasureTheory.lintegral` with
       respect to a right-invariant measure."]
 theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
