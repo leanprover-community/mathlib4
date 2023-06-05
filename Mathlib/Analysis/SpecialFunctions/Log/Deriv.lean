@@ -16,8 +16,8 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 /-!
 # Derivative and series expansion of real logarithm
 
-In this file we prove that `real.log` is infinitely smooth at all nonzero `x : ℝ`. We also prove
-that the series `∑' n : ℕ, x ^ (n + 1) / (n + 1)` converges to `(-real.log (1 - x))` for all
+In this file we prove that `Real.log` is infinitely smooth at all nonzero `x : ℝ`. We also prove
+that the series `∑' n : ℕ, x ^ (n + 1) / (n + 1)` converges to `(-Real.log (1 - x))` for all
 `x : ℝ`, `|x| < 1`.
 
 ## Tags
