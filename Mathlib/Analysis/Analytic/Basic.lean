@@ -127,7 +127,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
 converges for all `‖y‖ < r`. This implies that `Σ pₙ yⁿ` converges for all `‖y‖ < r`, but these
 definitions are *not* equivalent in general. -/
 def radius (p : FormalMultilinearSeries 𝕜 E F) : ℝ≥0∞ :=
-  ⨆ (r : ℝ≥0) (C : ℝ) (_hr : ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C), (r : ℝ≥0∞)
+  ⨆ (r : ℝ≥0) (C : ℝ) (_ : ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C), (r : ℝ≥0∞)
 #align formal_multilinear_series.radius FormalMultilinearSeries.radius
 
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/
@@ -1142,14 +1142,14 @@ def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[�
 
 theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
     ‖p.changeOriginSeries k l‖₊ ≤
-      ∑' _x : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
+      ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
   (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
     simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
 #align formal_multilinear_series.nnnorm_change_origin_series_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_le_tsum
 
 theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
-      ∑' _s : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
+      ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
   exact (p.changeOriginSeries k l).le_of_op_nnnorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
 #align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum

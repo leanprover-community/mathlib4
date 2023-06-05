@@ -566,7 +566,7 @@ theorem localTrivAsLocalEquiv_trans (i j : ι) :
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace Z.Fiber) :=
-  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_s_open : IsOpen s),
+  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_ : IsOpen s),
     {(Z.localTrivAsLocalEquiv i).source ∩ Z.localTrivAsLocalEquiv i ⁻¹' s}
 #align fiber_bundle_core.to_topological_space FiberBundleCore.toTopologicalSpace
 
@@ -803,7 +803,7 @@ variable (a : FiberPrebundle F E) {e : Pretrivialization F (π E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace E) :=
-  ⨆ (e : Pretrivialization F (π E)) (_he : e ∈ a.pretrivializationAtlas),
+  ⨆ (e : Pretrivialization F (π E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
 #align fiber_prebundle.total_space_topology FiberPrebundle.totalSpaceTopology
 

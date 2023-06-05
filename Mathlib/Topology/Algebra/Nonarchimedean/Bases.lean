@@ -186,7 +186,6 @@ theorem hasBasis_nhds (a : A) :
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  -- Check again during lean4#2210 cleanup.
   let _ := hB.topology
   { B i with
     isOpen' := by
