@@ -8,8 +8,8 @@ Authors: James Arthur, Chris Hughes, Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathbin.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Inverse of the sinh function
@@ -57,8 +57,7 @@ def arsinh (x : ℝ) :=
   log (x + sqrt (1 + x ^ 2))
 #align real.arsinh Real.arsinh
 
-theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) :=
-  by
+theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) := by
   apply exp_log
   rw [← neg_lt_iff_pos_add']
   calc
@@ -72,8 +71,7 @@ theorem arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
 #align real.arsinh_zero Real.arsinh_zero
 
 @[simp]
-theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x :=
-  by
+theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x := by
   rw [← exp_eq_exp, exp_arsinh, exp_neg, exp_arsinh]
   apply eq_inv_of_mul_eq_one_left
   rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel]
@@ -183,8 +181,7 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
   lt_iff_lt_of_le_iff_le arsinh_nonneg_iff
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
-theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x :=
-  by
+theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x := by
   convert
     sinh_homeomorph.to_local_homeomorph.has_strict_deriv_at_symm (mem_univ x) (cosh_pos _).ne'
       (has_strict_deriv_at_sinh _)
