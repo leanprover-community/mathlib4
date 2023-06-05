@@ -152,7 +152,7 @@ open Submodule.Quotient
 
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
-    ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk x = f 1 := by
+    ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
   have f1 := mk_surjective (R ∙ z) (f 1)
   have : p ^ k • f1.choose ∈ R ∙ z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
