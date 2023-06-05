@@ -101,10 +101,10 @@ namespace MonoidHom
 
 open MulAction Subgroup Subgroup.leftTransversals
 
-/-- Given `ϕ : H →* A` from `H : subgroup G` to a commutative group `A`,
+/-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
-@[to_additive
-      "Given `ϕ : H →+ A` from `H : add_subgroup G` to an additive commutative group `A`,\nthe transfer homomorphism is `transfer ϕ : G →+ A`."]
+@[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
+the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
@@ -144,7 +144,8 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
           exact map_one ϕ
-#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
+#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot
+  MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
 /-- Auxillary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
@@ -244,8 +245,8 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
       (transfer_sylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
-theorem transferSylow_restrict_eq_pow :
-    ⇑((transferSylow P hP).restrict (P : Subgroup G)) = (fun x : P => x ^ (P : Subgroup G).index) :=
+theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
+  (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 
