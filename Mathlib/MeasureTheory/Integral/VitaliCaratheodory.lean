@@ -17,7 +17,7 @@ import Mathlib.Topology.Instances.EReal
 # Vitali-Carathéodory theorem
 
 Vitali-Carathéodory theorem asserts the following. Consider an integrable function `f : α → ℝ` on
-a space with a regular measure. Then there exists a function `g : α → ereal` such that `f x < g x`
+a space with a regular measure. Then there exists a function `g : α → EReal` such that `f x < g x`
 everywhere, `g` is lower semicontinuous, and the integral of `g` is arbitrarily close to that of
 `f`. This theorem is proved in this file, as `exists_lt_lower_semicontinuous_integral_lt`.
 
@@ -50,7 +50,7 @@ upper semicontinuous as a finite sum of upper semicontinuous functions, and its 
 arbitrarily close to that of `f`.
 
 The main pain point in the implementation is that one needs to jump between the spaces `ℝ`, `ℝ≥0`,
-`ℝ≥0∞` and `ereal` (and be careful that addition is not well behaved on `ereal`), and between
+`ℝ≥0∞` and `EReal` (and be careful that addition is not well behaved on `EReal`), and between
 `lintegral` and `integral`.
 
 We first show the bound from above for simple functions and the nonnegative integral
@@ -242,7 +242,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
   rcases exists_lt_lowerSemicontinuous_lintegral_ge μ (fmeas.mk f) fmeas.measurable_mk this with
     ⟨g0, f_lt_g0, g0_cont, g0_int⟩
   rcases exists_measurable_superset_of_null fmeas.ae_eq_mk with ⟨s, hs, smeas, μs⟩
-  rcases exists_le_lowerSemicontinuous_lintegral_ge μ (s.indicator fun x => ∞)
+  rcases exists_le_lowerSemicontinuous_lintegral_ge μ (s.indicator fun _x => ∞)
       (measurable_const.indicator smeas) this with
     ⟨g1, le_g1, g1_cont, g1_int⟩
   refine' ⟨fun x => g0 x + g1 x, fun x => _, g0_cont.add g1_cont, _⟩
@@ -463,7 +463,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
 
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g > f` which is lower semicontinuous, with integral arbitrarily close
-to that of `f`. This function has to be `ereal`-valued in general. -/
+to that of `f`. This function has to be `EReal`-valued in general. -/
 theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → ℝ) (hf : Integrable f μ)
     {ε : ℝ} (εpos : 0 < ε) :
     ∃ g : α → EReal,
@@ -542,7 +542,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
 
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an
 integrable function `g < f` which is upper semicontinuous, with integral arbitrarily close to that
-of `f`. This function has to be `ereal`-valued in general. -/
+of `f`. This function has to be `EReal`-valued in general. -/
 theorem exists_upperSemicontinuous_lt_integral_gt [SigmaFinite μ] (f : α → ℝ) (hf : Integrable f μ)
     {ε : ℝ} (εpos : 0 < ε) :
     ∃ g : α → EReal,
