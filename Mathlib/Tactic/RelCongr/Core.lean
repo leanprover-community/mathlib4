@@ -89,9 +89,11 @@ side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`)
 `rel_congr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
 in this way are left for the user.
 
-The tactic also attempts to discharge "main" goals using the available hypotheses (as well as a
-limited amount of forward reasoning by symmetry and reflexivity, if applicable).  Such attempts are
-made *before* descending further into matching by congruence.
+The tactic also attempts to discharge "main" goals using the available hypotheses, as well as a
+limited amount of forward reasoning.  Such attempts are made *before* descending further into
+matching by congruence. The built-in forward-reasoning includes reasoning by symmetry and
+reflexivity, and this can be extended by writing tactic extensions tagged with the
+`@[rel_congr_forward]` attribute.
 
 ## Introducing variables and hypotheses
 

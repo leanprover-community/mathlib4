@@ -5,16 +5,40 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.RelCongr.Basic
+import Mathlib.Tactic.RelCongr.Core
 
 /-! # Setup for the `rel_congr` tactic
 
 The core implementation of the `rel_congr` ("relational congruence") tactic is in the file
 `Tactic.RelCongr.Core`.  In this file we set it up for use across the library by tagging a minimal
 set of lemmas with the attribute `@[rel_congr]` and by listing `positivity` as a first-pass
-discharger for side goals. -/
+discharger for side goals (`rel_congr_discharger`) and four simple tactics as first-pass dischargers
+for main goals (`@[rel_congr_forward]`). -/
 
 macro_rules | `(tactic| rel_congr_discharger) => `(tactic| positivity)
+
+namespace Mathlib.Tactic.Rel
+open Lean Meta
+
+/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
+@[rel_congr_forward] def exactRefl : RelCongrForwardExt where
+  eval h goal := do
+    let m ← mkFreshExprMVar none
+    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
+    goal.rfl
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[rel_congr_forward] def exactLeOfLt : RelCongrForwardExt where
+  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
+
+/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+@[rel_congr_forward] def symmExact : RelCongrForwardExt where
+  eval h goal := do (← goal.symm).exact h
+
+@[rel_congr_forward] def exact : RelCongrForwardExt where
+  eval := MVarId.exact
+
+end Mathlib.Tactic.Rel
 
 /-! # ≤, - -/
 
