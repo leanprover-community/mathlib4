@@ -448,7 +448,7 @@ using the relational congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_le
 
 The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`rel_congr_discharger`, which wraps `relCongrForward` but can also be extended. Side goals not discharged
+`rel_congr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
 in this way are left for the user. -/
 elab "rel_congr" template:(colGt term)?
     withArg:((" with " (colGt binderIdent)+)?) : tactic => do
@@ -504,7 +504,7 @@ no applicable relational congruence lemmas, the tactic fails.
 
 The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`rel_congr_discharger`, which wraps `relCongrForward` but can also be extended. If the side goals cannot
+`rel_congr_discharger`, which wraps `positivity` but can also be extended. If the side goals cannot
 be discharged in this way, the tactic fails. -/
 syntax "rel" " [" term,* "]" : tactic
 
