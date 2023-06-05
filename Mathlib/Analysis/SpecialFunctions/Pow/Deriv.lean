@@ -39,9 +39,9 @@ theorem hasStrictFDerivAt_cpow {p : ℂ × ℂ} (hp : 0 < p.1.re ∨ p.1.im ≠ 
   have : (fun x : ℂ × ℂ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
     ((isOpen_ne.preimage continuous_fst).eventually_mem A).mono fun p hp =>
       cpow_def_of_ne_zero hp _
-  rw [cpow_sub _ _ A, cpow_one, mul_div_left_comm, mul_smul, mul_smul, ← smul_add]
+  rw [cpow_sub _ _ A, cpow_one, mul_div_left_comm, mul_smul, mul_smul]
   refine' HasStrictFDerivAt.congr_of_eventuallyEq _ this.symm
-  simpa only [cpow_def_of_ne_zero A, div_eq_mul_inv, mul_smul, add_comm] using
+  simpa only [cpow_def_of_ne_zero A, div_eq_mul_inv, mul_smul, add_comm, smul_add] using
     ((hasStrictFDerivAt_fst.clog hp).mul hasStrictFDerivAt_snd).cexp
 #align complex.has_strict_fderiv_at_cpow Complex.hasStrictFDerivAt_cpow
 
