@@ -37,8 +37,8 @@ open Classical Filter
 equal to this filter. -/
 instance : IsAtomic (Filter α) :=
   IsAtomic.of_isChain_bounded fun c hc hne hb =>
-    ⟨infₛ c, (infₛ_neBot_of_directed' hne (show IsChain (· ≥ ·) c from hc.symm).directedOn hb).ne,
-      fun _ hx => infₛ_le hx⟩
+    ⟨sInf c, (sInf_neBot_of_directed' hne (show IsChain (· ≥ ·) c from hc.symm).directedOn hb).ne,
+      fun _ hx => sInf_le hx⟩
 
 /-- An ultrafilter is a minimal (maximal in the set order) proper filter. -/
 structure Ultrafilter (α : Type _) extends Filter α where
@@ -199,15 +199,15 @@ theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) �
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 #align ultrafilter.eventually_imp Ultrafilter.eventually_imp
 
-theorem finite_unionₛ_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
+theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
   Finite.induction_on hs (by simp) fun _ _ his => by
     simp [union_mem_iff, his, or_and_right, exists_or]
-#align ultrafilter.finite_sUnion_mem_iff Ultrafilter.finite_unionₛ_mem_iff
+#align ultrafilter.finite_sUnion_mem_iff Ultrafilter.finite_sUnion_mem_iff
 
-theorem finite_bunionᵢ_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
+theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
-  simp only [← unionₛ_image, finite_unionₛ_mem_iff (his.image s), bex_image_iff]
-#align ultrafilter.finite_bUnion_mem_iff Ultrafilter.finite_bunionᵢ_mem_iff
+  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), bex_image_iff]
+#align ultrafilter.finite_bUnion_mem_iff Ultrafilter.finite_biUnion_mem_iff
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
@@ -317,8 +317,8 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
   Nonempty.map pure inferInstance
 
 theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = pure x := by
-  rw [← bunionᵢ_of_singleton s] at h'
-  rcases(Ultrafilter.finite_bunionᵢ_mem_iff h).mp h' with ⟨a, has, haf⟩
+  rw [← biUnion_of_singleton s] at h'
+  rcases(Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
   exact ⟨a, has, eq_of_le (Filter.le_pure_iff.2 haf)⟩
 #align ultrafilter.eq_pure_of_finite_mem Ultrafilter.eq_pure_of_finite_mem
 
@@ -443,10 +443,10 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 #align filter.le_iff_ultrafilter Filter.le_iff_ultrafilter
 
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
-theorem supᵢ_ultrafilter_le_eq (f : Filter α) :
-    (⨆ (g : Ultrafilter α) (_hg : g ≤ f), (g : Filter α)) = f :=
-  eq_of_forall_ge_iff fun f' => by simp only [supᵢ_le_iff, ← le_iff_ultrafilter]
-#align filter.supr_ultrafilter_le_eq Filter.supᵢ_ultrafilter_le_eq
+theorem iSup_ultrafilter_le_eq (f : Filter α) :
+    (⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α)) = f :=
+  eq_of_forall_ge_iff fun f' => by simp only [iSup_le_iff, ← le_iff_ultrafilter]
+#align filter.supr_ultrafilter_le_eq Filter.iSup_ultrafilter_le_eq
 
 /-- The `tendsto` relation can be checked on ultrafilters. -/
 theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :

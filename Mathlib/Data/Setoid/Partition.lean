@@ -175,14 +175,14 @@ theorem eqv_classes_disjoint {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b �
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
 -- warning: expanding binder collection (b «expr ∈ » c) -/
 /-- A set of disjoint sets covering α partition α (classical). -/
-theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.unionₛ c = @Set.univ α)
+theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) (a) : ∃! (b : _)(_ : b ∈ c), a ∈ b :=
-  let ⟨b, hc, ha⟩ := Set.mem_unionₛ.1 <| show a ∈ _ by rw [hu]; exact Set.mem_univ a
+  let ⟨b, hc, ha⟩ := Set.mem_sUnion.1 <| show a ∈ _ by rw [hu]; exact Set.mem_univ a
   ExistsUnique.intro₂ b hc ha fun b' hc' ha' => H.elim_set hc' hc a ha' ha
 #align setoid.eqv_classes_of_disjoint_union Setoid.eqv_classes_of_disjoint_union
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
-def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.unionₛ c = @Set.univ α)
+def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
 #align setoid.setoid_of_disjoint_union Setoid.setoidOfDisjointUnion
@@ -196,9 +196,9 @@ theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_clas
 #align setoid.mk_classes_classes Setoid.mkClasses_classes
 
 @[simp]
-theorem unionₛ_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
-  Set.eq_univ_of_forall fun x => Set.mem_unionₛ.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
-#align setoid.sUnion_classes Setoid.unionₛ_classes
+theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
+  Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
+#align setoid.sUnion_classes Setoid.sUnion_classes
 
 section Partition
 
@@ -225,14 +225,14 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
   eqv_classes_disjoint hc.2
 #align setoid.is_partition.pairwise_disjoint Setoid.IsPartition.pairwiseDisjoint
 
-theorem IsPartition.unionₛ_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
+theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
   Set.eq_univ_of_forall fun x =>
-    Set.mem_unionₛ.2 <|
+    Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
         simp only [exists_unique_iff_exists] at ht
         tauto⟩
-#align setoid.is_partition.sUnion_eq_univ Setoid.IsPartition.unionₛ_eq_univ
+#align setoid.is_partition.sUnion_eq_univ Setoid.IsPartition.sUnion_eq_univ
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/
 theorem exists_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (hs : s ∈ c) :
@@ -302,7 +302,7 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
     Finpartition (Set.univ : Set α) where
   parts := c
   supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
-  supParts := c.sup_id_set_eq_unionₛ.trans hc.unionₛ_eq_univ
+  supParts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
   not_bot_mem := hc.left
 #align setoid.is_partition.finpartition Setoid.IsPartition.finpartition
 
@@ -312,7 +312,7 @@ end Setoid
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :
     Setoid.IsPartition (f.parts : Set (Set α)) :=
   ⟨f.not_bot_mem,
-    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_unionₛ.symm.trans f.supParts)
+    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.supParts)
       f.supIndep.pairwiseDisjoint⟩
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
@@ -370,10 +370,10 @@ theorem exists_mem (x : α) : ∃ i, x ∈ s i :=
   ⟨hs.index x, hs.mem_index x⟩
 #align indexed_partition.exists_mem IndexedPartition.exists_mem
 
-theorem unionᵢ : (⋃ i, s i) = univ := by
+theorem iUnion : (⋃ i, s i) = univ := by
   ext x
   simp [hs.exists_mem x]
-#align indexed_partition.Union IndexedPartition.unionᵢ
+#align indexed_partition.Union IndexedPartition.iUnion
 
 theorem disjoint : ∀ {i j}, i ≠ j → Disjoint (s i) (s j) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)

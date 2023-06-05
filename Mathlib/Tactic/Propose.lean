@@ -107,31 +107,30 @@ only the types of the lemmas in the `using` clause.
 
 Suggestions are printed as `have := f a b c`.
 -/
-syntax (name := propose') "propose" "!"? (" : " term)? (" using " (colGt term),+) : tactic
+syntax (name := propose') "propose" "!"? (" : " term)? " using " (colGt term),+ : tactic
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic |
-    `(tactic| propose%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
-  let goal ← getMainGoal
-  goal.withContext do
-    let required ← terms.mapM (elabTerm · none)
-    let type ← match type with
-    | some stx => elabTermWithHoles stx none (← getMainTag) true <&> (·.1)
-    | none => mkFreshTypeMVar
-    let proposals ← propose (← proposeLemmas.get) type required
-    if proposals.isEmpty then
-      throwError "propose could not find any lemmas using the given hypotheses"
-    -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
-    for p in proposals.toList.take 10 do
-      addHaveSuggestion tk (← inferType p.2) p.2
-    if lucky.isSome then
-      let mut g := goal
+elab_rules : tactic
+  | `(tactic| propose%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+    let goal ← getMainGoal
+    goal.withContext do
+      let required ← terms.mapM (elabTerm · none)
+      let type ← match type with
+      | some stx => elabTermWithHoles stx none (← getMainTag) true <&> (·.1)
+      | none => mkFreshTypeMVar
+      let proposals ← propose (← proposeLemmas.get) type required
+      if proposals.isEmpty then
+        throwError "propose could not find any lemmas using the given hypotheses"
+      -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        (_, g) ← g.let p.1 p.2
-      replaceMainGoal [g]
+        addHaveSuggestion tk (← inferType p.2) p.2
+      if lucky.isSome then
+        let mut g := goal
+        for p in proposals.toList.take 10 do
+          (_, g) ← g.let p.1 p.2
+        replaceMainGoal [g]
 
-@[inherit_doc propose'] macro "propose!" " using " terms:(colGt term),+ : tactic =>
-  `(tactic| propose ! using $[$terms],*)
-
-@[inherit_doc propose'] macro "propose!" " : " type:term " using " terms:(colGt term),+ : tactic =>
-  `(tactic| propose ! : $type using $[$terms],*)
+@[inherit_doc propose'] syntax "propose!" (" : " term)? " using " (colGt term),+ : tactic
+macro_rules
+  | `(tactic| propose!%$tk $[: $type]? using $terms,*) =>
+    `(tactic| propose%$tk ! $[: $type]? using $terms,*)

@@ -37,7 +37,7 @@ theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞
   rfl
 #align enat.map_coe_nnreal ENat.map_coe_nnreal
 
-/-- Coercion `ℕ∞ → ℝ≥0∞` as an `order_embedding`. -/
+/-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
 @[simps! (config := { fullyApplied := false })]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap

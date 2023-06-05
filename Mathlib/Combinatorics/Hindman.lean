@@ -144,9 +144,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
   · rcases h with ⟨U, hU, U_idem⟩
     refine' ⟨U, U_idem, _⟩
-    convert Set.mem_interᵢ.mp hU 0
+    convert Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
-  · apply IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed
+  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
     · intro n U hU
       apply Eventually.mono hU
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
@@ -156,9 +156,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     · exact (ultrafilter_isClosed_basic _).isCompact
     · intro n
       apply ultrafilter_isClosed_basic
-  · exact IsClosed.isCompact (isClosed_interᵢ fun i => ultrafilter_isClosed_basic _)
+  · exact IsClosed.isCompact (isClosed_iInter fun i => ultrafilter_isClosed_basic _)
   · intro U hU V hV
-    rw [Set.mem_interᵢ] at *
+    rw [Set.mem_iInter] at *
     intro n
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
     apply Eventually.mono (hU n)
@@ -220,7 +220,7 @@ contains an FP-set. -/
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
-  let ⟨c, cs, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset aU scov)
+  let ⟨c, cs, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset aU scov)
   ⟨c, cs, exists_FP_of_large U idem c hc⟩
 set_option linter.uppercaseLean3 false in
 #align hindman.FP_partition_regular Hindman.FP_partition_regular
@@ -236,7 +236,7 @@ theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M
     (scov : ⊤ ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ a : Stream' M, FP a ⊆ c :=
   let ⟨U, hU⟩ :=
     exists_idempotent_of_compact_t2_of_continuous_mul_left (@Ultrafilter.continuous_mul_left M _)
-  let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset univ_mem scov)
+  let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset univ_mem scov)
   ⟨c, c_s, exists_FP_of_large U hU c hc⟩
 set_option linter.uppercaseLean3 false in
 #align hindman.exists_FP_of_finite_cover Hindman.exists_FP_of_finite_cover

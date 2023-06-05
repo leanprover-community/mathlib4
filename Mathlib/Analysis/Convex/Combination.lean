@@ -364,14 +364,14 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · rw [_root_.convexHull_eq]
     -- Porting note: We have to specify the universe of `ι`
     rintro x ⟨ι : Type u_1, t, w, z, hw₀, hw₁, hz, rfl⟩
-    simp only [mem_unionᵢ]
+    simp only [mem_iUnion]
     refine' ⟨t.image z, _, _⟩
     · rw [coe_image, Set.image_subset_iff]
       exact hz
     · apply t.centerMass_mem_convexHull hw₀
       · simp only [hw₁, zero_lt_one]
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
-  · exact unionᵢ_subset fun i => unionᵢ_subset convexHull_mono
+  · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 #align convex_hull_eq_union_convex_hull_finite_subsets convexHull_eq_union_convexHull_finite_subsets
 
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
@@ -380,8 +380,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
   -- Porting note: We have to specify the universe of `ι` and `κ`
   obtain ⟨ι : Type u_1, a, w, S, hw, hw', hS, hSp⟩ := hx
   obtain ⟨κ : Type u_1, b, v, T, hv, hv', hT, hTp⟩ := hy
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
-  have h_sum : (∑ i : ι × κ in a ×ᶠ b, w i.fst * v i.snd) = 1 := by
+  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
     ext i
@@ -391,9 +390,8 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
       simp [mul_comm]
     rw [this, ← Finset.sum_mul, hv']
     simp
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
   refine'
-    ⟨ι × κ, a ×ᶠ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
+    ⟨ι × κ, a ×ˢ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
       fun p hp => _, _⟩
   · rw [mem_product] at hp
     exact mul_nonneg (hw p.1 hp.1) (hv p.2 hp.2)

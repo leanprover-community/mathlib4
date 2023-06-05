@@ -501,7 +501,7 @@ theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ↑(n • a) = n •
 #align with_bot.coe_nsmul WithBot.coe_nsmul
 
 theorem nsmul_eq_mul' [NonAssocSemiring R] (a : R) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero],
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
     rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
 #align nsmul_eq_mul' nsmul_eq_mul'ₓ
 -- typeclasses do not match up exactly.
@@ -548,7 +548,7 @@ theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = (n : ℤ) ^ m := b
 #align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
+  induction' k with k ih <;> [rfl; rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
 #align int.nat_abs_pow Int.natAbs_pow
 
 section bit0_bit1
@@ -580,7 +580,8 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 end bit0_bit1
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
-theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] : ∀ m n, ((m * n : ℤ) : α) = m • n :=
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+    ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
   fun m =>
   Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
     by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]

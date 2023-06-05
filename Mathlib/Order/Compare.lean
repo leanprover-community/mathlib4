@@ -218,9 +218,9 @@ def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := H,
-    decidable_lt := fun a b => decidable_of_iff _ (h a b).eq_lt,
-    decidable_eq := fun a b => decidable_of_iff _ (h a b).eq_eq }
+    decidableLE := H,
+    decidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
+    decidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
 #align linear_order_of_compares linearOrderOfCompares
 
 variable [LinearOrder α] (x y : α)

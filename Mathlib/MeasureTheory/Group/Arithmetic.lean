@@ -401,9 +401,9 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
   have : { x | f x = g x } = ⋃ j, { x | f x = j } ∩ { x | g x = j } := by
     ext1 x
-    simp only [Set.mem_setOf_eq, Set.mem_unionᵢ, Set.mem_inter_iff, exists_eq_right']
+    simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
-  refine' MeasurableSet.unionᵢ fun j => MeasurableSet.inter _ _
+  refine' MeasurableSet.iUnion fun j => MeasurableSet.inter _ _
   · exact hf (measurableSet_singleton j)
   · exact hg (measurableSet_singleton j)
 #align measurable_set_eq_fun_of_countable measurableSet_eq_fun_of_countable

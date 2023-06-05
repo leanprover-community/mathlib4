@@ -140,9 +140,9 @@ theorem tendsto_norm_atTop (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α
 
 theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.eval x‖ ≤ ‖p.eval y‖ :=
   if hp0 : 0 < degree p then
-    set_option synthInstance.etaExperiment true in -- workaround for lean4#2074
-      p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
-  else ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
+    p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
+  else
+    ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
 #align polynomial.exists_forall_norm_le Polynomial.exists_forall_norm_le
 
 section Roots
@@ -192,7 +192,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
 #align polynomial.coeff_le_of_roots_le Polynomial.coeff_le_of_roots_le
 
 /-- The coefficients of the monic polynomials of bounded degree with bounded roots are
-uniformely bounded. -/
+uniformly bounded. -/
 theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1 : p.Monic)
     (h2 : Splits f p) (h3 : p.natDegree ≤ d) (h4 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) (i : ℕ) :
     ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) := by
