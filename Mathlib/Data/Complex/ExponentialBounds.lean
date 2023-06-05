@@ -22,17 +22,17 @@ open IsAbsoluteValue Finset CauSeq Complex
 
 theorem exp_one_near_10 : |exp 1 - 2244083 / 825552| ≤ 1 / 10 ^ 10 := by
   apply exp_approx_start
-  iterate 13 refine' exp_1_approx_succ_eq (by norm_num1 <;> rfl) (by norm_cast <;> rfl) _
+  iterate 13 refine' exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) _
   norm_num1
-  refine' exp_approx_end' _ (by norm_num1 <;> rfl) _ (by norm_cast <;> rfl) (by simp) _
+  refine' exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) _
   rw [_root_.abs_one, abs_of_pos] <;> norm_num1
 #align real.exp_one_near_10 Real.exp_one_near_10
 
 theorem exp_one_near_20 : |exp 1 - 363916618873 / 133877442384| ≤ 1 / 10 ^ 20 := by
   apply exp_approx_start
-  iterate 21 refine' exp_1_approx_succ_eq (by norm_num1 <;> rfl) (by norm_cast <;> rfl) _
+  iterate 21 refine' exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) _
   norm_num1
-  refine' exp_approx_end' _ (by norm_num1 <;> rfl) _ (by norm_cast <;> rfl) (by simp) _
+  refine' exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) _
   rw [_root_.abs_one, abs_of_pos] <;> norm_num1
 #align real.exp_one_near_20 Real.exp_one_near_20
 
@@ -62,9 +62,9 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
     assumption
   have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; norm_num
   have z := Real.abs_log_sub_add_sum_range_le (show |(2⁻¹ : ℝ)| < 1 by rw [t]; norm_num) 34
-  rw [t] at z 
-  norm_num1 at z 
-  rw [one_div (2 : ℝ), log_inv, ← sub_eq_add_neg, _root_.abs_sub_comm] at z 
+  rw [t] at z
+  norm_num1 at z
+  rw [one_div (2 : ℝ), log_inv, ← sub_eq_add_neg, _root_.abs_sub_comm] at z
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
   simp_rw [sum_range_succ]
   norm_num
@@ -80,4 +80,3 @@ theorem log_two_lt_d9 : log 2 < 0.6931471808 :=
 #align real.log_two_lt_d9 Real.log_two_lt_d9
 
 end Real
-
