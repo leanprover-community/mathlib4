@@ -43,7 +43,6 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 noncomputable section
 
-/- ./././Mathport/Syntax/Translate/Command.lean:430:34: infer kinds are unsupported in Lean 4: mk [] -/
 /-- `witt_vector p R` is the ring of `p`-typical Witt vectors over the commutative ring `R`,
 where `p` is a prime number.
 
