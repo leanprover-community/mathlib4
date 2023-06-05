@@ -1740,7 +1740,7 @@ section IntegralTrim
 
 variable {H β γ : Type _} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
 
-/-- Simple function seen as simple function of a larger `measurable_space`. -/
+/-- Simple function seen as simple function of a larger `MeasurableSpace`. -/
 def SimpleFunc.toLargerSpace (hm : m ≤ m0) (f : @SimpleFunc β m γ) : SimpleFunc β γ :=
   ⟨@SimpleFunc.toFun β m γ f, fun x => hm _ (@SimpleFunc.measurableSet_fiber β γ m f x),
     @SimpleFunc.finite_range β γ m f⟩
@@ -1856,11 +1856,11 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
       rwa [Pi.neg_apply, Pi.zero_apply, neg_eq_zero] at hω
     · filter_upwards [hf]with ω hω
       rwa [Pi.zero_apply, Pi.neg_apply, Right.nonneg_neg_iff]
-  by_cases hμ : FiniteMeasure μ
+  by_cases hμ : IsFiniteMeasure μ
   swap
   · have : μ Set.univ = ∞ := by
       by_contra hμ'
-      exact hμ (FiniteMeasure.mk <| lt_top_iff_ne_top.2 hμ')
+      exact hμ (IsFiniteMeasure.mk <| lt_top_iff_ne_top.2 hμ')
     rw [this, ENNReal.mul_top', if_neg, ENNReal.top_mul', if_neg]
     · exact le_top
     · simp [hr]
