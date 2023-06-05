@@ -62,6 +62,7 @@ variable {α : Type _} {β : Type _}
 
 -- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
+local notation "W_" => wittPolynomial p
 
 -- type as `\bbW`
 open scoped Witt
@@ -73,15 +74,15 @@ If `f` is a ring homomorphism, then so is `f`, see `witt_vector.map f`. -/
 def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff)
 #align witt_vector.map_fun WittVector.mapFun
 
-namespace MapFun
+namespace mapFun
 
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := fun x y h =>
-  ext fun n => hf (congr_arg (fun x => coeff x n) h : _)
+theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := fun _ _ h =>
+  ext p fun n => hf (congr_arg (fun x => coeff x n) h : _)
 #align witt_vector.map_fun.injective WittVector.mapFun.injective
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
-  ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n, by ext n; dsimp [map_fun];
-    rw [Classical.choose_spec (hf (x.coeff n))]⟩
+  ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
+    by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 #align witt_vector.map_fun.surjective WittVector.mapFun.surjective
 
 variable (f : R →+* S) (x y : 𝕎 R)
@@ -91,8 +92,6 @@ variable (f : R →+* S) (x y : 𝕎 R)
 unsafe def map_fun_tac : tactic Unit :=
   sorry
 #align witt_vector.map_fun.map_fun_tac witt_vector.map_fun.map_fun_tac
-
-include hp
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
@@ -150,16 +149,16 @@ theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
 theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
-  show mapFun f n.unaryCast = coe n by
+  show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
 #align witt_vector.map_fun.nat_cast WittVector.mapFun.nat_cast
 
 theorem int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
-  show mapFun f n.castDef = coe n by
+  show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, nat_cast] <;> rfl
 #align witt_vector.map_fun.int_cast WittVector.mapFun.int_cast
 
-end MapFun
+end mapFun
 
 end WittVector
 
@@ -191,24 +190,18 @@ producing a value in `R`.
 This function will be bundled as the ring homomorphism `witt_vector.ghost_map`
 once the ring structure is available,
 but we rely on it to set up the ring structure in the first place. -/
-private def ghost_fun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
+private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
 
 section GhostFun
 
-include hp
-
 -- The following lemmas are not `@[simp]` because they will be bundled in `ghost_map` later on.
 variable (x y : 𝕎 R)
-
-omit hp
 
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
-
-include hp
 
 private theorem ghost_fun_zero : ghostFun (0 : 𝕎 R) = 0 := by ghost_fun_tac 0, ![]
 
@@ -249,34 +242,32 @@ variable (p) (R)
 
 /-- The bijection between `𝕎 R` and `ℕ → R`, under the assumption that `p` is invertible in `R`.
 In `witt_vector.ghost_equiv` we upgrade this to an isomorphism of rings. -/
-private def ghost_equiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
+private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   toFun := ghostFun
   invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
   left_inv := by
     intro x
     ext n
     have := bind₁_wittPolynomial_xInTermsOfW p R n
-    apply_fun aeval x.coeff at this 
-    simpa only [aeval_bind₁, aeval_X, ghost_fun, aeval_wittPolynomial]
+    apply_fun aeval x.coeff at this
+    simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
   right_inv := by
     intro x
     ext n
     have := bind₁_xInTermsOfW_wittPolynomial p R n
-    apply_fun aeval x at this 
-    simpa only [aeval_bind₁, aeval_X, ghost_fun, aeval_wittPolynomial]
-
-include hp
+    apply_fun aeval x at this
+    simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
 
 @[local instance]
 private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
-  letI : CommRing (MvPolynomial R ℚ) := MvPolynomial.commRing
-  (ghost_equiv' p (MvPolynomial R ℚ)).Injective.CommRing ghost_fun ghost_fun_zero ghost_fun_one
+  -- Porting note: needed? letI : CommRing (MvPolynomial R ℚ) := MvPolynomial.commRing
+  (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghost_fun_zero ghost_fun_one
     ghost_fun_add ghost_fun_mul ghost_fun_neg ghost_fun_sub ghost_fun_nsmul ghost_fun_zsmul
     ghost_fun_pow ghost_fun_nat_cast ghost_fun_int_cast
 
 @[local instance]
 private def comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
-  (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).CommRing _
+  (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.nat_cast _) (mapFun.int_cast _)
 
@@ -284,7 +275,7 @@ attribute [reducible] comm_ring_aux₂
 
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
-  (mapFun.surjective _ <| counit_surjective _).CommRing (mapFun <| MvPolynomial.counit _)
+  (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.nat_cast _) (mapFun.int_cast _)
 
@@ -340,7 +331,8 @@ theorem ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n 
 
 section Invertible
 
-variable (p R) [Invertible (p : R)]
+variable (p R)
+variable [Invertible (p : R)]
 
 /-- `witt_vector.ghost_map` is a ring isomorphism when `p` is invertible in `R`. -/
 def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
@@ -353,7 +345,7 @@ theorem ghostEquiv_coe : (ghostEquiv p R : 𝕎 R →+* ℕ → R) = ghostMap :=
 #align witt_vector.ghost_equiv_coe WittVector.ghostEquiv_coe
 
 theorem ghostMap.bijective_of_invertible : Function.Bijective (ghostMap : 𝕎 R → ℕ → R) :=
-  (ghostEquiv p R).Bijective
+  (ghostEquiv p R).bijective
 #align witt_vector.ghost_map.bijective_of_invertible WittVector.ghostMap.bijective_of_invertible
 
 end Invertible
@@ -372,4 +364,3 @@ instance [Nontrivial R] : Nontrivial (𝕎 R) :=
   constantCoeff.domain_nontrivial
 
 end WittVector
-
