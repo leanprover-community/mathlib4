@@ -9,6 +9,7 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 
 /-!
 # A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
@@ -40,6 +41,7 @@ open CategoryTheory FreeMonoidalCategory
 namespace Mathlib.Tactic.Coherence
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+open scoped MonoidalCategory
 
 noncomputable section lifting
 
@@ -241,6 +243,8 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
 Use `pure_coherence` instead, which is a frontend to this one. -/
 elab "monoidal_coherence" : tactic => do monoidal_coherence (← getMainGoal)
 
+open Mathlib.Tactic.BicategoryCoherence
+
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
@@ -255,12 +259,9 @@ which can also cope with identities of the form
 `a ≫ f ≫ b ≫ g ≫ c = a' ≫ f ≫ b' ≫ g ≫ c'`
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
-macro (name := pure_coherence) "pure_coherence" : tactic =>
-  `(tactic| monoidal_coherence)
-
--- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
--- macro (name := pure_coherence') "pure_coherence" : tactic =>
---   `(tactic| bicategory_coherence)
+elab (name := pure_coherence) "pure_coherence" : tactic => do
+  -- bicategory_coherence (← getMainGoal) <|>
+  monoidal_coherence (← getMainGoal)
 
 /--
 Auxiliary simp lemma for the `coherence` tactic:
@@ -271,7 +272,7 @@ built out of unitors and associators.
 -- They are intentional, to ensure that `simp only [assoc_LiftHom]` only left associates
 -- monoidal structural morphisms.
 @[nolint unusedArguments]
-lemma assoc_LiftHom {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y]
+lemma assoc_liftHom {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y]
     (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z) [LiftHom f] [LiftHom g] :
     f ≫ (g ≫ h) = (f ≫ g) ≫ h :=
   (Category.assoc _ _ _).symm
@@ -289,9 +290,7 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   evalTactic (← `(tactic|
     simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    -- TODO add `Bicategory.Coherence.assoc_LiftHom₂` when
-    -- `category_theory.bicategory.coherence` is ported.
-    simp only [assoc_LiftHom]))
+    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
 
 lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) : f = g :=
 by simpa using w
@@ -364,10 +363,8 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    -- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
-    -- simp only [bicategorical_comp];
-    simp only [monoidalComp]
-    -- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
-    -- try bicategory.whisker_simps
+    simp only [bicategoricalComp];
+    simp only [monoidalComp];
+    try whisker_simps
     ))
   coherence_loop
