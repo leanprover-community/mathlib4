@@ -862,7 +862,7 @@ abbrev associated : QuadraticForm R₁ M →ₗ[R₁] BilinForm R₁ M :=
 
 @[simp]
 theorem associated_linMulLin (f g : M →ₗ[R₁] R₁) :
-    associated (linMulLin f g) =
+    associated (R₁ := R₁) (linMulLin f g) =
       ⅟ (2 : R₁) • (BilinForm.linMulLin f g + BilinForm.linMulLin g f) := by
   ext
   simp only [smul_add, Algebra.id.smul_eq_mul, BilinForm.linMulLin_apply,
@@ -987,7 +987,7 @@ variable [Invertible (2 : R₁)]
 
 /-- A matrix representation of the quadratic form. -/
 def QuadraticForm.toMatrix' (Q : QuadraticForm R₁ (n → R₁)) : Matrix n n R₁ :=
-  BilinForm.toMatrix' (associated Q)
+  BilinForm.toMatrix' (associated (R₁ := R₁) Q)
 #align quadratic_form.to_matrix' QuadraticForm.toMatrix'
 
 open QuadraticForm
@@ -1175,7 +1175,8 @@ theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R₁] [SMulCommC
 /-- On an orthogonal basis, the basis representation of `Q` is just a sum of squares. -/
 theorem basisRepr_eq_of_iIsOrtho {R₁ M} [CommRing R₁] [AddCommGroup M] [Module R₁ M]
     [Invertible (2 : R₁)] (Q : QuadraticForm R₁ M) (v : Basis ι R₁ M)
-    (hv₂ : (associated Q).iIsOrtho v) : Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
+    (hv₂ : (associated (R₁ := R₁) Q).iIsOrtho v) :
+    Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
   ext w
   rw [basisRepr_apply, ← @associated_eq_self_apply R₁, sum_left, weightedSumSquares_apply]
   refine' sum_congr rfl fun j hj => _
