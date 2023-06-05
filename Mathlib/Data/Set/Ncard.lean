@@ -40,9 +40,9 @@ default argument of the form `(hs : s.Finite := by toFinite_tac)`, where `toFini
 a `Finite s` term in the cases where `s` is a set in a `Finite` type.
 
 Often, where there are two set arguments `s` and `t`, the Finiteness of one follows from the other
-in the context of the theorem, in which case we only include the ones that are needed, and derive the
-other inside the proof. A few of the theorems, such as `ncard_union_le` do not require finiteness
-arguments; they are are true by coincidence due to junk values.
+in the context of the theorem, in which case we only include the ones that are needed, and derive
+the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
+finiteness arguments; they are are true by coincidence due to junk values.
 -/
 
 open BigOperators
@@ -351,8 +351,8 @@ theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
 #align set.ncard_strict_mono Set.ncard_strictMono
 
-theorem ncard_eq_ofBijective {n : ℕ} (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
-    (hf' : ∀ (i) (h : i < n), f i h ∈ s)
+theorem ncard_eq_ofBijective {n : ℕ} (f : ∀ i, i < n → α)
+    (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j)
     (hs : s.Finite := by toFinite_tac) :
     s.ncard = n := by
@@ -538,7 +538,8 @@ theorem exists_mem_not_mem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
   diff_nonempty_of_ncard_lt_ncard h hs
 #align set.exists_mem_not_mem_of_ncard_lt_ncard Set.exists_mem_not_mem_of_ncard_lt_ncard
 
-@[simp] theorem ncard_inter_add_ncard_diff_eq_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac) :
+@[simp] theorem ncard_inter_add_ncard_diff_eq_ncard (s t : Set α)
+    (hs : s.Finite := by toFinite_tac) :
     (s ∩ t).ncard + (s \ t).ncard = s.ncard := by
   simp_rw [← ncard_diff_add_ncard_eq_ncard (diff_subset s t) hs, sdiff_sdiff_right_self,
     inf_eq_inter]
@@ -660,7 +661,8 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   exact ht (hs.insert x)
 #align set.exists_eq_insert_iff_ncard Set.exists_eq_insert_iff_ncard
 
-theorem ncard_le_one (hs : s.Finite := by toFinite_tac) : s.ncard ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
+theorem ncard_le_one (hs : s.Finite := by toFinite_tac) :
+    s.ncard ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.card_le_one, Finite.mem_toFinset]
 #align set.ncard_le_one Set.ncard_le_one
 
