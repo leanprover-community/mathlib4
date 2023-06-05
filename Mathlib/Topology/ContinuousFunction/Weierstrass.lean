@@ -19,9 +19,9 @@ in the sense that we've shown that the Bernstein approximations
 to a continuous function on `[0,1]` converge uniformly.
 
 Here we rephrase this more abstractly as
-`polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topological_closure = ⊤`
+`polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤`
 and then, by precomposing with suitable affine functions,
-`polynomialFunctions_closure_eq_top : (polynomialFunctions (Set.Icc a b)).topological_closure = ⊤`
+`polynomialFunctions_closure_eq_top : (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤`
 -/
 
 
@@ -71,7 +71,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- and pullback both sides, obtaining an equation between subalgebras of `C([a,b], ℝ)`.
     apply_fun fun s => s.comap W at p
     simp only [Algebra.comap_top] at p
-    -- Since the pullback operation is continuous, it commutes with taking `topological_closure`,
+    -- Since the pullback operation is continuous, it commutes with taking `topologicalClosure`,
     rw [Subalgebra.topologicalClosure_comap_homeomorph _ W W' w] at p
     -- and precomposing with an affine map takes polynomial functions to polynomial functions.
     rw [polynomialFunctions.comap_compRightAlgHom_iccHomeoI] at p
