@@ -41,6 +41,11 @@ macro_rules
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
+  | `(expand_binders% ($x => $term) (_%$ph $[: $ty]?) $binders*, $res) => do
+    let ty := ty.getD (← `(_))
+    term.replaceM fun x' ↦ do
+      unless x == x' do return none
+      `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
   | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' ↦ do
       unless x == x' do return none

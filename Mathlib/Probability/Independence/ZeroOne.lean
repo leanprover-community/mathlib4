@@ -44,13 +44,13 @@ theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   exact Or.inr (Or.inl h_indep.symm)
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSet_self
 
-theorem measure_eq_zero_or_one_of_indepSetCat_self [FiniteMeasure μ] {t : Set Ω}
+theorem measure_eq_zero_or_one_of_indepSetCat_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   have h_0_1_top := measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
   simpa [measure_ne_top μ] using h_0_1_top
 #align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSetCat_self
 
-variable [ProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
+variable [IsProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
 
 open Filter
 
@@ -104,7 +104,7 @@ theorem indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
   refine' iSup_congr fun n => _
-  have h : (⨆ (i : α) (_H : n ∈ ns i), s n) = ⨆ _h : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
+  have h : (⨆ (i : α) (_ : n ∈ ns i), s n) = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
 #align probability_theory.indep_supr_limsup ProbabilityTheory.indep_iSup_limsup

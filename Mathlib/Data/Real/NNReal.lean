@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Nonnegative real numbers
@@ -380,6 +381,9 @@ protected theorem coe_pos {r : ℝ≥0} : (0 : ℝ) < r ↔ 0 < r :=
 
 protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 #align nnreal.coe_mono NNReal.coe_mono
+
+@[gcongr]
+theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x:ℝ) ≤ y := NNReal.coe_mono h
 
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)
@@ -935,7 +939,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ≥0)) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero
