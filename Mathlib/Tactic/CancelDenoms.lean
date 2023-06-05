@@ -213,7 +213,8 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =, ≠}`, and returns
-`lhs`, `rhs`, and the `cancel_factors` lemma corresponding to `R`.
+`lhs`, `rhs`, the `cancel_factors` lemma corresponding to `R`, and a boolean indicating whether
+`R` involves the order (i.e. `<` and `≤`) or not (i.e. `=` and `≠`).
 In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
 it is not, the final component of the return value tracks this.
 -/
