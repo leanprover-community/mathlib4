@@ -249,7 +249,12 @@ directly. -/
 instance : CoeFun (EsakiaHom α β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
+-- Porting note: introduced this to appease simpNF linter with `toFun_eq_coe`
 @[simp]
+theorem toContinuousOrderHom_coe {f : EsakiaHom α β} :
+    f.toContinuousOrderHom = (f : α → β) := rfl
+
+-- Porting note: removed simp attribute as simp now solves this
 theorem toFun_eq_coe {f : EsakiaHom α β} : f.toFun = (f : α → β) := rfl
 #align esakia_hom.to_fun_eq_coe EsakiaHom.toFun_eq_coe
 
@@ -284,12 +289,12 @@ instance : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
 @[simp]
-theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
-#align esakia_hom.coe_id EsakiaHom.coe_id
-
-@[simp]
 theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
 #align esakia_hom.coe_id_continuous_order_hom EsakiaHom.coe_id_continuousOrderHom
+
+@[simp]
+theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
+#align esakia_hom.coe_id EsakiaHom.coe_id
 
 @[simp]
 theorem coe_id_pseudoEpimorphism :
@@ -311,14 +316,6 @@ def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
 #align esakia_hom.comp EsakiaHom.comp
 
 @[simp]
-theorem coe_comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : (g.comp f : α → γ) = g ∘ f := rfl
-#align esakia_hom.coe_comp EsakiaHom.coe_comp
-
-@[simp]
-theorem comp_apply (g : EsakiaHom β γ) (f : EsakiaHom α β) (a : α) : (g.comp f) a = g (f a) := rfl
-#align esakia_hom.comp_apply EsakiaHom.comp_apply
-
-@[simp]
 theorem coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) :
     (g.comp f : α →Co γ) = (g : β →Co γ).comp f := rfl
 #align esakia_hom.coe_comp_continuous_order_hom EsakiaHom.coe_comp_continuousOrderHom
@@ -327,6 +324,14 @@ theorem coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) 
 theorem coe_comp_pseudoEpimorphism (g : EsakiaHom β γ) (f : EsakiaHom α β) :
     (g.comp f : PseudoEpimorphism α γ) = (g : PseudoEpimorphism β γ).comp f := rfl
 #align esakia_hom.coe_comp_pseudo_epimorphism EsakiaHom.coe_comp_pseudoEpimorphism
+
+@[simp]
+theorem coe_comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : (g.comp f : α → γ) = g ∘ f := rfl
+#align esakia_hom.coe_comp EsakiaHom.coe_comp
+
+@[simp]
+theorem comp_apply (g : EsakiaHom β γ) (f : EsakiaHom α β) (a : α) : (g.comp f) a = g (f a) := rfl
+#align esakia_hom.comp_apply EsakiaHom.comp_apply
 
 @[simp]
 theorem comp_assoc (h : EsakiaHom γ δ) (g : EsakiaHom β γ) (f : EsakiaHom α β) :
@@ -354,3 +359,4 @@ theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : In
 #align esakia_hom.cancel_left EsakiaHom.cancel_left
 
 end EsakiaHom
+
