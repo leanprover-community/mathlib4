@@ -21,8 +21,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 ## Main definitions
 
-  * `lie_algebra.lie_character`
-  * `lie_algebra.lie_character_equiv_linear_dual`
+  * `LieAlgebra.LieCharacter`
+  * `LieAlgebra.lieCharacterEquivLinearDual`
 
 ## Tags
 
@@ -50,22 +50,22 @@ theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆
 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
-  rw [derived_series_def, derived_series_of_ideal_succ, derived_series_of_ideal_zero, ←
-    LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h 
-  apply Submodule.span_induction h
-  · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lie_character_apply_lie
+  rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
+    LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
+  refine' Submodule.span_induction h _ _ _ _
+  · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
   · intro y z hy hz; rw [LieHom.map_add, hy, hz, add_zero]
   · intro t y hy; rw [LieHom.map_smul, hy, smul_zero]
 #align lie_algebra.lie_character_apply_of_mem_derived LieAlgebra.lieCharacter_apply_of_mem_derived
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
-@[simps]
+@[simps! apply symm_apply left_inv right_inv]
 def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.Dual R L where
   toFun χ := (χ : L →ₗ[R] R)
   invFun ψ :=
     { ψ with
-      map_lie' := fun x y => by
+      map_lie' := fun {x y} => by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
           LinearMap.toFun_eq_coe, LinearMap.map_zero] }
   left_inv χ := by ext; rfl
@@ -73,4 +73,3 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
 #align lie_algebra.lie_character_equiv_linear_dual LieAlgebra.lieCharacterEquivLinearDual
 
 end LieAlgebra
-
