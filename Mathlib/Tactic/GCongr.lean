@@ -94,7 +94,8 @@ attribute [gcongr]
 
 /-! # ≤, / -/
 
-theorem Nat.div_le_div (a b c d : ℕ) (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
+protected theorem Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) :
+    a / c ≤ b / d :=
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
