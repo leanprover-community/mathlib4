@@ -133,10 +133,14 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
   · rw [iteratedFDeriv_zero_eq_comp]
     exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOn h
   · rw [iteratedFDeriv_succ_eq_comp_left]
-    apply
-      (continuousMultilinearCurryLeftEquiv 𝕜 (fun i : Fin (n + 1) => E)
-              F).toContinuousLinearEquiv.toContinuousLinearMap.comp_analyticOn
-    exact IH.fderiv
+    -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
+    convert @ContinuousLinearMap.comp_analyticOn 𝕜 E
+      ?_ (ContinuousMultilinearMap 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+      ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
+      s ?g IH.fderiv
+    case g =>
+      exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F)
+    rfl
 #align analytic_on.iterated_fderiv AnalyticOn.iteratedFDeriv
 
 /-- An analytic function is infinitely differentiable. -/
