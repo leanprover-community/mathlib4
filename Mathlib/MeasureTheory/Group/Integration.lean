@@ -57,7 +57,7 @@ section MeasurableMul
 
 variable [Group G] [MeasurableMul G]
 
-/-- Translating a function by left-multiplication does not change its `measure_theory.lintegral`
+/-- Translating a function by left-multiplication does not change its `MeasureTheory.lintegral`
 with respect to a left-invariant measure. -/
 @[to_additive
       "Translating a function by left-addition does not change its `measure_theory.lintegral` with
@@ -69,7 +69,7 @@ theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞
 #align measure_theory.lintegral_mul_left_eq_self MeasureTheory.lintegral_mul_left_eq_self
 #align measure_theory.lintegral_add_left_eq_self MeasureTheory.lintegral_add_left_eq_self
 
-/-- Translating a function by right-multiplication does not change its `measure_theory.lintegral`
+/-- Translating a function by right-multiplication does not change its `MeasureTheory.lintegral`
 with respect to a right-invariant measure. -/
 @[to_additive
       "Translating a function by right-addition does not change its `measure_theory.lintegral` with
