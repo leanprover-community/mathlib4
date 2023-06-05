@@ -19,21 +19,21 @@ inverse, arsinh.
 
 ## Main definitions
 
-- `real.arsinh`: The inverse function of `real.sinh`.
+- `Real.arsinh`: The inverse function of `Real.sinh`.
 
-- `real.sinh_equiv`, `real.sinh_order_iso`, `real.sinh_homeomorph`: `real.sinh` as an `equiv`,
-  `order_iso`, and `homeomorph`, respectively.
+- `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
+  `OrderIso` and `Homeomorph`, respectively.
 
 ## Main Results
 
-- `real.sinh_surjective`, `real.sinh_bijective`: `real.sinh` is surjective and bijective;
+- `Real.sinh_surjective`, `Real.sinh_bijective`: `Real.sinh` is surjective and bijective;
 
-- `real.arsinh_injective`, `real.arsinh_surjective`, `real.arsinh_bijective`: `real.arsinh` is
+- `Real.arsinh_injective`, `Real.arsinh_surjective`, `Real.arsinh_bijective`: `Real.arsinh` is
   injective, surjective, and bijective;
 
-- `real.continuous_arsinh`, `real.differentiable_arsinh`, `real.cont_diff_arsinh`: `real.arsinh` is
+- `Real.continuous_arsinh`, `Real.differentiable_arsinh`, `Real.contDiff_arsinh`: `Real.arsinh` is
   continuous, differentiable, and continuously differentiable; we also provide dot notation
-  convenience lemmas like `filter.tendsto.arsinh` and `cont_diff_at.arsinh`.
+  convenience lemmas like `Filter.Tendsto.arsinh` and `ContDiffAt.arsinh`.
 
 ## Tags
 
@@ -52,7 +52,7 @@ namespace Real
 variable {x y : ℝ}
 
 /-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
-@[pp_nodot]
+-- @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + sqrt (1 + x ^ 2))
 #align real.arsinh Real.arsinh
@@ -61,9 +61,8 @@ theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) := by
   apply exp_log
   rw [← neg_lt_iff_pos_add']
   calc
-    -x ≤ sqrt (x ^ 2) := le_sqrt_of_sq_le (neg_pow_bit0 _ _).le
+    -x ≤ sqrt (x ^ 2) := le_sqrt_of_sq_le (by linarith)
     _ < sqrt (1 + x ^ 2) := sqrt_lt_sqrt (sq_nonneg _) (lt_one_add _)
-    
 #align real.exp_arsinh Real.exp_arsinh
 
 @[simp]
@@ -105,7 +104,7 @@ theorem arsinh_sinh (x : ℝ) : arsinh (sinh x) = x :=
   rightInverse_of_injective_of_leftInverse sinh_injective sinh_arsinh x
 #align real.arsinh_sinh Real.arsinh_sinh
 
-/-- `real.sinh` as an `equiv`. -/
+/-- `Real.sinh` as an `Equiv`. -/
 @[simps]
 def sinhEquiv : ℝ ≃ ℝ where
   toFun := sinh
@@ -114,33 +113,33 @@ def sinhEquiv : ℝ ≃ ℝ where
   right_inv := sinh_arsinh
 #align real.sinh_equiv Real.sinhEquiv
 
-/-- `real.sinh` as an `order_iso`. -/
-@[simps (config := { fullyApplied := false })]
+/-- `Real.sinh` as an `OrderIso`. -/
+@[simps! (config := { fullyApplied := false })]
 def sinhOrderIso : ℝ ≃o ℝ where
   toEquiv := sinhEquiv
   map_rel_iff' := @sinh_le_sinh
 #align real.sinh_order_iso Real.sinhOrderIso
 
-/-- `real.sinh` as a `homeomorph`. -/
-@[simps (config := { fullyApplied := false })]
+/-- `Real.sinh` as a `Homeomorph`. -/
+@[simps! (config := { fullyApplied := false })]
 def sinhHomeomorph : ℝ ≃ₜ ℝ :=
   sinhOrderIso.toHomeomorph
 #align real.sinh_homeomorph Real.sinhHomeomorph
 
 theorem arsinh_bijective : Bijective arsinh :=
-  sinhEquiv.symm.Bijective
+  sinhEquiv.symm.bijective
 #align real.arsinh_bijective Real.arsinh_bijective
 
 theorem arsinh_injective : Injective arsinh :=
-  sinhEquiv.symm.Injective
+  sinhEquiv.symm.injective
 #align real.arsinh_injective Real.arsinh_injective
 
 theorem arsinh_surjective : Surjective arsinh :=
-  sinhEquiv.symm.Surjective
+  sinhEquiv.symm.surjective
 #align real.arsinh_surjective Real.arsinh_surjective
 
 theorem arsinh_strictMono : StrictMono arsinh :=
-  sinhOrderIso.symm.StrictMono
+  sinhOrderIso.symm.strictMono
 #align real.arsinh_strict_mono Real.arsinh_strictMono
 
 @[simp]
@@ -182,18 +181,17 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x := by
-  convert
-    sinh_homeomorph.to_local_homeomorph.has_strict_deriv_at_symm (mem_univ x) (cosh_pos _).ne'
-      (has_strict_deriv_at_sinh _)
+  convert sinhHomeomorph.toLocalHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
+    (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 #align real.has_strict_deriv_at_arsinh Real.hasStrictDerivAt_arsinh
 
 theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x :=
-  (hasStrictDerivAt_arsinh x).HasDerivAt
+  (hasStrictDerivAt_arsinh x).hasDerivAt
 #align real.has_deriv_at_arsinh Real.hasDerivAt_arsinh
 
 theorem differentiable_arsinh : Differentiable ℝ arsinh := fun x =>
-  (hasDerivAt_arsinh x).DifferentiableAt
+  (hasDerivAt_arsinh x).differentiableAt
 #align real.differentiable_arsinh Real.differentiable_arsinh
 
 theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
@@ -202,7 +200,7 @@ theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
 
 @[continuity]
 theorem continuous_arsinh : Continuous arsinh :=
-  sinhHomeomorph.symm.Continuous
+  sinhHomeomorph.symm.continuous
 #align real.continuous_arsinh Real.continuous_arsinh
 
 end Real
@@ -211,18 +209,19 @@ open Real
 
 theorem Filter.Tendsto.arsinh {α : Type _} {l : Filter α} {f : α → ℝ} {a : ℝ}
     (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => arsinh (f x)) l (𝓝 (arsinh a)) :=
-  (continuous_arsinh.Tendsto _).comp h
+  (continuous_arsinh.tendsto _).comp h
 #align filter.tendsto.arsinh Filter.Tendsto.arsinh
 
 section Continuous
 
 variable {X : Type _} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {a : X}
 
-theorem ContinuousAt.arsinh (h : ContinuousAt f a) : ContinuousAt (fun x => arsinh (f x)) a :=
+nonrec theorem ContinuousAt.arsinh (h : ContinuousAt f a) :
+    ContinuousAt (fun x => arsinh (f x)) a :=
   h.arsinh
 #align continuous_at.arsinh ContinuousAt.arsinh
 
-theorem ContinuousWithinAt.arsinh (h : ContinuousWithinAt f s a) :
+nonrec theorem ContinuousWithinAt.arsinh (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => arsinh (f x)) s a :=
   h.arsinh
 #align continuous_within_at.arsinh ContinuousWithinAt.arsinh
@@ -276,12 +275,12 @@ theorem Differentiable.arsinh (h : Differentiable ℝ f) : Differentiable ℝ fu
 #align differentiable.arsinh Differentiable.arsinh
 
 theorem ContDiffAt.arsinh (h : ContDiffAt ℝ n f a) : ContDiffAt ℝ n (fun x => arsinh (f x)) a :=
-  contDiff_arsinh.ContDiffAt.comp a h
+  contDiff_arsinh.contDiffAt.comp a h
 #align cont_diff_at.arsinh ContDiffAt.arsinh
 
 theorem ContDiffWithinAt.arsinh (h : ContDiffWithinAt ℝ n f s a) :
     ContDiffWithinAt ℝ n (fun x => arsinh (f x)) s a :=
-  contDiff_arsinh.ContDiffAt.comp_contDiffWithinAt a h
+  contDiff_arsinh.contDiffAt.comp_contDiffWithinAt a h
 #align cont_diff_within_at.arsinh ContDiffWithinAt.arsinh
 
 theorem ContDiff.arsinh (h : ContDiff ℝ n f) : ContDiff ℝ n fun x => arsinh (f x) :=
@@ -314,4 +313,3 @@ theorem HasDerivWithinAt.arsinh (hf : HasDerivWithinAt f f' s a) :
 #align has_deriv_within_at.arsinh HasDerivWithinAt.arsinh
 
 end deriv
-
