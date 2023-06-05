@@ -8,9 +8,9 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Inverse
-import Mathbin.Analysis.SpecialFunctions.Complex.Log
-import Mathbin.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.Calculus.Inverse
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Differentiability of the complex `log` function
@@ -125,8 +125,7 @@ theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E
 #align has_fderiv_within_at.clog HasFDerivWithinAt.clog
 
 theorem HasDerivWithinAt.clog {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ} (h₁ : HasDerivWithinAt f f' s x)
-    (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x :=
-  by
+    (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
   exact (has_strict_deriv_at_log h₂).HasDerivAt.comp_hasDerivWithinAt x h₁
 #align has_deriv_within_at.clog HasDerivWithinAt.clog
