@@ -8,8 +8,8 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Closed.Monoidal
-import Mathbin.Algebra.Category.Module.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.Algebra.Category.Module.Monoidal.Symmetric
 
 /-!
 # The monoidal closed structure on `Module R`.
@@ -34,8 +34,7 @@ attribute [local ext] TensorProduct.ext
 @[simps]
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
-      (N ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op M)).obj P)
-    where
+      (N ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op M)).obj P) where
   toFun f := LinearMap.compr₂ (TensorProduct.mk R N M) ((β_ N M).Hom ≫ f)
   invFun f := (β_ M N).Hom ≫ TensorProduct.lift f
   left_inv f := by
@@ -79,8 +78,7 @@ theorem monoidalClosed_uncurry {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[Module
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip :=
-  by
+    (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip := by
   ext
   exact ModuleCat.monoidalClosed_uncurry _ _ _
 #align Module.ihom_ev_app ModuleCat.ihom_ev_app
