@@ -449,11 +449,11 @@ namespace Integrable
 
 /-- If `ε > 0`, then `BoxIntegral.Integrable.convergenceR` is a function `r : ℝ≥0 → ℝⁿ → (0, ∞)`
 such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate to `r` (and satisfying
-additional distortion estimates if `box_integral.integration_params.bDistortion l = tt`), the
+additional distortion estimates if `box_integral.integration_params.bDistortion l = true`), the
 corresponding integral sum is `ε`-close to the integral.
 
-If `box.integral.integration_params.bRiemann = tt`, then `r c x` does not depend on `x`. If `ε ≤ 0`,
-then we use `r c x = 1`.  -/
+If `box.integral.integration_params.bRiemann = true`, then `r c x` does not depend on `x`. If
+`ε ≤ 0`, then we use `r c x = 1`.  -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
   else fun _ _ => ⟨1, Set.mem_Ioi.2 zero_lt_one⟩
