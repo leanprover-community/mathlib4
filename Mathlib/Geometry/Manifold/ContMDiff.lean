@@ -1399,12 +1399,8 @@ alias contMDiff_iff_contDiff ↔ ContMDiff.contDiff ContDiff.contMDiff
 
 theorem ContDiffWithinAt.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M} {t : Set F}
     {x : M} (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x)
-    (h : s ⊆ f ⁻¹' t) : ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x := by
-  rw [contMDiffWithinAt_iff] at *
-  refine' ⟨hg.continuousWithinAt.comp hf.1 h, _⟩
-  rw [← (extChartAt I x).left_inv (mem_extChartAt_source I x)] at hg 
-  apply ContDiffWithinAt.comp _ hg hf.2 _
-  exact (inter_subset_left _ _).trans (preimage_mono h)
+    (h : s ⊆ f ⁻¹' t) : ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+  hg.contMDiffWithinAt.comp x hf h
 #align cont_diff_within_at.comp_cont_mdiff_within_at ContDiffWithinAt.comp_contMDiffWithinAt
 
 theorem ContDiffAt.comp_contMDiffAt {g : F → F'} {f : M → F} {x : M} (hg : ContDiffAt 𝕜 n g (f x))
@@ -1679,7 +1675,6 @@ section Prod_map
 
 variable {g : N → N'} {r : Set N} {y : N}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
 theorem ContMDiffWithinAt.prod_map' {p : M × N} (hf : ContMDiffWithinAt I I' n f s p.1)
@@ -1689,7 +1684,6 @@ theorem ContMDiffWithinAt.prod_map' {p : M × N} (hf : ContMDiffWithinAt I I' n 
     hg.comp p contMDiffWithinAt_snd (prod_subset_preimage_snd _ _)
 #align cont_mdiff_within_at.prod_map' ContMDiffWithinAt.prod_map'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem ContMDiffWithinAt.prod_map (hf : ContMDiffWithinAt I I' n f s x)
     (hg : ContMDiffWithinAt J J' n g r y) :
     ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) (x, y) :=
@@ -1709,7 +1703,6 @@ theorem ContMDiffAt.prod_map' {p : M × N} (hf : ContMDiffAt I I' n f p.1)
   exact hf.prod_map hg
 #align cont_mdiff_at.prod_map' ContMDiffAt.prod_map'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem ContMDiffOn.prod_map (hf : ContMDiffOn I I' n f s) (hg : ContMDiffOn J J' n g r) :
     ContMDiffOn (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) :=
   (hf.comp contMDiffOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
@@ -1722,7 +1715,6 @@ theorem ContMDiff.prod_map (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
   exact (hf p.1).prod_map' (hg p.2)
 #align cont_mdiff.prod_map ContMDiff.prod_map
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 nonrec theorem SmoothWithinAt.prod_map (hf : SmoothWithinAt I I' f s x)
     (hg : SmoothWithinAt J J' g r y) :
     SmoothWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) (x, y) :=
@@ -1734,7 +1726,6 @@ nonrec theorem SmoothAt.prod_map (hf : SmoothAt I I' f x) (hg : SmoothAt J J' g 
   hf.prod_map hg
 #align smooth_at.prod_map SmoothAt.prod_map
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 nonrec theorem SmoothOn.prod_map (hf : SmoothOn I I' f s) (hg : SmoothOn J J' g r) :
     SmoothOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
   hf.prod_map hg
