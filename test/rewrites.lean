@@ -1,5 +1,11 @@
 import Mathlib.Tactic.Rewrites
-import Mathlib
+import Mathlib.Data.Nat.Prime
+import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Algebra.Group.Basic
+
+-- To see the (sorted) list of lemmas that `rewrites` will try rewriting by, use:
+-- set_option trace.Tactic.rewrites.lemmas true
 
 -- Recall that `rewrites` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
@@ -44,3 +50,6 @@ example [Group G] (g h : G) : g * g⁻¹ * h = h := by
   -/
   rw [mul_inv_self]
   rw [one_mul]
+
+lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
+  rewrites!
