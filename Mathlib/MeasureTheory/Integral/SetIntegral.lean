@@ -1210,7 +1210,8 @@ theorem integral_smul_const {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] (
   · by_cases hc : c = 0
     · simp only [hc, integral_zero, smul_zero]
     rw [integral_undef hf, integral_undef, zero_smul]
-    simp_rw [integrable_smul_const hc, hf, not_false_iff]
+    rw [integrable_smul_const hc]
+    simp_rw [hf]
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :
@@ -1265,9 +1266,9 @@ theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMe
     (∫ a, g a ∂μ.withDensity fun x => f x) = ∫ a, f a • g a ∂μ := by
   let f' := hf.mk _
   calc
-    (∫ a, g a ∂μ.with_density fun x => f x) = ∫ a, g a ∂μ.with_density fun x => f' x := by
+    (∫ a, g a ∂μ.withDensity fun x => f x) = ∫ a, g a ∂μ.withDensity fun x => f' x := by
       congr 1
-      apply with_density_congr_ae
+      apply withDensity_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx
       rw [hx]
     _ = ∫ a, f' a • g a ∂μ := (integral_withDensity_eq_integral_smul hf.measurable_mk _)
@@ -1281,13 +1282,13 @@ theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMe
 theorem set_integral_withDensity_eq_set_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f)
     (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     (∫ a in s, g a ∂μ.withDensity fun x => f x) = ∫ a in s, f a • g a ∂μ := by
-  rw [restrict_with_density hs, integral_withDensity_eq_integral_smul f_meas]
+  rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul f_meas]
 #align set_integral_with_density_eq_set_integral_smul set_integral_withDensity_eq_set_integral_smul
 
 theorem set_integral_withDensity_eq_set_integral_smul₀ {f : α → ℝ≥0} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (g : α → E) (hs : MeasurableSet s) :
     (∫ a in s, g a ∂μ.withDensity fun x => f x) = ∫ a in s, f a • g a ∂μ := by
-  rw [restrict_with_density hs, integral_withDensity_eq_integral_smul₀ hf]
+  rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 #align set_integral_with_density_eq_set_integral_smul₀ set_integral_withDensity_eq_set_integral_smul₀
 
 end
@@ -1300,7 +1301,7 @@ theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure α) {E : Set α
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ a, (thickenedIndicatorAux δ E a : ℝ≥0∞) ∂μ := by
   convert_to lintegral μ (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ lintegral μ (thickenedIndicatorAux δ E)
   · rw [lintegral_indicator _ E_mble]
-    simp only [lintegral_one, measure.restrict_apply, MeasurableSet.univ, univ_inter]
+    simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
   · apply lintegral_mono
     apply indicator_le_thickenedIndicatorAux
 #align measure_le_lintegral_thickened_indicator_aux measure_le_lintegral_thickenedIndicatorAux
@@ -1310,7 +1311,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure α) {E : Set α}
     μ E ≤ ∫⁻ a, (thickenedIndicator δ_pos E a : ℝ≥0∞) ∂μ := by
   convert measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
   dsimp
-  simp only [thickened_indicator_aux_lt_top.ne, ENNReal.coe_toNNReal, Ne.def, not_false_iff]
+  simp only [thickenedIndicatorAux_lt_top.ne, ENNReal.coe_toNNReal, Ne.def, not_false_iff]
 #align measure_le_lintegral_thickened_indicator measure_le_lintegral_thickenedIndicator
 
 end thickenedIndicator
@@ -1324,12 +1325,12 @@ variable {f : β → ℝ} {m m0 : MeasurableSpace β} {μ : Measure β}
 theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ) :
     Integrable (g * f) μ := by
   refine'
-    simple_func.induction (fun c s hs => _)
+    SimpleFunc.induction (fun c s hs => _)
       (fun g₁ g₂ h_disj h_int₁ h_int₂ =>
-        (h_int₁.add h_int₂).congr (by rw [simple_func.coe_add, add_mul]))
+        (h_int₁.add h_int₂).congr (by rw [SimpleFunc.coe_add, add_mul]))
       g
-  simp only [simple_func.const_zero, simple_func.coe_piecewise, simple_func.coe_const,
-    simple_func.coe_zero, Set.piecewise_eq_indicator]
+  simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+    SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
   have : Set.indicator s (Function.const β c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s
@@ -1340,7 +1341,7 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ)
 #align measure_theory.integrable.simple_func_mul MeasureTheory.Integrable.simpleFunc_mul
 
 theorem Integrable.simpleFunc_mul' (hm : m ≤ m0) (g : @SimpleFunc β m ℝ) (hf : Integrable f μ) :
-    Integrable (g * f) μ := by rw [← simple_func.coe_to_larger_space_eq hm g];
+    Integrable (g * f) μ := by rw [← SimpleFunc.coe_to_larger_space_eq hm g];
   exact hf.simple_func_mul (g.to_larger_space hm)
 #align measure_theory.integrable.simple_func_mul' MeasureTheory.Integrable.simpleFunc_mul'
 
