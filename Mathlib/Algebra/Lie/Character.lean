@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Abelian
-import Mathbin.Algebra.Lie.Solvable
-import Mathbin.LinearAlgebra.Dual
+import Mathlib.Algebra.Lie.Abelian
+import Mathlib.Algebra.Lie.Solvable
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Characters of Lie algebras
@@ -49,8 +49,7 @@ theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆
 #align lie_algebra.lie_character_apply_lie LieAlgebra.lieCharacter_apply_lie
 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
-    (h : x ∈ derivedSeries R L 1) : χ x = 0 :=
-  by
+    (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derived_series_def, derived_series_of_ideal_succ, derived_series_of_ideal_zero, ←
     LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h 
   apply Submodule.span_induction h
@@ -62,8 +61,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
 @[simps]
-def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.Dual R L
-    where
+def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.Dual R L where
   toFun χ := (χ : L →ₗ[R] R)
   invFun ψ :=
     { ψ with
