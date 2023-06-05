@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 ## Main definitions
 
 * `QuadraticForm.Isometry`: `LinearEquiv`s which map between two different quadratic forms
-* `quadratic_form.equvialent`: propositional version of the above
+* `QuadraticForm.Equivalent`: propositional version of the above
 
 ## Main results
 
