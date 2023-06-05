@@ -18,13 +18,11 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 -/
 
 
-noncomputable section
-
-namespace Complex
-
 open Set Filter
 
 open scoped Real Topology
+
+namespace Complex
 
 theorem isOpenMap_exp : IsOpenMap exp :=
   open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
@@ -33,7 +31,7 @@ theorem isOpenMap_exp : IsOpenMap exp :=
 /-- `complex.exp` as a `local_homeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
+noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
   LocalHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
@@ -45,21 +43,20 @@ def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
         obtain rfl : y = 0 := by
           rw [exp_im] at hz 
           simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz
-        rw [mem_set_of_eq, ← of_real_def, exp_of_real_re]
+        rw [mem_setOf_eq, ← ofReal_def, exp_ofReal_re]
         exact Real.exp_pos x
-      map_target' := fun z h =>
-        suffices 0 ≤ z.re ∨ z.im ≠ 0 by
-          simpa [log_im, neg_pi_lt_arg, (arg_le_pi _).lt_iff_ne, arg_eq_pi_iff, not_and_or]
-        h.imp (fun h => le_of_lt h) id
+      map_target' := fun z h => by
+        simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
+        exact h.imp_left le_of_lt
       left_inv' := fun x hx => log_exp hx.1 (le_of_lt hx.2)
-      right_inv' := fun x hx => exp_log <| by rintro rfl; simpa [lt_irrefl] using hx }
-    continuous_exp.ContinuousOn isOpenMap_exp (isOpen_Ioo.Preimage continuous_im)
+      right_inv' := fun x hx => exp_log <| by rintro rfl; simp [lt_irrefl] at hx }
+    continuous_exp.continuousOn isOpenMap_exp (isOpen_Ioo.preimage continuous_im)
 #align complex.exp_local_homeomorph Complex.expLocalHomeomorph
 
 theorem hasStrictDerivAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : HasStrictDerivAt log x⁻¹ x :=
-  have h0 : x ≠ 0 := by rintro rfl; simpa [lt_irrefl] using h
+  have h0 : x ≠ 0 := by rintro rfl; simp [lt_irrefl] at h
   expLocalHomeomorph.hasStrictDerivAt_symm h h0 <| by
-    simpa [exp_log h0] using has_strict_deriv_at_exp (log x)
+    simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 #align complex.has_strict_deriv_at_log Complex.hasStrictDerivAt_log
 
 theorem hasStrictFDerivAt_log_real {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) :
@@ -69,7 +66,7 @@ theorem hasStrictFDerivAt_log_real {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) :
 
 theorem contDiffAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) {n : ℕ∞} : ContDiffAt ℂ n log x :=
   expLocalHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
-    contDiff_exp.ContDiffAt
+    contDiff_exp.contDiffAt
 #align complex.cont_diff_at_log Complex.contDiffAt_log
 
 end Complex
@@ -89,58 +86,58 @@ theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h
 
 theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
-  rw [div_eq_inv_mul]; exact (has_strict_deriv_at_log h₂).comp x h₁
+  rw [div_eq_inv_mul]; exact (hasStrictDerivAt_log h₂).comp x h₁
 #align has_strict_deriv_at.clog HasStrictDerivAt.clog
 
 theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasStrictDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
-  simpa only [div_eq_inv_mul] using (has_strict_fderiv_at_log_real h₂).comp_hasStrictDerivAt x h₁
+  simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 #align has_strict_deriv_at.clog_real HasStrictDerivAt.clog_real
 
 theorem HasFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
-  (hasStrictDerivAt_log h₂).HasDerivAt.comp_hasFDerivAt x h₁
+  (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
 #align has_fderiv_at.clog HasFDerivAt.clog
 
 theorem HasDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasDerivAt (fun t => log (f t)) (f' / f x) x := by
-  rw [div_eq_inv_mul]; exact (has_strict_deriv_at_log h₂).HasDerivAt.comp x h₁
+  rw [div_eq_inv_mul]; exact (hasStrictDerivAt_log h₂).hasDerivAt.comp x h₁
 #align has_deriv_at.clog HasDerivAt.clog
 
 theorem HasDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasDerivAt f f' x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using
-    (has_strict_fderiv_at_log_real h₂).HasFDerivAt.comp_hasDerivAt x h₁
+    (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivAt x h₁
 #align has_deriv_at.clog_real HasDerivAt.clog_real
 
 theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt ℂ f x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : DifferentiableAt ℂ (fun t => log (f t)) x :=
-  (h₁.HasFDerivAt.clog h₂).DifferentiableAt
+  (h₁.hasFDerivAt.clog h₂).differentiableAt
 #align differentiable_at.clog DifferentiableAt.clog
 
 theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E} {x : E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) :
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
-  (hasStrictDerivAt_log h₂).HasDerivAt.comp_hasFDerivWithinAt x h₁
+  (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivWithinAt x h₁
 #align has_fderiv_within_at.clog HasFDerivWithinAt.clog
 
 theorem HasDerivWithinAt.clog {f : ℂ → ℂ} {f' x : ℂ} {s : Set ℂ} (h₁ : HasDerivWithinAt f f' s x)
     (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
-  exact (has_strict_deriv_at_log h₂).HasDerivAt.comp_hasDerivWithinAt x h₁
+  exact (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasDerivWithinAt x h₁
 #align has_deriv_within_at.clog HasDerivWithinAt.clog
 
 theorem HasDerivWithinAt.clog_real {f : ℝ → ℂ} {s : Set ℝ} {x : ℝ} {f' : ℂ}
     (h₁ : HasDerivWithinAt f f' s x) (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) :
     HasDerivWithinAt (fun t => log (f t)) (f' / f x) s x := by
   simpa only [div_eq_inv_mul] using
-    (has_strict_fderiv_at_log_real h₂).HasFDerivAt.comp_hasDerivWithinAt x h₁
+    (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivWithinAt x h₁
 #align has_deriv_within_at.clog_real HasDerivWithinAt.clog_real
 
 theorem DifferentiableWithinAt.clog {f : E → ℂ} {s : Set E} {x : E}
     (h₁ : DifferentiableWithinAt ℂ f s x) (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) :
     DifferentiableWithinAt ℂ (fun t => log (f t)) s x :=
-  (h₁.HasFDerivWithinAt.clog h₂).DifferentiableWithinAt
+  (h₁.hasFDerivWithinAt.clog h₂).differentiableWithinAt
 #align differentiable_within_at.clog DifferentiableWithinAt.clog
 
 theorem DifferentiableOn.clog {f : E → ℂ} {s : Set E} (h₁ : DifferentiableOn ℂ f s)
