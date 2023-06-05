@@ -1166,8 +1166,7 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
         -- Porting note: needed to add this step in #3414.
-        -- However it is not caused by lean4#2210 (reenableeta)
-        -- but rather by https://github.com/leanprover/lean4/pull/2146.
+        -- This is caused by https://github.com/leanprover/lean4/pull/2146.
         -- Nevertheless the proof could be cleaned up.
         cases this
       | cons hd tail =>
