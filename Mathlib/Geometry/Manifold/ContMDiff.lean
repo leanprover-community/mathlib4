@@ -350,11 +350,12 @@ theorem contMDiffWithinAt_iff_target :
     refine' ⟨fun h => h.1, fun h => ⟨h, _⟩⟩
     have h₂ := (chartAt H' (f x)).continuous_toFun.continuousWithinAt (mem_chart_source _ _)
     refine' ((I'.continuousAt.comp_continuousWithinAt h₂).comp' h).mono_of_mem _
-    exact inter_mem self_mem_nhdsWithin
-      (h.preimage_mem_nhdsWithin <| (chartAt _ _).open_source.mem_nhds <| mem_chart_source _ _)
+    exact inter_mem self_mem_nhdsWithin <| h.preimage_mem_nhdsWithin <|
+      (chartAt _ _).open_source.mem_nhds <| mem_chart_source _ _
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, LocalHomeomorph.extend, LocalEquiv.coe_trans,
     ModelWithCorners.toLocalEquiv_coe, LocalHomeomorph.coe_coe, modelWithCornersSelf_coe,
     chartAt_self_eq, LocalHomeomorph.refl_apply, comp.left_id]
+  rfl
 #align cont_mdiff_within_at_iff_target contMDiffWithinAt_iff_target
 
 theorem smoothWithinAt_iff :
