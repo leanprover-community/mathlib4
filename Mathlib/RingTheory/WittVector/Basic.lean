@@ -8,9 +8,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Counit
-import Mathbin.Data.MvPolynomial.Invertible
-import Mathbin.RingTheory.WittVector.Defs
+import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Invertible
+import Mathlib.RingTheory.WittVector.Defs
 
 /-!
 # Witt vectors
@@ -249,8 +249,7 @@ variable (p) (R)
 
 /-- The bijection between `𝕎 R` and `ℕ → R`, under the assumption that `p` is invertible in `R`.
 In `witt_vector.ghost_equiv` we upgrade this to an isomorphism of rings. -/
-private def ghost_equiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R)
-    where
+private def ghost_equiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   toFun := ghostFun
   invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
   left_inv := by
@@ -293,8 +292,7 @@ variable {p R}
 
 /-- `witt_vector.map f` is the ring homomorphism `𝕎 R →+* 𝕎 S` naturally induced
 by a ring homomorphism `f : R →+* S`. It acts coefficientwise. -/
-noncomputable def map (f : R →+* S) : 𝕎 R →+* 𝕎 S
-    where
+noncomputable def map (f : R →+* S) : 𝕎 R →+* 𝕎 S where
   toFun := mapFun f
   map_zero' := mapFun.zero f
   map_one' := mapFun.one f
@@ -362,8 +360,7 @@ end Invertible
 
 /-- `witt_vector.coeff x 0` as a `ring_hom` -/
 @[simps]
-noncomputable def constantCoeff : 𝕎 R →+* R
-    where
+noncomputable def constantCoeff : 𝕎 R →+* R where
   toFun x := x.coeff 0
   map_zero' := by simp
   map_one' := by simp
