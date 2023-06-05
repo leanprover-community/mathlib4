@@ -15,7 +15,7 @@ The tactic `mono` applies monotonicity lemmas (collected through the library by 
 `@[mono]`, `@[mono left]`, or `@[mono right]`).
 -/
 
-open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim BacktrackOptimize
+open Lean Elab Meta Tactic Parser Qq Mathlib.Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -138,21 +138,35 @@ def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both)
     goal.assign expr
     return goals
   else
-    let cfg : MinimizeSubgoalsConfig :=
+    -- Preserve "stopgap" behavior using solve_by_elim. This does not use the discrtree.
+    let cfg : ApplyRulesConfig := {
+      backtracking := false
+      transparency := .reducible
+      exfalso := false }
+    let cfg :=
       if let some ctx := simpUsing then
         let simpProc (goals : List MVarId) : MetaM (Option (List MVarId)) := optional do
           let goals := (← goals.mapM
-            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map (·.2))).reduceOption
+            (fun g ↦ do let (a,_) ← simpGoal g ctx; return a.map Prod.snd)).reduceOption
           return goals
-        { proc := fun _ curr ↦ simpProc curr, trace := `Tactic.mono }
+        { cfg with proc := fun _ curr ↦ simpProc curr }
       else
-        { trace := `Tactic.mono }
-    let some goals ← optional <| minimizeSubgoals [goal] (applyMonosAlternatives side) cfg
-      | throwError "backtracking in mono* failed"
-    if ! (← goal.isAssigned) then
-      throwError "mono* could not make progress on the goal"
-    else
-      return goals
+        cfg.toConfig
+    goal.withContext do
+      let monos := monoExt.getState (← getEnv) |>.tree.elements
+      let monos := match side with
+      | .both  => monos
+      | .left  => monos.filter isLeft
+      | .right => monos.filter isRight
+      let monoLemmas : List (TermElabM Expr) :=
+        monos.toList.map (liftM <| mkConstWithFreshMVarLevels ·.name)
+      let ⟨lemmas, ctx⟩ ← mkAssumptionSet false false [] [] #[]
+      let goals ← repeat1' (maxIters := cfg.maxDepth)
+        (applyFirstLemma cfg (monoLemmas ++ lemmas) ctx) [goal]
+      if ! (← goal.isAssigned) then
+        throwError "mono* could not make progress on the goal"
+      else
+        return goals
 
 --TODO: add `config` syntax to adjust `maxDepth` in `mono*` and add custom `proc`
 open Parser.Tactic in
