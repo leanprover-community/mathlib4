@@ -164,8 +164,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : 
     ⁅of L i x, of L j y⁆ = 0 := by
   apply lieAlgebra_ext R ι L; intro k
   rw [LieHom.map_lie]
-  simp only [component, of, lapply_apply, singleAddHom_apply, lieAlgebraComponent_apply,
-    single_apply, zero_apply]
+  simp only [of, singleAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, lieAlgebraComponent_apply,
+    component, lapply, LinearMap.coe_mk, AddHom.coe_mk, single_apply, LieHom.map_zero]
   by_cases hik : i = k
   · simp only [dif_neg, not_false_iff, lie_zero, hik.symm, hij]
   · simp only [dif_neg, not_false_iff, zero_lie, hik]
