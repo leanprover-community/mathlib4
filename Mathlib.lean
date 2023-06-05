@@ -695,6 +695,7 @@ import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.ArrowFour
 import Mathlib.CategoryTheory.ArrowThree
 import Mathlib.CategoryTheory.ArrowTwo
 import Mathlib.CategoryTheory.Balanced
