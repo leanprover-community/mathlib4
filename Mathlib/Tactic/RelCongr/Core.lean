@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth
 import Mathlib.Init.Algebra.Order
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Backtracking
 
 /-!
 # The `rel_congr` ("relational congruence") tactic
@@ -354,22 +355,44 @@ def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   g.checkNotAssigned `myExact
   g.assign e
 
-syntax "rel_congr_forward " term : tactic
+/-- An extension for `rel_congr_forward`. -/
+structure RelCongrForwardExt where
+  eval (h : Expr) (goal : MVarId) : MetaM Unit
 
-macro_rules
-| `(tactic| rel_congr_forward $t) => `(tactic| exact $t)
+/-- Read a `rel_congr_forward` extension from a declaration of the right type. -/
+def mkRelCongrForwardExt (n : Name) : ImportM RelCongrForwardExt := do
+  let { env, opts, .. } ← read
+  IO.ofExcept <| unsafe env.evalConstCheck RelCongrForwardExt opts ``RelCongrForwardExt n
 
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-macro_rules
-| `(tactic| rel_congr_forward $t) => `(tactic| exact le_of_lt $t)
+/-- Environment extensions for `relCongrForward` declarations -/
+initialize relCongrForwardExt : PersistentEnvExtension Name (Name × RelCongrForwardExt)
+    (List Name × List (Name × RelCongrForwardExt)) ←
+  registerPersistentEnvExtension {
+    mkInitial := pure ([], {})
+    addImportedFn := fun s => do
+      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
+        return (n, ← mkRelCongrForwardExt n) :: dt
+      pure ([], dt)
+    addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
+    exportEntriesFn := fun s => s.1.reverse.toArray
+  }
 
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-macro_rules
-| `(tactic| rel_congr_forward $t) => `(tactic| symm ; exact le_of_lt $t)
-
-/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-macro_rules
-| `(tactic| rel_congr_forward $t) => `(tactic| refine Eq.subst $t ?_ ; rfl)
+initialize registerBuiltinAttribute {
+  name := `rel_congr_forward
+  descr := "adds a rel_congr_forward extension"
+  applicationTime := .afterCompilation
+  add := fun declName stx kind => match stx with
+    | `(attr| rel_congr_forward) => do
+      unless kind == AttributeKind.global do
+        throwError "invalid attribute 'rel_congr_forward', must be global"
+      let env ← getEnv
+      unless (env.getModuleIdxFor? declName).isNone do
+        throwError "invalid attribute 'rel_congr_forward', declaration is in an imported module"
+      if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
+      let ext ← mkRelCongrForwardExt declName
+      setEnv <| relCongrForwardExt.addEntry env (declName, ext)
+    | _ => throwUnsupportedSyntax
+}
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -379,11 +402,13 @@ def _root_.Lean.MVarId.relCongrForward (hs : Array Expr) (g : MVarId) : MetaM Un
     let s ← saveState
     withTraceNode `Meta.rel (fun _ => return m!"rel_congr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
+    let tacs := (relCongrForwardExt.getState (← getEnv)).2
     for h in hs do
       try
-        Term.TermElabM.run' do
-          let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| rel_congr_forward h))
-            | failure
+        tacs.firstM fun (n, tac) =>
+          withTraceNode `Meta.rel (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+            tac.eval h g
+        return
       catch _ => s.restore
     throwError "rel_congr_forward failed"
 
@@ -423,7 +448,7 @@ using the relational congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_le
 
 The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`rel_congr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
+`rel_congr_discharger`, which wraps `relCongrForward` but can also be extended. Side goals not discharged
 in this way are left for the user. -/
 elab "rel_congr" template:(colGt term)?
     withArg:((" with " (colGt binderIdent)+)?) : tactic => do
@@ -479,7 +504,7 @@ no applicable relational congruence lemmas, the tactic fails.
 
 The tactic attempts to discharge side goals to these "relational congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
-`rel_congr_discharger`, which wraps `positivity` but can also be extended. If the side goals cannot
+`rel_congr_discharger`, which wraps `relCongrForward` but can also be extended. If the side goals cannot
 be discharged in this way, the tactic fails. -/
 syntax "rel" " [" term,* "]" : tactic
 

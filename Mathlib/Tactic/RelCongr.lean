@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.RelCongr.Core
+import Mathlib.Tactic.RelCongr.Basic
 
 /-! # Setup for the `rel_congr` tactic
 
