@@ -2185,12 +2185,11 @@ def count : Measure α :=
   sum dirac
 #align measure_theory.measure.count MeasureTheory.Measure.count
 
-theorem le_count_apply : (∑' _i : s, 1 : ℝ≥0∞) ≤ count s :=
+theorem le_count_apply : (∑' _ : s, 1 : ℝ≥0∞) ≤ count s :=
   calc
-    (∑' _i : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
+    (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
     _ ≤ ∑' i, dirac i s := (ENNReal.tsum_le_tsum fun _ => le_dirac_apply)
     _ ≤ count s := le_sum_apply _ _
-
 #align measure_theory.measure.le_count_apply MeasureTheory.Measure.le_count_apply
 
 theorem count_apply (hs : MeasurableSet s) : count s = ∑' i : s, 1 := by

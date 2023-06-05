@@ -705,7 +705,7 @@ open DirectSum
 
 -- To check `Mul.gmul_mul` matches
 example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
-    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _i, R) = DirectSum.of _ (i + j) (a * b) := by
+    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.
