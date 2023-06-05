@@ -29,6 +29,9 @@ Really we should treat `Cat` as a 2-category, and allow `F` to be a 2-functor.
 There is also a closely related construction starting with `G : Cᵒᵖ ⥤ Cat`,
 where morphisms consists again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)).obj f'`.
 
+See also `Mathlib.CategoryTheory.Grothendieck.Opposite` for the corresponding construction starting
+from `F : Cᵒᵖ ⥤ Cat`.
+
 ## References
 
 See also `CategoryTheory.Functor.Elements` for the category of elements of functor `F : C ⥤ Type`.

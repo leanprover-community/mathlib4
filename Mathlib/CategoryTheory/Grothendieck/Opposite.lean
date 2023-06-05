@@ -15,13 +15,6 @@ consist of dependent pairs `(b, f)`, where `b : Cᵒᵖ ` and `f : F.obj c`,
 and a morphism `(b, f) ⟶ (b', f')` is a pair `β : b' ⟶ b` in `Cᵒᵖ`, and
 `φ : f ⟶ (F.map β).obj f'`
 
-Categories such as `PresheafedSpace` are in fact examples of this construction,
-and it may be interesting to try to generalize some of the development there.
-
-## Implementation notes
-
-Porting note: after the port this should be combined into `Grothendieck/Basic.lean`.
-
 -/
 
 

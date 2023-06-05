@@ -36,6 +36,9 @@ open Opposite
 
 variable {C : Type u₁} [Category.{v₁} C] {R : Type u₂} [Category.{v₂} R]
 
+/-- A presheaf of modules over a given presheaf of rings,
+described as a presheaf of abelian groups, and the extra data of the action at each object,
+and a condition relating functoriality and scalar multiplication. -/
 structure PresheafOfModules (F : Cᵒᵖ ⥤ RingCat.{u}) where
   presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
   module : ∀ X : Cᵒᵖ, Module (F.obj X) (presheaf.obj X)
@@ -48,6 +51,7 @@ variable {F : Cᵒᵖ ⥤ RingCat.{u}}
 
 attribute [instance] PresheafOfModules.module
 
+/-- The bundled module over an object `X`. -/
 def obj (P : PresheafOfModules F) (X : Cᵒᵖ) : ModuleCat (F.obj X) :=
   ModuleCat.of _ (P.presheaf.obj X)
 
@@ -85,16 +89,19 @@ theorem map_comp (P : PresheafOfModules F) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : 
   ext
   simp
 
+/-- A morphism of presheaves of modules. -/
 structure Hom (P Q : PresheafOfModules F) where
   hom : P.presheaf ⟶ Q.presheaf
   map_smul : ∀ (X : Cᵒᵖ) (r : F.obj X) (x : P.presheaf.obj X), hom.app X (r • x) = r • hom.app X x
 
 namespace Hom
 
+/-- The identity morphism on a presheaf of modules. -/
 def id (P : PresheafOfModules F) : Hom P P where
   hom := 𝟙 _
   map_smul _ _ _ := rfl
 
+/-- Composition of morphisms of presheaves of modules. -/
 def comp {P Q R : PresheafOfModules F} (f : Hom P Q) (g : Hom Q R) : Hom P R where
   hom := f.hom ≫ g.hom
   map_smul _ _ _ := by simp [Hom.map_smul]
@@ -122,6 +129,9 @@ theorem Hom.ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
+/-- The functor from presheaves of modules over a specified presheaf of rings,
+to presheaves of abelian groups.
+-/
 def toPresheaf : PresheafOfModules F ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
   obj P := P.presheaf
   map f := f.hom

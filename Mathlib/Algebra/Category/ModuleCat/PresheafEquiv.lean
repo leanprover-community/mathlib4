@@ -25,7 +25,7 @@ These are presheaves valued in the Grothendieck construction for `L`,
 with base part specified by `F`.
 
 Mostly this is just abstract nonsense, that serves as a playground to test our definition of
-`PresheafOfModules F` by showing that it is equivalent to `PresheafRel F ModuleCat.functor
+`PresheafOfModules F` by showing that it is equivalent to `PresheafRel F ModuleCat.functor`
 -/
 -- We could alternatively do this with a natural isomorphism rather than an equality.
 -- It would be larger and less evil, but nevertheless equivalent to this version.
@@ -86,14 +86,9 @@ def functor_map {P Q : PresheafOfModules F} (f : P ⟶ Q) : functor_obj F P ⟶ 
 
 attribute [simps] functor_map
 
-set_option maxHeartbeats 0 in
 def functor : PresheafOfModules F ⥤ PresheafRel F ModuleCat.functor.{v} where
   obj P := functor_obj F P
   map f := functor_map F f
-  -- map_id := sorry
-  -- map_comp := sorry
-
-#print functor
 
 end equiv_PresheafRel
 
@@ -105,5 +100,6 @@ def PresheafOfModules.equiv_PresheafRel (F : Cᵒᵖ ⥤ RingCat.{u}) :
   inverse := sorry
   unitIso := sorry
   counitIso := sorry
+  functor_unitIso_comp := sorry
 
 end PresheafOfModules

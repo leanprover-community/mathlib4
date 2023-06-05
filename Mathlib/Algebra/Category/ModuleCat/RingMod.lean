@@ -14,9 +14,7 @@ We implement this using the Grothendieck construction.
 -/
 
 -- Rings live in `u`, modules live in `v`.
--- Abstract categorical constructions in this file use universe variables with numerical subscripts.
 universe v u
--- set_option pp.universes true
 
 -- Porting note:
 -- After the port, move `Module.pullback` and `LinearMap.pullback` into the linear algebra library.
@@ -81,6 +79,8 @@ section
 
 variable {R S : RingCat} (f : R ⟶ S) {M : ModuleCat R} {N : ModuleCat S}
 
+/-- A `R`-linear map from `M` to the pullback of an `S`-module `N` along a ring homomorphism
+`f : R →+* S` is the same thing as an `f`-semilinear map. -/
 def ModuleCat.hom_functor_map_equiv :
     (M ⟶ (ModuleCat.functor.map (f.op)).obj N) ≃ (M →ₛₗ[f] N) where
   toFun f :=
@@ -109,13 +109,11 @@ deriving LargeCategory
 
 namespace RingMod
 
-def forget' : RingMod ⥤ Type _ where
-  obj := fun ⟨R, M⟩ => R × M
-  map := @fun ⟨R₁, M₁⟩ ⟨R₂, M₂⟩ ⟨f, g⟩ ⟨x, y⟩ =>
-    ((forget RingCat).map f x, (forget (ModuleCat R₁)).map g y)
-
 instance : ConcreteCategory RingMod where
-  forget := forget'
+  forget :=
+  { obj := fun ⟨R, M⟩ => R × M
+    map := @fun ⟨R₁, M₁⟩ ⟨R₂, M₂⟩ ⟨f, g⟩ ⟨x, y⟩ =>
+      ((forget RingCat).map f x, (forget (ModuleCat R₁)).map g y) }
   forget_faithful :=
   { map_injective := @fun ⟨R₁, M₁⟩ ⟨R₂, M₂⟩ ⟨f₁, g₁⟩ ⟨f₂, g₂⟩ w => by
      dsimp at w
@@ -130,10 +128,12 @@ instance : ConcreteCategory RingMod where
 @[simp] lemma forget_obj (R : RingCat) (M : ModuleCat.functor.obj (op R)) :
     (forget RingMod).obj ⟨R, M⟩ = (R × M) := rfl
 
+/-- The functor from `RingMod` to `RingCat` which forgets the module. -/
 def toRingCat : RingMod ⥤ RingCat where
   obj := fun ⟨R, _⟩ => R
   map := fun ⟨f, _⟩ => f
 
+/-- The functor from `RingMod` to `AddCommGroupCat` which forgets the ring and its action. -/
 def toAddCommGroupCat : RingMod ⥤ AddCommGroupCat where
   obj := fun ⟨_, M⟩ => AddCommGroupCat.of M
   map := fun f => (ModuleCat.hom_functor_map_equiv f.base f.fiber).toAddMonoidHom
