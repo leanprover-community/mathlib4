@@ -9,6 +9,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
+import Mathlib.MeasureTheory.Integral.IntegralSimps
 
 /-!
 # Bochner integral
@@ -1720,13 +1721,6 @@ set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
 end Properties
-
-/- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-[PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-     [(Command.docComment "/--" "Simp set for integral rules. -/")]
-     "register_simp_attr"
-     `integral_simps)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-/-- Simp set for integral rules. -/ register_simp_attr integral_simps
 
 attribute [integral_simps] integral_neg integral_smul L1.integral_add L1.integral_sub
   L1.integral_smul L1.integral_neg
