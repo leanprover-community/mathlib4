@@ -190,7 +190,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)
         obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine' ⟨x, h0, _⟩; rw [h1]
-        simp only [LinearMap.coe_comp, f.symm.coe_to_linear_map, f.apply_symm_apply]
+        simp only [LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply]
       refine'
         ⟨_,
           ⟨(((@lequivProdOfRightSplitExact _ _ _ _ _ _ _ _ _ _ _ _
@@ -199,7 +199,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
                                   (liftQSpanSingleton.{u, u} (p ^ k i)
                                       (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left :
                                     R ⧸ _ →ₗ[R] _)).comp
-                              ULift.module_equiv.toLinearMap)
+                              ULift.moduleEquiv.toLinearMap)
                             (R ∙ s j).injective_subtype _ _).symm.trans <|
                       ((quotTorsionOfEquivSpanSingleton _ _ _).symm.trans <|
                             quot_equiv_of_eq _ _ <|
@@ -214,8 +214,8 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           LinearMap.comp_assoc, ← LinearEquiv.toLinearMap_eq_coe,
           LinearEquiv.toLinearMap_symm_comp_eq, LinearMap.comp_id, ← LinearMap.comp_assoc, ←
           LinearMap.comp_assoc]
-        suffices (f.to_linear_map.comp (R ∙ s j).mkQ).comp _ = LinearMap.id by
-          rw [← f.to_linear_map_eq_coe, this, LinearMap.id_comp]
+        suffices (f.toLinearMap.comp (R ∙ s j).mkQ).comp _ = LinearMap.id by
+          rw [← f.toLinearMap_eq_coe, this, LinearMap.id_comp]
         ext i : 3
         simp only [LinearMap.coe_comp, Function.comp_apply, mkq_apply]
         rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
@@ -223,7 +223,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           map_one, (this i).choose_spec.right]
     · exact
         (mk_surjective _).forall.mpr fun x =>
-          ⟨(@hN x).some, by rw [← quotient.mk_smul, (@hN x).choose_spec, quotient.mk_zero]⟩
+          ⟨(@hN x).some, by rw [← quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkq <| R ∙ s j) hs
       rw [Submodule.map_span, Submodule.map_top, range_mkq] at hs' ; simp only [mkq_apply] at hs'
       simp only [s']; rw [Set.range_comp (_ ∘ s), Fin.range_succAbove]
