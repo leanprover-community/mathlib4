@@ -18,9 +18,9 @@ When we define a smooth bump function on a normed space, it is useful to have a 
 the space. Since the default distance is not guaranteed to be smooth, we define `to_euclidean` to be
 an equivalence between a finite dimensional topological vector space and the standard Euclidean
 space of the same dimension.
-Then we define `euclidean.dist x y = dist (to_euclidean x) (to_euclidean y)` and
-provide some definitions (`euclidean.ball`, `euclidean.closed_ball`) and simple lemmas about this
-distance. This way we hide the usage of `to_euclidean` behind an API.
+Then we define `Euclidean.dist x y = dist (toEuclidean x) (toEuclidean y)` and
+provide some definitions (`Euclidean.ball`, `Euclidean.closedBall`) and simple lemmas about this
+distance. This way we hide the usage of `toEuclidean` behind an API.
 -/
 
 
@@ -35,7 +35,7 @@ noncomputable section
 
 open FiniteDimensional
 
-/-- If `E` is a finite dimensional space over `ℝ`, then `to_euclidean` is a continuous `ℝ`-linear
+/-- If `E` is a finite dimensional space over `ℝ`, then `toEuclidean` is a continuous `ℝ`-linear
 equivalence between `E` and the Euclidean space of the same dimension. -/
 def toEuclidean : E ≃L[ℝ] EuclideanSpace ℝ (Fin <| finrank ℝ E) :=
   ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
@@ -43,7 +43,7 @@ def toEuclidean : E ≃L[ℝ] EuclideanSpace ℝ (Fin <| finrank ℝ E) :=
 
 namespace Euclidean
 
-/-- If `x` and `y` are two points in a finite dimensional space over `ℝ`, then `euclidean.dist x y`
+/-- If `x` and `y` are two points in a finite dimensional space over `ℝ`, then `Euclidean.dist x y`
 is the distance between these points in the metric defined by some inner product space structure on
 `E`. -/
 def dist (x y : E) : ℝ :=
@@ -103,7 +103,7 @@ theorem closure_ball (x : E) {r : ℝ} (h : r ≠ 0) : closure (ball x r) = clos
 
 theorem exists_pos_lt_subset_ball {R : ℝ} {s : Set E} {x : E} (hR : 0 < R) (hs : IsClosed s)
     (h : s ⊆ ball x R) : ∃ r ∈ Ioo 0 R, s ⊆ ball x r := by
-  rw [ball_eq_preimage, ← image_subset_iff] at h 
+  rw [ball_eq_preimage, ← image_subset_iff] at h
   rcases exists_pos_lt_subset_ball hR (to_euclidean.is_closed_image.2 hs) h with ⟨r, hr, hsr⟩
   exact ⟨r, hr, image_subset_iff.1 hsr⟩
 #align euclidean.exists_pos_lt_subset_ball Euclidean.exists_pos_lt_subset_ball
@@ -136,6 +136,5 @@ theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) 
   simp only [Euclidean.dist]
   apply @ContDiff.dist ℝ
   exacts [(@toEuclidean G _ _ _ _ _ _ _).ContDiff.comp hf,
-    (@toEuclidean G _ _ _ _ _ _ _).ContDiff.comp hg, fun x => to_euclidean.injective.ne (h x)]
+    (@toEuclidean G _ _ _ _ _ _ _).ContDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
 #align cont_diff.euclidean_dist ContDiff.euclidean_dist
-
