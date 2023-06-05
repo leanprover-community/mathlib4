@@ -50,7 +50,7 @@ and consequences are derived.
 
 * `Filter.HasBasis.inf`, `Filter.HasBasis.inf_principal`, `Filter.HasBasis.prod`,
   `Filter.HasBasis.prod_self`, `Filter.HasBasis.map`, `Filter.HasBasis.comap` : combinators to
-  construct filters of `l ⊓ l'`, `l ⊓ 𝓟 t`, `l ×ᶠ l'`, `l ×ᶠ l`, `l.map f`, `l.comap f`
+  construct filters of `l ⊓ l'`, `l ⊓ 𝓟 t`, `l ×ˢ l'`, `l ×ˢ l`, `l.map f`, `l.comap f`
   respectively;
 
 * `Filter.HasBasis.le_iff`, `Filter.HasBasis.ge_iff`, `Filter.HasBasis.le_basis_iff` : restate
@@ -718,7 +718,7 @@ theorem disjoint_pure_pure {x y : α} : Disjoint (pure x : Filter α) (pure y) �
 #align filter.disjoint_pure_pure Filter.disjoint_pure_pure
 
 @[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : diagonal αᶜ ∈ l₁ ×ᶠ l₂ ↔ Disjoint l₁ l₂ := by
+theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : diagonal αᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
   simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
 #align filter.compl_diagonal_mem_prod Filter.compl_diagonal_mem_prod
 
@@ -750,7 +750,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
   exact inf_neBot_iff_frequently_left
 #align filter.inf_ne_bot_iff_frequently_right Filter.inf_neBot_iff_frequently_right
 
-theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_hi : p i), 𝓟 (s i) :=
+theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
   eq_biInf_of_mem_iff_exists_mem <| fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
 #align filter.has_basis.eq_binfi Filter.HasBasis.eq_biInf
 
@@ -784,7 +784,7 @@ theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedO
 
 theorem hasBasis_biInf_principal' {ι : Type _} {p : ι → Prop} {s : ι → Set α}
     (h : ∀ i, p i → ∀ j, p j → ∃ k, p k ∧ s k ⊆ s i ∧ s k ⊆ s j) (ne : ∃ i, p i) :
-    (⨅ (i) (_h : p i), 𝓟 (s i)).HasBasis p s :=
+    (⨅ (i) (_ : p i), 𝓟 (s i)).HasBasis p s :=
   Filter.hasBasis_biInf_principal h ne
 #align filter.has_basis_binfi_principal' Filter.hasBasis_biInf_principal'
 
@@ -812,7 +812,7 @@ theorem HasBasis.forall_mem_mem (h : HasBasis l p s) {x : α} :
 #align filter.has_basis.forall_mem_mem Filter.HasBasis.forall_mem_mem
 
 protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h : HasBasis l p s)
-    (hf : Monotone f) : (⨅ t ∈ l, f t) = ⨅ (i) (_hi : p i), f (s i) :=
+    (hf : Monotone f) : (⨅ t ∈ l, f t) = ⨅ (i) (_ : p i), f (s i) :=
   le_antisymm (le_iInf₂ fun i hi => iInf₂_le (s i) (h.mem_of_mem hi)) <|
     le_iInf₂ fun _t ht =>
       let ⟨i, hpi, hi⟩ := h.mem_iff.1 ht
@@ -820,11 +820,11 @@ protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h
 #align filter.has_basis.binfi_mem Filter.HasBasis.biInf_mem
 
 protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
-    (⋂ t ∈ l, f t) = ⋂ (i) (_hi : p i), f (s i) :=
+    (⋂ t ∈ l, f t) = ⋂ (i) (_ : p i), f (s i) :=
   h.biInf_mem hf
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
-theorem HasBasis.sInter_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_hi : p i), s i := by
+theorem HasBasis.sInter_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_ : p i), s i := by
   rw [sInter_eq_biInter]
   exact h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.sInter_sets
@@ -894,19 +894,19 @@ theorem Tendsto.basis_both (H : Tendsto f la lb) (hla : la.HasBasis pa sa)
 #align filter.tendsto.basis_both Filter.Tendsto.basis_bothₓ
 
 theorem HasBasis.prod_pprod (hla : la.HasBasis pa sa) (hlb : lb.HasBasis pb sb) :
-    (la ×ᶠ lb).HasBasis (fun i : PProd ι ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
+    (la ×ˢ lb).HasBasis (fun i : PProd ι ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
   (hla.comap Prod.fst).inf' (hlb.comap Prod.snd)
 #align filter.has_basis.prod_pprod Filter.HasBasis.prod_pprod
 
 theorem HasBasis.prod {ι ι' : Type _} {pa : ι → Prop} {sa : ι → Set α} {pb : ι' → Prop}
     {sb : ι' → Set β} (hla : la.HasBasis pa sa) (hlb : lb.HasBasis pb sb) :
-    (la ×ᶠ lb).HasBasis (fun i : ι × ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
+    (la ×ˢ lb).HasBasis (fun i : ι × ι' => pa i.1 ∧ pb i.2) fun i => sa i.1 ×ˢ sb i.2 :=
   (hla.comap Prod.fst).inf (hlb.comap Prod.snd)
 #align filter.has_basis.prod Filter.HasBasis.prod
 
 theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : la.HasBasis p sa)
     (hlb : lb.HasBasis p sb) (h_dir : ∀ {i j}, p i → p j → ∃ k, p k ∧ sa k ⊆ sa i ∧ sb k ⊆ sb j) :
-    (la ×ᶠ lb).HasBasis p fun i => sa i ×ˢ sb i := by
+    (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i := by
   simp only [hasBasis_iff, (hla.prod_pprod hlb).mem_iff]
   refine' fun t => ⟨_, _⟩
   · rintro ⟨⟨i, j⟩, ⟨hi, hj⟩, hsub : sa i ×ˢ sb j ⊆ t⟩
@@ -919,7 +919,7 @@ theorem HasBasis.prod_same_index {p : ι → Prop} {sb : ι → Set β} (hla : l
 theorem HasBasis.prod_same_index_mono {ι : Type _} [LinearOrder ι] {p : ι → Prop} {sa : ι → Set α}
     {sb : ι → Set β} (hla : la.HasBasis p sa) (hlb : lb.HasBasis p sb)
     (hsa : MonotoneOn sa { i | p i }) (hsb : MonotoneOn sb { i | p i }) :
-    (la ×ᶠ lb).HasBasis p fun i => sa i ×ˢ sb i :=
+    (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i :=
   hla.prod_same_index hlb fun {i j} hi hj =>
     have : p (min i j) := min_rec' _ hi hj
     ⟨min i j, this, hsa this hi <| min_le_left _ _, hsb this hj <| min_le_right _ _⟩
@@ -928,24 +928,24 @@ theorem HasBasis.prod_same_index_mono {ι : Type _} [LinearOrder ι] {p : ι →
 theorem HasBasis.prod_same_index_anti {ι : Type _} [LinearOrder ι] {p : ι → Prop} {sa : ι → Set α}
     {sb : ι → Set β} (hla : la.HasBasis p sa) (hlb : lb.HasBasis p sb)
     (hsa : AntitoneOn sa { i | p i }) (hsb : AntitoneOn sb { i | p i }) :
-    (la ×ᶠ lb).HasBasis p fun i => sa i ×ˢ sb i :=
+    (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i :=
   @HasBasis.prod_same_index_mono _ _ _ _ ιᵒᵈ _ _ _ _ hla hlb hsa.dual_left hsb.dual_left
 #align filter.has_basis.prod_same_index_anti Filter.HasBasis.prod_same_index_anti
 
 theorem HasBasis.prod_self (hl : la.HasBasis pa sa) :
-    (la ×ᶠ la).HasBasis pa fun i => sa i ×ˢ sa i :=
+    (la ×ˢ la).HasBasis pa fun i => sa i ×ˢ sa i :=
   hl.prod_same_index hl fun {i j} hi hj => by
     simpa only [exists_prop, subset_inter_iff] using
       hl.mem_iff.1 (inter_mem (hl.mem_of_mem hi) (hl.mem_of_mem hj))
 #align filter.has_basis.prod_self Filter.HasBasis.prod_self
 
-theorem mem_prod_self_iff {s} : s ∈ la ×ᶠ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ s :=
+theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ s :=
   la.basis_sets.prod_self.mem_iff
 #align filter.mem_prod_self_iff Filter.mem_prod_self_iff
 
 theorem HasAntitoneBasis.prod {ι : Type _} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
-    HasAntitoneBasis (f ×ᶠ g) fun n => s n ×ˢ t n :=
+    HasAntitoneBasis (f ×ˢ g) fun n => s n ×ˢ t n :=
   ⟨hf.1.prod_same_index_anti hg.1 (hf.2.antitoneOn _) (hg.2.antitoneOn _), hf.2.set_prod hg.2⟩
 #align filter.has_antitone_basis.prod Filter.HasAntitoneBasis.prod
 
@@ -1134,7 +1134,7 @@ instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
 #align filter.sup.is_countably_generated Filter.Sup.isCountablyGenerated
 
 instance prod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
-    [IsCountablyGenerated lb] : IsCountablyGenerated (la ×ᶠ lb) :=
+    [IsCountablyGenerated lb] : IsCountablyGenerated (la ×ˢ lb) :=
   Filter.Inf.isCountablyGenerated _ _
 #align filter.prod.is_countably_generated Filter.prod.isCountablyGenerated
 

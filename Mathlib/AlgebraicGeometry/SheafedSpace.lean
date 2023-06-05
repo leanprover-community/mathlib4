@@ -29,7 +29,11 @@ open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits Categ
 
 variable (C : Type u) [Category.{v} C]
 
--- attribute [local tidy] tactic.op_induction'
+-- Porting note: removed
+-- local attribute [tidy] tactic.op_induction'
+-- as it isn't needed here. If it is useful elsewhere
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- should suffice.
 
 namespace AlgebraicGeometry
 
@@ -100,7 +104,6 @@ instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C)
 
 -- Porting note : can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
-  map_injective h := h
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace.{v} C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
@@ -126,12 +129,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_c_app (X : SheafedSpace C) (U) :
-    (𝟙 X : X ⟶ X).c.app U =
-    eqToHom (by induction U using Opposite.rec' with | h U => ?_; cases U; rfl) := by
-  induction U using Opposite.rec' with | h U => ?_
-  cases U
-  simp only [id_c]
-  rw [eqToHom_app]
+    (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
+  aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c_app AlgebraicGeometry.SheafedSpace.id_c_app
 
@@ -233,7 +232,7 @@ noncomputable instance [HasLimits C] :
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
 instance [HasLimits C] : HasColimits (SheafedSpace C) :=
-  has_colimits_of_has_colimits_creates_colimits forgetToPresheafedSpace
+  hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
 noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)

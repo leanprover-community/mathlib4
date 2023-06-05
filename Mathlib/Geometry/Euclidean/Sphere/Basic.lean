@@ -78,8 +78,8 @@ theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sph
 
 /- Porting note: is a syntactic tautology
 theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
-  rfl
-#align euclidean_geometry.sphere.coe_def EuclideanGeometry.Sphere.coe_def -/
+  rfl -/
+#noalign euclidean_geometry.sphere.coe_def
 
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=

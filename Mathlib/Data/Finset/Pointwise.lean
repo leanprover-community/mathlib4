@@ -309,13 +309,13 @@ protected def mul : Mul (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.mul Finset.add
 
 @[to_additive]
-theorem mul_def : s * t = (s ×ᶠ t).image fun p : α × α => p.1 * p.2 :=
+theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
   rfl
 #align finset.mul_def Finset.mul_def
 #align finset.add_def Finset.add_def
 
 @[to_additive]
-theorem image_mul_product : ((s ×ᶠ t).image fun x : α × α => x.fst * x.snd) = s * t :=
+theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
   rfl
 #align finset.image_mul_product Finset.image_mul_product
 #align finset.image_add_product Finset.image_add_product
@@ -537,13 +537,13 @@ protected def div : Div (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.div Finset.sub
 
 @[to_additive]
-theorem div_def : s / t = (s ×ᶠ t).image fun p : α × α => p.1 / p.2 :=
+theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
   rfl
 #align finset.div_def Finset.div_def
 #align finset.sub_def Finset.sub_def
 
 @[to_additive add_image_prod]
-theorem image_div_prod : ((s ×ᶠ t).image fun x : α × α => x.fst / x.snd) = s / t :=
+theorem image_div_prod : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
   rfl
 #align finset.image_div_prod Finset.image_div_prod
 #align finset.add_image_prod Finset.add_image_prod
@@ -1265,13 +1265,13 @@ protected def smul : SMul (Finset α) (Finset β) :=
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
 
 @[to_additive]
-theorem smul_def : s • t = (s ×ᶠ t).image fun p : α × β => p.1 • p.2 :=
+theorem smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 :=
   rfl
 #align finset.smul_def Finset.smul_def
 #align finset.vadd_def Finset.vadd_def
 
 @[to_additive]
-theorem image_smul_product : ((s ×ᶠ t).image fun x : α × β => x.fst • x.snd) = s • t :=
+theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t :=
   rfl
 #align finset.image_smul_product Finset.image_smul_product
 #align finset.image_vadd_product Finset.image_vadd_product

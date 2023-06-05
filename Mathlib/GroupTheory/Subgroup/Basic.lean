@@ -1706,7 +1706,8 @@ def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
 #align add_subgroup.prod AddSubgroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (H : Subgroup G) (K : Subgroup N) : (H.prod K : Set (G × N)) = H ×ˢ K :=
+theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
+    (H.prod K : Set (G × N)) = (H : Set G) ×ˢ (K : Set N) :=
   rfl
 #align subgroup.coe_prod Subgroup.coe_prod
 #align add_subgroup.coe_prod AddSubgroup.coe_prod
@@ -2487,7 +2488,7 @@ theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ nor
 
 -- Porting note: the elaborator trips up on using underscores for names in `⨅`
 theorem normalClosure_eq_iInf :
-    normalClosure s = ⨅ (N : Subgroup G) (_hN : Normal N) (_hs : s ⊆ N), N :=
+    normalClosure s = ⨅ (N : Subgroup G) (_ : Normal N) (_ : s ⊆ N), N :=
   le_antisymm (le_iInf fun N => le_iInf fun hN => le_iInf normalClosure_le_normal)
     (iInf_le_of_le (normalClosure s)
       (iInf_le_of_le (by infer_instance) (iInf_le_of_le subset_normalClosure le_rfl)))
@@ -2542,7 +2543,7 @@ theorem normalCore_mono {H K : Subgroup G} (h : H ≤ K) : H.normalCore ≤ K.no
 #align subgroup.normal_core_mono Subgroup.normalCore_mono
 
 theorem normalCore_eq_iSup (H : Subgroup G) :
-    H.normalCore = ⨆ (N : Subgroup G) (_hN : Normal N) (_hs : N ≤ H), N :=
+    H.normalCore = ⨆ (N : Subgroup G) (_ : Normal N) (_ : N ≤ H), N :=
   le_antisymm
     (le_iSup_of_le H.normalCore
       (le_iSup_of_le H.normalCore_normal (le_iSup_of_le H.normalCore_le le_rfl)))

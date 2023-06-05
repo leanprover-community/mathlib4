@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 
 ! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
+! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -17,7 +17,6 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Adjoining roots of polynomials
@@ -395,9 +394,8 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
 noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { AdjoinRoot.instCommRing f,
-    Ideal.Quotient.field
-      (span {f} : Ideal K[X]) with
+  { Quotient.groupWithZero (span {f} : Ideal K[X]) with
+    toCommRing := AdjoinRoot.instCommRing f
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
@@ -426,8 +424,7 @@ theorem coe_injective' [Fact (Irreducible f)] : Function.Injective ((â†‘) : K â†
 variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
-    -- porting note: I do not know how to get this to typecheck without using the ugly `Div.div`
-    (X - C (root f)) * (Div.div (f.map (of f)) (X - C (root f))) = f.map (of f) :=
+    (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
   mul_div_eq_iff_isRoot.2 <| isRoot_root _
 #align adjoin_root.mul_div_root_cancel AdjoinRoot.mul_div_root_cancel
 

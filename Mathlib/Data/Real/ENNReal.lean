@@ -430,7 +430,7 @@ theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : (⨅ x : { x // x ≠
 #align ennreal.cinfi_ne_top ENNReal.cinfi_ne_top
 
 theorem iInf_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨅ (x) (_h : x ≠ ∞), f x) = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
+    (⨅ (x) (_ : x ≠ ∞), f x) = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
 #align ennreal.infi_ne_top ENNReal.iInf_ne_top
 
 theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : (⨆ x : { x // x ≠ ∞ }, f x) = ⨆ x : ℝ≥0, f x :=
@@ -438,7 +438,7 @@ theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : (⨆ x : { x // x ≠
 #align ennreal.csupr_ne_top ENNReal.csupr_ne_top
 
 theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨆ (x) (_h : x ≠ ∞), f x) = ⨆ x : ℝ≥0, f x :=
+    (⨆ (x) (_ : x ≠ ∞), f x) = ⨆ x : ℝ≥0, f x :=
   @iInf_ne_top αᵒᵈ _ _
 #align ennreal.supr_ne_top ENNReal.iSup_ne_top
 
@@ -2462,7 +2462,7 @@ theorem iSup_eq_zero {ι : Sort _} {f : ι → ℝ≥0∞} : (⨆ i, f i) = 0 �
 #align ennreal.supr_eq_zero ENNReal.iSup_eq_zero
 
 @[simp]
-theorem iSup_zero_eq_zero {ι : Sort _} : (⨆ _i : ι, (0 : ℝ≥0∞)) = 0 := by simp
+theorem iSup_zero_eq_zero {ι : Sort _} : (⨆ _ : ι, (0 : ℝ≥0∞)) = 0 := by simp
 #align ennreal.supr_zero_eq_zero ENNReal.iSup_zero_eq_zero
 
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=

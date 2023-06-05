@@ -1241,7 +1241,7 @@ theorem map_congr {s1 s2 : Computation α} {f : α → β}
     exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 #align computation.map_congr Computation.map_congr
 
-/-- Alternate defintion of `LiftRel` over relations between `Computation`s-/
+/-- Alternate definition of `LiftRel` over relations between `Computation`s-/
 def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β → Prop) :
     Sum α (Computation α) → Sum β (Computation β) → Prop
   | Sum.inl a, Sum.inl b => R a b

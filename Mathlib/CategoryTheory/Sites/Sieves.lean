@@ -198,7 +198,7 @@ def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
 #align category_theory.presieve.functor_pushforward CategoryTheory.Presieve.functorPushforward
 
 --porting note: removed @[nolint hasNonemptyInstance]
-/-- An auxillary definition in order to fix the choice of the preimages between various definitions.
+/-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where
   /-- an object in the source category -/

@@ -77,7 +77,7 @@ which respectively provide the API lemmas
 * `SetLike.mul_mem_graded`
 * `SetLike.pow_mem_graded`, `SetLike.list_prod_map_mem_graded`
 
-Strictly this last class is unecessary as it has no fields not present in its parents, but it is
+Strictly this last class is unnecessary as it has no fields not present in its parents, but it is
 included for convenience. Note that there is no need for `SetLike.GradedRing` or similar, as all
 the information it would contain is already supplied by `GradedMonoid` when `A` is a collection
 of objects satisfying `AddSubmonoidClass` such as `Submodule`s. These constructions are explored
@@ -171,9 +171,9 @@ theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
 end GMonoid
 
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_zero'' -/
-macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_zero)
+macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_zero)
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
-macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_succ)
+macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
 
 /-- A graded version of `Monoid`
 
