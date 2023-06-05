@@ -11,6 +11,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Extended non-negative reals
@@ -761,11 +762,11 @@ protected theorem le_of_add_le_add_right : a ≠ ∞ → b + a ≤ c + a → b �
   WithTop.le_of_add_le_add_right
 #align ennreal.le_of_add_le_add_right ENNReal.le_of_add_le_add_right
 
-protected theorem add_lt_add_left : a ≠ ∞ → b < c → a + b < a + c :=
+@[gcongr] protected theorem add_lt_add_left : a ≠ ∞ → b < c → a + b < a + c :=
   WithTop.add_lt_add_left
 #align ennreal.add_lt_add_left ENNReal.add_lt_add_left
 
-protected theorem add_lt_add_right : a ≠ ∞ → b < c → b + a < c + a :=
+@[gcongr] protected theorem add_lt_add_right : a ≠ ∞ → b < c → b + a < c + a :=
   WithTop.add_lt_add_right
 #align ennreal.add_lt_add_right ENNReal.add_lt_add_right
 
@@ -899,7 +900,7 @@ theorem iInter_Ioi_coe_nat : (⋂ n : ℕ, Ioi (n : ℝ≥0∞)) = {∞} := by
 #align ennreal.Inter_Ioi_coe_nat ENNReal.iInter_Ioi_coe_nat
 
 -- porting note: todo: generalize to `WithTop`
-theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
+@[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
@@ -957,7 +958,7 @@ end CompleteLattice
 section Mul
 
 -- porting note: todo: generalize to `WithTop`
-@[mono]
+@[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
   rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
   lift a to ℝ≥0 using ne_top_of_lt aa'
@@ -985,6 +986,10 @@ theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0�
   | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
+@[gcongr] protected theorem pow_lt_pow_of_lt_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
+    a ^ n < b ^ n :=
+  ENNReal.pow_strictMono hn h
+
 theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 #align ennreal.max_mul ENNReal.max_mul
 
@@ -1000,6 +1005,14 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
     using mul_le_mul_left' h (↑a⁻¹)
 #align ennreal.mul_left_strict_mono ENNReal.mul_left_strictMono
+
+@[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    a * b < a * c :=
+  ENNReal.mul_left_strictMono h0 hinf bc
+
+@[gcongr] protected theorem mul_lt_mul_right' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    b * a < c * a :=
+  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
 -- porting note: todo: generalize to `WithTop`
 theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
@@ -1487,6 +1500,11 @@ theorem le_inv_iff_le_inv : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
   simpa only [inv_inv] using @ENNReal.inv_le_inv a⁻¹ b
 #align ennreal.le_inv_iff_le_inv ENNReal.le_inv_iff_le_inv
 
+@[gcongr] protected theorem inv_le_inv' (h : a ≤ b) : b⁻¹ ≤ a⁻¹ :=
+  ENNReal.inv_strictAnti.antitone h
+
+@[gcongr] protected theorem inv_lt_inv' (h : a < b) : b⁻¹ < a⁻¹ := ENNReal.inv_strictAnti h
+
 @[simp]
 protected theorem inv_le_one : a⁻¹ ≤ 1 ↔ 1 ≤ a := by rw [inv_le_iff_inv_le, inv_one]
 #align ennreal.inv_le_one ENNReal.inv_le_one
@@ -1616,15 +1634,15 @@ theorem le_inv_iff_mul_le : a ≤ b⁻¹ ↔ a * b ≤ 1 := by
       simp
 #align ennreal.le_inv_iff_mul_le ENNReal.le_inv_iff_mul_le
 
-protected theorem div_le_div (hab : a ≤ b) (hdc : d ≤ c) : a / c ≤ b / d :=
+@[gcongr] protected theorem div_le_div (hab : a ≤ b) (hdc : d ≤ c) : a / c ≤ b / d :=
   div_eq_mul_inv b d ▸ div_eq_mul_inv a c ▸ mul_le_mul' hab (ENNReal.inv_le_inv.mpr hdc)
 #align ennreal.div_le_div ENNReal.div_le_div
 
-protected theorem div_le_div_left (h : a ≤ b) (c : ℝ≥0∞) : c / b ≤ c / a :=
+@[gcongr] protected theorem div_le_div_left (h : a ≤ b) (c : ℝ≥0∞) : c / b ≤ c / a :=
   ENNReal.div_le_div le_rfl h
 #align ennreal.div_le_div_left ENNReal.div_le_div_left
 
-protected theorem div_le_div_right (h : a ≤ b) (c : ℝ≥0∞) : a / c ≤ b / c :=
+@[gcongr] protected theorem div_le_div_right (h : a ≤ b) (c : ℝ≥0∞) : a / c ≤ b / c :=
   ENNReal.div_le_div h le_rfl
 #align ennreal.div_le_div_right ENNReal.div_le_div_right
 
@@ -1894,6 +1912,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
       exact ENNReal.zpow_lt_top (zero_lt_one.trans hy).ne' h'y _
 #align ennreal.Ioo_zero_top_eq_Union_Ico_zpow ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow
 
+@[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
   · simp only [Int.ofNat_eq_coe, zpow_ofNat]
@@ -2244,9 +2263,6 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 #align ennreal.to_real_top_mul ENNReal.toReal_top_mul
-
-theorem mul_eq_top_iff {a b : ℝ≥0∞} : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
-  WithTop.mul_eq_top_iff
 
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
