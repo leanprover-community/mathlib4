@@ -163,7 +163,7 @@ variable [Fintype ι]
 
 /-- The predicate `has_integral I l f vol y` says that `y` is the integral of `f` over `I` along `l`
 w.r.t. volume `vol`. This means that integral sums of `f` tend to `𝓝 y` along
-`box_integral.integration_params.to_filter_Union I ⊤`. -/
+`BoxIntegral.IntegrationParams.toFilteriUnion I ⊤`. -/
 def HasIntegral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (y : F) :
     Prop :=
   Tendsto (integralSum f vol) (l.toFilteriUnion I ⊤) (𝓝 y)
@@ -185,14 +185,14 @@ def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι �
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Lean.204.20doesn't.20add.20lemma.20to.20the.20environment/near/363764522
 variable {l : IntegrationParams} {f g : (ι → ℝ) → E} {vol : ι →ᵇᵃ E →L[ℝ] F} {y y' : F}
 
-/-- Reinterpret `box_integral.has_integral` as `filter.tendsto`, e.g., dot-notation theorems
-that are shadowed in the `box_integral.has_integral` namespace. -/
+/-- Reinterpret `BoxIntegral.HasIntegral` as `Filter.Tendsto`, e.g., dot-notation theorems
+that are shadowed in the `BoxIntegral.HasIntegral` namespace. -/
 theorem HasIntegral.tendsto (h : HasIntegral I l f vol y) :
     Tendsto (integralSum f vol) (l.toFilteriUnion I ⊤) (𝓝 y) :=
   h
 #align box_integral.has_integral.tendsto BoxIntegral.HasIntegral.tendsto
 
-/-- The `ε`-`δ` definition of `box_integral.has_integral`. -/
+/-- The `ε`-`δ` definition of `BoxIntegral.HasIntegral`. -/
 theorem hasIntegral_iff :
     HasIntegral I l f vol y ↔
       ∀ ε > (0 : ℝ),
@@ -426,13 +426,13 @@ integrable on a box `I`; let `r : ℝⁿ → (0, ∞)` be a function such that f
 any tagged prepartition (i.e. a finite collections of pairwise disjoint subboxes of `I` with tagged
 points) `π`, the integral sum over `π` differs from the integral of `f` over the part of `I` covered
 by `π` by at most `ε`. The actual statement in the library is a bit more complicated to make it work
-for any `box_integral.integration_params`. We formalize several versions of this inequality in
-`box_integral.integrable.dist_integral_sum_le_of_mem_base_set`,
-`box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set_of_Union_eq`, and
-`box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set`.
+for any `BoxIntegral.IntegrationParams`. We formalize several versions of this inequality in
+`BoxIntegral.Integrable.dist_integralSum_le_of_memBaseSet`,
+`BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq`, and
+`BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet`.
 
 Instead of using predicate assumptions on `r`, we define
-`box_integral.integrable.convergence_r (h : integrable I l f vol) (ε : ℝ) (c : ℝ≥0) : ℝⁿ → (0, ∞)`
+`BoxIntegral.Integrable.convergenceR (h : integrable I l f vol) (ε : ℝ) (c : ℝ≥0) : ℝⁿ → (0, ∞)`
 to be a function `r` such that
 
 - if `l.bRiemann`, then `r` is a constant;
@@ -447,7 +447,7 @@ The proof is mostly based on
 
 namespace Integrable
 
-/-- If `ε > 0`, then `box_integral.integrable.convergence_r` is a function `r : ℝ≥0 → ℝⁿ → (0, ∞)`
+/-- If `ε > 0`, then `BoxIntegral.Integrable.convergenceR` is a function `r : ℝ≥0 → ℝⁿ → (0, ∞)`
 such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate to `r` (and satisfying
 additional distortion estimates if `box_integral.integration_params.bDistortion l = tt`), the
 corresponding integral sum is `ε`-close to the integral.
@@ -482,13 +482,13 @@ prepartitions differ from each other by at most `ε₁ + ε₂`.
 
 The actual statement
 
-- uses `box_integral.integrable.convergence_r` instead of a predicate assumption on `r`;
-- uses `box_integral.integration_params.mem_base_set` instead of “subordinate to `r`” to
+- uses `BoxIntegral.Integrable.convergenceR` instead of a predicate assumption on `r`;
+- uses `BoxIntegral.IntegrationParams.MemBaseSet` instead of “subordinate to `r`” to
   account for additional requirements like being a Henstock partition or having a bounded
   distortion.
 
-See also `box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set_of_Union_eq` and
-`box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set`.
+See also `BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq` and
+`BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet`.
 -/
 theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 0 < ε₁)
     (hpos₂ : 0 < ε₂) (h₁ : l.MemBaseSet I c₁ (h.convergenceR ε₁ c₁) π₁)
@@ -513,7 +513,7 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
 #align box_integral.integrable.dist_integral_sum_le_of_mem_base_set BoxIntegral.Integrable.dist_integralSum_le_of_memBaseSet
 
 /-- If `f` is integrable on `I` along `l`, then for two sufficiently fine tagged prepartitions
-(in the sense of the filter `box_integral.integration_params.to_filter l I`) such that they cover
+(in the sense of the filter `BoxIntegral.IntegrationParams.toFilter l I`) such that they cover
 the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other.  -/
 theorem tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity (h : Integrable I l f vol) :
     Tendsto
@@ -572,8 +572,8 @@ covered by `π` by at most `ε`.
 
 The actual statement
 
-- uses `box_integral.integrable.convergence_r` instead of a predicate assumption on `r`;
-- uses `box_integral.integration_params.mem_base_set` instead of “subordinate to `r`” to
+- uses `BoxIntegral.Integrable.convergenceR` instead of a predicate assumption on `r`;
+- uses `BoxIntegral.IntegrationParams.MemBaseSet` instead of “subordinate to `r`” to
   account for additional requirements like being a Henstock partition or having a bounded
   distortion;
 - takes an extra argument `π₀ : prepartition I` and an assumption `π.Union = π₀.Union` instead of
@@ -636,8 +636,8 @@ covered by `π` by at most `ε`.
 
 The actual statement
 
-- uses `box_integral.integrable.convergence_r` instead of a predicate assumption on `r`;
-- uses `box_integral.integration_params.mem_base_set` instead of “subordinate to `r`” to
+- uses `BoxIntegral.Integrable.convergenceR` instead of a predicate assumption on `r`;
+- uses `BoxIntegral.IntegrationParams.MemBaseSet` instead of “subordinate to `r`” to
   account for additional requirements like being a Henstock partition or having a bounded
   distortion;
 -/
@@ -663,7 +663,7 @@ theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Pre
 if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
-See also `box_integral.integrable.to_box_additive` for a bundled version. -/
+See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
 theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartition I}
     (hU : π₁.iUnion = π₂.iUnion) :
     (∑ J in π₁.boxes, integral J l f vol) = ∑ J in π₂.boxes, integral J l f vol := by
@@ -676,7 +676,7 @@ theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartitio
 if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
-See also `box_integral.integrable.sum_integral_congr` for an unbundled version. -/
+See also `BoxIntegral.Integrable.sum_integral_congr` for an unbundled version. -/
 @[simps]
 def toBoxAdditive (h : Integrable I l f vol) : ι →ᵇᵃ[I] F where
   toFun J := integral J l f vol
@@ -832,14 +832,14 @@ function `g` on `I` provided that `vol J (f x)` is sufficiently close to `g J` f
 small boxes `J ∋ x`. This lemma is useful to prove, e.g., to prove the Divergence theorem for
 integral along `⊥`.
 
-Let `l` be either `box_integral.integration_params.Henstock` or `⊥`. Let `g` a box-additive function
+Let `l` be either `BoxIntegral.IntegrationParams.Henstock` or `⊥`. Let `g` a box-additive function
 on subboxes of `I`. Suppose that there exists a nonnegative box-additive function `B` and a
 countable set `s` with the following property.
 
 For every `c : ℝ≥0`, a point `x ∈ I.Icc`, and a positive `ε` there exists `δ > 0` such that for any
 box `J ≤ I` such that
 
-- `x ∈ J.Icc ⊆ metric.closed_ball x δ`;
+- `x ∈ J.Icc ⊆ Metric.closedBall x δ`;
 - if `l.bDistortion` (i.e., `l = ⊥`), then the distortion of `J` is less than or equal to `c`,
 
 the distance between the term `vol J (f x)` of an integral sum corresponding to `J` and `g J` is
@@ -877,7 +877,7 @@ set_option linter.uppercaseLean3 false in
 For every `c : ℝ≥0`, a point `x ∈ I.Icc`, and a positive `ε` there exists `δ > 0` such that for any
 box `J ≤ I` such that
 
-- `J.Icc ⊆ metric.closed_ball x δ`;
+- `J.Icc ⊆ Metric.closedBall x δ`;
 - if `l.bDistortion` (i.e., `l = ⊥`), then the distortion of `J` is less than or equal to `c`,
 
 the distance between the term `vol J (f x)` of an integral sum corresponding to `J` and `g J` is
