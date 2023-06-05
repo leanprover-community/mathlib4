@@ -800,17 +800,13 @@ end
   `∫ x, f x = 0` will be parsed incorrectly. -/
 
 
--- mathport name: «expr∫ , ∂ »
-notation3"∫ "(...)", "r:(scoped f => f)" ∂"μ => integral μ r
+notation3 "∫ "(...)", "r:(scoped f => f)" ∂"μ => integral μ r
+notation3 "∫ "(...)", "r:(scoped f => integral volume f) => r
+notation3 "∫ "(...)" in "s", "r:(scoped f => f)" ∂"μ => integral (Measure.restrict μ s) r
 
--- mathport name: «expr∫ , »
-notation3"∫ "(...)", "r:(scoped f => integral volume f) => r
-
--- mathport name: «expr∫ in , ∂ »
-notation3"∫ "(...)" in "s", "r:(scoped f => f)" ∂"μ => integral (Measure.restrict μ s) r
-
--- mathport name: «expr∫ in , »
-notation3"∫ "(...)" in "s", "r:(scoped f => integral Measure.restrict volume s f) => r
+-- porting note: ould not generate matchers for a delaborator
+notation3 (prettyPrint := false)
+  "∫ "(...)" in "s", "r:(scoped f => integral Measure.restrict volume s f) => r
 
 section Properties
 
@@ -1360,7 +1356,7 @@ theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
 @[simp]
 theorem integral_const (c : E) : (∫ _x : α, c ∂μ) = (μ univ).toReal • c := by
   cases' (@le_top _ _ _ (μ univ)).lt_or_eq with hμ hμ
-  · haveI : FiniteMeasure μ := ⟨hμ⟩
+  · haveI : IsFiniteMeasure μ := ⟨hμ⟩
     simp only [integral, L1.integral]
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
   · by_cases hc : c = 0
@@ -1371,7 +1367,7 @@ theorem integral_const (c : E) : (∫ _x : α, c ∂μ) = (μ univ).toReal • c
       simp [integral_undef, *]
 #align measure_theory.integral_const MeasureTheory.integral_const
 
-theorem norm_integral_le_of_norm_le_const [FiniteMeasure μ] {f : α → E} {C : ℝ}
+theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → E} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
   calc
     ‖∫ x, f x ∂μ‖ ≤ ∫ _x, C ∂μ := norm_integral_le_of_norm_le (integrable_const C) h
@@ -1428,13 +1424,12 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → E) :
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
     (∫ a, f a ∂∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂μ i := by
-  classical
-  refine' Finset.induction_on' s _ _
-  -- `induction s using finset.induction_on'` fails
-  · simp
-  · intro i t hi ht hit iht
-    simp only [Finset.sum_insert hit, ← iht]
-    exact integral_add_measure (hf _ hi) (integrable_finset_sum_measure.2 fun j hj => hf j (ht hj))
+  induction s using Finset.cons_induction_on with
+  | h₁ => simp
+  | h₂ h ih =>
+    rw [Finset.forall_mem_cons] at hf
+    rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
+    exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
 #align measure_theory.integral_finset_sum_measure MeasureTheory.integral_finset_sum_measure
 
 theorem nndist_integral_add_measure_le_lintegral (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
@@ -1480,7 +1475,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AES
     intro x hx
     rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
     exact hx.ne
-  convert(MeasureTheory.hasSum_integral_of_dominated_convergence (fun i a => ‖f i a‖₊) hf _ hhh
+  convert (MeasureTheory.hasSum_integral_of_dominated_convergence (fun i a => ‖f i a‖₊) hf _ hhh
           ⟨_, _⟩ _).tsum_eq.symm
   · intro n
     filter_upwards with x
@@ -1618,7 +1613,7 @@ theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f
   · exact integral_zero_measure _
 #align measure_theory.set_integral_dirac MeasureTheory.set_integral_dirac
 
-theorem mul_meas_ge_le_integral_of_nonneg [FiniteMeasure μ] {f : α → ℝ} (hf_nonneg : 0 ≤ f)
+theorem mul_meas_ge_le_integral_of_nonneg [IsFiniteMeasure μ] {f : α → ℝ} (hf_nonneg : 0 ≤ f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
   cases' lt_or_le ε 0 with hε hε
   · exact
