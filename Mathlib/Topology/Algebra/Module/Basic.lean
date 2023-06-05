@@ -1360,8 +1360,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 #align continuous_linear_map.has_sub ContinuousLinearMap.sub
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
-  -- Porting note: Original proofs were `simp`s, but they timeout.
-  -- Check this again during lean4#2210 cleanup
   refine'
     { ContinuousLinearMap.addCommMonoid with
       zero := 0
@@ -1371,26 +1369,13 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
       sub_eq_add_neg := _
       nsmul := (· • ·)
       zsmul := (· • ·)
-      zsmul_zero' := fun f => by
-        ext
-        dsimp only []
-        rw [coe_smul', Pi.smul_apply, zero_zsmul, zero_apply]
-      zsmul_succ' := fun n f => by
-        ext
-        dsimp only []
-        rw [coe_smul', Nat.succ_eq_one_add, Pi.smul_apply, Int.ofNat_eq_cast,
-          Int.ofNat_eq_cast, Nat.cast_add, add_smul, Nat.cast_one, one_smul, coe_add',
-          Pi.add_apply, coe_smul', Pi.smul_apply]
-      zsmul_neg' := fun n f => by
-        ext
-        dsimp only []
-        rw [Nat.succ_eq_add_one, coe_smul', Pi.smul_apply, negSucc_zsmul, add_smul,
-          one_nsmul, neg_add_rev, Nat.cast_add, Nat.cast_one, neg_apply, coe_smul',
-          add_smul, coe_nat_zsmul, one_zsmul, Pi.add_apply, neg_add_rev, Pi.smul_apply]
+      zsmul_zero' := fun f => by ext; simp
+      zsmul_succ' := fun n f => by ext; simp [add_smul, add_comm]
+      zsmul_neg' := fun n f => by ext; simp [Nat.succ_eq_add_one, add_smul]
       .. } <;>
-    intros <;>
-    ext <;>
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm, sub_eq_add_neg]
+    { intros
+      ext
+      apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm, sub_eq_add_neg] }
 #align continuous_linear_map.add_comm_group ContinuousLinearMap.addCommGroup
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
@@ -1409,36 +1394,28 @@ theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
 
 end
 
--- Porting note: checked that lack of eta causes simp to fail, otherwise works
--- This can probably be removed during lean4#2210 cleanup.
-@[simp, nolint simpNF]
+@[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) : g.comp (-f) = -g.comp f := by
   ext x
   simp
 #align continuous_linear_map.comp_neg ContinuousLinearMap.comp_neg
 
--- Porting note: checked that lack of eta causes simp to fail, otherwise works
--- This can probably be removed during lean4#2210 cleanup.
-@[simp, nolint simpNF]
+@[simp]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
   ext
   simp
 #align continuous_linear_map.neg_comp ContinuousLinearMap.neg_comp
 
--- Porting note: checked that lack of eta causes simp to fail, otherwise works
--- This can probably be removed during lean4#2210 cleanup.
-@[simp, nolint simpNF]
+@[simp]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₂] [TopologicalAddGroup M₃]
     (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) : g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
   ext
   simp
 #align continuous_linear_map.comp_sub ContinuousLinearMap.comp_sub
 
--- Porting note: checked that lack of eta causes simp to fail, otherwise works
--- This can probably be removed during lean4#2210 cleanup.
-@[simp, nolint simpNF]
+@[simp]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
     (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
   ext
@@ -1676,10 +1653,8 @@ variable {R : Type _} [CommRing R] {M : Type _} [TopologicalSpace M] [AddCommGro
 
 variable [TopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 
--- Porting note: Instances should be specified, or timeouts.
--- Check this again during lean4#2210 cleanup.
 instance algebra : Algebra R (M₂ →L[R] M₂) :=
-  @Algebra.ofModule _ _ _ _ ContinuousLinearMap.module smul_comp fun _ _ _ => comp_smul _ _ _
+  Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
 #align continuous_linear_map.algebra ContinuousLinearMap.algebra
 
 end CommRing
