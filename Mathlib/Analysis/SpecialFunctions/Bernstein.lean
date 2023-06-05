@@ -18,7 +18,7 @@ import Mathlib.Topology.ContinuousFunction.Compact
 
 We prove that the Bernstein approximations
 ```
-∑ k : fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
+∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
 ```
 for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` tends to infinity.
 
@@ -75,13 +75,13 @@ theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
 #align bernstein_nonneg bernstein_nonneg
 
 /-!
-We now give a slight reformulation of `bernstein_polynomial.variance`.
+We now give a slight reformulation of `bernsteinPolynomial.variance`.
 -/
 
 
 namespace bernstein
 
-/-- Send `k : fin (n+1)` to the equally spaced points `k/n` in the unit interval.
+/-- Send `k : Fin (n+1)` to the equally spaced points `k/n` in the unit interval.
 -/
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
@@ -147,7 +147,7 @@ converge uniformly.
 A key player is the set `S f ε h n x`,
 for some function `f : C(I, ℝ)`, `h : 0 < ε`, `n : ℕ` and `x : I`.
 
-This is the set of points `k` in `fin (n+1)` such that
+This is the set of points `k` in `Fin (n+1)` such that
 `k/n` is within `δ` of `x`, where `δ` is the modulus of uniform continuity for `f`,
 chosen so `|f x - f y| < ε/2` when `|x - y| < δ`.
 
@@ -212,7 +212,7 @@ open scoped Topology
 
 /-- The Bernstein approximations
 ```
-∑ k : fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
+∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
 ```
 for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` tends to infinity.
 
@@ -260,7 +260,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
         Finset.sum_le_sum fun k m =>
           mul_le_mul_of_nonneg_right (le_of_lt (lt_of_mem_S m)) bernstein_nonneg
       _ = ε / 2 * ∑ k in S, bernstein n k x := by rw [Finset.mul_sum]
-      -- In this step we increase the sum over `S` back to a sum over all of `fin (n+1)`,
+      -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
       _ ≤
           ε / 2 * ∑ k : Fin (n + 1), bernstein n k x :=
@@ -281,7 +281,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
             conv_lhs => rw [← one_mul (bernstein _ _ _)]
             exact mul_le_mul_of_nonneg_right (le_of_mem_S_compl m) bernstein_nonneg)
           w₁)
-      -- Again enlarging the sum from `Sᶜ` to all of `fin (n+1)`
+      -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤
           2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x :=
         (mul_le_mul_of_nonneg_left
