@@ -8,10 +8,10 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.Algebra.Lie.OfAssociative
-import Mathbin.Algebra.Lie.Submodule
-import Mathbin.Algebra.Lie.Basic
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.Submodule
+import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Direct sums of Lie algebras and Lie modules
@@ -48,8 +48,7 @@ variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 
-instance : LieRingModule L (⨁ i, M i)
-    where
+instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
   add_lie x y m := by ext; simp only [map_range_apply, add_apply, add_lie]
   lie_add x m n := by ext; simp only [map_range_apply, add_apply, lie_add]
@@ -60,8 +59,7 @@ theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ 
   mapRange_apply _ _ m i
 #align direct_sum.lie_module_bracket_apply DirectSum.lie_module_bracket_apply
 
-instance : LieModule R L (⨁ i, M i)
-    where
+instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by ext i; simp only [smul_lie, lie_module_bracket_apply, smul_apply]
   lie_smul t x m := by ext i; simp only [lie_smul, lie_module_bracket_apply, smul_apply]
 
@@ -161,8 +159,7 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : 
 #align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
 
 theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L j) :
-    ⁅of L i x, of L j y⁆ = of L i ⁅x, hij.recOn y⁆ :=
-  by
+    ⁅of L i x, of L j y⁆ = of L i ⁅x, hij.recOn y⁆ := by
   have : of L j y = of L i (hij.rec_on y) := Eq.drec (Eq.refl _) hij
   rw [this, ← lie_algebra_of_apply R ι L i ⁅x, hij.rec_on y⁆, LieHom.map_lie, lie_algebra_of_apply,
     lie_algebra_of_apply]
@@ -170,8 +167,7 @@ theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L 
 
 @[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
-    ⁅of L i x, of L j y⁆ = if hij : j = i then lieAlgebraOf R ι L i ⁅x, hij.recOn y⁆ else 0 :=
-  by
+    ⁅of L i x, of L j y⁆ = if hij : j = i then lieAlgebraOf R ι L i ⁅x, hij.recOn y⁆ else 0 := by
   by_cases hij : j = i
   · simp only [lie_of_of_eq R ι L hij x y, hij, dif_pos, not_false_iff, lie_algebra_of_apply]
   · simp only [lie_of_of_ne R ι L hij x y, hij, dif_neg, not_false_iff]
@@ -202,16 +198,14 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       suffices
         ∀ (i : ι) (y : L i),
           to_module R ι L' f' ⁅x, of L i y⁆ =
-            ⁅to_module R ι L' f' x, to_module R ι L' f' (of L i y)⁆
-        by
+            ⁅to_module R ι L' f' x, to_module R ι L' f' (of L i y)⁆ by
         simp only [← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear y; ext (i y); exact this i y
       suffices
         ∀ (i j) (y : L i) (x : L j),
           to_module R ι L' f' ⁅of L j x, of L i y⁆ =
-            ⁅to_module R ι L' f' (of L j x), to_module R ι L' f' (of L i y)⁆
-        by
+            ⁅to_module R ι L' f' (of L j x), to_module R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (to_module R ι L' f' x)]
         simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
