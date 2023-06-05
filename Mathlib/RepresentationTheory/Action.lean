@@ -507,16 +507,16 @@ set_option linter.uppercaseLean3 false in
 #align Action.tensor_hom Action.tensorHom
 
 -- porting note: removed the @[simp] as the simpNF linter complains
-theorem associator_hom_hom {X Y Z : Action V G} : Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom :=
-  by
+theorem associator_hom_hom {X Y Z : Action V G} :
+    Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
   dsimp [Monoidal.transport_associator]
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
 
 -- porting note: removed the @[simp] as the simpNF linter complains
-theorem associator_inv_hom {X Y Z : Action V G} : Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv :=
-  by
+theorem associator_inv_hom {X Y Z : Action V G} :
+    Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
   dsimp [Monoidal.transport_associator]
   simp
 set_option linter.uppercaseLean3 false in
