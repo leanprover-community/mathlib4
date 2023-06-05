@@ -99,17 +99,17 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     (ε0 : ε ≠ 0) :
     ∃ g : α → ℝ≥0, (∀ x, f x ≤ g x) ∧ LowerSemicontinuous g ∧ (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, f x ∂μ) + ε :=
   by
-  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ H h₁ h₂ generalizing ε
+  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing ε
   · let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) (SimpleFunc.const α 0)
     by_cases h : (∫⁻ x, f x ∂μ) = ⊤
     · refine'
-        ⟨fun x => c, fun x => _, lowerSemicontinuous_const, by
+        ⟨fun _ => c, fun x => _, lowerSemicontinuous_const, by
           simp only [_root_.top_add, le_top, h]⟩
       simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_self _ _ _
     by_cases hc : c = 0
-    · refine' ⟨fun x => 0, _, lowerSemicontinuous_const, _⟩
+    · refine' ⟨fun _ => 0, _, lowerSemicontinuous_const, _⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
@@ -120,16 +120,16 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       simpa using ENNReal.add_lt_add_left ?aux this
     case aux =>
       classical
-      simpa? [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
+      simpa [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
-        ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top_iff, SimpleFunc.const_zero,
+        ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
         or_false_iff, lintegral_indicator, ENNReal.coe_eq_zero, Ne.def, not_false_iff,
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, false_and_iff,
         restrict_apply] using h
     obtain ⟨u, su, u_open, μu⟩ : ∃ (u : _), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
       s.exists_isOpen_lt_of_lt _ this
     refine'
-      ⟨Set.indicator u fun x => c, fun x => _, u_open.lowerSemicontinuous_indicator (zero_le _), _⟩
+      ⟨Set.indicator u fun _ => c, fun x => _, u_open.lowerSemicontinuous_indicator (zero_le _), _⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_indicator_of_subset su (fun x => zero_le _) _
@@ -333,10 +333,9 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     (int_f : (∫⁻ x, f x ∂μ) ≠ ∞) {ε : ℝ≥0∞} (ε0 : ε ≠ 0) :
     ∃ g : α → ℝ≥0, (∀ x, g x ≤ f x) ∧ UpperSemicontinuous g ∧ (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, g x ∂μ) + ε :=
   by
-  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ H h₁ h₂ generalizing ε
-  · let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) (SimpleFunc.const α 0)
-    by_cases hc : c = 0
-    · refine' ⟨fun x => 0, _, upperSemicontinuous_const, _⟩
+  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing ε
+  · by_cases hc : c = 0
+    · refine' ⟨fun _ => 0, _, upperSemicontinuous_const, _⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
@@ -346,9 +345,10 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise, zero_le]
     have μs_lt_top : μ s < ∞ := by
+      classical
       simpa only [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const, or_false_iff,
         lintegral_const, ENNReal.coe_indicator, Set.univ_inter, ENNReal.coe_ne_top,
-        Measure.restrict_apply MeasurableSet.univ, ENNReal.mul_eq_top_iff, SimpleFunc.const_zero,
+        Measure.restrict_apply MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
         Function.const_apply, lintegral_indicator, ENNReal.coe_eq_zero, Ne.def, not_false_iff,
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
         false_and_iff] using int_f
@@ -356,7 +356,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
     refine'
-      ⟨Set.indicator F fun x => c, fun x => _, F_closed.upperSemicontinuous_indicator (zero_le _),
+      ⟨Set.indicator F fun _ => c, fun x => _, F_closed.upperSemicontinuous_indicator (zero_le _),
         _⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
