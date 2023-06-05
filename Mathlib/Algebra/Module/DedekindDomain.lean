@@ -8,8 +8,8 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Torsion
-import Mathbin.RingTheory.DedekindDomain.Ideal
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.RingTheory.DedekindDomain.Ideal
 
 /-!
 # Modules over a Dedekind domain
@@ -42,8 +42,7 @@ torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in 
 theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI : I ≠ ⊥)
     (hM : Module.IsTorsionBySet R M I) :
     DirectSum.IsInternal fun p : (factors I).toFinset =>
-      torsionBySet R M (p ^ (factors I).count p : Ideal R) :=
-  by
+      torsionBySet R M (p ^ (factors I).count p : Ideal R) := by
   let P := factors I
   have prime_of_mem := fun p (hp : p ∈ P.to_finset) =>
     prime_of_factor p (multiset.mem_to_finset.mp hp)
@@ -69,8 +68,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
 `e i` are their multiplicities. -/
 theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
-      torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count p : Ideal R) :=
-  by
+      torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count p : Ideal R) := by
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
   refine' is_internal_prime_power_torsion_of_is_torsion_by_ideal _ hM'
