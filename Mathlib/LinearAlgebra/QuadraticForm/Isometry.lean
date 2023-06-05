@@ -15,13 +15,13 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 ## Main definitions
 
-* `quadratic_form.isometry`: `linear_equiv`s which map between two different quadratic forms
+* `QuadraticForm.Isometry`: `LinearEquiv`s which map between two different quadratic forms
 * `quadratic_form.equvialent`: propositional version of the above
 
 ## Main results
 
 * `equivalent_weighted_sum_squares`: in finite dimensions, any quadratic form is equivalent to a
-  parametrization of `quadratic_form.weighted_sum_squares`.
+  parametrization of `QuadraticForm.weightedSumSquares`.
 -/
 
 
@@ -116,7 +116,7 @@ end Equivalent
 
 variable [Fintype ι] {v : Basis ι R M}
 
-/-- A quadratic form composed with a `linear_equiv` is isometric to itself. -/
+/-- A quadratic form composed with a `LinearEquiv` is isometric to itself. -/
 def isometryOfCompLinearEquiv (Q : QuadraticForm R M) (f : M₁ ≃ₗ[R] M) :
     Q.Isometry (Q.comp (f : M₁ →ₗ[R] M)) :=
   { f.symm with
