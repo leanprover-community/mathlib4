@@ -224,45 +224,47 @@ open scoped BigOperators
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `has_sum_pow_div_log_of_abs_lt_1`.
+
+Porting note: TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
   /- For the proof, we show that the derivative of the function to be estimated is small,
     and then apply the mean value inequality. -/
   let F : ℝ → ℝ := fun x => (∑ i in range n, x ^ (i + 1) / (i + 1)) + log (1 - x)
+  let F' : ℝ → ℝ := fun x ↦ -x ^ n / (1 - x)
+  -- Porting note: In `mathlib3`, the proof used `deriv`/`DifferentiableAt`. `simp` failed to
+  -- compute `deriv`, so I changed the proof to use `HasDerivAt` instead
   -- First step: compute the derivative of `F`
-  have A : ∀ y ∈ Ioo (-1 : ℝ) 1, deriv F y = -y ^ n / (1 - y) := by
-    intro y hy
-    have : (∑ i in range n, (↑i + 1) * y ^ i / (↑i + 1)) = ∑ i in range n, y ^ i := by
-      congr with i
-      exact mul_div_cancel_left _ (Nat.cast_add_one_pos i).ne'
-    field_simp [this, geom_sum_eq (ne_of_lt hy.2), sub_ne_zero_of_ne (ne_of_gt hy.2),
-      sub_ne_zero_of_ne (ne_of_lt hy.2)]
-    ring
-  -- second step: show that the derivative of `F` is small
-  have B : ∀ y ∈ Icc (-|x|) (|x|), |deriv F y| ≤ |x| ^ n / (1 - |x|) := by
-    intro y hy
-    have : y ∈ Ioo (-(1 : ℝ)) 1 := ⟨lt_of_lt_of_le (neg_lt_neg h) hy.1, lt_of_le_of_lt hy.2 h⟩
-    -- porting note: `|_|` instead of `abs _` fails in the first line of `calc`
+  have A : ∀ y ∈ Ioo (-1 : ℝ) 1, HasDerivAt F (F' y) y := fun y hy ↦ by
+    have : HasDerivAt F ((∑ i in range n, ↑(i + 1) * y ^ i / (↑i + 1)) + (-1) / (1 - y)) y :=
+      .add (.sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
+        (((hasDerivAt_id y).const_sub _).log <| sub_ne_zero.2 hy.2.ne')
+    convert this using 1
     calc
-      |deriv F y| = abs (-y ^ n / (1 - y)) := by rw [A y this]
-      _ ≤ |x| ^ n / (1 - |x|) := by
+      -y ^ n / (1 - y) = ∑ i in Finset.range n, y ^ i + -1 / (1 - y) := by
+        field_simp [geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
+        ring
+      _ = ∑ i in Finset.range n, ↑(i + 1) * y ^ i / (↑i + 1) + -1 / (1 - y) := by
+        congr with i
+        rw [Nat.cast_succ, mul_div_cancel_left _ (Nat.cast_add_one_pos i).ne']
+  -- second step: show that the derivative of `F` is small
+  have B : ∀ y ∈ Icc (-|x|) (|x|), |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
+    calc
+      |F' y| = |y| ^ n / |1 - y| := by simp [abs_div]
+      _ ≤ |x| ^ n / (1 - |x|) :=
         have : |y| ≤ |x| := abs_le.2 hy
-        have : 0 < 1 - |x| := by linarith
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
-        simp only [← pow_abs, abs_div, abs_neg]
-        apply_rules [div_le_div, pow_nonneg, abs_nonneg, pow_le_pow_of_le_left]
+        div_le_div (by positivity) (pow_le_pow_of_le_left (abs_nonneg _) ‹_› _) (sub_pos.2 h) ‹_›
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ n / (1 - |x|) * ‖x - 0‖ := by
-    have : ∀ y ∈ Icc (-|x|) (|x|), DifferentiableAt ℝ F y := by
-      intro y hy
-      have : 1 - y ≠ 0 := sub_ne_zero_of_ne (ne_of_gt (lt_of_le_of_lt hy.2 h))
-      simp [this]
-    apply Convex.norm_image_sub_le_of_norm_deriv_le this B (convex_Icc _ _) _ _
+    refine Convex.norm_image_sub_le_of_norm_hasDerivWithin_le
+      (fun y hy ↦ (A _ ?_).hasDerivWithinAt) B (convex_Icc _ _) ?_ ?_
+    · exact Icc_subset_Ioo (neg_lt_neg h) h hy
     · simp
     · simp [le_abs_self x, neg_le.mp (neg_le_abs_self x)]
   -- fourth step: conclude by massaging the inequality of the third step
-  simpa [norm_eq_abs, div_mul_eq_mul_div, pow_succ'] using C
+  simpa [div_mul_eq_mul_div, pow_succ'] using C
 #align real.abs_log_sub_add_sum_range_le Real.abs_log_sub_add_sum_range_le
 
 /-- Power series expansion of the logarithm around `1`. -/
