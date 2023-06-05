@@ -265,8 +265,8 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Module.Pid
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
