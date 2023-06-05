@@ -67,6 +67,7 @@ def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
 open private getIntrosSize from Lean.Meta.Tactic.Intro in
+/-- Introduce variables, giving them names from a specified list. -/
 def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
