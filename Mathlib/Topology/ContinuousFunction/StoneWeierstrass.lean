@@ -90,7 +90,7 @@ theorem polynomial_comp_attachBound_mem (A : Subalgebra ℝ C(X, ℝ)) (f : A) (
 #align continuous_map.polynomial_comp_attach_bound_mem ContinuousMap.polynomial_comp_attachBound_mem
 
 theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
-    (p : C(Set.Icc (-‖f‖) ‖f‖, ℝ)) : p.comp (attachBound f) ∈ A.topologicalClosure := by
+    (p : C(Set.Icc (-‖f‖) ‖f‖, ℝ)) : p.comp (attachBound (f : C(X, ℝ))) ∈ A.topologicalClosure := by
   -- `p` itself is in the closure of polynomials, by the Weierstrass theorem,
   have mem_closure : p ∈ (polynomialFunctions (Set.Icc (-‖f‖) ‖f‖)).topologicalClosure :=
     continuousMap_mem_polynomialFunctions_closure _ _ p
@@ -101,14 +101,14 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
   apply mem_closure_iff_frequently.mpr
   -- To show that, we pull back the polynomials close to `p`,
   refine'
-    ((comp_right_continuous_map ℝ (attach_bound (f : C(X, ℝ)))).ContinuousAt
-            p).Tendsto.frequently_map
+    ((compRightContinuousMap ℝ (attachBound (f : C(X, ℝ)))).continuousAt
+            p).tendsto.frequently_map
       _ _ frequently_mem_polynomials
   -- but need to show that those pullbacks are actually in `A`.
   rintro _ ⟨g, ⟨-, rfl⟩⟩
-  simp only [SetLike.mem_coe, AlgHom.coe_toRingHom, comp_right_continuous_map_apply,
+  simp only [SetLike.mem_coe, AlgHom.coe_toRingHom, compRightContinuousMap_apply,
     Polynomial.toContinuousMapOnAlgHom_apply]
-  apply polynomial_comp_attach_bound_mem
+  apply polynomial_comp_attachBound_mem
 #align continuous_map.comp_attach_bound_mem_closure ContinuousMap.comp_attachBound_mem_closure
 
 theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
@@ -220,28 +220,28 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let h : ∀ x, L := fun x =>
     ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
       Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
-  have lt_h : ∀ x z, f z - ε < h x z := by
+  have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
-    dsimp [h]
-    simp only [coeFn_coe_base', Subtype.coe_mk, sup'_coe, Finset.sup'_apply, Finset.lt_sup'_iff]
+    dsimp
+    simp only [Subtype.coe_mk, sup'_coe, Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
-  have h_eq : ∀ x, h x x = f x := by intro x; simp [coeFn_coe_base', w₁]
+  have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
-  let W : ∀ x, Set X := fun x => {z | h x z < f z + ε}
+  let W : ∀ x, Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
     refine' IsOpen.mem_nhds _ _
     · apply isOpen_lt <;> continuity
-    · dsimp only [W, Set.mem_setOf_eq]
+    · dsimp only [Set.mem_setOf_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
   -- Since `X` is compact, there is some finset `ys t`
   -- so the union of the `W x` for `x ∈ xs` still covers everything.
   let xs : Finset X := (CompactSpace.elim_nhds_subcover W W_nhd).choose
   let xs_w : (⋃ x ∈ xs, W x) = ⊤ := (CompactSpace.elim_nhds_subcover W W_nhd).choose_spec
-  have xs_nonempty : xs.nonempty := Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
+  have xs_nonempty : xs.Nonempty := Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
   let k : (L : Type _) :=
@@ -249,7 +249,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
   refine' ⟨k.1, _, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
-  rw [dist_lt_iff Pos]
+  rw [dist_lt_iff pos]
   intro z
   -- We rewrite into this particular form,
   -- so that simp lemmas about inequalities involving `finset.inf'` can fire.
@@ -322,7 +322,7 @@ every real-valued continuous function on `X` is within any `ε > 0` of some elem
 -/
 theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) (f : X → ℝ) (c : Continuous f) (ε : ℝ) (pos : 0 < ε) :
-    ∃ g : A, ∀ x, ‖g x - f x‖ < ε := by
+    ∃ g : A, ∀ x, ‖(g : X → ℝ) x - f x‖ < ε := by
   obtain ⟨g, b⟩ := exists_mem_subalgebra_near_continuousMap_of_separatesPoints A w ⟨f, c⟩ ε pos
   use g
   rwa [norm_lt_iff _ pos] at b
@@ -361,7 +361,7 @@ theorem subalgebraConjInvariant {S : Set C(X, 𝕜)}
   · exact fun g hg => Algebra.subset_adjoin (hS g hg)
   · exact fun c => Subalgebra.algebraMap_mem _ (starRingEnd 𝕜 c)
   · intro f g hf hg
-    convert Subalgebra.add_mem _ hf hg
+    convert Subalgebra.add_mem _ hf hg using 1
     exact AlgHom.map_add _ f g
   · intro f g hf hg
     convert Subalgebra.mul_mem _ hf hg
@@ -440,11 +440,11 @@ theorem ContinuousMap.subalgebra_isROrC_topologicalClosure_eq_top_of_separatesPo
   have h_f_re : I f_re ∈ A.topologicalClosure := key ⟨f_re, rfl⟩
   have h_f_im : I f_im ∈ A.topologicalClosure := key ⟨f_im, rfl⟩
   -- So `f_re + I • f_im` is in the closure of `A`
-  convert A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im IsROrC.i)
+  convert A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im IsROrC.I)
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
-  simp [I, mul_comm IsROrC.i _]
+  simp [mul_comm IsROrC.I _]
 #align continuous_map.subalgebra_is_R_or_C_topological_closure_eq_top_of_separates_points ContinuousMap.subalgebra_isROrC_topologicalClosure_eq_top_of_separatesPoints
 
 end IsROrC
