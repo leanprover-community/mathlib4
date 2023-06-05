@@ -750,7 +750,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
   exact inf_neBot_iff_frequently_left
 #align filter.inf_ne_bot_iff_frequently_right Filter.inf_neBot_iff_frequently_right
 
-theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_hi : p i), 𝓟 (s i) :=
+theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
   eq_biInf_of_mem_iff_exists_mem <| fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
 #align filter.has_basis.eq_binfi Filter.HasBasis.eq_biInf
 
@@ -784,7 +784,7 @@ theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedO
 
 theorem hasBasis_biInf_principal' {ι : Type _} {p : ι → Prop} {s : ι → Set α}
     (h : ∀ i, p i → ∀ j, p j → ∃ k, p k ∧ s k ⊆ s i ∧ s k ⊆ s j) (ne : ∃ i, p i) :
-    (⨅ (i) (_h : p i), 𝓟 (s i)).HasBasis p s :=
+    (⨅ (i) (_ : p i), 𝓟 (s i)).HasBasis p s :=
   Filter.hasBasis_biInf_principal h ne
 #align filter.has_basis_binfi_principal' Filter.hasBasis_biInf_principal'
 
@@ -812,7 +812,7 @@ theorem HasBasis.forall_mem_mem (h : HasBasis l p s) {x : α} :
 #align filter.has_basis.forall_mem_mem Filter.HasBasis.forall_mem_mem
 
 protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h : HasBasis l p s)
-    (hf : Monotone f) : (⨅ t ∈ l, f t) = ⨅ (i) (_hi : p i), f (s i) :=
+    (hf : Monotone f) : (⨅ t ∈ l, f t) = ⨅ (i) (_ : p i), f (s i) :=
   le_antisymm (le_iInf₂ fun i hi => iInf₂_le (s i) (h.mem_of_mem hi)) <|
     le_iInf₂ fun _t ht =>
       let ⟨i, hpi, hi⟩ := h.mem_iff.1 ht
@@ -820,11 +820,11 @@ protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h
 #align filter.has_basis.binfi_mem Filter.HasBasis.biInf_mem
 
 protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
-    (⋂ t ∈ l, f t) = ⋂ (i) (_hi : p i), f (s i) :=
+    (⋂ t ∈ l, f t) = ⋂ (i) (_ : p i), f (s i) :=
   h.biInf_mem hf
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
-theorem HasBasis.sInter_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_hi : p i), s i := by
+theorem HasBasis.sInter_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_ : p i), s i := by
   rw [sInter_eq_biInter]
   exact h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.sInter_sets
