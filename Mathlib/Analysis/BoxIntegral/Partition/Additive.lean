@@ -61,8 +61,9 @@ open Box Prepartition Finset
 variable {N : Type _} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : CoeFun (ι →ᵇᵃ[I₀] M) fun _ => Box ι → M :=
-  ⟨toFun⟩
+instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
 
 initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 

@@ -741,8 +741,8 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean
 
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/
-theorem hasIntegralOfBRiemannEqFfOfForallIsO (hl : l.bRiemann = false) (B : ι →ᵇᵃ[I] ℝ)
-    (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
+theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = false)
+    (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
     (hlH : s.Nonempty → l.bHenstock = true)
     (H₁ :
       ∀ (c : ℝ≥0),
@@ -798,32 +798,34 @@ theorem hasIntegralOfBRiemannEqFfOfForallIsO (hl : l.bRiemann = false) (B : ι �
       rw [Finset.mem_filter] at hJ ; cases' hJ with hJ hJs
       refine' Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) _
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-      convert hπδ.1 J hJ; exact (dif_pos hJs).symm
+      convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm
     refine' (dist_sum_sum_le_of_le _ this).trans _
     rw [sum_comp]
     refine' (sum_le_sum _).trans (hεs _ _)
     · rintro b -
       rw [← Nat.cast_two, ← Nat.cast_pow, ← nsmul_eq_mul]
       refine' nsmul_le_nsmul (hεs0 _).le _
-      refine' (Finset.card_le_of_subset _).trans ((hπδ.is_Henstock hlH).card_filter_tag_eq_le b)
+      refine' (Finset.card_le_of_subset _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
       exact filter_subset_filter _ (filter_subset _ _)
     · rw [Finset.coe_image, Set.image_subset_iff]
       exact fun J hJ => (Finset.mem_filter.1 hJ).2
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
-  have H₂ :
-    ∀ J ∈ π.boxes.filter fun J => π.tag J ∉ s, dist (vol J (f <| π.tag J)) (g J) ≤ ε' * B J := by
-    intro J hJ; rw [Finset.mem_filter] at hJ ; cases' hJ with hJ hJs
-    refine'
-      Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) _ (fun hH => hπδ.2 hH J hJ)
+  -- porting note: avoided strange elaboration issues by rewriting using `calc`
+  calc
+    dist (∑ J in π.boxes.filter (¬tag π · ∈ s), vol J (f (tag π J)))
+      (∑ J in π.boxes.filter (¬tag π · ∈ s), g J)
+      ≤ ∑ J in π.boxes.filter (¬tag π · ∈ s), ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
+      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
+      refine' Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) _ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
-    convert hπδ.1 J hJ; exact (dif_neg hJs).symm
-  refine' (dist_sum_sum_le_of_le _ H₂).trans
-    ((sum_le_sum_of_subset_of_nonneg (filter_subset _ _) _).trans _)
-  · exact fun _ _ _ => mul_nonneg ε'0.le (hB0 _)
-  · rw [← mul_sum, B.sum_partition_boxes le_rfl hπp, mul_comm]
-    exact hεI.le
-#align box_integral.has_integral_of_bRiemann_eq_ff_of_forall_is_o BoxIntegral.hasIntegralOfBRiemannEqFfOfForallIsO
+      convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm
+    _ ≤ ∑ J in π.boxes, ε' * B J := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun _ _ _ ↦
+      mul_nonneg ε'0.le (hB0 _)
+    _ = B I * ε' := by rw [← mul_sum, B.sum_partition_boxes le_rfl hπp, mul_comm]
+    _ ≤ ε / 2 := hεI.le
+set_option linter.uppercaseLean3 false in
+#align box_integral.has_integral_of_bRiemann_eq_ff_of_forall_is_o BoxIntegral.HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO
 
 /-- A function `f` has Henstock (or `⊥`) integral over `I` is equal to the value of a box-additive
 function `g` on `I` provided that `vol J (f x)` is sufficiently close to `g J` for sufficiently
@@ -844,8 +846,8 @@ the distance between the term `vol J (f x)` of an integral sum corresponding to 
 less than or equal to `ε` if `x ∈ s` and is less than or equal to `ε * B J` otherwise.
 
 Then `f` is integrable on `I along `l` with integral `g I`. -/
-theorem hasIntegralOfLeHenstockOfForallIsO (hl : l ≤ Henstock) (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J)
-    (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
+theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B : ι →ᵇᵃ[I] ℝ)
+    (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
     (H₁ :
       ∀ (c : ℝ≥0),
         ∀ x ∈ Box.Icc I ∩ s,
@@ -865,10 +867,10 @@ theorem hasIntegralOfLeHenstockOfForallIsO (hl : l ≤ Henstock) (B : ι →ᵇ�
                     (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I l f vol (g I) :=
   have A : l.bHenstock := hl.2.1.resolve_left (by decide)
-  hasIntegralOfBRiemannEqFfOfForallIsO (hl.1.resolve_right (by decide)) B hB0 _ s hs (fun _ => A)
-      H₁ <|
-    by simpa only [A, true_imp_iff] using H₂
-#align box_integral.has_integral_of_le_Henstock_of_forall_is_o BoxIntegral.hasIntegralOfLeHenstockOfForallIsO
+  HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl.1.resolve_right (by decide)) B hB0 _ s hs
+    (fun _ => A) H₁ <| by simpa only [A, true_imp_iff] using H₂
+set_option linter.uppercaseLean3 false in
+#align box_integral.has_integral_of_le_Henstock_of_forall_is_o BoxIntegral.HasIntegral.of_le_Henstock_of_forall_isLittleO
 
 /-- Suppose that there exists a nonnegative box-additive function `B` with the following property.
 
@@ -882,13 +884,14 @@ the distance between the term `vol J (f x)` of an integral sum corresponding to 
 less than or equal to `ε * B J`.
 
 Then `f` is McShane integrable on `I` with integral `g I`. -/
-theorem hasIntegralMcShaneOfForallIsO (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F)
-    (H : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I, ∀ ε > (0 : ℝ), ∃ δ > 0, ∀ J ≤ I,
+theorem HasIntegral.mcShane_of_forall_isLittleO (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J)
+    (g : ι →ᵇᵃ[I] F) (H : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I, ∀ ε > (0 : ℝ), ∃ δ > 0, ∀ J ≤ I,
       Box.Icc J ⊆ Metric.closedBall x δ → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I McShane f vol (g I) :=
-  (hasIntegralOfBRiemannEqFfOfForallIsO rfl B hB0 g ∅ countable_empty (fun ⟨x, hx⟩ => hx.elim)
-      fun c x hx => hx.2.elim) <|
-    by simpa only [McShane, Bool.coe_sort_false, false_imp_iff, true_imp_iff, diff_empty] using H
-#align box_integral.has_integral_McShane_of_forall_is_o BoxIntegral.hasIntegralMcShaneOfForallIsO
+  (HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (l := McShane) rfl B hB0 g ∅ countable_empty
+      (fun ⟨_x, hx⟩ => hx.elim) fun c x hx => hx.2.elim) <| by
+    simpa only [McShane, Bool.coe_sort_false, false_imp_iff, true_imp_iff, diff_empty] using H
+set_option linter.uppercaseLean3 false in
+#align box_integral.has_integral_McShane_of_forall_is_o BoxIntegral.HasIntegral.mcShane_of_forall_isLittleO
 
 end BoxIntegral
