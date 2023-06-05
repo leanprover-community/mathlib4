@@ -25,15 +25,15 @@ Then we prove some results on the unique factorization monoid structure of the i
 
 ## Main definitions
 
- - `is_dedekind_domain_inv` alternatively defines a Dedekind domain as an integral domain where
+ - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
    every nonzero fractional ideal is invertible.
- - `is_dedekind_domain_inv_iff` shows that this does note depend on the choice of field of
+ - `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
    fractions.
- - `is_dedekind_domain.height_one_spectrum` defines the type of nonzero prime ideals of `R`.
+ - `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
 
 ## Main results:
- - `is_dedekind_domain_iff_is_dedekind_domain_inv`
- - `ideal.unique_factorization_monoid`
+ - `isDedekindDomain_iff_isDedekindDomainInv`
+ - `Ideal.uniqueFactorizationMonoid`
 
 ## Implementation notes
 
@@ -41,7 +41,7 @@ The definitions that involve a field of fractions choose a canonical field of fr
 but are independent of that choice. The `..._iff` lemmas express this independence.
 
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
-to add a `(h : ¬ is_field A)` assumption whenever this is explicitly needed.
+to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
@@ -242,10 +242,10 @@ end FractionalIdeal
 
 /-- A Dedekind domain is an integral domain such that every fractional ideal has an inverse.
 
-This is equivalent to `is_dedekind_domain`.
+This is equivalent to `IsDedekindDomain`.
 In particular we provide a `fractional_ideal.comm_group_with_zero` instance,
-assuming `is_dedekind_domain A`, which implies `is_dedekind_domain_inv`. For **integral** ideals,
-`is_dedekind_domain`(`_inv`) implies only `ideal.cancel_comm_monoid_with_zero`.
+assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integral** ideals,
+`IsDedekindDomain`(`_inv`) implies only `Ideal.cancelCommMonoidWithZero`.
 -/
 def IsDedekindDomainInv : Prop :=
   ∀ (I) (_ : I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A))), I * I⁻¹ = 1
@@ -329,12 +329,12 @@ theorem dimensionLeOne : DimensionLEOne A := by
     · rw [mul_assoc, ← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne,
       one_mul, h.inv_mul_eq_one M'_ne]
     · rw [← mul_assoc  (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne, one_mul]
-  -- Suppose we have `x ∈ M⁻¹ * P`, then in fact `x = algebra_map _ _ y` for some `y`.
+  -- Suppose we have `x ∈ M⁻¹ * P`, then in fact `x = algebraMap _ _ y` for some `y`.
   intro x hx
   have le_one : (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ 1 := by
     rw [← h.inv_mul_eq_one M'_ne]
     exact mul_left_mono _ ((coeIdeal_le_coeIdeal (FractionRing A)).mpr hM.le)
-  obtain ⟨y, hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
+  obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
   obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
@@ -347,7 +347,7 @@ theorem dimensionLeOne : DimensionLEOne A := by
 #align is_dedekind_domain_inv.dimension_le_one IsDedekindDomainInv.dimensionLeOne
 
 /-- Showing one side of the equivalence between the definitions
-`is_dedekind_domain_inv` and `is_dedekind_domain` of Dedekind domains. -/
+`IsDedekindDomainInv` and `IsDedekindDomain` of Dedekind domains. -/
 theorem isDedekindDomain : IsDedekindDomain A :=
   ⟨h.isNoetherianRing, h.dimensionLeOne, h.integrallyClosed⟩
 #align is_dedekind_domain_inv.is_dedekind_domain IsDedekindDomainInv.isDedekindDomain
@@ -357,7 +357,7 @@ end IsDedekindDomainInv
 variable [Algebra A K] [IsFractionRing A K]
 
 /-- Specialization of `exists_prime_spectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
-Let `I : ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
+Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
 Then `exists_prime_spectrum_prod_le_and_ne_bot_of_domain` states we can find a product of prime
 ideals that is contained within `I`. This lemma extends that result by making the product minimal:
 let `M` be a maximal ideal that contains `I`, then the product including `M` is contained within `I`
@@ -403,7 +403,7 @@ theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] (hNF : ¬IsField A) {I
     ∃ x : K, x ∈ (I⁻¹ : FractionalIdeal A⁰ K) ∧ x ∉ (1 : FractionalIdeal A⁰ K) := by
   -- WLOG, let `I` be maximal.
   suffices
-    ∀ {M : Ideal A} (hM : M.IsMaximal),
+    ∀ {M : Ideal A} (_hM : M.IsMaximal),
       ∃ x : K, x ∈ (M⁻¹ : FractionalIdeal A⁰ K) ∧ x ∉ (1 : FractionalIdeal A⁰ K) by
     obtain ⟨M, hM, hIM⟩ : ∃ M : Ideal A, IsMaximal M ∧ I ≤ M := Ideal.exists_le_maximal I hI1
     skip
@@ -427,7 +427,7 @@ theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] (hNF : ¬IsField A) {I
   obtain ⟨b, hbZ, hbJ⟩ := SetLike.not_le_iff_exists.mp hnle
   have hnz_fa : algebraMap A K a ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (IsFractionRing.injective A K) a) ha0
-  have hb0 : algebraMap A K b ≠ 0 :=
+  have _hb0 : algebraMap A K b ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (IsFractionRing.injective A K) b) fun h =>
       hbJ <| h.symm ▸ J.zero_mem
   -- Then `b a⁻¹ : K` is in `M⁻¹` but not in `1`.
@@ -531,7 +531,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
 /-- Nonzero fractional ideals in a Dedekind domain are units.
 
 This is also available as `_root_.mul_inv_cancel`, using the
-`comm_group_with_zero` instance defined below.
+`CommGroupWithZero` instance defined below.
 -/
 protected theorem mul_inv_cancel [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hne : I ≠ 0) :
     I * I⁻¹ = 1 := by
@@ -573,7 +573,7 @@ theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (h
 #align fractional_ideal.mul_left_strict_mono FractionalIdeal.mul_left_strictMono
 
 /-- This is also available as `_root_.div_eq_mul_inv`, using the
-`comm_group_with_zero` instance defined below.
+`CommGroupWithZero` instance defined below.
 -/
 protected theorem div_eq_mul_inv [IsDedekindDomain A] (I J : FractionalIdeal A⁰ K) :
     I / J = I * J⁻¹ := by
@@ -589,10 +589,10 @@ protected theorem div_eq_mul_inv [IsDedekindDomain A] (I J : FractionalIdeal A�
 
 end FractionalIdeal
 
-/-- `is_dedekind_domain` and `is_dedekind_domain_inv` are equivalent ways
+/-- `IsDedekindDomain` and `IsDedekindDomainInv` are equivalent ways
 to express that an integral domain is a Dedekind domain. -/
 theorem isDedekindDomain_iff_isDedekindDomainInv : IsDedekindDomain A ↔ IsDedekindDomainInv A :=
-  ⟨fun h I hI => FractionalIdeal.mul_inv_cancel hI, fun h => h.isDedekindDomain⟩
+  ⟨fun _h _I hI => FractionalIdeal.mul_inv_cancel hI, fun h => h.isDedekindDomain⟩
 #align is_dedekind_domain_iff_is_dedekind_domain_inv isDedekindDomain_iff_isDedekindDomainInv
 
 end Inverse
@@ -683,7 +683,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
         have : P.IsMaximal := by
           refine ⟨⟨mt Ideal.isUnit_iff.mpr hirr.not_unit, ?_⟩⟩
           intro J hJ
-          obtain ⟨J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
+          obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
         rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, SetLike.le_def, SetLike.le_def,
           SetLike.le_def]
@@ -717,14 +717,14 @@ theorem Ideal.prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : 
   simpa only [Ideal.dvd_iff_le] using h.mul_le.mp (Ideal.le_of_dvd hIJ)
 #align ideal.prime_of_is_prime Ideal.prime_of_isPrime
 
-/-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `ideal A`
+/-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `Ideal A`
 are exactly the prime ideals. -/
 theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsPrime P :=
   ⟨Ideal.isPrime_of_prime, Ideal.prime_of_isPrime hP⟩
 #align ideal.prime_iff_is_prime Ideal.prime_iff_isPrime
 
 /-- In a Dedekind domain, the the prime ideals are the zero ideal together with the prime elements
-of the monoid with zero `ideal A`. -/
+of the monoid with zero `Ideal A`. -/
 theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime P :=
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
@@ -782,7 +782,7 @@ open FractionalIdeal
 
 variable {K}
 
-/-- Strengthening of `is_localization.exist_integer_multiples`:
+/-- Strengthening of `IsLocalization.exist_integer_multiples`:
 Let `J ≠ ⊤` be an ideal in a Dedekind domain `A`, and `f ≠ 0` a finite collection
 of elements of `K = Frac(A)`, then we can multiply the elements of `f` by some `a : K`
 to find a collection of elements of `A` that is not completely contained in `J`. -/
@@ -829,7 +829,7 @@ namespace Ideal
 /-! ### GCD and LCM of ideals in a Dedekind domain
 
 We show that the gcd of two ideals in a Dedekind domain is just their supremum,
-and the lcm is their infimum, and use this to instantiate `normalized_gcd_monoid (ideal A)`.
+and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (Ideal A)`.
 -/
 
 
@@ -1175,7 +1175,7 @@ variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
 
 variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
 
-/-- The map `normalized_factors_equiv_of_quot_equiv` preserves multiplicities. -/
+/-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
 theorem normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
     (L : Ideal R) (hL : L ∈ normalizedFactors I) :
     multiplicity (↑(normalizedFactorsEquivOfQuotEquiv f hI hJ ⟨L, hL⟩)) J = multiplicity L I := by
@@ -1256,7 +1256,7 @@ theorem Ideal.le_of_pow_le_prime {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h :
   exact ((Ideal.prime_iff_isPrime hP0).mpr hP).dvd_of_dvd_pow h
 #align ideal.le_of_pow_le_prime Ideal.le_of_pow_le_prime
 
-theorem Ideal.pow_le_prime_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
+theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
     I ^ n ≤ P ↔ I ≤ P :=
   ⟨Ideal.le_of_pow_le_prime, fun h => _root_.trans (Ideal.pow_le_self hn) h⟩
 #align ideal.pow_le_prime_iff Ideal.pow_le_prime_iff
@@ -1346,7 +1346,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
-    IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun P =>
+    IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun _P =>
       Ideal.Quotient.mk _ x := rfl
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
 
@@ -1360,7 +1360,7 @@ noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i in s, P i ^ e i`, then `R ⧸ I` factors as `Π (i : s), R ⧸ (P i ^ e i)`.
 
-This is a version of `is_dedekind_domain.quotient_equiv_pi_of_prod_eq` where we restrict
+This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict
 the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
 noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type _} {s : Finset ι}
@@ -1381,7 +1381,7 @@ theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type _} {s : Fin
   let f := IsDedekindDomain.quotientEquivPiOfFinsetProdEq _ P e prime coprime rfl
   obtain ⟨y, rfl⟩ := f.surjective x
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective y
-  exact ⟨z, fun i hi => rfl⟩
+  exact ⟨z, fun i _hi => rfl⟩
 #align is_dedekind_domain.exists_representative_mod_finset IsDedekindDomain.exists_representative_mod_finset
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R`,
@@ -1411,7 +1411,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     Ideal.span {a} ∣ Ideal.span ({b} : Set R) ↔ a ∣ b :=
   ⟨fun h => mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
-    dvd_iff_le.mpr fun d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
+    dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
 #align span_singleton_dvd_span_singleton_iff_dvd span_singleton_dvd_span_singleton_iff_dvd
 
 theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [NormalizationMonoid R]
@@ -1485,7 +1485,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
 
 variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
 
-/-- The bijection `normalized_factors_equiv_span_normalized_factors` between the set of prime
+/-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
     factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. -/
 theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
