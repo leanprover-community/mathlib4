@@ -451,8 +451,8 @@ theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] (hNF : ¬IsField A) {I
     contradiction
 #align fractional_ideal.exists_not_mem_one_of_ne_bot FractionalIdeal.exists_not_mem_one_of_ne_bot
 
-theorem one_mem_inv_coe_ideal {I : Ideal A} (hI : I ≠ ⊥) : (1 : K) ∈ (I : FractionalIdeal A⁰ K)⁻¹ :=
-  by
+theorem one_mem_inv_coe_ideal {I : Ideal A} (hI : I ≠ ⊥) :
+    (1 : K) ∈ (I : FractionalIdeal A⁰ K)⁻¹ := by
   rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI)]
   intro y hy
   rw [one_mul]
@@ -1509,5 +1509,3 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
 
 end PID
-
-#lint
