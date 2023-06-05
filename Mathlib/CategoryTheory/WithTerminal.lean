@@ -97,11 +97,25 @@ instance : Category.{v} (WithTerminal C) where
   id X := id _
   comp := comp
   assoc {a b c d} f g h := by
-    -- Porting note : still can't automatically close goal using `aesop_cat + cases`
+    -- Porting note: it would be nice to automate this away as well.
+    -- I tried splitting this into separate `Quiver` and `Category` instances,
+    -- so the `false_of_from_star` destruct rule below can be used here.
+    -- That works, but causes mysterious failures of `aesop_cat` in `map`.
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
     . exact (h : PEmpty).elim
     . exact (g : PEmpty).elim
     . exact (h : PEmpty).elim
+
+/-- Helper function for typechecking. -/
+def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
+
+@[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
+@[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
+    down (f ≫ g) = down f ≫ down g :=
+  rfl
+
+@[aesop safe destruct (rule_sets [CategoryTheory])]
+lemma false_of_from_star {X : C} (f : star ⟶ of X) : False := (f : PEmpty).elim
 
 /-- The inclusion from `C` into `WithTerminal C`. -/
 def incl : C ⥤ WithTerminal C where
@@ -122,21 +136,9 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
     | star => star
   map {X Y} f :=
     match X, Y, f with
-    | of x, of y, f => F.map f
-    | of _, star, PUnit.unit => PUnit.unit
-    | star, star, PUnit.unit => PUnit.unit
-  -- Porting note : need to do cases analysis
-  map_id
-    | of _X => F.map_id _X
-    | star => by aesop_cat
-  -- Porting note : still need to do cases analysis
-  -- `aesop_cat + cases` can't do it automatically
-  map_comp {X Y Z} f g := by
-    cases X <;> cases Y <;> cases Z <;> try aesop_cat
-    . exact F.map_comp f g
-    . exact (g : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (g : PEmpty).elim
+    | of x, of y, f => F.map (down f)
+    | of _, star, _ => PUnit.unit
+    | star, star, _ => PUnit.unit
 #align category_theory.with_terminal.map CategoryTheory.WithTerminal.map
 
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
@@ -161,26 +163,9 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     | star => Z
   map {X Y} f :=
     match X, Y, f with
-    | of x, of y, f => F.map f
-    | of x, star, PUnit.unit => M x
-    | star, star, PUnit.unit => 𝟙 Z
-  map_id
-    | of x => F.map_id x
-    | star => rfl
-  map_comp {X Y Z} f g := by
-  -- Porting note : still need to do cases analysis
-  -- `aesop(_cat) + cases` can't do it automatically
-    cases X <;> cases Y <;> cases Z
-    . exact F.map_comp f g
-    . exact (hM _ _ _).symm
-    . exact (g : PEmpty).elim
-    . change M _ =  M _ ≫ 𝟙 Z
-      rw [Category.comp_id]
-    . exact (f : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (g : PEmpty).elim
-    . change 𝟙 Z = 𝟙 Z ≫ 𝟙 Z
-      rw [Category.comp_id]
+    | of x, of y, f => F.map (down f)
+    | of x, star, _ => M x
+    | star, star, _ => 𝟙 Z
 #align category_theory.with_terminal.lift CategoryTheory.WithTerminal.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
@@ -300,15 +285,24 @@ instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
-  comp_id {X Y} _ := by aesop_cat
-  -- Porting note : `aesop_cat + cases` does `comp_id` but not `id_comp`
-  id_comp {X Y} _ := by
-    cases X <;> cases Y <;> aesop_cat
   assoc {a b c d} f g h := by
+    -- Porting note: it would be nice to automate this away as well.
+    -- See the note on `Category (WithTerminal C)`
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
     . exact (g : PEmpty).elim
     . exact (f : PEmpty).elim
     . exact (f : PEmpty).elim
+
+/-- Helper function for typechecking. -/
+def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
+
+@[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
+@[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
+    down (f ≫ g) = down f ≫ down g :=
+  rfl
+
+@[aesop safe destruct (rule_sets [CategoryTheory])]
+lemma false_of_to_star {X : C} (f : of X ⟶ star) : False := (f : PEmpty).elim
 
 /-- The inclusion of `C` into `WithInitial C`. -/
 def incl : C ⥤ WithInitial C where
@@ -329,19 +323,10 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     | star => star
   map {X Y} f :=
     match X, Y, f with
-    | of x, of y, f => F.map f
-    | star, of _, PUnit.unit => PUnit.unit
-    | star, star, PUnit.unit => PUnit.unit
-  map_id
-    | of _X => F.map_id _X
-    | star => by aesop_cat
-  -- Porting note : need to do cases analysis
-  map_comp {X Y Z} f g := by
-    cases X <;> cases Y <;> cases Z <;> try aesop_cat
-    . exact F.map_comp f g
-    . exact (g : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (f : PEmpty).elim
+    | of x, of y, f => F.map (down f)
+    | star, of _, _ => PUnit.unit
+    | star, star, _ => PUnit.unit
+
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
@@ -366,25 +351,9 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     | star => Z
   map {X Y} f :=
     match X, Y, f with
-    | of x, of y, f => F.map f
-    | star, of x, PUnit.unit => M _
-    | star, star, PUnit.unit => 𝟙 _
-  map_id
-    | of x => F.map_id x
-    | star => rfl
-  map_comp {X Y Z} f g := by
-  -- Porting note : need to do more cases analysis
-    cases X <;> cases Y <;> cases Z
-    . exact F.map_comp f g
-    . exact (g : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (hM _ _ _).symm
-    . exact (g : PEmpty).elim
-    . change M _ =  𝟙 _ ≫ M _
-      rw [Category.id_comp]
-    . change 𝟙 Z = 𝟙 Z ≫ 𝟙 Z
-      rw [Category.comp_id]
+    | of x, of y, f => F.map (down f)
+    | star, of x, _ => M _
+    | star, star, _ => 𝟙 _
 #align category_theory.with_initial.lift CategoryTheory.WithInitial.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
