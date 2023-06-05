@@ -245,11 +245,24 @@ def shortComplex₄ : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
     (X.shortComplex₂ n₀).zero
     (X.shortComplex₃ n₀ n₁ hn₁).zero
 
+def shortComplex₄' : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
+  ShortComplex₄.mk
+    (X.δ n₀ n₁ hn₁)
+    (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁))
+    (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁))
+    (X.shortComplex₁ n₀ n₁ hn₁).zero
+    (X.shortComplex₂ n₁).zero
+
 pp_extended_field_notation shortComplex₄
+pp_extended_field_notation shortComplex₄'
 
 lemma shortComplex₄_exact : (X.shortComplex₄ n₀ n₁ hn₁).Exact where
   exact₂ := X.shortComplex₂_exact n₀
   exact₃ := X.shortComplex₃_exact n₀ n₁ hn₁
+
+lemma shortComplex₄'_exact : (X.shortComplex₄' n₀ n₁ hn₁).Exact where
+  exact₂ := X.shortComplex₁_exact n₀ n₁ hn₁
+  exact₃ := X.shortComplex₂_exact n₁
 
 def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
   X₁ := Arrow₃.hMor ⋙ X.H n₀
@@ -329,10 +342,22 @@ lemma δ_comp_pCyclesCo_app (D : Arrow₂ ι) :
     (X.δ n₀ n₁ hn₁).app D ≫ (X.pCyclesCo n₀ n₁ hn₁).app D = 0 :=
   congr_app (X.δ_comp_pCyclesCo n₀ n₁ hn₁) D
 
+noncomputable def kernelSequenceCycles : ShortComplex (Arrow₂ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.iCycles_comp_δ n₀ n₁ hn₁)
+
 noncomputable def cokernelSequenceCyclesCo : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.δ_comp_pCyclesCo n₀ n₁ hn₁)
 
 pp_extended_field_notation cokernelSequenceCyclesCo
+pp_extended_field_notation kernelSequenceCycles
+
+lemma kernelSequenceCycles_exact :
+    (X.kernelSequenceCycles n₀ n₁ hn₁).Exact :=
+  ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
+
+lemma kernelSequenceCycles_obj_exact (D : Arrow₂ ι) :
+    (ShortComplex.mk _ _ (X.iCycles_comp_δ_app n₀ n₁ hn₁ D)).Exact :=
+  (X.kernelSequenceCycles_exact n₀ n₁ hn₁).map ((evaluation _ _ ).obj D)
 
 lemma cokernelSequenceCyclesCo_exact :
     (X.cokernelSequenceCyclesCo n₀ n₁ hn₁).Exact :=
@@ -354,16 +379,30 @@ noncomputable def cokernelIsoCycles :
     cokernel (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀)) ≅ X.cycles n₀ n₁ hn₁ :=
   (X.shortComplex₄_exact n₀ n₁ hn₁).cokerIsoKer
 
+noncomputable def cyclesCoIsoKernel :
+    X.cyclesCo n₀ n₁ hn₁ ≅ kernel (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁)) :=
+  (X.shortComplex₄'_exact n₀ n₁ hn₁).cokerIsoKer
+
 pp_extended_field_notation cokernelIsoCycles
+pp_extended_field_notation cyclesCoIsoKernel
 
 noncomputable def Hδ₁ToCycles : Arrow₂.δ₁ ⋙ X.H n₀ ⟶ X.cycles n₀ n₁ hn₁ :=
   cokernel.π _ ≫ (X.cokernelIsoCycles n₀ n₁ hn₁).hom
 
 pp_extended_field_notation Hδ₁ToCycles
 
+noncomputable def cyclesCoToHδ₁ : X.cyclesCo n₀ n₁ hn₁ ⟶ Arrow₂.δ₁ ⋙ X.H n₁ :=
+  (X.cyclesCoIsoKernel n₀ n₁ hn₁).hom ≫ kernel.ι _
+
+pp_extended_field_notation cyclesCoToHδ₁
+
 instance : Epi (X.Hδ₁ToCycles n₀ n₁ hn₁) := by
   dsimp [Hδ₁ToCycles]
   apply epi_comp
+
+instance : Mono (X.cyclesCoToHδ₁ n₀ n₁ hn₁) := by
+  dsimp [cyclesCoToHδ₁]
+  apply mono_comp
 
 @[reassoc (attr := simp)]
 lemma Hδ₁ToCycles_iCycles :
@@ -373,10 +412,22 @@ lemma Hδ₁ToCycles_iCycles :
   exact (X.shortComplex₄ n₀ n₁ hn₁).cokerToKer_fac
 
 @[reassoc (attr := simp)]
+lemma pCyclesCo_cyclesCoToHδ₁ :
+    X.pCyclesCo n₀ n₁ hn₁ ≫ X.cyclesCoToHδ₁ n₀ n₁ hn₁ = whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁) := by
+  dsimp only [cyclesCoToHδ₁]
+  exact (X.shortComplex₄' n₀ n₁ hn₁).cokerToKer_fac
+
+@[reassoc (attr := simp)]
 lemma Hδ₁ToCycles_iCycles_app (D : Arrow₂ ι) :
     (X.Hδ₁ToCycles n₀ n₁ hn₁).app D ≫ (X.iCycles n₀ n₁ hn₁).app D =
       (X.H n₀).map (Arrow₂.δ₁Toδ₀.app D) :=
   congr_app (X.Hδ₁ToCycles_iCycles n₀ n₁ hn₁) D
+
+@[reassoc (attr := simp)]
+lemma pCyclesCo_cyclesCoToHδ₁_app (D : Arrow₂ ι):
+    (X.pCyclesCo n₀ n₁ hn₁).app D ≫ (X.cyclesCoToHδ₁ n₀ n₁ hn₁).app D =
+      (X.H n₁).map (Arrow₂.δ₂Toδ₁.app D) :=
+  congr_app (X.pCyclesCo_cyclesCoToHδ₁ n₀ n₁ hn₁) D
 
 @[reassoc (attr := simp)]
 lemma Hδ₂Toδ₁_Hδ₁ToCycles :
@@ -384,20 +435,45 @@ lemma Hδ₂Toδ₁_Hδ₁ToCycles :
   rw [← cancel_mono (X.iCycles n₀ n₁ hn₁), assoc, Hδ₁ToCycles_iCycles, zero_comp]
   exact (X.shortComplex₂ n₀).zero
 
+@[reassoc (attr := simp)]
+lemma cyclesCoToHδ₁_Hδ₁Toδ₀ :
+    X.cyclesCoToHδ₁ n₀ n₁ hn₁ ≫ whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁) = 0 := by
+  rw [← cancel_epi (X.pCyclesCo n₀ n₁ hn₁), pCyclesCo_cyclesCoToHδ₁_assoc, comp_zero]
+  exact (X.shortComplex₂ n₁).zero
+
+@[reassoc (attr := simp)]
+lemma cyclesCoToHδ₁_Hδ₁Toδ₀_app (D : Arrow₂ ι) :
+    (X.cyclesCoToHδ₁ n₀ n₁ hn₁).app D ≫ (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁)).app D = 0 :=
+  congr_app (X.cyclesCoToHδ₁_Hδ₁Toδ₀ n₀ n₁ hn₁) D
+
 @[simps]
 noncomputable def cokernelSequenceCycles : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.Hδ₂Toδ₁_Hδ₁ToCycles n₀ n₁ hn₁)
 
+@[simps]
+noncomputable def kernelSequenceCyclesCo : ShortComplex (Arrow₂ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.cyclesCoToHδ₁_Hδ₁Toδ₀ n₀ n₁ hn₁)
+
 pp_extended_field_notation cokernelSequenceCycles
+pp_extended_field_notation kernelSequenceCyclesCo
 
 instance : Epi (X.cokernelSequenceCycles n₀ n₁ hn₁).g := by
   dsimp only [cokernelSequenceCycles]
+  infer_instance
+
+instance : Mono (X.kernelSequenceCyclesCo n₀ n₁ hn₁).f := by
+  dsimp only [kernelSequenceCyclesCo]
   infer_instance
 
 lemma cokernelSequenceCycles_exact : (X.cokernelSequenceCycles n₀ n₁ hn₁).Exact := by
   apply ShortComplex.exact_of_g_is_cokernel
   exact IsColimit.ofIsoColimit (cokernelIsCokernel _)
     (Cofork.ext (X.cokernelIsoCycles n₀ n₁ hn₁) (by simp [Hδ₁ToCycles]))
+
+lemma kernelSequenceCyclesCo_exact : (X.kernelSequenceCyclesCo n₀ n₁ hn₁).Exact := by
+  apply ShortComplex.exact_of_f_is_kernel
+  exact IsLimit.ofIsoLimit (kernelIsKernel _)
+    (Fork.ext ((X.cyclesCoIsoKernel n₀ n₁ hn₁).symm) (by simp [cyclesCoToHδ₁]))
 
 @[simps!]
 noncomputable def δ₀PullbackCokernelSequenceCycles :
@@ -433,6 +509,14 @@ lemma comp_ψ_app (D : Arrow₃ ι) :
   (X.Hδ₁ToCycles n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D) ≫ (X.Ψ n₀ n₁ hn₁).app D =
     (X.δ n₀ n₁ hn₁).app (Arrow₃.δ₂.obj D) ≫ (X.pCyclesCo n₀ n₁ hn₁).app (Arrow₃.δ₃.obj D) :=
   congr_app (X.comp_Ψ n₀ n₁ hn₁) D
+
+@[reassoc (attr := simp)]
+lemma ψ_comp_app (D : Arrow₃ ι) :
+    (X.Ψ n₀ n₁ hn₁).app D ≫ (X.cyclesCoToHδ₁ n₀ n₁ hn₁).app (Arrow₃.δ₃.obj D) =
+      (X.iCycles n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D) ≫ (X.δ n₀ n₁ hn₁).app (Arrow₃.δ₁.obj D) := by
+  rw [← cancel_epi ((X.Hδ₁ToCycles n₀ n₁ hn₁).app (Arrow₃.δ₀.obj D)), comp_ψ_app_assoc,
+    pCyclesCo_cyclesCoToHδ₁_app, Hδ₁ToCycles_iCycles_app_assoc]
+  exact ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₂Toδ₁.app D)).symm
 
 @[simps]
 noncomputable def shortComplex₄Ψ : ShortComplex₄ (Arrow₃ ι ⥤ C) where
@@ -509,18 +593,92 @@ lemma shortComplex₄Ψ_exact₁ : (X.shortComplex₄Ψ n₀ n₁ hn₁).shortCo
     Hδ₁ToCycles_iCycles_app]
   erw [X.zero₂ n₀ (Arrow₂.mk f₂ f₃), comp_zero, comp_zero]
 
-/-lemma shortComplex₄Ψ_exact₂ : (X.shortComplex₄Ψ n₀ n₁ hn₁).shortComplex₂.Exact := by
-  sorry
+lemma shortComplex₄Ψ_exact₂ : (X.shortComplex₄Ψ n₀ n₁ hn₁).shortComplex₂.Exact := by
+  rw [exact_iff_exact_evaluation]
+  rintro ⟨f₁, f₂, f₃⟩
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A₀ x₀ hx₀
+  dsimp [Arrow₃.δ₃] at x₀ hx₀
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ = x₀ ≫ (X.cyclesCoToHδ₁ n₀ n₁ hn₁).app (Arrow₂.mk f₁ f₂) := ⟨_, rfl⟩
+  obtain ⟨A₁, π₁, hπ₁, x₂, hx₂⟩ :=
+    (X.exact₁ n₀ n₁ hn₁ (Arrow₂.mk (f₁ ≫ f₂) f₃)).exact_up_to_refinements x₁ (by
+      dsimp
+      let e : Arrow.mk ((f₁ ≫ f₂) ≫ f₃) ≅ Arrow.mk (f₁ ≫ f₂ ≫ f₃) :=
+        Arrow.isoMk (Iso.refl _) (Iso.refl _) (by simp)
+      have eq := x₀ ≫= (X.cyclesCoToHδ₁ n₀ n₁ hn₁).naturality
+        (Arrow₃.δ₃Toδ₂.app (Arrow₃.mk f₁ f₂ f₃)) =≫ (X.H n₁).map e.inv
+      simp only [assoc, reassoc_of% hx₀, zero_comp, Functor.comp_map, ← Functor.map_comp] at eq
+      simp only [hx₁, assoc, eq]
+      congr
+      ext <;> dsimp <;> simp)
+  dsimp at x₂ hx₂
+  have := (X.δ n₀ n₁ hn₁).app (Arrow₂.mk (f₁ ≫ f₂) f₃)
+  refine' ⟨A₁, π₁, hπ₁,
+    (X.kernelSequenceCycles_obj_exact n₀ n₁ hn₁ (Arrow₂.mk f₂ f₃)).lift x₂ _, _⟩
+  . dsimp
+    have eq := (X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₁Toδ₀.app (Arrow₃.mk f₁ f₂ f₃))
+    dsimp at eq
+    erw [Functor.map_id, id_comp] at eq
+    erw [eq, ← reassoc_of% hx₂, hx₁]
+    rw [assoc]
+    erw [X.cyclesCoToHδ₁_Hδ₁Toδ₀_app n₀ n₁ hn₁ (Arrow₂.mk f₁ f₂), comp_zero, comp_zero]
+  . dsimp
+    rw [← cancel_mono ((X.cyclesCoToHδ₁ n₀ n₁ hn₁).app (Arrow₂.mk f₁ f₂)), assoc]
+    simp only [← hx₁, hx₂]
+    erw [assoc, X.ψ_comp_app n₀ n₁ hn₁ (Arrow₃.mk f₁ f₂ f₃), ShortComplex.Exact.lift_f_assoc]
+    rfl
 
 lemma shortComplex₄Ψ_exact : (X.shortComplex₄Ψ n₀ n₁ hn₁).Exact where
-  exact₁ := X.shortComplex₄Ψ_exact₁ n₀ n₁ hn₁
-  exact₂ := X.shortComplex₄Ψ_exact₂ n₀ n₁ hn₁
+  exact₂ := X.shortComplex₄Ψ_exact₁ n₀ n₁ hn₁
+  exact₃ := X.shortComplex₄Ψ_exact₂ n₀ n₁ hn₁
 
-noncomputable def Φ : cokernel (whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n₀ n₁ hn₁)) ≅
-    kernel (whiskerRight Arrow₃.δ₃Toδ₂ (X.cyclesCo n₀ n₁ hn₁)) :=
+noncomputable def srcΦ := cokernel (whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n₀ n₁ hn₁))
+noncomputable def tgtΦ := kernel (whiskerRight Arrow₃.δ₃Toδ₂ (X.cyclesCo n₀ n₁ hn₁))
+
+noncomputable def toSrcΦ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ X.srcΦ n₀ n₁ hn₁ := cokernel.π _
+noncomputable def fromTgtΦ : X.tgtΦ n₀ n₁ hn₁ ⟶ Arrow₃.δ₃ ⋙ X.cyclesCo n₀ n₁ hn₁ := kernel.ι _
+
+@[reassoc (attr := simp)]
+lemma comp_toSrcΦ :
+    whiskerRight Arrow₃.δ₁Toδ₀ (X.cycles n₀ n₁ hn₁) ≫ X.toSrcΦ n₀ n₁ hn₁ = 0 :=
+  cokernel.condition _
+
+@[reassoc (attr := simp)]
+lemma comp_toSrcΦ_app (D : Arrow₃ ι) :
+    (X.cycles n₀ n₁ hn₁).map (Arrow₃.δ₁Toδ₀.app D) ≫ (X.toSrcΦ n₀ n₁ hn₁).app D = 0 :=
+  congr_app (X.comp_toSrcΦ n₀ n₁ hn₁) D
+
+@[reassoc (attr := simp)]
+lemma fromTgtΦ_comp :
+    X.fromTgtΦ n₀ n₁ hn₁ ≫ whiskerRight Arrow₃.δ₃Toδ₂ (X.cyclesCo n₀ n₁ hn₁)  = 0 :=
+  kernel.condition _
+
+@[reassoc (attr := simp)]
+lemma fromTgtΦ_comp_app (D : Arrow₃ ι) :
+    (X.fromTgtΦ n₀ n₁ hn₁).app D ≫ (X.cyclesCo n₀ n₁ hn₁).map (Arrow₃.δ₃Toδ₂.app D) = 0 :=
+  congr_app (X.fromTgtΦ_comp n₀ n₁ hn₁) D
+
+noncomputable def cokernelSequenceSrcΦ : ShortComplex (Arrow₃ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.comp_toSrcΦ n₀ n₁ hn₁)
+
+noncomputable def kernelSequenceTgtΦ : ShortComplex (Arrow₃ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.fromTgtΦ_comp n₀ n₁ hn₁)
+
+pp_extended_field_notation cokernelSequenceSrcΦ
+pp_extended_field_notation kernelSequenceTgtΦ
+
+lemma cokernelSequenceSrcΦ_exact :
+    (X.cokernelSequenceSrcΦ n₀ n₁ hn₁).Exact :=
+  ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
+
+lemma kernelSequenceTgtΦ_exact :
+    (X.kernelSequenceTgtΦ n₀ n₁ hn₁).Exact :=
+  ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
+
+noncomputable def Φ : X.srcΦ n₀ n₁ hn₁ ≅ X.tgtΦ n₀ n₁ hn₁ :=
   (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
 
-pp_extended_field_notation Φ-/
+pp_extended_field_notation Φ
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
