@@ -1718,6 +1718,7 @@ import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Torsion
+import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
