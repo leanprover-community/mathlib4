@@ -382,7 +382,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `Num`s by transfering them to the `Nat` world and
+This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
 then trying to call `simp`.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
@@ -596,8 +596,8 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `PosNum`s by transfering them to the `Nat` world and
-then trying to call `simp`.
+This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
+and then trying to call `simp`.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
@@ -1376,13 +1376,11 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
   | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b <;>
-        dsimp <;>
-      [simp, exact congr_arg pos, simp [GT.gt]]
+    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
+    cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
-    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]; cases PosNum.cmp b a <;>
-        dsimp <;>
-      [simp, simp (config := { contextual := true }), simp [GT.gt]]
+    have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
+    cases PosNum.cmp b a <;> dsimp <;> [simp; simp (config := { contextual := true }); simp [GT.gt]]
   | pos a, 0 => PosNum.cast_pos _
   | pos a, neg b => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg b => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -1431,7 +1429,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [cast_add] | rw [mul_to_int] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `ZNum`s by transfering them to the `Int` world and
+This tactic tries to prove (in)equalities about `ZNum`s by transferring them to the `Int` world and
 then trying to call `simp`.
 ```lean
 example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by

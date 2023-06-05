@@ -95,7 +95,7 @@ protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = 
     fun h ↦ eq_bot_iff.mpr fun x hx ↦ (mem_bot R).mpr (h x hx)⟩
 #align submodule.eq_bot_iff Submodule.eq_bot_iff
 
-@[ext]
+@[ext high]
 protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
   rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
   rw [(Submodule.eq_bot_iff _).mp rfl x xm]

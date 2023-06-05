@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module algebra.star.module
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
+! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -78,8 +78,8 @@ end SmulLemmas
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
 @[simps]
-def starLinearEquiv (R : Type _) {A : Type _} [CommRing R] [StarRing R] [Semiring A] [StarRing A]
-    [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
+def starLinearEquiv (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid A]
+    [StarAddMonoid A] [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
   { starAddEquiv with
     toFun := star
     map_smul' := star_smul }

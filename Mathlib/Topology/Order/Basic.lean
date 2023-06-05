@@ -11,6 +11,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Order.Filter.Interval
+import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Support
 import Mathlib.Topology.Algebra.Order.LeftRight
 
@@ -973,7 +974,7 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le {f g h : β → α} {b : Filte
 #align tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_of_tendsto_of_tendsto_of_le_of_le
 
 theorem nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
-    𝓝 a = ⨅ (l) (_h₂ : l < a) (u) (_h₂ : a < u), 𝓟 (Ioo l u) := by
+    𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
   simp only [nhds_eq_order, ← inf_biInf, ← biInf_inf, *, ← inf_principal, ← Ioi_inter_Iio]; rfl
 #align nhds_order_unbounded nhds_order_unbounded
 
@@ -1080,7 +1081,7 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
-    𝓝[≥] a = (⨅ (u) (_hu : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
+    𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
   refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
@@ -1092,7 +1093,7 @@ theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology �
 #align nhds_within_Iic_eq'' nhdsWithin_Iic_eq''
 
 theorem nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
-    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_hu : a < u), 𝓟 (Ico a u) := by
+    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsWithin_Ici_eq'', biInf_inf ha, inf_principal, Iio_inter_Ici]
 #align nhds_within_Ici_eq' nhdsWithin_Ici_eq'
 
@@ -1590,16 +1591,23 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Ioo a b] a,
       ∃ u ∈ Ioc a b, Ioo a u ⊆ s,
       ∃ u ∈ Ioi a, Ioo a u ⊆ s] := by
-  rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab, nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> try { exact id }
-  · rw [nhdsWithin, mem_inf_principal]
-    intro h
-    rcases exists_Ico_subset_of_mem_nhds' h hab with ⟨u, au, hu⟩
-    exact ⟨u, au, fun x hx => hu (Ioo_subset_Ico_self hx) hx.1⟩
-  · rintro ⟨u, hu, hs⟩
-    exact ⟨u, hu.1, hs⟩
-  · rintro ⟨u, hu, hs⟩
-    exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi' hu) hs
+  tfae_have 1 ↔ 2
+  · rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab]
+  tfae_have 1 ↔ 3
+  · rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
+  tfae_have 4 → 5
+  · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 5 → 1
+  · rintro ⟨u, hau, hu⟩
+    exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
+  tfae_have 1 → 4
+  · intro h
+    rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
+    rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
+    refine' ⟨u, au, fun x hx => _⟩
+    refine' hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
+    exact hx.1
+  tfae_finish
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
 theorem mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
@@ -1729,14 +1737,20 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
       ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
-  rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab, nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> try { exact id }
-  · rw [nhdsWithin, mem_inf_principal]
-    intro h
-    rcases exists_Ico_subset_of_mem_nhds' h hab with ⟨u, au, hu⟩
-    exact ⟨u, au, fun x hx => hu hx hx.1⟩
-  · rintro ⟨u, hu, hs⟩; exact ⟨u, hu.1, hs⟩
-  · rintro ⟨u, hu, hs⟩; exact mem_of_superset (Ico_mem_nhdsWithin_Ici' hu) hs
+  tfae_have 1 ↔ 2
+  · rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab]
+  tfae_have 1 ↔ 3
+  · rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
+  tfae_have 1 ↔ 5
+  · exact (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
+  tfae_have 4 → 5
+  · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 5 → 4
+  · rintro ⟨u, hua, hus⟩
+    exact
+      ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
+        (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
+  tfae_finish
 #align tfae_mem_nhds_within_Ici TFAE_mem_nhdsWithin_Ici
 
 theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :

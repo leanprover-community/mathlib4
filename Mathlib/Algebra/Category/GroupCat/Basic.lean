@@ -65,6 +65,10 @@ instance (X : GroupCat) : Group X := X.str
 instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
+@[to_additive]
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
@@ -206,6 +210,10 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+show FunLike (X →* Y) X (fun _ => Y) from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -416,7 +424,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.AddCommGroup_iso_to_add_equiv CategoryTheory.Iso.addCommGroupIsoToAddEquiv
 
-/-- Build an `AddEquiv` from an isomorphism\nin the category `AddCommGroup`. -/
+/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/
 add_decl_doc addCommGroupIsoToAddEquiv
 
 end CategoryTheory.Iso
