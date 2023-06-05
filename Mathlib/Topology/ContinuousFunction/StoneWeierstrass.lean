@@ -209,14 +209,14 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- and still equal to `f x` at `x`.
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
-  let ys : ∀ x, Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
+  let ys : ∀ _, Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
   let ys_w : ∀ x, (⋃ y ∈ ys x, U x y) = ⊤ := fun x =>
     (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
   have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
     Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
   -- and `h x x = f x`.
-  let h : ∀ x, L := fun x =>
+  let h : ∀ _, L := fun x =>
     ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
       Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
@@ -227,12 +227,14 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
-  let W : ∀ x, Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
+  let W : ∀ _, Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
     refine' IsOpen.mem_nhds _ _
-    · apply isOpen_lt <;> continuity
+    · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
+      apply isOpen_lt (continuous_set_coe _ _)
+      continuity
     · dsimp only [Set.mem_setOf_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
@@ -260,7 +262,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
   · dsimp
     simp only [Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
-    intro x xm
+    rintro x -
     apply lt_h
 #align continuous_map.sublattice_closure_eq_top ContinuousMap.sublattice_closure_eq_top
 
