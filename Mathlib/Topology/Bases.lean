@@ -472,7 +472,7 @@ theorem isTopologicalBasis_iInf {β : Type _} {ι : Type _} {X : ι → Type _}
     (cond : ∀ i, IsTopologicalBasis (T i)) (f : ∀ i, β → X i) :
     @IsTopologicalBasis β (⨅ i, induced (f i) (t i))
       { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_hi : i ∈ F), f i ⁻¹' U i } := by
+        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
   letI := ⨅ i, induced (f i) (t i)
   convert (isTopologicalBasis_pi cond).inducing (inducing_iInf_to_pi f)
   ext V

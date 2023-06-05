@@ -984,10 +984,6 @@ theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n :=
   simp
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
--- HACK: CovariantClass lemma times out sigh
--- Investigate this during lean4#2210 cleanup.
-attribute [nolint simpNF] lt_add_one_iff add_one_lt_iff
-
 @[simp]
 theorem le_zero_iff {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩

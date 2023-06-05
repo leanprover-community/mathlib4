@@ -291,7 +291,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 #align box_integral.box.is_some_iff BoxIntegral.Box.isSome_iff
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
-    (⋃ (J : Box ι) (_hJ : ↑J = I), (J : Set (ι → ℝ))) = I := by
+    (⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ))) = I := by
   induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
 #align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
 

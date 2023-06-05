@@ -310,7 +310,7 @@ theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftL
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
 def length (s : Set ℝ) : ℝ≥0∞ :=
-  ⨅ (a) (b) (_h : s ⊆ Ioc a b), ofReal (f b - f a)
+  ⨅ (a) (b) (_ : s ⊆ Ioc a b), ofReal (f b - f a)
 #align stieltjes_function.length StieltjesFunction.length
 
 @[simp]
@@ -609,8 +609,8 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
 
-instance instLocallyFiniteMeasure : LocallyFiniteMeasure f.measure :=
+instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
-#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instLocallyFiniteMeasure
+#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
 
 end StieltjesFunction
