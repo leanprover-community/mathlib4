@@ -179,10 +179,10 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     refine' (List.prod_map_hom _ _ _).trans _ -- porting note: this used to be in the `rw`
     refine' congrArg ϕ (Subtype.coe_injective _)
     simp only -- porting note: added `simp only`
-    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, (zpowers g).coe_mk,
+    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
       index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
-    simp only [Finset.coe_list_prod, List.map_map, ← minimalPeriod_eq_card]
+    simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
     congr
     funext
     apply key
