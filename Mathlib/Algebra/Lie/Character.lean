@@ -43,10 +43,14 @@ abbrev LieCharacter :=
 
 variable {R L}
 
-@[simp]
+-- @[simp] -- Porting note: simp normal form is `lieCharacter_apply_lie'`
 theorem lieCharacter_apply_lie (χ : LieCharacter R L) (x y : L) : χ ⁅x, y⁆ = 0 := by
   rw [LieHom.map_lie, LieRing.of_associative_ring_bracket, mul_comm, sub_self]
 #align lie_algebra.lie_character_apply_lie LieAlgebra.lieCharacter_apply_lie
+
+@[simp]
+theorem lieCharacter_apply_lie' (χ : LieCharacter R L) (x y : L) : ⁅χ x, χ y⁆ = 0 := by
+  rw [LieRing.of_associative_ring_bracket, mul_comm, sub_self]
 
 theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
@@ -60,7 +64,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
 #align lie_algebra.lie_character_apply_of_mem_derived LieAlgebra.lieCharacter_apply_of_mem_derived
 
 /-- For an Abelian Lie algebra, characters are just linear forms. -/
-@[simps! apply symm_apply left_inv right_inv]
+@[simps! apply symm_apply]
 def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.Dual R L where
   toFun χ := (χ : L →ₗ[R] R)
   invFun ψ :=
