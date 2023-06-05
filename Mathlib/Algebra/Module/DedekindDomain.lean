@@ -65,7 +65,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
 #align submodule.is_internal_prime_power_torsion_of_is_torsion_by_ideal Submodule.isInternal_prime_power_torsion_of_is_torsion_by_ideal
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
-`p i ^ e i`-torsion submodules where `p i` are factors of `(⊤ : submodule R M).annihilator` and
+`p i ^ e i`-torsion submodules where `p i` are factors of `(⊤ : Submodule R M).annihilator` and
 `e i` are their multiplicities. -/
 theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
