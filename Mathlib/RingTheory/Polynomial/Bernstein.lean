@@ -378,9 +378,10 @@ theorem sum_mul_smul (n : ℕ) :
       map_mul, map_add]
   -- On the right hand side, we'll just simplify.
   · simp only [pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
-      (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero, mul_one,
-      Derivation.map_smul_of_tower, map_nsmul, map_pow, map_add, Bool.cond_true, Bool.cond_false,
-      MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow, smul_smul, smul_one_mul]
+      (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero,
+      mul_one, Derivation.map_smul_of_tower, map_nsmul, map_pow, map_add, Bool.cond_true,
+      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow, smul_smul,
+      smul_one_mul]
 #align bernstein_polynomial.sum_mul_smul bernsteinPolynomial.sum_mul_smul
 
 /-- A certain linear combination of the previous three identities,
