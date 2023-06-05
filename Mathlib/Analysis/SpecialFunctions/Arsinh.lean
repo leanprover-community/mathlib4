@@ -22,7 +22,7 @@ inverse, arsinh.
 - `Real.arsinh`: The inverse function of `Real.sinh`.
 
 - `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
-  `OrderIso` and `Homeomorph`, respectively.
+  `OrderIso`, and `Homeomorph`, respectively.
 
 ## Main Results
 
@@ -52,7 +52,7 @@ namespace Real
 variable {x y : ℝ}
 
 /-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
--- @[pp_nodot]
+-- @[pp_nodot] is no longer needed
 def arsinh (x : ℝ) :=
   log (x + sqrt (1 + x ^ 2))
 #align real.arsinh Real.arsinh
@@ -60,9 +60,8 @@ def arsinh (x : ℝ) :=
 theorem exp_arsinh (x : ℝ) : exp (arsinh x) = x + sqrt (1 + x ^ 2) := by
   apply exp_log
   rw [← neg_lt_iff_pos_add']
-  calc
-    -x ≤ sqrt (x ^ 2) := le_sqrt_of_sq_le (by linarith)
-    _ < sqrt (1 + x ^ 2) := sqrt_lt_sqrt (sq_nonneg _) (lt_one_add _)
+  apply lt_sqrt_of_sq_lt
+  simp
 #align real.exp_arsinh Real.exp_arsinh
 
 @[simp]
@@ -114,14 +113,14 @@ def sinhEquiv : ℝ ≃ ℝ where
 #align real.sinh_equiv Real.sinhEquiv
 
 /-- `Real.sinh` as an `OrderIso`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def sinhOrderIso : ℝ ≃o ℝ where
   toEquiv := sinhEquiv
   map_rel_iff' := @sinh_le_sinh
 #align real.sinh_order_iso Real.sinhOrderIso
 
 /-- `Real.sinh` as a `Homeomorph`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def sinhHomeomorph : ℝ ≃ₜ ℝ :=
   sinhOrderIso.toHomeomorph
 #align real.sinh_homeomorph Real.sinhHomeomorph
