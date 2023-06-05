@@ -58,6 +58,10 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 
+/-- Short-hand for applying a constant to the goal. -/
+def applyConst (mvar : MVarId) (c : Name) (cfg : ApplyConfig := {}) : MetaM (List MVarId) := do
+  mvar.apply (← mkConstWithFreshMVarLevels c) cfg
+
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
@@ -150,14 +154,13 @@ and then builds the lambda telescope term for the new term.
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
 
+
+/-- Get the type the given metavariable after instantiating metavariables and cleaning up
+annotations. -/
+def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
+  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
+
 end Lean.Meta
-
-section SynthInstance
-
-/-- Elaborate the following term with `set_option synthInstance.etaExperiment true`. -/
-macro "eta_experiment% " a:term : term => `(term|set_option synthInstance.etaExperiment true in $a)
-
-end SynthInstance
 
 namespace Lean.Elab.Tactic
 

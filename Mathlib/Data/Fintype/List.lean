@@ -20,7 +20,7 @@ admits a `Fintype` instance.
 
 ## Implementation details
 To construct the `Fintype` instance, a function lifting a `Multiset α`
-to the `Finset (list α)` that can construct it is provided.
+to the `Finset (List α)` that can construct it is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 In general, a `DecidableEq` instance is not necessary to define this function,
@@ -59,7 +59,7 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 end Multiset
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
-  Fintype.subtype ((Finset.univ : Finset α).powerset.bunionᵢ fun s => s.val.lists) fun l => by
+  Fintype.subtype ((Finset.univ : Finset α).powerset.biUnion fun s => s.val.lists) fun l => by
     suffices (∃ a : Finset α, a.val = ↑l) ↔ l.Nodup by simpa
     constructor
     · rintro ⟨s, hs⟩

@@ -47,7 +47,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
     apply Faithful.map_injective (F := forget Profinite)
-    simp only [forget_map_eq_coe, ContinuousMap.coe_mk, coe_comp]
+    simp only [ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
     let g'' : ContinuousMap Y Z := g

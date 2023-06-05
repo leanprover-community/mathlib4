@@ -47,7 +47,7 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
     pure g₂.mvarId!
 
 /--
-Tries to generate a `nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
+Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
@@ -97,7 +97,7 @@ example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   assumption
 ```
 -/
-syntax (name := nontriviality) "nontriviality" (ppSpace (colGt term))?
+syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
   (" using " Parser.Tactic.simpArg,+)? : tactic
 
 /-- Elaborator for the `nontriviality` tactic. -/

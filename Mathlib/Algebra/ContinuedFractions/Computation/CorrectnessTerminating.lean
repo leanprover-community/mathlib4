@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Correctness of Terminating Continued Fraction Computations (`generalized_continued_fraction.of`)
+# Correctness of Terminating Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
 
 ## Summary
 
@@ -77,16 +77,16 @@ protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
 variable [FloorRing K]
 
 /-- Just a computational lemma we need for the next main proof. -/
-protected theorem comp_exact_value_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
+protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
     (fract_a_ne_zero : Int.fract a ≠ 0) :
     ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a := by
   field_simp [fract_a_ne_zero]
   rw [Int.fract]
   ring
-#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GeneralizedContinuedFraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp
+#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some_aux_comp
 
 open GeneralizedContinuedFraction
-  (compExactValue comp_exact_value_correctness_of_stream_eq_some_aux_comp)
+  (compExactValue compExactValue_correctness_of_stream_eq_some_aux_comp)
 
 /-- Shows the correctness of `compExactValue` in case the continued fraction
 `GeneralizedContinuedFraction.of v` did not terminate at position `n`. That is, we obtain the
@@ -187,9 +187,9 @@ theorem compExactValue_correctness_of_stream_eq_some :
       rw [this]
       -- two calculations needed to show the claim
       have tmp_calc :=
-        comp_exact_value_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
+        compExactValue_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
       have tmp_calc' :=
-        comp_exact_value_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
+        compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
       have f_ne_zero : f ≠ 0 := by simpa using ifp_succ_n_fr_ne_zero
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
@@ -219,10 +219,10 @@ open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_s
 `IntFractPair.stream` of the corresponding continued fraction terminated at step `n`. -/
 theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.stream v n = none) :
     v = (of v).convergents (n - 1) := by
-  induction' n with n IH
-  case zero => contradiction
+  induction n with
+  | zero => contradiction
   -- IntFractPair.stream v 0 ≠ none
-  case succ =>
+  | succ n IH =>
     let g := of v
     change v = g.convergents n
     have :

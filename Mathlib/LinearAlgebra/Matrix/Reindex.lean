@@ -154,7 +154,6 @@ theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m R) (N : Matrix m m R) 
 
 end Algebra
 
-set_option synthInstance.etaExperiment true in
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.

@@ -226,9 +226,9 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
     (adj2 : F ⊣ G') (x : D) :
     (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x := by
   apply Quiver.Hom.op_inj
-  -- Porting note: is `convert` more aggresive in Lean4?
   convert homEquiv_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ F adj2)
-    (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x) using 1
+    (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x)
+  -- Porting note: was `simpa`
   simp only [opAdjointOpOfAdjoint, Functor.op_obj, Opposite.unop_op, mkOfHomEquiv_unit_app,
     Equiv.trans_apply, homEquiv_counit, Functor.id_obj]
   erw [F.map_id] -- Porting note: Yet another `erw`...

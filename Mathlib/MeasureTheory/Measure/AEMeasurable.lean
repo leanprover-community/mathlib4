@@ -79,7 +79,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     rw [measure_toMeasurable]
     exact (h i).ae_eq_mk
   have hsm : MeasurableSet (⋂ i, s i) :=
-    MeasurableSet.interᵢ fun i => measurableSet_toMeasurable _ _
+    MeasurableSet.iInter fun i => measurableSet_toMeasurable _ _
   have hs : ∀ i x, x ∉ s i → f x = (h i).mk f x := by
     intro i x hx
     contrapose! hx
@@ -89,15 +89,15 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   · rw [restrict_piecewise]
     simp only [Set.restrict, const]
     exact measurable_const
-  · rw [restrict_piecewise_compl, compl_interᵢ]
+  · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
     refine'
       ⟨⋃ i, (h i).mk f ⁻¹' t ∩ s iᶜ,
-        MeasurableSet.unionᵢ fun i =>
+        MeasurableSet.iUnion fun i =>
           (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl,
         _⟩
     ext ⟨x, hx⟩
-    simp only [mem_preimage, mem_unionᵢ, Subtype.coe_mk, Set.restrict, mem_inter_iff,
+    simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
       mem_compl_iff] at hx⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩
@@ -108,7 +108,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   · refine' measure_mono_null (fun x (hx : f x ≠ g x) => _) (hsμ i)
     contrapose! hx
     refine' (piecewise_eq_of_not_mem _ _ _ _).symm
-    exact fun h => hx (mem_interᵢ.1 h i)
+    exact fun h => hx (mem_iInter.1 h i)
 #align ae_measurable.sum_measure AEMeasurable.sum_measure
 
 @[simp]
@@ -131,22 +131,22 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
 #align ae_measurable.add_measure AEMeasurable.add_measure
 
 @[measurability]
-protected theorem unionᵢ [Countable ι] {s : ι → Set α}
+protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_unionᵢ_le
-#align ae_measurable.Union AEMeasurable.unionᵢ
+  (sum_measure h).mono_measure <| restrict_iUnion_le
+#align ae_measurable.Union AEMeasurable.iUnion
 
 @[simp]
-theorem _root_.aemeasurable_unionᵢ_iff [Countable ι] {s : ι → Set α} :
+theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
     AEMeasurable f (μ.restrict (⋃ i, s i)) ↔ ∀ i, AEMeasurable f (μ.restrict (s i)) :=
-  ⟨fun h _ => h.mono_measure <| restrict_mono (subset_unionᵢ _ _) le_rfl, AEMeasurable.unionᵢ⟩
-#align ae_measurable_Union_iff aemeasurable_unionᵢ_iff
+  ⟨fun h _ => h.mono_measure <| restrict_mono (subset_iUnion _ _) le_rfl, AEMeasurable.iUnion⟩
+#align ae_measurable_Union_iff aemeasurable_iUnion_iff
 
 @[simp]
 theorem _root_.aemeasurable_union_iff {s t : Set α} :
     AEMeasurable f (μ.restrict (s ∪ t)) ↔
       AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) :=
-  by simp only [union_eq_unionᵢ, aemeasurable_unionᵢ_iff, Bool.forall_bool, cond, and_comm]
+  by simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 #align ae_measurable_union_iff aemeasurable_union_iff
 
 @[measurability]
@@ -320,10 +320,10 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     AEMeasurable g (μ.restrict (Ioi x)) := by
   haveI : Nonempty α := ⟨x⟩
   obtain ⟨u, hu_tendsto⟩ := exists_seq_tendsto (atTop : Filter α)
-  have Ioi_eq_unionᵢ : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
-    rw [unionᵢ_Ioc_eq_Ioi_self_iff.mpr _]
+  have Ioi_eq_iUnion : Ioi x = ⋃ n : ℕ, Ioc x (u n) := by
+    rw [iUnion_Ioc_eq_Ioi_self_iff.mpr _]
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_atTop y)).exists
-  rw [Ioi_eq_unionᵢ, aemeasurable_unionᵢ_iff]
+  rw [Ioi_eq_iUnion, aemeasurable_iUnion_iff]
   intro n
   cases' lt_or_le x (u n) with h h
   · exact g_meas (u n) h

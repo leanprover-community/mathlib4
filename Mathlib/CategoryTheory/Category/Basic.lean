@@ -12,8 +12,6 @@ Ported by: Scott Morrison
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.RestateAxiom
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Replace
 
 /-!
 # Categories
@@ -85,13 +83,9 @@ If it is omitted a "free" universe will be used.
 namespace Std.Tactic.Ext
 open Lean Elab Tactic
 
-/-- A wrapper for `ext` that will fail if it does not make progress. -/
--- After https://github.com/leanprover/std4/pull/33
--- we can just `` evalTactic (← `(tactic| ext))``
--- (But it would be good to have a name for that, too, so we can pass it to aesop.)
+/-- A wrapper for `ext` that we can pass to `aesop`. -/
 def extCore' : TacticM Unit := do
-  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
-  replaceMainGoal <| gs.map (·.1) |>.toList
+  evalTactic (← `(tactic| ext))
 
 end Std.Tactic.Ext
 
@@ -140,6 +134,11 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+
+-- Porting note:
+-- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
+-- now that etaExperiment is always on.
+attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
@@ -294,16 +293,12 @@ theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f �
 #align category_theory.cancel_mono CategoryTheory.cancel_mono
 
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_epi f` here.
-  convert @cancel_epi _ _ _ _ _ f _ h (𝟙 Y)
+  convert cancel_epi f
   simp
 #align category_theory.cancel_epi_id CategoryTheory.cancel_epi_id
 
 theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g = 𝟙 X := by
-  -- Porting note: `convert` became less powerful!
-  -- It used to suffice to write `cancel_mono f` here.
-  convert @cancel_mono _ _ _ _ _ f _ g (𝟙 X)
+  convert cancel_mono f
   simp
 #align category_theory.cancel_mono_id CategoryTheory.cancel_mono_id
 
@@ -386,7 +381,7 @@ One would usually hope that the same effect could be achieved simply with `simp`
 
 The essential issue is that composition of morphisms involves dependent types.
 When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
-then `simp` can operate succesfully on the morphisms
+then `simp` can operate successfully on the morphisms
 (e.g. if `f` is the identity it can strip that off).
 
 However if we have an equality of objects, say `Y = Y'`,
