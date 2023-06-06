@@ -8,13 +8,13 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Valuation.Integers
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.RingTheory.Localization.FractionRing
-import Mathbin.RingTheory.Localization.Integer
-import Mathbin.RingTheory.DiscreteValuationRing.Basic
-import Mathbin.RingTheory.Bezout
-import Mathbin.Tactic.FieldSimp
+import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.Bezout
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Valuation Rings
@@ -109,8 +109,7 @@ instance : Inv (ValueGroup A K) :=
 
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
-protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a :=
-  by
+protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
   rcases a with ⟨a⟩; rcases b with ⟨b⟩
   obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
   obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
@@ -178,8 +177,7 @@ noncomputable instance : LinearOrderedCommGroupWithZero (ValueGroup A K) :=
       rw [ha]; rfl }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
-def valuation : Valuation K (ValueGroup A K)
-    where
+def valuation : Valuation K (ValueGroup A K) where
   toFun := Quotient.mk''
   map_zero' := rfl
   map_one' := rfl
@@ -206,8 +204,7 @@ def valuation : Valuation K (ValueGroup A K)
       congr 1; ring
 #align valuation_ring.valuation ValuationRing.valuation
 
-theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x :=
-  by
+theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
   · rintro ⟨c, rfl⟩
     use c
@@ -324,8 +321,7 @@ theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) 
 variable (R)
 
 theorem iff_isInteger_or_isInteger :
-    ValuationRing R ↔ ∀ x : K, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ :=
-  by
+    ValuationRing R ↔ ∀ x : K, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹ := by
   constructor
   · intro H x
     obtain ⟨x : R, y, hy, rfl⟩ := IsFractionRing.div_surjective x
@@ -400,8 +396,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
     TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
-        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] :=
-  by
+        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2; · exact iff_is_integer_or_is_integer R _
   tfae_have 1 ↔ 3; · exact iff_dvd_total
   tfae_have 1 ↔ 4; · exact iff_ideal_total
@@ -445,8 +440,7 @@ section
 variable (K : Type u) [Field K]
 
 /-- A field is a valuation ring. -/
-instance (priority := 100) of_field : ValuationRing K :=
-  by
+instance (priority := 100) of_field : ValuationRing K := by
   constructor
   intro a b
   by_cases b = 0
@@ -461,8 +455,7 @@ section
 variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
-instance (priority := 100) of_discreteValuationRing : ValuationRing A :=
-  by
+instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
   constructor
   intro a b
   by_cases ha : a = 0; · use 0; right; simp [ha]
