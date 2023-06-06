@@ -109,10 +109,11 @@ noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBounds
   stronglyConvergesToInDegree n :=
     { hasInfinityPageAt := inferInstance
       filtration' := ιℤt ⋙ X.filtration' n
-      exists_isZero_filtration' := sorry
-      exists_isIso_filtration'_hom := sorry
-      π' := fun i pq hpq => by
-        sorry
+      exists_isZero_filtration' :=
+        ⟨0, X.isZero_filtration_obj_eq_bot Bounds.firstQuadrant _ _ (𝟙 _)⟩
+      exists_isIso_filtration'_hom :=
+        ⟨n + 1, X.isIso_filtrationι Bounds.firstQuadrant _ _ (homOfLE (by simp))⟩
+      π' := fun i pq hpq => sorry
       epi_π' := sorry
       comp_π' := sorry
       exact' := sorry }
