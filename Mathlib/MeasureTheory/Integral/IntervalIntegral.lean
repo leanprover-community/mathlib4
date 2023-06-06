@@ -1040,17 +1040,19 @@ special case of the dominated convergence theorem). -/
 theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
-  refine'
-    hasSum_integral_of_dominated_convergence
-      (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
-      (fun i => (map_continuous <| f i).aestronglyMeasurable)
-      (fun i => ae_of_all _ fun x hx =>
-        ((f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)).norm_coe_le_norm
-          ⟨x, ⟨hx.1.le, hx.2⟩⟩)
-      (ae_of_all _ fun x hx => hf_sum) intervalIntegrable_const
-      (ae_of_all _ fun x hx => Summable.hasSum _)
-  -- next line is slow, & doesn't work with "exact" in place of "apply" -- ?
-  apply ContinuousMap.summable_apply (summable_of_summable_norm hf_sum) ⟨x, ⟨hx.1.le, hx.2⟩⟩
+  apply hasSum_integral_of_dominated_convergence
+    (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
+    (fun i => (map_continuous <| f i).aestronglyMeasurable)
+  · refine fun i => ae_of_all _ fun x hx => ?_
+    apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
+    exact ⟨hx.1.le, hx.2⟩
+  · exact ae_of_all _ fun x _ => hf_sum
+  · exact intervalIntegrable_const
+  · refine ae_of_all _ fun x hx => Summable.hasSum ?_
+    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap; exact ⟨hx.1.le, hx.2⟩
+    have := summable_of_summable_norm hf_sum
+    simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
+      using ContinuousMap.summable_apply this x
 #align interval_integral.has_sum_interval_integral_of_summable_norm intervalIntegral.hasSum_intervalIntegral_of_summable_norm
 
 theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
