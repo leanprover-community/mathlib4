@@ -166,7 +166,8 @@ def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : (J.plusObj P)
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
   dsimp [mk, plusObj]
-  erw [← comp_apply, ι_colimMap_assoc, colimit.ι_pre]
+  erw [← comp_apply]
+  rw [ι_colimMap_assoc, colimit.ι_pre]
   simp_rw [comp_apply]
   apply congr_arg
   apply (Meq.equiv P _).injective
