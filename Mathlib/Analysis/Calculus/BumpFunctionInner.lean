@@ -482,35 +482,43 @@ theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
   f.eventuallyEq_one_of_mem_ball (mem_ball_self f.rIn_pos)
 #align cont_diff_bump.eventually_eq_one ContDiffBump.eventuallyEq_one
 
+-- porting note: new lemma
 /-- `cont_diff_bump` is `𝒞ⁿ` in all its arguments. -/
-protected theorem ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)} {x : X}
-    (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).R) x)
-    (hR : ContDiffAt ℝ n (fun x => (f x).r) x) (hg : ContDiffAt ℝ n g x) :
+protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
+    {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)
+    (hr : ContDiffWithinAt ℝ n (fun x => (f x).rIn) s x)
+    (hR : ContDiffWithinAt ℝ n (fun x => (f x).rOut) s x)
+    (hg : ContDiffWithinAt ℝ n g s x) :
+    ContDiffWithinAt ℝ n (fun x => f x (g x)) s x := by
+  change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
+    ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) s x
+  have A : ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x)) ∈ Ioi (1 : ℝ) ×ˢ (univ : Set E) :=
+    ⟨(f x).one_lt_rOut_div_rIn, mem_univ _⟩
+  have B : Ioi (1 : ℝ) ×ˢ univ ∈ 𝓝 ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x)) :=
+    (isOpen_Ioi.prod isOpen_univ).mem_nhds A
+  apply (((someContDiffBumpBase E).smooth.contDiffAt B).of_le le_top).comp_contDiffWithinAt x
+  exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
+
+/-- `cont_diff_bump` is `𝒞ⁿ` in all its arguments. -/
+protected theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)} {x : X}
+    (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).rIn) x)
+    (hR : ContDiffAt ℝ n (fun x => (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
     ContDiffAt ℝ n (fun x => f x (g x)) x := by
-  rcases eq_or_ne (g x) (c x) with (hx | hx)
-  · have : (fun x => f x (g x)) =ᶠ[𝓝 x] fun x => 1 := by
-      have : dist (g x) (c x) < (f x).R := by simp_rw [hx, dist_self, (f x).r_pos]
-      have :=
-        ContinuousAt.eventually_lt (hg.continuous_at.dist hc.continuous_at) hr.continuous_at this
-      exact eventually_of_mem this fun x hx => (f x).one_of_mem_closedBall (mem_set_of_eq.mp hx).le
-    exact cont_diff_at_const.congr_of_eventually_eq this
-  · change
-      ContDiffAt ℝ n
-        (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
-          ((f x).r / (f x).R, (f x).R⁻¹ • (g x - c x)))
-        x
-    have A : ((f x).r / (f x).R, (f x).R⁻¹ • (g x - c x)) ∈ Ioi (1 : ℝ) ×ˢ (univ : Set E) := by
-      simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using (f x).one_lt_r_div_r
-    have B : Ioi (1 : ℝ) ×ˢ (univ : Set E) ∈ 𝓝 ((f x).r / (f x).R, (f x).R⁻¹ • (g x - c x)) :=
-      (is_open_Ioi.prod isOpen_univ).mem_nhds A
-    apply
-      ((((someContDiffBumpBase E).smooth.contDiffWithinAt A).contDiffAt B).of_le le_top).comp x _
-    exact (hR.div hr (f x).r_pos.ne').Prod ((hr.inv (f x).r_pos.ne').smul (hg.sub hc))
+  change ContDiffAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
+    ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) x
+  have A : ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x)) ∈ Ioi (1 : ℝ) ×ˢ (univ : Set E) :=
+    ⟨(f x).one_lt_rOut_div_rIn, mem_univ _⟩
+  have B : Ioi (1 : ℝ) ×ˢ univ ∈ 𝓝 ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x)) :=
+    (isOpen_Ioi.prod isOpen_univ).mem_nhds A
+  apply ((((someContDiffBumpBase E).smooth.contDiffWithinAt A).contDiffAt B).of_le le_top).comp x
+  exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 #align cont_diff_at.cont_diff_bump ContDiffAt.contDiffBump
 
-theorem ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)} (hc : ContDiff ℝ n c)
-    (hr : ContDiff ℝ n fun x => (f x).R) (hR : ContDiff ℝ n fun x => (f x).r)
-    (hg : ContDiff ℝ n g) : ContDiff ℝ n fun x => f x (g x) := by rw [contDiff_iff_contDiffAt] at *;
+theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
+    (hc : ContDiff ℝ n c) (hr : ContDiff ℝ n fun x => (f x).rIn)
+    (hR : ContDiff ℝ n fun x => (f x).rOut) (hg : ContDiff ℝ n g) :
+    ContDiff ℝ n fun x => f x (g x) := by
+  rw [contDiff_iff_contDiffAt] at *
   exact fun x => (hc x).contDiffBump (hr x) (hR x) (hg x)
 #align cont_diff.cont_diff_bump ContDiff.contDiffBump
 
