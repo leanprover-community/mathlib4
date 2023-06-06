@@ -19,10 +19,10 @@ In this file we prove the Schur-Zassenhaus theorem.
 ## Main results
 
 - `exists_right_complement'_of_coprime` : The **Schur-Zassenhaus** theorem:
-  If `H : subgroup G` is normal and has order coprime to its index,
+  If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
 - `exists_left_complement'_of_coprime`  The **Schur-Zassenhaus** theorem:
-  If `H : subgroup G` is normal and has order coprime to its index,
+  If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
 
@@ -91,16 +91,16 @@ noncomputable instance : MulAction G H.QuotientDiff where
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
-  rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
+  rw [diff, diff, index_eq_card, ←Finset.card_univ, ←Finset.prod_const, ←Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, coe_mk, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ← Subtype.ext_iff,
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ←Subtype.ext_iff,
     Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
-theorem eq_one_of_smul_eq_one (hH : Nat.coprime (Nat.card H) H.index) (α : H.QuotientDiff) (h : H) :
-    h • α = α → h = 1 :=
+theorem eq_one_of_smul_eq_one (hH : Nat.coprime (Nat.card H) H.index) (α : H.QuotientDiff)
+  (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
       calc
@@ -160,7 +160,7 @@ variable {G : Type u} [Group G] [Fintype G] {N : Subgroup G} [Normal N]
  * step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
  * step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
  * step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
- * step 4: `p` (`min_fact (fintype.card N)`) is prime (follows from step0).
+ * step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
  * step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
  * step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
  * step 7: `N` is abelian (applies step 3 to the center of `N`).
@@ -186,11 +186,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Fintype.card (H.map K.subtype) = N.index := by
-    sorry
-    -- ((Set.card_image_of_injective _ Subtype.coe_injective).trans
-    --       (mul_left_injective₀ Fintype.card_ne_zero
-    --         (hH.symm.card_mul.trans (N.comap K.subtype).index_mul_card.symm))).trans
-    --   h4
+    rw [←relindex_bot_left_eq_card, ←relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relindex_bot_left, ←IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      subtype_range, ←relindex_sup_right, hK, relindex_top_right]
   have h7 : Fintype.card N * Fintype.card (H.map K.subtype) = Fintype.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Fintype.card N).coprime (Fintype.card (H.map K.subtype)) := by
@@ -285,15 +283,16 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : subgroup G` is normal, and has order coprime to its index, then there exists a
+  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
   subgroup `K` which is a (right) complement of `H`. -/
 theorem exists_right_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H :=
   exists_right_complement'_of_coprime_aux' rfl hN
-#align subgroup.exists_right_complement'_of_coprime_of_fintype Subgroup.exists_right_complement'_of_coprime_of_fintype
+#align subgroup.exists_right_complement'_of_coprime_of_fintype
+  Subgroup.exists_right_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : subgroup G` is normal, and has order coprime to its index, then there exists a
+  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
   subgroup `K` which is a (right) complement of `H`. -/
 theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H := by
@@ -316,15 +315,16 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
 #align subgroup.exists_right_complement'_of_coprime Subgroup.exists_right_complement'_of_coprime
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : subgroup G` is normal, and has order coprime to its index, then there exists a
+  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
   subgroup `K` which is a (left) complement of `H`. -/
 theorem exists_left_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
   Exists.imp (fun _ => IsComplement'.symm) (exists_right_complement'_of_coprime_of_fintype hN)
-#align subgroup.exists_left_complement'_of_coprime_of_fintype Subgroup.exists_left_complement'_of_coprime_of_fintype
+#align subgroup.exists_left_complement'_of_coprime_of_fintype
+  Subgroup.exists_left_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
-  If `H : subgroup G` is normal, and has order coprime to its index, then there exists a
+  If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
   subgroup `K` which is a (left) complement of `H`. -/
 theorem exists_left_complement'_of_coprime {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
