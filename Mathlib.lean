@@ -975,6 +975,7 @@ import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.Etransform
