@@ -142,10 +142,11 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     { carrier := FreeAlgebra R S
       isRing := Algebra.semiringToRing R }
   map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- obviously can fill the next two goals, but it is slow
-  map_id := by intro X; ext1; simp only [FreeAlgebra.ι_comp_lift]; rfl
+  -- porting note: `apply FreeAlgebra.hom_ext` was `ext1`.
+  map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
   map_comp := by
-    intros; ext1; simp only [FreeAlgebra.ι_comp_lift]; ext1
+    -- porting note: ditto
+    intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
     simp only [FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp, Function.comp_apply,
       types_comp_apply]
 #align Algebra.free AlgebraCat.free
@@ -191,8 +192,16 @@ namespace CategoryTheory.Iso
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
   toFun := i.hom
   invFun := i.inv
-  left_inv := by simp
-  right_inv := by simp
+  left_inv x := by
+    -- porting note: was `by tidy`
+    change (i.hom ≫ i.inv) x = x
+    simp [id_apply]
+    sorry
+  right_inv x := by
+    -- porting note: was `by tidy`
+    change (i.inv ≫ i.hom) x = x
+    simp
+    sorry
   map_add' := by simp
   map_mul' := by simp
   commutes' := by simp
