@@ -23,17 +23,17 @@ length `3`.
 The idea is that the sphere (in the `n` dimensional Euclidean space) doesn't contain arithmetic
 progressions (literally) because the corresponding ball is strictly convex. Thus we can take
 integer points on that sphere and map them onto `ℕ` in a way that preserves arithmetic progressions
-(`behrend.map`).
+(`Behrend.map`).
 
 ## Main declarations
 
-* `behrend.sphere`: The intersection of the Euclidean sphere with the positive integer quadrant.
+* `Behrend.sphere`: The intersection of the Euclidean sphere with the positive integer quadrant.
   This is the set that we will map on `ℕ`.
-* `behrend.map`: Given a natural number `d`, `behrend.map d : ℕⁿ → ℕ` reads off the coordinates as
+* `Behrend.map`: Given a natural number `d`, `Behrend.map d : ℕⁿ → ℕ` reads off the coordinates as
   digits in base `d`.
-* `behrend.card_sphere_le_roth_number_nat`: Implicit lower bound on Roth numbers in terms of
-  `behrend.sphere`.
-* `behrend.roth_lower_bound`: Behrend's explicit lower bound on Roth numbers.
+* `Behrend.card_sphere_le_rothNumberNat`: Implicit lower bound on Roth numbers in terms of
+  `Behrend.sphere`.
+* `Behrend.roth_lower_bound`: Behrend's explicit lower bound on Roth numbers.
 
 ## References
 
@@ -50,9 +50,7 @@ Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly co
 
 open Nat hiding log
 
-open Finset
-
-open Real
+open Finset Real
 
 open scoped BigOperators Pointwise
 
@@ -63,15 +61,15 @@ variable {α β : Type _} {n d k N : ℕ} {x : Fin n → ℕ}
 /-!
 ### Turning the sphere into a Salem-Spencer set
 
-We define `behrend.sphere`, the intersection of the $L^2$ sphere with the positive quadrant of
+We define `Behrend.sphere`, the intersection of the $L^2$ sphere with the positive quadrant of
 integer points. Because the $L^2$ closed ball is strictly convex, the $L^2$ sphere and
-`behrend.sphere` are Salem-Spencer (`add_salem_spencer_sphere`). Then we can turn this set in
-`fin n → ℕ` into a set in `ℕ` using `behrend.map`, which preserves `add_salem_spencer` because it is
+`Behrend.sphere` are Salem-Spencer (`addSalemSpencer_sphere`). Then we can turn this set in
+`Fin n → ℕ` into a set in `ℕ` using `Behrend.map`, which preserves `AddSalemSpencer` because it is
 an additive monoid homomorphism.
 -/
 
 
-/-- The box `{0, ..., d - 1}^n` as a finset. -/
+/-- The box `{0, ..., d - 1}^n` as a `Finset`. -/
 def box (n d : ℕ) : Finset (Fin n → ℕ) :=
   Fintype.piFinset fun _ => range d
 #align behrend.box Behrend.box
@@ -93,8 +91,7 @@ def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
   (box n d).filter fun x => (∑ i, x i ^ 2) = k
 #align behrend.sphere Behrend.sphere
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by
-  simp (config := { contextual := true }) [sphere, Function.funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, Function.funext_iff]
 #align behrend.sphere_zero_subset Behrend.sphere_zero_subset
 
 @[simp]
@@ -112,10 +109,9 @@ theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
 #align behrend.norm_of_mem_sphere Behrend.norm_of_mem_sphere
 
-theorem sphere_subset_preimage_metric_sphere :
-    (sphere n d k : Set (Fin n → ℕ)) ⊆
-      (fun x : Fin n → ℕ => (PiLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
-        Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (Real.sqrt k) :=
+theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
+    (fun x : Fin n → ℕ => (PiLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
+      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (Real.sqrt k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 #align behrend.sphere_subset_preimage_metric_sphere Behrend.sphere_subset_preimage_metric_sphere
 
@@ -127,7 +123,7 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 #align behrend.map Behrend.map
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 #align behrend.map_zero Behrend.map_zero
 
@@ -241,13 +237,12 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
 Now that we know how to turn the integer points of any sphere into a Salem-Spencer set, we find a
 sphere containing many integer points by the pigeonhole principle. This gives us an implicit bound
 that we then optimize by tweaking the parameters. The (almost) optimal parameters are
-`behrend.nValue` and `behrend.dValue`.
+`Behrend.nValue` and `Behrend.dValue`.
 -/
 
 
-theorem exists_large_sphere_aux (n d : ℕ) :
-    ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
-      (↑(d ^ n) / (↑(n * (d - 1) ^ 2) + 1) : ℝ) ≤ (sphere n d k).card := by
+theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
+    (↑(d ^ n) / (↑(n * (d - 1) ^ 2) + 1) : ℝ) ≤ (sphere n d k).card := by
   refine' exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => _) nonempty_range_succ _
   · rw [mem_range, lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
@@ -496,6 +491,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
   have hn₂ : 2 ≤ n := two_le_nValue (hN.trans' <| by norm_num1)
   have : (2 * dValue N - 1) ^ n ≤ N := le_N (hN.trans' <| by norm_num1)
   refine' ((bound_aux hd.ne' hn₂).trans <| cast_le.2 <| rothNumberNat.mono this).trans_lt' _
+  conv_rhs => rw [← cast_two, ← cast_sub hn₂, rpow_nat_cast]
   refine' (div_lt_div_of_lt hn <| pow_lt_pow_of_lt_left (bound hN) _ _).trans_le' _
   · exact div_nonneg (rpow_nonneg_of_nonneg (cast_nonneg _) _) (exp_pos _).le
   · exact tsub_pos_of_lt (three_le_nValue <| hN.trans' <| by norm_num1)
@@ -508,8 +504,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
     rw [← exp_add, ← add_mul]
     norm_num
   rw [this]
-  refine'
-    mul_le_mul _ (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos _).le (exp_pos _).le <|
+  refine' mul_le_mul _ (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos _).le (exp_pos _).le <|
       rpow_nonneg_of_nonneg (cast_nonneg _) _
   · rw [← le_log_iff_exp_le (rpow_pos_of_pos hN₀ _), log_rpow hN₀, ← le_div_iff, mul_div_assoc,
       div_sqrt, neg_mul, neg_le_neg_iff, div_mul_eq_mul_div, div_le_iff hn]
@@ -535,8 +530,8 @@ theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
   linarith [log_two_lt_d9]
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen
 
-theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) : (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 :=
-  by
+theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
+    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
   rw [← log_le_log (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
@@ -547,8 +542,8 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) : (N : ℝ) * exp 
   exact_mod_cast hN'
 #align behrend.lower_bound_le_one' Behrend.lower_bound_le_one'
 
-theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) : (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 :=
-  by
+theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
+    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
   obtain rfl | hN := hN.eq_or_lt
   · norm_num
   · exact lower_bound_le_one' hN hN'
