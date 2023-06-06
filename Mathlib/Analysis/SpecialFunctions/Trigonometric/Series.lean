@@ -8,7 +8,7 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Trigonometric functions as sums of infinite series
@@ -32,8 +32,7 @@ open scoped Nat
 section SinCos
 
 theorem Complex.hasSum_cos' (z : ℂ) :
-    HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) :=
-  by
+    HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   rw [Complex.cos, Complex.exp_eq_exp_ℂ]
   have :=
     ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
@@ -53,8 +52,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
 
 theorem Complex.hasSum_sin' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I)
-      (Complex.sin z) :=
-  by
+      (Complex.sin z) := by
   rw [Complex.sin, Complex.exp_eq_exp_ℂ]
   have :=
     (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
@@ -75,16 +73,14 @@ theorem Complex.hasSum_sin' (z : ℂ) :
 
 /-- The power series expansion of `complex.cos`. -/
 theorem Complex.hasSum_cos (z : ℂ) :
-    HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) :=
-  by
+    HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   convert Complex.hasSum_cos' z using 1
   simp_rw [mul_pow, pow_mul, Complex.I_sq, mul_comm]
 #align complex.has_sum_cos Complex.hasSum_cos
 
 /-- The power series expansion of `complex.sin`. -/
 theorem Complex.hasSum_sin (z : ℂ) :
-    HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)!) (Complex.sin z) :=
-  by
+    HasSum (fun n : ℕ => (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)!) (Complex.sin z) := by
   convert Complex.hasSum_sin' z using 1
   simp_rw [mul_pow, pow_succ', pow_mul, Complex.I_sq, ← mul_assoc, mul_div_assoc, div_right_comm,
     div_self Complex.I_ne_zero, mul_comm _ ((-1 : ℂ) ^ _), mul_one_div, mul_div_assoc, mul_assoc]
