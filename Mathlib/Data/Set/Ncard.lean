@@ -50,7 +50,7 @@ open BigOperators
 variable {α β : Type _} {s t : Set α} {a b x y : α} {f : α → β}
 
 /-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a
-  `Set.finite` term. -/
+  `Set.Finite` term. -/
 syntax "toFinite_tac" : tactic
 
 macro_rules
@@ -58,7 +58,7 @@ macro_rules
 
 namespace Set
 
-/-- The cardinality of `s : set α` . Has the junk value `0` if `s` is Infinite -/
+/-- The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite -/
 noncomputable def ncard (s : Set α) :=
   Nat.card s
 #align set.ncard Set.ncard
