@@ -423,22 +423,28 @@ theorem continuous_integral_integral :
     Continuous fun f : α × β →₁[μ.prod ν] E => ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   rw [continuous_iff_continuousAt]; intro g
   refine'
-    tendsto_integral_of_L1 _ (L1.integrable_coe_fn g).integral_prod_left
-      (eventually_of_forall fun h => (L1.integrable_coe_fn h).integral_prod_left) _
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
+      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) _
   simp_rw [←
-    lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coe_fn _)
-      (L1.integrable_coe_fn g)]
+    lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
+      (L1.integrable_coeFn g)]
   refine' tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => ennnorm_integral_le_lintegral_ennnorm _
   show
-    tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ) (𝓝 g)
+    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ) (𝓝 g)
       (𝓝 0)
   have : ∀ i : α × β →₁[μ.prod ν] E, Measurable fun z => (‖i z - g z‖₊ : ℝ≥0∞) := fun i =>
-    ((Lp.strongly_measurable i).sub (Lp.strongly_measurable g)).ennnorm
-  simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.of_real_norm_sub_eq_lintegral, ←
-    of_real_zero]
-  refine' (continuous_of_real.tendsto 0).comp _
+    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).ennnorm
+  -- Porting note: was
+  -- simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
+  --   ofReal_zero]
+  conv =>
+    congr
+    ext
+    rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral]
+  rw [← ofReal_zero]
+  refine' (continuous_ofReal.tendsto 0).comp _
   rw [← tendsto_iff_norm_tendsto_zero]; exact tendsto_id
 #align measure_theory.continuous_integral_integral MeasureTheory.continuous_integral_integral
 
@@ -455,8 +461,9 @@ theorem integral_prod :
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
       integral_indicator (measurable_prod_mk_left hs), set_integral_const, integral_smul_const,
       integral_toReal (measurable_measure_prod_mk_left hs).aemeasurable
-        (ae_measure_lt_top hs h2s.ne),
-      prod_apply hs]
+        (ae_measure_lt_top hs h2s.ne)]
+    -- Porting note: was `simp_rw`
+    rw [prod_apply hs]
   · intro f g hfg i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
