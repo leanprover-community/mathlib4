@@ -8,12 +8,12 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.BoxIntegral.Basic
-import Mathbin.Analysis.BoxIntegral.Partition.Additive
-import Mathbin.Analysis.Calculus.Fderiv.Add
-import Mathbin.Analysis.Calculus.Fderiv.Mul
-import Mathbin.Analysis.Calculus.Fderiv.Equiv
-import Mathbin.Analysis.Calculus.Fderiv.RestrictScalars
+import Mathlib.Analysis.BoxIntegral.Basic
+import Mathlib.Analysis.BoxIntegral.Partition.Additive
+import Mathlib.Analysis.Calculus.Fderiv.Add
+import Mathlib.Analysis.Calculus.Fderiv.Mul
+import Mathlib.Analysis.Calculus.Fderiv.Equiv
+import Mathlib.Analysis.Calculus.Fderiv.RestrictScalars
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral
@@ -83,8 +83,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : ℝⁿ⁺¹ �
     ‖(∏ j, I.upper j - I.lower j) • f' (Pi.single i 1) -
           (integral (I.face i) ⊥ (f ∘ i.insertNth (I.upper i)) BoxAdditiveMap.volume -
             integral (I.face i) ⊥ (f ∘ i.insertNth (I.lower i)) BoxAdditiveMap.volume)‖ ≤
-      2 * ε * c * ∏ j, I.upper j - I.lower j :=
-  by
+      2 * ε * c * ∏ j, I.upper j - I.lower j := by
   /- **Plan of the proof**. The difference of the integrals of the affine function
     `λ y, a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
     volume of `I` multiplied by `f' (pi.single i 1)`, so it suffices to show that the integral of
@@ -106,8 +105,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : ℝⁿ⁺¹ �
     ∀ y ∈ (I.face i).Icc,
       ‖f' (Pi.single i (I.upper i - I.lower i)) -
             (f (i.insert_nth (I.upper i) y) - f (i.insert_nth (I.lower i) y))‖ ≤
-        2 * ε * diam I.Icc :=
-    by
+        2 * ε * diam I.Icc := by
     intro y hy
     set g := fun y => f y - a - f' (y - x) with hg
     change ∀ y ∈ I.Icc, ‖g y‖ ≤ ε * ‖y - x‖ at hε 
@@ -133,14 +131,12 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : ℝⁿ⁺¹ �
             (fun x : Fin n → ℝ =>
               f' (Pi.single i (I.upper i - I.lower i)) -
                 (f (i.insert_nth (I.upper i) x) - f (i.insert_nth (I.lower i) x)))
-            box_additive_map.volume‖ :=
-      by
+            box_additive_map.volume‖ := by
       rw [← integral_sub (Hi _ Hu) (Hi _ Hl), ← box.volume_face_mul i, mul_smul, ← box.volume_apply,
         ← box_additive_map.to_smul_apply, ← integral_const, ← box_additive_map.volume, ←
         integral_sub (integrable_const _) ((Hi _ Hu).sub (Hi _ Hl))]
       simp only [(· ∘ ·), Pi.sub_def, ← f'.map_smul, ← Pi.single_smul', smul_eq_mul, mul_one]
-    _ ≤ (volume (I.face i : Set ℝⁿ)).toReal * (2 * ε * c * (I.upper i - I.lower i)) :=
-      by
+    _ ≤ (volume (I.face i : Set ℝⁿ)).toReal * (2 * ε * c * (I.upper i - I.lower i)) := by
       -- The hard part of the estimate was done above, here we just replace `diam I.Icc`
       -- with `c * (I.upper i - I.lower i)`
       refine' norm_integral_le_of_le_const (fun y hy => (this y hy).trans _) volume
@@ -148,8 +144,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : ℝⁿ⁺¹ �
       exact
         mul_le_mul_of_nonneg_left (I.diam_Icc_le_of_distortion_le i hc)
           (mul_nonneg zero_le_two h0.le)
-    _ = 2 * ε * c * ∏ j, I.upper j - I.lower j :=
-      by
+    _ = 2 * ε * c * ∏ j, I.upper j - I.lower j := by
       rw [← measure.to_box_additive_apply, box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
     
@@ -173,8 +168,7 @@ theorem hasIntegralGPPderiv (f : ℝⁿ⁺¹ → E) (f' : ℝⁿ⁺¹ → ℝⁿ
       (integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x))
           BoxAdditiveMap.volume -
         integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x))
-          BoxAdditiveMap.volume) :=
-  by
+          BoxAdditiveMap.volume) := by
   /- Note that `f` is continuous on `I.Icc`, hence it is integrable on the faces of all boxes
     `J ≤ I`, thus the difference of integrals over `x i = J.upper i` and `x i = J.lower i` is a
     box-additive function of `J ≤ I`. -/
@@ -203,8 +197,7 @@ theorem hasIntegralGPPderiv (f : ℝⁿ⁺¹ → E) (f' : ℝⁿ⁺¹ → ℝⁿ
         δ ∈ Ioc (0 : ℝ) (1 / 2) ∧
           (∀ (y₁) (_ : y₁ ∈ closed_ball x δ ∩ I.Icc) (y₂) (_ : y₂ ∈ closed_ball x δ ∩ I.Icc),
               ‖f y₁ - f y₂‖ ≤ ε / 2) ∧
-            (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖ ≤ ε / 2 :=
-      by
+            (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖ ≤ ε / 2 := by
       refine' eventually.and _ (eventually.and _ _)
       · exact Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, one_half_pos⟩
       · rcases((nhdsWithin_hasBasis nhds_basis_closed_ball _).tendsto_iffₓ nhds_basis_closed_ball).1
@@ -245,8 +238,7 @@ theorem hasIntegralGPPderiv (f : ℝⁿ⁺¹ → E) (f' : ℝⁿ⁺¹ → ℝⁿ
     refine' (norm_sub_le _ _).trans (add_le_add _ _)
     · simp_rw [box_additive_map.volume_apply, norm_smul, Real.norm_eq_abs, abs_prod]
       refine' (mul_le_mul_of_nonneg_right _ <| norm_nonneg _).trans hδ
-      have : ∀ j, |J.upper j - J.lower j| ≤ 2 * δ :=
-        by
+      have : ∀ j, |J.upper j - J.lower j| ≤ 2 * δ := by
         intro j
         calc
           dist (J.upper j) (J.lower j) ≤ dist J.upper J.lower := dist_le_pi_dist _ _ _
@@ -310,8 +302,7 @@ theorem hasIntegralGPDivergenceOfForallHasDerivWithinAt (f : ℝⁿ⁺¹ → E�
         integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x) i)
             BoxAdditiveMap.volume -
           integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x) i)
-            BoxAdditiveMap.volume) :=
-  by
+            BoxAdditiveMap.volume) := by
   refine' has_integral_sum fun i hi => _; clear hi
   simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs 
   convert has_integral_GP_pderiv I _ _ s hs (fun x hx => Hs x hx i) (fun x hx => Hd x hx i) i
