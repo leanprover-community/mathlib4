@@ -454,7 +454,7 @@ theorem continuous_integral_integral :
   `measure_theory.integrable.integral_prod_right` is useful to show that the inner integral
   of the right-hand side is integrable. -/
 theorem integral_prod :
-    ∀ (f : α × β → E) (hf : Integrable f (μ.prod ν)),
+    ∀ (f : α × β → E) (_ : Integrable f (μ.prod ν)),
       (∫ z, f z ∂μ.prod ν) = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   apply Integrable.induction
   · intro c s hs h2s
@@ -464,10 +464,10 @@ theorem integral_prod :
         (ae_measure_lt_top hs h2s.ne)]
     -- Porting note: was `simp_rw`
     rw [prod_apply hs]
-  · intro f g hfg i_f i_g hf hg
+  · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
-  · intro f g hfg i_f hf; convert hf using 1
+  · rintro f g hfg - hf; convert hf using 1
     · exact integral_congr_ae hfg.symm
     · refine' integral_congr_ae _
       refine' (ae_ae_of_ae_prod hfg).mp _
@@ -492,7 +492,7 @@ theorem integral_integral {f : α → β → E} (hf : Integrable (uncurry f) (μ
 /-- Reversed version of **Fubini's Theorem** (symmetric version). -/
 theorem integral_integral_symm {f : α → β → E} (hf : Integrable (uncurry f) (μ.prod ν)) :
     (∫ x, ∫ y, f x y ∂ν ∂μ) = ∫ z, f z.2 z.1 ∂ν.prod μ :=
-  (integral_prod_symm _ hf.symm).symm
+  (integral_prod_symm _ hf.swap).symm
 #align measure_theory.integral_integral_symm MeasureTheory.integral_integral_symm
 
 /-- Change the order of Bochner integration. -/
@@ -501,13 +501,13 @@ theorem integral_integral_swap ⦃f : α → β → E⦄ (hf : Integrable (uncur
   (integral_integral hf).trans (integral_prod_symm _ hf)
 #align measure_theory.integral_integral_swap MeasureTheory.integral_integral_swap
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- **Fubini's Theorem** for set integrals. -/
 theorem set_integral_prod (f : α × β → E) {s : Set α} {t : Set β}
     (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
     (∫ z in s ×ˢ t, f z ∂μ.prod ν) = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
+  -- Porting note: added
+  rw [← Measure.prod_restrict s t] at hf ⊢
   exact integral_prod f hf
 #align measure_theory.set_integral_prod MeasureTheory.set_integral_prod
 
@@ -519,14 +519,15 @@ theorem integral_prod_mul {L : Type _} [IsROrC L] (f : α → L) (g : β → L) 
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
     exact integrable_prod_mul h.1 h.2
-  cases H <;> simp [integral_undef h, integral_undef H]
+  cases' H with H H <;> simp [integral_undef h, integral_undef H]
 #align measure_theory.integral_prod_mul MeasureTheory.integral_prod_mul
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem set_integral_prod_mul {L : Type _} [IsROrC L] (f : α → L) (g : β → L) (s : Set α)
     (t : Set β) :
     (∫ z in s ×ˢ t, f z.1 * g z.2 ∂μ.prod ν) = (∫ x in s, f x ∂μ) * ∫ y in t, g y ∂ν := by
-  simp only [← measure.prod_restrict s t, integrable_on, integral_prod_mul]
+  -- Porting note: added
+  rw [← Measure.prod_restrict s t]
+  simp only [← Measure.prod_restrict s t, IntegrableOn, integral_prod_mul]
 #align measure_theory.set_integral_prod_mul MeasureTheory.set_integral_prod_mul
 
 end MeasureTheory
