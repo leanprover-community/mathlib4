@@ -288,10 +288,12 @@ structure IsPrimitiveRoot (ζ : M) (k : ℕ) : Prop where
 #align is_primitive_root IsPrimitiveRoot
 
 /-- Turn a primitive root μ into a member of the `roots_of_unity` subgroup. -/
-@[simps]
+@[simps!]
 def IsPrimitiveRoot.toRootsOfUnity {μ : M} {n : ℕ+} (h : IsPrimitiveRoot μ n) : rootsOfUnity n M :=
   rootsOfUnity.mkOfPowEq μ h.pow_eq_one
 #align is_primitive_root.to_roots_of_unity IsPrimitiveRoot.toRootsOfUnity
+#align is_primitive_root.coe_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_val
+#align is_primitive_root.coe_inv_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_inv
 
 section primitiveRoots
 
@@ -940,9 +942,9 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
-    rw [hμ.eq_orderOf, ← hμ.coe_to_roots_of_unity_coe, orderOf_units, orderOf_subgroup]
+    rw [hμ.eq_orderOf, ← hμ.toRootsOfUnity_coe_val, orderOf_units, orderOf_subgroup]
   MonoidHom.toHomUnits
-    { toFun := fun σ => (map_root_of_unity_eq_pow_self σ.toAlgHom μ').some
+    { toFun := fun σ => (map_root_of_unity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
         generalize_proofs h1
         have h := h1.some_spec
@@ -972,7 +974,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
 -- We are not using @[simps] in aut_to_pow to avoid a timeout.
 theorem coe_autToPow_apply (f : S ≃ₐ[R] S) :
     (autToPow R hμ f : ZMod n) =
-      ((map_root_of_unity_eq_pow_self f hμ.toRootsOfUnity).some : ZMod n) :=
+      ((map_root_of_unity_eq_pow_self f hμ.toRootsOfUnity).choose : ZMod n) :=
   rfl
 #align is_primitive_root.coe_aut_to_pow_apply IsPrimitiveRoot.coe_autToPow_apply
 
@@ -980,12 +982,12 @@ theorem coe_autToPow_apply (f : S ≃ₐ[R] S) :
 theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val = f μ := by
   rw [IsPrimitiveRoot.coe_autToPow_apply]
   generalize_proofs h
-  have := h.some_spec
+  have := h.choose_spec
   dsimp only [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_algHom] at this
-  refine' (_ : ↑hμ.to_roots_of_unity ^ _ = _).trans this.symm
+  refine' (_ : ↑hμ.toRootsOfUnity ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 1
-  rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hμ.coe_to_roots_of_unity_coe, ←
+  rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hμ.toRootsOfUnity_coe_val, ←
     hμ.eq_order_of, ZMod.val_nat_cast]
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
