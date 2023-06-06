@@ -59,7 +59,7 @@ namespace Filter
 
 variable {α β γ δ : Type _} {l : Filter α} {f g h : α → β}
 
-theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _x in l, a = b) ↔ a = b :=
+theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
   eventually_const
 #align filter.const_eventually_eq' Filter.const_eventuallyEq'
 

@@ -812,7 +812,7 @@ attribute [to_additive] LipschitzOnWith.norm_div_le
 @[to_additive]
 theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzOnWith C f s)
     (ha : a ∈ s) (hb : b ∈ s) (hr : ‖a / b‖ ≤ r) : ‖f a / f b‖ ≤ C * r :=
-  (h.norm_div_le ha hb).trans <| mul_le_mul_of_nonneg_left hr C.2
+  (h.norm_div_le ha hb).trans <| by gcongr
 #align lipschitz_on_with.norm_div_le_of_le LipschitzOnWith.norm_div_le_of_le
 #align lipschitz_on_with.norm_sub_le_of_le LipschitzOnWith.norm_sub_le_of_le
 
@@ -831,7 +831,7 @@ attribute [to_additive] LipschitzWith.norm_div_le
 @[to_additive]
 theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzWith C f)
     (hr : ‖a / b‖ ≤ r) : ‖f a / f b‖ ≤ C * r :=
-  (h.norm_div_le _ _).trans <| mul_le_mul_of_nonneg_left hr C.2
+  (h.norm_div_le _ _).trans <| by gcongr
 #align lipschitz_with.norm_div_le_of_le LipschitzWith.norm_div_le_of_le
 #align lipschitz_with.norm_sub_le_of_le LipschitzWith.norm_sub_le_of_le
 
@@ -1158,8 +1158,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
   · exact (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
       norm_nonneg' _).trans_lt ε₀
   calc
-    A * ‖f i‖ * ‖g i‖ ≤ A * δ * C :=
-      mul_le_mul (mul_le_mul_of_nonneg_left hf.le hA) hg (norm_nonneg' _) (mul_nonneg hA δ₀.le)
+    A * ‖f i‖ * ‖g i‖ ≤ A * δ * C := by gcongr; exact hg
     _ = A * C * δ := (mul_right_comm _ _ _)
     _ < ε := hδ
 #align filter.tendsto.op_one_is_bounded_under_le' Filter.Tendsto.op_one_isBoundedUnder_le'
@@ -1300,7 +1299,7 @@ theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
     {l : Filter ι} {l' : Filter κ} :
     UniformCauchySeqOnFilter f l l' ↔
-      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) l' := by
+      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
   refine' ⟨fun hf u hu => _, fun hf u hu => _⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine'
@@ -1319,7 +1318,7 @@ theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_on
 theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ}
     {l : Filter ι} :
     UniformCauchySeqOn f l s ↔
-      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ᶠ l) s := by
+      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter,
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]
@@ -1523,7 +1522,7 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 #align add_mem_closed_ball_iff_norm add_mem_closedBall_iff_norm
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplifiy
+-- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
@@ -1531,7 +1530,7 @@ theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ba
 #align preimage_add_ball preimage_add_ball
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplifiy
+-- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (· * ·) b ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c

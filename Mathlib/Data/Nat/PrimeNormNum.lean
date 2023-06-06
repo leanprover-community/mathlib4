@@ -15,7 +15,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Primality prover
 
-This file provides a `norm_num` extention to prove that natural numbers are prime.
+This file provides a `norm_num` extension to prove that natural numbers are prime.
 
 Porting note: the sole purpose of this file is to mark it as "ported".
 This file seems to be tripping up the porting dashboard.

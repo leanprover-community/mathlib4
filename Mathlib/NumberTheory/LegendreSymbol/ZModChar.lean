@@ -83,7 +83,7 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
-  --porting note: `nth_rw` didn't work here anymore. artifical workaround
+  --porting note: `nth_rw` didn't work here anymore. artificial workaround
   nth_rw 3 [← Nat.div_add_mod n 4]
   nth_rw 3 [(by norm_num : 4 = 2 * 2)]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ (by norm_num : 0 < 2), pow_add, pow_mul,
@@ -130,10 +130,6 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
   rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
   rfl
 #align zmod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
-
-lemma test : IsUnit (7 : ZMod 8) := by
-  have : (7 : ZMod 8) * 7 = 1 := by decide
-  exact isUnit_of_mul_eq_one (7 : ZMod 8) 7 this
 
 set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.

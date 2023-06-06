@@ -85,9 +85,9 @@ variable {R : Type _} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
--- mathport name: «expr [ ⁻¹]»
 @[inherit_doc OreLocalization]
-notation:1075 R "[" S "⁻¹]" => OreLocalization R S
+scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
+macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $R $S)
 
 attribute [local instance] oreEqv
 

@@ -35,7 +35,7 @@ variable (R M) (ι : Type _) [DecidableEq ι]
 
 /-- The finitely supported functions `ι →₀ M` are in linear equivalence with the direct sum of
 copies of M indexed by ι. -/
-def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _i : ι, M :=
+def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
   haveI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
   finsuppLequivDfinsupp R
 #align finsupp_lequiv_direct_sum finsuppLEquivDirectSum

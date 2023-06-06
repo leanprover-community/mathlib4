@@ -36,7 +36,7 @@ namespace Coyoneda
 
 variable {C : Type v} [SmallCategory C]
 
-/-- The colimit cocone over `coyoneda.obj X`, with cocone point `punit`.
+/-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
@@ -68,7 +68,7 @@ instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
     { cocone := _
       isColimit := colimitCoconeIsColimit X }
 
-/-- The colimit of `coyoneda.obj X` is isomorphic to `punit`.
+/-- The colimit of `coyoneda.obj X` is isomorphic to `PUnit`.
 -/
 noncomputable def colimitCoyonedaIso (X : Cᵒᵖ) : colimit (coyoneda.obj X) ≅ PUnit := by
   apply colimit.isoColimitCocone

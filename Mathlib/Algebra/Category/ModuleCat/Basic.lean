@@ -45,10 +45,10 @@ in the category of `R`-modules, we have to take care not to inadvertently end up
 Similarly, given `f : M ≃ₗ[R] N`, use `toModuleIso`, `toModuleIso'Left`, `toModuleIso'Right`
 or `toModuleIso'`, respectively.
 
-The arrow notations are localized, so you may have to `open_locale Module` to use them. Note that
-the notation for `asHomLeft` clashes with the notation used to promote functions between types to
-morphisms in the category `Type`, so to avoid confusion, it is probably a good idea to avoid having
-the locales `Module` and `CategoryTheory.Type` open at the same time.
+The arrow notations are localized, so you may have to `open ModuleCat` (or `open scoped ModuleCat`)
+to use them. Note that the notation for `asHomLeft` clashes with the notation used to promote
+functions between types to morphisms in the category `Type`, so to avoid confusion, it is probably a
+good idea to avoid having the locales `Module` and `CategoryTheory.Type` open at the same time.
 
 If you get an error when trying to apply a theorem and the `convert` tactic produces goals of the
 form `M = of R M`, then you probably used an incorrect variant of `asHom` or `toModuleIso`.
@@ -84,12 +84,18 @@ attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
 namespace ModuleCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
+Since the universe the ring lives in can be inferred, we put that last. -/
+@[nolint checkUnivs]
+abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
+
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
 
 attribute [coe] ModuleCat.carrier
 
-instance moduleCategory : Category (ModuleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
   id _ := LinearMap.id -- porting note: was `1`
   comp f g := g.comp f

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -65,7 +65,7 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   simp_rw [EMetric.infEdist]
   have : Function.Surjective ((c • ·) : E → E) :=
     Function.RightInverse.surjective (smul_inv_smul₀ hc)
-  trans ⨅ (y) (_H : y ∈ s), ‖c‖₊ • edist x y
+  trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
   · refine' (this.iInf_congr _ fun y => _).symm
     simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]

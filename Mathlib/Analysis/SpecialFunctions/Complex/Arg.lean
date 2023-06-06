@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 /-!
 # The argument of a complex number.
 
-We define `arg : ℂ → ℝ`, returing a real number in the range (-π, π],
+We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/

@@ -1294,7 +1294,7 @@ theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (c
   Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
 #align multiset.map_const Multiset.map_const
 
--- Porting note: was not a `simp` lemma in mathlib3 because `function.const` was reducible
+-- Porting note: was not a `simp` lemma in mathlib3 because `Function.const` was reducible
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
 #align multiset.map_const' Multiset.map_const'
@@ -1913,7 +1913,7 @@ section
 
 variable (p : α → Prop) [DecidablePred p]
 
-/-- `filter p s` returns the elements in `s` (with the same multiplicities)
+/-- `Filter p s` returns the elements in `s` (with the same multiplicities)
   which satisfy `p`, and removes the rest. -/
 def filter (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (List.filter p l : Multiset α)) fun _l₁ _l₂ h => Quot.sound <| h.filter p
@@ -2097,7 +2097,7 @@ theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map 
 
 
 /-- `filterMap f s` is a combination filter/map operation on `s`.
-  The function `f : α → option β` is applied to each element of `s`;
+  The function `f : α → Option β` is applied to each element of `s`;
   if `f a` is `some b` then `b` is added to the result, otherwise
   `a` is removed from the resulting multiset. -/
 def filterMap (f : α → Option β) (s : Multiset α) : Multiset β :=
@@ -2650,8 +2650,8 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
 
 section Rel
 
-/-- `rel r s t` -- lift the relation `r` between two elements to a relation between `s` and `t`,
-s.t. there is a one-to-one mapping betweem elements in `s` and `t` following `r`. -/
+/-- `Rel r s t` -- lift the relation `r` between two elements to a relation between `s` and `t`,
+s.t. there is a one-to-one mapping between elements in `s` and `t` following `r`. -/
 @[mk_iff]
 inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0

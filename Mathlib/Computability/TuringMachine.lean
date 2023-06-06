@@ -1527,9 +1527,8 @@ variable [Fintype σ]
 
 /-- Given a finite set of accessible `Λ` machine states, there is a finite set of accessible
 machine states in the target (even though the type `Λ'` is infinite). -/
--- Porting note: Unfolded `×ˢ` to `Finset.product`.
 noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
-  Finset.product (TM1.stmts M S) Finset.univ
+  (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
 open Classical
@@ -1966,7 +1965,7 @@ end TM1to1
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head
 and local state, while TM1 doesn't (in order to have more programming language-like semantics).
-So we use a computed `goto` to go to a state that performes the desired action and then returns to
+So we use a computed `goto` to go to a state that performs the desired action and then returns to
 normal execution.
 
 One issue with this is that the `halt` instruction is supposed to halt immediately, not take a step
