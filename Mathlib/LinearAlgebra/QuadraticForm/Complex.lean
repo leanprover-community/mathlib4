@@ -8,8 +8,8 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.QuadraticForm.Isometry
-import Mathbin.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Quadratic forms over the complex numbers
@@ -32,11 +32,9 @@ variable {ι : Type _} [Fintype ι]
 sum of squares, i.e. `weighted_sum_squares` with weights 1 or 0. -/
 noncomputable def isometrySumSquares [DecidableEq ι] (w' : ι → ℂ) :
     Isometry (weightedSumSquares ℂ w')
-      (weightedSumSquares ℂ (fun i => if w' i = 0 then 0 else 1 : ι → ℂ)) :=
-  by
+      (weightedSumSquares ℂ (fun i => if w' i = 0 then 0 else 1 : ι → ℂ)) := by
   let w i := if h : w' i = 0 then (1 : Units ℂ) else Units.mk0 (w' i) h
-  have hw' : ∀ i : ι, (w i : ℂ) ^ (-(1 / 2 : ℂ)) ≠ 0 :=
-    by
+  have hw' : ∀ i : ι, (w i : ℂ) ^ (-(1 / 2 : ℂ)) ≠ 0 := by
     intro i hi
     exact (w i).NeZero ((Complex.cpow_eq_zero_iff _ _).1 hi).1
   convert
@@ -47,8 +45,7 @@ noncomputable def isometrySumSquares [DecidableEq ι] (w' : ι → ℂ) :
   refine' sum_congr rfl fun j hj => _
   have hsum :
     (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).Unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
-      v j • w j ^ (-(1 / 2 : ℂ)) :=
-    by
+      v j • w j ^ (-(1 / 2 : ℂ)) := by
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
       LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]
@@ -73,8 +70,7 @@ noncomputable def isometrySumSquares [DecidableEq ι] (w' : ι → ℂ) :
 /-- The isometry between a weighted sum of squares on the complex numbers and the
 sum of squares, i.e. `weighted_sum_squares` with weight `λ i : ι, 1`. -/
 noncomputable def isometrySumSquaresUnits [DecidableEq ι] (w : ι → Units ℂ) :
-    Isometry (weightedSumSquares ℂ w) (weightedSumSquares ℂ (1 : ι → ℂ)) :=
-  by
+    Isometry (weightedSumSquares ℂ w) (weightedSumSquares ℂ (1 : ι → ℂ)) := by
   have hw1 : (fun i => if (w i : ℂ) = 0 then 0 else 1 : ι → ℂ) = 1 := by ext i : 1;
     exact dif_neg (w i).NeZero
   have := isometry_sum_squares (coe ∘ w)
