@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Algebra
-import Mathbin.FieldTheory.IntermediateField
-import Mathbin.RingTheory.Adjoin.Field
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.FieldTheory.IntermediateField
+import Mathlib.RingTheory.Adjoin.Field
 
 /-!
 # Splitting fields
@@ -64,8 +64,7 @@ variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
-    Subalgebra.restrictScalars_injective F <|
-      by
+    Subalgebra.restrictScalars_injective F <| by
       rw [map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top, eq_top_iff, ←
         adjoin_roots L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
@@ -92,8 +91,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
-        ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)),
-    by
+        ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
     rw [Polynomial.map_mul,
       roots_mul (mul_ne_zero (map_ne_zero hf : f.map (algebraMap F L) ≠ 0) (map_ne_zero hg)),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
@@ -113,8 +111,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Polynomial.Splits (algebraMap K F) f) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
-      (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <|
-        by
+      (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
         rw [← (splits_iff L f).1 (show f.splits (RingHom.id K) from hf0.symm ▸ splits_zero _)]
         exact Algebra.toTop
   else
@@ -164,8 +161,7 @@ open Polynomial
 variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
 
 theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
-    (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) :=
-  by
+    (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
   simp_rw [root_set, Finset.mem_coe, Multiset.mem_toFinset] at hF 
   rw [splits_iff_exists_multiset]
   refine' ⟨Multiset.pmap Subtype.mk _ hF, map_injective _ (algebraMap F L).Injective _⟩
