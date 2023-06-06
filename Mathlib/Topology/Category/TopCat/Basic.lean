@@ -134,8 +134,8 @@ set_option linter.uppercaseLean3 false in
 def homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp [←comp_apply, id_apply]
-  right_inv x := by simp [←comp_apply, id_apply]
+  left_inv x := by simp
+  right_inv x := by simp
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 set_option linter.uppercaseLean3 false in

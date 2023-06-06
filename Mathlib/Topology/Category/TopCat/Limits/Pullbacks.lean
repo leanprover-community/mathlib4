@@ -196,11 +196,9 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   ext
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    refine ⟨⟨(pullback.fst (f := f₁) (g := f₂) y), ?_⟩,
-      ⟨(pullback.snd (f := f₁) (g := f₂) y), ?_⟩⟩ <;>
-    rw [←comp_apply, ←comp_apply] <;>
-    simp
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ←comp_apply, limit.lift_π,
+      PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    simp only [comp_apply, exists_apply_eq_apply, and_self]
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
