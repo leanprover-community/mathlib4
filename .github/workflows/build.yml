@@ -115,7 +115,7 @@ jobs:
 
       - name: get cache
         run: |
-          lake exe cache clean!
+          lake exe cache clean
           lake exe cache get
 
       - name: build mathlib
