@@ -46,7 +46,7 @@ class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
   cond' : ∀ a b : A, ∃ c : A, a * c = b ∨ b * c = a
 #align valuation_ring ValuationRing
 
--- Porting note: need to add explicit lemma since infer kinds are unsupported in Lean 4
+-- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
   ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
 
@@ -127,7 +127,8 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     simp only [← RingHom.map_mul, ← h]; congr 1; ring
 #align valuation_ring.le_total ValuationRing.le_total
 
--- Porting note: TODO
+-- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
+-- into two parts
 noncomputable instance : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans :=  by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
