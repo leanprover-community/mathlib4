@@ -48,6 +48,7 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Images
 import Mathlib.Algebra.Category.ModuleCat.Kernels
