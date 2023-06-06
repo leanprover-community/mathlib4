@@ -21,13 +21,13 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 In this file we prove the Divergence Theorem for a Henstock-Kurzweil style integral. The theorem
 says the following. Let `f : ℝⁿ → Eⁿ` be a function differentiable on a closed rectangular box
 `I` with derivative `f' x : ℝⁿ →L[ℝ] Eⁿ` at `x ∈ I`. Then the divergence `λ x, ∑ k, f' x eₖ k`,
-where `eₖ = pi.single k 1` is the `k`-th basis vector, is integrable on `I`, and its integral is
+where `eₖ = Pi.single k 1` is the `k`-th basis vector, is integrable on `I`, and its integral is
 equal to the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
 To make the proof work, we had to ban tagged partitions with “long and thin” boxes. More precisely,
 we use the following generalization of one-dimensional Henstock-Kurzweil integral to functions
-defined on a box in `ℝⁿ` (it corresponds to the value `box_integral.integration_params.GP = ⊥` of
-`box_integral.integration_params` in the definition of `box_integral.has_integral`).
+defined on a box in `ℝⁿ` (it corresponds to the value `BoxIntegral.IntegrationParams.GP = ⊥` of
+`BoxIntegral.IntegrationParams` in the definition of `BoxIntegral.HasIntegral`).
 
 We say that `f : ℝⁿ → E` has integral `y : E` over a box `I ⊆ ℝⁿ` if for an arbitrarily small
 positive `ε` and an arbitrarily large `c`, there exists a function `r : ℝⁿ → (0, ∞)` such that for
@@ -82,7 +82,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
   set e : ℝ → (Fin n → ℝ) → (Fin (n + 1) → ℝ) := i.insertNth (α := fun _ ↦ ℝ)
   /- **Plan of the proof**. The difference of the integrals of the affine function
     `λ y, a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
-    volume of `I` multiplied by `f' (pi.single i 1)`, so it suffices to show that the integral of
+    volume of `I` multiplied by `f' (Pi.single i 1)`, so it suffices to show that the integral of
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
     `∏ j ≠ i, (I.upper j - I.lower j)`. Since `diam I.Icc ≤ c * (I.upper i - I.lower i)`, we get the
@@ -94,8 +94,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     integrable_of_continuousOn _ (Box.continuousOn_face_Icc hfc hx) volume
   /- We start with an estimate: the difference of the values of `f` at the corresponding points
     of the faces `x i = I.lower i` and `x i = I.upper i` is `(2 * ε * diam I.Icc)`-close to the value
-    of `f'` on `pi.single i (I.upper i - I.lower i) = lᵢ • eᵢ`, where `lᵢ = I.upper i - I.lower i`
-    is the length of `i`-th edge of `I` and `eᵢ = pi.single i 1` is the `i`-th unit vector. -/
+    of `f'` on `Pi.single i (I.upper i - I.lower i) = lᵢ • eᵢ`, where `lᵢ = I.upper i - I.lower i`
+    is the length of `i`-th edge of `I` and `eᵢ = Pi.single i 1` is the `i`-th unit vector. -/
   have : ∀ y ∈ Box.Icc (I.face i),
       ‖f' (Pi.single i (I.upper i - I.lower i)) -
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
@@ -144,7 +144,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
-the partial derivative `λ x, f' x (pi.single i 1)` is Henstock-Kurzweil integrable with integral
+the partial derivative `λ x, f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and
@@ -264,7 +264,7 @@ set_option linter.uppercaseLean3 false in
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 
 If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is differentiable on a closed rectangular box `I` with derivative `f'`, then
-the divergence `∑ i, f' x (pi.single i 1) i` is Henstock-Kurzweil integrable with integral equal to
+the divergence `∑ i, f' x (Pi.single i 1) i` is Henstock-Kurzweil integrable with integral equal to
 the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and
