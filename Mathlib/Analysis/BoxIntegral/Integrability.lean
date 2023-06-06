@@ -185,7 +185,7 @@ theorem hasBoxIntegral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ
 #align measure_theory.simple_func.has_box_integral MeasureTheory.SimpleFunc.hasBoxIntegral
 
 /-- For a simple function, its McShane (or Henstock, or `⊥`) box integral is equal to its
-integral in the sense of `measure_theory.simple_func.integral`. -/
+integral in the sense of `MeasureTheory.SimpleFunc.integral`. -/
 theorem box_integral_eq_integral (f : SimpleFunc (ι → ℝ) E) (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] (I : Box ι) (l : IntegrationParams) (hl : l.bRiemann = false) :
     BoxIntegral.integral.{u, v, v} I l f μ.toBoxAdditive.toSMul = f.integral (μ.restrict I) :=
