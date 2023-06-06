@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.AdjoinRoot
-import Mathbin.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 The `R`-`alg_equiv` between the localization of `R` away from `r` and
