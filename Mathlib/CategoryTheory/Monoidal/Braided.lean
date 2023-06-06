@@ -32,7 +32,7 @@ just requiring a property.
 -/
 
 
-open CategoryTheory
+open CategoryTheory MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
