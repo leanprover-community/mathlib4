@@ -1896,6 +1896,7 @@ import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.QuotientPi
 import Mathlib.LinearAlgebra.Ray
