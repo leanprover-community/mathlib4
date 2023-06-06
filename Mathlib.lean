@@ -435,6 +435,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
+import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
@@ -527,6 +528,7 @@ import Mathlib.Analysis.Convex.Side
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Analysis.Convex.StoneSeparation
 import Mathlib.Analysis.Convex.Strict
