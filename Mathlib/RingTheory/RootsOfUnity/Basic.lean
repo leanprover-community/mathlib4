@@ -627,7 +627,8 @@ theorem ne_zero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R
   · exact NeZero.of_not_dvd R hp
 #align is_primitive_root.ne_zero' IsPrimitiveRoot.ne_zero'
 
-theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) : ζ ∈ nthRootsFinset k R :=
+nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
+    ζ ∈ nthRootsFinset k R :=
   (mem_nthRootsFinset hk).2 hζ.pow_eq_one
 #align is_primitive_root.mem_nth_roots_finset IsPrimitiveRoot.mem_nthRootsFinset
 
