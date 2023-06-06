@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.SetIntegral
-import Mathbin.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
@@ -24,8 +24,7 @@ variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : f ≤ᵐ[μ.restrict s] g) :
-    μ.Prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=
-  by
+    μ.Prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) := by
   have h : g - f =ᵐ[μ.restrict s] fun x => Real.toNNReal (g x - f x) :=
     hfg.mono fun x hx => (Real.coe_toNNReal _ <| sub_nonneg.2 hx).symm
   rw [volume_regionBetween_eq_lintegral f_int.ae_measurable g_int.ae_measurable hs,
@@ -57,8 +56,7 @@ open ContinuousMap
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
-    Integrable f :=
-  by
+    Integrable f := by
   refine'
     integrable_of_summable_norm_restrict
       (summable_of_nonneg_of_le
@@ -90,8 +88,7 @@ of finite integrals, see `interval_integral.integral_comp_neg`.
 
 @[simp]
 theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x :=
-  by
+    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).ClosedEmbedding.MeasurableEmbedding
   have := A.set_integral_map f (Ici (-c))
@@ -101,8 +98,7 @@ theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace �
 
 @[simp]
 theorem integral_comp_neg_Ioi {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x :=
-  by
+    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
 #align integral_comp_neg_Ioi integral_comp_neg_Ioi
