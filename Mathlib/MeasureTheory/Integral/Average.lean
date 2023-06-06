@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # Integral average of a function
@@ -109,8 +109,7 @@ theorem average_eq_integral [IsProbabilityMeasure μ] (f : α → E) : (⨍ x, f
 
 @[simp]
 theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
-    ((μ univ).toReal • ⨍ x, f x ∂μ) = ∫ x, f x ∂μ :=
-  by
+    ((μ univ).toReal • ⨍ x, f x ∂μ) = ∫ x, f x ∂μ := by
   cases' eq_or_ne μ 0 with hμ hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
@@ -138,8 +137,7 @@ theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeas
     (hμ : Integrable f μ) (hν : Integrable f ν) :
     (⨍ x, f x ∂μ + ν) =
       (((μ univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂μ) +
-        ((ν univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂ν :=
-  by
+        ((ν univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂ν := by
   simp only [div_eq_inv_mul, mul_smul, measure_smul_average, ← smul_add, ←
     integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
   rw [average_eq, measure.add_apply]
@@ -159,8 +157,7 @@ theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht
     (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
     (⨍ x in s ∪ t, f x ∂μ) =
       (((μ s).toReal / ((μ s).toReal + (μ t).toReal)) • ⨍ x in s, f x ∂μ) +
-        ((μ t).toReal / ((μ s).toReal + (μ t).toReal)) • ⨍ x in t, f x ∂μ :=
-  by
+        ((μ t).toReal / ((μ s).toReal + (μ t).toReal)) • ⨍ x in t, f x ∂μ := by
   haveI := Fact.mk hsμ.lt_top; haveI := Fact.mk htμ.lt_top
   rw [restrict_union₀ hd ht, average_add_measure hfs hft, restrict_apply_univ, restrict_apply_univ]
 #align measure_theory.average_union MeasureTheory.average_union
@@ -168,8 +165,7 @@ theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht
 theorem average_union_mem_openSegment {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t)
     (ht : NullMeasurableSet t μ) (hs₀ : μ s ≠ 0) (ht₀ : μ t ≠ 0) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞)
     (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
-    (⨍ x in s ∪ t, f x ∂μ) ∈ openSegment ℝ (⨍ x in s, f x ∂μ) (⨍ x in t, f x ∂μ) :=
-  by
+    (⨍ x in s ∪ t, f x ∂μ) ∈ openSegment ℝ (⨍ x in s, f x ∂μ) (⨍ x in t, f x ∂μ) := by
   replace hs₀ : 0 < (μ s).toReal; exact ENNReal.toReal_pos hs₀ hsμ
   replace ht₀ : 0 < (μ t).toReal; exact ENNReal.toReal_pos ht₀ htμ
   refine'
@@ -180,8 +176,7 @@ theorem average_union_mem_openSegment {f : α → E} {s t : Set α} (hd : AEDisj
 theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t)
     (ht : NullMeasurableSet t μ) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) :
-    (⨍ x in s ∪ t, f x ∂μ) ∈ [⨍ x in s, f x ∂μ -[ℝ] ⨍ x in t, f x ∂μ] :=
-  by
+    (⨍ x in s ∪ t, f x ∂μ) ∈ [⨍ x in s, f x ∂μ -[ℝ] ⨍ x in t, f x ∂μ] := by
   by_cases hse : μ s = 0
   · rw [← ae_eq_empty] at hse 
     rw [restrict_congr_set (hse.union eventually_eq.rfl), empty_union]
