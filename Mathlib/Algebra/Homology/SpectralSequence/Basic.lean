@@ -405,6 +405,10 @@ structure ConvergenceStripes where
 
 variable (c : ConvergenceStripes)
 
+lemma ConvergenceStripes.stripe_eq (n i : ℤ) (pq : ℤ × ℤ) (hpq : c.position n i = pq) :
+    c.stripe pq = n := by
+  rw [← hpq, c.position_stripe]
+
 class CollapsesAt (n i : ℤ) where
   condition : ∀ (k : ℤ) (_ : k ≠ i), IsZero (E.pageInfinity (c.position n k))
 

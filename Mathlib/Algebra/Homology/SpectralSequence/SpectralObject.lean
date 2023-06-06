@@ -10,6 +10,24 @@ namespace CategoryTheory
 
 section
 
+variable {ι : Type _} [Preorder ι]
+
+@[simps!]
+def Arrow.mkOfLE (a b : ι) (hab : a ≤ b := by linarith) : Arrow ι := Arrow.mk (homOfLE hab)
+
+variable (ι)
+
+@[simps]
+noncomputable def Arrow.ιOfOrderBot [OrderBot ι] : ι ⥤ Arrow ι where
+  obj i := Arrow.mkOfLE ⊥ i bot_le
+  map {i j} φ :=
+    { left := 𝟙 _
+      right := φ }
+
+end
+
+section
+
 variable {C : Type _} [Category C] [Abelian C]
 
 noncomputable def Over.abelianImageFunctor (X : C) : Over X ⥤ MonoOver X where
@@ -52,13 +70,6 @@ lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
         IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
     . aesop_cat
     . aesop_cat
-
-@[simps]
-noncomputable def ιOfHasInitial (C : Type _) [Category C] [HasInitial C] : C ⥤ Arrow C where
-  obj i := Arrow.mk (initial.to i)
-  map {i j} φ :=
-    { left := 𝟙 _
-      right := φ }
 
 end Arrow
 
@@ -114,11 +125,13 @@ end Limits
 end CategoryTheory
 
 
-variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
-
 namespace CategoryTheory
 
 namespace Abelian
+
+section
+
+variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 
 lemma exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
     S.Exact ↔ ∀ (i : ι), (S.map ((evaluation ι C).obj i)).Exact := by
@@ -144,14 +157,18 @@ structure SpectralObject where
   exact₃ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : Arrow₂ ι) :
     (ShortComplex.mk _ _ (zero₃ n₀ n₁ h D)).Exact
 
+end
+
 namespace SpectralObject
+
+section
 
 pp_extended_field_notation H
 pp_extended_field_notation δ
 
 attribute [reassoc (attr := simp)] zero₁ zero₂ zero₃
 
-variable {C ι}
+variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 variable (X : SpectralObject C ι)
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
@@ -863,34 +880,55 @@ pp_extended_field_notation imagesLemmaInput₂
 lemma images_exact₂ : (X.imagesLemmaInput₂ n₀).shortComplex.Exact :=
   (X.imagesLemmaInput₂ n₀).shortComplex_exact
 
+end
+
 section Convergence
 
-variable [HasInitial ι] [HasTerminal ι]
+variable {C ι : Type _} [Category C] [Abelian C] [Preorder ι] [OrderBot ι] [OrderTop ι]
+  (X : SpectralObject C ι) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
 
 noncomputable def EInfty : (Arrow ι ⥤ C) := Arrow₃.ιArrow ι ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
 
 pp_extended_field_notation EInfty
 
-noncomputable def abutment (n : ℤ) : C := (X.H n).obj (Arrow.mk (initial.to (⊤_ ι)))
+noncomputable def abutment (n : ℤ) : C := (X.H n).obj (Arrow.mkOfLE ⊥ ⊤ bot_le)
 
 pp_extended_field_notation abutment
 
+noncomputable def EInftyIsoAbutment :
+    (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mkOfLE ⊥ ⊤ bot_le) ≅ X.abutment n₁ :=
+  X.EObjIsoH n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mkOfLE ⊥ ⊤ bot_le))
+    (by change IsIso (𝟙 _) ; infer_instance)
+    (by change IsIso (𝟙 _) ; infer_instance)
+
 noncomputable def overAbutment (n : ℤ) : ι ⥤ Over (X.abutment n) where
-  obj i := Over.mk ((X.H n).map ((Arrow.ιOfHasInitial ι).map (terminal.from i)))
-  map {i j} φ := Over.homMk ((X.H n).map ((Arrow.ιOfHasInitial ι).map φ)) (by
+  obj i := Over.mk ((X.H n).map ((Arrow.ιOfOrderBot ι).map (homOfLE le_top)))
+  map {i j} φ := Over.homMk ((X.H n).map ((Arrow.ιOfOrderBot ι).map φ)) (by
     dsimp
     simp only [← Functor.map_comp]
-    congr
-    simp)
+    congr 1)
   map_id _ := by ext ; dsimp ; simp
   map_comp _ _ := by ext ; dsimp ; simp
 
 pp_extended_field_notation overAbutment
 
-noncomputable def filtration (n : ℤ) : ι ⥤ Subobject (X.abutment n) :=
-  X.overAbutment n ⋙ Over.abelianImageFunctor _ ⋙ toThinSkeleton _
+noncomputable def filtration' (n : ℤ) : ι ⥤ MonoOver (X.abutment n) :=
+  X.overAbutment n ⋙ Over.abelianImageFunctor _
 
+noncomputable def filtration (n : ℤ) : ι ⥤ C :=
+  X.filtration' n ⋙ MonoOver.forget _ ⋙ Over.forget _
+
+noncomputable def filtrationι (n : ℤ) (i : ι) : (X.filtration n).obj i ⟶ X.abutment n :=
+  ((X.filtration' n ⋙ MonoOver.forget _).obj i).hom
+
+instance (n : ℤ) (i : ι) : Mono (X.filtrationι n i) := by
+  dsimp [filtrationι]
+  infer_instance
+
+pp_extended_field_notation filtration'
 pp_extended_field_notation filtration
+pp_extended_field_notation filtrationι
+
 
 variable (ι)
 
@@ -958,18 +996,18 @@ lemma isIso_H_map₁ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ 
 
 lemma isZero_overAbutment_obj (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
     IsZero ((X.overAbutment n ⋙ Over.forget _).obj i) := by
-  let φ : Arrow.mk (initial.to i) ⟶ Arrow.mk (𝟙 i) :=
-    { left := initial.to i
+  let φ : Arrow.mkOfLE ⊥ i bot_le ⟶ Arrow.mk (𝟙 i) :=
+    { left := homOfLE bot_le
       right := 𝟙 _
       w := by simp }
   have := X.mono_H_map₁ B n φ (by dsimp ; infer_instance) α
   rw [IsZero.iff_id_eq_zero, ← cancel_mono ((X.H n).map φ)]
   exact IsZero.eq_of_tgt (X.isZero_H_of_isIso n _ (by dsimp ; infer_instance)) _ _
 
-lemma filtration_obj_eq_bot (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
-    (X.filtration n).obj i = ⊥ := by
-  erw [Subobject.mk_eq_bot_iff_zero]
-  rw [← cancel_epi (Abelian.factorThruImage _), comp_zero, kernel.lift_ι]
+lemma isZero_filtration_obj_eq_bot (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
+    IsZero ((X.filtration n).obj i) := by
+  rw [IsZero.iff_id_eq_zero]
+  rw [← cancel_epi (Abelian.factorThruImage _), comp_zero]
   exact IsZero.eq_of_src (X.isZero_overAbutment_obj B n i α) _ _
 
 lemma isZero₂_H (n : ℤ) {i j : ι} (g : i ⟶ j) (β : B.γ₂ n ⟶ i) :
@@ -1034,11 +1072,10 @@ lemma isIso_overAbutment_obj_hom (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i)
     IsIso ((X.overAbutment n).obj i).hom :=
   X.isIso_H_map₂ B n _ (by dsimp ; infer_instance) β n' hn' β'
 
-lemma filtration_obj_eq_top (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i) :
-    (X.filtration n).obj i = ⊤ := by
-  erw [← Subobject.isIso_iff_mk_eq_top]
+lemma isIso_filtrationι (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i) :
+    IsIso (X.filtrationι n i) := by
   have := X.epi_overAbutment_obj_hom B n i β
-  have := epi_of_epi_fac (image.fac ((X.overAbutment n).obj i).hom)
+  have : Epi (X.filtrationι n i) := epi_of_epi_fac (image.fac ((X.overAbutment n).obj i).hom)
   apply isIso_of_mono_of_epi
 
 end Convergence

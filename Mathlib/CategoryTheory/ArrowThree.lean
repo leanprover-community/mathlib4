@@ -205,18 +205,19 @@ def δ₃δ₀Toδ₀δ₁ : (Arrow₃.δ₃ : Arrow₃ C ⥤ _) ⋙ Arrow₂.δ
 
 variable (C)
 
-noncomputable def ιArrow [HasInitial C] [HasTerminal C] : Arrow C ⥤ Arrow₃ C where
-  obj D := Arrow₃.mk (initial.to _) D.hom (terminal.from _)
+@[simps]
+def mkOfLE {ι : Type _} [Preorder ι] (a b c d : ι)
+    (hab : a ≤ b := by linarith) (hbc : b ≤ c := by linarith) (hcd : c ≤ d := by linarith) :
+  Arrow₃ ι := Arrow₃.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd)
+
+noncomputable def ιArrow (ι : Type _) [Preorder ι] [OrderBot ι] [OrderTop ι] :
+    Arrow ι ⥤ Arrow₃ ι where
+  obj D := mkOfLE ⊥ D.left D.right ⊤ bot_le (leOfHom D.hom) le_top
   map {D₁ D₂} φ :=
     { τ₀ := 𝟙 _
       τ₁ := φ.left
       τ₂ := φ.right
       τ₃ := 𝟙 _ }
-
-@[simps]
-def mkOfLE {ι : Type _} [Preorder ι] (a b c d : ι)
-    (hab : a ≤ b := by linarith) (hbc : b ≤ c := by linarith) (hcd : c ≤ d := by linarith) :
-  Arrow₃ ι := Arrow₃.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd)
 
 @[simps]
 def _root_.CategoryTheory.Functor.mapArrow₃ {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :

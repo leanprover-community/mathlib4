@@ -25,30 +25,25 @@ def _root_.ιℤt  : ℤ ⥤ ℤt := ℤt.mk_monotone.functor
 instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
   IsIso.of_iso (Iso.refl a)
 
-abbrev subInfinity : ℤt := some none
-abbrev infinity : ℤt := none
-
-lemma isInitial_subInfinity : IsInitial subInfinity :=
+/-lemma isInitial_bot : IsInitial (⊥ : ℤt) :=
   @isInitialBot (WithTop (WithBot ℤ)) _  _
 
-lemma isTerminal_infinity : IsTerminal infinity :=
+lemma isTerminal_top : IsTerminal (⊤ : ℤt) :=
   @isTerminalTop (WithTop (WithBot ℤ)) _ _
 
-
-instance : HasTerminal ℤt := isTerminal_infinity.hasTerminal
-instance : HasInitial ℤt := isInitial_subInfinity.hasInitial
-
+instance : HasTerminal ℤt := isTerminal_top.hasTerminal
+instance : HasInitial ℤt := isInitial_bot.hasInitial-/
 
 @[simp]
 lemma some_le_some_none_iff (a : ℤ) :
-    @LE.le ℤt _ (some (some a)) (subInfinity) ↔ False := by
+    @LE.le ℤt _ (some (some a)) (some none) ↔ False := by
   simp only [iff_false]
   erw [WithTop.coe_le_coe]
   apply WithBot.not_coe_le_bot
 
 @[simp]
 lemma none_le_some_iff (a : WithBot ℤ) :
-    @LE.le ℤt _ infinity (some a) ↔ False := by
+    @LE.le ℤt _ none (some a) ↔ False := by
   simp only [iff_false]
   apply WithTop.not_top_le_coe
 
@@ -60,5 +55,8 @@ lemma some_some_le_some_some_iff (a b : ℤ) :
 @[simp]
 lemma mk_le_mk_iff (a b : ℤ) :
     mk a ≤ mk b ↔ a ≤ b := some_some_le_some_some_iff a b
+
+instance : OrderTop ℤt := by dsimp [ℤt] ; infer_instance
+instance : OrderBot ℤt := by dsimp [ℤt] ; infer_instance
 
 end ℤt

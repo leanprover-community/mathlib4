@@ -560,12 +560,12 @@ noncomputable def truncGEt : ℤt ⥤ C ⥤ C where
     all_goals simp at hbc hab <;> dsimp [TruncGEt.map] <;> simp
 
 @[simp]
-lemma truncGEt_subInfinity :
-    t.truncGEt.obj ℤt.subInfinity = 𝟭 _ := rfl
+lemma truncGEt_bot :
+    t.truncGEt.obj ⊥ = 𝟭 _ := rfl
 
 @[simp]
-lemma truncGEt_infinity :
-    t.truncGEt.obj ℤt.infinity = 0 := rfl
+lemma truncGEt_top :
+    t.truncGEt.obj ⊤ = 0 := rfl
 
 namespace TruncGEtδLTt
 
@@ -593,13 +593,7 @@ lemma truncGEtδLTt_mk (n : ℤ) :
     t.truncGEtδLTt.app (ℤt.mk n) = t.truncGEδLT n := rfl
 
 @[simps]
-noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject C where
-  ι := ℤt
-  hι := inferInstance
-  bot := ℤt.subInfinity
-  top := ℤt.infinity
-  isInitial_bot := ℤt.isInitial_subInfinity
-  isTerminal_top := ℤt.isTerminal_infinity
+noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject C ℤt where
   truncLT := t.truncLTt
   truncGE := t.truncGEt
   truncLTObjTopIso' := Iso.refl _
@@ -610,12 +604,12 @@ namespace AbstractSpectralObject
 
 open SpectralObject
 
-noncomputable def isZero_truncGE_obj_infinity_obj (X : C) :
-    IsZero ((t.abstractSpectralObject.truncGE.obj ℤt.infinity).obj X) :=
+noncomputable def isZero_truncGE_obj_top_obj (X : C) :
+    IsZero ((t.abstractSpectralObject.truncGE.obj ⊤).obj X) :=
   IsZero.obj (isZero_zero _) _
 
-noncomputable def isZero_truncLT_obj_subInfinity_obj (X : C) :
-    IsZero ((t.abstractSpectralObject.truncLT.obj ℤt.subInfinity).obj X) :=
+noncomputable def isZero_truncLT_obj_bot_obj (X : C) :
+    IsZero ((t.abstractSpectralObject.truncLT.obj ⊥).obj X) :=
   IsZero.obj (isZero_zero _) _
 
 @[simp]
@@ -640,43 +634,44 @@ lemma triangleLTGEIso (n : ℤ) (X : C) :
   all_goals aesop_cat
 
 @[simp]
-lemma truncLTι_infinity_app (X : C) :
-    (t.abstractSpectralObject.truncLTι (ℤt.infinity)).app X = 𝟙 X := by
+lemma truncLTι_top_app (X : C) :
+    (t.abstractSpectralObject.truncLTι ⊤).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncLTι]
   erw [Functor.map_id]
   simp only [NatTrans.id_app, id_comp]
   rfl
 
 @[simp]
-lemma truncGEπ_subInfinity_app (X : C) :
-    (t.abstractSpectralObject.truncGEπ (ℤt.subInfinity)).app X = 𝟙 X := by
+lemma truncGEπ_bot_app (X : C) :
+    (t.abstractSpectralObject.truncGEπ ⊥).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncGEπ]
   erw [Functor.map_id]
-  simp only [NatTrans.id_app, comp_id]
+  simp only [NatTrans.id_app]
+  erw [comp_id]
   rfl
 
-lemma triangleLTGEInfinityIso (X : C) :
-  (t.abstractSpectralObject.triangleLTGE.obj ℤt.infinity).obj X ≅
+lemma triangleLTGETopIso (X : C) :
+  (t.abstractSpectralObject.triangleLTGE.obj ⊤).obj X ≅
     Pretriangulated.contractibleTriangle X := by
   refine' Triangle.isoMk _ _ (((abstractSpectralObject t).truncLTObjTopIso).app X)
-    (Iso.refl _) (isZero_truncLT_obj_subInfinity_obj t X).isoZero _ _ _
+    (Iso.refl _) (isZero_truncLT_obj_bot_obj t X).isoZero _ _ _
   . dsimp
-    rw [truncLTι_infinity_app]
+    rw [truncLTι_top_app]
     rfl
   . exact IsZero.eq_of_tgt (isZero_zero _) _ _
   . refine' IsZero.eq_of_src _ _ _
     exact IsZero.obj (isZero_zero _) _
 
-lemma triangleLTGESubInfinityIso (X : C) :
-  (t.abstractSpectralObject.triangleLTGE.obj ℤt.subInfinity).obj X ≅
+lemma triangleLTGEBotIso (X : C) :
+  (t.abstractSpectralObject.triangleLTGE.obj ⊥).obj X ≅
     (Pretriangulated.contractibleTriangle X).invRotate := by
-  refine' Triangle.isoMk _ _ ((isZero_truncLT_obj_subInfinity_obj t X).isoZero ≪≫
+  refine' Triangle.isoMk _ _ ((isZero_truncLT_obj_bot_obj t X).isoZero ≪≫
     (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm)
     (((abstractSpectralObject t).truncLTObjTopIso).app X) (Iso.refl _) _ _ _
   . apply IsZero.eq_of_src
-    apply isZero_truncLT_obj_subInfinity_obj
+    apply isZero_truncLT_obj_bot_obj
   . dsimp
-    rw [truncGEπ_subInfinity_app]
+    rw [truncGEπ_bot_app]
     rfl
   . apply IsZero.eq_of_tgt _
     dsimp
@@ -687,16 +682,16 @@ lemma distinguished (n : ℤt) (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj n).obj X ∈ distTriang C := by
   obtain (_|_|n) := n
   . exact isomorphic_distinguished _ (contractible_distinguished X) _
-      (triangleLTGEInfinityIso t X)
+      (triangleLTGETopIso t X)
   . exact isomorphic_distinguished _
       (inv_rot_of_dist_triangle _ (contractible_distinguished X)) _
-      (triangleLTGESubInfinityIso t X)
+      (triangleLTGEBotIso t X)
   . exact isomorphic_distinguished _ (t.triangleLTGE_distinguished n X) _
       (triangleLTGEIso t n X)
 
 end AbstractSpectralObject
 
-/-instance : t.abstractSpectralObject.IsCompatible where
+instance : t.abstractSpectralObject.IsCompatible where
   distinguished := AbstractSpectralObject.distinguished t
   isIso_truncGEToTruncGEGE := sorry
   isIso_truncLTLTToTruncLT := sorry
@@ -706,8 +701,7 @@ end AbstractSpectralObject
   truncLTι_compatibility' := sorry
 
 noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=
-  t.abstractSpectralObject.spectralObject X-/
-
+  t.abstractSpectralObject.spectralObject X
 
 lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
   let δ := (t.truncGEδLE n (n+1) rfl).app 0
