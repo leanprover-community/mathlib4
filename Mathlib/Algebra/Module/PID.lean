@@ -184,12 +184,12 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
     haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact ⟨0⟩
-  · have : ∀ x : N, Decidable (x = 0)
-    classical
-    infer_instance
+  · have : ∀ x : N, Decidable (x = 0) := fun _ => by classical infer_instance
     obtain ⟨j, hj⟩ := exists_isTorsionBy hN d.succ d.succ_ne_zero s hs
     let s' : Fin d → N ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
-    obtain ⟨k, ⟨f⟩⟩ := IH _ s' _ <;> clear IH
+    have := IH ?_ s' ?_
+    obtain ⟨k, ⟨f⟩⟩ := this
+    clear IH
     · have :
         ∀ i : Fin d,
           ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
@@ -229,12 +229,12 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           map_one, (this i).choose_spec.right]
     · exact
         (mk_surjective _).forall.mpr fun x =>
-          ⟨(@hN x).some, by rw [← quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
-    · have hs' := congr_arg (Submodule.map <| mkq <| R ∙ s j) hs
-      rw [Submodule.map_span, Submodule.map_top, range_mkq] at hs' ; simp only [mkq_apply] at hs'
-      simp only [s']; rw [Set.range_comp (_ ∘ s), Fin.range_succAbove]
+          ⟨(@hN x).choose, by rw [← Quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
+    · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
+      rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs' ; simp only [mkQ_apply] at hs'
+      simp only; rw [← Function.comp.assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
-        (quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
+        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
       exact hs'
 #align module.torsion_by_prime_power_decomposition Module.torsion_by_prime_power_decomposition
 
