@@ -319,6 +319,7 @@ lemma triangle_distinguished (D : Arrow₂ ι) (X : C) :
   isomorphic_distinguished _ (F.triangleLTGEPrecompTruncGELT_distinguished D X) _
     (((F.triangleIsoTriangleLTGEPrecompTruncGELT).app D).app X)
 
+@[simps]
 noncomputable def spectralObject (X : C) :
     SpectralObject C ι where
   ω₁ := ((whiskeringRight (Arrow ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT

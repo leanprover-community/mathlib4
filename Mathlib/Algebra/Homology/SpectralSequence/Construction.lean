@@ -34,14 +34,16 @@ noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectra
 pp_extended_field_notation toE₂CohomologicalSpectralSequence
 
 noncomputable def toE₂CohomologicalSpectralSequencePageIso (r : ℤ)
-    [X.toE₂CohomologicalSpectralSequence.HasPage r] (p q : ℤ)
-    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hpq : p + q = n₁) (q₀ q₁ q₂ : ℤ)
-    (hq₀ : q₀ + r - 2 = q) (hq₁ : q + 1 = q₁) (hq₂ : q₁ + r - 2 = q₂) :
-    X.toE₂CohomologicalSpectralSequence.page r ⟨p, q⟩ ≅
+    [X.toE₂CohomologicalSpectralSequence.HasPage r] (pq : ℤ × ℤ)
+    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+    (hpq : pq.1 + pq.2 = n₁) (q₀ q₁ q₂ : ℤ)
+    (hq₀ : q₀ + r - 2 = pq.2) (hq₁ : pq.2 + 1 = q₁) (hq₂ : q₁ + r - 2 = q₂) :
+    X.toE₂CohomologicalSpectralSequence.page r pq ≅
       (X.E n₀ n₁ n₂ hn₁ hn₂).obj (ιℤt.mapArrow₃.obj (by
         have := X.toE₂CohomologicalSpectralSequence.le_of_hasPage r
-        exact Arrow₃.mkOfLE q₀ q q₁ q₂)) :=
+        exact Arrow₃.mkOfLE q₀ pq.2 q₁ q₂)) :=
   eqToIso (by
+    obtain ⟨p, q⟩ := pq
     obtain rfl : n₀ = p + q - 1 := by linarith
     obtain rfl : n₁ = p + q := by linarith
     obtain rfl : n₂ = p + q + 1 := by linarith
@@ -51,11 +53,11 @@ noncomputable def toE₂CohomologicalSpectralSequencePageIso (r : ℤ)
     rfl)
 
 noncomputable def toE₂CohomologicalSpectralSequenceE₂pageIso
-    (p q : ℤ) (n : ℤ) (hn : p + q = n) (q' : ℤ) (hq' : q + 1 = q') :
-    X.toE₂CohomologicalSpectralSequence.page 2 ⟨p, q⟩ ≅
-      (X.H n).obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) :=
-  X.toE₂CohomologicalSpectralSequencePageIso 2 p q (n-1) n (n+1)
-    (by linarith) _ hn q q' q' (by linarith) (by linarith) (by linarith) ≪≫
+    (pq : ℤ × ℤ) (n : ℤ) (hn : pq.1 + pq.2 = n) (q' : ℤ) (hq' : pq.2 + 1 = q') :
+    X.toE₂CohomologicalSpectralSequence.page 2 pq ≅
+      (X.H n).obj (ιℤt.mapArrow.obj (Arrow.mkOfLE pq.2 q')) :=
+  X.toE₂CohomologicalSpectralSequencePageIso 2 pq (n-1) n (n+1)
+    (by linarith) _ hn pq.2 q' q' (by linarith) (by linarith) (by linarith) ≪≫
     X.EObjIsoH (n-1) n (n+1) _ rfl _ (by dsimp ; infer_instance) (by dsimp ; infer_instance)
 
 lemma toE₂CohomologicalSpectralSequence_isZero_page
@@ -83,13 +85,14 @@ instance [X.IsStationary Bounds.firstQuadrant] :
     intro r hr pq hpq
     exact X.toE₂CohomologicalSpectralSequence_isZero_page r 0 0 pq hpq
 
-noncomputable def toE₂CohomologicalSpectralSequencePageTwoIso (p q n : ℤ) (h : p + q = n)
-    (q' : ℤ) (hq' : q + 1 = q'):
-    X.toE₂CohomologicalSpectralSequence.page 2 ⟨p, q⟩ ≅
-      (X.H n).obj (Arrow.mk (homOfLE (show ℤt.mk q ≤ ℤt.mk q'
+noncomputable def toE₂CohomologicalSpectralSequencePageTwoIso
+    (pq : ℤ × ℤ) (n : ℤ) (h : pq.1 + pq.2 = n)
+    (q' : ℤ) (hq' : pq.2 + 1 = q'):
+    X.toE₂CohomologicalSpectralSequence.page 2 pq ≅
+      (X.H n).obj (Arrow.mk (homOfLE (show ℤt.mk pq.2 ≤ ℤt.mk q'
         by simp only [ℤt.mk_le_mk_iff] ; linarith))) := by
-  refine' X.toE₂CohomologicalSpectralSequencePageIso 2 p q (n-1) n (n+1)
-    (by linarith) (by linarith) h q q' q' (by linarith) hq' (by linarith) ≪≫ _
+  refine' X.toE₂CohomologicalSpectralSequencePageIso 2 pq (n-1) n (n+1)
+    (by linarith) (by linarith) h pq.2 q' q' (by linarith) hq' (by linarith) ≪≫ _
   refine' X.EObjIsoH (n-1) n (n+1) _ rfl _ _ _
   all_goals dsimp ; infer_instance
 

@@ -43,6 +43,7 @@ def ω₂ : Arrow₂ ι ⥤ Triangle C where
 lemma distinguished (D : Arrow₂ ι) :
     X.ω₂.obj D ∈ distTriang C := X.distinguished' D
 
+@[simps]
 noncomputable def mapHomologicalFunctor (F : C ⥤ A) [F.PreservesZeroMorphisms]
     [F.IsHomological] [F.ShiftSequence ℤ] : Abelian.SpectralObject A ι where
   H n := X.ω₁ ⋙ F.shift n

@@ -600,9 +600,15 @@ noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject
   truncGEObjBotIso' := Iso.refl _
   truncGEδLT := t.truncGEtδLTt
 
+
 namespace AbstractSpectralObject
 
 open SpectralObject
+
+@[simp]
+lemma truncGELT_eq (g : Arrow ℤt) :
+  (abstractSpectralObject t).truncGELT.obj g =
+    t.truncLTt.obj g.right ⋙ t.truncGEt.obj g.left := rfl
 
 noncomputable def isZero_truncGE_obj_top_obj (X : C) :
     IsZero ((t.abstractSpectralObject.truncGE.obj ⊤).obj X) :=
@@ -700,6 +706,7 @@ instance : t.abstractSpectralObject.IsCompatible where
   truncGEπ_compatibility' := sorry
   truncLTι_compatibility' := sorry
 
+@[simps!]
 noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=
   t.abstractSpectralObject.spectralObject X
 
@@ -721,6 +728,12 @@ lemma isZero_truncGE_obj_zero (n : ℤ) : IsZero ((t.truncGE n).obj 0) := by
 
 instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_iso (t.isZero_truncLE_obj_zero n).isoZero n
 instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_iso (t.isZero_truncGE_obj_zero n).isoZero n
+
+lemma isLE_of_isZero (X : C) (hX : IsZero X) (n : ℤ) : t.IsLE X n :=
+  t.isLE_of_iso hX.isoZero.symm n
+
+lemma isGE_of_isZero (X : C) (hX : IsZero X) (n : ℤ) : t.IsGE X n :=
+  t.isGE_of_iso hX.isoZero.symm n
 
 lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) := by
@@ -1058,6 +1071,26 @@ instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
 instance (X : C) (a b : ℤ) : t.IsLE ((t.truncGELE a b).obj X) b := by
   sorry -- see below
 
+instance (i : ℤt) : (t.truncGEt.obj i).Additive := sorry
+
+@[simp]
+lemma truncGEt_obj_mk (n : ℤ) : t.truncGEt.obj (ℤt.mk n) = t.truncGE n := rfl
+
+lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : ℤt) (hj : j ≤ ℤt.mk n) :
+  IsZero ((t.truncLTt.obj j).obj X) := sorry
+
+lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
+    t.IsGE ((t.truncGEt.obj i).obj X) n := by
+  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
+  . simp at h
+  . simp at h
+    dsimp
+    exact t.isGE_of_GE  _ _ _ h
+  . dsimp
+    apply t.isGE_of_isZero
+    apply Functor.zero_obj
+
+
 noncomputable def homology' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
 
 instance (X : C) : t.IsLE ((t.homology' n).obj X) 0 :=
@@ -1084,11 +1117,17 @@ noncomputable def homologyCompιHeartDegreeIsoHomology' (q : ℤ) :
     isoWhiskerLeft _  (shiftFunctorCompIsoId C q (-q) (add_right_neg q)) ≪≫
     Functor.rightUnitor _
 
-noncomputable def spectralObjectω₁IsoHomology (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
+/-noncomputable def spectralObjectω₁IsoHomologyιHeartDegree (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
     (t.spectralObject X).ω₁.obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) ≅
       (t.homology q ⋙ t.ιHeartDegree q).obj X :=
   (t.truncGELEIsoTruncGELT q q q' hq').symm.app X ≪≫
-    (t.homologyCompιHeartDegreeIsoHomology' q).symm.app X
+    (t.homologyCompιHeartDegreeIsoHomology' q).symm.app X-/
+
+noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
+    ((t.spectralObject X).ω₁ ⋙ shiftFunctor C q).obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) ≅
+      (t.homology q ⋙ t.ιHeart).obj X :=
+  (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hq').symm.app X) ≪≫
+    (t.homologyCompιHeart q).symm.app X
 
 /- Now, we need the octahedron axiom -/
 
