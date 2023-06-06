@@ -300,7 +300,7 @@ variable {k : ℕ}
 /-- `primitive_roots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type _) [CommRing R] [IsDomain R] : Finset R :=
-  (nthRoots k (1 : R)).toFinset.filterₓ fun ζ => IsPrimitiveRoot ζ k
+  (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
 #align primitive_roots primitiveRoots
 
 variable [CommRing R] [IsDomain R]
@@ -318,8 +318,7 @@ theorem primitiveRoots_zero : primitiveRoots 0 R = ∅ := by
 
 theorem isPrimitiveRoot_of_mem_primitiveRoots {ζ : R} (h : ζ ∈ primitiveRoots k R) :
     IsPrimitiveRoot ζ k :=
-  k.eq_zero_or_pos.elim (fun hk => False.elim <| by simpa [hk] using h) fun hk =>
-    (mem_primitiveRoots hk).1 h
+  k.eq_zero_or_pos.elim (fun hk => by simp [hk] at h) fun hk => (mem_primitiveRoots hk).1 h
 #align is_primitive_root_of_mem_primitive_roots isPrimitiveRoot_of_mem_primitiveRoots
 
 end primitiveRoots
@@ -352,8 +351,8 @@ theorem of_subsingleton [Subsingleton M] (x : M) : IsPrimitiveRoot x 1 :=
 #align is_primitive_root.of_subsingleton IsPrimitiveRoot.of_subsingleton
 
 theorem pow_eq_one_iff_dvd (l : ℕ) : ζ ^ l = 1 ↔ k ∣ l :=
-  ⟨h.dvd_of_pow_eq_one l, by rintro ⟨i, rfl⟩;
-    simp only [pow_mul, h.pow_eq_one, one_pow, PNat.mul_coe]⟩
+  ⟨h.dvd_of_pow_eq_one l,
+    by rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow, PNat.mul_coe]⟩
 #align is_primitive_root.pow_eq_one_iff_dvd IsPrimitiveRoot.pow_eq_one_iff_dvd
 
 theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) : IsUnit ζ := by
@@ -377,13 +376,13 @@ theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j 
   rw [← tsub_eq_zero_iff_le]
   apply Nat.eq_zero_of_dvd_of_lt _ (lt_of_le_of_lt tsub_le_self hj)
   apply h.dvd_of_pow_eq_one
-  rw [← ((h.is_unit (lt_of_le_of_lt (Nat.zero_le _) hi)).pow i).mul_left_inj, ← pow_add,
+  rw [← ((h.isUnit (lt_of_le_of_lt (Nat.zero_le _) hi)).pow i).mul_left_inj, ← pow_add,
     tsub_add_cancel_of_le hij, H, one_mul]
 #align is_primitive_root.pow_inj IsPrimitiveRoot.pow_inj
 
 theorem one : IsPrimitiveRoot (1 : M) 1 :=
   { pow_eq_one := pow_one _
-    dvd_of_pow_eq_one := fun l hl => one_dvd _ }
+    dvd_of_pow_eq_one := fun _ _ => one_dvd _ }
 #align is_primitive_root.one IsPrimitiveRoot.one
 
 @[simp]
