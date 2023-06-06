@@ -17,10 +17,10 @@ In this file we express trigonometric functions in terms of their series expansi
 
 ## Main results
 
-* `complex.has_sum_cos`, `complex.tsum_cos`: `complex.cos` as the sum of an infinite series.
-* `real.has_sum_cos`, `real.tsum_cos`: `real.cos` as the sum of an infinite series.
-* `complex.has_sum_sin`, `complex.tsum_sin`: `complex.sin` as the sum of an infinite series.
-* `real.has_sum_sin`, `real.tsum_sin`: `real.sin` as the sum of an infinite series.
+* `Complex.hasSum_cos`, `Complex.cos_eq_tsum`: `Complex.cos` as the sum of an infinite series.
+* `Real.hasSum_cos`, `Real.cos_eq_tsum`: `Real.cos` as the sum of an infinite series.
+* `Complex.hasSum_sin`, `Complex.sin_eq_tsum`: `Complex.sin` as the sum of an infinite series.
+* `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
 
 
@@ -34,13 +34,11 @@ section SinCos
 theorem Complex.hasSum_cos' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   rw [Complex.cos, Complex.exp_eq_exp_ℂ]
-  have :=
-    ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
-          (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const
-      2
+  have := ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
+    (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this 
-  simp_rw [← mul_comm 2 _] at this 
+  dsimp [Function.comp] at this
+  simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
@@ -54,14 +52,11 @@ theorem Complex.hasSum_sin' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I)
       (Complex.sin z) := by
   rw [Complex.sin, Complex.exp_eq_exp_ℂ]
-  have :=
-    (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
-              (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right
-          Complex.I).div_const
-      2
+  have := (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
+    (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this 
-  simp_rw [← mul_comm 2 _] at this 
+  dsimp [Function.comp] at this
+  simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
@@ -128,4 +123,3 @@ theorem Real.sin_eq_tsum (r : ℝ) :
 #align real.sin_eq_tsum Real.sin_eq_tsum
 
 end SinCos
-
