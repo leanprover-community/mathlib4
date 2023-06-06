@@ -92,18 +92,20 @@ def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacing
         | none => pure yz[0]!.mvarId?
         | some y => match yz[0]!.mvarId? with
           | some mvarId => do
-            unless (← isDefEq (.mvar mvarId) y) do
+            unless ← isDefEq yz[0]! y do
               throwError "could not use {y}; was not defeq to {yz[0]!}"
-            unless (← mvarId.isAssigned) do mvarId.assign y -- `isDefEq` doesn't always assign mvars
+            unless ← mvarId.isAssigned do mvarId.assign y -- `isDefEq` doesn't always assign mvars
             pure none
           | none => throwError "could not use {y}; {yz[0]!} is not a metavariable"
       -- We use `mkAppNUnifying` to account for the new assignments.
       let proof ← mkAppNUnifying l hs
-      let (explicitHyps, implicitHyps, instImplicitHyps) := groupByBinderInfo hs.pop.pop bs.pop.pop
       -- Assign the proof to `g`
       unless ← isDefEq (.mvar g) proof do
         throwError "{← g.getType} is not defeq to {← inferType proof}"
-      unless (← g.isAssigned) do g.assign proof -- `isDefEq` doesn't always assign mvars
+      unless ← g.isAssigned do g.assign proof -- `isDefEq` doesn't always assign mvars
+      -- Handle remaining `hs`
+      let (explicitHyps, implicitHyps, instImplicitHyps) := groupByBinderInfo hs.pop.pop bs.pop.pop
+      -- Check we have all instance hypotheses, and if not try to synthesize them.
       instImplicitHyps.forM fun mvar => do
         let mvarId := mvar.mvarId!
         unless ← mvarId.isAssigned do
