@@ -27,10 +27,11 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) := by
   have h : g - f =ᵐ[μ.restrict s] fun x => Real.toNNReal (g x - f x) :=
     hfg.mono fun x hx => (Real.coe_toNNReal _ <| sub_nonneg.2 hx).symm
-  rw [volume_regionBetween_eq_lintegral f_int.ae_measurable g_int.ae_measurable hs,
+  rw [volume_regionBetween_eq_lintegral f_int.aemeasurable g_int.aemeasurable hs,
     integral_congr_ae h, lintegral_congr_ae,
     lintegral_coe_eq_integral _ ((integrable_congr h).mp (g_int.sub f_int))]
-  simpa only
+  dsimp only
+  rfl
 #align volume_region_between_eq_integral' volume_regionBetween_eq_integral'
 
 /-- If two functions are integrable on a measurable set, and one function is less than
@@ -48,7 +49,6 @@ end regionBetween
 section SummableNormIcc
 
 open ContinuousMap
-
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
 `measure_theory.integral.set_integral`, but it is placed here because it needs to know that
 `Icc a b` has volume `b - a`. -/
@@ -60,16 +60,16 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E]
   refine'
     integrable_of_summable_norm_restrict
       (summable_of_nonneg_of_le
-        (fun n : ℤ =>
-          mul_nonneg (norm_nonneg (f.restrict (⟨Icc n (n + 1), is_compact_Icc⟩ : compacts ℝ)))
+        (@fun n : ℤ =>
+          mul_nonneg (norm_nonneg (f.restrict (⟨Icc n (n + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf)
       (iUnion_Icc_int_cast ℝ)
-  simp only [compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
+
+  simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
     mul_one, norm_le _ (norm_nonneg _)]
   intro x
-  have :=
-    ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
+  have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
       ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
   simpa only [ContinuousMap.restrict_apply, comp_apply, coe_add_right, Subtype.coe_mk,
     sub_add_cancel] using this
@@ -90,9 +90,9 @@ of finite integrals, see `interval_integral.integral_comp_neg`.
 theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
-    (Homeomorph.neg ℝ).ClosedEmbedding.MeasurableEmbedding
-  have := A.set_integral_map f (Ici (-c))
-  rw [measure.map_neg_eq_self (volume : Measure ℝ)] at this
+    (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
+  have := @MeasurableEmbedding.set_integral_map _ _ _ _ volume _ _ _ _ _  A f (Ici (-c))
+  rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
 #align integral_comp_neg_Iic integral_comp_neg_Iic
 
