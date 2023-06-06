@@ -57,11 +57,13 @@ namespace IsSplittingField
 variable {K}
 
 -- Porting note: infer kinds are unsupported
+-- so we provide a version of `splits'` with `f` explicit.
 theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
   splits'
 #align polynomial.is_splitting_field.splits Polynomial.IsSplittingField.splits
 
 -- Porting note: infer kinds are unsupported
+-- so we provide a version of `adjoin_roots'` with `f` explicit.
 theorem adjoin_roots (f : K[X]) [IsSplittingField K L f] :
     Algebra.adjoin K (↑(f.map (algebraMap K L)).roots.toFinset : Set L) = ⊤ :=
   adjoin_roots'
