@@ -8,8 +8,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.QuadraticDiscriminant
-import Mathbin.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 
 /-!
 # Complex trigonometric functions
@@ -31,10 +31,8 @@ open Set Filter
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
-  by
-  have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 :=
-    by
+theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
+  have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
     rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, MulZeroClass.zero_mul,
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
     field_simp only; congr 3; ring
@@ -48,8 +46,7 @@ theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k
   rw [← not_exists, not_iff_not, cos_eq_zero_iff]
 #align complex.cos_ne_zero_iff Complex.cos_ne_zero_iff
 
-theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π :=
-  by
+theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := by
   rw [← Complex.cos_sub_pi_div_two, cos_eq_zero_iff]
   constructor
   · rintro ⟨k, hk⟩
@@ -66,8 +63,7 @@ theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
 #align complex.sin_ne_zero_iff Complex.sin_ne_zero_iff
 
-theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 :=
-  by
+theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
   have h := (sin_two_mul θ).symm
   rw [mul_assoc] at h 
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← MulZeroClass.zero_mul (1 / 2 : ℂ), mul_one_div,
@@ -90,8 +86,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
     _ ↔ -2 * sin ((x + y) / 2) * sin ((x - y) / 2) = 0 := by rw [cos_sub_cos]
     _ ↔ sin ((x + y) / 2) = 0 ∨ sin ((x - y) / 2) = 0 := by simp [(by norm_num : (2 : ℂ) ≠ 0)]
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
-    _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x :=
-      by
+    _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
       apply or_congr <;>
         field_simp [sin_eq_zero_iff, (by norm_num : -(2 : ℂ) ≠ 0), eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
@@ -101,8 +96,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
 #align complex.cos_eq_cos_iff Complex.cos_eq_cos_iff
 
 theorem sin_eq_sin_iff {x y : ℂ} :
-    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x :=
-  by
+    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
   simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
   refine' exists_congr fun k => or_congr _ _ <;> refine' Eq.congr rfl _ <;> field_simp <;> ring
 #align complex.sin_eq_sin_iff Complex.sin_eq_sin_iff
@@ -111,8 +105,7 @@ theorem tan_add {x y : ℂ}
     (h :
       ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
         (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
-    tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
-  by
+    tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
   rcases h with (⟨h1, h2⟩ | ⟨⟨k, rfl⟩, ⟨l, rfl⟩⟩)
   · rw [tan, sin_add, cos_add, ←
       div_div_div_cancel_right (sin x * cos y + cos x * sin y)
@@ -133,8 +126,7 @@ theorem tan_add' {x y : ℂ}
   tan_add (Or.inl h)
 #align complex.tan_add' Complex.tan_add'
 
-theorem tan_two_mul {z : ℂ} : tan (2 * z) = 2 * tan z / (1 - tan z ^ 2) :=
-  by
+theorem tan_two_mul {z : ℂ} : tan (2 * z) = 2 * tan z / (1 - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
   · rw [not_forall_not] at h 
@@ -171,8 +163,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 #align complex.continuous_tan Complex.continuous_tan
 
 theorem cos_eq_iff_quadratic {z w : ℂ} :
-    cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 :=
-  by
+    cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
   field_simp [cos, exp_neg, exp_ne_zero]
   refine' Eq.congr _ rfl
@@ -180,11 +171,9 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
 #align complex.cos_eq_iff_quadratic Complex.cos_eq_iff_quadratic
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (w «expr ≠ » 0) -/
-theorem cos_surjective : Function.Surjective cos :=
-  by
+theorem cos_surjective : Function.Surjective cos := by
   intro x
-  obtain ⟨w, w₀, hw⟩ : ∃ (w : _) (_ : w ≠ 0), 1 * w * w + -2 * x * w + 1 = 0 :=
-    by
+  obtain ⟨w, w₀, hw⟩ : ∃ (w : _) (_ : w ≠ 0), 1 * w * w + -2 * x * w + 1 = 0 := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩
@@ -202,8 +191,7 @@ theorem range_cos : range cos = Set.univ :=
   cos_surjective.range_eq
 #align complex.range_cos Complex.range_cos
 
-theorem sin_surjective : Function.Surjective sin :=
-  by
+theorem sin_surjective : Function.Surjective sin := by
   intro x
   rcases cos_surjective x with ⟨z, rfl⟩
   exact ⟨z + π / 2, sin_add_pi_div_two z⟩
@@ -249,8 +237,7 @@ theorem le_sin_mul {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ 1) : x ≤ sin (π / 2 
       ⟨pi_div_two_pos.le, half_le_self pi_pos.le⟩ (sub_nonneg.2 hx') hx
 #align real.le_sin_mul Real.le_sin_mul
 
-theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin x :=
-  by
+theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin x := by
   rw [← inv_div]
   simpa [-inv_div, pi_div_two_pos.ne'] using @lt_sin_mul ((π / 2)⁻¹ * x) _ _
   · exact mul_pos (inv_pos.2 pi_div_two_pos) hx
@@ -259,8 +246,7 @@ theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin 
 
 /-- In the range `[0, π / 2]`, we have a linear lower bound on `sin`. This inequality forms one half
 of Jordan's inequality, the other half is `real.sin_lt` -/
-theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x ≤ sin x :=
-  by
+theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← inv_div]
   simpa [-inv_div, pi_div_two_pos.ne'] using @le_sin_mul ((π / 2)⁻¹ * x) _ _
   · exact mul_nonneg (inv_nonneg.2 pi_div_two_pos.le) hx
