@@ -115,7 +115,7 @@ def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) : rootsO
 
 @[simp]
 theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) :
-    (rootsOfUnity.mkOfPowEq _ h : M) = ζ :=
+    ((rootsOfUnity.mkOfPowEq _ h : Mˣ) : M) = ζ :=
   rfl
 #align roots_of_unity.coe_mk_of_pow_eq rootsOfUnity.coe_mkOfPowEq
 
