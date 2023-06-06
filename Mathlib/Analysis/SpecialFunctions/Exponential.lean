@@ -8,9 +8,9 @@ Authors: Anatole Dedecker, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Exponential
-import Mathbin.Analysis.Calculus.FderivAnalytic
-import Mathbin.Topology.MetricSpace.CauSeqFilter
+import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.Calculus.FderivAnalytic
+import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
 # Calculus results on exponential in a Banach algebra
@@ -68,8 +68,7 @@ variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [
 /-- The exponential in a Banach-algebra `𝔸` over a normed field `𝕂` has strict Fréchet-derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
-    HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 :=
-  by
+    HasStrictFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) 0 := by
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).HasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
@@ -95,14 +94,12 @@ characteristic zero has Fréchet-derivative `exp 𝕂 x • 1 : 𝔸 →L[𝕂] 
 disk of convergence. -/
 theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasFDerivAt (exp 𝕂) (exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸) x :=
-  by
+    HasFDerivAt (exp 𝕂) (exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸) x := by
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices
     (fun h => exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
-      exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h
-    by
+      exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
     refine' (is_o.const_mul_left _ _).congr' this (eventually_eq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
     exact hasFDerivAt_exp_zero_of_radius_pos hpos
@@ -222,8 +219,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 
 end DerivROrC
 
-theorem Complex.exp_eq_exp_ℂ : Complex.exp = exp ℂ :=
-  by
+theorem Complex.exp_eq_exp_ℂ : Complex.exp = exp ℂ := by
   refine' funext fun x => _
   rw [Complex.exp, exp_eq_tsum_div]
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).HasSum.tendsto_sum_nat
@@ -279,8 +275,7 @@ variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
-    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smul_right x) t :=
-  by
+    HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smul_right x) t := by
   -- TODO: prove this via `has_fderiv_at_exp_of_mem_ball` using the commutative ring
   -- `algebra.elemental_algebra 𝕊 x`. See leanprover-community/mathlib#19062 for discussion.
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt htx
@@ -290,19 +285,16 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
         exp 𝕂 (t • x) *
           (exp 𝕂 ((0 + h) • x) - exp 𝕂 ((0 : 𝕊) • x) - ((1 : 𝕊 →L[𝕂] 𝕊).smul_right x) h)) =ᶠ[𝓝 0]
       fun h =>
-      exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smul_right x) h
-    by
+      exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smul_right x) h by
     refine' (is_o.const_mul_left _ _).congr' this (eventually_eq.refl _ _)
     rw [←
       @hasFDerivAt_iff_isLittleO_nhds_zero _ _ _ _ _ _ _ _ (fun u => exp 𝕂 (u • x))
         ((1 : 𝕊 →L[𝕂] 𝕊).smul_right x) 0]
-    have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smul_right x 0) :=
-      by
+    have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smul_right x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
     exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smul_right x).HasFDerivAt
-  have : tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) :=
-    by
+  have : tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) := by
     rw [← zero_smul 𝕊 x]
     exact tendsto_id.smul_const x
   have : ∀ᶠ h in 𝓝 (0 : 𝕊), h • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
@@ -319,8 +311,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
 theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
-      (((1 : 𝕊 →L[𝕂] 𝕊).smul_right x).smul_right (exp 𝕂 (t • x))) t :=
-  by
+      (((1 : 𝕊 →L[𝕂] 𝕊).smul_right x).smul_right (exp 𝕂 (t • x))) t := by
   convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
   show Commute (t' • x) (exp 𝕂 (t • x))
@@ -342,8 +333,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
 theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
-      (((1 : 𝕊 →L[𝕂] 𝕊).smul_right x).smul_right (exp 𝕂 (t • x))) t :=
-  by
+      (((1 : 𝕊 →L[𝕂] 𝕊).smul_right x).smul_right (exp 𝕂 (t • x))) t := by
   let ⟨p, hp⟩ := analyticAt_exp_of_mem_ball (t • x) htx
   convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
