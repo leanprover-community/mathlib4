@@ -783,14 +783,13 @@ variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E] {α : E}
 
 variable {K : Type _} [Field K] [Algebra F K]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem minpoly_gen {α : E} (h : IsIntegral F α) : minpoly F (AdjoinSimple.gen F α) = minpoly F α :=
   by
-  rw [← adjoin_simple.algebra_map_gen F α] at h
-  have inj := (algebraMap F⟮⟯ E).Injective
+  rw [← AdjoinSimple.algebraMap_gen F α] at h
+  have inj := (algebraMap F⟮α⟯ E).injective
   exact
     minpoly.eq_of_algebraMap_eq inj ((isIntegral_algebraMap_iff inj).mp h)
-      (adjoin_simple.algebra_map_gen _ _).symm
+      (AdjoinSimple.algebraMap_gen _ _).symm
 #align intermediate_field.minpoly_gen IntermediateField.minpoly_gen
 
 variable (F)
@@ -798,15 +797,13 @@ variable (F)
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
   convert minpoly.aeval F α
-  conv in aeval α => rw [← adjoin_simple.algebra_map_gen F α]
-  exact (aeval_algebra_map_apply E (adjoin_simple.gen F α) _).symm
+  conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
+  exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 #align intermediate_field.aeval_gen_minpoly IntermediateField.aeval_gen_minpoly
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
+--Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `adjoin_root` and `F⟮α⟯` -/
-noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) : AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮⟯ :=
+noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) : AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
     (AdjoinRoot.liftHom (minpoly F α) (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
     (by
@@ -814,17 +811,18 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) : AdjoinRoot (minp
       haveI := Fact.mk (minpoly.irreducible h)
       constructor
       · exact RingHom.injective f
-      · suffices F⟮⟯.toSubfield ≤ RingHom.fieldRange (F⟮⟯.toSubfield.Subtype.comp f) by
-          exact fun x => Exists.cases_on (this (Subtype.mem x)) fun y hy => ⟨y, Subtype.ext hy⟩
-        exact
-          subfield.closure_le.mpr
-            (Set.union_subset
-              (fun x hx =>
-                Exists.cases_on hx fun y hy =>
-                  ⟨y, by rw [RingHom.comp_apply, AdjoinRoot.lift_of]; exact hy⟩)
-              (set.singleton_subset_iff.mpr
-                ⟨AdjoinRoot.root (minpoly F α), by rw [RingHom.comp_apply, AdjoinRoot.lift_root];
-                  rfl⟩)))
+      · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
+          intro x
+          obtain ⟨y, hy⟩ := (this (Subtype.mem x))
+          exact ⟨y, Subtype.ext hy⟩
+        refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
+        · obtain ⟨y, hy⟩ := hx
+          refine' ⟨y, _⟩
+          rw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
+          exact hy
+        · refine' Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), _⟩
+          rw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
+          rfl)
 #align intermediate_field.adjoin_root_equiv_adjoin IntermediateField.adjoinRootEquivAdjoin
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
@@ -836,74 +834,67 @@ section PowerBasis
 
 variable {L : Type _} [Field L] [Algebra K L]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
-    Basis (Fin (minpoly K x).natDegree) K K⟮⟯ :=
-  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).Basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
+    Basis (Fin (minpoly K x).natDegree) K K⟮x⟯ :=
+  (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
 #align intermediate_field.power_basis_aux IntermediateField.powerBasisAux
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
+set_option maxHeartbeats 300000 in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 @[simps]
-noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K K⟮⟯ where
+noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K K⟮x⟯ where
   gen := AdjoinSimple.gen K x
   dim := (minpoly K x).natDegree
-  Basis := powerBasisAux hx
+  basis := powerBasisAux hx
   basis_eq_pow i := by
-    rw [power_basis_aux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
-      AlgEquiv.map_pow, AdjoinRoot.powerBasis_gen, adjoin_root_equiv_adjoin_apply_root]
+    rw [powerBasisAux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
+      AlgEquiv.map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
 #align intermediate_field.adjoin.power_basis IntermediateField.adjoin.powerBasis
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮⟯ :=
+theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
   PowerBasis.finiteDimensional (adjoin.powerBasis hx)
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
-    FiniteDimensional.finrank K K⟮⟯ = (minpoly K x).natDegree := by
-  rw [PowerBasis.finrank (adjoin.power_basis hx : _)]
+    FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
+  rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
   rfl
 #align intermediate_field.adjoin.finrank IntermediateField.adjoin.finrank
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem minpoly.natDegree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
     (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank hx).symm K⟮⟯.toSubmodule.finrank_le
-#align minpoly.nat_degree_le minpoly.natDegree_le
+  le_of_eq_of_le (IntermediateField.adjoin.finrank hx).symm K⟮x⟯.toSubmodule.finrank_le
+#align minpoly.nat_degree_le IntermediateField.minpoly.natDegree_le
 
 theorem minpoly.degree_le {x : L} [FiniteDimensional K L] (hx : IsIntegral K x) :
     (minpoly K x).degree ≤ finrank K L :=
   degree_le_of_natDegree_le (minpoly.natDegree_le hx)
-#align minpoly.degree_le minpoly.degree_le
+#align minpoly.degree_le IntermediateField.minpoly.degree_le
 
 end PowerBasis
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- Algebra homomorphism `F⟮α⟯ →ₐ[F] K` are in bijection with the set of roots
 of `minpoly α` in `K`. -/
 noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
-    (F⟮⟯ →ₐ[F] K) ≃ { x // x ∈ ((minpoly F α).map (algebraMap F K)).roots } :=
+    (F⟮α⟯ →ₐ[F] K) ≃ { x // x ∈ ((minpoly F α).map (algebraMap F K)).roots } :=
   (adjoin.powerBasis h).liftEquiv'.trans
     ((Equiv.refl _).subtypeEquiv fun x => by
-      rw [adjoin.power_basis_gen, minpoly_gen h, Equiv.refl_apply])
+      rw [adjoin.powerBasis_gen, minpoly_gen h, Equiv.refl_apply])
 #align intermediate_field.alg_hom_adjoin_integral_equiv IntermediateField.algHomAdjoinIntegralEquiv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
-noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮⟯ →ₐ[F] K) :=
+noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 #align intermediate_field.fintype_of_alg_hom_adjoin_integral IntermediateField.fintypeOfAlgHomAdjoinIntegral
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : (minpoly F α).Separable)
     (h_splits : (minpoly F α).Splits (algebraMap F K)) :
-    @Fintype.card (F⟮⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
+    @Fintype.card (F⟮α⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
   rw [AlgHom.card_of_powerBasis] <;>
-    simp only [adjoin.power_basis_dim, adjoin.power_basis_gen, minpoly_gen h, h_sep, h_splits]
+    simp only [adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen h, h_sep, h_splits]
 #align intermediate_field.card_alg_hom_adjoin_integral IntermediateField.card_algHom_adjoin_integral
 
 end AdjoinIntegralElement
