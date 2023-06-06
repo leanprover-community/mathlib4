@@ -197,7 +197,8 @@ where
       return false
 
 /--
-Like `variable` but inserts missing typeclasses automatically as extra variables.
+Like `variable` but inserts missing instances automatically as extra variables.
+It does not add variables that can already be deduced from others in the current context.
 Use `variable!?` to see an equivalent `variable` command.
 
 Structures tagged with the `variable_alias` attribute can serve as aliases for a collection
