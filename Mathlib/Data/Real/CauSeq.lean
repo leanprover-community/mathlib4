@@ -14,6 +14,7 @@ import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring
 
 /-!
@@ -65,9 +66,9 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   refine' ⟨_, εK, fun {a₁ a₂ b₁ b₂} ha₁ hb₂ h₁ h₂ => _⟩
   replace ha₁ := lt_of_lt_of_le ha₁ (le_trans (le_max_left _ K₂) (le_max_right 1 _))
   replace hb₂ := lt_of_lt_of_le hb₂ (le_trans (le_max_right K₁ _) (le_max_right 1 _))
-  have :=
-    add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg abv _) εK)
-      (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg abv _) εK)
+  set M := max 1 (max K₁ K₂)
+  have : abv (a₁ - b₁) * abv b₂ + abv (a₂ - b₂) * abv a₁ < ε / 2 / M * M + ε / 2 / M * M
+  · gcongr
   rw [← abv_mul abv, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
   simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
     lt_of_le_of_lt (abv_add abv _ _) this
@@ -84,7 +85,7 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
-  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)
+  gcongr
 #align rat_inv_continuous_lemma rat_inv_continuous_lemma
 
 end
@@ -552,9 +553,7 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   apply not_le_of_lt hN'
   change _ ≤ abv (_ * _)
   rw [abv_mul abv]
-  apply mul_le_mul <;> try assumption
-  · exact le_of_lt ha2
-  · exact abv_nonneg abv _
+  gcongr
 #align cau_seq.mul_not_equiv_zero CauSeq.mul_not_equiv_zero
 
 theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=

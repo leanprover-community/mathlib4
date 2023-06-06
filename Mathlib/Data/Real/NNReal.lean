@@ -399,10 +399,16 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_nat_cast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_coe_nat
 
+-- Porting note: place this in the `Real` namespace
 @[simp]
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
+
+@[simp]
+theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+  Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
+  toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
