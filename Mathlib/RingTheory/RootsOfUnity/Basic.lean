@@ -132,8 +132,7 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ+) : (rootsOfUnity k M).map 
 
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
-    ↑(ζ ^ m) = (ζ ^ m : R) := by
-  change ↑(↑(ζ ^ m) : Rˣ) = ↑(ζ : Rˣ) ^ m
+    ((ζ ^ m : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
 #align roots_of_unity.coe_pow rootsOfUnity.coe_pow
 
@@ -144,20 +143,19 @@ variable [CommSemiring R] [CommSemiring S]
 /-- Restrict a ring homomorphism to the nth roots of unity -/
 def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
     rootsOfUnity n R →* rootsOfUnity n S :=
-  let h : ∀ ξ : rootsOfUnity n R, σ ξ ^ (n : ℕ) = 1 := fun ξ => by
-    change σ (ξ : Rˣ) ^ (n : ℕ) = 1
+  let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ (n : ℕ) = 1 := fun ξ => by
     rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n : ℕ) = 1 from ξ.2, Units.val_one,
       map_one σ]
   { toFun := fun ξ =>
-      ⟨@unitOfInvertible _ _ _ (invertibleOfPowEqOne _ _ (h ξ) n.NeZero), by ext;
-        rw [Units.val_pow_eq_pow_val]; exact h ξ⟩
+      ⟨@unitOfInvertible _ _ _ (invertibleOfPowEqOne _ _ (h ξ) n.ne_zero), by
+        ext; rw [Units.val_pow_eq_pow_val]; exact h ξ⟩
     map_one' := by ext; exact map_one σ
     map_mul' := fun ξ₁ ξ₂ => by ext; rw [Subgroup.coe_mul, Units.val_mul]; exact map_mul σ _ _ }
 #align restrict_roots_of_unity restrictRootsOfUnity
 
 @[simp]
 theorem restrictRootsOfUnity_coe_apply [RingHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
-    ↑(restrictRootsOfUnity σ k ζ) = σ ↑ζ :=
+    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 #align restrict_roots_of_unity_coe_apply restrictRootsOfUnity_coe_apply
 
