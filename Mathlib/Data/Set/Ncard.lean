@@ -413,10 +413,10 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   intro b hb
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩ with hf'
+  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
   have finj : f'.Injective := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    simp only [hf', Subtype.mk.injEq] at hxy ⊢
+    simp only [Subtype.mk.injEq] at hxy ⊢
     apply hinj _ _ hx hy hxy
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
@@ -577,9 +577,7 @@ end Lattice
 theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t) :
     ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
   cases' t.finite_or_infinite with ht ht
-  · have hft := ht.to_subtype
-    have hfs := (ht.subset h₂).to_subtype
-    rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
+  · rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
     rw [ncard_eq_toFinset_card t ht] at h₁
     obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h₁ (by simpa)
     exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
