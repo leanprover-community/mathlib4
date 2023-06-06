@@ -22,9 +22,9 @@ In this file we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x �
 
 ### Avoiding `if`, `min`, and `max`
 
-In order to avoid `if`s in the definition, we define `interval_integrable f μ a b` as
+In order to avoid `if`s in the definition, we define `IntervalIntegrable f μ a b` as
 `integrable_on f (Ioc a b) μ ∧ integrable_on f (Ioc b a) μ`. For any `a`, `b` one of these
-intervals is empty and the other coincides with `set.uIoc a b = set.Ioc (min a b) (max a b)`.
+intervals is empty and the other coincides with `Set.uIoc a b = Set.Ioc (min a b) (max a b)`.
 
 Similarly, we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`.
 Again, for any `a`, `b` one of these integrals is zero, and the other gives the expected result.
@@ -34,12 +34,12 @@ the cases `a ≤ b` and `b ≤ a` separately.
 
 ### Choice of the interval
 
-We use integral over `set.uIoc a b = set.Ioc (min a b) (max a b)` instead of one of the other
+We use integral over `Set.uIoc a b = Set.Ioc (min a b) (max a b)` instead of one of the other
 three possible intervals with the same endpoints for two reasons:
 
 * this way `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ` holds whenever
   `f` is integrable on each interval; in particular, it works even if the measure `μ` has an atom
-  at `b`; this rules out `set.Ioo` and `set.Icc` intervals;
+  at `b`; this rules out `Set.Ioo` and `Set.Icc` intervals;
 * with this definition for a probability measure `μ`, the integral `∫ x in a..b, 1 ∂μ` equals
   the difference $F_μ(b)-F_μ(a)$, where $F_μ(a)=μ(-∞, a]$ is the
   [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
@@ -80,7 +80,7 @@ variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
 /-- A function is interval integrable with respect to a given measure `μ` on `a..b` if and
   only if it is integrable on `uIoc a b` with respect to `μ`. This is an equivalent
-  definition of `interval_integrable`. -/
+  definition of `IntervalIntegrable`. -/
 theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f (Ι a b) μ := by
   rw [uIoc_eq_union, integrableOn_union, IntervalIntegrable]
 #align interval_integrable_iff intervalIntegrable_iff
@@ -364,7 +364,7 @@ theorem ContinuousOn.intervalIntegrable_of_Icc {u : ℝ → E} {a b : ℝ} (h : 
   ContinuousOn.intervalIntegrable ((uIcc_of_le h).symm ▸ hu)
 #align continuous_on.interval_integrable_of_Icc ContinuousOn.intervalIntegrable_of_Icc
 
-/-- A continuous function on `ℝ` is `interval_integrable` with respect to any locally finite measure
+/-- A continuous function on `ℝ` is `IntervalIntegrable` with respect to any locally finite measure
 `ν` on ℝ. -/
 theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b : ℝ) :
     IntervalIntegrable u μ a b :=
@@ -408,7 +408,7 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is i
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `filter ℝ` and
+`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
 `tendsto_Ixx_class Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
@@ -426,7 +426,7 @@ Suppose that `f : ℝ → E` has a finite limit at `l`. Then `f` is interval int
 provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `filter ℝ` and
+`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
 `tendsto_Ixx_class Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
@@ -514,7 +514,8 @@ theorem intervalIntegrable_of_integral_ne_zero {a b : ℝ} {f : ℝ → E} {μ :
   not_imp_comm.1 integral_undef h
 #align interval_integral.interval_integrable_of_integral_ne_zero intervalIntegral.intervalIntegrable_of_integral_ne_zero
 
-nonrec theorem integral_non_aestronglyMeasurable (hf : ¬AEStronglyMeasurable f (μ.restrict (Ι a b))) :
+nonrec theorem integral_non_aestronglyMeasurable
+    (hf : ¬AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     (∫ x in a..b, f x ∂μ) = 0 := by
   rw [intervalIntegral_eq_integral_uIoc, integral_non_aestronglyMeasurable hf, smul_zero]
 #align interval_integral.integral_non_ae_strongly_measurable intervalIntegral.integral_non_aestronglyMeasurable
@@ -1210,7 +1211,7 @@ theorem continuousOn_primitive_Icc [NoAtoms μ] (h_int : IntegrableOn f (Icc a b
   exact continuousOn_primitive h_int
 #align interval_integral.continuous_on_primitive_Icc intervalIntegral.continuousOn_primitive_Icc
 
-/-- Note: this assumes that `f` is `interval_integrable`, in contrast to some other lemmas here. -/
+/-- Note: this assumes that `f` is `IntervalIntegrable`, in contrast to some other lemmas here. -/
 theorem continuousOn_primitive_interval' [NoAtoms μ] (h_int : IntervalIntegrable f μ b₁ b₂)
     (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b => ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
   refine continuousWithinAt_primitive (measure_singleton _) ?_
@@ -1267,9 +1268,9 @@ theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b �
   · rw [integral_symm, neg_eq_zero, integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi.symm]
 #align interval_integral.integral_eq_zero_iff_of_nonneg_ae intervalIntegral.integral_eq_zero_iff_of_nonneg_ae
 
-/-- If `f` is nonnegative and integrable on the unordered interval `set.uIoc a b`, then its
+/-- If `f` is nonnegative and integrable on the unordered interval `Set.uIoc a b`, then its
 integral over `a..b` is positive if and only if `a < b` and the measure of
-`function.support f ∩ set.Ioc a b` is positive. -/
+`Function.support f ∩ Set.Ioc a b` is positive. -/
 theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a b)] f)
     (hfi : IntervalIntegrable f μ a b) :
     (0 < ∫ x in a..b, f x ∂μ) ↔ a < b ∧ 0 < μ (support f ∩ Ioc a b) := by
@@ -1284,8 +1285,8 @@ theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a 
 #align interval_integral.integral_pos_iff_support_of_nonneg_ae' intervalIntegral.integral_pos_iff_support_of_nonneg_ae'
 
 /-- If `f` is nonnegative a.e.-everywhere and it is integrable on the unordered interval
-`set.uIoc a b`, then its integral over `a..b` is positive if and only if `a < b` and the
-measure of `function.support f ∩ set.Ioc a b` is positive. -/
+`Set.uIoc a b`, then its integral over `a..b` is positive if and only if `a < b` and the
+measure of `Function.support f ∩ Set.Ioc a b` is positive. -/
 theorem integral_pos_iff_support_of_nonneg_ae (hf : 0 ≤ᵐ[μ] f) (hfi : IntervalIntegrable f μ a b) :
     (0 < ∫ x in a..b, f x ∂μ) ↔ a < b ∧ 0 < μ (support f ∩ Ioc a b) :=
   integral_pos_iff_support_of_nonneg_ae' (ae_mono Measure.restrict_le_self hf) hfi
@@ -1315,7 +1316,7 @@ theorem intervalIntegral_pos_of_pos {f : ℝ → ℝ} {a b : ℝ}
 #align interval_integral.interval_integral_pos_of_pos intervalIntegral.intervalIntegral_pos_of_pos
 
 /-- If `f` and `g` are two functions that are interval integrable on `a..b`, `a ≤ b`,
-`f x ≤ g x` for a.e. `x ∈ set.Ioc a b`, and `f x < g x` on a subset of `set.Ioc a b`
+`f x ≤ g x` for a.e. `x ∈ Set.Ioc a b`, and `f x < g x` on a subset of `Set.Ioc a b`
 of nonzero measure, then `∫ x in a..b, f x ∂μ < ∫ x in a..b, g x ∂μ`. -/
 theorem integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero (hab : a ≤ b)
     (hfi : IntervalIntegrable f μ a b) (hgi : IntervalIntegrable g μ a b)
