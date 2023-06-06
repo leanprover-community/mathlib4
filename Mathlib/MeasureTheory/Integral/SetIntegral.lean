@@ -1049,7 +1049,7 @@ The goal of this section is to prove that integration commutes with continuous l
 This holds for simple functions. The general result follows from the continuity of all involved
 operations on the space `L¹`. Note that composition by a continuous linear map on `L¹` is not just
 the composition, as we are dealing with classes of functions, but it has already been defined
-as `ContinuousLinearMap.comp_Lp`. We take advantage of this construction here.
+as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
 
@@ -1218,7 +1218,7 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
     (∫ a, g a ∂μ.withDensity fun x => f x) = ∫ a, f a • g a ∂μ := by
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
-    rwa [← integrable_withDensity_iff_integrable_smul f_meas] <;> infer_instance
+    rwa [← integrable_withDensity_iff_integrable_smul f_meas]
   refine' Integrable.induction
     (P := fun g => (∫ a, g a ∂μ.withDensity fun x => f x) = ∫ a, f a • g a ∂μ) _ _ _ _ hg
   · intro c s s_meas hs
@@ -1233,7 +1233,7 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
       rw [HasFiniteIntegral]
       convert hs with x
       simp only [NNReal.nnnorm_eq]
-  · intro u u' h_disj u_int u'_int h h'
+  · intro u u' _ u_int u'_int h h'
     change
       (∫ a : α, u a + u' a ∂μ.withDensity fun x : α => ↑(f x)) = ∫ a : α, f a • (u a + u' a) ∂μ
     simp_rw [smul_add]
@@ -1245,17 +1245,16 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
         ∫ x, u x ∂μ.withDensity fun x => f x :=
       continuous_integral
     have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
-      have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI μ f_meas) :=
-        continuous_integral.comp (withDensitySMulLI μ f_meas).continuous
-      convert this
-      ext1 u
-      simp only [Function.comp_apply, with_density_smul_li_apply]
-      exact integral_congr_ae (mem_ℒ1_smul_of_L1_with_density f_meas u).coeFn_toLp.symm
+      have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
+        continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
+      convert this with u
+      simp only [Function.comp_apply, withDensitySMulLI_apply]
+      exact integral_congr_ae (memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2
-  · intro u v huv u_int hu
+  · intro u v huv _ hu
     rw [← integral_congr_ae huv, hu]
     apply integral_congr_ae
-    filter_upwards [(ae_with_density_iff f_meas.coe_nnreal_ennreal).1 huv] with x hx
+    filter_upwards [(ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 huv] with x hx
     rcases eq_or_ne (f x) 0 with (h'x | h'x)
     · simp only [h'x, zero_smul]
     · rw [hx _]
@@ -1276,7 +1275,6 @@ theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMe
       apply integral_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx
       rw [hx]
-
 #align integral_with_density_eq_integral_smul₀ integral_withDensity_eq_integral_smul₀
 
 theorem set_integral_withDensity_eq_set_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f)
@@ -1323,10 +1321,10 @@ namespace MeasureTheory
 variable {f : β → ℝ} {m m0 : MeasurableSpace β} {μ : Measure β}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ) :
-    Integrable (g * f) μ := by
+    Integrable (⇑g * f) μ := by
   refine'
     SimpleFunc.induction (fun c s hs => _)
-      (fun g₁ g₂ h_disj h_int₁ h_int₂ =>
+      (fun g₁ g₂ _ h_int₁ h_int₂ =>
         (h_int₁.add h_int₂).congr (by rw [SimpleFunc.coe_add, add_mul]))
       g
   simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
@@ -1334,15 +1332,16 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ)
   have : Set.indicator s (Function.const β c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
+        ← Function.const_def]
     · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, MulZeroClass.zero_mul]
   rw [this, integrable_indicator_iff hs]
-  exact (hf.smul c).IntegrableOn
+  exact (hf.smul c).integrableOn
 #align measure_theory.integrable.simple_func_mul MeasureTheory.Integrable.simpleFunc_mul
 
 theorem Integrable.simpleFunc_mul' (hm : m ≤ m0) (g : @SimpleFunc β m ℝ) (hf : Integrable f μ) :
-    Integrable (g * f) μ := by rw [← SimpleFunc.coe_to_larger_space_eq hm g];
-  exact hf.simple_func_mul (g.to_larger_space hm)
+    Integrable (⇑g * f) μ := by
+  rw [← SimpleFunc.coe_toLargerSpace_eq hm g]; exact hf.simpleFunc_mul (g.toLargerSpace hm)
 #align measure_theory.integrable.simple_func_mul' MeasureTheory.Integrable.simpleFunc_mul'
 
 end MeasureTheory
