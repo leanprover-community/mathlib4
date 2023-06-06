@@ -1023,7 +1023,8 @@ theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
   rw [pow_two, real_inner_self_eq_norm_mul_norm]
 #align real_inner_self_eq_norm_sq real_inner_self_eq_norm_sq
 
-variable (𝕜)
+-- Porting note: this was present in mathlib3 but seemingly didn't do anything.
+-- variable (𝕜)
 
 /-- Expand the square -/
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by

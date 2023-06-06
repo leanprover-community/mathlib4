@@ -28,6 +28,8 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 -/
 
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 noncomputable section
 
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter
@@ -41,21 +43,20 @@ section
 variable {α F : Type _} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
 theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
-  simpa [← mem_ℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
+  simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
 #align measure_theory.mem_ℒp.integrable_sq MeasureTheory.Memℒp.integrable_sq
 
 theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
-  rw [← mem_ℒp_one_iff_integrable]
-  convert (mem_ℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
+  rw [← memℒp_one_iff_integrable]
+  convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
 #align measure_theory.mem_ℒp_two_iff_integrable_sq_norm MeasureTheory.memℒp_two_iff_integrable_sq_norm
 
 theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
-  convert mem_ℒp_two_iff_integrable_sq_norm hf
-  ext x
+  convert memℒp_two_iff_integrable_sq_norm hf using 3
   simp
 #align measure_theory.mem_ℒp_two_iff_integrable_sq MeasureTheory.memℒp_two_iff_integrable_sq
 
