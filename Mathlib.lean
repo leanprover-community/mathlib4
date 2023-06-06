@@ -650,6 +650,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -980,6 +981,7 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Combinatorics.Additive.Behrend
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.Etransform
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
@@ -990,6 +992,7 @@ import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
+import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.HalesJewett
@@ -1625,6 +1628,7 @@ import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
@@ -1892,6 +1896,7 @@ import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
 import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
 import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.QuotientPi
 import Mathlib.LinearAlgebra.Ray
@@ -2024,6 +2029,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
@@ -2231,6 +2237,7 @@ import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.Derivation.Lie
