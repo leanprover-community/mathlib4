@@ -155,8 +155,7 @@ section InsertErase
 theorem ncard_insert_of_mem (h : a ∈ s) : ncard (insert a s) = s.ncard := by rw [insert_eq_of_mem h]
 #align set.ncard_insert_of_mem Set.ncard_insert_of_mem
 
-theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard + 1 :=
-  by
+theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard + 1 := by
   obtain hs | hs := s.finite_or_infinite
   · exact (em (a ∈ s)).elim (fun h ↦ (ncard_insert_of_mem h).trans_le (Nat.le_succ _))
       (fun h ↦ by rw [ncard_insert_of_not_mem h hs])
