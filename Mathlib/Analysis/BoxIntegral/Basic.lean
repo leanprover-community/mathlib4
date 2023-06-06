@@ -20,7 +20,7 @@ Riemann, Henstock-Kurzweil, and McShane integrals.
 
 As usual, we represent `ℝⁿ` as the type of functions `ι → ℝ` for some finite type `ι`. A rectangular
 box `(l, u]` in `ℝⁿ` is defined to be the set `{x : ι → ℝ | ∀ i, l i < x i ∧ x i ≤ u i}`, see
-`box_integral.box`.
+`BoxIntegral.Box`.
 
 Let `vol` be a box-additive function on boxes in `ℝⁿ` with codomain `E →L[ℝ] F`. Given a function
 `f : ℝⁿ → E`, a box `I` and a tagged partition `π` of this box, the *integral sum* of `f` over `π`
@@ -29,18 +29,18 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
-theorems take an argument `l : box_integral.integration_params`. This is a type that holds three
+theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
 boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
-Following the design of infinite sums (see `has_sum` and `tsum`), we define a predicate
-`box_integral.has_integral` and a function `box_integral.integral` that returns a vector satisfying
+Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
+`BoxIntegral.HasIntegral` and a function `BoxIntegral.integral` that returns a vector satisfying
 the predicate or zero if the function is not integrable.
 
 Then we prove some basic properties of box integrals (linearity, a formula for the integral of a
 constant). We also prove a version of the Henstock-Sacks inequality (see
-`box_integral.integrable.dist_integral_sum_le_of_mem_base_set` and
-`box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set_of_Union_eq`), prove
+`BoxIntegral.Integrable.dist_integralSum_le_of_memBaseSet` and
+`BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq`), prove
 integrability of continuous functions, and provide a criterion for integrability w.r.t. a
 non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 
@@ -129,8 +129,7 @@ theorem integralSum_sub_partitions (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L
 theorem integralSum_disjUnion (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) {π₁ π₂ : TaggedPrepartition I}
     (h : Disjoint π₁.iUnion π₂.iUnion) :
     integralSum f vol (π₁.disjUnion π₂ h) = integralSum f vol π₁ + integralSum f vol π₂ := by
-  refine'
-    (Prepartition.sum_disj_union_boxes h _).trans
+  refine' (Prepartition.sum_disj_union_boxes h _).trans
       (congr_arg₂ (· + ·) (sum_congr rfl fun J hJ => _) (sum_congr rfl fun J hJ => _))
   · rw [disjUnion_tag_of_mem_left _ hJ]
   · rw [disjUnion_tag_of_mem_right _ hJ]
@@ -161,7 +160,7 @@ variable [Fintype ι]
 -/
 
 
-/-- The predicate `has_integral I l f vol y` says that `y` is the integral of `f` over `I` along `l`
+/-- The predicate `HasIntegral I l f vol y` says that `y` is the integral of `f` over `I` along `l`
 w.r.t. volume `vol`. This means that integral sums of `f` tend to `𝓝 y` along
 `BoxIntegral.IntegrationParams.toFilteriUnion I ⊤`. -/
 def HasIntegral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (y : F) :
@@ -169,14 +168,14 @@ def HasIntegral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : �
   Tendsto (integralSum f vol) (l.toFilteriUnion I ⊤) (𝓝 y)
 #align box_integral.has_integral BoxIntegral.HasIntegral
 
-/-- A function is integrable if there exists a vector that satisfies the `has_integral`
+/-- A function is integrable if there exists a vector that satisfies the `HasIntegral`
 predicate. -/
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 #align box_integral.integrable BoxIntegral.Integrable
 
-/-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.  Returns
-zero on non-integrable functions. -/
+/-- The integral of a function `f` over a box `I` along a filter `l` w.r.t. a volume `vol`.
+Returns zero on non-integrable functions. -/
 def integral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   if h : Integrable I l f vol then h.choose else 0
 #align box_integral.integral BoxIntegral.integral
@@ -194,12 +193,9 @@ theorem HasIntegral.tendsto (h : HasIntegral I l f vol y) :
 #align box_integral.has_integral.tendsto BoxIntegral.HasIntegral.tendsto
 
 /-- The `ε`-`δ` definition of `BoxIntegral.HasIntegral`. -/
-theorem hasIntegral_iff :
-    HasIntegral I l f vol y ↔
-      ∀ ε > (0 : ℝ),
-        ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ),
-          (∀ c, l.RCond (r c)) ∧
-            ∀ c π, l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ ε :=
+theorem hasIntegral_iff : HasIntegral I l f vol y ↔
+    ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
+      ∀ c π, l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ ε :=
   ((l.hasBasis_toFilteriUnion_top I).tendsto_iff nhds_basis_closedBall).trans <| by
     simp [@forall_swap ℝ≥0 (TaggedPrepartition I)]
 #align box_integral.has_integral_iff BoxIntegral.hasIntegral_iff
@@ -223,16 +219,10 @@ theorem integrable_iff_cauchy [CompleteSpace F] :
 
 /-- In a complete space, a function is integrable if and only if its integral sums form a Cauchy
 net. Here we restate this fact in terms of `∀ ε > 0, ∃ r, ...`. -/
-theorem integrable_iff_cauchy_basis [CompleteSpace F] :
-    Integrable I l f vol ↔
-      ∀ ε > (0 : ℝ),
-        ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ),
-          (∀ c, l.RCond (r c)) ∧
-            ∀ c₁ c₂ π₁ π₂,
-              l.MemBaseSet I c₁ (r c₁) π₁ →
-                π₁.IsPartition →
-                  l.MemBaseSet I c₂ (r c₂) π₂ →
-                    π₂.IsPartition → dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε := by
+theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
+    ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
+      ∀ c₁ c₂ π₁ π₂, l.MemBaseSet I c₁ (r c₁) π₁ → π₁.IsPartition → l.MemBaseSet I c₂ (r c₂) π₂ →
+        π₂.IsPartition → dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε := by
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
   refine' forall₂_congr fun ε _ => exists_congr fun r => _
@@ -445,7 +435,7 @@ namespace Integrable
 
 /-- If `ε > 0`, then `BoxIntegral.Integrable.convergenceR` is a function `r : ℝ≥0 → ℝⁿ → (0, ∞)`
 such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate to `r` (and satisfying
-additional distortion estimates if `box_integral.integration_params.bDistortion l = true`), the
+additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l = true`), the
 corresponding integral sum is `ε`-close to the integral.
 
 If `box.integral.integration_params.bRiemann = true`, then `r c x` does not depend on `x`. If
@@ -512,10 +502,9 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
 (in the sense of the filter `BoxIntegral.IntegrationParams.toFilter l I`) such that they cover
 the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other.  -/
 theorem tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity (h : Integrable I l f vol) :
-    Tendsto
-      (fun π : TaggedPrepartition I × TaggedPrepartition I =>
-        (integralSum f vol π.1, integralSum f vol π.2))
-      ((l.toFilter I ×ˢ l.toFilter I) ⊓ 𝓟 {π | π.1.iUnion = π.2.iUnion}) (𝓤 F) := by
+    Tendsto (fun π : TaggedPrepartition I × TaggedPrepartition I =>
+      (integralSum f vol π.1, integralSum f vol π.2))
+        ((l.toFilter I ×ˢ l.toFilter I) ⊓ 𝓟 {π | π.1.iUnion = π.2.iUnion}) (𝓤 F) := by
   refine (((l.hasBasis_toFilter I).prod_self.inf_principal _).tendsto_iff
     uniformity_basis_dist_le).2 fun ε ε0 => ?_
   replace ε0 := half_pos ε0
@@ -587,12 +576,9 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
   set C := max π₀.distortion π₀.compl.distortion
   /- Next we choose a tagged partition of each `J ∈ π₀` such that the integral sum of `f` over this
     partition is `δ'`-close to the integral of `f` over `J`. -/
-  have :
-    ∀ J ∈ π₀,
-      ∃ πi : TaggedPrepartition J,
-        πi.IsPartition ∧
-          dist (integralSum f vol πi) (integral J l f vol) ≤ δ' ∧
-            l.MemBaseSet J C (h.convergenceR δ' C) πi := by
+  have : ∀ J ∈ π₀, ∃ πi : TaggedPrepartition J,
+      πi.IsPartition ∧ dist (integralSum f vol πi) (integral J l f vol) ≤ δ' ∧
+        l.MemBaseSet J C (h.convergenceR δ' C) πi := by
     intro J hJ
     have Hle : J ≤ I := π₀.le_of_mem hJ
     have HJi : Integrable J l f vol := h.to_subbox Hle
@@ -605,7 +591,7 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
       refine' hC.mono J le_rfl le_rfl fun x _ => _; exact min_le_left _ _
     exact ⟨πJ, hp, HJi.dist_integralSum_integral_le_of_memBaseSet δ'0 hC₁ hp, hC₂⟩
   /- Now we combine these tagged partitions into a tagged prepartition of `I` that covers the
-    same part of `I` as `π₀` and apply `box_integral.dist_integral_sum_le_of_mem_base_set` to
+    same part of `I` as `π₀` and apply `BoxIntegral.dist_integralSum_le_of_memBaseSet` to
     `π` and this prepartition. -/
   choose! πi hπip hπiδ' hπiC using this
   have : l.MemBaseSet I C (h.convergenceR δ' C) (π₀.biUnionTagged πi) :=
@@ -706,12 +692,9 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
   refine' ⟨fun _ _ => ⟨δ / 2, half_pos δ0⟩, fun _ _ _ => rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p => _⟩
   simp only [dist_eq_norm, integralSum_sub_partitions _ _ h₁p h₂p, BoxAdditiveMap.toSMul_apply,
     ← smul_sub]
-  have :
-    ∀ J ∈ π₁.toPrepartition ⊓ π₂.toPrepartition,
-      ‖μ.toBoxAdditive J •
-            (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
-              f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤
-        μ.toBoxAdditive J * ε' := by
+  have : ∀ J ∈ π₁.toPrepartition ⊓ π₂.toPrepartition,
+      ‖μ.toBoxAdditive J • (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
+        f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * ε' := by
     intro J hJ
     have : 0 ≤ μ.toBoxAdditive J := ENNReal.toReal_nonneg
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg this, ← dist_eq_norm]
