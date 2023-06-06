@@ -209,8 +209,8 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
                               ULift.moduleEquiv.toLinearMap)
                             (R ∙ s j).injective_subtype _ _).symm.trans <|
                       ((quotTorsionOfEquivSpanSingleton _ _ _).symm.trans <|
-                            quot_equiv_of_eq _ _ <|
-                              Ideal.torsionOf_eq_span_pow_pOrder hp hN _).Prod <|
+                            quotEquivOfEqBot _ _ <|
+                              Ideal.torsionOf_eq_span_pow_pOrder hp hN _).prod <|
                         ULift.moduleEquiv).trans <|
                   (@DirectSum.lequivProdDirectSum R _ _ _
                       (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hN <| s j) k i) _
