@@ -24,13 +24,13 @@ A valuation ring is a domain such that for every pair of elements `a b`, either 
 
 Any valuation ring induces a natural valuation on its fraction field, as we show in this file.
 Namely, given the following instances:
-`[comm_ring A] [is_domain A] [valuation_ring A] [field K] [algebra A K] [is_fraction_ring A K]`,
-there is a natural valuation `valuation A K` on `K` with values in `value_group A K` where
-the image of `A` under `algebra_map A K` agrees with `(valuation A K).integer`.
+`[CommRing A] [IsDomain A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
+there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
+the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
-We also provide the equivalence of the following notions for a domain `R` in `valuation_ring.tfae`.
+We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.tFAE`.
 1. `R` is a valuation ring.
-2. For each `x : fraction_ring K`, either `x` or `x⁻¹` is in `R`.
+2. For each `x : FractionRing K`, either `x` or `x⁻¹` is in `R`.
 3. "divides" is a total relation on the elements of `R`.
 4. "contains" is a total relation on the ideals of `R`.
 5. `R` is a local bezout domain.
@@ -40,7 +40,7 @@ We also provide the equivalence of the following notions for a domain `R` in `va
 
 universe u v w
 
-/-- An integral domain is called a `valuation ring` provided that for any pair
+/-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
   cond' : ∀ a b : A, ∃ c : A, a * c = b ∨ b * c = a
