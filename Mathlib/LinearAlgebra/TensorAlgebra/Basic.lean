@@ -155,7 +155,7 @@ theorem lift_comp_ι {A : Type _} [Semiring A] [Algebra R A] (g : TensorAlgebra 
 #align tensor_algebra.lift_comp_ι TensorAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext high]
+@[ext]
 theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
@@ -177,11 +177,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @h_mul
       add_mem' := @h_add
       algebraMap_mem' := h_grade0 }
-  -- porting note: split `let` in two to isolate a timeout in the second half
+  -- porting note: Added `h`. `h` is needed for `of`.
   let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of' : M →ₗ[R] (Subalgebra.toSubmodule s) :=
-    (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
-  let of : M →ₗ[R] s := of'
+  let of : M →ₗ[R] s := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
