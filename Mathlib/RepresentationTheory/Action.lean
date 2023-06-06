@@ -996,9 +996,9 @@ def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
         comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) }
     ε_isIso := by infer_instance
     μ_isIso := by infer_instance
-    μ_natural := by intros; ext; dsimp; simp
-    associativity := by intros; ext; dsimp; simp
-    left_unitality := by intros; ext; dsimp; simp
+    μ_natural := by intros; ext; simp
+    associativity := by intros; ext; simp
+    left_unitality := by intros; ext; simp
     right_unitality := by
       intros
       ext
