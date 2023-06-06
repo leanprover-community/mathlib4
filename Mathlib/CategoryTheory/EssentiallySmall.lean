@@ -11,7 +11,6 @@ Authors: Scott Morrison
 import Mathlib.Logic.Small.Basic
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Tactic.Constructor
 
 /-!
 # Essentially small categories.

@@ -86,7 +86,7 @@ def map (f : α → β) : LazyList α → LazyList β
 #align lazy_list.map LazyList.map
 
 /-- Maps a binary function over two lazy list.
-Like `lazy_list.zip`, the result is only as long as the smaller input.
+Like `LazyList.zip`, the result is only as long as the smaller input.
 -/
 def map₂ (f : α → β → δ) : LazyList α → LazyList β → LazyList δ
   | nil, _ => nil
@@ -106,7 +106,7 @@ def join : LazyList (LazyList α) → LazyList α
 #align lazy_list.join LazyList.join
 
 /-- Maps a function over a lazy list.
-Same as `lazy_list.map`, but with swapped arguments.
+Same as `LazyList.map`, but with swapped arguments.
 -/
 def «for» (l : LazyList α) (f : α → β) : LazyList β :=
   map f l
@@ -128,7 +128,7 @@ def filter (p : α → Prop) [DecidablePred p] : LazyList α → LazyList α
   | cons h t => if p h then cons h (filter p t.get) else filter p (t.get)
 #align lazy_list.filter LazyList.filter
 
-/-- The nth element of a lazy list as an option (like `list.nth`). -/
+/-- The nth element of a lazy list as an option (like `List.get?`). -/
 def nth : LazyList α → Nat → Option α
   | nil, _ => none
   | cons a _, 0 => some a

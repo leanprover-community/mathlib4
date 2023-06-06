@@ -14,10 +14,10 @@ import Mathlib.Topology.Sets.Opens
 # Properties of maps that are local at the target.
 
 We show that the following properties of continuous maps are local at the target :
-- `inducing`
-- `embedding`
-- `open_embedding`
-- `closed_embedding`
+- `Inducing`
+- `Embedding`
+- `OpenEmbedding`
+- `ClosedEmbedding`
 
 -/
 

@@ -893,7 +893,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 #align localization.add_mk_self Localization.add_mk_self
 
-local macro "localization_tac": tactic =>
+local macro "localization_tac" : tactic =>
   `(tactic|
    { intros
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
@@ -1005,7 +1005,7 @@ instance {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M
         simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul, mul_one,
           Algebra.commutes]
 
-instance : IsLocalization M (Localization M) where
+instance isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
   surj' := (Localization.monoidOf M).surj
   eq_iff_exists' := (Localization.monoidOf M).eq_iff_exists

@@ -10,7 +10,7 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
 
 /-!
@@ -50,8 +50,7 @@ theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   · continuity
   · continuity
   · continuity
-  · -- Porting note: was `continuity`
-    refine Continuous.mul ?_ (Continuous.sub ?_ ?_) <;> continuity
+  · continuity
   intro x hx
   -- Porting note: norm_num ignores arguments.
   rw [hx, mul_assoc]
@@ -138,7 +137,7 @@ def transReflReparamAux (t : I) : ℝ :=
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
-    [continuity, continuity, continuity, continuity, skip]
+    [continuity; continuity; continuity; continuity; skip]
   intro x hx
   -- Porting note: norm_num ignores arguments.
   simp [hx]
@@ -176,7 +175,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   · simp
 #align path.homotopy.trans_refl_reparam Path.Homotopy.trans_refl_reparam
 
-/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (path.refl x₁)` to `p`. -/
+/-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by continuity) (Subtype.ext transReflReparamAux_zero)
@@ -203,7 +202,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _)
       (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
       _ <;>
-    [continuity, continuity, continuity, continuity, continuity, continuity, continuity, skip,
+    [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
       -- Porting note: norm_num ignores arguments.
@@ -365,13 +364,8 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
--- mathport name: fundamental_groupoid_functor
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
-
--- mathport name: fundamental_groupoid_functor.obj
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
-
--- mathport name: fundamental_groupoid_functor.map
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
@@ -397,7 +391,7 @@ a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient
 def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient (X := X) x₀ x₁ := p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
-/-- Help the typechecker by convering a path in a topological space to an arrow in the
+/-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
 @[reducible]
 def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ := p

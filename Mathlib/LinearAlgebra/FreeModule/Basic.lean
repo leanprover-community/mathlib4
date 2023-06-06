@@ -99,7 +99,7 @@ noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
   (chooseBasis R M).repr
 #align module.free.repr Module.Free.repr
 
-/-- The universal property of free modules: giving a functon `(ChooseBasisIndex R M) → N`, for `N`
+/-- The universal property of free modules: giving a function `(ChooseBasisIndex R M) → N`, for `N`
 an `R`-module, is the same as giving an `R`-linear map `M →ₗ[R] N`.
 
 This definition is parameterized over an extra `Semiring S`,

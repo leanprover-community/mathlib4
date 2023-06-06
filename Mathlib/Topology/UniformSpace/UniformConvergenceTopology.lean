@@ -162,9 +162,9 @@ scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
 
 -- Porting note: these are not used anymore
--- scoped[UniformConvergence] notation3"λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
+-- scoped[UniformConvergence] notation3 "λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
--- scoped[UniformConvergence] notation3"λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
+-- scoped[UniformConvergence] notation3 "λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
 open UniformConvergence
 
@@ -246,12 +246,13 @@ protected def phi (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × 
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
 -- mathport name: exprlower_adjoint
+set_option quotPrecheck false -- Porting note: error message suggested to do this
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
 (in `UniformFun.mono` and `UniformFun.iInf_eq`) and that
 `l (Filter.map (Prod.map f f) 𝓕) = Filter.map (Prod.map ((∘) f) ((∘) f)) (l 𝓕)` for each
 `𝓕 : Filter (γ × γ)` and `f : γ → α` (in `UniformFun.comap_eq`). -/
-local notation "lower_adjoint" => fun 𝓐 => map (UniformFun.phi α β) (𝓐 ×ᶠ ⊤)
+local notation "lower_adjoint" => fun 𝓐 => map (UniformFun.phi α β) (𝓐 ×ˢ ⊤)
 
 /-- The function `UniformFun.filter α β : Filter (β × β) → Filter ((α →ᵤ β) × (α →ᵤ β))`
 has a lower adjoint `l` (in the sense of `GaloisConnection`). The exact definition of `l` is not
@@ -272,7 +273,7 @@ protected theorem gc : GaloisConnection lower_adjoint fun 𝓕 => UniformFun.fil
       Iff.rfl
     _ ↔ ∀ U ∈ 𝓕,
           { uvx : ((α →ᵤ β) × (α →ᵤ β)) × α | (uvx.1.1 uvx.2, uvx.1.2 uvx.2) ∈ U } ∈
-            𝓐 ×ᶠ (⊤ : Filter α) :=
+            𝓐 ×ˢ (⊤ : Filter α) :=
       forall₂_congr fun U _hU => mem_prod_top.symm
     _ ↔ lower_adjoint 𝓐 ≤ 𝓕 := Iff.rfl
 #align uniform_fun.gc UniformFun.gc
@@ -611,7 +612,7 @@ declared as an instance on `α →ᵤ[𝔖] β`. It is defined as the infimum, f
 by `S.restrict`, the map of restriction to `S`, of the uniform structure `𝒰(s, β, uβ)` on
 `↥S →ᵤ β`. We will denote it `𝒱(α, β, 𝔖, uβ)`, where `uβ` is the uniform structure on `β`. -/
 instance uniformSpace : UniformSpace (α →ᵤ[𝔖] β) :=
-  ⨅ (s : Set α) (_hs : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
+  ⨅ (s : Set α) (_ : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
 
 local notation "𝒱(" α ", " β ", " 𝔖 ", " u ")" => @UniformOnFun.uniformSpace α β u 𝔖
 
@@ -625,7 +626,7 @@ of `S.restrict : (α →ᵤ[𝔖] β) → (↥S →ᵤ β)` of restriction to `S
 the topology of uniform convergence. -/
 protected theorem topologicalSpace_eq :
     UniformOnFun.topologicalSpace α β 𝔖 =
-      ⨅ (s : Set α) (_hs : s ∈ 𝔖), TopologicalSpace.induced (s.restrict ∘ UniformFun.toFun)
+      ⨅ (s : Set α) (_ : s ∈ 𝔖), TopologicalSpace.induced (s.restrict ∘ UniformFun.toFun)
         (UniformFun.topologicalSpace s β) := by
   simp only [UniformOnFun.topologicalSpace, toTopologicalSpace_iInf, toTopologicalSpace_iInf,
     toTopologicalSpace_comap]

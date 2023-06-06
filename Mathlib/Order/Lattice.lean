@@ -11,7 +11,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # (Semi-)lattices

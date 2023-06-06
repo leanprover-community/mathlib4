@@ -65,7 +65,7 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 
 @[to_additive (attr := simp)]
 theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl, simp only [*, List.join, map, prod_append, prod_cons]]
+  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons]]
 #align list.prod_join List.prod_join
 #align list.sum_join List.sum_join
 
@@ -238,7 +238,7 @@ theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod =
 @[to_additive "Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
   by requiring the list to be nonempty."]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
-    l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction, simp]
+    l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
 #align list.head_mul_tail_prod_of_ne_nil List.headI_mul_tail_prod_of_ne_nil
 #align list.head_add_tail_sum_of_ne_nil List.headI_add_tail_sum_of_ne_nil
 

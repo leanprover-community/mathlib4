@@ -553,6 +553,5 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 
 end Int
 
--- Porting note assert_not_exists not ported yet.
 -- We should need only a minimal development of sets in order to get here.
--- assert_not_exists set.range
+assert_not_exists Set.range

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -252,7 +252,7 @@ theorem discreteTopology_subtype_iff {S : Set α} : DiscreteTopology S ↔ ∀ x
 
 end Topα
 
-/-- A type synonym equiped with the topology whose open sets are the empty set and the sets with
+/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements. -/
 def CofiniteTopology (α : Type _) :=
   α
@@ -508,14 +508,15 @@ theorem IsOpen.prod {s : Set α} {t : Set β} (hs : IsOpen s) (ht : IsOpen t) : 
 #align is_open.prod IsOpen.prod
 
 -- porting note: todo: Lean fails to find `t₁` and `t₂` by unification
-theorem nhds_prod_eq {a : α} {b : β} : 𝓝 (a, b) = 𝓝 a ×ᶠ 𝓝 b := by
+theorem nhds_prod_eq {a : α} {b : β} : 𝓝 (a, b) = 𝓝 a ×ˢ 𝓝 b := by
+  dsimp only [SProd.sprod]
   rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 #align nhds_prod_eq nhds_prod_eq
 
 -- porting note: moved from `topology.continuous_on`
 theorem nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
-    𝓝[s ×ˢ t] (a, b) = 𝓝[s] a ×ᶠ 𝓝[t] b := by
+    𝓝[s ×ˢ t] (a, b) = 𝓝[s] a ×ˢ 𝓝[t] b := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
 
@@ -805,6 +806,18 @@ theorem Inducing.prod_map {f : α → β} {g : γ → δ} (hf : Inducing f) (hg 
   inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
+
+@[simp]
+theorem inducing_const_prod {a : α} {f : β → γ} : (Inducing fun x => (a, f x)) ↔ Inducing f := by
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+    induced_const, top_inf_eq]
+#align inducing_const_prod inducing_const_prod
+
+@[simp]
+theorem inducing_prod_const {b : β} {f : α → γ} : (Inducing fun x => (f x, b)) ↔ Inducing f := by
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
+    induced_const, inf_top_eq]
+#align inducing_prod_const inducing_prod_const
 
 theorem Embedding.prod_map {f : α → β} {g : γ → δ} (hf : Embedding f) (hg : Embedding g) :
     Embedding (Prod.map f g) :=
@@ -1576,6 +1589,11 @@ theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α �
 theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULift.{v, u} α → α) :=
   ⟨⟨rfl⟩, ULift.down_injective⟩
 #align embedding_ulift_down embedding_uLift_down
+
+theorem ULift.closedEmbedding_down [TopologicalSpace α] :
+    ClosedEmbedding (ULift.down : ULift.{v, u} α → α) :=
+  ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
+#align ulift.closed_embedding_down ULift.closedEmbedding_down
 
 instance [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (ULift α) :=
   embedding_uLift_down.discreteTopology

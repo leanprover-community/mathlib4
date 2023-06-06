@@ -10,8 +10,6 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Tauto
 
 /-!
 # Intervals without endpoints ordering
@@ -34,7 +32,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
 make the notation available.
 
 -/

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 4e529b03dd62b7b7d13806c3fb974d9d4848910e
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,7 +74,7 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
 
@@ -92,7 +92,7 @@ def MvPolynomial (σ : Type _) (R : Type _) [CommSemiring R] :=
 
 namespace MvPolynomial
 
--- porting note: because of `mv_polynomial.C` and `mv_polynomial.X` this linter throws
+-- porting note: because of `MvPolynomial.C` and `MvPolynomial.X` this linter throws
 -- tons of warnings in this file, and it's easier to just disable them globally in the file
 set_option linter.uppercaseLean3 false
 
@@ -539,17 +539,18 @@ theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
 #align mv_polynomial.support_monomial_subset MvPolynomial.support_monomial_subset
 
-theorem support_add : (p + q).support ⊆ p.support ∪ q.support :=
+theorem support_add [DecidableEq σ] : (p + q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_add
 #align mv_polynomial.support_add MvPolynomial.support_add
 
 theorem support_X [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
-  rw [X, support_monomial, if_neg]; exact one_ne_zero
+  classical rw [X, support_monomial, if_neg]; exact one_ne_zero
 #align mv_polynomial.support_X MvPolynomial.support_X
 
 theorem support_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).support = {Finsupp.single s n} := by
-  rw [X_pow_eq_monomial, support_monomial, if_neg (one_ne_zero' R)]
+  classical
+    rw [X_pow_eq_monomial, support_monomial, if_neg (one_ne_zero' R)]
 #align mv_polynomial.support_X_pow MvPolynomial.support_X_pow
 
 @[simp]
@@ -562,7 +563,7 @@ theorem support_smul {S₁ : Type _} [SMulZeroClass S₁ R] {a : S₁} {f : MvPo
   Finsupp.support_smul
 #align mv_polynomial.support_smul MvPolynomial.support_smul
 
-theorem support_sum {α : Type _} {s : Finset α} {f : α → MvPolynomial σ R} :
+theorem support_sum {α : Type _} [DecidableEq σ] {s : Finset α} {f : α → MvPolynomial σ R} :
     (∑ x in s, f x).support ⊆ s.biUnion fun x => (f x).support :=
   Finsupp.support_finset_sum
 #align mv_polynomial.support_sum MvPolynomial.support_sum
@@ -591,7 +592,7 @@ theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ �
     p.sum b = ∑ m in p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
-theorem support_mul (p q : MvPolynomial σ R) :
+theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p * q).support ⊆ p.support.biUnion fun a => q.support.biUnion fun b => {a + b} := by
   convert AddMonoidAlgebra.support_mul p q
 #align mv_polynomial.support_mul MvPolynomial.support_mul
@@ -685,11 +686,12 @@ theorem coeff_X' [DecidableEq σ] (i : σ) (m) :
 
 @[simp]
 theorem coeff_X (i : σ) : coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
-  rw [coeff_X', if_pos rfl]
+  classical rw [coeff_X', if_pos rfl]
 #align mv_polynomial.coeff_X MvPolynomial.coeff_X
 
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
+  classical
   rw [mul_def, sum_C]
   · simp (config := { contextual := true }) [sum_def, coeff_sum]
   simp
@@ -760,6 +762,7 @@ theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPo
 
 theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff m (p * monomial s r) = if s ≤ m then coeff (m - s) p * r else 0 := by
+  classical
   obtain rfl | hr := eq_or_ne r 0
   · simp only [monomial_zero, coeff_zero, MulZeroClass.mul_zero, ite_self]
   haveI : Nontrivial R := nontrivial_of_ne _ _ hr
@@ -865,7 +868,7 @@ variable (σ)
 
 @[simp]
 theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r := by
-  simp [constantCoeff_eq]
+  classical simp [constantCoeff_eq]
 #align mv_polynomial.constant_coeff_C MvPolynomial.constantCoeff_C
 
 variable {σ}
@@ -950,8 +953,8 @@ theorem eval₂_zero : (0 : MvPolynomial σ R).eval₂ f g = 0 :=
 section
 
 @[simp]
-theorem eval₂_add : (p + q).eval₂ f g = p.eval₂ f g + q.eval₂ f g :=
-  Finsupp.sum_add_index (by simp [f.map_zero]) (by simp [add_mul, f.map_add])
+theorem eval₂_add : (p + q).eval₂ f g = p.eval₂ f g + q.eval₂ f g := by
+  classical exact Finsupp.sum_add_index (by simp [f.map_zero]) (by simp [add_mul, f.map_add])
 #align mv_polynomial.eval₂_add MvPolynomial.eval₂_add
 
 @[simp]
@@ -976,6 +979,7 @@ theorem eval₂_X (n) : (X n).eval₂ f g = g n := by
 
 theorem eval₂_mul_monomial :
     ∀ {s a}, (p * monomial s a).eval₂ f g = p.eval₂ f g * f a * s.prod fun n e => g n ^ e := by
+  classical
   apply MvPolynomial.induction_on p
   · intro a' s a
     simp [C_mul_monomial, eval₂_monomial, f.map_mul]
@@ -1263,6 +1267,7 @@ theorem map_eval₂ (f : R →+* S₁) (g : S₂ → MvPolynomial S₃ R) (p : M
 #align mv_polynomial.map_eval₂ MvPolynomial.map_eval₂
 
 theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map f p) = f (coeff m p) := by
+  classical
   apply MvPolynomial.induction_on p <;> clear p
   · intro r m
     rw [map_C]

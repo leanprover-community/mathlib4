@@ -9,7 +9,6 @@ Authors: Alexander Bentkamp, François Dupuis
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Tactic.WLOG
 
 /-!
 # Convex and concave functions

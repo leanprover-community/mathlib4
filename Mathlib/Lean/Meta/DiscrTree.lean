@@ -25,9 +25,13 @@ def insertIfSpecific [BEq α] (d : DiscrTree α s)
 
 /--
 Find keys which match the expression, or some subexpression.
+
+Implementation: we reverse the results from `getMatch`,
+so that we return lemmas matching larger subexpressions first,
+and amongst those we return more specific lemmas first.
 -/
 partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Array α) := do
-  e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e)
+  e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
 variable {m : Type → Type} [Monad m]
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
