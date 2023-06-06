@@ -8,9 +8,9 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Zpow
-import Mathbin.Analysis.SpecialFunctions.Pow.Deriv
-import Mathbin.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.Calculus.Deriv.Zpow
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
 # Collection of convex functions
@@ -38,8 +38,7 @@ open Real Set
 open scoped BigOperators NNReal
 
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
-theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n :=
-  by
+theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
   exact fun x (hx : 0 < x) y hy hxy =>
@@ -49,8 +48,7 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
-    StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n :=
-  by
+    StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   apply StrictMono.strictConvexOn_univ_of_deriv (continuous_pow n)
   rw [deriv_pow']
   replace h := Nat.pos_of_ne_zero h
@@ -72,8 +70,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type _} [LinearOrderedCo
     
 #align finset.prod_nonneg_of_card_nonpos_even Finset.prod_nonneg_of_card_nonpos_even
 
-theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) : 0 ≤ ∏ k in Finset.range n, m - k :=
-  by
+theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) : 0 ≤ ∏ k in Finset.range n, m - k := by
   rcases hn with ⟨n, rfl⟩
   induction' n with n ihn; · simp
   rw [← two_mul] at ihn 
@@ -88,8 +85,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) : 0 ≤ ∏ k in
 #align int_prod_range_nonneg int_prod_range_nonneg
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
-    0 < ∏ k in Finset.range n, m - k :=
-  by
+    0 < ∏ k in Finset.range n, m - k := by
   refine' (int_prod_range_nonneg m n hn).lt_of_ne fun h => hm _
   rw [eq_comm, Finset.prod_eq_zero_iff] at h 
   obtain ⟨a, ha, h⟩ := h
@@ -99,8 +95,7 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
 
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m` except `0` and `1`. -/
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
-    StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m :=
-  by
+    StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m := by
   apply strictConvexOn_of_deriv2_pos' (convex_Ioi 0)
   · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
   intro x hx
@@ -115,16 +110,14 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
 section SqrtMulLog
 
 theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
-    HasDerivAt (fun x => sqrt x * log x) ((2 + log x) / (2 * sqrt x)) x :=
-  by
+    HasDerivAt (fun x => sqrt x * log x) ((2 + log x) / (2 * sqrt x)) x := by
   convert (has_deriv_at_sqrt hx).mul (has_deriv_at_log hx)
   rw [add_div, div_mul_right (sqrt x) two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
     div_eq_mul_one_div, mul_comm]
 #align has_deriv_at_sqrt_mul_log hasDerivAt_sqrt_mul_log
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
-    deriv (fun x => sqrt x * log x) x = (2 + log x) / (2 * sqrt x) :=
-  by
+    deriv (fun x => sqrt x * log x) x = (2 + log x) / (2 * sqrt x) := by
   cases' lt_or_le 0 x with hx hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, MulZeroClass.mul_zero, div_zero]
@@ -139,8 +132,7 @@ theorem deriv_sqrt_mul_log' :
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
-    (deriv^[2]) (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) :=
-  by
+    (deriv^[2]) (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   cases' le_or_lt x 0 with hx hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, MulZeroClass.mul_zero, div_zero]
@@ -173,15 +165,13 @@ end SqrtMulLog
 
 open scoped Real
 
-theorem strictConcaveOn_sin_Icc : StrictConcaveOn ℝ (Icc 0 π) sin :=
-  by
+theorem strictConcaveOn_sin_Icc : StrictConcaveOn ℝ (Icc 0 π) sin := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuous_on_sin fun x hx => _
   rw [interior_Icc] at hx 
   simp [sin_pos_of_mem_Ioo hx]
 #align strict_concave_on_sin_Icc strictConcaveOn_sin_Icc
 
-theorem strictConcaveOn_cos_Icc : StrictConcaveOn ℝ (Icc (-(π / 2)) (π / 2)) cos :=
-  by
+theorem strictConcaveOn_cos_Icc : StrictConcaveOn ℝ (Icc (-(π / 2)) (π / 2)) cos := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc _ _) continuous_on_cos fun x hx => _
   rw [interior_Icc] at hx 
   simp [cos_pos_of_mem_Ioo hx]
