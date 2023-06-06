@@ -2,6 +2,18 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/adamtopaz/lean_pinecone",
+    "subDir?": null,
+    "rev": "5dc11bd399edbfef471073d1a1647e6e777c3ef0",
+    "name": "lean_pinecone",
+    "inputRev?": "master"}},
+  {"git":
+   {"url": "https://github.com/adamtopaz/lean_embedding",
+    "subDir?": null,
+    "rev": "a38ddd0ec56927deeb087b9aba5a067318143917",
+    "name": "lean_embedding",
+    "inputRev?": "master"}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",
@@ -16,12 +28,12 @@
   {"git":
    {"url": "https://github.com/leanprover-community/llm",
     "subDir?": null,
-    "rev": "f2538034fb9643642ec5ac161b6c0bbcd5ad0050",
+    "rev": "f9c364c19460e8a05b6bb6e0715dda41338bc133",
     "name": "llm",
     "inputRev?": "main"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "6932c4ea52914dc6b0488944e367459ddc4d01a6",
+    "rev": "176b4657e21ea6f5a1517c625ee97e89acad0126",
     "name": "std",
     "inputRev?": "main"}}]}
