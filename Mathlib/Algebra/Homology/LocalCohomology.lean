@@ -71,6 +71,8 @@ determined by the functor `I`  -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
+  -- Porting note: was 'obviously'
+  map_comp f g := by apply Submodule.linearMap_qext; rfl
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- TODO:  Once this file is ported, move this file to the right location.
@@ -186,7 +188,7 @@ def localCohomology.idealPowersToSelfLeRadical (J : Ideal R) : ℕᵒᵖ ⥤ Sel
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
     cases' unop k with n
-    · simp only [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
+    · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top, Nat.zero_eq]
     · simp only [J.radical_pow _ n.succ_pos, Ideal.le_radical]
 #align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLeRadical
 
