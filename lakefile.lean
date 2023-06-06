@@ -30,6 +30,8 @@ require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require llm from git "https://github.com/leanprover-community/llm" @ "main"
+require lean_pinecone from git "https://github.com/adamtopaz/lean_pinecone" @ "master"
+require lean_embedding from git "https://github.com/adamtopaz/lean_embedding" @ "master"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
@@ -40,3 +42,7 @@ lean_exe cache where
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
+
+lean_exe embed where
+  supportInterpreter := true
+  root := `Embed.Main
