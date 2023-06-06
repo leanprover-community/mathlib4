@@ -205,20 +205,15 @@ theorem hasIntegral_iff :
 
 /-- Quite often it is more natural to prove an estimate of the form `a * ε`, not `ε` in the RHS of
 `BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma.  -/
-theorem hasIntegralOfMul (a : ℝ)
-    (h :
-      ∀ ε : ℝ,
-        0 < ε →
-          ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ),
-            (∀ c, l.RCond (r c)) ∧
-              ∀ c π,
-                l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ a * ε) :
+theorem HasIntegral.of_mul (a : ℝ)
+    (h : ∀ ε : ℝ, 0 < ε → ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧ ∀ c π,
+      l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ a * ε) :
     HasIntegral I l f vol y := by
   refine' hasIntegral_iff.2 fun ε hε => _
   rcases exists_pos_mul_lt hε a with ⟨ε', hε', ha⟩
   rcases h ε' hε' with ⟨r, hr, H⟩
   exact ⟨r, hr, fun c π hπ hπp => (H c π hπ hπp).trans ha.le⟩
-#align box_integral.has_integral_of_mul BoxIntegral.hasIntegralOfMul
+#align box_integral.has_integral_of_mul BoxIntegral.HasIntegral.of_mul
 
 theorem integrable_iff_cauchy [CompleteSpace F] :
     Integrable I l f vol ↔ Cauchy ((l.toFilteriUnion I ⊤).map (integralSum f vol)) :=
