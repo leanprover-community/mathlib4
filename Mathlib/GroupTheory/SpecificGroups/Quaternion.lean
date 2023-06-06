@@ -169,9 +169,8 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
 instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
--- Porting note: Changed `by decide` to `by revert n; simp`
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by revert n; simp⟩⟩
+  ⟨⟨a 0, xa 0, by revert n; simp⟩⟩ -- Porting note: `revert n; simp` was `decide`
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
