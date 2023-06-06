@@ -332,7 +332,6 @@ protected theorem set_lintegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFun
     (∫⁻ x in s, f x ∂μ) = ∑' g : G, ∫⁻ x in s ∩ g • t, f x ∂μ := ht.set_lintegral_eq_tsum _ _
     _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp only [hf, inter_comm]
     _ = ∫⁻ x in t, f x ∂μ := (hs.set_lintegral_eq_tsum' _ _).symm
-    
 #align measure_theory.is_fundamental_domain.set_lintegral_eq MeasureTheory.IsFundamentalDomain.set_lintegral_eq
 #align measure_theory.is_add_fundamental_domain.set_lintegral_eq MeasureTheory.IsAddFundamentalDomain.set_lintegral_eq
 
@@ -374,13 +373,12 @@ protected theorem aEStronglyMeasurable_on_iff {β : Type _} [TopologicalSpace β
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • s ∩ t)) := by
       refine' forall_congr' fun g => _
       have he : MeasurableEmbedding ((· • ·) g⁻¹ : α → α) := measurableEmbedding_const_smul _
-      rw [← image_smul, ←
-        ((measure_preserving_smul g⁻¹ μ).restrict_image_emb he _).aestronglyMeasurable_comp_iff he]
+      rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
+        _).aestronglyMeasurable_comp_iff he]
       simp only [(· ∘ ·), hf]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
-    
 #align measure_theory.is_fundamental_domain.ae_strongly_measurable_on_iff MeasureTheory.IsFundamentalDomain.aEStronglyMeasurable_on_iff
 #align measure_theory.is_add_fundamental_domain.ae_strongly_measurable_on_iff MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff
 
@@ -425,10 +423,8 @@ theorem integral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → E) (hf : 
   calc
     (∫ x, f x ∂μ) = ∑' g : G, ∫ x in g • s, f x ∂μ := h.integral_eq_tsum f hf
     _ = ∑' g : G, ∫ x in g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
-    _ = ∑' g : G, ∫ x in s, f (g⁻¹ • x) ∂μ :=
-      tsum_congr fun g =>
-        (measurePreserving_smul g⁻¹ μ).set_integral_image_emb (measurableEmbedding_const_smul _) _ _
-    
+    _ = ∑' g : G, ∫ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g =>
+      (measurePreserving_smul g⁻¹ μ).set_integral_image_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.integral_eq_tsum' MeasureTheory.IsFundamentalDomain.integral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.integral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.integral_eq_tsum'
 
@@ -440,7 +436,6 @@ theorem set_integral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t 
       h.integral_eq_tsum_of_ac restrict_le_self.absolutelyContinuous f hf
     _ = ∑' g : G, ∫ x in t ∩ g • s, f x ∂μ := by
       simp only [h.restrict_restrict, measure_smul, inter_comm]
-    
 #align measure_theory.is_fundamental_domain.set_integral_eq_tsum MeasureTheory.IsFundamentalDomain.set_integral_eq_tsum
 #align measure_theory.is_add_fundamental_domain.set_integral_eq_tsum MeasureTheory.IsAddFundamentalDomain.set_integral_eq_tsum
 
@@ -510,8 +505,9 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
 /-- If `f` is invariant under the action of a countable group `G`, and `μ` is a `G`-invariant
   measure with a fundamental domain `s`, then the `ess_sup` of `f` restricted to `s` is the same as
   that of `f` on all of its domain. -/
-@[to_additive
-      "If `f` is invariant under the action of a countable additive group `G`, and `μ` is a\n`G`-invariant measure with a fundamental domain `s`, then the `ess_sup` of `f` restricted to `s` is\nthe same as that of `f` on all of its domain."]
+@[to_additive "If `f` is invariant under the action of a countable additive group `G`, and `μ` is a
+  `G`-invariant measure with a fundamental domain `s`, then the `ess_sup` of `f` restricted to `s`
+  is the same as that of `f` on all of its domain."]
 theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → ℝ≥0∞}
     (hf : ∀ γ : G, ∀ x : α, f (γ • x) = f x) : essSup f (μ.restrict s) = essSup f μ := by
   refine' le_antisymm (essSup_mono_measure' Measure.restrict_le_self) _
@@ -537,16 +533,16 @@ variable (G) [Group G] [MulAction G α] (s : Set α) {x : α}
 
 /-- The boundary of a fundamental domain, those points of the domain that also lie in a nontrivial
 translate. -/
-@[to_additive MeasureTheory.addFundamentalFrontier
-      "The boundary of a fundamental domain, those\npoints of the domain that also lie in a nontrivial translate."]
+@[to_additive MeasureTheory.addFundamentalFrontier "The boundary of a fundamental domain, those
+  points of the domain that also lie in a nontrivial translate."]
 def fundamentalFrontier : Set α :=
   s ∩ ⋃ (g : G) (_ : g ≠ 1), g • s
 #align measure_theory.fundamental_frontier MeasureTheory.fundamentalFrontier
 #align measure_theory.add_fundamental_frontier MeasureTheory.addFundamentalFrontier
 
 /-- The interior of a fundamental domain, those points of the domain not lying in any translate. -/
-@[to_additive MeasureTheory.addFundamentalInterior
-      "The interior of a fundamental domain, those\npoints of the domain not lying in any translate."]
+@[to_additive MeasureTheory.addFundamentalInterior "The interior of a fundamental domain, those
+  points of the domain not lying in any translate."]
 def fundamentalInterior : Set α :=
   s \ ⋃ (g : G) (_ : g ≠ 1), g • s
 #align measure_theory.fundamental_interior MeasureTheory.fundamentalInterior
@@ -695,8 +691,8 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
     have :
       ((⋃ g : G, g⁻¹ • s) \ ⋃ g : G, g⁻¹ • fundamentalFrontier G s) ⊆
         ⋃ g : G, g⁻¹ • fundamentalInterior G s := by
-      simp_rw [diff_subset_iff, ← iUnion_union_distrib, ← smul_set_union,
-        fundamentalFrontier_union_fundamentalInterior]
+      simp_rw [diff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
+        fundamentalFrontier_union_fundamentalInterior]; rfl
     refine' eq_bot_mono (μ.mono <| compl_subset_compl.2 this) _
     simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
