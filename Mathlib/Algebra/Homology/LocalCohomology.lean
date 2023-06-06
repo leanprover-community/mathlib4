@@ -124,7 +124,12 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLeRadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
-deriving Category
+--deriving Category
+
+-- Porting note: `deriving Category` is not able to derive this instance
+instance (J : Ideal R) : Category (SelfLeRadical J) :=
+  (FullSubcategory.category _)
+
 #align local_cohomology.self_le_radical localCohomology.SelfLeRadical
 
 instance SelfLeRadical.inhabited (J : Ideal R) : Inhabited (SelfLeRadical J)
@@ -180,7 +185,7 @@ valued in `self_le_radical J`. -/
 def localCohomology.idealPowersToSelfLeRadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLeRadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
-    cases unop k
+    cases' unop k with n
     · simp only [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow _ n.succ_pos, Ideal.le_radical]
 #align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLeRadical
