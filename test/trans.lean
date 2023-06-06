@@ -71,4 +71,7 @@ example (a : α)(c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
     assumption
     assumption
 
-example (Q : Prop) (q : Q) (h₁ : P → Q) (h₂ : Q → R) : P → R := by trans <;> assumption
+example (Q : Prop) (q : Q) (h₁ : P → Q) (h₂ : Q → R) : P → R := by
+  trans
+  case h₁ => guard_target =ₛ P → ?q; assumption
+  case h₂ => guard_target =ₛ Q → R; assumption
