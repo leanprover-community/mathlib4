@@ -257,7 +257,7 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
 
-instance IsAddHaarMeasure [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
   IsAddHaarMeasure_basis_addHaar _
 
