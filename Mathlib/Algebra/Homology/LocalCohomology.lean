@@ -9,8 +9,8 @@ Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
 ! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.Category.Module.Colimits
-import Mathlib.Algebra.Category.Module.Projective
+import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RingTheory.Finiteness
 
@@ -70,19 +70,20 @@ variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 determined by the functor `I`  -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
-  map s t w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
-#align local_cohomology.ring_mod_ideals LocalCohomology.ringModIdeals
+  map w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
+#align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- TODO:  Once this file is ported, move this file to the right location.
 instance moduleCat_enough_projectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
-#align local_cohomology.Module_enough_projectives' LocalCohomology.moduleCat_enough_projectives'
+set_option linter.uppercaseLean3 false in
+#align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enough_projectives'
 
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
 def diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
   (ringModIdeals I).op ⋙ Ext R (ModuleCat.{u} R) i
-#align local_cohomology.diagram LocalCohomology.diagram
+#align local_cohomology.diagram localCohomology.diagram
 
 end
 
@@ -106,7 +107,7 @@ ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collect
 of `R`, represented as a functor `I`. -/
 def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
   colimit (diagram.{max u v, v} I i)
-#align local_cohomology.of_diagram LocalCohomology.ofDiagram
+#align local_cohomology.of_diagram localCohomology.ofDiagram
 
 end
 
@@ -117,24 +118,24 @@ variable {R : Type u} [CommRing R]
 /-- The functor sending a natural number `i` to the `i`-th power of the ideal `J` -/
 def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
   obj t := J ^ unop t
-  map s t w := ⟨⟨Ideal.pow_le_pow w.unop.down.down⟩⟩
-#align local_cohomology.ideal_powers_diagram LocalCohomology.idealPowersDiagram
+  map w := ⟨⟨Ideal.pow_le_pow w.unop.down.down⟩⟩
+#align local_cohomology.ideal_powers_diagram localCohomology.idealPowersDiagram
 
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLeRadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 deriving Category
-#align local_cohomology.self_le_radical LocalCohomology.SelfLeRadical
+#align local_cohomology.self_le_radical localCohomology.SelfLeRadical
 
 instance SelfLeRadical.inhabited (J : Ideal R) : Inhabited (SelfLeRadical J)
     where default := ⟨J, Ideal.le_radical⟩
-#align local_cohomology.self_le_radical.inhabited LocalCohomology.SelfLeRadical.inhabited
+#align local_cohomology.self_le_radical.inhabited localCohomology.SelfLeRadical.inhabited
 
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
 This is the "largest" diagram that computes local cohomology with support in `J`. -/
 def selfLeRadicalDiagram (J : Ideal R) : SelfLeRadical J ⥤ Ideal R :=
   fullSubcategoryInclusion _
-#align local_cohomology.self_le_radical_diagram LocalCohomology.selfLeRadicalDiagram
+#align local_cohomology.self_le_radical_diagram localCohomology.selfLeRadicalDiagram
 
 end Diagrams
 
