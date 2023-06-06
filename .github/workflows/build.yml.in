@@ -72,7 +72,7 @@ jobs:
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: BuildJOB_NAME
-    runs-on: RUNS_ON
+    runs-on: ubuntu-latest
     steps:
       - name: cleanup
         run: |
