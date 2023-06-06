@@ -60,11 +60,18 @@ instance : CoeOut (Q₁.Isometry Q₂) (M₁ ≃ₗ[R] M₂) :=
 -- Porting note: syntaut
 #noalign quadratic_form.isometry.to_linear_equiv_eq_coe
 
-instance : CoeFun (Q₁.Isometry Q₂) fun _ => M₁ → M₂ :=
-  ⟨fun f => ⇑(f : M₁ ≃ₗ[R] M₂)⟩
+--Porting note: replace `CoeFun` with `EquivLike`
+instance : EquivLike (Q₁.Isometry Q₂) M₁ M₂ :=
+  { coe := fun f => ⇑(f : M₁ ≃ₗ[R] M₂),
+    inv := fun f => ⇑(f : M₁ ≃ₗ[R] M₂).symm,
+    left_inv := fun f => (f : M₁ ≃ₗ[R] M₂).left_inv
+    right_inv := fun f => (f : M₁ ≃ₗ[R] M₂).right_inv
+    coe_injective' := fun f g => by cases f; cases g; simp (config:={contextual:=true}) }
 
--- Porting note: syntaut
-#noalign quadratic_form.isometry.coe_to_linear_equiv
+@[simp]
+theorem coe_toLinearEquiv (f : Q₁.Isometry Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
+  rfl
+#align quadratic_form.isometry.coe_to_linear_equiv QuadraticForm.Isometry.coe_toLinearEquiv
 
 @[simp]
 theorem map_app (f : Q₁.Isometry Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
