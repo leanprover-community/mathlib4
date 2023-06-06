@@ -469,6 +469,208 @@ lemma leftHomologyπ_naturality :
 
 end
 
+namespace LeftHomologyMapData
+
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+  (γ : LeftHomologyMapData φ h₁ h₂)
+
+lemma leftHomologyMap'_eq : leftHomologyMap' φ h₁ h₂ = γ.φH :=
+  LeftHomologyMapData.congr_φH (Subsingleton.elim _ _)
+
+lemma cyclesMap'_eq : cyclesMap' φ h₁ h₂ = γ.φK :=
+  LeftHomologyMapData.congr_φK (Subsingleton.elim _ _)
+
+end LeftHomologyMapData
+
+@[simp]
+lemma leftHomologyMap'_id (h : S.LeftHomologyData) :
+    leftHomologyMap' (𝟙 S) h h = 𝟙 _ :=
+  (LeftHomologyMapData.id h).leftHomologyMap'_eq
+
+@[simp]
+lemma cyclesMap'_id (h : S.LeftHomologyData) :
+    cyclesMap' (𝟙 S) h h = 𝟙 _ :=
+  (LeftHomologyMapData.id h).cyclesMap'_eq
+
+variable (S)
+
+@[simp]
+lemma leftHomologyMap_id [HasLeftHomology S] :
+    leftHomologyMap (𝟙 S) = 𝟙 _ :=
+  leftHomologyMap'_id _
+
+@[simp]
+lemma cyclesMap_id [HasLeftHomology S] :
+    cyclesMap (𝟙 S) = 𝟙 _ :=
+  cyclesMap'_id _
+
+@[simp]
+lemma leftHomologyMap'_zero (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    leftHomologyMap' 0 h₁ h₂ = 0 :=
+  (LeftHomologyMapData.zero h₁ h₂).leftHomologyMap'_eq
+
+@[simp]
+lemma cyclesMap'_zero (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    cyclesMap' 0 h₁ h₂ = 0 :=
+  (LeftHomologyMapData.zero h₁ h₂).cyclesMap'_eq
+
+variable (S₁ S₂)
+
+@[simp]
+lemma leftHomologyMap_zero [HasLeftHomology S₁] [HasLeftHomology S₂] :
+    leftHomologyMap (0 : S₁ ⟶ S₂) = 0 :=
+  leftHomologyMap'_zero _ _
+
+@[simp]
+lemma cyclesMap_zero [HasLeftHomology S₁] [HasLeftHomology S₂] :
+    cyclesMap (0 : S₁ ⟶ S₂) = 0 :=
+  cyclesMap'_zero _ _
+
+variable {S₁ S₂}
+
+@[reassoc]
+lemma leftHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) (h₃ : S₃.LeftHomologyData) :
+    leftHomologyMap' (φ₁ ≫ φ₂) h₁ h₃ = leftHomologyMap' φ₁ h₁ h₂ ≫
+      leftHomologyMap' φ₂ h₂ h₃ := by
+  let γ₁ := leftHomologyMapData φ₁ h₁ h₂
+  let γ₂ := leftHomologyMapData φ₂ h₂ h₃
+  rw [γ₁.leftHomologyMap'_eq, γ₂.leftHomologyMap'_eq, (γ₁.comp γ₂).leftHomologyMap'_eq,
+    LeftHomologyMapData.comp_φH]
+
+@[reassoc]
+lemma cyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) (h₃ : S₃.LeftHomologyData) :
+    cyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesMap' φ₁ h₁ h₂ ≫ cyclesMap' φ₂ h₂ h₃ := by
+  let γ₁ := leftHomologyMapData φ₁ h₁ h₂
+  let γ₂ := leftHomologyMapData φ₂ h₂ h₃
+  rw [γ₁.cyclesMap'_eq, γ₂.cyclesMap'_eq, (γ₁.comp γ₂).cyclesMap'_eq,
+    LeftHomologyMapData.comp_φK]
+
+@[reassoc]
+lemma leftHomologyMap_comp [HasLeftHomology S₁] [HasLeftHomology S₂] [HasLeftHomology S₃]
+    (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
+    leftHomologyMap (φ₁ ≫ φ₂) = leftHomologyMap φ₁ ≫ leftHomologyMap φ₂ :=
+  leftHomologyMap'_comp _ _ _ _ _
+
+@[reassoc]
+lemma cyclesMap_comp [HasLeftHomology S₁] [HasLeftHomology S₂] [HasLeftHomology S₃]
+    (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
+    cyclesMap (φ₁ ≫ φ₂) = cyclesMap φ₁ ≫ cyclesMap φ₂ :=
+  cyclesMap'_comp _ _ _ _ _
+
+attribute [simp] leftHomologyMap_comp cyclesMap_comp
+
+/-- An isomorphism of short complexes `S₁ ≅ S₂` induces an isomorphism on the `H` fields
+of left homology data of `S₁` and `S₂`. -/
+@[simps]
+def leftHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
+    (h₂ : S₂.LeftHomologyData) : h₁.H ≅ h₂.H where
+  hom := leftHomologyMap' e.hom h₁ h₂
+  inv := leftHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by rw [← leftHomologyMap'_comp, e.hom_inv_id, leftHomologyMap'_id]
+  inv_hom_id := by rw [← leftHomologyMap'_comp, e.inv_hom_id, leftHomologyMap'_id]
+
+instance isIso_leftHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    IsIso (leftHomologyMap' φ h₁ h₂) :=
+  (inferInstance : IsIso (leftHomologyMapIso' (asIso φ) h₁ h₂).hom)
+
+/-- An isomorphism of short complexes `S₁ ≅ S₂` induces an isomorphism on the `K` fields
+of left homology data of `S₁` and `S₂`. -/
+@[simps]
+def cyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
+    (h₂ : S₂.LeftHomologyData) : h₁.K ≅ h₂.K where
+  hom := cyclesMap' e.hom h₁ h₂
+  inv := cyclesMap' e.inv h₂ h₁
+  hom_inv_id := by rw [← cyclesMap'_comp, e.hom_inv_id, cyclesMap'_id]
+  inv_hom_id := by rw [← cyclesMap'_comp, e.inv_hom_id, cyclesMap'_id]
+
+instance isIso_cyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+    (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    IsIso (cyclesMap' φ h₁ h₂) :=
+  (inferInstance : IsIso (cyclesMapIso' (asIso φ) h₁ h₂).hom)
+
+/-- The isomorphism `S₁.leftHomology ≅ S₂.leftHomology` induced by an isomorphism of
+short complexes `S₁ ≅ S₂`. -/
+@[simps]
+noncomputable def leftHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
+    [S₂.HasLeftHomology] : S₁.leftHomology ≅ S₂.leftHomology where
+  hom := leftHomologyMap e.hom
+  inv := leftHomologyMap e.inv
+  hom_inv_id := by rw [← leftHomologyMap_comp, e.hom_inv_id, leftHomologyMap_id]
+  inv_hom_id := by rw [← leftHomologyMap_comp, e.inv_hom_id, leftHomologyMap_id]
+
+instance isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂)
+    [IsIso φ] [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    IsIso (leftHomologyMap φ) :=
+  (inferInstance : IsIso (leftHomologyMapIso (asIso φ)).hom)
+
+/-- The isomorphism `S₁.cycles ≅ S₂.cycles` induced by an isomorphism
+of short complexes `S₁ ≅ S₂`. -/
+@[simps]
+noncomputable def cyclesMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
+    [S₂.HasLeftHomology] : S₁.cycles ≅ S₂.cycles where
+  hom := cyclesMap e.hom
+  inv := cyclesMap e.inv
+  hom_inv_id := by rw [← cyclesMap_comp, e.hom_inv_id, cyclesMap_id]
+  inv_hom_id := by rw [← cyclesMap_comp, e.inv_hom_id, cyclesMap_id]
+
+instance isIso_cyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
+    [S₂.HasLeftHomology] : IsIso (cyclesMap φ) :=
+  (inferInstance : IsIso (cyclesMapIso (asIso φ)).hom)
+
+variable {S}
+
+/-- The isomorphism `S.leftHomology ≅ h.H` induced by a left homology data `h` for a
+short complex `S`. -/
+noncomputable def LeftHomologyData.leftHomologyIso (h : S.LeftHomologyData) [S.HasLeftHomology] :
+  S.leftHomology ≅ h.H := leftHomologyMapIso' (Iso.refl _) _ _
+
+/-- The isomorphism `S.cycles ≅ h.K` induced by a left homology data `h` for a
+short complex `S`. -/
+noncomputable def LeftHomologyData.cyclesIso (h : S.LeftHomologyData) [S.HasLeftHomology] :
+  S.cycles ≅ h.K := cyclesMapIso' (Iso.refl _) _ _
+
+@[reassoc (attr := simp)]
+lemma LeftHomologyData.cyclesIso_hom_comp_i (h : S.LeftHomologyData) [S.HasLeftHomology] :
+    h.cyclesIso.hom ≫ h.i = S.iCycles := by
+  dsimp [iCycles, LeftHomologyData.cyclesIso]
+  simp only [cyclesMap'_i, id_τ₂, comp_id]
+
+@[reassoc (attr := simp)]
+lemma LeftHomologyData.cyclesIso_inv_comp_iCycles (h : S.LeftHomologyData)
+    [S.HasLeftHomology] : h.cyclesIso.inv ≫ S.iCycles = h.i := by
+  simp only [← h.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
+
+namespace LeftHomologyMapData
+
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+  (γ : LeftHomologyMapData φ h₁ h₂)
+
+lemma leftHomologyMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    leftHomologyMap φ = h₁.leftHomologyIso.hom ≫ γ.φH ≫ h₂.leftHomologyIso.inv := by
+  dsimp [LeftHomologyData.leftHomologyIso, leftHomologyMapIso']
+  rw [← γ.leftHomologyMap'_eq, ← leftHomologyMap'_comp,
+    ← leftHomologyMap'_comp, id_comp, comp_id]
+  rfl
+
+lemma cyclesMap_eq [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    cyclesMap φ = h₁.cyclesIso.hom ≫ γ.φK ≫ h₂.cyclesIso.inv := by
+  dsimp [LeftHomologyData.cyclesIso, cyclesMapIso']
+  rw [← γ.cyclesMap'_eq, ← cyclesMap'_comp, ← cyclesMap'_comp, id_comp, comp_id]
+  rfl
+
+lemma leftHomologyMap_comm [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    leftHomologyMap φ ≫ h₂.leftHomologyIso.hom = h₁.leftHomologyIso.hom ≫ γ.φH := by
+  simp only [γ.leftHomologyMap_eq, assoc, Iso.inv_hom_id, comp_id]
+
+lemma cyclesMap_comm [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    cyclesMap φ ≫ h₂.cyclesIso.hom = h₁.cyclesIso.hom ≫ γ.φK := by
+  simp only [γ.cyclesMap_eq, assoc, Iso.inv_hom_id, comp_id]
+
+end LeftHomologyMapData
+
 end ShortComplex
 
 end CategoryTheory
