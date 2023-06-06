@@ -669,33 +669,28 @@ theorem adjoin_eq_bot_iff : adjoin F S = ⊥ ↔ S ⊆ (⊥ : IntermediateField 
   rw [eq_bot_iff, adjoin_le_iff]; rfl
 #align intermediate_field.adjoin_eq_bot_iff IntermediateField.adjoin_eq_bot_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 @[simp]
-theorem adjoin_simple_eq_bot_iff : F⟮⟯ = ⊥ ↔ α ∈ (⊥ : IntermediateField F E) := by
+theorem adjoin_simple_eq_bot_iff : F⟮α⟯ = ⊥ ↔ α ∈ (⊥ : IntermediateField F E) := by
   rw [adjoin_eq_bot_iff]; exact Set.singleton_subset_iff
 #align intermediate_field.adjoin_simple_eq_bot_iff IntermediateField.adjoin_simple_eq_bot_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 @[simp]
-theorem adjoin_zero : F⟮⟯ = ⊥ :=
+theorem adjoin_zero : F⟮(0 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (zero_mem ⊥)
 #align intermediate_field.adjoin_zero IntermediateField.adjoin_zero
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 @[simp]
-theorem adjoin_one : F⟮⟯ = ⊥ :=
+theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (one_mem ⊥)
 #align intermediate_field.adjoin_one IntermediateField.adjoin_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 @[simp]
-theorem adjoin_int (n : ℤ) : F⟮⟯ = ⊥ :=
-  adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
+theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
+  refine' adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
 #align intermediate_field.adjoin_int IntermediateField.adjoin_int
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 @[simp]
-theorem adjoin_nat (n : ℕ) : F⟮⟯ = ⊥ :=
+theorem adjoin_nat (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (coe_nat_mem ⊥ n)
 #align intermediate_field.adjoin_nat IntermediateField.adjoin_nat
 
@@ -707,14 +702,14 @@ variable {K L : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
-  rw [← to_subalgebra_eq_iff, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff,
-    bot_to_subalgebra]
+  rw [← toSubalgebra_eq_iff, ← rank_eq_rank_subalgebra, Subalgebra.rank_eq_one_iff,
+    bot_toSubalgebra]
 #align intermediate_field.rank_eq_one_iff IntermediateField.rank_eq_one_iff
 
 @[simp]
 theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
-  rw [← to_subalgebra_eq_iff, ← finrank_eq_finrank_subalgebra, Subalgebra.finrank_eq_one_iff,
-    bot_to_subalgebra]
+  rw [← toSubalgebra_eq_iff, ← finrank_eq_finrank_subalgebra, Subalgebra.finrank_eq_one_iff,
+    bot_toSubalgebra]
 #align intermediate_field.finrank_eq_one_iff IntermediateField.finrank_eq_one_iff
 
 @[simp]
@@ -729,8 +724,7 @@ theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ :
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.rank_adjoin_eq_one_iff IntermediateField.rank_adjoin_eq_one_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem rank_adjoin_simple_eq_one_iff : Module.rank F F⟮⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) :=
+theorem rank_adjoin_simple_eq_one_iff : Module.rank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) :=
   by rw [rank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
 #align intermediate_field.rank_adjoin_simple_eq_one_iff IntermediateField.rank_adjoin_simple_eq_one_iff
 
@@ -738,52 +732,44 @@ theorem finrank_adjoin_eq_one_iff : finrank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : 
   Iff.trans finrank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.finrank_adjoin_eq_one_iff IntermediateField.finrank_adjoin_eq_one_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem finrank_adjoin_simple_eq_one_iff : finrank F F⟮⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) := by
+theorem finrank_adjoin_simple_eq_one_iff : finrank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) := by
   rw [finrank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
 #align intermediate_field.finrank_adjoin_simple_eq_one_iff IntermediateField.finrank_adjoin_simple_eq_one_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- If `F⟮x⟯` has dimension `1` over `F` for every `x ∈ E` then `F = E`. -/
-theorem bot_eq_top_of_rank_adjoin_eq_one (h : ∀ x : E, Module.rank F F⟮⟯ = 1) :
+theorem bot_eq_top_of_rank_adjoin_eq_one (h : ∀ x : E, Module.rank F F⟮x⟯ = 1) :
     (⊥ : IntermediateField F E) = ⊤ := by
-  ext
+  ext y
   rw [iff_true_right IntermediateField.mem_top]
-  exact rank_adjoin_simple_eq_one_iff.mp (h x)
+  exact rank_adjoin_simple_eq_one_iff.mp (h y)
 #align intermediate_field.bot_eq_top_of_rank_adjoin_eq_one IntermediateField.bot_eq_top_of_rank_adjoin_eq_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem bot_eq_top_of_finrank_adjoin_eq_one (h : ∀ x : E, finrank F F⟮⟯ = 1) :
+theorem bot_eq_top_of_finrank_adjoin_eq_one (h : ∀ x : E, finrank F F⟮x⟯ = 1) :
     (⊥ : IntermediateField F E) = ⊤ := by
-  ext
+  ext y
   rw [iff_true_right IntermediateField.mem_top]
-  exact finrank_adjoin_simple_eq_one_iff.mp (h x)
+  exact finrank_adjoin_simple_eq_one_iff.mp (h y)
 #align intermediate_field.bot_eq_top_of_finrank_adjoin_eq_one IntermediateField.bot_eq_top_of_finrank_adjoin_eq_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem subsingleton_of_rank_adjoin_eq_one (h : ∀ x : E, Module.rank F F⟮⟯ = 1) :
+theorem subsingleton_of_rank_adjoin_eq_one (h : ∀ x : E, Module.rank F F⟮x⟯ = 1) :
     Subsingleton (IntermediateField F E) :=
   subsingleton_of_bot_eq_top (bot_eq_top_of_rank_adjoin_eq_one h)
 #align intermediate_field.subsingleton_of_rank_adjoin_eq_one IntermediateField.subsingleton_of_rank_adjoin_eq_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem subsingleton_of_finrank_adjoin_eq_one (h : ∀ x : E, finrank F F⟮⟯ = 1) :
+theorem subsingleton_of_finrank_adjoin_eq_one (h : ∀ x : E, finrank F F⟮x⟯ = 1) :
     Subsingleton (IntermediateField F E) :=
   subsingleton_of_bot_eq_top (bot_eq_top_of_finrank_adjoin_eq_one h)
 #align intermediate_field.subsingleton_of_finrank_adjoin_eq_one IntermediateField.subsingleton_of_finrank_adjoin_eq_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- If `F⟮x⟯` has dimension `≤1` over `F` for every `x ∈ E` then `F = E`. -/
 theorem bot_eq_top_of_finrank_adjoin_le_one [FiniteDimensional F E]
-    (h : ∀ x : E, finrank F F⟮⟯ ≤ 1) : (⊥ : IntermediateField F E) = ⊤ := by
+    (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : (⊥ : IntermediateField F E) = ⊤ := by
   apply bot_eq_top_of_finrank_adjoin_eq_one
-  exact fun x => by linarith [h x, show 0 < finrank F F⟮⟯ from finrank_pos]
+  exact fun x => by linarith [h x, show 0 < finrank F F⟮x⟯ from finrank_pos]
 #align intermediate_field.bot_eq_top_of_finrank_adjoin_le_one IntermediateField.bot_eq_top_of_finrank_adjoin_le_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem subsingleton_of_finrank_adjoin_le_one [FiniteDimensional F E]
-    (h : ∀ x : E, finrank F F⟮⟯ ≤ 1) : Subsingleton (IntermediateField F E) :=
+    (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : Subsingleton (IntermediateField F E) :=
   subsingleton_of_bot_eq_top (bot_eq_top_of_finrank_adjoin_le_one h)
 #align intermediate_field.subsingleton_of_finrank_adjoin_le_one IntermediateField.subsingleton_of_finrank_adjoin_le_one
 
