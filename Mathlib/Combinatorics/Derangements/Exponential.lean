@@ -8,9 +8,9 @@ Authors: Henry Swanson, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Exponential
-import Mathbin.Combinatorics.Derangements.Finite
-import Mathbin.Order.Filter.Basic
+import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Combinatorics.Derangements.Finite
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Derangement exponential series
@@ -27,14 +27,12 @@ open scoped BigOperators
 open scoped Topology
 
 theorem numDerangements_tendsto_inv_e :
-    Tendsto (fun n => (numDerangements n : ℝ) / n.factorial) atTop (𝓝 (Real.exp (-1))) :=
-  by
+    Tendsto (fun n => (numDerangements n : ℝ) / n.factorial) atTop (𝓝 (Real.exp (-1))) := by
   -- we show that d(n)/n! is the partial sum of exp(-1), but offset by 1.
   -- this isn't entirely obvious, since we have to ensure that asc_factorial and
   -- factorial interact in the right way, e.g., that k ≤ n always
   let s : ℕ → ℝ := fun n => ∑ k in Finset.range n, (-1 : ℝ) ^ k / k.factorial
-  suffices ∀ n : ℕ, (numDerangements n : ℝ) / n.factorial = s (n + 1)
-    by
+  suffices ∀ n : ℕ, (numDerangements n : ℝ) / n.factorial = s (n + 1) by
     simp_rw [this]
     -- shift the function by 1, and then use the fact that the partial sums
     -- converge to the infinite sum
