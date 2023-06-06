@@ -371,7 +371,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.colimit_cocone_is_colimit ModuleCat.Colimits.colimitCoconeIsColimit
 
-instance hasColimits_moduleCat : HasColimits (ModuleCat.{max v u} R)
+instance hasColimits_moduleCat : HasColimits (ModuleCatMax.{v, u, u} R)
     where has_colimits_of_shape _ _ :=
     { has_colimit := fun F =>
         HasColimit.mk
@@ -380,35 +380,39 @@ instance hasColimits_moduleCat : HasColimits (ModuleCat.{max v u} R)
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_Module ModuleCat.Colimits.hasColimits_moduleCat
 
-instance hasColimitsOfSize_moduleCat : HasColimitsOfSize.{v} (ModuleCat.{max v u} R) :=
-  hasColimitsOfSize_shrink _
+instance hasColimitsOfSize_moduleCat : HasColimitsOfSize.{v, v} (ModuleCatMax.{v, u, u} R) :=
+  hasColimitsOfSize_shrink.{v, v, u, u} _
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_of_size_Module ModuleCat.Colimits.hasColimitsOfSize_moduleCat
 
-instance hasColimitsOfSize_zero_moduleCat : HasColimitsOfSize.{0} (ModuleCat.{max v u} R) :=
-  @hasColimitsOfSize_shrink.{0} (ModuleCat.{max v u} R) _ ModuleCat.Colimits.hasColimits_moduleCat
+instance hasColimitsOfSize_zero_moduleCat : HasColimitsOfSize.{0, 0} (ModuleCatMax.{v, u, u} R) :=
+  -- Porting note: had to specify further universes.
+  hasColimitsOfSize_shrink.{0, 0, v, v} (ModuleCatMax.{v, u, u} R)
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.has_colimits_of_size_zero_Module ModuleCat.Colimits.hasColimitsOfSize_zero_moduleCat
 
--- We manually add a `has_colimits` instance with universe parameters swapped, for otherwise
--- the instance is not found by typeclass search.
-instance hasColimits_Module' (R : Type u) [Ring R] : HasColimits (ModuleCat.{max u v} R) :=
-  ModuleCat.Colimits.hasColimits_moduleCat.{u, v}
-set_option linter.uppercaseLean3 false in
-#align Module.colimits.has_colimits_Module' ModuleCat.Colimits.hasColimits_Module'
+-- Porting note: in mathlib3 it was helpful to add to more instances with specialised universes.
+-- However in Lean 4 they *break*, rather than *enable*, the examples below.
 
--- We manually add a `has_colimits` instance with equal universe parameters, for otherwise
--- the instance is not found by typeclass search.
-instance hasColimits_Module'' (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
-  ModuleCat.Colimits.hasColimits_moduleCat.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Module.colimits.has_colimits_Module'' ModuleCat.Colimits.hasColimits_Module''
+-- -- We manually add a `has_colimits` instance with universe parameters swapped, for otherwise
+-- -- the instance is not found by typeclass search.
+-- instance hasColimits_Module' (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v, u} R) :=
+--   ModuleCat.Colimits.hasColimits_moduleCat.{u, v}
+-- set_option linter.uppercaseLean3 false in
+-- #align Module.colimits.has_colimits_Module' ModuleCat.Colimits.hasColimits_Module'
+
+-- -- We manually add a `has_colimits` instance with equal universe parameters, for otherwise
+-- -- the instance is not found by typeclass search.
+-- instance hasColimits_Module'' (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
+--   ModuleCat.Colimits.hasColimits_moduleCat.{u, u}
+-- set_option linter.uppercaseLean3 false in
+-- #align Module.colimits.has_colimits_Module'' ModuleCat.Colimits.hasColimits_Module''
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
-example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max v u} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
   inferInstance
 
-example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max u v} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v} R) :=
   inferInstance
 
 example (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=
