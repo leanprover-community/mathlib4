@@ -21,7 +21,7 @@ namespace Real
 
 @[measurability]
 theorem measurable_arctan : Measurable arctan :=
-  continuous_arctan.Measurable
+  continuous_arctan.measurable
 #align real.measurable_arctan Real.measurable_arctan
 
 end Real
@@ -38,4 +38,3 @@ theorem Measurable.arctan : Measurable fun x => arctan (f x) :=
 #align measurable.arctan Measurable.arctan
 
 end RealComposition
-
