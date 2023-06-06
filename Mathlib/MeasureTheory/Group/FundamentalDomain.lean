@@ -312,8 +312,8 @@ theorem measure_zero_of_invariant (h : IsFundamentalDomain G s μ) (t : Set α)
 /-- Given a measure space with an action of a finite group `G`, the measure of any `G`-invariant set
 is determined by the measure of its intersection with a fundamental domain for the action of `G`. -/
 @[to_additive measure_eq_card_smul_of_vadd_ae_eq_self "Given a measure space with an action of a
-  finite additive group `G`, the measure of any `G`-invariant set is determined by the measure of its
-  intersection with a fundamental domain for the action of `G`."]
+  finite additive group `G`, the measure of any `G`-invariant set is determined by the measure of
+  its intersection with a fundamental domain for the action of `G`."]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
     (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
   haveI : Fintype G := Fintype.ofFinite G
