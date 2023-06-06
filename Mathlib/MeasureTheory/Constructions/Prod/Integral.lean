@@ -160,9 +160,12 @@ theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => (ν (Prod.mk x ⁻¹' s)).toReal) μ := by
   refine' ⟨(measurable_measure_prod_mk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, _⟩
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
-  convert h2s.lt_top using 1; simp_rw [prod_apply hs]; apply lintegral_congr_ae
+  convert h2s.lt_top using 1
+  -- Porting note: was `simp_rw`
+  rw [prod_apply hs]
+  apply lintegral_congr_ae
   refine' (ae_measure_lt_top hs h2s).mp _; apply eventually_of_forall; intro x hx
-  rw [lt_top_iff_ne_top] at hx ; simp [of_real_to_real, hx]
+  rw [lt_top_iff_ne_top] at hx ; simp [ofReal_toReal, hx]
 #align measure_theory.measure.integrable_measure_prod_mk_left MeasureTheory.Measure.integrable_measure_prod_mk_left
 
 end Measure
