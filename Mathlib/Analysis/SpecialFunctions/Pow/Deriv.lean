@@ -284,7 +284,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
     (continuousAt_fst.eventually (gt_mem_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
   refine' HasStrictFDerivAt.congr_of_eventuallyEq _ this.symm
   convert ((hasStrictFDerivAt_fst.log hp.ne).mul hasStrictFDerivAt_snd).exp.mul
-    (hasStrictFDerivAt_snd.mul_const _).cos using 1
+    (hasStrictFDerivAt_snd.mul_const π).cos using 1
   simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul, ← mul_assoc,
     mul_comm (cos _), ← rpow_def_of_neg hp]
   rw [div_eq_mul_inv, add_comm]; congr 2 <;> ring
@@ -310,7 +310,7 @@ theorem differentiableAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
 theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : HasStrictDerivAt f f' x)
     (hg : HasStrictDerivAt g g' x) (h : 0 < f x) : HasStrictDerivAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
-  convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt _
+  convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prod hg) using 1
   simp [mul_assoc, mul_comm, mul_left_comm]
 #align has_strict_deriv_at.rpow HasStrictDerivAt.rpow
@@ -320,7 +320,7 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const _ _))
-    convert this; simp
+    convert this using 1; simp
   · simpa using (hasStrictDerivAt_id x).rpow (hasStrictDerivAt_const x p) hx
 #align real.has_strict_deriv_at_rpow_const_of_ne Real.hasStrictDerivAt_rpow_const_of_ne
 
@@ -396,7 +396,7 @@ theorem contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p)
 
 theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
-  ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [Nat.cast_one]))
+  ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
     (hasDerivAt_rpow_const hx) le_rfl
 #align real.has_strict_deriv_at_rpow_const Real.hasStrictDerivAt_rpow_const
 
