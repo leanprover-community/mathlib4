@@ -574,7 +574,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   apply hinj ⟨z, (iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) z.2)⟩
   dsimp only
   erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
-  simp_rw [←comp_apply, f.1.naturality, comp_apply, heq, ←comp_apply, ← G.1.map_comp]
+  simp_rw [← comp_apply, f.1.naturality, comp_apply, heq, ← comp_apply, ← G.1.map_comp]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_injective_of_locally_surjective TopCat.Presheaf.app_surjective_of_injective_of_locally_surjective

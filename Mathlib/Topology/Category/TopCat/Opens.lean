@@ -296,12 +296,10 @@ def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
   unitIso :=
-    NatIso.ofComponents (fun U => eqToIso
-      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
+    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
       (by intros; simp)
   counitIso :=
-    NatIso.ofComponents (fun U => eqToIso
-      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
+    NatIso.ofComponents (fun U => eqToIso (by simp [map, Set.preimage_preimage]))
       (by intros; simp)
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 

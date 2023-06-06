@@ -200,7 +200,8 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp only [toPlus, plusObj]
   delta Cover.toMultiequalizer
   dsimp [mk]
-  erw [←comp_apply, ι_colimMap_assoc, colimit.ι_pre, comp_apply, comp_apply]
+  erw [←comp_apply]
+  rw [ι_colimMap_assoc, colimit.ι_pre, comp_apply, comp_apply]
   dsimp only [Functor.op]
   let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
@@ -209,8 +210,9 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  erw [←comp_apply, ←comp_apply, ←comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
-    Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+  rw [←comp_apply, ←comp_apply, ←comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
+    Multiequalizer.lift_ι]
+  erw [Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
     ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
   erw [x.condition RR]
@@ -263,7 +265,8 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     convert e
     all_goals
       dsimp [diagram]
-      erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+      rw [← comp_apply, Multiequalizer.lift_ι]
+      erw [Meq.equiv_symm_eq_apply]
       cases i; rfl
 #align category_theory.grothendieck_topology.plus.eq_mk_iff_exists CategoryTheory.GrothendieckTopology.Plus.eq_mk_iff_exists
 
@@ -441,7 +444,8 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     rw [← ht]
     ext i
     dsimp
-    erw [← comp_apply, Multiequalizer.lift_ι]
+    erw [← comp_apply]
+    rw [Multiequalizer.lift_ι]
     rfl
 #align category_theory.grothendieck_topology.plus.is_sheaf_of_sep CategoryTheory.GrothendieckTopology.Plus.isSheaf_of_sep
 

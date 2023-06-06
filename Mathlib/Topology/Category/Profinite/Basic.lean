@@ -356,8 +356,8 @@ def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
 def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp [←comp_apply, id_apply]
-  right_inv x := by simp [←comp_apply, id_apply]
+  left_inv x := by simp
+  right_inv x := by simp
   continuous_toFun := f.hom.continuous
   continuous_invFun := f.inv.continuous
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
