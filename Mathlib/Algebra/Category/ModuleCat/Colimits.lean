@@ -351,6 +351,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
+    -- porting note: was `induction x` but now need `Quot.rec` with explicit `motive`
     refine Quot.rec (motive := fun x ↦ m x = _) (fun x ↦ ?_) (fun x_a x_b x_p ↦ ?_) x
     dsimp
     induction' x with x_j x_x
