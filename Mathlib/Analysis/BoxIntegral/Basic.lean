@@ -542,10 +542,9 @@ theorem to_subbox_aux (h : Integrable I l f vol) (hJ : J ≤ I) :
       Tendsto (integralSum f vol) (l.toFilteriUnion I (Prepartition.single I J hJ)) (𝓝 y) := by
   refine (cauchy_map_iff_exists_tendsto.1
     (h.cauchy_map_integralSum_toFilteriUnion (.single I J hJ))).imp fun y hy ↦ ⟨?_, hy⟩
-  convert hy.comp (l.tendsto_embedBox_toFilteriUnion_top hJ)
+  convert hy.comp (l.tendsto_embedBox_toFilteriUnion_top hJ) -- faster than `exact` here
 #align box_integral.integrable.to_subbox_aux BoxIntegral.Integrable.to_subbox_aux
 
--- faster than `exact` here
 /-- If `f` is integrable on a box `I`, then it is integrable on any subbox of `I`. -/
 theorem to_subbox (h : Integrable I l f vol) (hJ : J ≤ I) : Integrable J l f vol :=
   (h.to_subbox_aux hJ).imp fun _ => And.left
@@ -740,23 +739,12 @@ lemmas instead. -/
 theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = false)
     (B : ι →ᵇᵃ[I] ℝ) (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
     (hlH : s.Nonempty → l.bHenstock = true)
-    (H₁ :
-      ∀ (c : ℝ≥0),
-        ∀ x ∈ Box.Icc I ∩ s,
-          ∀ ε > (0 : ℝ),
-            ∃ δ > 0,
-              ∀ J ≤ I,
-                Box.Icc J ⊆ Metric.closedBall x δ →
-                  x ∈ Box.Icc J → (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε)
-    (H₂ :
-      ∀ (c : ℝ≥0),
-        ∀ x ∈ Box.Icc I \ s,
-          ∀ ε > (0 : ℝ),
-            ∃ δ > 0,
-              ∀ J ≤ I,
-                Box.Icc J ⊆ Metric.closedBall x δ →
-                  (l.bHenstock → x ∈ Box.Icc J) →
-                    (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
+    (H₁ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I ∩ s, ∀ ε > (0 : ℝ),
+      ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → x ∈ Box.Icc J →
+        (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε)
+    (H₂ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I \ s, ∀ ε > (0 : ℝ),
+      ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → (l.bHenstock → x ∈ Box.Icc J) →
+        (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I l f vol (g I) := by
   /- We choose `r x` differently for `x ∈ s` and `x ∉ s`.
 
@@ -844,23 +832,12 @@ less than or equal to `ε` if `x ∈ s` and is less than or equal to `ε * B J` 
 Then `f` is integrable on `I along `l` with integral `g I`. -/
 theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B : ι →ᵇᵃ[I] ℝ)
     (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
-    (H₁ :
-      ∀ (c : ℝ≥0),
-        ∀ x ∈ Box.Icc I ∩ s,
-          ∀ ε > (0 : ℝ),
-            ∃ δ > 0,
-              ∀ J ≤ I,
-                Box.Icc J ⊆ Metric.closedBall x δ →
-                  x ∈ Box.Icc J → (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε)
-    (H₂ :
-      ∀ (c : ℝ≥0),
-        ∀ x ∈ Box.Icc I \ s,
-          ∀ ε > (0 : ℝ),
-            ∃ δ > 0,
-              ∀ J ≤ I,
-                Box.Icc J ⊆ Metric.closedBall x δ →
-                  x ∈ Box.Icc J →
-                    (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
+    (H₁ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I ∩ s, ∀ ε > (0 : ℝ),
+      ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → x ∈ Box.Icc J →
+        (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε)
+    (H₂ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I \ s, ∀ ε > (0 : ℝ),
+      ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → x ∈ Box.Icc J →
+        (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I l f vol (g I) :=
   have A : l.bHenstock := hl.2.1.resolve_left (by decide)
   HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl.1.resolve_right (by decide)) B hB0 _ s hs
