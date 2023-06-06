@@ -11,16 +11,12 @@ import Std.Tactic.TryThis
 
 This defines a command like `variable` that automatically adds all missing typeclass
 arguments. For example, `variable! [Module R M]` is the same as
-`variable [Semiring R] [AddCommMonoid M] [Module R M]`.
+`variable [Semiring R] [AddCommMonoid M] [Module R M]`. If any of these three instance arguments
+can be inferred from previous variables then they will be omitted.
 
 An inherent limitation with this command is that variables are recorded in the scope as
 *syntax*. This means that `variable!` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
-
-The `variable!?` command gives a "try this" suggestion for a complete `variable` command.
-The `variable?` command relies on typeclass inference failure to decide to add new variables.
-Failing typeclass inference can be slow, so `variable!?` can be used to save the result and
-speed things up.
 -/
 
 namespace Mathlib.Command
@@ -39,6 +35,7 @@ register_option variable!.checkRedundant : Bool :=
     group := "variable!"
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
+/-- Get the type out of a bracketed binder. -/
 private def bracketedBinderType : Syntax → Option Term
   | `(bracketedBinderF|($_* $[: $ty?]? $(_annot?)?)) => ty?
   | `(bracketedBinderF|{$_* $[: $ty?]?})             => ty?
@@ -46,12 +43,19 @@ private def bracketedBinderType : Syntax → Option Term
   | `(bracketedBinderF|[$[$_ :]? $ty])               => some ty
   | _                                                => none
 
-/-- The `variable!` command has the same syntax as `variable`, but it will auto-insert
+/-- The basic `variable!` command has the same syntax as `variable`, but it will auto-insert
 missing instance arguments wherever they are needed.
 Warning: the command does not check that earlier variables aren't implied by later ones.
 
-The `variable!?` variant suggests a completed `variable` command. -/
-syntax (name := «variable!») "variable!" "?"? (ppSpace bracketedBinder)* : command
+The `variable! binders => binders'` command is the same as `variable binders'`. The `binders'`
+are meant to be the completed list of `binders` without any missing instances.
+When the `=> binders'` clause is not present, then `variable!` suggests a completion.
+The purpose of this is to cache the sometimes slow computation.
+
+The `variable!?` variant checks that the `binders'` clause is exactly what was inferred.
+It can also be used to recompute the cache. -/
+syntax (name := «variable!») "variable!" "?"? (ppSpace bracketedBinder)*
+  (" => " ppLine (ppSpace bracketedBinder)*)? : command
 
 macro "variable!?" binders:bracketedBinder* : command => `(command| variable! ? $binders*)
 
@@ -74,7 +78,7 @@ initialize variableAliasAttr : TagAttribute ←
   registerTagAttribute `variable_alias "Attribute to record aliases for the `variable!` command."
 
 /-- Find a synthetic typeclass metavariable with no expr metavariables in its type. -/
-private def pendingActionableSynthMVar (binder : TSyntax `Lean.Parser.Term.bracketedBinder) :
+private def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
     TermElabM (Option MVarId) := do
   let pendingMVars := (← get).pendingMVars
   if pendingMVars.isEmpty then
@@ -196,6 +200,14 @@ where
           return true
       return false
 
+/-- Strip off whitespace and comments. -/
+def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
+    TSyntaxArray ``bracketedBinder := Id.run do
+  let mut binders' := #[]
+  for binder in binders do
+    binders' := binders'.push <| ⟨binder.raw.unsetTrailing⟩
+  return binders'
+
 /--
 Like `variable` but inserts missing instances automatically as extra variables.
 It does not add variables that can already be deduced from others in the current context.
@@ -217,9 +229,12 @@ Unlike `variable`, the `variable!` command does not support changing variable bi
 -/
 @[command_elab «variable!»] def elabVariables : CommandElab := fun stx =>
   match stx with
+  | `(variable! $_* => $binders*) => do
+    elabCommand <| ← `(variable $binders*)
   | `(variable! $[?%$info]? $binders*) => do
     let maxSteps := variable!.maxSteps.get (← getOptions)
     trace[«variable!»] "variable!.maxSteps = {maxSteps}"
+    let binders := cleanBinders binders
     for binder in binders do
       if (bracketedBinderType binder).isNone then
         throwErrorAt binder "variable! cannot update pre-existing variables"
@@ -229,10 +244,9 @@ Unlike `variable`, the `variable!` command does not support changing variable bi
     runTermElabM fun _ => Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
     -- Filter out omitted binders and then add the remaining binders to the scope
     let binders' := (binders.zip toOmit).filterMap (fun (b, omit) => if omit then none else some b)
-    let varComm ← `(command| variable $binders'*)
+    let varComm ← `(command| variable! $binders* => $binders'*)
     trace[«variable!»] "derived{indentD varComm}"
-    if info.isSome then
-      liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
+    liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
     for binder in binders' do
       let varUIds ← getBracketedBinderIds binder |>.mapM
         (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
