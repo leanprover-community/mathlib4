@@ -16,7 +16,7 @@ import Mathlib.Order.Filter.Basic
 # Derangement exponential series
 
 This file proves that the probability of a permutation on n elements being a derangement is 1/e.
-The specific lemma is `num_derangements_tendsto_inv_e`.
+The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
 
 
@@ -36,7 +36,8 @@ theorem numDerangements_tendsto_inv_e :
     simp_rw [this]
     -- shift the function by 1, and then use the fact that the partial sums
     -- converge to the infinite sum
-    rw [tendsto_add_at_top_iff_nat 1]
+    rw [tendsto_add_atTop_iff_nat
+      (f := fun n => ∑ k in Finset.range n, (-1 : ℝ) ^ k / k.factorial) 1]
     apply HasSum.tendsto_sum_nat
     -- there's no specific lemma for ℝ that ∑ x^k/k! sums to exp(x), but it's
     -- true in more general fields, so use that lemma
@@ -49,10 +50,9 @@ theorem numDerangements_tendsto_inv_e :
   -- get down to individual terms
   refine' Finset.sum_congr (refl _) _
   intro k hk
-  have h_le : k ≤ n := finset.mem_range_succ_iff.mp hk
+  have h_le : k ≤ n := Finset.mem_range_succ_iff.mp hk
   rw [Nat.ascFactorial_eq_div, add_tsub_cancel_of_le h_le]
   push_cast [Nat.factorial_dvd_factorial h_le]
   field_simp [Nat.factorial_ne_zero]
   ring
 #align num_derangements_tendsto_inv_e numDerangements_tendsto_inv_e
-
