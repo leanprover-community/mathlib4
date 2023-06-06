@@ -377,7 +377,7 @@ theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : ℕ∞} (h : x ≠ 0) :
 theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiff ℝ n fun x : ℝ => x ^ p := by
   induction' n with n ihn generalizing p
-  · exact contDiff_zero.2 (continuous_id.rpow_const fun x => by simp at h; exact Or.inr h)
+  · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
