@@ -8,7 +8,7 @@ Authors: Jujian Zhang, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Sheaves.Punit
+import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.Topology.Sheaves.Functors
 
@@ -56,16 +56,16 @@ point, then the skyscraper presheaf `𝓕` with value `A` is defined by `U ↦ A
 @[simps]
 def skyscraperPresheaf : Presheaf C X where
   obj U := if p₀ ∈ unop U then A else terminal C
-  map U V i :=
+  map {U V} i :=
     if h : p₀ ∈ unop V then eqToHom <| by erw [if_pos h, if_pos (le_of_hom i.unop h)]
     else ((if_neg h).symm.rec terminalIsTerminal).from _
-  map_id' U :=
+  map_id U :=
     (em (p₀ ∈ U.unop)).elim (fun h => dif_pos h) fun h =>
       ((if_neg h).symm.rec terminalIsTerminal).hom_ext _ _
-  map_comp' U V W iVU iWV := by
+  map_comp {U V W} iVU iWV := by
     by_cases hW : p₀ ∈ unop W
-    · have hV : p₀ ∈ unop V := le_of_hom iWV.unop hW
-      simp only [dif_pos hW, dif_pos hV, eq_to_hom_trans]
+    · have hV : p₀ ∈ unop V := leOfHom iWV.unop hW
+      simp only [dif_pos hW, dif_pos hV, eqToHom_trans]
     · rw [dif_neg hW]; apply ((if_neg hW).symm.rec terminal_is_terminal).hom_ext
 #align skyscraper_presheaf skyscraperPresheaf
 
@@ -74,7 +74,7 @@ theorem skyscraperPresheaf_eq_pushforward
     skyscraperPresheaf p₀ A =
       ContinuousMap.const (TopCat.of PUnit) p₀ _* skyscraperPresheaf PUnit.unit A := by
   convert_to
-      @skyscraperPresheaf X p₀ (fun U => hd <| (opens.map <| ContinuousMap.const _ p₀).obj U) C _ _
+      @skyscraperPresheaf X p₀ (fun U => hd <| (Opens.map <| ContinuousMap.const _ p₀).obj U) C _ _
           A =
         _ <;>
     first
@@ -92,10 +92,10 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
   app U :=
     if h : p₀ ∈ U.unop then eqToHom (if_pos h) ≫ f ≫ eqToHom (if_pos h).symm
     else ((if_neg h).symm.rec terminalIsTerminal).from _
-  naturality' U V i := by
+  naturality U V i := by
     simp only [skyscraperPresheaf_map]; by_cases hV : p₀ ∈ V.unop
-    · have hU : p₀ ∈ U.unop := le_of_hom i.unop hV; split_ifs
-      simpa only [eq_to_hom_trans_assoc, category.assoc, eq_to_hom_trans]
+    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs
+      simpa only [eqToHom_trans_assoc, Category.assoc, eqToHom_trans]
     · apply ((if_neg hV).symm.rec terminal_is_terminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
 
@@ -121,9 +121,9 @@ sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U
 @[simps]
 def skyscraperPresheafFunctor : C ⥤ Presheaf C X where
   obj := skyscraperPresheaf p₀
-  map _ _ := SkyscraperPresheafFunctor.map' p₀
-  map_id' _ := SkyscraperPresheafFunctor.map'_id p₀
-  map_comp' _ _ _ := SkyscraperPresheafFunctor.map'_comp p₀
+  map := SkyscraperPresheafFunctor.map' p₀
+  map_id _ := SkyscraperPresheafFunctor.map'_id p₀
+  map_comp := SkyscraperPresheafFunctor.map'_comp p₀
 #align skyscraper_presheaf_functor skyscraperPresheafFunctor
 
 end
@@ -142,9 +142,9 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
   pt := A
   ι :=
     { app := fun U => eqToHom <| if_pos <| h.mem_open U.unop.1.2 U.unop.2
-      naturality' := fun U V inc => by
+      naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dif_pos]
-        · erw [category.comp_id, eq_to_hom_trans]; rfl
+        · erw [Category.comp_id, eqToHom_trans]; rfl
         · exact h.mem_open V.unop.1.2 V.unop.2 }
 #align skyscraper_presheaf_cocone_of_specializes skyscraperPresheafCoconeOfSpecializes
 
@@ -156,7 +156,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     IsColimit (skyscraperPresheafCoconeOfSpecializes p₀ A h) where
   desc c := eqToHom (if_pos trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
-    rw [← c.w (hom_of_le <| (le_top : unop U ≤ _)).op]
+    rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
     ·
@@ -182,8 +182,8 @@ def skyscraperPresheafCocone (y : X) : Cocone ((OpenNhds.inclusion y).op ⋙ sky
     where
   pt := terminal C
   ι :=
-    { app := fun U => terminal.from _
-      naturality' := fun U V inc => terminalIsTerminal.hom_ext _ _ }
+    { app := fun _ => terminal.from _
+      naturality := fun _ _ _ => terminalIsTerminal.hom_ext _ _ }
 #align skyscraper_presheaf_cocone skyscraperPresheafCocone
 
 /--
@@ -198,13 +198,13 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
   { desc := fun c => eqToHom (if_neg h1.choose_spec).symm ≫ c.ι.app (op h1.some)
     fac := fun c U => by
       change _ = c.ι.app (op U.unop)
-      simp only [← c.w (hom_of_le <| @inf_le_left _ _ h1.some U.unop).op, ←
-        c.w (hom_of_le <| @inf_le_right _ _ h1.some U.unop).op, ← category.assoc]
+      simp only [← c.w (homOfLE <| @inf_le_left _ _ h1.some U.unop).op, ←
+        c.w (homOfLE <| @inf_le_right _ _ h1.some U.unop).op, ← category.assoc]
       congr 1
       refine' ((if_neg _).symm.rec terminal_is_terminal).hom_ext _ _
       exact fun h => h1.some_spec h.1
     uniq := fun c f H => by
-      rw [← category.id_comp f, ← H, ← category.assoc]
+      rw [← Category.id_comp f, ← H, ← category.assoc]
       congr 1; apply terminal_is_terminal.hom_ext }
 #align skyscraper_presheaf_cocone_is_colimit_of_not_specializes skyscraperPresheafCoconeIsColimitOfNotSpecializes
 
