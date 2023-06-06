@@ -836,13 +836,13 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots
   apply (@Multiset.dedup_eq_self R _ _).1
   rw [eq_iff_le_not_lt]
   constructor
-  · exact Multiset.dedup_le (nth_roots n (1 : R))
+  · exact Multiset.dedup_le (nthRoots n (1 : R))
   · by_contra ha
     replace ha := Multiset.card_lt_of_lt ha
-    rw [card_nth_roots h] at ha
-    have hrw : (nth_roots n (1 : R)).dedup.card = Fintype.card { x // x ∈ nth_roots n (1 : R) } :=
-      by
-      set fs := (⟨(nth_roots n (1 : R)).dedup, Multiset.nodup_dedup _⟩ : Finset R)
+    rw [card_nthRoots h] at ha
+    have hrw : Multiset.card (nthRoots n (1 : R)).dedup =
+        Fintype.card { x // x ∈ nthRoots n (1 : R) } := by
+      set fs := (⟨(nthRoots n (1 : R)).dedup, Multiset.nodup_dedup _⟩ : Finset R)
       rw [← Finset.card_mk, ← Fintype.card_of_subtype fs _]
       intro x
       simp only [Multiset.mem_dedup, Finset.mem_mk]
@@ -855,7 +855,7 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRootsFinset n R).card = n := by
-  rw [nth_roots_finset, ← Multiset.toFinset_eq (nth_roots_nodup h), card_mk, h.card_nth_roots]
+  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), card_mk, h.card_nthRoots]
 #align is_primitive_root.card_nth_roots_finset IsPrimitiveRoot.card_nthRootsFinset
 
 open scoped Nat
@@ -877,14 +877,14 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   · simp only [exists_prop, true_and_iff, mem_filter, mem_range, mem_univ]
     intro ξ hξ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0),
-      h.is_primitive_root_iff (Nat.pos_of_ne_zero h0)] at hξ
+      h.isPrimitiveRoot_iff (Nat.pos_of_ne_zero h0)] at hξ
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 #align is_primitive_root.card_primitive_roots IsPrimitiveRoot.card_primitiveRoots
 
 /-- The sets `primitive_roots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
-  Finset.disjoint_left.2 fun z hk hl =>
+  Finset.disjoint_left.2 fun _ hk hl =>
     h <|
       (isPrimitiveRoot_of_mem_primitiveRoots hk).unique <| isPrimitiveRoot_of_mem_primitiveRoots hl
 #align is_primitive_root.disjoint IsPrimitiveRoot.disjoint
@@ -925,14 +925,14 @@ theorem nth_roots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ} (h : IsPrimit
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i => primitiveRoots i R := by
   by_cases hn : n = 0
   · simp [hn]
-  exact @nth_roots_one_eq_bUnion_primitive_roots' _ _ _ _ ⟨n, Nat.pos_of_ne_zero hn⟩ h
+  exact @nth_roots_one_eq_biUnion_primitive_roots' _ _ _ _ ⟨n, Nat.pos_of_ne_zero hn⟩ h
 #align is_primitive_root.nth_roots_one_eq_bUnion_primitive_roots IsPrimitiveRoot.nth_roots_one_eq_biUnion_primitiveRoots
 
 end IsDomain
 
 section Automorphisms
 
-variable {S} [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ n) (R) [CommRing R]
+variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ n) (R) [CommRing R]
   [Algebra R S]
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
@@ -940,7 +940,7 @@ variable {S} [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoo
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
-    rw [hμ.eq_order_of, ← hμ.coe_to_roots_of_unity_coe, orderOf_units, orderOf_subgroup]
+    rw [hμ.eq_orderOf, ← hμ.coe_to_roots_of_unity_coe, orderOf_units, orderOf_subgroup]
   MonoidHom.toHomUnits
     { toFun := fun σ => (map_root_of_unity_eq_pow_self σ.toAlgHom μ').some
       map_one' := by
