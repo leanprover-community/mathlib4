@@ -56,6 +56,7 @@ class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorde
   map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
 
+-- Porting note: namespaced these results since there are more than 3 now
 namespace ContinuousOrderHomClass
 
 variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
@@ -68,6 +69,10 @@ instance (priority := 100) toOrderHomClass  :
     map_rel := ContinuousOrderHomClass.map_monotone }
 #align continuous_order_hom_class.to_continuous_map_class ContinuousOrderHomClass.toContinuousMapClass
 
+-- Porting note: following `OrderHomClass.toOrderHom` design, introduced a wrapper
+-- for the original coercion. The original one directly exposed
+-- ContinuousOrderHom.mk which allowed simp to apply more eagerly than in all
+-- the other results in `Topology.Order.Hom.Esakia`.
 @[coe]
 def toContinuousOrderHom (f : F) : α →Co β :=
     { toFun := f
@@ -76,11 +81,6 @@ def toContinuousOrderHom (f : F) : α →Co β :=
 
 instance : CoeTC F (α →Co β) :=
   ⟨toContinuousOrderHom⟩
--- instance : CoeTC F (α →Co β) :=
---   ⟨fun f =>
---     { toFun := f
---       monotone' := ContinuousOrderHomClass.map_monotone f
---       continuous_toFun := map_continuous f }⟩
 
 end ContinuousOrderHomClass
 /-! ### Top homomorphisms -/
