@@ -365,7 +365,9 @@ theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (�
 
 theorem ceil_lt_mul {x : ℝ} (hx : 50 / 19 ≤ x) : (⌈x⌉₊ : ℝ) < 1.38 * x := by
   refine' (ceil_lt_add_one <| hx.trans' <| by norm_num).trans_le _
-  rwa [← le_sub_iff_add_le', ← sub_one_mul, show (69 / 50 - 1 : ℝ) = (50 / 19)⁻¹ by norm_num1, ←
+  rw [← le_sub_iff_add_le', ← sub_one_mul]
+  have : (1.38 : ℝ) = 69 / 50 := by norm_num
+  rwa [this, show (69 / 50 - 1 : ℝ) = (50 / 19)⁻¹ by norm_num1, ←
     div_eq_inv_mul, one_le_div]
   norm_num1
 #align behrend.ceil_lt_mul Behrend.ceil_lt_mul
@@ -437,7 +439,6 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     Nat.pow_le_pow_of_le_left (Nat.sub_le _ _) _
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N by exact_mod_cast this
-  rw [← rpow_nat_cast]
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (1 / nValue N : ℝ)
   · apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), one_div_mul_cancel, rpow_one]
@@ -528,8 +529,9 @@ theorem exp_four_lt : exp 4 < 64 := by
 #align behrend.exp_four_lt Behrend.exp_four_lt
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
-  rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_num, ←
-    rpow_nat_cast, log_rpow zero_lt_two, cast_bit0, cast_bit0, cast_bit1, cast_one]
+  rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
+    log_rpow zero_lt_two]
+  have : 12 * (0.6931471808 : ℝ) < 16 := by norm_num
   linarith [log_two_lt_d9]
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen
 
@@ -539,8 +541,7 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) : (N : ℝ) * exp 
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
     div_le_iff (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| one_lt_two.trans_le hN), div_sqrt,
-    sqrt_le_left (zero_le_bit0.2 zero_le_two),
-    log_le_iff_le_exp (cast_pos.2 (zero_lt_two.trans_le hN))]
+    sqrt_le_left zero_le_four, log_le_iff_le_exp (cast_pos.2 (zero_lt_two.trans_le hN))]
   norm_num1
   apply le_trans _ four_zero_nine_six_lt_exp_sixteen.le
   exact_mod_cast hN'
