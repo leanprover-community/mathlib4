@@ -1342,7 +1342,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
     exact EventuallyLE.antisymm ((ae_restrict_iff' measurableSet_Ioc).2 <|
       eventually_of_forall hle) hlt
   simp only [Measure.restrict_congr_set Ioc_ae_eq_Icc] at h_eq
-  exact fun c hc => (measure.eq_on_Icc_of_ae_eq volume hab.ne h_eq hfc hgc hc).ge
+  exact fun c hc => (Measure.eqOn_Icc_of_ae_eq volume hab.ne h_eq hfc hgc hc).ge
 #align interval_integral.integral_lt_integral_of_continuous_on_of_le_of_exists_lt intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
 
 theorem integral_nonneg_of_ae_restrict (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Icc a b)] f) :
@@ -1372,8 +1372,6 @@ section Mono
 
 variable (hab : a ≤ b) (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b)
 
-include hab hf hg
-
 theorem integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict (Icc a b)] g) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
   let H := h.filter_mono <| ae_mono <| Measure.restrict_mono Ioc_subset_Icc_self <| le_refl μ
@@ -1393,8 +1391,6 @@ theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
 theorem integral_mono (h : f ≤ g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ :=
   integral_mono_ae hab hf hg <| ae_of_all _ h
 #align interval_integral.integral_mono intervalIntegral.integral_mono
-
-omit hg hab
 
 theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d)
     (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
@@ -1423,20 +1419,18 @@ section HasSum
 
 variable {μ : Measure ℝ} {f : ℝ → E}
 
-theorem MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
+theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
     HasSum (fun n : ℤ => ∫ x in y + n..y + n + 1, f x ∂μ) (∫ x, f x ∂μ) := by
   simp_rw [integral_of_le (le_add_of_nonneg_right zero_le_one)]
   rw [← integral_univ, ← iUnion_Ioc_add_int_cast y]
   exact
-    hasSum_integral_Union (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_int_cast y)
+    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_int_cast y)
       hfi.integrableOn
 #align measure_theory.integrable.has_sum_interval_integral MeasureTheory.Integrable.hasSum_intervalIntegral
 
-theorem MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hfi : Integrable f) :
-    HasSum (fun n : ℤ => ∫ x in 0 ..1, f (x + n)) (∫ x, f x) := by
-  convert hfi.hasSum_intervalIntegral 0 using 2
-  ext1 n
-  rw [integral_comp_add_right, zero_add, add_comm]
+theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hfi : Integrable f) :
+    HasSum (fun n : ℤ => ∫ x in (0:ℝ)..(1:ℝ), f (x + n)) (∫ x, f x) := by
+  simpa only [integral_comp_add_right, zero_add, add_comm (1:ℝ)] using hfi.hasSum_intervalIntegral 0
 #align measure_theory.integrable.has_sum_interval_integral_comp_add_int MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int
 
 end HasSum
