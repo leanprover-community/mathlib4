@@ -354,7 +354,7 @@ instance : ConcreteCategory CommRingCat := by
 instance : CoeSort CommRingCat (Type _) where
   coe X := X.α
 
-instance (X : CommRingCat) : CommRing X := X.str
+instance commRing (X : CommRingCat) : CommRing X := X.str
 
 -- porting note: this instance was not necessary in mathlib
 instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
