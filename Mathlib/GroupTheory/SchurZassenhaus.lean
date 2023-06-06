@@ -8,8 +8,8 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Sylow
-import Mathbin.GroupTheory.Transfer
+import Mathlib.GroupTheory.Sylow
+import Mathlib.GroupTheory.Transfer
 
 /-!
 # The Schur-Zassenhaus Theorem
@@ -52,8 +52,7 @@ instance : Inhabited H.QuotientDiff :=
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
-        hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ :=
-  by
+        hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
   letI := H.fintype_quotient_of_finite_index
   let ϕ : H →* H :=
     { toFun := fun h =>
@@ -75,8 +74,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
 
 variable {H} [Normal H]
 
-instance : MulAction G H.QuotientDiff
-    where
+instance : MulAction G H.QuotientDiff where
   smul g :=
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
@@ -91,8 +89,7 @@ instance : MulAction G H.QuotientDiff
       congr_arg Quotient.mk'' (by rw [inv_one] <;> apply one_smul Gᵐᵒᵖ T)
 
 theorem smul_diff' (h : H) :
-    diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index :=
-  by
+    diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintype_quotient_of_finite_index
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
@@ -179,19 +176,15 @@ private theorem step0 : N ≠ ⊥ := by
   exact h3 ⊤ is_complement'_bot_top
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ :=
-  by
+private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
-  have h4 : (N.comap K.subtype).index = N.index :=
-    by
+  have h4 : (N.comap K.subtype).index = N.index := by
     rw [← N.relindex_top_right, ← hK]
     exact (relindex_sup_right K N).symm
-  have h5 : Fintype.card K < Fintype.card G :=
-    by
+  have h5 : Fintype.card K < Fintype.card G := by
     rw [← K.index_mul_card]
     exact lt_mul_of_one_lt_left Fintype.card_pos (one_lt_index_of_ne_top h3)
-  have h6 : Nat.coprime (Fintype.card (N.comap K.subtype)) (N.comap K.subtype).index :=
-    by
+  have h6 : Nat.coprime (Fintype.card (N.comap K.subtype)) (N.comap K.subtype).index := by
     rw [h4]
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
@@ -206,13 +199,11 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ :=
   exact ⟨H.map K.subtype, is_complement'_of_coprime h7 h8⟩
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N :=
-  by
+private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
   have h4 := step1 h1 h2 h3
   contrapose! h4
-  have h5 : Fintype.card (G ⧸ K) < Fintype.card G :=
-    by
+  have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
     rw [← index_eq_card, ← K.index_mul_card]
     refine'
       lt_mul_of_one_lt_right (Nat.pos_of_ne_zero index_ne_zero_of_finite)
@@ -228,8 +219,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     exact K.card_quotient_dvd_card
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
   refine' ⟨H.comap (QuotientGroup.mk' K), _, _⟩
-  · have key : (N.map (QuotientGroup.mk' K)).comap (QuotientGroup.mk' K) = N :=
-      by
+  · have key : (N.map (QuotientGroup.mk' K)).comap (QuotientGroup.mk' K) = N := by
       refine' comap_map_eq_self _
       rwa [QuotientGroup.ker_mk']
     rwa [← key, comap_sup_eq, hH.symm.sup_eq_top, comap_top]
@@ -240,8 +230,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     · exact h4.2 (le_antisymm hK hH)
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step3 (K : Subgroup N) [(K.map N.Subtype).Normal] : K = ⊥ ∨ K = ⊤ :=
-  by
+private theorem step3 (K : Subgroup N) [(K.map N.Subtype).Normal] : K = ⊥ ∨ K = ⊤ := by
   have key := step2 h1 h2 h3 (K.map N.subtype) K.map_subtype_le
   rw [← map_bot N.subtype] at key 
   conv at key =>
@@ -262,8 +251,7 @@ private theorem step5 {P : Sylow (Fintype.card N).minFac N} : P.1 ≠ ⊥ :=
   P.ne_bot_of_dvd_card (Fintype.card N).minFac_dvd
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step6 : IsPGroup (Fintype.card N).minFac N :=
-  by
+private theorem step6 : IsPGroup (Fintype.card N).minFac N := by
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h2 h3⟩
   refine' sylow.nonempty.elim fun P => P.2.ofSurjective P.1.Subtype _
   rw [← MonoidHom.range_top_iff_surjective, subtype_range]
@@ -272,8 +260,7 @@ private theorem step6 : IsPGroup (Fintype.card N).minFac N :=
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h2 h3)
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-theorem step7 : IsCommutative N :=
-  by
+theorem step7 : IsCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h2 h3)
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h2 h3⟩
   exact
@@ -310,8 +297,7 @@ theorem exists_right_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup
   If `H : subgroup G` is normal, and has order coprime to its index, then there exists a
   subgroup `K` which is a (right) complement of `H`. -/
 theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
-    (hN : Nat.coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H :=
-  by
+    (hN : Nat.coprime (Nat.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H := by
   by_cases hN1 : Nat.card N = 0
   · rw [hN1, Nat.coprime_zero_left, index_eq_one] at hN 
     rw [hN]
