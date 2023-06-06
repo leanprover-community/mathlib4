@@ -18,17 +18,17 @@ import Mathlib.MeasureTheory.Integral.Average
 
 In this file we prove several forms of Jensen's inequality for integrals.
 
-- for convex sets: `convex.average_mem`, `convex.set_average_mem`, `convex.integral_mem`;
+- for convex sets: `Convex.average_mem`, `Convex.set_average_mem`, `Convex.integral_mem`;
 
-- for convex functions: `convex.on.average_mem_epigraph`, `convex_on.map_average_le`,
-  `convex_on.set_average_mem_epigraph`, `convex_on.map_set_average_le`, `convex_on.map_integral_le`;
+- for convex functions: `ConvexOn.average_mem_epigraph`, `ConvexOn.map_average_le`,
+  `ConvexOn.set_average_mem_epigraph`, `ConvexOn.map_set_average_le`, `ConvexOn.map_integral_le`;
 
-- for strictly convex sets: `strict_convex.ae_eq_const_or_average_mem_interior`;
+- for strictly convex sets: `StrictConvex.ae_eq_const_or_average_mem_interior`;
 
 - for a closed ball in a strictly convex normed space:
   `ae_eq_const_or_norm_integral_lt_of_norm_le_const`;
 
-- for strictly convex functions: `strict_convex_on.ae_eq_const_or_map_average_lt`.
+- for strictly convex functions: `StrictConvexOn.ae_eq_const_or_map_average_lt`.
 
 ## TODO
 
@@ -55,7 +55,7 @@ variable {α E F : Type _} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [Nor
 
 /-- If `μ` is a probability measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the expected value of `f` belongs to `s`:
-`∫ x, f x ∂μ ∈ s`. See also `convex.sum_mem` for a finite sum version of this lemma. -/
+`∫ x, f x ∂μ ∈ s`. See also `Convex.sum_mem` for a finite sum version of this lemma. -/
 theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc : IsClosed s)
     (hf : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (∫ x, f x ∂μ) ∈ s := by
   borelize E
@@ -67,7 +67,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     exact ⟨f x₀, by simp only [h₀.2, mem_range_self], h₀.1⟩
   rw [integral_congr_ae hfg]; rw [integrable_congr hfg] at hfi
   have hg : ∀ᵐ x ∂μ, g x ∈ closure (range g ∩ s) := by
-    filter_upwards [hfg.rw (fun x y => y ∈ s) hf] with x hx
+    filter_upwards [hfg.rw (fun _ y => y ∈ s) hf] with x hx
     apply subset_closure
     exact ⟨mem_range_self _, hx⟩
   set G : ℕ → SimpleFunc α E := SimpleFunc.approxOn _ hgm.measurable (range g ∩ s) y₀ h₀
@@ -81,12 +81,12 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   · simp only [SimpleFunc.mem_range, forall_range_iff]
     intro x
     apply inter_subset_right (range g)
-    exact SimpleFunc.approxOn_mem hgm.measurable _ _ _
+    exact SimpleFunc.approxOn_mem hgm.measurable h₀ _ _
 #align convex.integral_mem Convex.integral_mem
 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
-`⨍ x, f x ∂μ ∈ s`. See also `convex.center_mass_mem` for a finite sum version of this lemma. -/
+`⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.average_mem [IsFiniteMeasure μ] (hs : Convex ℝ s) (hsc : IsClosed s) (hμ : μ ≠ 0)
     (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s := by
   have : IsProbabilityMeasure ((μ univ)⁻¹ • μ) := isProbabilityMeasureSmul hμ
@@ -96,7 +96,7 @@ theorem Convex.average_mem [IsFiniteMeasure μ] (hs : Convex ℝ s) (hsc : IsClo
 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
-`⨍ x, f x ∂μ ∈ s`. See also `convex.center_mass_mem` for a finite sum version of this lemma. -/
+`⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
     (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) : (⨍ x in t, f x ∂μ) ∈ s := by
   haveI : Fact (μ t < ∞) := ⟨ht.lt_top⟩
@@ -106,7 +106,7 @@ theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t
 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex set in `E`, and `f` is an integrable
 function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `closure s`:
-`⨍ x, f x ∂μ ∈ s`. See also `convex.center_mass_mem` for a finite sum version of this lemma. -/
+`⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.set_average_mem_closure (hs : Convex ℝ s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
     (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) :
     (⨍ x in t, f x ∂μ) ∈ closure s :=
@@ -119,7 +119,7 @@ theorem ConvexOn.average_mem_epigraph [IsFiniteMeasure μ] (hg : ConvexOn ℝ s 
     (⨍ x, f x ∂μ, ⨍ x, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} := by
   have ht_mem : ∀ᵐ x ∂μ, (f x, g (f x)) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} :=
     hfs.mono fun x hx => ⟨hx, le_rfl⟩
-  simpa only [average_pair hfi hgi] using
+  exact average_pair hfi hgi ▸
     hg.convex_epigraph.average_mem (hsc.epigraph hgc) hμ ht_mem (hfi.prod_mk hgi)
 #align convex_on.average_mem_epigraph ConvexOn.average_mem_epigraph
 
@@ -135,7 +135,7 @@ theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] (hg : ConcaveOn ℝ
 set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points to `s`, then the value of `g` at the average value of `f` is less than or equal to
 the average value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
-`convex_on.map_center_mass_le` for a finite sum version of this lemma. -/
+`ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
 theorem ConvexOn.map_average_le [IsFiniteMeasure μ] (hg : ConvexOn ℝ s g) (hgc : ContinuousOn g s)
     (hsc : IsClosed s) (hμ : μ ≠ 0) (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ)
     (hgi : Integrable (g ∘ f) μ) : g (⨍ x, f x ∂μ) ≤ ⨍ x, g (f x) ∂μ :=
@@ -146,7 +146,7 @@ theorem ConvexOn.map_average_le [IsFiniteMeasure μ] (hg : ConvexOn ℝ s g) (hg
 set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points to `s`, then the average value of `g ∘ f` is less than or equal to the value of `g`
 at the average value of `f` provided that both `f` and `g ∘ f` are integrable. See also
-`concave_on.le_map_center_mass` for a finite sum version of this lemma. -/
+`ConcaveOn.le_map_centerMass` for a finite sum version of this lemma. -/
 theorem ConcaveOn.le_map_average [IsFiniteMeasure μ] (hg : ConcaveOn ℝ s g) (hgc : ContinuousOn g s)
     (hsc : IsClosed s) (hμ : μ ≠ 0) (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ)
     (hgi : Integrable (g ∘ f) μ) : (⨍ x, g (f x) ∂μ) ≤ g (⨍ x, f x ∂μ) :=
@@ -208,7 +208,7 @@ theorem ConcaveOn.le_map_set_average (hg : ConcaveOn ℝ s g) (hgc : ContinuousO
 set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e.  points
 to `s`, then the value of `g` at the expected value of `f` is less than or equal to the expected
 value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
-`convex_on.map_center_mass_le` for a finite sum version of this lemma. -/
+`ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
 theorem ConvexOn.map_integral_le [IsProbabilityMeasure μ] (hg : ConvexOn ℝ s g)
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ)
     (hgi : Integrable (g ∘ f) μ) : g (∫ x, f x ∂μ) ≤ ∫ x, g (f x) ∂μ := by
@@ -299,8 +299,10 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
   rintro ⟨t, hm, h₀, h₀', hne⟩
   rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prod_mk hgi) with
     ⟨a, b, ha, hb, hab, h_avg⟩
-  simp only [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
-    Prod.mk_add_mk, Prod.mk.inj_iff, (· ∘ ·)] at h_avg
+  rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
+    average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
+    Prod.smul_mk, Prod.mk_add_mk, Prod.mk.inj_iff] at h_avg
+  simp only [Function.comp] at h_avg
   rw [← h_avg.1, ← h_avg.2]
   calc
     g ((a • ⨍ x in t, f x ∂μ) + b • ⨍ x in tᶜ, f x ∂μ) <
@@ -343,11 +345,11 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e., then either this function is a.e. equal to its average value, or the norm of its integral is
-strictly less than `(μ univ).to_real * C`. -/
+strictly less than `(μ univ).toReal * C`. -/
 theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] [IsFiniteMeasure μ]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < (μ univ).toReal * C := by
-  cases' eq_or_ne μ 0 with h₀ h₀; · left; simp [h₀]
+  cases' eq_or_ne μ 0 with h₀ h₀; · left; simp [h₀, EventuallyEq]
   have hμ : 0 < (μ univ).toReal := by
     simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
   refine' (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => _
@@ -357,7 +359,7 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e. on a set `t` of finite measure, then either this function is a.e. equal to its average value on
-`t`, or the norm of its integral over `t` is strictly less than `(μ t).to_real * C`. -/
+`t`, or the norm of its integral over `t` is strictly less than `(μ t).toReal * C`. -/
 theorem ae_eq_const_or_norm_set_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
     (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
     f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < (μ t).toReal * C := by
