@@ -238,7 +238,7 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) :=
 #align roots_of_unity.fintype rootsOfUnity.fintype
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
-  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).Subtype)
+  isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype)
     (Units.ext.comp Subtype.val_injective)
 #align roots_of_unity.is_cyclic rootsOfUnity.isCyclic
 
