@@ -67,7 +67,7 @@ instance : ProperSpace ℝ where
 instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
-    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) b}) :=
+    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)

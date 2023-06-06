@@ -66,7 +66,7 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
 theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i))
     (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∃ r : ℝ, ∀ᶠ y in 𝓝 x,
-      r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i } := by
+      r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i } := by
   have := (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
     (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
   rcases this.exists_gt with ⟨r, hr0, hr⟩
@@ -76,7 +76,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
 
 theorem exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
-      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
+      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
     ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
       ordConnected_setOf_closedBall_subset y (U i)

@@ -54,12 +54,12 @@ variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
 def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : ↑k > n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 #align polynomial.degree_le Polynomial.degreeLE
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLT (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLT
 
 variable {R}

@@ -72,7 +72,7 @@ jobs:
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: BuildJOB_NAME
-    runs-on: RUNS_ON
+    runs-on: ubuntu-latest
     steps:
       - name: cleanup
         run: |
@@ -117,7 +117,10 @@ jobs:
         run: make -j 8 test
 
       - name: lint mathlib
-        run: env LEAN_ABORT_ON_PANIC=1 make lint
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 make lint
 
   final:
     name: Post-CI jobJOB_NAME

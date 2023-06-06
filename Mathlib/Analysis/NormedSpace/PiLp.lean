@@ -84,6 +84,10 @@ def PiLp (_p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) : Type _ :=
 instance (p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
+@[ext] -- porting note: new lemma
+protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p  α}
+    (h : ∀ i, x i = y i) : x = y := funext h
+
 namespace PiLp
 
 variable (p : ℝ≥0∞) (𝕜 𝕜' : Type _) {ι : Type _} (α : ι → Type _) (β : ι → Type _)
