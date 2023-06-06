@@ -178,9 +178,10 @@ open MeasureTheory.Measure
 
 section
 
-theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type _} [TopologicalSpace γ]
+nonrec theorem MeasureTheory.AEStronglyMeasurable.prod_swap {γ : Type _} [TopologicalSpace γ]
     [SigmaFinite μ] [SigmaFinite ν] {f : β × α → γ} (hf : AEStronglyMeasurable f (ν.prod μ)) :
-    AEStronglyMeasurable (fun z : α × β => f z.symm) (μ.prod ν) := by rw [← prod_swap] at hf ;
+    AEStronglyMeasurable (fun z : α × β => f z.swap) (μ.prod ν) := by
+  rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 #align measure_theory.ae_strongly_measurable.prod_swap MeasureTheory.AEStronglyMeasurable.prod_swap
 
@@ -230,25 +231,27 @@ theorem Integrable.swap [SigmaFinite μ] ⦃f : α × β → E⦄ (hf : Integrab
 
 theorem integrable_swap_iff [SigmaFinite μ] ⦃f : α × β → E⦄ :
     Integrable (f ∘ Prod.swap) (ν.prod μ) ↔ Integrable f (μ.prod ν) :=
-  ⟨fun hf => by convert hf.swap; ext ⟨x, y⟩; rfl, fun hf => hf.symm⟩
+  ⟨fun hf => hf.swap, fun hf => hf.swap⟩
 #align measure_theory.integrable_swap_iff MeasureTheory.integrable_swap_iff
 
 theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp only [HasFiniteIntegral, lintegral_prod_of_measurable _ h1f.ennnorm]
+  simp only [HasFiniteIntegral]
+  -- Porting note: was `simp`
+  rw [lintegral_prod_of_measurable _ h1f.ennnorm]
   have : ∀ x, ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := fun x => eventually_of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
     ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
   -- this fact is probably too specialized to be its own lemma
-  have : ∀ {p q r : Prop} (h1 : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
+  have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun {p q r} h1 => by
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
     refine' h2f.mp _; apply eventually_of_forall; intro x hx; dsimp only
-    rw [of_real_to_real]; rw [← lt_top_iff_ne_top]; exact hx
+    rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
   · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
 #align measure_theory.has_finite_integral_prod_iff MeasureTheory.hasFiniteIntegral_prod_iff
 
@@ -256,17 +259,16 @@ theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMe
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  rw [has_finite_integral_congr h1f.ae_eq_mk,
-    has_finite_integral_prod_iff h1f.strongly_measurable_mk]
+  rw [hasFiniteIntegral_congr h1f.ae_eq_mk,
+    hasFiniteIntegral_prod_iff h1f.stronglyMeasurable_mk]
   apply and_congr
   · apply eventually_congr
     filter_upwards [ae_ae_of_ae_prod h1f.ae_eq_mk.symm]
     intro x hx
-    exact has_finite_integral_congr hx
-  · apply has_finite_integral_congr
+    exact hasFiniteIntegral_congr hx
+  · apply hasFiniteIntegral_congr
     filter_upwards [ae_ae_of_ae_prod h1f.ae_eq_mk.symm] with _ hx using
-      integral_congr_ae (eventually_eq.fun_comp hx _)
-  · infer_instance
+      integral_congr_ae (EventuallyEq.fun_comp hx _)
 #align measure_theory.has_finite_integral_prod_iff' MeasureTheory.hasFiniteIntegral_prod_iff'
 
 /-- A binary function is integrable if the function `y ↦ f (x, y)` is integrable for almost every
