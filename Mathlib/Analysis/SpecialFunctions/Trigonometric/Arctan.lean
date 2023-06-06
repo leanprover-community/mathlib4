@@ -8,7 +8,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # The `arctan` function.
@@ -60,10 +60,8 @@ theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
 
-theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} :=
-  by
-  suffices ContinuousOn (fun x => sin x / cos x) {x | cos x ≠ 0}
-    by
+theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
+  suffices ContinuousOn (fun x => sin x / cos x) {x | cos x ≠ 0} by
     have h_eq : (fun x => sin x / cos x) = tan := by ext1 x; rw [tan_eq_sin_div_cos]
     rwa [h_eq] at this 
   exact continuous_on_sin.div continuous_on_cos fun x => id
@@ -74,8 +72,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 #align real.continuous_tan Real.continuous_tan
 
-theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) :=
-  by
+theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine' ContinuousOn.mono continuous_on_tan fun x => _
   simp only [and_imp, mem_Ioo, mem_set_of_eq, Ne.def]
   rw [cos_eq_zero_iff]
@@ -192,8 +189,7 @@ theorem arctan_one : arctan 1 = π / 4 :=
 theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arcsin, neg_div]
 #align real.arctan_neg Real.arctan_neg
 
-theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ :=
-  by
+theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ := by
   rw [arctan_eq_arcsin, arccos_eq_arcsin]; swap; · exact inv_nonneg.2 (sqrt_nonneg _)
   congr 1
   rw [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel', sqrt_div, sqrt_sq h]
@@ -201,8 +197,7 @@ theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + 
 #align real.arctan_eq_arccos Real.arctan_eq_arccos
 
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
-theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x ^ 2) / x) :=
-  by
+theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x ^ 2) / x) := by
   rw [arccos, eq_comm]
   refine' arctan_eq_of_tan_eq _ ⟨_, _⟩
   · rw [tan_pi_div_two_sub, tan_arcsin, inv_div]
@@ -220,8 +215,7 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
 /-- `real.tan` as a `local_homeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ
-    where
+def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)
