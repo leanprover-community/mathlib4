@@ -1042,7 +1042,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
   refine'
     hasSum_integral_of_dominated_convergence
-      (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : compacts ℝ)‖)
+      (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
       (fun i => (map_continuous <| f i).aestronglyMeasurable)
       (fun i => ae_of_all _ fun x hx =>
         ((f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)).norm_coe_le_norm
@@ -1332,17 +1332,17 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
     (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hgc : ContinuousOn g (Icc a b))
     (hle : ∀ x ∈ Ioc a b, f x ≤ g x) (hlt : ∃ c ∈ Icc a b, f c < g c) :
     (∫ x in a..b, f x) < ∫ x in a..b, g x := by
-  refine'
-    integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero hab.le
-      (hfc.intervalIntegrable_of_Icc hab.le) (hgc.intervalIntegrable_of_Icc hab.le)
-      ((ae_restrict_mem measurableSet_Ioc).mono hle) _
+  apply integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero hab.le
+    (hfc.intervalIntegrable_of_Icc hab.le) (hgc.intervalIntegrable_of_Icc hab.le)
+  · simpa only [gt_iff_lt, not_lt, ge_iff_le, measurableSet_Ioc, ae_restrict_eq, le_principal_iff]
+      using (ae_restrict_mem measurableSet_Ioc).mono hle
   contrapose! hlt
   have h_eq : f =ᵐ[volume.restrict (Ioc a b)] g := by
     simp only [← not_le, ← ae_iff] at hlt
     exact EventuallyLE.antisymm ((ae_restrict_iff' measurableSet_Ioc).2 <|
       eventually_of_forall hle) hlt
-  simp only [Measure.restrict_congr_set Ioc_ae_eq_Icc] at h_eq
-  exact fun c hc => (Measure.eqOn_Icc_of_ae_eq volume hab.ne h_eq hfc hgc hc).ge
+  rw [Measure.restrict_congr_set Ioc_ae_eq_Icc] at h_eq
+  exact fun c hc ↦ (Measure.eqOn_Icc_of_ae_eq volume hab.ne h_eq hfc hgc hc).ge
 #align interval_integral.integral_lt_integral_of_continuous_on_of_le_of_exists_lt intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
 
 theorem integral_nonneg_of_ae_restrict (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Icc a b)] f) :
