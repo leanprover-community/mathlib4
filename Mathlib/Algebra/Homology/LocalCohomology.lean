@@ -8,11 +8,11 @@ Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Basic
-import Mathbin.Algebra.Category.Module.Colimits
-import Mathbin.Algebra.Category.Module.Projective
-import Mathbin.CategoryTheory.Abelian.Ext
-import Mathbin.RingTheory.Finiteness
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Category.Module.Colimits
+import Mathlib.Algebra.Category.Module.Projective
+import Mathlib.CategoryTheory.Abelian.Ext
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # Local cohomology.
@@ -68,8 +68,7 @@ variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 
 /-- The directed system of `R`-modules of the form `R/J`, where `J` is an ideal of `R`,
 determined by the functor `I`  -/
-def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R
-    where
+def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
   map s t w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
 #align local_cohomology.ring_mod_ideals LocalCohomology.ringModIdeals
@@ -116,8 +115,7 @@ section Diagrams
 variable {R : Type u} [CommRing R]
 
 /-- The functor sending a natural number `i` to the `i`-th power of the ideal `J` -/
-def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R
-    where
+def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
   obj t := J ^ unop t
   map s t w := ⟨⟨Ideal.pow_le_pow w.unop.down.down⟩⟩
 #align local_cohomology.ideal_powers_diagram LocalCohomology.idealPowersDiagram
@@ -179,8 +177,7 @@ variable {R : Type u} [CommRing R] (I J : Ideal R)
 /-- Lifting `ideal_powers_diagram J` from a diagram valued in `ideals R` to a diagram
 valued in `self_le_radical J`. -/
 def localCohomology.idealPowersToSelfLeRadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLeRadical J :=
-  FullSubcategory.lift _ (idealPowersDiagram J) fun k =>
-    by
+  FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
     cases unop k
     · simp only [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
@@ -199,8 +196,7 @@ def localCohomology.idealPowersToSelfLeRadicalCompInclusion (J : Ideal R) :
 PORTING NOTE: This lemma should probably be moved to `ring_theory/finiteness.lean`
 to be near `ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
-    ∃ k : ℕ, I ^ k ≤ J :=
-  by
+    ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
   use k
   calc
