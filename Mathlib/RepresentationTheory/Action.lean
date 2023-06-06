@@ -985,9 +985,7 @@ variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCate
 the categories of `G`-actions within those categories. -/
 @[simps]
 def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
-  {-- See note [dsimp, simp].
-          F.toFunctor.mapAction
-      G with
+  { F.toFunctor.mapAction G with
     ε :=
       { hom := F.ε
         comm := fun g => by
