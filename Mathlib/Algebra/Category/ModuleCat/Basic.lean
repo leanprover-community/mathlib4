@@ -85,7 +85,8 @@ attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 namespace ModuleCat
 
 -- Porting note: typemax hack to fix universe complaints
-/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues. -/
+/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
+Since the universe the ring lives in can be inferred, we put that last. -/
 @[nolint checkUnivs]
 abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
 
