@@ -88,8 +88,7 @@ instance commRing (R : Type u₁) [CommRing R] [CharP R p] : CommRing (Ring.Perf
   (Ring.perfectionSubring R p).toCommRing
 #align perfection.comm_ring Perfection.commRing
 
-instance : Inhabited (Ring.Perfection R p) :=
-  ⟨0⟩
+instance : Inhabited (Ring.Perfection R p) := ⟨0⟩
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeff (n : ℕ) : Ring.Perfection R p →+* R where
@@ -121,13 +120,11 @@ def pthRoot : Ring.Perfection R p →+* Ring.Perfection R p where
 variable {R p}
 
 @[simp]
-theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n :=
-  rfl
+theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 #align perfection.coeff_mk Perfection.coeff_mk
 
 theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
-    coeff R p n (pthRoot R p f) = coeff R p (n + 1) f :=
-  rfl
+    coeff R p n (pthRoot R p f) = coeff R p (n + 1) f := rfl
 #align perfection.coeff_pth_root Perfection.coeff_pthRoot
 
 theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) (f ^ p) = coeff R p n f :=
@@ -180,8 +177,8 @@ variable (R p)
 
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   pthRoot' := pthRoot R p
-  frobenius_pthRoot' := congr_fun <| congr_arg RingHom.toFun <| @frobenius_pthRoot R _ p _ _
-  pthRoot_frobenius' := congr_fun <| congr_arg RingHom.toFun <| @pthRoot_frobenius R _ p _ _
+  frobenius_pthRoot' := FunLike.congr_fun <| @frobenius_pthRoot R _ p _ _
+  pthRoot_frobenius' := FunLike.congr_fun <| @pthRoot_frobenius R _ p _ _
 #align perfection.perfect_ring Perfection.perfectRing
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
@@ -190,9 +187,8 @@ any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* perfection
 def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p] (S : Type u₂) [CommSemiring S]
     [CharP S p] : (R →+* S) ≃ (R →+* Ring.Perfection S p) where
   toFun f :=
-    { toFun := fun r =>
-        ⟨fun n => f <| (pthRoot R p^[n]) r, fun n => by
-          rw [← f.map_pow, Function.iterate_succ_apply', pthRoot_pow_p]⟩
+    { toFun := fun r => ⟨fun n => f ((_root_.pthRoot R p^[n]) r),
+        fun n => by rw [← f.map_pow, Function.iterate_succ_apply', pthRoot_pow_p]⟩
       map_one' := ext fun n => (congr_arg f <| RingHom.iterate_map_one _ _).trans f.map_one
       map_mul' := fun x y =>
         ext fun n => (congr_arg f <| RingHom.iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
@@ -201,18 +197,15 @@ def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p] (S : Typ
         ext fun n => (congr_arg f <| RingHom.iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   left_inv f := RingHom.ext fun r => rfl
-  right_inv f :=
-    RingHom.ext fun r =>
-      ext fun n =>
-        show coeff S p 0 (f ((pthRoot R p^[n]) r)) = coeff S p n (f r) by
-          rw [← coeff_iterate_frobenius _ 0 n, zero_add, ← RingHom.map_iterate_frobenius,
-            right_inverse_pth_root_frobenius.iterate]
-#align perfection.lift Perfection.lift
+  right_inv f := RingHom.ext fun r => ext fun n =>
+    show coeff S p 0 (f ((_root_.pthRoot R p^[n]) r)) = coeff S p n (f r) by
+      rw [← coeff_iterate_frobenius _ 0 n, zero_add, ← RingHom.map_iterate_frobenius,
+        rightInverse_pthRoot_frobenius.iterate]
 
 theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {S : Type u₂}
     [CommSemiring S] [CharP S p] {f g : R →+* Ring.Perfection S p}
     (hfg : ∀ x, coeff S p 0 (f x) = coeff S p 0 (g x)) : f = g :=
-  (lift p R S).symm.Injective <| RingHom.ext hfg
+  (lift p R S).symm.injective <| RingHom.ext hfg
 #align perfection.hom_ext Perfection.hom_ext
 
 variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
@@ -228,8 +221,7 @@ def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
 #align perfection.map Perfection.map
 
 theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
-    coeff S p n (map p φ f) = φ (coeff R p n f) :=
-  rfl
+    coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
 #align perfection.coeff_map Perfection.coeff_map
 
 end Perfection
@@ -256,14 +248,14 @@ variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
   { Injective := fun x y hxy =>
-      g.Injective <|
+      g.injective <|
         (RingHom.ext_iff.1 hfg x).symm.trans <|
           Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n => (hxy n).symm
     Surjective := fun y hy =>
-      let ⟨x, hx⟩ := g.Surjective ⟨y, hy⟩
+      let ⟨x, hx⟩ := g.surjective ⟨y, hy⟩
       ⟨x, fun n =>
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
-          rw [hfg, ← coeFn_coeBase, hx]⟩ }
+          simp [hfg, hx]⟩ }
 #align perfection_map.mk' PerfectionMap.mk'
 
 variable (p R P)
@@ -294,27 +286,24 @@ noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Ring
 #align perfection_map.equiv PerfectionMap.equiv
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :
-    m.Equiv x = Perfection.lift p P R π x :=
-  rfl
+    m.equiv x = Perfection.lift p P R π x := rfl
 #align perfection_map.equiv_apply PerfectionMap.equiv_apply
 
 theorem comp_equiv {π : P →+* R} (m : PerfectionMap p π) (x : P) :
-    Perfection.coeff R p 0 (m.Equiv x) = π x :=
-  rfl
+    Perfection.coeff R p 0 (m.equiv x) = π x := rfl
 #align perfection_map.comp_equiv PerfectionMap.comp_equiv
 
 theorem comp_equiv' {π : P →+* R} (m : PerfectionMap p π) :
-    (Perfection.coeff R p 0).comp ↑m.Equiv = π :=
-  RingHom.ext fun x => rfl
+    (Perfection.coeff R p 0).comp ↑m.equiv = π := RingHom.ext fun x => rfl
 #align perfection_map.comp_equiv' PerfectionMap.comp_equiv'
 
 theorem comp_symm_equiv {π : P →+* R} (m : PerfectionMap p π) (f : Ring.Perfection R p) :
-    π (m.Equiv.symm f) = Perfection.coeff R p 0 f :=
-  (m.comp_equiv _).symm.trans <| congr_arg _ <| m.Equiv.apply_symm_apply f
+    π (m.equiv.symm f) = Perfection.coeff R p 0 f :=
+  (m.comp_equiv _).symm.trans <| congr_arg _ <| m.equiv.apply_symm_apply f
 #align perfection_map.comp_symm_equiv PerfectionMap.comp_symm_equiv
 
 theorem comp_symm_equiv' {π : P →+* R} (m : PerfectionMap p π) :
-    π.comp ↑m.Equiv.symm = Perfection.coeff R p 0 :=
+    π.comp ↑m.equiv.symm = Perfection.coeff R p 0 :=
   RingHom.ext m.comp_symm_equiv
 #align perfection_map.comp_symm_equiv' PerfectionMap.comp_symm_equiv'
 
@@ -327,17 +316,15 @@ where `P` is any perfection of `S`. -/
 noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP S p] (P : Type u₃)
     [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π) :
     (R →+* S) ≃ (R →+* P) where
-  toFun f := RingHom.comp ↑m.Equiv.symm <| Perfection.lift p R S f
+  toFun f := RingHom.comp ↑m.equiv.symm <| Perfection.lift p R S f
   invFun f := π.comp f
   left_inv f := by
     simp_rw [← RingHom.comp_assoc, comp_symm_equiv']
     exact (Perfection.lift p R S).symm_apply_apply f
-  right_inv f :=
-    RingHom.ext fun x =>
-      m.Equiv.Injective <|
-        (m.Equiv.apply_symm_apply _).trans <|
-          show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.Equiv) f x from
-            RingHom.ext_iff.1 ((Perfection.lift p R S).apply_eq_iff_eq_symm_apply.2 rfl) _
+  right_inv f := by
+    exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
+      <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
+        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl ) _
 #align perfection_map.lift PerfectionMap.lift
 
 variable {R p}
@@ -345,10 +332,12 @@ variable {R p}
 theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {P : Type u₃}
     [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* S) (m : PerfectionMap p π)
     {f g : R →+* P} (hfg : ∀ x, π (f x) = π (g x)) : f = g :=
-  (lift p R S P π m).symm.Injective <| RingHom.ext hfg
+  (lift p R S P π m).symm.injective <| RingHom.ext hfg
 #align perfection_map.hom_ext PerfectionMap.hom_ext
 
-variable {R P} (p) {S : Type u₂} [CommSemiring S] [CharP S p]
+variable {P} (p)
+
+variable {S : Type u₂} [CommSemiring S] [CharP S p]
 
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
@@ -385,12 +374,10 @@ variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
 
 variable (p : ℕ)
 
-include hv
-
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
 @[nolint unused_arguments has_nonempty_instance]
 def ModP :=
-  O ⧸ (Ideal.span {p} : Ideal O)
+  O ⧸ (Ideal.span {(p : O)} : Ideal O)
 #align mod_p ModP
 
 variable [hp : Fact p.Prime] [hvp : Fact (v p ≠ 1)]
