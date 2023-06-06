@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Quaternion
-import Mathbin.Analysis.NormedSpace.Exponential
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Series
+import Mathlib.Analysis.Quaternion
+import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
 # Lemmas about `exp` on `quaternion`s
@@ -42,8 +42,7 @@ at `‖q‖` tend to `c` and `s`, then the exponential series tends to `c + (s /
 theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s : ℝ}
     (hc : HasSum (fun n => (-1) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) c)
     (hs : HasSum (fun n => (-1) ^ n * ‖q‖ ^ (2 * n + 1) / (2 * n + 1)!) s) :
-    HasSum (fun n => expSeries ℝ _ n fun _ => q) (↑c + (s / ‖q‖) • q) :=
-  by
+    HasSum (fun n => expSeries ℝ _ n fun _ => q) (↑c + (s / ‖q‖) • q) := by
   replace hc := has_sum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   obtain rfl | hq0 := eq_or_ne q 0
@@ -94,8 +93,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
 
 /-- The closed form for the quaternion exponential on imaginary quaternions. -/
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
-    exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q :=
-  by
+    exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
   rw [exp_eq_tsum]
   refine' HasSum.tsum_eq _
   simp_rw [← expSeries_apply_eq]
@@ -104,8 +102,7 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
 
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
-    exp ℝ q = exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) :=
-  by
+    exp ℝ q = exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
   rw [← exp_of_re_eq_zero q.im q.im_re, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
@@ -125,8 +122,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
       by rw [exp_eq]
     _ = exp ℝ q.re ^ 2 * normSq (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
       rw [norm_sq_smul]
-    _ = exp ℝ q.re ^ 2 * (Real.cos ‖q.im‖ ^ 2 + Real.sin ‖q.im‖ ^ 2) :=
-      by
+    _ = exp ℝ q.re ^ 2 * (Real.cos ‖q.im‖ ^ 2 + Real.sin ‖q.im‖ ^ 2) := by
       congr 1
       obtain hv | hv := eq_or_ne ‖q.im‖ 0
       · simp [hv]

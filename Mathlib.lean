@@ -616,6 +616,7 @@ import Mathlib.Analysis.NormedSpace.Multilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.NormedSpace.QuaternionExponential
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Star.Basic
