@@ -151,10 +151,10 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply, Pi.smul_apply,
     ContinuousLinearMap.coe_smul']
 
-theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
+nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa only [aux] using (hf.cpow hg h0).hasStrictDerivAt
+  simpa using (hf.cpow hg h0).hasStrictDerivAt
 #align has_strict_deriv_at.cpow HasStrictDerivAt.cpow
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
@@ -215,9 +215,17 @@ theorem hasDerivAt_of_real_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -
   rw [Ne.def, ← add_eq_zero_iff_eq_neg, ← Ne.def] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
   · -- easy case : `0 < x`
-    convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_of_real using 1
-    · rw [add_sub_cancel, id.def, mul_one, mul_comm, mul_div_cancel _ hr]
-    · rw [id.def, of_real_re]; exact Or.inl hx
+    -- Porting note: proof used to be
+    -- convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_of_real using 1
+    -- · rw [add_sub_cancel, id.def, mul_one, mul_comm, mul_div_cancel _ hr]
+    -- · rw [id.def, of_real_re]; exact Or.inl hx
+    apply HasDerivAt.comp_of_real (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
+    convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
+    · exact (mul_div_cancel _ hr).symm
+    · convert HasDerivAt.cpow_const ?_ ?_ using 1
+      · rw [add_sub_cancel, mul_comm]; exact (mul_one _).symm
+      · exact hasDerivAt_id (x : ℂ)
+      · simp [hx]
   · -- harder case : `x < 0`
     have : ∀ᶠ y : ℝ in nhds x,
         (y : ℂ) ^ (r + 1) / (r + 1) = (-y : ℂ) ^ (r + 1) * exp (π * I * (r + 1)) / (r + 1) := by
@@ -231,18 +239,19 @@ theorem hasDerivAt_of_real_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -
       conv_rhs => rw [mul_assoc, mul_comm, mul_div_cancel _ hr]
     rw [mul_add ((π : ℂ) * _), mul_one, exp_add, exp_pi_mul_I, mul_comm (_ : ℂ) (-1 : ℂ),
       neg_one_mul]
-    simp_rw [mul_neg, ← neg_mul, ← of_real_neg]
+    simp_rw [mul_neg, ← neg_mul, ← ofReal_neg]
     suffices HasDerivAt (fun y : ℝ => ↑(-y) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
-      convert this.neg.mul_const _; ring
+      convert this.neg.mul_const _ using 1; ring
     suffices HasDerivAt (fun y : ℝ => ↑y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
       convert @HasDerivAt.scomp ℝ _ ℂ _ _ x ℝ _ _ _ _ _ _ _ _ this (hasDerivAt_neg x) using 1
-      rw [real_smul, of_real_neg 1, of_real_one]; ring
+      rw [real_smul, ofReal_neg 1, ofReal_one]; ring
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
       exact this.comp_of_real
     conv in ↑_ ^ _ => rw [(by ring : r = r + 1 - 1)]
-    convert (hasDerivAt_id ((-x : ℝ) : ℂ)).cpow_const _ using 1
-    · simp
-    · left; rwa [id.def, of_real_re, neg_pos]
+    convert HasDerivAt.cpow_const ?_ ?_ using 1
+    · rw [add_sub_cancel, add_sub_cancel]; exact (mul_one _).symm
+    · exact hasDerivAt_id ((-x : ℝ) : ℂ)
+    · simp [hx]
 #align has_deriv_at_of_real_cpow hasDerivAt_of_real_cpow
 
 end deriv
@@ -259,7 +268,7 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
     (continuousAt_fst.eventually (lt_mem_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
   refine' HasStrictFDerivAt.congr_of_eventuallyEq _ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp
+  convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp using 1
   rw [rpow_sub_one hp.ne', ← rpow_def_of_pos hp, smul_add, smul_smul, mul_div_left_comm,
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 #align real.has_strict_fderiv_at_rpow_of_pos Real.hasStrictFDerivAt_rpow_of_pos
