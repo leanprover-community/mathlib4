@@ -8,9 +8,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.QuadraticForm.Isometry
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
-import Mathbin.Data.Real.Sign
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Data.Real.Sign
 
 /-!
 # Real quadratic forms
@@ -36,8 +36,7 @@ variable {ι : Type _} [Fintype ι]
 /-- The isometry between a weighted sum of squares with weights `u` on the
 (non-zero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
 noncomputable def isometrySignWeightedSumSquares [DecidableEq ι] (w : ι → ℝ) :
-    Isometry (weightedSumSquares ℝ w) (weightedSumSquares ℝ (SignType.sign ∘ w)) :=
-  by
+    Isometry (weightedSumSquares ℝ w) (weightedSumSquares ℝ (SignType.sign ∘ w)) := by
   let u i := if h : w i = 0 then (1 : ℝˣ) else Units.mk0 (w i) h
   have hu' : ∀ i : ι, (SignType.sign (u i) * u i) ^ (-(1 / 2 : ℝ)) ≠ 0 := by intro i;
     refine' (ne_of_lt (Real.rpow_pos_of_pos (sign_mul_pos_of_ne_zero _ <| Units.ne_zero _) _)).symm
@@ -49,8 +48,7 @@ noncomputable def isometrySignWeightedSumSquares [DecidableEq ι] (w : ι → �
   refine' sum_congr rfl fun j hj => _
   have hsum :
     (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hu' i).Unit : ℝ) • (Pi.basisFun ℝ ι) i) j =
-      v j • (SignType.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) :=
-    by
+      v j • (SignType.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) := by
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
       LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]
