@@ -436,6 +436,7 @@ import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
+import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
