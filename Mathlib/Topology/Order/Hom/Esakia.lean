@@ -229,7 +229,6 @@ namespace EsakiaHom
 variable [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β] [TopologicalSpace γ]
   [Preorder γ] [TopologicalSpace δ] [Preorder δ]
 
-/-- Reinterpret an `EsakiaHom` as a `PseudoEpimorphism`. -/
 def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 #align esakia_hom.to_pseudo_epimorphism EsakiaHom.toPseudoEpimorphism
@@ -289,10 +288,6 @@ instance : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
 @[simp]
-theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
-#align esakia_hom.coe_id_continuous_order_hom EsakiaHom.coe_id_continuousOrderHom
-
-@[simp]
 theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
 #align esakia_hom.coe_id EsakiaHom.coe_id
 
@@ -307,6 +302,10 @@ variable {α}
 theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
 #align esakia_hom.id_apply EsakiaHom.id_apply
 
+@[simp]
+theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
+#align esakia_hom.coe_id_continuous_order_hom EsakiaHom.coe_id_continuousOrderHom
+
 /-- Composition of `EsakiaHom`s as an `EsakiaHom`. -/
 def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
   ⟨g.toContinuousOrderHom.comp f.toContinuousOrderHom, fun a b h₀ => by
@@ -317,7 +316,7 @@ def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
 
 @[simp]
 theorem coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) :
-    (g.comp f : α →Co γ) = (g : β →Co γ).comp f := rfl
+    (g.comp f : α →Co γ) = (g: β →Co γ).comp f := rfl
 #align esakia_hom.coe_comp_continuous_order_hom EsakiaHom.coe_comp_continuousOrderHom
 
 @[simp]
