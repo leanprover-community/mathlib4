@@ -329,7 +329,7 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
-      ∑ ij in Dfinsupp.support a ×ᶠ Dfinsupp.support a',
+      ∑ ij in Dfinsupp.support a ×ˢ Dfinsupp.support a',
         DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) :=
   by simp only [mul_eq_dfinsupp_sum, Dfinsupp.sum, Finset.sum_product]
 #align direct_sum.mul_eq_sum_support_ghas_mul DirectSum.mul_eq_sum_support_ghas_mul
@@ -705,7 +705,7 @@ open DirectSum
 
 -- To check `Mul.gmul_mul` matches
 example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
-    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _i, R) = DirectSum.of _ (i + j) (a * b) := by
+    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.
@@ -716,4 +716,3 @@ instance CommSemiring.directSumGCommSemiring {R : Type _} [AddCommMonoid ι] [Co
 #align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGCommSemiring
 
 end Uniform
-

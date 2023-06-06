@@ -437,8 +437,8 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ in f.support, ∑ a₂ in g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p in f.support ×ᶠ g.support, F p := Finset.sum_product.symm
-        _ = ∑ p in (f.support ×ᶠ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p in f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p in (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
         _ = ∑ p in s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
           (sum_congr
@@ -1700,7 +1700,7 @@ end AddMonoidAlgebra
 We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just contruct the ring isomorphisms using `RingEquiv.refl _`.
+but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
 

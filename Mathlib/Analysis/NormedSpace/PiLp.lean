@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Jireh Loreaux
 
 ! This file was ported from Lean 3 source module analysis.normed_space.pi_Lp
-! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
+! leanprover-community/mathlib commit 9d013ad8430ddddd350cff5c3db830278ded3c79
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -83,6 +83,10 @@ def PiLp (_p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) : Type _ :=
 
 instance (p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
+
+@[ext] -- porting note: new lemma
+protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p  α}
+    (h : ∀ i, x i = y i) : x = y := funext h
 
 namespace PiLp
 
@@ -945,18 +949,12 @@ protected def linearEquiv : PiLp p β ≃ₗ[𝕜] ∀ i, β i :=
 #align pi_Lp.linear_equiv PiLp.linearEquiv
 
 /-- `PiLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := { fullyApplied := false }) toFun apply symm_apply]
+@[simps! (config := { fullyApplied := false }) apply symm_apply]
 protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := PiLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
   continuous_invFun := continuous_equiv_symm _ _
 #align pi_Lp.continuous_linear_equiv PiLp.continuousLinearEquiv
-
--- Porting note: defined separately to appease simpNF linter
-@[simp high]
-theorem continuousLinearEquiv_invFun :
-    (PiLp.continuousLinearEquiv p 𝕜 β).toLinearEquiv.invFun = ↑(PiLp.equiv p fun i ↦ β i).symm  :=
-  rfl
 
 section Basis
 

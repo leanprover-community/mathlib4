@@ -256,7 +256,7 @@ theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
 #align pi.continuous_curry Pi.continuous_curry
 
 theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
-  ext (x y)
+  ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
   rfl

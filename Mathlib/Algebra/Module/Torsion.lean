@@ -27,7 +27,7 @@ import Mathlib.RingTheory.Finiteness
   `a • x = 0` for all `a` in `s`.
 * `Submodule.torsion' R M S` : the `S`-torsion submodule, containing all elements `x` of `M` such
   that `a • x = 0` for some `a` in `S`.
-* `Submodule.torsion R M` : the torsion submoule, containing all elements `x` of `M` such that
+* `Submodule.torsion R M` : the torsion submodule, containing all elements `x` of `M` such that
   `a • x = 0` for some non-zero-divisor `a` in `R`.
 * `Module.IsTorsionBy R M a` : the property that defines a `a`-torsion module. Similarly,
   `IsTorsionBySet`, `IsTorsion'` and `IsTorsion`.
@@ -405,7 +405,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     apply iSup_le _
     intro is
     apply torsionBySet_le_torsionBySet_of_subset
-    exact (iInf_le (fun i => ⨅ _H : i ∈ S, p i) i).trans (iInf_le _ is)
+    exact (iInf_le (fun i => ⨅ _ : i ∈ S, p i) i).trans (iInf_le _ is)
   · intro x hx
     rw [mem_iSup_finset_iff_exists_sum]
     obtain ⟨μ, hμ⟩ :=

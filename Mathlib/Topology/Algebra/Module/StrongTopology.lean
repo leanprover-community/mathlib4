@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module topology.algebra.module.strong_topology
-! leanprover-community/mathlib commit b8627dbac120a9ad6267a75575ae1e070d5bff5b
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -230,3 +230,82 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
 end BoundedSets
 
 end ContinuousLinearMap
+
+open ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+
+section Semilinear
+
+variable {𝕜 : Type _} {𝕜₂ : Type _} {𝕜₃ : Type _} {𝕜₄ : Type _} {E : Type _} {F : Type _}
+  {G : Type _} {H : Type _} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+  [NontriviallyNormedField 𝕜₄] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [TopologicalAddGroup G] [TopologicalAddGroup H] [ContinuousConstSMul 𝕜₃ G]
+  [ContinuousConstSMul 𝕜₄ H] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
+  {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄} [RingHomInvPair σ₁₂ σ₂₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+  [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+
+/-- A pair of continuous (semi)linear equivalences generates a (semi)linear equivalence between the
+spaces of continuous (semi)linear maps. -/
+@[simps]
+def arrowCongrₛₗ (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃ₛₗ[σ₄₃] F →SL[σ₂₃] G :=
+  { e₁₂.arrowCongrEquiv e₄₃ with
+    -- given explicitly to help `simps`
+    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
+    -- given explicitly to help `simps`
+    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
+    map_add' := fun f g => by simp only [add_comp, comp_add]
+    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ] }
+#align continuous_linear_equiv.arrow_congrₛₗ ContinuousLinearEquiv.arrowCongrₛₗ
+
+variable [RingHomIsometric σ₂₁]
+
+theorem arrowCongrₛₗ_continuous (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
+    Continuous (id (e₁₂.arrowCongrₛₗ e₄₃ : (E →SL[σ₁₄] H) ≃ₛₗ[σ₄₃] F →SL[σ₂₃] G)) := by
+  apply continuous_of_continuousAt_zero
+  show Filter.Tendsto _ _ _
+  simp_rw [(arrowCongrₛₗ e₁₂ e₄₃).map_zero]
+  rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff ContinuousLinearMap.hasBasis_nhds_zero]
+  rintro ⟨sF, sG⟩ ⟨h1 : Bornology.IsVonNBounded 𝕜₂ sF, h2 : sG ∈ nhds (0 : G)⟩
+  dsimp
+  refine' ⟨(e₁₂.symm '' sF, e₄₃ ⁻¹' sG), ⟨h1.image (e₁₂.symm : F →SL[σ₂₁] E), _⟩, fun _ h _ hx =>
+    h _ (Set.mem_image_of_mem _ hx)⟩
+  apply e₄₃.continuous.continuousAt
+  simpa using h2
+#align continuous_linear_equiv.arrow_congrₛₗ_continuous ContinuousLinearEquiv.arrowCongrₛₗ_continuous
+
+variable [RingHomIsometric σ₁₂]
+
+/-- A pair of continuous (semi)linear equivalences generates an continuous (semi)linear equivalence
+between the spaces of continuous (semi)linear maps. -/
+@[simps!]
+def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
+  { e₁₂.arrowCongrₛₗ e₄₃ with
+    continuous_toFun := e₁₂.arrowCongrₛₗ_continuous e₄₃
+    continuous_invFun := e₁₂.symm.arrowCongrₛₗ_continuous e₄₃.symm }
+set_option linter.uppercaseLean3 false in
+#align continuous_linear_equiv.arrow_congrSL ContinuousLinearEquiv.arrowCongrSL
+
+end Semilinear
+
+section Linear
+
+variable {𝕜 : Type _} {E : Type _} {F : Type _} {G : Type _} {H : Type _} [AddCommGroup E]
+  [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NontriviallyNormedField 𝕜] [Module 𝕜 E]
+  [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
+  [TopologicalSpace G] [TopologicalSpace H] [TopologicalAddGroup G] [TopologicalAddGroup H]
+  [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]
+
+/-- A pair of continuous linear equivalences generates an continuous linear equivalence between
+the spaces of continuous linear maps. -/
+def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
+  e₁.arrowCongrSL e₂
+#align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
+
+end Linear
+
+end ContinuousLinearEquiv

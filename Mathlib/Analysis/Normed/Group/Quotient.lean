@@ -44,10 +44,10 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
 `AddSubgroup.normedMk S` as `S.normedMk`.
 
 * `seminormedAddCommGroupQuotient` : The seminormed group structure on the quotient by
-    an additive subgroup. This is an instance so there is no need to explictly use it.
+    an additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedAddCommGroupQuotient` : The normed group structure on the quotient by
-    a closed additive subgroup. This is an instance so there is no need to explictly use it.
+    a closed additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedMk S` : the normed group hom from `M` to `M ⧸ S`.
 

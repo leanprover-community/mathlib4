@@ -324,7 +324,7 @@ end ExplicitRelationVariants
 
 end
 
--- Porting note: the `StrictWeakOrder` section has been ommitted.
+-- Porting note: the `StrictWeakOrder` section has been omitted.
 
 -- namespace StrictWeakOrder
 

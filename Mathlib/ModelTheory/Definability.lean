@@ -285,23 +285,19 @@ instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 #align first_order.language.definable_set.has_bot FirstOrder.Language.DefinableSet.instBot
 
--- Porting note: added `noncomputable`
-noncomputable instance instSup : Sup (L.DefinableSet A α) :=
+instance instSup : Sup (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
 #align first_order.language.definable_set.has_sup FirstOrder.Language.DefinableSet.instSup
 
--- Porting note: added `noncomputable`
-noncomputable instance instInf : Inf (L.DefinableSet A α) :=
+instance instInf : Inf (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 #align first_order.language.definable_set.has_inf FirstOrder.Language.DefinableSet.instInf
 
--- Porting note: added `noncomputable`
-noncomputable instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance instHasCompl : HasCompl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 #align first_order.language.definable_set.has_compl FirstOrder.Language.DefinableSet.instHasCompl
 
--- Porting note: added `noncomputable`
-noncomputable instance instSDiff : SDiff (L.DefinableSet A α) :=
+instance instSDiff : SDiff (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
 #align first_order.language.definable_set.has_sdiff FirstOrder.Language.DefinableSet.instSDiff
 
@@ -377,8 +373,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
   rfl
 #align first_order.language.definable_set.coe_sdiff FirstOrder.Language.DefinableSet.coe_sdiff
 
--- Porting note: added `noncomputable`
-noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
+instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
   Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
 #align first_order.language.definable_set.boolean_algebra FirstOrder.Language.DefinableSet.instBooleanAlgebra

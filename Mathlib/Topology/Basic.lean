@@ -25,7 +25,7 @@ the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 
 For topological spaces `α` and `β`, a function `f : α → β` and a point `a : α`,
 `ContinuousAt f a` means `f` is continuous at `a`, and global continuity is
-`Continuous f`. There is also a version of continuity `Pcontinuous` for
+`Continuous f`. There is also a version of continuity `PContinuous` for
 partially defined functions.
 
 ## Notation
@@ -851,7 +851,7 @@ scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
-theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
+theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_ : IsOpen s) (_ : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), iInf_and]
 #align nhds_def' nhds_def'
 

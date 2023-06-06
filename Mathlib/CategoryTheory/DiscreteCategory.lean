@@ -116,8 +116,8 @@ attribute [local tidy] tactic.discrete_cases
 
 /- Porting note: rewrote `discrete_cases` tactic -/
 /-- A simple tactic to run `cases` on any `discrete α` hypotheses. -/
-macro "discrete_cases": tactic =>
-  `(tactic|casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
+macro "discrete_cases" : tactic =>
+  `(tactic| casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
 
 instance [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)
