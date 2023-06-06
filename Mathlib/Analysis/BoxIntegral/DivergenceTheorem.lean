@@ -93,9 +93,10 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       Integrable.{0, u, u} (I.face i) ⊥ (f ∘ e x) BoxAdditiveMap.volume := fun x hx =>
     integrable_of_continuousOn _ (Box.continuousOn_face_Icc hfc hx) volume
   /- We start with an estimate: the difference of the values of `f` at the corresponding points
-    of the faces `x i = I.lower i` and `x i = I.upper i` is `(2 * ε * diam I.Icc)`-close to the value
-    of `f'` on `Pi.single i (I.upper i - I.lower i) = lᵢ • eᵢ`, where `lᵢ = I.upper i - I.lower i`
-    is the length of `i`-th edge of `I` and `eᵢ = Pi.single i 1` is the `i`-th unit vector. -/
+    of the faces `x i = I.lower i` and `x i = I.upper i` is `(2 * ε * diam I.Icc)`-close to the
+    value of `f'` on `Pi.single i (I.upper i - I.lower i) = lᵢ • eᵢ`, where
+    `lᵢ = I.upper i - I.lower i` is the length of `i`-th edge of `I` and `eᵢ = Pi.single i 1` is the
+    `i`-th unit vector. -/
   have : ∀ y ∈ Box.Icc (I.face i),
       ‖f' (Pi.single i (I.upper i - I.lower i)) -
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
