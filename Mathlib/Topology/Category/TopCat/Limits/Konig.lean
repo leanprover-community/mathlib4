@@ -135,7 +135,7 @@ theorem partialSections.closed [I : ∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partialSections F H =
-      ⋂ (f : FiniteDiagramArrow G) (_hf : f ∈ H), { u | F.map f.2.2.2.2 (u f.1) = u f.2.1 } := by
+      ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), { u | F.map f.2.2.2.2 (u f.1) = u f.2.1 } := by
     ext1
     simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl

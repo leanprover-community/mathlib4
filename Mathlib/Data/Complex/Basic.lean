@@ -557,7 +557,7 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.conj_eq_iff_im Complex.conj_eq_iff_im
 
--- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
+-- `simpNF` complains about this being provable by `IsROrC.star_def` even
 -- though it's not imported by this file.
 -- Porting note: linter `simpNF` not found
 @[simp]
@@ -1281,7 +1281,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance : CauSeq.IsComplete ℂ Complex.abs :=
+instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq

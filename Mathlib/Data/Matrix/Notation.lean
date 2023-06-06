@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 
 ! This file was ported from Lean 3 source module data.matrix.notation
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -75,7 +75,8 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
-syntax (name := matrixNotation) "!![" sepBy1(term,+,?, ";", "; ", allowTrailingSep) "]" : term
+syntax (name := matrixNotation)
+  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
@@ -385,6 +386,20 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
   refine' Fin.cases _ _ i <;> simp [submatrix]
 #align matrix.submatrix_cons_row Matrix.submatrix_cons_row
 
+/-- Updating a row then removing it is the same as removing it. -/
+@[simp]
+theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
+    (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
+  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
+#align matrix.submatrix_update_row_succ_above Matrix.submatrix_updateRow_succAbove
+
+/-- Updating a column then removing it is the same as removing it. -/
+@[simp]
+theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+    (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
+  ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
+#align matrix.submatrix_update_column_succ_above Matrix.submatrix_updateColumn_succAbove
+
 end Submatrix
 
 section Vec2AndVec3
@@ -472,24 +487,24 @@ theorem smul_vec3 {R : Type _} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
 
 variable [AddCommMonoid α] [Mul α]
 
-theorem vec2_dot_product' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
+theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
   rw [cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty, add_zero]
-#align matrix.vec2_dot_product' Matrix.vec2_dot_product'
+#align matrix.vec2_dot_product' Matrix.vec2_dotProduct'
 
 @[simp]
 theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
-  vec2_dot_product'
+  vec2_dotProduct'
 #align matrix.vec2_dot_product Matrix.vec2_dotProduct
 
-theorem vec3_dot_product' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
+theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
     ![a₀, a₁, a₂] ⬝ᵥ ![b₀, b₁, b₂] = a₀ * b₀ + a₁ * b₁ + a₂ * b₂ := by
   rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
     add_zero, add_assoc]
-#align matrix.vec3_dot_product' Matrix.vec3_dot_product'
+#align matrix.vec3_dot_product' Matrix.vec3_dotProduct'
 
 @[simp]
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
-  vec3_dot_product'
+  vec3_dotProduct'
 #align matrix.vec3_dot_product Matrix.vec3_dotProduct
 
 end Vec2AndVec3
