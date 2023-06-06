@@ -681,7 +681,7 @@ instance instCoeToRingHom : Coe (R ≃+* S) (R →+* S) :=
   ⟨RingEquiv.toRingHom⟩
 #align ring_equiv.has_coe_to_ring_hom RingEquiv.instCoeToRingHom
 
-theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
+@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.toRingHom_eq_coe
 
