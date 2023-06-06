@@ -918,12 +918,14 @@ theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite 
 #align intermediate_field.fg_def IntermediateField.fg_def
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
-  ⟨∅, adjoin_empty F E⟩
+  -- porting note: was `⟨∅, adjoin_empty F E⟩`
+  ⟨∅, by simp only [Finset.coe_empty, Algebra.adjoin_empty, bot_toSubalgebra]⟩
 #align intermediate_field.fg_bot IntermediateField.fg_bot
 
 theorem fG_of_fG_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   cases' h with t ht
-  exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
+  -- porting note: was `exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩`
+  exact ⟨t, ht⟩
 #align intermediate_field.fg_of_fg_to_subalgebra IntermediateField.fG_of_fG_toSubalgebra
 
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
@@ -932,7 +934,7 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮⟯.restrictScalars F)) :
+    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F ↑S) := by
   apply Finset.induction_on' S
   · exact base
@@ -975,7 +977,7 @@ instance : PartialOrder (Lifts F E K) where
   le_refl x := ⟨le_refl x.1, fun s t hst => congr_arg x.2 (Subtype.ext hst)⟩
   le_trans x y z hxy hyz :=
     ⟨le_trans hxy.1 hyz.1, fun s u hsu =>
-      Eq.trans (hxy.2 s ⟨s, hxy.1 s.Mem⟩ rfl) (hyz.2 ⟨s, hxy.1 s.Mem⟩ u hsu)⟩
+      Eq.trans (hxy.2 s ⟨s, hxy.1 s.mem⟩ rfl) (hyz.2 ⟨s, hxy.1 s.mem⟩ u hsu)⟩
   le_antisymm := by
     rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨hxy1, hxy2⟩ ⟨hyx1, hyx2⟩
     obtain rfl : x1 = y1 := le_antisymm hxy1 hyx1
@@ -986,15 +988,15 @@ noncomputable instance : OrderBot (Lifts F E K) where
   bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E).toAlgHom⟩
   bot_le x :=
     ⟨bot_le, fun s t hst => by
-      cases' intermediate_field.mem_bot.mp s.mem with u hu
+      cases' IntermediateField.mem_bot.mp s.mem with u hu
       rw [show s = (algebraMap F _) u from Subtype.ext hu.symm, AlgHom.commutes]
       rw [show t = (algebraMap F _) u from Subtype.ext (Eq.trans hu hst).symm, AlgHom.commutes]⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
 
-theorem Lifts.eq_of_le {x y : Lifts F E K} (hxy : x ≤ y) (s : x.1) : x.2 s = y.2 ⟨s, hxy.1 s.Mem⟩ :=
-  hxy.2 s ⟨s, hxy.1 s.Mem⟩ rfl
+theorem Lifts.eq_of_le {x y : Lifts F E K} (hxy : x ≤ y) (s : x.1) : x.2 s = y.2 ⟨s, hxy.1 s.mem⟩ :=
+  hxy.2 s ⟨s, hxy.1 s.mem⟩ rfl
 #align intermediate_field.lifts.eq_of_le IntermediateField.Lifts.eq_of_le
 
 theorem Lifts.exists_max_two {c : Set (Lifts F E K)} {x y : Lifts F E K} (hc : IsChain (· ≤ ·) c)
