@@ -61,8 +61,8 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E]
   refine'
     @integrable_of_summable_norm_restrict ℝ ℤ E _ volume  _ _ _ _ _ _ _ _
       (summable_of_nonneg_of_le
-        (fun n : ℤ =>
-          mul_nonneg (norm_nonneg (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
+        (fun n : ℤ =>  mul_nonneg (norm_nonneg
+            (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _
   -- porting note: `refine` was able to find that on its own before
