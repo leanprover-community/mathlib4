@@ -260,8 +260,8 @@ which can also cope with identities of the form
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
 elab (name := pure_coherence) "pure_coherence" : tactic => do
-  -- bicategory_coherence (← getMainGoal) <|>
-  monoidal_coherence (← getMainGoal)
+  let g ← getMainGoal
+  monoidal_coherence g <|> bicategory_coherence g
 
 /--
 Auxiliary simp lemma for the `coherence` tactic:
@@ -331,7 +331,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
     -- Discharge the first using `coherence`,
     evalTactic (← `(tactic| { pure_coherence })) <|>
-      exception' "`coherence` tactic failed, subgoal not true in the free monoidal_category"
+      exception' "`coherence` tactic failed, subgoal not true in the free monoidal category"
     -- Then check that either `g₀` is identically `g₁`,
     evalTactic (← `(tactic| rfl)) <|> do
       -- or that both are compositions,

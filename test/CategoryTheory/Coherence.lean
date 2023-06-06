@@ -58,7 +58,7 @@ by coherence
 example (X Y : C) :
   (𝟙 X ⊗ (λ_ Y).inv) ≫ (α_ X (𝟙_ C) Y).inv = (ρ_ X).inv ⊗ 𝟙 Y :=
 by coherence
-example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (w : false) :
+example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (_w : false) :
   (λ_ (𝟙_ C)).hom ≫ f ≫ 𝟙 X ≫ g = (ρ_ (𝟙_ C)).hom ≫ f ≫ g :=
 by coherence
 
@@ -101,11 +101,14 @@ example (f : a ⟶ b) (g : b ⟶ c) :
   f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g :=
 by bicategory_coherence
 
-example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
-  (λ_ (𝟙 a)).hom ≫ η ≫ 𝟙 f ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ :=
-by bicategory_coherence
+example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
+  bicategory_coherence
 
-example (f₁ : a ⟶ b) (g₁ : b ⟶ a) (f₂ : b ⟶ c) (g₂ : c ⟶ b) :
+example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
+  (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ :=
+by coherence
+
+example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
   (α_ (𝟙 a) (𝟙 a) (f₁ ≫ f₂)).hom ≫
     𝟙 a ◁ (α_ (𝟙 a) f₁ f₂).inv ≫
       𝟙 a ◁ ((λ_ f₁).hom ≫ (ρ_ f₁).inv) ▷ f₂ ≫
