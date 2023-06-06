@@ -1043,6 +1043,53 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGT b).obj X) a :=
   t.isGE_of_iso ((t.truncGTIsoTruncGE b (b+1) (by linarith)).symm.app X) a
 
+noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
+
+noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
+
+noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
+    t.truncGELE a b ≅ t.truncGELT a b' :=
+  isoWhiskerRight (t.truncLEIsoTruncLT b b' hb') _
+
+instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
+  dsimp [truncGELE]
+  infer_instance
+
+instance (X : C) (a b : ℤ) : t.IsLE ((t.truncGELE a b).obj X) b := by
+  sorry -- see below
+
+noncomputable def homology' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
+
+instance (X : C) : t.IsLE ((t.homology' n).obj X) 0 :=
+  t.isLE_shift _ n n 0 (add_zero n)
+
+instance (X : C) : t.IsGE ((t.homology' n).obj X) 0 :=
+  t.isGE_shift _ n n 0 (add_zero n)
+
+lemma homology'_obj_mem_heart (n : ℤ) (X : C) : (t.homology' n).obj X ∈ t.heart := by
+  rw [mem_heart_iff]
+  exact ⟨inferInstance, inferInstance⟩
+
+noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
+  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n) (t.homology'_obj_mem_heart n)
+
+noncomputable def homologyCompιHeart (n : ℤ) :
+  t.homology n ⋙ t.ιHeart ≅ t.truncGELE n n ⋙ shiftFunctor C n :=
+    FullSubcategory.lift_comp_inclusion _ _ _
+
+noncomputable def homologyCompιHeartDegreeIsoHomology' (q : ℤ) :
+    t.homology q ⋙ t.ιHeartDegree q ≅ t.truncGELE q q :=
+  (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (t.homologyCompιHeart q) _ ≪≫ Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _  (shiftFunctorCompIsoId C q (-q) (add_right_neg q)) ≪≫
+    Functor.rightUnitor _
+
+noncomputable def spectralObjectω₁IsoHomology (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
+    (t.spectralObject X).ω₁.obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) ≅
+      (t.homology q ⋙ t.ιHeartDegree q).obj X :=
+  (t.truncGELEIsoTruncGELT q q q' hq').symm.app X ≪≫
+    (t.homologyCompιHeartDegreeIsoHomology' q).symm.app X
+
 /- Now, we need the octahedron axiom -/
 
 /-variable [IsTriangulated C]
@@ -1468,10 +1515,6 @@ instance (a b : ℤ) : IsIso (t.natTransTruncGELETruncLEGE a b) := NatIso.isIso_
 noncomputable def truncGELEIsoTruncLEGE (a b : ℤ) :
     t.truncGELE a b ≅ t.truncLEGE a b := asIso (t.natTransTruncGELETruncLEGE a b)
 
-noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
-  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n) (fun X => by
-    exact (t.mem_heart_iff _).2 ⟨t.isLE_shift _ n n 0 (add_zero n),
-      t.isGE_shift _ n n 0 (add_zero n)⟩)
 
 noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
 

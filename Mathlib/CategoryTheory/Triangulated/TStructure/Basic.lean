@@ -233,7 +233,7 @@ def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
 abbrev Heart := FullSubcategory t.heart
 
-abbrev heartInclusion : t.Heart ⥤ C := fullSubcategoryInclusion _
+abbrev ιHeart : t.Heart ⥤ C := fullSubcategoryInclusion _
 
 lemma mem_heart_iff (X : C) :
     X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
@@ -243,8 +243,16 @@ lemma mem_heart_iff (X : C) :
   . rintro ⟨h₁, h₂⟩
     exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
 
-instance (X : t.Heart) : t.IsLE (t.heartInclusion.obj X) 0 := ⟨X.2.1⟩
-instance (X : t.Heart) : t.IsGE (t.heartInclusion.obj X) 0 := ⟨X.2.2⟩
+instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 := ⟨X.2.1⟩
+instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 := ⟨X.2.2⟩
+
+def ιHeartDegree (n : ℤ) : t.Heart ⥤ C :=
+  t.ιHeart ⋙ shiftFunctor C (-n)
+
+noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅ t.ιHeart :=
+  Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
+    Functor.rightUnitor _
 
 end TStructure
 

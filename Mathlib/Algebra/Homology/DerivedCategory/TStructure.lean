@@ -188,7 +188,7 @@ instance : EssSurj (singleFunctor₀ToHeart C) := ⟨fun X => by
   have : X.obj.IsLE 0 := X.2.1
   have : X.obj.IsGE 0 := X.2.2
   obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X.obj 0
-  exact ⟨A, ⟨t.heartInclusion.preimageIso e.symm⟩⟩⟩
+  exact ⟨A, ⟨t.ιHeart.preimageIso e.symm⟩⟩⟩
 
 noncomputable instance : IsEquivalence (singleFunctor₀ToHeart C) :=
   Equivalence.ofFullyFaithfullyEssSurj _

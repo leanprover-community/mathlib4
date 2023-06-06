@@ -23,7 +23,7 @@ def Bounds.quadrantUR (p q : ℤ) : Bounds ℤt where
 
 abbrev Bounds.firstQuadrant := Bounds.quadrantUR 0 0
 
-noncomputable def toE₂CohomologicalSpectralSequence : CohomologicalSpectralSequence C 2 where
+noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectralSequence C where
   page' r hr := fun ⟨p, q⟩ =>
     (X.E (p+q-1) (p+q) (p+q+1) (by linarith) (by linarith)).obj
       (ιℤt.mapArrow₃.obj (Arrow₃.mkOfLE (q-r+2) q (q+1) (q+r-1)))
