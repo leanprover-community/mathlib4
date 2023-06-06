@@ -125,6 +125,8 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
+  -- Porting note: needed to make `smul_smul` work below.
+  letI : MulAction R M := MulActionWithZero.toMulAction
   by_cases hk : k ≤ pOrder hM y
   · let f :=
       ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
@@ -140,7 +142,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
     dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
       quotTorsionOfEquivSpanSingleton_apply_mk] at ha
-    rw [smul_smul, mul_comm]; exact congr_arg (↑) ha.symm
+    rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
