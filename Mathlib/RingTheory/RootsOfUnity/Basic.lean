@@ -387,6 +387,7 @@ theorem one : IsPrimitiveRoot (1 : M) 1 :=
 
 @[simp]
 theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
+  clear h
   constructor
   · intro h; rw [← pow_one ζ, h.pow_eq_one]
   · rintro rfl; exact one
@@ -611,15 +612,15 @@ theorem ne_zero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R
   by_cases hp : p ∣ n
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity.pos_of_dvd hfin hp).ne'
     haveI : NeZero p := NeZero.of_pos (Nat.pos_of_dvd_of_pos hp n.pos)
-    haveI hpri : Fact p.prime := CharP.char_is_prime_of_pos R p
+    haveI hpri : Fact p.Prime := CharP.char_is_prime_of_pos R p
     have := hζ.pow_eq_one
     rw [hm.1, hk, pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
     exfalso
     have hpos : 0 < p ^ k * m := by
-      refine' mul_pos (pow_pos hpri.1.Pos _) (Nat.pos_of_ne_zero fun h => _)
+      refine' mul_pos (pow_pos hpri.1.pos _) (Nat.pos_of_ne_zero fun h => _)
       have H := hm.1
       rw [h] at H
-      simpa using H
+      simp at H
     refine' hζ.pow_ne_one_of_pos_of_lt hpos _ (frobenius_inj R p this)
     · rw [hm.1, hk, pow_succ, mul_assoc, mul_comm p]
       exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
