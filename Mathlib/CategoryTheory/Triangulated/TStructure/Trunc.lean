@@ -188,16 +188,31 @@ lemma triangleFunctorNatTransOfLE_refl (a : ℤ) :
     (triangleFunctor_obj_distinguished t a X) (triangleFunctor_obj_distinguished t a X)
     inferInstance inferInstance (by aesop_cat)
 
+instance : (triangleFunctor t n).Additive where
+  map_add := triangle_map_ext t n  _ _ rfl
+
 end TruncAux
 
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₁
+
+instance (n : ℤ) : (t.truncLT n).Additive where
+  map_add {_ _ f g} := by
+    dsimp only [truncLT, Functor.comp_map]
+    rw [Functor.map_add]
+    rfl
 
 noncomputable def truncLTι (n : ℤ) : t.truncLT n ⟶ 𝟭 _ :=
   whiskerLeft (TruncAux.triangleFunctor t n) Triangle.π₁Toπ₂
 
 noncomputable def truncGE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₃
+
+instance (n : ℤ) : (t.truncGE n).Additive where
+  map_add {_ _ f g} := by
+    dsimp only [truncGE, Functor.comp_map]
+    rw [Functor.map_add]
+    rfl
 
 noncomputable def truncGEπ (n : ℤ) : 𝟭 _ ⟶ t.truncGE n :=
   whiskerLeft (TruncAux.triangleFunctor t n) Triangle.π₂Toπ₃
@@ -367,6 +382,10 @@ attribute [irreducible] truncLT truncGE truncLTι truncGEπ truncGEδLT
 
 noncomputable def truncLE (n : ℤ) : C ⥤ C := t.truncLT (n+1)
 
+instance (n : ℤ) : (t.truncLE n).Additive := by
+  dsimp only [truncLE]
+  infer_instance
+
 instance (n : ℤ) (X : C) : t.IsLE ((t.truncLE n).obj X) n := by
   have : t.IsLE ((t.truncLE n).obj X) (n+1-1) := by
     dsimp [truncLE]
@@ -374,6 +393,10 @@ instance (n : ℤ) (X : C) : t.IsLE ((t.truncLE n).obj X) n := by
   exact t.isLE_of_LE _ (n+1-1) n (by linarith)
 
 noncomputable def truncGT (n : ℤ) : C ⥤ C := t.truncGE (n+1)
+
+instance (n : ℤ) : (t.truncGT n).Additive := by
+  dsimp only [truncGT]
+  infer_instance
 
 instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT n).obj X) (n+1) := by
   dsimp [truncGT]
@@ -522,6 +545,15 @@ noncomputable def truncLTt : ℤt ⥤ C ⥤ C where
     obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
     all_goals simp at hbc hab <;> dsimp [TruncLTt.map] <;> simp
 
+@[simp]
+lemma truncLTt_obj_top : t.truncLTt.obj ⊤ = 𝟭 _ := rfl
+
+@[simp]
+lemma truncLTt_obj_bot : t.truncLTt.obj ⊥ = 0 := rfl
+
+@[simp]
+lemma truncLTt_obj_mk (n : ℤ) : t.truncLTt.obj (ℤt.mk n) = t.truncLT n := rfl
+
 namespace TruncGEt
 
 noncomputable def obj : ℤt → C ⥤ C
@@ -560,12 +592,15 @@ noncomputable def truncGEt : ℤt ⥤ C ⥤ C where
     all_goals simp at hbc hab <;> dsimp [TruncGEt.map] <;> simp
 
 @[simp]
-lemma truncGEt_bot :
+lemma truncGEt_obj_bot :
     t.truncGEt.obj ⊥ = 𝟭 _ := rfl
 
 @[simp]
-lemma truncGEt_top :
+lemma truncGEt_obj_top :
     t.truncGEt.obj ⊤ = 0 := rfl
+
+@[simp]
+lemma truncGEt_obj_mk (n : ℤ) : t.truncGEt.obj (ℤt.mk n) = t.truncGE n := rfl
 
 namespace TruncGEtδLTt
 
@@ -640,21 +675,24 @@ lemma triangleLTGEIso (n : ℤ) (X : C) :
   all_goals aesop_cat
 
 @[simp]
+lemma truncLTObjTopIso : t.abstractSpectralObject.truncLTObjTopIso = Iso.refl _ := rfl
+
+@[simp]
+lemma truncGEObjBotIso : t.abstractSpectralObject.truncGEObjBotIso = Iso.refl _ := rfl
+
+@[simp]
 lemma truncLTι_top_app (X : C) :
     (t.abstractSpectralObject.truncLTι ⊤).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncLTι]
   erw [Functor.map_id]
-  simp only [NatTrans.id_app, id_comp]
-  rfl
+  simp only [truncLTt_obj_top, NatTrans.id_app, Functor.id_obj, comp_id]
 
 @[simp]
 lemma truncGEπ_bot_app (X : C) :
     (t.abstractSpectralObject.truncGEπ ⊥).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncGEπ]
   erw [Functor.map_id]
-  simp only [NatTrans.id_app]
-  erw [comp_id]
-  rfl
+  simp only [truncGEt_obj_bot, NatTrans.id_app, Functor.id_obj, comp_id]
 
 lemma triangleLTGETopIso (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj ⊤).obj X ≅
@@ -663,7 +701,6 @@ lemma triangleLTGETopIso (X : C) :
     (Iso.refl _) (isZero_truncLT_obj_bot_obj t X).isoZero _ _ _
   . dsimp
     rw [truncLTι_top_app]
-    rfl
   . exact IsZero.eq_of_tgt (isZero_zero _) _ _
   . refine' IsZero.eq_of_src _ _ _
     exact IsZero.obj (isZero_zero _) _
@@ -678,7 +715,6 @@ lemma triangleLTGEBotIso (X : C) :
     apply isZero_truncLT_obj_bot_obj
   . dsimp
     rw [truncGEπ_bot_app]
-    rfl
   . apply IsZero.eq_of_tgt _
     dsimp
     rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← Functor.map_id, id_zero,
@@ -1071,13 +1107,42 @@ instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
 instance (X : C) (a b : ℤ) : t.IsLE ((t.truncGELE a b).obj X) b := by
   sorry -- see below
 
-instance (i : ℤt) : (t.truncGEt.obj i).Additive := sorry
+instance (a b : ℤ) : (t.truncGELT a b).Additive := by
+  dsimp only [truncGELT]
+  infer_instance
 
-@[simp]
-lemma truncGEt_obj_mk (n : ℤ) : t.truncGEt.obj (ℤt.mk n) = t.truncGE n := rfl
+instance (a b : ℤ) : (t.truncGELE a b).Additive := by
+  dsimp only [truncGELE]
+  infer_instance
+
+instance (i : ℤt) : (t.truncGEt.obj i).Additive := by
+  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
+  . dsimp
+    infer_instance
+  . dsimp
+    infer_instance
+  . constructor
+    aesop_cat
+
+instance (i : ℤt) : (t.truncLTt.obj i).Additive := by
+  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
+  . constructor
+    dsimp
+    aesop_cat
+  . dsimp
+    infer_instance
+  . dsimp
+    infer_instance
 
 lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : ℤt) (hj : j ≤ ℤt.mk n) :
-  IsZero ((t.truncLTt.obj j).obj X) := sorry
+    IsZero ((t.truncLTt.obj j).obj X) := by
+  obtain (rfl|⟨j, rfl⟩|rfl) := j.three_cases
+  . apply Functor.zero_obj
+  . simp at hj
+    dsimp
+    rw [← t.isGE_iff_isZero_truncLT_obj]
+    exact t.isGE_of_GE  _ _ _ hj
+  . simp at hj
 
 lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
     t.IsGE ((t.truncGEt.obj i).obj X) n := by

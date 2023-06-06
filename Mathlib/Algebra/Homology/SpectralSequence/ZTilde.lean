@@ -63,6 +63,10 @@ instance : OrderBot ℤt := by dsimp [ℤt] ; infer_instance
 lemma le_bot_mk_iff (a : ℤ) :
     ℤt.mk a ≤ ⊥ ↔ False := some_le_some_none_iff a
 
+@[simp]
+lemma top_le_mk_iff (a : ℤ) :
+    ⊤ ≤ ℤt.mk a ↔ False := none_le_some_iff a
+
 lemma three_cases (x : ℤt) :
     x = ⊥ ∨ (∃ (n : ℤ), x = ℤt.mk n) ∨ x = ⊤ := by
   obtain (_|_|n) := x
