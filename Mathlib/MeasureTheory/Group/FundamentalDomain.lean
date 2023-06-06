@@ -89,9 +89,10 @@ theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G
 #align measure_theory.is_fundamental_domain.mk' MeasureTheory.IsFundamentalDomain.mk'
 #align measure_theory.is_add_fundamental_domain.mk' MeasureTheory.IsAddFundamentalDomain.mk'
 
-/-- For `s` to be a fundamental domain, it's enough to check `ae_disjoint (g • s) s` for `g ≠ 1`. -/
-@[to_additive "For `s` to be a fundamental domain, it's enough to check `ae_disjoint (g +ᵥ s) s` for
-`g ≠ 0`."]
+/-- For `s` to be a fundamental domain, it's enough to check
+`MeasureTheory.AEDisjoint (g • s) s` for `g ≠ 1`. -/
+@[to_additive "For `s` to be a fundamental domain, it's enough to check
+  `MeasureTheory.AEDisjoint (g +ᵥ s) s` for `g ≠ 0`."]
 theorem mk'' (h_meas : NullMeasurableSet s μ) (h_ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s)
     (h_ae_disjoint : ∀ g, g ≠ (1 : G) → AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving ((g • ·) : α → α) μ μ) :
