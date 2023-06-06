@@ -96,9 +96,9 @@ theorem mem_rootsOfUnity (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ 
   Iff.rfl
 #align mem_roots_of_unity mem_rootsOfUnity
 
-theorem mem_roots_of_unity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ (k : ℕ) = 1 := by
+theorem mem_rootsOfUnity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ (k : ℕ) = 1 := by
   rw [mem_rootsOfUnity]; norm_cast
-#align mem_roots_of_unity' mem_roots_of_unity'
+#align mem_roots_of_unity' mem_rootsOfUnity'
 
 theorem rootsOfUnity.coe_injective {n : ℕ+} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
@@ -221,13 +221,13 @@ variable {k R}
 
 @[simp]
 theorem rootsOfUnityEquivNthRoots_apply (x : rootsOfUnity k R) :
-    (rootsOfUnityEquivNthRoots R k x : R) = x :=
+    (rootsOfUnityEquivNthRoots R k x : R) = ((x:Rˣ) : R) :=
   rfl
 #align roots_of_unity_equiv_nth_roots_apply rootsOfUnityEquivNthRoots_apply
 
 @[simp]
 theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R) }) :
-    ((rootsOfUnityEquivNthRoots R k).symm x : R) = x :=
+    (((rootsOfUnityEquivNthRoots R k).symm x : Rˣ) : R) = (x : R) :=
   rfl
 #align roots_of_unity_equiv_nth_roots_symm_apply rootsOfUnityEquivNthRoots_symm_apply
 
@@ -270,10 +270,13 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 @[simp]
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
-    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, hp.1.Pos⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
-  simp [mem_roots_of_unity']
+    {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, hp.1.pos⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
+  simp only [mem_rootsOfUnity', PNat.mul_coe, PNat.pow_coe, PNat.mk_coe,
+    CharP.pow_prime_pow_mul_eq_one_iff]
 #align mem_roots_of_unity_prime_pow_mul_iff mem_rootsOfUnity_prime_pow_mul_iff
 
 end Reduced
