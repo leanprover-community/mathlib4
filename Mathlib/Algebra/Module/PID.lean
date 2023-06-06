@@ -174,9 +174,13 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
-  · use fun i => finZeroElim i
+  · simp only [Nat.zero_eq] at *
+    -- Porting note: was `use fun i => finZeroElim i`
+    use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
-    haveI : Unique N := ⟨⟨0⟩, fun x => by rw [← mem_bot _, hs]; trivial⟩
+    haveI : Unique N :=
+      ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
+    haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact ⟨0⟩
   · have : ∀ x : N, Decidable (x = 0)
     classical
