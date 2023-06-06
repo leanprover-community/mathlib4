@@ -69,9 +69,7 @@ noncomputable def isometrySumSquares [DecidableEq ι] (w' : ι → ℂ) :
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
 noncomputable def isometrySumSquaresUnits [DecidableEq ι] (w : ι → Units ℂ) :
     Isometry (weightedSumSquares ℂ w) (weightedSumSquares ℂ (1 : ι → ℂ)) := by
-  have hw1 : (fun i => if (w i : ℂ) = 0 then 0 else 1 : ι → ℂ) = 1 := by
-    ext i : 1; exact dif_neg (w i).ne_zero
-  simpa [hw1] using isometrySumSquares ((↑) ∘ w)
+  simpa using isometrySumSquares ((↑) ∘ w)
 #align quadratic_form.isometry_sum_squares_units QuadraticForm.isometrySumSquaresUnits
 
 /-- A nondegenerate quadratic form on the complex numbers is equivalent to
