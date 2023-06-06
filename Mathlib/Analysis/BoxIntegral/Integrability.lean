@@ -287,8 +287,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
         hNxn J hJ]
       exact (hfi _).mono_set (Prepartition.le_of_mem _ hJ)
   · /-  For the last jump, we use the fact that the distance between `f (Nx x) x` and `g x` is less
-        than or equal to the distance between `f N₀ x` and `g x` and the integral of `‖f N₀ x - g x‖`
-        is less than or equal to `ε`. -/
+        than or equal to the distance between `f N₀ x` and `g x` and the integral of
+        `‖f N₀ x - g x‖` is less than or equal to `ε`. -/
     refine' le_trans _ hN₀
     have hfi : ∀ (n), ∀ J ∈ π, IntegrableOn (f n) (↑J) μ := fun n J hJ =>
       (hfi n).mono_set (π.le_of_mem' J hJ)
