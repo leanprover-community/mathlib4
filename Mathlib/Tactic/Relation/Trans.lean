@@ -61,8 +61,7 @@ if no lemma can be applied.
 
 If a lemma of type `..hyps → x ∼ y → y ∼ z → x ∼ z` can be applied to the goal of type `x ∼ z`,
 this returns `?g₁ : x ∼ y`, `?g₂ : y ∼ z`, and `?y` in that order, along with an array of any
-unsolved explicit arguments in `hyps`. If any of these mvars have been assigned over the course of
-`trans`, we return `none` instead.
+unsolved explicit arguments in `hyps`. If `?y` was solved, we return `none`.
 
 If the argument `y?` is provided as `none`, a new metavariable will be created for `y` if
 necessary; otherwise the third component of the return value will be `none`.
@@ -71,7 +70,7 @@ If `userFacingGoals` is `true`, the returned goals will be renamed appropriately
 `.natural` (the default) to `.syntheticOpaque`, except for `?y` (if present). This allows `?y` to
 be assigned in the course of solving for the other goals. -/
 def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacingGoals := false)
-    : MetaM (Option MVarId × Option MVarId × Option MVarId × Array MVarId) := withReducible do
+    : MetaM (MVarId × MVarId × Option MVarId × Array MVarId) := withReducible do
   let tgt ← g.getType'
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify tgt) ++ #[``Trans.simple, ``Trans.het] do
@@ -124,13 +123,13 @@ def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacing
         throwError "could not unify all implicit arguments, namely {
           ← implicitHyps.filterM (notM ·.mvarId!.isAssigned)}"
       if userFacingGoals then return (
-          ← g₁.mkUserFacingMVar? `trans₁,
-          ← g₂.mkUserFacingMVar? `trans₂,
+          ← g₁.mkUserFacingMVar `trans₁ false, -- already `.syntheticOpaque`.
+          ← g₂.mkUserFacingMVar `trans₂ false,
           (← yGoal?.mapM (·.mkUserFacingMVar? `trans_y (setSyntheticOpaque := false))).join,
           ← mkUserFacingMVarsArray (explicitHyps.map (·.mvarId!)) `trans_side)
       else return (
-          ← g₁.unassigned?,
-          ← g₂.unassigned?,
+          g₁,
+          g₂,
           yGoal?,
           ← explicitHyps.filterMapM (·.mvarId!.unassigned?))
     catch e =>
@@ -152,11 +151,11 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let (y?, goals?) := match yGoals? with
     | some (y, goals) => (some y, some goals)
     | none => (none, none)
-  let (g₁?, g₂?, yGoal?, otherGoals) ← liftMetaM <| (← getMainGoal).trans y?
+  let (g₁, g₂, yGoal?, otherGoals) ← liftMetaM <| (← getMainGoal).trans y?
   let goals? ← goals?.mapM (mkUserFacingMVars · `trans_y_side)
   let mut allGoals := #[]
-  if let some g₁ := g₁?    then allGoals := allGoals.push g₁
-  if let some g₂ := g₂?    then allGoals := allGoals.push g₂
+  allGoals := allGoals.push g₁
+  allGoals := allGoals.push g₂
   if let some y  := yGoal? then allGoals := allGoals.push y
   if let some gs := goals? then allGoals := allGoals ++ gs
   allGoals := allGoals ++ otherGoals
