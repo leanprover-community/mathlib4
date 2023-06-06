@@ -703,14 +703,14 @@ theorem zmodEquivZpowers_apply_coe_int (i : ℤ) :
 theorem zmodEquivZpowers_apply_coe_nat (i : ℕ) :
     h.zmodEquivZpowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmod_equiv_zpowers_apply_coe_int, zpow_ofNat]
+  simp only [this, zmodEquivZpowers_apply_coe_int, zpow_ofNat]
   rfl
 #align is_primitive_root.zmod_equiv_zpowers_apply_coe_nat IsPrimitiveRoot.zmodEquivZpowers_apply_coe_nat
 
 @[simp]
 theorem zmodEquivZpowers_symm_apply_zpow (i : ℤ) :
     h.zmodEquivZpowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmod_equiv_zpowers.symm_apply_apply i, zmod_equiv_zpowers_apply_coe_int]
+  rw [← h.zmodEquivZpowers.symm_apply_apply i, zmodEquivZpowers_apply_coe_int]
 #align is_primitive_root.zmod_equiv_zpowers_symm_apply_zpow IsPrimitiveRoot.zmodEquivZpowers_symm_apply_zpow
 
 @[simp]
@@ -721,7 +721,7 @@ theorem zmodEquivZpowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZpowers.symm �
 @[simp]
 theorem zmodEquivZpowers_symm_apply_pow (i : ℕ) :
     h.zmodEquivZpowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmod_equiv_zpowers.symm_apply_apply i, zmod_equiv_zpowers_apply_coe_nat]
+  rw [← h.zmodEquivZpowers.symm_apply_apply i, zmodEquivZpowers_apply_coe_nat]
 #align is_primitive_root.zmod_equiv_zpowers_symm_apply_pow IsPrimitiveRoot.zmodEquivZpowers_symm_apply_pow
 
 @[simp]
