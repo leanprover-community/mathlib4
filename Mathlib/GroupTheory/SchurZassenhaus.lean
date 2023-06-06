@@ -151,8 +151,8 @@ variable {G : Type u} [Group G] [Fintype G] {N : Subgroup G} [Normal N]
   (h1 : Nat.coprime (Fintype.card N) N.index)
   (h2 :
     ∀ (G' : Type u) [Group G'] [Fintype G'],
-      ∀ (hG'3 : Fintype.card G' < Fintype.card G) {N' : Subgroup G'} [N'.Normal]
-        (hN : Nat.coprime (Fintype.card N') N'.index), ∃ H' : Subgroup G', IsComplement' N' H')
+      ∀ (_ : Fintype.card G' < Fintype.card G) {N' : Subgroup G'} [N'.Normal]
+        (_ : Nat.coprime (Fintype.card N') N'.index), ∃ H' : Subgroup G', IsComplement' N' H')
   (h3 : ∀ H : Subgroup G, ¬IsComplement' N H)
 
 /-! We will arrive at a contradiction via the following steps:
