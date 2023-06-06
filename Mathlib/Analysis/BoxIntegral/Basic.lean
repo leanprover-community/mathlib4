@@ -353,13 +353,13 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
   hasIntegral_zero.integral_eq
 #align box_integral.integral_zero BoxIntegral.integral_zero
 
-theorem hasIntegralSum {α : Type _} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
+theorem HasIntegral.sum {α : Type _} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i in s, f i x) vol (∑ i in s, g i) := by
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
   simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
   exact h.1.add (ihs h.2)
-#align box_integral.has_integral_sum BoxIntegral.hasIntegralSum
+#align box_integral.has_integral_sum BoxIntegral.HasIntegral.sum
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -700,7 +700,7 @@ variable (l)
 /-- A continuous function is box-integrable with respect to any locally finite measure.
 
 This is true for any volume with bounded variation. -/
-theorem integrableOfContinuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
+theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hc : ContinuousOn f (Box.Icc I)) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
   have huc := I.isCompact_Icc.uniformContinuousOn_of_continuous hc
@@ -733,7 +733,7 @@ theorem integrableOfContinuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → 
   refine' (norm_sum_le_of_le _ this).trans _
   rw [← Finset.sum_mul, μ.toBoxAdditive.sum_partition_boxes le_top (h₁p.inf h₂p)]
   exact hε.le
-#align box_integral.integrable_of_continuous_on BoxIntegral.integrableOfContinuousOn
+#align box_integral.integrable_of_continuous_on BoxIntegral.integrable_of_continuousOn
 
 variable {l}
 
