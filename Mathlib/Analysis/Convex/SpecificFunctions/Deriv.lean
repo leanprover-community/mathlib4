@@ -154,9 +154,9 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    field_simp
-    -- Porting note: was `ring`
-    ring
+    have := pow_ne_zero 3 h₀
+    have h₁ : sqrt x ^ 3 ≠ 0 := by norm_cast
+    field_simp; norm_cast; ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
