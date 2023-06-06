@@ -164,14 +164,14 @@ nonrec def RingEquiv.restrictRootsOfUnity (σ : R ≃+* S) (n : ℕ+) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
   toFun := restrictRootsOfUnity σ.toRingHom n
   invFun := restrictRootsOfUnity σ.symm.toRingHom n
-  left_inv ξ := by ext; exact σ.symm_apply_apply ξ
-  right_inv ξ := by ext; exact σ.apply_symm_apply ξ
+  left_inv ξ := by ext; exact σ.symm_apply_apply (ξ : Rˣ)
+  right_inv ξ := by ext; exact σ.apply_symm_apply (ξ : Sˣ)
   map_mul' := (restrictRootsOfUnity _ n).map_mul
 #align ring_equiv.restrict_roots_of_unity RingEquiv.restrictRootsOfUnity
 
 @[simp]
 theorem RingEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃+* S) (ζ : rootsOfUnity k R) :
-    ↑(σ.restrictRootsOfUnity k ζ) = σ ↑ζ :=
+    (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 #align ring_equiv.restrict_roots_of_unity_coe_apply RingEquiv.restrictRootsOfUnity_coe_apply
 
@@ -189,7 +189,7 @@ variable [CommRing R] [IsDomain R]
 
 theorem mem_rootsOfUnity_iff_mem_nthRoots {ζ : Rˣ} :
     ζ ∈ rootsOfUnity k R ↔ (ζ : R) ∈ nthRoots k (1 : R) := by
-  simp only [mem_rootsOfUnity, mem_nth_roots k.pos, Units.ext_iff, Units.val_one,
+  simp only [mem_rootsOfUnity, mem_nthRoots k.pos, Units.ext_iff, Units.val_one,
     Units.val_pow_eq_pow_val]
 #align mem_roots_of_unity_iff_mem_nth_roots mem_rootsOfUnity_iff_mem_nthRoots
 
@@ -202,14 +202,14 @@ because `roots_of_unity` is a subgroup of the group of units,
 whereas `nth_roots` is a multiset. -/
 def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 : R) } := by
   refine'
-    { toFun := fun x => ⟨x, mem_roots_of_unity_iff_mem_nth_roots.mp x.2⟩
-      invFun := fun x => ⟨⟨x, x ^ (k - 1 : ℕ), _, _⟩, _⟩
+    { toFun := fun x => ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.2⟩
+      invFun := fun x => ⟨⟨x, ↑x ^ (k - 1 : ℕ), _, _⟩, _⟩
       left_inv := _
       right_inv := _ }
   pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
   pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
   all_goals
-    rcases x with ⟨x, hx⟩; rw [mem_nth_roots k.pos] at hx
+    rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
     simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
       tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
   · show (_ : Rˣ) ^ (k : ℕ) = 1
@@ -307,13 +307,13 @@ variable [CommRing R] [IsDomain R]
 
 @[simp]
 theorem mem_primitiveRoots {ζ : R} (h0 : 0 < k) : ζ ∈ primitiveRoots k R ↔ IsPrimitiveRoot ζ k := by
-  rw [primitiveRoots, mem_filter, Multiset.mem_toFinset, mem_nth_roots h0, and_iff_right_iff_imp]
+  rw [primitiveRoots, mem_filter, Multiset.mem_toFinset, mem_nthRoots h0, and_iff_right_iff_imp]
   exact IsPrimitiveRoot.pow_eq_one
 #align mem_primitive_roots mem_primitiveRoots
 
 @[simp]
 theorem primitiveRoots_zero : primitiveRoots 0 R = ∅ := by
-  rw [primitiveRoots, nth_roots_zero, Multiset.toFinset_zero, Finset.filter_empty]
+  rw [primitiveRoots, nthRoots_zero, Multiset.toFinset_zero, Finset.filter_empty]
 #align primitive_roots_zero primitiveRoots_zero
 
 theorem isPrimitiveRoot_of_mem_primitiveRoots {ζ : R} (h : ζ ∈ primitiveRoots k R) :
