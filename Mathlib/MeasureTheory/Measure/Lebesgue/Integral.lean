@@ -49,6 +49,7 @@ end regionBetween
 section SummableNormIcc
 
 open ContinuousMap
+
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
 `measure_theory.integral.set_integral`, but it is placed here because it needs to know that
 `Icc a b` has volume `b - a`. -/
@@ -58,21 +59,23 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E]
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine'
-    integrable_of_summable_norm_restrict
+    @integrable_of_summable_norm_restrict ℝ ℤ E _ volume  _ _ _ _ _ _ _ _
       (summable_of_nonneg_of_le
-        (@fun n : ℤ =>
-          mul_nonneg (norm_nonneg (f.restrict (⟨Icc n (n + 1), isCompact_Icc⟩ : Compacts ℝ)))
+        (fun n : ℤ =>
+          mul_nonneg (norm_nonneg (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
-        (fun n => _) hf)
-      (iUnion_Icc_int_cast ℝ)
-
+        (fun n => _) hf) _
+  -- porting note: `refine` was able to find that on its own before
+  intro n
+  exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
   simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
     mul_one, norm_le _ (norm_nonneg _)]
   intro x
   have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
       ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
-  simpa only [ContinuousMap.restrict_apply, comp_apply, coe_add_right, Subtype.coe_mk,
+  simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
     sub_add_cancel] using this
+  exact iUnion_Icc_int_cast ℝ
 #align real.integrable_of_summable_norm_Icc Real.integrable_of_summable_norm_Icc
 
 end SummableNormIcc
