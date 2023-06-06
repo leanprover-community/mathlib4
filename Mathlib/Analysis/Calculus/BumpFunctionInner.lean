@@ -8,12 +8,12 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.Deriv.Inv
-import Mathbin.Analysis.Calculus.ExtendDeriv
-import Mathbin.Analysis.Calculus.IteratedDeriv
-import Mathbin.Analysis.InnerProductSpace.Calculus
-import Mathbin.Analysis.SpecialFunctions.ExpDeriv
-import Mathbin.MeasureTheory.Integral.SetIntegral
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.ExtendDeriv
+import Mathlib.Analysis.Calculus.IteratedDeriv
+import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # Infinitely smooth bump function
@@ -76,8 +76,7 @@ def fAux (n : ℕ) (x : ℝ) : ℝ :=
 #align exp_neg_inv_glue.f_aux expNegInvGlue.fAux
 
 /-- The `0`-th auxiliary function `f_aux 0` coincides with `exp_neg_inv_glue`, by definition. -/
-theorem fAux_zero_eq : fAux 0 = expNegInvGlue :=
-  by
+theorem fAux_zero_eq : fAux 0 = expNegInvGlue := by
   ext x
   by_cases h : x ≤ 0
   · simp [expNegInvGlue, f_aux, h]
@@ -89,8 +88,7 @@ theorem fAux_zero_eq : fAux 0 = expNegInvGlue :=
 the polynomial `P_aux (n+1)` was chosen precisely to ensure this. -/
 theorem f_aux_deriv (n : ℕ) (x : ℝ) (hx : x ≠ 0) :
     HasDerivAt (fun x => (pAux n).eval x * exp (-x⁻¹) / x ^ (2 * n))
-      ((pAux (n + 1)).eval x * exp (-x⁻¹) / x ^ (2 * (n + 1))) x :=
-  by
+      ((pAux (n + 1)).eval x * exp (-x⁻¹) / x ^ (2 * (n + 1))) x := by
   simp only [P_aux, eval_add, eval_sub, eval_mul, eval_pow, eval_X, eval_C, eval_one]
   convert
     (((P_aux n).HasDerivAt x).mul ((hasDerivAt_exp _).comp x (hasDerivAt_inv hx).neg)).div
@@ -107,8 +105,7 @@ theorem f_aux_deriv (n : ℕ) (x : ℝ) (hx : x ≠ 0) :
 /-- For positive values, the derivative of the `n`-th auxiliary function `f_aux n`
 is the `n+1`-th auxiliary function. -/
 theorem fAux_deriv_pos (n : ℕ) (x : ℝ) (hx : 0 < x) :
-    HasDerivAt (fAux n) ((pAux (n + 1)).eval x * exp (-x⁻¹) / x ^ (2 * (n + 1))) x :=
-  by
+    HasDerivAt (fAux n) ((pAux (n + 1)).eval x * exp (-x⁻¹) / x ^ (2 * (n + 1))) x := by
   apply (f_aux_deriv n x (ne_of_gt hx)).congr_of_eventuallyEq
   filter_upwards [lt_mem_nhds hx] with _ hy
   simp [f_aux, hy.not_le]
@@ -118,12 +115,10 @@ theorem fAux_deriv_pos (n : ℕ) (x : ℝ) (hx : 0 < x) :
 is `0`, to be able to apply general differentiability extension theorems. This limit is checked in
 this lemma. -/
 theorem f_aux_limit (n : ℕ) :
-    Tendsto (fun x => (pAux n).eval x * exp (-x⁻¹) / x ^ (2 * n)) (𝓝[>] 0) (𝓝 0) :=
-  by
+    Tendsto (fun x => (pAux n).eval x * exp (-x⁻¹) / x ^ (2 * n)) (𝓝[>] 0) (𝓝 0) := by
   have A : tendsto (fun x => (P_aux n).eval x) (𝓝[>] 0) (𝓝 ((P_aux n).eval 0)) :=
     (P_aux n).ContinuousWithinAt
-  have B : tendsto (fun x => exp (-x⁻¹) / x ^ (2 * n)) (𝓝[>] 0) (𝓝 0) :=
-    by
+  have B : tendsto (fun x => exp (-x⁻¹) / x ^ (2 * n)) (𝓝[>] 0) (𝓝 0) := by
     convert (tendsto_pow_mul_exp_neg_at_top_nhds_0 (2 * n)).comp tendsto_inv_zero_atTop
     ext x
     field_simp
@@ -133,18 +128,15 @@ theorem f_aux_limit (n : ℕ) :
 /-- Deduce from the limiting behavior at `0` of its derivative and general differentiability
 extension theorems that the auxiliary function `f_aux n` is differentiable at `0`,
 with derivative `0`. -/
-theorem fAux_deriv_zero (n : ℕ) : HasDerivAt (fAux n) 0 0 :=
-  by
+theorem fAux_deriv_zero (n : ℕ) : HasDerivAt (fAux n) 0 0 := by
   -- we check separately differentiability on the left and on the right
-  have A : HasDerivWithinAt (f_aux n) (0 : ℝ) (Iic 0) 0 :=
-    by
+  have A : HasDerivWithinAt (f_aux n) (0 : ℝ) (Iic 0) 0 := by
     apply (hasDerivAt_const (0 : ℝ) (0 : ℝ)).HasDerivWithinAt.congr
     · intro y hy
       simp at hy 
       simp [f_aux, hy]
     · simp [f_aux, le_refl]
-  have B : HasDerivWithinAt (f_aux n) (0 : ℝ) (Ici 0) 0 :=
-    by
+  have B : HasDerivWithinAt (f_aux n) (0 : ℝ) (Ici 0) 0 := by
     have diff : DifferentiableOn ℝ (f_aux n) (Ioi 0) := fun x hx =>
       (f_aux_deriv_pos n x hx).DifferentiableAt.DifferentiableWithinAt
     -- next line is the nontrivial bit of this proof, appealing to differentiability
@@ -164,8 +156,7 @@ theorem fAux_deriv_zero (n : ℕ) : HasDerivAt (fAux n) 0 0 :=
 
 /-- At every point, the auxiliary function `f_aux n` has a derivative which is
 equal to `f_aux (n+1)`. -/
-theorem fAux_hasDerivAt (n : ℕ) (x : ℝ) : HasDerivAt (fAux n) (fAux (n + 1) x) x :=
-  by
+theorem fAux_hasDerivAt (n : ℕ) (x : ℝ) : HasDerivAt (fAux n) (fAux (n + 1) x) x := by
   -- check separately the result for `x < 0`, where it is trivial, for `x > 0`, where it is done
   -- in `f_aux_deriv_pos`, and for `x = 0`, done in
   -- `f_aux_deriv_zero`.
@@ -186,8 +177,7 @@ theorem fAux_hasDerivAt (n : ℕ) (x : ℝ) : HasDerivAt (fAux n) (fAux (n + 1) 
 
 /-- The successive derivatives of the auxiliary function `f_aux 0` are the
 functions `f_aux n`, by induction. -/
-theorem fAux_iteratedDeriv (n : ℕ) : iteratedDeriv n (fAux 0) = fAux n :=
-  by
+theorem fAux_iteratedDeriv (n : ℕ) : iteratedDeriv n (fAux 0) = fAux n := by
   induction' n with n IH
   · simp
   · simp [iteratedDeriv_succ, IH]
@@ -196,8 +186,7 @@ theorem fAux_iteratedDeriv (n : ℕ) : iteratedDeriv n (fAux 0) = fAux n :=
 #align exp_neg_inv_glue.f_aux_iterated_deriv expNegInvGlue.fAux_iteratedDeriv
 
 /-- The function `exp_neg_inv_glue` is smooth. -/
-protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue :=
-  by
+protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue := by
   rw [← f_aux_zero_eq]
   apply contDiff_of_differentiable_iteratedDeriv fun m hm => _
   rw [f_aux_iterated_deriv m]
@@ -214,8 +203,7 @@ theorem pos_of_pos {x : ℝ} (hx : 0 < x) : 0 < expNegInvGlue x := by
 #align exp_neg_inv_glue.pos_of_pos expNegInvGlue.pos_of_pos
 
 /-- The function exp_neg_inv_glue` is nonnegative. -/
-theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x :=
-  by
+theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   cases le_or_gt x 0
   · exact ge_of_eq (zero_of_nonpos h)
   · exact le_of_lt (pos_of_pos h)
@@ -264,8 +252,7 @@ protected theorem one : smoothTransition 1 = 1 :=
 projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`. -/
 @[simp]
 protected theorem projIcc :
-    smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x :=
-  by
+    smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
   refine'
     congr_fun (Icc_extend_eq_self zero_le_one smooth_transition (fun x hx => _) fun x hx => _) x
   · rw [smooth_transition.zero, zero_of_nonpos hx.le]
@@ -369,17 +356,14 @@ instance (priority := 100) hasContDiffBump_of_innerProductSpace (E : Type _) [No
         rcases eq_or_ne x 0 with (rfl | hx)
         · have :
             (fun p : ℝ × E => Real.smoothTransition ((p.1 - ‖p.2‖) / (p.1 - 1))) =ᶠ[𝓝 (R, 0)]
-              fun p => 1 :=
-            by
+              fun p => 1 := by
             have A :
               tendsto (fun p : ℝ × E => (p.1 - ‖p.2‖) / (p.1 - 1)) (𝓝 (R, 0))
-                (𝓝 ((R - ‖(0 : E)‖) / (R - 1))) :=
-              by
+                (𝓝 ((R - ‖(0 : E)‖) / (R - 1))) := by
               rw [nhds_prod_eq]
               apply (tendsto_fst.sub tendsto_snd.norm).div (tendsto_fst.sub tendsto_const_nhds)
               exact (sub_pos.2 hR).ne'
-            have : ∀ᶠ p : ℝ × E in 𝓝 (R, 0), 1 < (p.1 - ‖p.2‖) / (p.1 - 1) :=
-              by
+            have : ∀ᶠ p : ℝ × E in 𝓝 (R, 0), 1 < (p.1 - ‖p.2‖) / (p.1 - 1) := by
               apply (tendsto_order.1 A).1
               apply (one_lt_div (sub_pos.2 hR)).2
               simp only [norm_zero, tsub_zero, sub_lt_self_iff, zero_lt_one]
@@ -417,8 +401,7 @@ theorem r_pos {c : E} (f : ContDiffBump c) : 0 < f.r :=
 #align cont_diff_bump.R_pos ContDiffBump.r_pos
 -/
 
-theorem one_lt_r_div_r {c : E} (f : ContDiffBump c) : 1 < f.r / f.R :=
-  by
+theorem one_lt_r_div_r {c : E} (f : ContDiffBump c) : 1 < f.r / f.R := by
   rw [one_lt_div f.r_pos]
   exact f.r_lt_R
 #align cont_diff_bump.one_lt_R_div_r ContDiffBump.one_lt_r_div_r
@@ -452,8 +435,7 @@ protected theorem neg (f : ContDiffBump (0 : E)) (x : E) : f (-x) = f x := by
 
 open Metric
 
-theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.R) : f x = 1 :=
-  by
+theorem one_of_mem_closedBall (hx : x ∈ closedBall c f.R) : f x = 1 := by
   apply ContDiffBumpBase.eq_one _ _ f.one_lt_R_div_r
   simpa only [norm_smul, norm_eq_abs, abs_inv, abs_of_nonneg f.r_pos.le, ← div_eq_inv_mul,
     div_le_one f.r_pos] using mem_closedBall_iff_norm.1 hx
@@ -472,8 +454,7 @@ theorem le_one : f x ≤ 1 :=
   (ContDiffBumpBase.mem_Icc (someContDiffBumpBase E) _ _).2
 #align cont_diff_bump.le_one ContDiffBump.le_one
 
-theorem pos_of_mem_ball (hx : x ∈ ball c f.r) : 0 < f x :=
-  by
+theorem pos_of_mem_ball (hx : x ∈ ball c f.r) : 0 < f x := by
   refine' lt_iff_le_and_ne.2 ⟨f.nonneg, Ne.symm _⟩
   change f.r⁻¹ • (x - c) ∈ support ((someContDiffBumpBase E).toFun (f.R / f.r))
   rw [ContDiffBumpBase.support _ _ f.one_lt_R_div_r]
@@ -482,8 +463,7 @@ theorem pos_of_mem_ball (hx : x ∈ ball c f.r) : 0 < f x :=
     div_eq_inv_mul] using (div_lt_div_right f.r_pos).2 hx
 #align cont_diff_bump.pos_of_mem_ball ContDiffBump.pos_of_mem_ball
 
-theorem zero_of_le_dist (hx : f.r ≤ dist x c) : f x = 0 :=
-  by
+theorem zero_of_le_dist (hx : f.r ≤ dist x c) : f x = 0 := by
   rw [dist_eq_norm] at hx 
   suffices H : f.r⁻¹ • (x - c) ∉ support ((someContDiffBumpBase E).toFun (f.R / f.r))
   · simpa only [mem_support, Classical.not_not] using H
@@ -492,8 +472,7 @@ theorem zero_of_le_dist (hx : f.r ≤ dist x c) : f x = 0 :=
   exact div_le_div_of_le f.r_pos.le hx
 #align cont_diff_bump.zero_of_le_dist ContDiffBump.zero_of_le_dist
 
-theorem support_eq : support (f : E → ℝ) = Metric.ball c f.r :=
-  by
+theorem support_eq : support (f : E → ℝ) = Metric.ball c f.r := by
   ext x
   suffices f x ≠ 0 ↔ dist x c < f.R by simpa [mem_support]
   cases' lt_or_le (dist x c) f.R with hx hx
@@ -524,11 +503,9 @@ theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
 protected theorem ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)} {x : X}
     (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).R) x)
     (hR : ContDiffAt ℝ n (fun x => (f x).r) x) (hg : ContDiffAt ℝ n g x) :
-    ContDiffAt ℝ n (fun x => f x (g x)) x :=
-  by
+    ContDiffAt ℝ n (fun x => f x (g x)) x := by
   rcases eq_or_ne (g x) (c x) with (hx | hx)
-  · have : (fun x => f x (g x)) =ᶠ[𝓝 x] fun x => 1 :=
-      by
+  · have : (fun x => f x (g x)) =ᶠ[𝓝 x] fun x => 1 := by
       have : dist (g x) (c x) < (f x).R := by simp_rw [hx, dist_self, (f x).r_pos]
       have :=
         ContinuousAt.eventually_lt (hg.continuous_at.dist hc.continuous_at) hr.continuous_at this
@@ -614,15 +591,13 @@ protected theorem integrable_normed : Integrable (f.normed μ) μ :=
 
 variable [μ.IsOpenPosMeasure]
 
-theorem integral_pos : 0 < ∫ x, f x ∂μ :=
-  by
+theorem integral_pos : 0 < ∫ x, f x ∂μ := by
   refine' (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr _
   rw [f.support_eq]
   refine' is_open_ball.measure_pos _ (nonempty_ball.mpr f.R_pos)
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos
 
-theorem integral_normed : (∫ x, f.normed μ x ∂μ) = 1 :=
-  by
+theorem integral_normed : (∫ x, f.normed μ x ∂μ) = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]
   exact inv_mul_cancel f.integral_pos.ne'
 #align cont_diff_bump.integral_normed ContDiffBump.integral_normed
@@ -642,8 +617,7 @@ theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
 
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).r) l (𝓝 0)) :
-    Tendsto (fun i => support fun x => (φ i).normed μ x) l (𝓝 c).smallSets :=
-  by
+    Tendsto (fun i => support fun x => (φ i).normed μ x) l (𝓝 c).smallSets := by
   simp_rw [NormedAddCommGroup.tendsto_nhds_zero, Real.norm_eq_abs,
     abs_eq_self.mpr (φ _).r_pos.le] at hφ 
   rw [tendsto_small_sets_iff]
