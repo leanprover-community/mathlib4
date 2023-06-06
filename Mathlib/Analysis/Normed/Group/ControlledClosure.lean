@@ -68,7 +68,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     rintro n (hn : n ≥ 1)
     calc
       ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
-      _ ≤ C * b n := (mul_le_mul_of_nonneg_left (hv _ <| Nat.succ_le_iff.mp hn).le hC.le)
+      _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
       _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel' _ hC.ne.symm]
       _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
@@ -91,26 +91,23 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       have :=
         calc
           ‖v 0‖ ≤ ‖h‖ + ‖v 0 - h‖ := norm_le_insert' _ _
-          _ ≤ ‖h‖ + b 0 := by apply add_le_add_left hv₀.le
+          _ ≤ ‖h‖ + b 0 := by gcongr
       calc
         ‖u 0‖ ≤ C * ‖v 0‖ := hnorm_u 0
-        _ ≤ C * (‖h‖ + b 0) := (mul_le_mul_of_nonneg_left this hC.le)
+        _ ≤ C * (‖h‖ + b 0) := by gcongr
         _ = C * b 0 + C * ‖h‖ := by rw [add_comm, mul_add]
     have : (∑ k in range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc
         (∑ k in range (n + 1), C * b k) = (∑ k in range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) :=
           by simp only [mul_div_cancel' _ hC.ne.symm, ← sum_mul]
-        _ ≤ 2 * (ε * ‖h‖ / 2) :=
-          (mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (by nlinarith [hε, norm_nonneg h]))
+        _ ≤ 2 * (ε * ‖h‖ / 2) := by gcongr; apply sum_geometric_two_le
         _ = ε * ‖h‖ := mul_div_cancel' _ two_ne_zero
     calc
       ‖s n‖ ≤ ∑ k in range (n + 1), ‖u k‖ := norm_sum_le _ _
       _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := (sum_range_succ' _ _)
-      _ ≤ (∑ k in range n, C * ‖v (k + 1)‖) + ‖u 0‖ :=
-        (add_le_add_right (sum_le_sum fun _ _ => hnorm_u _) _)
-      _ ≤ (∑ k in range n, C * b (k + 1)) + (C * b 0 + C * ‖h‖) :=
-        (add_le_add (sum_le_sum fun k _ => mul_le_mul_of_nonneg_left (hv _ k.succ_pos).le hC.le)
-          hnorm₀)
+      _ ≤ (∑ k in range n, C * ‖v (k + 1)‖) + ‖u 0‖ := by gcongr; apply hnorm_u
+      _ ≤ (∑ k in range n, C * b (k + 1)) + (C * b 0 + C * ‖h‖) := by
+        gcongr with k; exact (hv _ k.succ_pos).le
       _ = (∑ k in range (n + 1), C * b k) + C * ‖h‖ := by rw [← add_assoc, sum_range_succ']
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]

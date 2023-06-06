@@ -130,8 +130,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by simp only [pow_mul, one_add_one_eq_two]; rfl
     _ = ∑ m in range (2 * n + 1), choose (2 * n) m := by simp [add_pow]
-    _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) :=
-      sum_le_sum fun i _ ↦ choose_le_middle i (2 * n)
+    _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 #align nat.four_pow_le_two_mul_add_one_mul_central_binom Nat.four_pow_le_two_mul_add_one_mul_central_binom
 
