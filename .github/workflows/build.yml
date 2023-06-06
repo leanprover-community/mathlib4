@@ -97,6 +97,7 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
+          rm -rf ~/.cache/mathlib
 
       - name: install elan
         run: |
