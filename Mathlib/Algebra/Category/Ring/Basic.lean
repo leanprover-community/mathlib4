@@ -98,6 +98,12 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
@@ -219,6 +225,12 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
@@ -305,6 +317,12 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRing.of R : Type u) = R 
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRing.coe_of
+
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (CommSemiRing.of X ⟶ CommSemiRing.of Y) _ (fun _ => (forget CommSemiRing).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
 
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
   BundledHom.forget₂ _ _
