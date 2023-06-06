@@ -81,6 +81,9 @@ def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacing
       let (hs, bs, targetTy) ← forallMetaTelescope lType
       let g₂ := hs.back.mvarId!
       let g₁ := hs[hs.size - 2]!.mvarId!
+      -- whnf(R) the hypotheses. Also makes them syntheticOpaque.
+      let g₂ ← g₂.change (← whnfR <|← g₂.getType) false
+      let g₁ ← g₁.change (← whnfR <|← g₁.getType) false
       -- Assign mvars in `targetTy` (and therefore in `hs`)
       unless ← isDefEq targetTy tgt do throwError "doesn't apply!"
       -- Process optional "bridge" argument
