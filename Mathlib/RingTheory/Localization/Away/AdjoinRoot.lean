@@ -16,24 +16,18 @@ The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/
 
-
 open Polynomial AdjoinRoot Localization
 
 variable {R : Type _} [CommRing R]
 
--- Porting note: `cannot find synthesization order for instance ` but this is probably a bad hack.
-set_option synthInstance.checkSynthOrder false
-
-attribute [local instance] IsLocalization.algHom_subsingleton AdjoinRoot.algHom_subsingleton
+-- Porting note: removed `IsLocalization.algHom_subsingleton` due to
+-- `cannot find synthesization order for instance`
+attribute [local instance] AdjoinRoot.algHom_subsingleton
 
 /-- The `R`-`AlgEquiv` between the localization of `R` away from `r` and
     `R` with an inverse of `r` adjoined. -/
-noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) := by
-  have : Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] AdjoinRoot (C r * X - 1))
-  · infer_instance
-  have : Subsingleton (Away r →ₐ[R] Away r)
-  · infer_instance
-  exact AlgEquiv.ofAlgHom
+noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) :=
+  AlgEquiv.ofAlgHom
     { awayLift _ r
       -- Porting note: This argument used to be found automatically, i.e. `_`
       (isUnit_of_mul_eq_one ((algebraMap R (AdjoinRoot (C r * X - 1))) r) (root (C r * X - 1))
@@ -44,7 +38,8 @@ noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] Adjoin
       simp only [map_sub, map_mul, aeval_C, aeval_X, IsLocalization.Away.mul_invSelf, aeval_one,
         sub_self])
     (Subsingleton.elim _ _)
-    (Subsingleton.elim _ _)
+    -- Porting note: fix since `IsLocalization.algHom_subsingleton` is no local instance anymore
+    (Subsingleton.elim (h := IsLocalization.algHom_subsingleton (Submonoid.powers r)) _ _)
 #align localization.away_equiv_adjoin Localization.awayEquivAdjoin
 
 theorem IsLocalization.adjoin_inv (r : R) : IsLocalization.Away r (AdjoinRoot <| C r * X - 1) :=
