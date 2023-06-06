@@ -32,11 +32,11 @@ We also generate additive versions of all theorems in this file using the `to_ad
 
 ## Main declarations
 
-* `measure_theory.is_fundamental_domain`: Predicate for a set to be a fundamental domain of the
+* `MeasureTheory.IsFundamentalDomain`: Predicate for a set to be a fundamental domain of the
   action of a group
-* `measure_theory.fundamental_frontier`: Fundamental frontier of a set under the action of a group.
+* `MeasureTheory.fundamentalFrontier`: Fundamental frontier of a set under the action of a group.
   Elements of `s` that belong to some other translate of `s`.
-* `measure_theory.fundamental_interior`: Fundamental interior of a set under the action of a group.
+* `MeasureTheory.fundamentalInterior`: Fundamental interior of a set under the action of a group.
   Elements of `s` that do not belong to any other translate of `s`.
 -/
 
@@ -503,7 +503,7 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
 #align measure_theory.is_add_fundamental_domain.exists_ne_zero_vadd_eq MeasureTheory.IsAddFundamentalDomain.exists_ne_zero_vadd_eq
 
 /-- If `f` is invariant under the action of a countable group `G`, and `μ` is a `G`-invariant
-  measure with a fundamental domain `s`, then the `ess_sup` of `f` restricted to `s` is the same as
+  measure with a fundamental domain `s`, then the `essSup` of `f` restricted to `s` is the same as
   that of `f` on all of its domain. -/
 @[to_additive "If `f` is invariant under the action of a countable additive group `G`, and `μ` is a
   `G`-invariant measure with a fundamental domain `s`, then the `ess_sup` of `f` restricted to `s`
