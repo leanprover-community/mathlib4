@@ -8,11 +8,11 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Braided
-import Mathbin.CategoryTheory.Monoidal.Linear
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.CategoryTheory.Linear.LinearFunctor
-import Mathbin.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Full monoidal subcategories
@@ -63,8 +63,7 @@ variable [MonoidalPredicate P]
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P)
-    where
+instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   tensorHom X₁ Y₁ X₂ Y₂ f g := by
     change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
@@ -88,8 +87,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P)
 ("forgetting" the condition).
 -/
 @[simps]
-def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C
-    where
+def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C where
   toFunctor := fullSubcategoryInclusion P
   ε := 𝟙 _
   μ X Y := 𝟙 _
@@ -134,8 +132,7 @@ variable {P} {P' : C → Prop} [MonoidalPredicate P']
 subcategories. -/
 @[simps]
 def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    MonoidalFunctor (FullSubcategory P) (FullSubcategory P')
-    where
+    MonoidalFunctor (FullSubcategory P) (FullSubcategory P') where
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
   μ X Y := 𝟙 _
@@ -166,8 +163,7 @@ instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
 ("forgetting" the condition).
 -/
 @[simps]
-def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C
-    where
+def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
   toMonoidalFunctor := fullMonoidalSubcategoryInclusion P
   braided' X Y := by rw [is_iso.eq_inv_comp]; tidy
 #align category_theory.monoidal_category.full_braided_subcategory_inclusion CategoryTheory.MonoidalCategory.fullBraidedSubcategoryInclusion
@@ -186,8 +182,7 @@ variable {P}
 subcategories. -/
 @[simps]
 def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    BraidedFunctor (FullSubcategory P) (FullSubcategory P')
-    where
+    BraidedFunctor (FullSubcategory P) (FullSubcategory P') where
   toMonoidalFunctor := fullMonoidalSubcategory.map h
   braided' X Y := by rw [is_iso.eq_inv_comp]; tidy
 #align category_theory.monoidal_category.full_braided_subcategory.map CategoryTheory.MonoidalCategory.fullBraidedSubcategory.map
