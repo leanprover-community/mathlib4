@@ -73,6 +73,78 @@ where
           tooManyExplicitArgsException `mkAppNUnifying f args.size xs
     instantiateMVars (mkAppN f args)
 
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. However, it does
+fail if any *new* metavariables are present. -/
+private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Expr)
+    (mvars instMVars : Array MVarId) : MetaM Expr := do
+  instMVars.forM fun mvarId => do
+    let mvarVal ← synthInstance (← mvarId.getType)
+    mvarId.assign mvarVal
+  let result ← instantiateMVars (mkAppN f args)
+  unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
+    throwAppBuilderException methodName ("result contains new metavariables" ++ indentExpr result)
+  return result
+
+/-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal` and keeps track
+of any created implicit mvars. -/
+private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) (xs : Array Expr)
+    (reducing : Bool) (k : Name → Expr → Array Expr → Array MVarId → Array MVarId → MetaM α)
+    : MetaM α :=
+  let rec loop (type : Expr) (i : Nat) (j : Nat) (args : Array Expr)
+      (mvars instMVars : Array MVarId) : MetaM α := do
+    if i >= xs.size then
+      k n f args mvars instMVars
+    else match type with
+      | Expr.forallE n d b bi =>
+        let d  := d.instantiateRevRange j args.size args
+        match bi with
+        | BinderInfo.implicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.natural n
+          loop b i j (args.push mvar) (mvars.push mvar.mvarId!) instMVars
+        | BinderInfo.strictImplicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.natural n
+          loop b i j (args.push mvar) (mvars.push mvar.mvarId!) instMVars
+        | BinderInfo.instImplicit =>
+          let mvar ← mkFreshExprMVar d MetavarKind.synthetic n
+          loop b i j (args.push mvar) mvars (instMVars.push mvar.mvarId!)
+        | _ =>
+          let x := xs[i]!
+          let xType ← inferType x
+          if (← isDefEq d xType) then
+            loop b (i+1) j (args.push x) mvars instMVars
+          else
+            throwAppTypeMismatch (mkAppN f args) x
+      | type =>
+        let type := type.instantiateRevRange j args.size args
+        if reducing then
+          let type ← whnfD type
+          if type.isForall then
+            loop type i args.size args mvars instMVars
+          else
+            throwAppBuilderException n m!"too many explicit arguments provided to{
+              indentExpr f}\narguments{indentD xs}"
+        else
+          throwAppBuilderException n m!"too many explicit arguments provided to{
+            indentExpr f}\narguments{indentD xs}"
+  loop fType 0 0 #[] #[] #[]
+
+/-- Like `mkAppM`, but allows metavariables to be unified during the construction of the
+application. Fails if any metavariables for implicit arguments created during the course of
+`mkAppMUnifying` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars`. -/
+def mkAppMUnifying (const : Name) (xs : Array Expr) (reducing := true)
+    : MetaM Expr :=
+  withAppBuilderTrace const xs do
+    let (f, fType) ← mkFun const
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
+
+/-- Like `mkAppM'`, but allows metavariables to be unified during the construction of the
+application. Fails if any metavariables for implicit arguments created during the course of
+`mkAppMUnifying'` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars'`. -/
+def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true)
+    : MetaM Expr :=
+  withAppBuilderTrace f xs do
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifying
+
 
 -/
 
