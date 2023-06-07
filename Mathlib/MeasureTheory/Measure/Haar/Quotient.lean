@@ -8,9 +8,9 @@ Authors: Alex Kontorovich, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.Haar.Basic
-import Mathbin.MeasureTheory.Group.FundamentalDomain
-import Mathbin.Algebra.Group.Opposite
+import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Group.FundamentalDomain
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Haar quotient measure
@@ -46,8 +46,7 @@ variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [Topolo
 @[to_additive
       "Measurability of the action of the additive topological group `G` on the left-coset\n  space `G/Γ`."]
 instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] :
-    MeasurableSMul G (G ⧸ Γ)
-    where
+    MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).Measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).Measurable
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
@@ -80,8 +79,7 @@ theorem MeasureTheory.IsFundamentalDomain.sMulInvariantMeasure_map [μ.IsMulLeft
       have : QuotientGroup.mk ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = Mul.mul g ⁻¹' π_preA := by
         ext1; simp
       rw [this]
-      have : μ (Mul.mul g ⁻¹' π_preA ∩ 𝓕) = μ (π_preA ∩ Mul.mul g⁻¹ ⁻¹' 𝓕) :=
-        by
+      have : μ (Mul.mul g ⁻¹' π_preA ∩ 𝓕) = μ (π_preA ∩ Mul.mul g⁻¹ ⁻¹' 𝓕) := by
         trans μ (Mul.mul g ⁻¹' (π_preA ∩ Mul.mul g⁻¹ ⁻¹' 𝓕))
         · rw [preimage_inter]
           congr
@@ -132,8 +130,7 @@ variable [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] (K : Positive
 theorem MeasureTheory.IsFundamentalDomain.map_restrict_quotient [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure μ] [μ.IsMulRightInvariant] (h𝓕_finite : μ 𝓕 < ⊤) :
     Measure.map (QuotientGroup.mk' Γ) (μ.restrict 𝓕) =
-      μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) • MeasureTheory.Measure.haarMeasure K :=
-  by
+      μ (𝓕 ∩ QuotientGroup.mk' Γ ⁻¹' K) • MeasureTheory.Measure.haarMeasure K := by
   let π : G →* G ⧸ Γ := QuotientGroup.mk' Γ
   have meas_π : Measurable π := continuous_quotient_mk.measurable
   have 𝓕meas : null_measurable_set 𝓕 μ := h𝓕.null_measurable_set
