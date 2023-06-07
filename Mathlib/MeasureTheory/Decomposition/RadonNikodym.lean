@@ -8,7 +8,7 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym theorem
@@ -49,14 +49,11 @@ namespace Measure
 include m
 
 theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] (h : μ ≪ ν) :
-    ν.withDensity (rnDeriv μ ν) = μ :=
-  by
+    ν.withDensity (rnDeriv μ ν) = μ := by
   obtain ⟨hf₁, ⟨E, hE₁, hE₂, hE₃⟩, hadd⟩ := have_lebesgue_decomposition_spec μ ν
-  have : singular_part μ ν = 0 :=
-    by
+  have : singular_part μ ν = 0 := by
     refine' le_antisymm (fun A hA => _) (measure.zero_le _)
-    suffices singular_part μ ν Set.univ = 0
-      by
+    suffices singular_part μ ν Set.univ = 0 by
       rw [measure.coe_zero, Pi.zero_apply, ← this]
       exact measure_mono (Set.subset_univ _)
     rw [← measure_add_measure_compl hE₁, hE₂, zero_add]
@@ -77,8 +74,7 @@ theorem absolutelyContinuous_iff_withDensity_rnDeriv_eq {μ ν : Measure α}
 
 theorem with_density_rnDeriv_toReal_eq {μ ν : Measure α} [IsFiniteMeasure μ]
     [HaveLebesgueDecomposition μ ν] (h : μ ≪ ν) {i : Set α} (hi : MeasurableSet i) :
-    (∫ x in i, (μ.rnDeriv ν x).toReal ∂ν) = (μ i).toReal :=
-  by
+    (∫ x in i, (μ.rnDeriv ν x).toReal ∂ν) = (μ i).toReal := by
   rw [integral_to_real, ← with_density_apply _ hi, with_density_rn_deriv_eq μ ν h]
   · measurability
   · refine'
@@ -96,8 +92,7 @@ include m
 open Measure VectorMeasure
 
 theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [SigmaFinite μ]
-    (h : s ≪ᵥ μ.toENNRealVectorMeasure) : μ.withDensityᵥ (s.rnDeriv μ) = s :=
-  by
+    (h : s ≪ᵥ μ.toENNRealVectorMeasure) : μ.withDensityᵥ (s.rnDeriv μ) = s := by
   rw [absolutely_continuous_ennreal_iff, (_ : μ.to_ennreal_vector_measure.ennreal_to_measure = μ),
     total_variation_absolutely_continuous_iff] at h 
   · ext1 i hi
