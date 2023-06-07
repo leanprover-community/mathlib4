@@ -28,7 +28,7 @@ satisfy the axioms of a commutative ring.
   all the ghost components together.
   If `p` is invertible in `R`, then the ghost map is an equivalence,
   which we use to define the ring operations on `𝕎 R`.
-* `witt_vector.comm_ring`: the ring structure induced by the ghost components.
+* `WittVector.CommRing`: the ring structure induced by the ghost components.
 
 ## Notation
 
