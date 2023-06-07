@@ -207,8 +207,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
       lt_mul_of_one_lt_right (Nat.pos_of_ne_zero index_ne_zero_of_finite)
         (K.one_lt_card_iff_ne_bot.mpr h4.1)
   have h6 :
-    Nat.coprime (Fintype.card (N.map (QuotientGroup.mk' K))) (N.map (QuotientGroup.mk' K)).index :=
-    by
+    (Fintype.card (N.map (QuotientGroup.mk' K))).coprime (N.map (QuotientGroup.mk' K)).index := by
     have index_map := N.index_map_eq this (by rwa [QuotientGroup.ker_mk'])
     have index_pos : 0 < N.index := Nat.pos_of_ne_zero index_ne_zero_of_finite
     rw [index_map]
