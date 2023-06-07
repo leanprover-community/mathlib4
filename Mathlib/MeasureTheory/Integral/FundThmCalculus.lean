@@ -88,28 +88,28 @@ an `FTC_filter` pair of filters around `b`. If `f` has finite limits `ca` and `c
 
 We use FTC-1 to prove several versions of FTC-2 for the Lebesgue measure, using a similar naming
 scheme as for the versions of FTC-1. They include:
-* `interval_integral.integral_eq_sub_of_has_deriv_right_of_le` - most general version, for functions
+* `intervalIntegral.integral_eq_sub_of_has_deriv_right_of_le` - most general version, for functions
   with a right derivative
-* `interval_integral.integral_eq_sub_of_has_deriv_at'` - version for functions with a derivative on
+* `intervalIntegral.integral_eq_sub_of_hasDerivAt'` - version for functions with a derivative on
   an open set
-* `interval_integral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
+* `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
 
 We then derive additional integration techniques from FTC-2:
-* `interval_integral.integral_mul_deriv_eq_deriv_mul` - integration by parts
-* `interval_integral.integral_comp_mul_deriv''` - integration by substitution
+* `intervalIntegral.integral_mul_deriv_eq_deriv_mul` - integration by parts
+* `intervalIntegral.integral_comp_mul_deriv''` - integration by substitution
 
 Many applications of these theorems can be found in the file `analysis.special_functions.integrals`.
 
 Note that the assumptions of FTC-2 are formulated in the form that `f'` is integrable. To use it in
 a context with the stronger assumption that `f'` is continuous, one can use
-`continuous_on.interval_integrable` or `continuous_on.integrable_on_Icc` or
+`ContinuousOn.intervalIntegrable` or `ContinuousOn.integrableOn_Icc` or
 `continuous_on.integrable_on_interval`.
 
 ### `FTC_filter` class
 
 As explained above, many theorems in this file rely on the typeclass
-`FTC_filter (a : ℝ) (l l' : filter ℝ)` to avoid code duplication. This typeclass combines four
+`FTC_filter (a : ℝ) (l l' : Filter ℝ)` to avoid code duplication. This typeclass combines four
 assumptions:
 
 - `pure a ≤ l`;
@@ -130,11 +130,11 @@ atom at one of the endpoints.
 
 There are some `FTC_filter` instances where the fact that it is one-sided or
 two-sided depends on the point, namely `(x, 𝓝[Icc a b] x, 𝓝[Icc a b] x)`
-(resp. `(x, 𝓝[[a, b]] x, 𝓝[[a, b]] x)`, where `[a, b] = set.uIcc a b`),
+(resp. `(x, 𝓝[[a, b]] x, 𝓝[[a, b]] x)`, where `[a, b] = Set.uIcc a b`),
 with `x ∈ Icc a b` (resp. `x ∈ [a, b]`).
 This results in a two-sided derivatives for `x ∈ Ioo a b` and one-sided derivatives for
 `x ∈ {a, b}`. Other instances could be added when needed (in that case, one also needs to add
-instances for `filter.is_measurably_generated` and `filter.tendsto_Ixx_class`).
+instances for `Filter.IsMeasurablyGenerated` and `Filter.TendstoIxxClass`).
 
 ## Tags
 
@@ -673,8 +673,8 @@ theorem _root_.Continuous.deriv_integral (f : ℝ → E) (hf : Continuous f) (a 
 /-!
 #### Fréchet differentiability
 
-In this subsection we restate results from the previous subsection in terms of `has_fderiv_at`,
-`has_deriv_at`, `fderiv`, and `deriv`.
+In this subsection we restate results from the previous subsection in terms of `HasFDerivAt`,
+`HasDerivAt`, `fderiv`, and `deriv`.
 -/
 
 
@@ -825,7 +825,7 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
 has derivative `(u, v) ↦ v • f b - u • f a` within `s × t` at `(a, b)`, where
 `s ∈ {Iic a, {a}, Ici a, univ}` and `t ∈ {Iic b, {b}, Ici b, univ}` provided that `f` tends to
 `f a` and `f b` at the filters `la` and `lb` from the following table. In most cases this assumption
-is definitionally equal `continuous_at f _` or `continuous_within_at f _ _`.
+is definitionally equal `ContinuousAt f _` or `ContinuousWithinAt f _ _`.
 
 | `s`     | `la`     | `t`     | `lb`     |
 | ------- | ----     | ---     | ----     |
@@ -844,7 +844,7 @@ theorem integral_hasFDerivWithinAt (hf : IntervalIntegrable f volume a b)
     (hb.mono_left inf_le_left)
 #align interval_integral.integral_has_fderiv_within_at intervalIntegral.integral_hasFDerivWithinAt
 
-/-- An auxiliary tactic closing goals `unique_diff_within_at ℝ s a` where
+/-- An auxiliary tactic closing goals `UniqueDiffWithinAt ℝ s a` where
 `s ∈ {Iic a, Ici a, univ}`. -/
 macro "uniqueDiffWithinAt_Ici_Iic_univ" : tactic =>
   `(tactic| (first | exact uniqueDiffOn_Ici _ _ left_mem_Ici |
@@ -853,7 +853,7 @@ macro "uniqueDiffWithinAt_Ici_Iic_univ" : tactic =>
 
 /-- Let `f` be a measurable function integrable on `a..b`. Choose `s ∈ {Iic a, Ici a, univ}`
 and `t ∈ {Iic b, Ici b, univ}`. Suppose that `f` tends to `ca` and `cb` almost surely at the filters
-`la` and `lb` from the table below. Then `fderiv_within ℝ (λ p, ∫ x in p.1..p.2, f x) (s ×ˢ t)`
+`la` and `lb` from the table below. Then `fderivWithin ℝ (λ p, ∫ x in p.1..p.2, f x) (s ×ˢ t)`
 is equal to `(u, v) ↦ u • cb - v • ca`.
 
 | `s`     | `la`     | `t`     | `lb`     |
@@ -1389,7 +1389,7 @@ theorem integral_comp_smul_deriv'' {f f' : ℝ → ℝ} {g : ℝ → E} (hf : Co
 /-- Change of variables. If `f` is has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
-Compared to `interval_integral.integral_comp_smul_deriv` we only require that `g` is continuous on
+Compared to `intervalIntegral.integral_comp_smul_deriv` we only require that `g` is continuous on
 `f '' [a, b]`.
 -/
 theorem integral_comp_smul_deriv' {f f' : ℝ → ℝ} {g : ℝ → E}
@@ -1461,7 +1461,7 @@ theorem integral_comp_mul_deriv'' {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[
 /-- Change of variables. If `f` is has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
-Compared to `interval_integral.integral_comp_mul_deriv` we only require that `g` is continuous on
+Compared to `intervalIntegral.integral_comp_mul_deriv` we only require that `g` is continuous on
 `f '' [a, b]`.
 -/
 theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
