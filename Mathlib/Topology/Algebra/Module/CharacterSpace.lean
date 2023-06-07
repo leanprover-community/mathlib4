@@ -126,8 +126,7 @@ theorem union_zero :
 
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
-    IsClosed (characterSpace 𝕜 A ∪ {0}) :=
-  by
+    IsClosed (characterSpace 𝕜 A ∪ {0}) := by
   simp only [union_zero, Set.setOf_forall]
   exact
     isClosed_iInter fun x =>
