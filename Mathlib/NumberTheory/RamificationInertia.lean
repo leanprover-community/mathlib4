@@ -839,7 +839,7 @@ theorem sum_ramification_inertia (K L : Type _) [Field K] [Field L] [IsDomain R]
     _ = finrank (R ⧸ p) (S ⧸ map (algebraMap R S) p) := ?_
     _ = finrank K L := ?_
   · rw [← Finset.sum_attach]
-    refine' Finset.sum_congr rfl fun P _ => _
+    refine Finset.sum_congr rfl fun P _ => ?_
     rw [Factors.finrank_pow_ramificationIdx]
   · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p ?_).symm
     rwa [Ne.def, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
