@@ -471,6 +471,8 @@ end Abelian
 
 section Monoidal
 
+open MonoidalCategory
+
 variable [MonoidalCategory V]
 
 instance : MonoidalCategory (Action V G) :=
@@ -882,8 +884,8 @@ def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftReg
 set_option linter.uppercaseLean3 false in
 #align Action.diagonal_one_iso_left_regular Action.diagonalOneIsoLeftRegular
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+open MonoidalCategory
+
 /-- Given `X : Action (Type u) (Mon.of G)` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -923,7 +925,6 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
 set_option linter.uppercaseLean3 false in
 #align Action.left_regular_tensor_iso Action.leftRegularTensorIso
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/
 @[simps!]
