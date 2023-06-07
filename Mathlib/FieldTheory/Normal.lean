@@ -8,10 +8,10 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Adjoin
-import Mathbin.FieldTheory.Tower
-import Mathbin.GroupTheory.Solvable
-import Mathbin.RingTheory.PowerBasis
+import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.Tower
+import Mathlib.GroupTheory.Solvable
+import Mathlib.RingTheory.PowerBasis
 
 /-!
 # Normal field extensions
@@ -78,8 +78,7 @@ variable {K}
 variable (K)
 
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
-    ∃ p : F[X], IsSplittingField F K p :=
-  by
+    ∃ p : F[X], IsSplittingField F K p := by
   let s := Basis.ofVectorSpace F K
   refine'
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x hx => h.splits (s x),
@@ -114,8 +113,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
 #align normal.tower_top_of_normal Normal.tower_top_of_normal
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
-  ⟨ϕ.toRingHom.Injective, fun x =>
-    by
+  ⟨ϕ.toRingHom.Injective, fun x => by
     letI : Algebra E K := ϕ.to_ring_hom.to_algebra
     obtain ⟨h1, h2⟩ := h.out (algebraMap K E x)
     cases'
@@ -163,8 +161,7 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
 attribute [-instance] AdjoinRoot.hasSmul
 
-theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E :=
-  by
+theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_roots
     simp only [Polynomial.map_zero, roots_zero, Multiset.toFinset_zero, Finset.coe_empty,
@@ -206,8 +203,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   haveI : IsScalarTower F C E := of_algebra_map_eq fun x => (AdjoinRoot.lift_of _).symm
   suffices Nonempty (D →ₐ[C] E) by exact Nonempty.map (AlgHom.restrictScalars F) this
   let S : Set D := ((p.map (algebraMap F E)).roots.map (algebraMap E D)).toFinset
-  suffices ⊤ ≤ IntermediateField.adjoin C S
-    by
+  suffices ⊤ ≤ IntermediateField.adjoin C S by
     refine' IntermediateField.algHom_mk_adjoin_splits' (top_le_iff.mp this) fun y hy => _
     rcases multiset.mem_map.mp (multiset.mem_to_finset.mp hy) with ⟨z, hz1, hz2⟩
     have Hz : IsIntegral F z := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) z
@@ -226,8 +222,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   apply ge_trans (IntermediateField.algebra_adjoin_le_adjoin C S)
   suffices
     (Algebra.adjoin C S).restrictScalars F =
-      (Algebra.adjoin E {AdjoinRoot.root q}).restrictScalars F
-    by
+      (Algebra.adjoin E {AdjoinRoot.root q}).restrictScalars F by
     rw [AdjoinRoot.adjoinRoot_eq_top, Subalgebra.restrictScalars_top, ←
       @Subalgebra.restrictScalars_top F C] at this 
     exact top_le_iff.mpr (Subalgebra.restrictScalars_injective F this)
@@ -245,19 +240,16 @@ namespace IntermediateField
 
 /-- A compositum of normal extensions is normal -/
 instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
-    Normal F (⨆ i, t i : IntermediateField F K) :=
-  by
+    Normal F (⨆ i, t i : IntermediateField F K) := by
   refine' ⟨is_algebraic_supr fun i => (h i).1, fun x => _⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
-  have hF : Normal F E :=
-    by
+  have hF : Normal F E := by
     apply Normal.of_isSplittingField (∏ i in s, minpoly F i.2)
     refine' is_splitting_field_supr _ fun i hi => adjoin_root_set_is_splitting_field _
     · exact finset.prod_ne_zero_iff.mpr fun i hi => minpoly.ne_zero ((h i.1).IsIntegral i.2)
     · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).Splits i.2)
-  have hE : E ≤ ⨆ i, t i :=
-    by
+  have hE : E ≤ ⨆ i, t i := by
     refine' iSup_le fun i => iSup_le fun hi => le_iSup_of_le i.1 _
     rw [adjoin_le_iff, ← image_root_set ((h i.1).Splits i.2) (t i.1).val]
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
@@ -286,8 +278,7 @@ variable (E : Type _) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] 
 
 /-- Restrict algebra homomorphism to image of normal subfield -/
 def AlgHom.restrictNormalAux [h : Normal F E] :
-    (toAlgHom F E K₁).range →ₐ[F] (toAlgHom F E K₂).range
-    where
+    (toAlgHom F E K₁).range →ₐ[F] (toAlgHom F E K₂).range where
   toFun x :=
     ⟨ϕ x, by
       suffices (to_alg_hom F E K₁).range.map ϕ ≤ _ by exact this ⟨x, Subtype.mem x, rfl⟩
@@ -369,8 +360,7 @@ variable (F K₁ E)
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `normal.alg_hom_equiv_aut` is an
  equivalence. -/
 @[simps]
-def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E
-    where
+def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
   toFun σ := AlgHom.restrictNormal' σ E
   invFun σ := (IsScalarTower.toAlgHom F E K₁).comp σ.toAlgHom
   left_inv σ := by
@@ -448,8 +438,7 @@ theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
 variable (F) (K₁) (E)
 
 theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
-    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable (E ≃ₐ[F] E) :=
-  by
+    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable (E ≃ₐ[F] E) := by
   let f : (E ≃ₐ[K₁] E) →* E ≃ₐ[F] E :=
     { toFun := fun ϕ =>
         AlgEquiv.ofAlgHom (ϕ.to_alg_hom.restrict_scalars F) (ϕ.symm.to_alg_hom.restrict_scalars F)
@@ -480,8 +469,7 @@ noncomputable def normalClosure : IntermediateField K L :=
 namespace normalClosure
 
 theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
-    (normalClosure F K L).restrictScalars F = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) :=
-  by
+    (normalClosure F K L).restrictScalars F = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   refine' le_antisymm (iSup_le _) (iSup_le fun x => adjoin_le_iff.mpr fun y hy => _)
   · rintro f _ ⟨x, rfl⟩
     refine'
@@ -507,8 +495,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     apply PowerBasis.lift_gen
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
-instance normal [h : Normal F L] : Normal F (normalClosure F K L) :=
-  by
+instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   let ϕ := algebraMap K L
   rw [← IntermediateField.restrictScalars_normal, restrict_scalars_eq_supr_adjoin]
   apply IntermediateField.normal_iSup F L _
