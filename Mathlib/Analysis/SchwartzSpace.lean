@@ -116,20 +116,18 @@ theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
 #align schwartz_map.smooth SchwartzMap.smooth
 
 /-- Every Schwartz function is continuous. -/
-@[continuity, protected]
-theorem continuous (f : 𝓢(E, F)) : Continuous f :=
+@[continuity]
+protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 #align schwartz_map.continuous SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
-@[protected]
-theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
+protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
   (f.smooth 1).differentiable rfl.le
 #align schwartz_map.differentiable SchwartzMap.differentiable
 
 /-- Every Schwartz function is differentiable at any point. -/
-@[protected]
-theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
+protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
   f.differentiable.differentiableAt
 #align schwartz_map.differentiable_at SchwartzMap.differentiableAt
 
@@ -150,8 +148,13 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite _⟩
   refine' (Filter.eventually_cofinite_ne 0).mp (Filter.eventually_of_forall fun x hx => _)
-  rwa [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
-  exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
+  --  porting note: worked without norm_cast before
+  norm_cast
+  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg x) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
+  simp only [zpow_coe_nat]
+  convert hd' x
+  norm_cast
+  exact zpow_pos_of_pos (norm_pos_iff.mpr hx) k
 #align schwartz_map.is_O_cocompact_zpow_neg_nat SchwartzMap.isBigO_cocompact_zpow_neg_nat
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
@@ -203,9 +206,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
 
 theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f : E → F) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  nth_rw 4 [← norm_neg]
-  congr
-  exact iteratedFDeriv_neg_apply
+  rw [iteratedFDeriv_neg_apply, norm_neg]
 #align schwartz_map.decay_neg_aux SchwartzMap.decay_neg_aux
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -221,8 +222,7 @@ end Aux
 section SeminormAux
 
 /-- Helper definition for the seminorms of the Schwartz space. -/
-@[protected]
-def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
+protected def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c }
 #align schwartz_map.seminorm_aux SchwartzMap.seminormAux
 
@@ -282,7 +282,7 @@ theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).le.trans _
   rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (f.le_seminorm_aux k n x) (norm_nonneg _)
+  exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
 
 instance hasNsmul : SMul ℕ 𝓢(E, F) :=
