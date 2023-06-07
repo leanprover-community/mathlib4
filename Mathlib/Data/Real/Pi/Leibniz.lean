@@ -8,7 +8,7 @@ Authors: Benjamin Davidson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-! ### Leibniz's Series for Pi -/
 
@@ -46,14 +46,12 @@ local notation "|" x "|" => abs x
   subintervals. Finally, we (6) apply the Mean Value Theorem twice, obtaining bounds on `f 1 - f u`
   and `f u - f 0` from the bounds on `f'` (note that `f 0 = 0`). -/
 theorem tendsto_sum_pi_div_four :
-    Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) :=
-  by
+    Tendsto (fun k => ∑ i in Finset.range k, (-(1 : ℝ)) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   rw [tendsto_iff_norm_tendsto_zero, ← tendsto_zero_iff_norm_tendsto_zero]
   -- (1) We introduce a useful sequence `u` of values in [0,1], then prove that another sequence
   --     constructed from `u` tends to `0` at `+∞`
   let u := fun k : ℕ => (k : NNReal) ^ (-1 / (2 * (k : ℝ) + 1))
-  have H : tendsto (fun k : ℕ => (1 : ℝ) - u k + u k ^ (2 * (k : ℝ) + 1)) at_top (𝓝 0) :=
-    by
+  have H : tendsto (fun k : ℕ => (1 : ℝ) - u k + u k ^ (2 * (k : ℝ) + 1)) at_top (𝓝 0) := by
     convert
       (((tendsto_rpow_div_mul_add (-1) 2 1 two_ne_zero.symm).neg.const_add 1).add
             tendsto_inv_atTop_zero).comp
@@ -91,11 +89,9 @@ theorem tendsto_sum_pi_div_four :
   have hU2 := NNReal.coe_nonneg U
   -- (4) We compute the derivative of `f`, denoted by `f'`
   let f' := fun x : ℝ => (-x ^ 2) ^ k / (1 + x ^ 2)
-  have has_deriv_at_f : ∀ x, HasDerivAt f (f' x) x :=
-    by
+  have has_deriv_at_f : ∀ x, HasDerivAt f (f' x) x := by
     intro x
-    have has_deriv_at_b : ∀ i ∈ Finset.range k, HasDerivAt (b i) ((-x ^ 2) ^ i) x :=
-      by
+    have has_deriv_at_b : ∀ i ∈ Finset.range k, HasDerivAt (b i) ((-x ^ 2) ^ i) x := by
       intro i hi
       convert
         HasDerivAt.const_mul ((-1 : ℝ) ^ i / (2 * i + 1))
@@ -119,8 +115,7 @@ theorem tendsto_sum_pi_div_four :
   have hderiv2 : ∀ x ∈ Icc 0 (U : ℝ), HasDerivWithinAt f (f' x) (Icc 0 (U : ℝ)) x := fun x hx =>
     (has_deriv_at_f x).HasDerivWithinAt
   -- (5) We prove a general bound for `f'` and then more precise bounds on each of two subintervals
-  have f'_bound : ∀ x ∈ Icc (-1 : ℝ) 1, |f' x| ≤ |x| ^ (2 * k) :=
-    by
+  have f'_bound : ∀ x ∈ Icc (-1 : ℝ) 1, |f' x| ≤ |x| ^ (2 * k) := by
     intro x hx
     rw [abs_div, IsAbsoluteValue.abv_pow abs (-x ^ 2) k, abs_neg, IsAbsoluteValue.abv_pow abs x 2, ←
       pow_mul]
@@ -128,15 +123,13 @@ theorem tendsto_sum_pi_div_four :
     refine' le_mul_of_one_le_right (pow_nonneg (abs_nonneg _) _) _
     rw [abs_of_nonneg (add_nonneg zero_le_one (sq_nonneg x) : (0 : ℝ) ≤ _)]
     exact (le_add_of_nonneg_right (sq_nonneg x) : (1 : ℝ) ≤ _)
-  have hbound1 : ∀ x ∈ Ico (U : ℝ) 1, |f' x| ≤ 1 :=
-    by
+  have hbound1 : ∀ x ∈ Ico (U : ℝ) 1, |f' x| ≤ 1 := by
     rintro x ⟨hx_left, hx_right⟩
     have hincr := pow_le_pow_of_le_left (le_trans hU2 hx_left) (le_of_lt hx_right) (2 * k)
     rw [one_pow (2 * k), ← abs_of_nonneg (le_trans hU2 hx_left)] at hincr 
     rw [← abs_of_nonneg (le_trans hU2 hx_left)] at hx_right 
     linarith [f'_bound x (mem_Icc.mpr (abs_le.mp (le_of_lt hx_right)))]
-  have hbound2 : ∀ x ∈ Ico 0 (U : ℝ), |f' x| ≤ U ^ (2 * k) :=
-    by
+  have hbound2 : ∀ x ∈ Ico 0 (U : ℝ), |f' x| ≤ U ^ (2 * k) := by
     rintro x ⟨hx_left, hx_right⟩
     have hincr := pow_le_pow_of_le_left hx_left (le_of_lt hx_right) (2 * k)
     rw [← abs_of_nonneg hx_left] at hincr hx_right 
