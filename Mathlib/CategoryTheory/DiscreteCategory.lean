@@ -109,18 +109,24 @@ macro "discrete_cases" : tactic =>
   `(tactic| fail_if_no_progress casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
 
 open Lean Elab Tactic in
-/-- Wrapper for `discrete_cases` so `aesop_cat` can call it. -/
-def discreteCases : TacticM Unit := do
-  evalTactic (← `(tactic| discrete_cases))
-
-/-
+/--
 Use:
 ```
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
-to locally gives `aesop_cat` the ability to call `cases` on `Discrete` hypotheses.
+to locally gives `aesop_cat` the ability to call `cases` on
+`Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
+def discreteCases : TacticM Unit := do
+  evalTactic (← `(tactic| discrete_cases))
+
+-- Porting note:
+-- investigate turning on either
+-- `attribute [aesop safe cases (rule_sets [CategoryTheory])] Discrete`
+-- or
+-- `attribute [aesop safe tactic (rule_sets [CategoryTheory])] discreteCases`
+-- globally.
 
 instance [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)
