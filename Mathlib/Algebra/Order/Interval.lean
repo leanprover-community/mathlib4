@@ -214,11 +214,14 @@ theorem bot_mul : ⊥ * t = ⊥ :=
 #align interval.bot_mul Interval.bot_mul
 #align interval.bot_add Interval.bot_add
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mul_bot : s * ⊥ = ⊥ :=
   Option.map₂_none_right _ _
 #align interval.mul_bot Interval.mul_bot
 #align interval.add_bot Interval.add_bot
+
+-- Porting note: simp can prove `add_bot`
+attribute [simp] mul_bot
 
 end Interval
 
@@ -302,12 +305,15 @@ instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :
 
 namespace NonemptyInterval
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
     (s ^ n : Interval α) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
 #align nonempty_interval.coe_nsmul_interval NonemptyInterval.coe_nsmul_interval
+
+-- Porting note: simp can prove `coe_nsmul_interval`
+attribute [simp] coe_pow_interval
 
 end NonemptyInterval
 
@@ -491,7 +497,7 @@ theorem snd_inv : s⁻¹.snd = s.fst⁻¹ :=
 #align nonempty_interval.snd_neg NonemptyInterval.snd_neg
 
 @[to_additive (attr := simp)]
-theorem coe_inv_interval : (↑s⁻¹ : Interval α) = s⁻¹ :=
+theorem coe_inv_interval : (↑(s⁻¹) : Interval α) = (↑s)⁻¹ :=
   rfl
 #align nonempty_interval.coe_inv_interval NonemptyInterval.coe_inv_interval
 #align nonempty_interval.coe_neg_interval NonemptyInterval.coe_neg_interval
@@ -597,7 +603,8 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
-          |cases h|exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
+          | cases h
+          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
@@ -729,7 +736,8 @@ end Length
 -- /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 -- @[positivity]
 -- unsafe def positivity_interval_length : expr → tactic strictness
---   | q(NonemptyInterval.length $(s)) => nonnegative <$> mk_app `nonempty_interval.length_nonneg [s]
+--   | q(NonemptyInterval.length $(s)) =>
+--       nonnegative <$> mk_app `nonempty_interval.length_nonneg [s]
 --   | q(Interval.length $(s)) => nonnegative <$> mk_app `interval.length_nonneg [s]
 --   | e =>
 --     pp e >>=
