@@ -73,3 +73,24 @@ def toExpr? (e : ExprWithLevels) : Option Expr := if e.params.isEmpty then some 
 a constant function with respect to `params`. -/
 def toExpr'? (e : ExprWithLevels) : Option Expr :=
   if e.params.isEmpty || e.isConstantInLevelArgs then some e.expr else none
+
+/-- A low-level "environment" used to associate "variables" (parameter names) to level
+metavariables. Used when "telescoping" an `ExprWithLevels`.
+
+We maintain the following assumptions:
+
+* All elements of `levels` are level metavariables.
+* `env.params.size == env.levels.size`; this lets us avoid extra zipping and unzipping compared to
+  using an `Array (Name × Level)`. -/
+structure Environment where
+  params : Array Name
+  levels : Array Level
+deriving Repr
+
+instance : EmptyCollection Environment := ⟨⟨#[],#[]⟩⟩
+
+instance : ToMessageData Environment where
+  toMessageData env :=
+    let a := env.params.zipWith env.levels fun p l => toMessageData p ++ " ↤ " ++ toMessageData l
+    MessageData.ofArray a
+
