@@ -8,7 +8,7 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Sites.Canonical
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
@@ -29,8 +29,7 @@ open scoped CategoryTheory.Type
 
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
-def typesGrothendieckTopology : GrothendieckTopology (Type u)
-    where
+def typesGrothendieckTopology : GrothendieckTopology (Type u) where
   sieves α S := ∀ x : α, S fun _ : PUnit => x
   top_mem' α x := trivial
   pullback_stable' α β S f hs x := hs (f x)
@@ -39,8 +38,7 @@ def typesGrothendieckTopology : GrothendieckTopology (Type u)
 
 /-- The discrete sieve on a type, which only includes arrows whose image is a subsingleton. -/
 @[simps]
-def discreteSieve (α : Type u) : Sieve α
-    where
+def discreteSieve (α : Type u) : Sieve α where
   arrows β f := ∃ x, ∀ y, f y = x
   downward_closed' := fun β γ f ⟨x, hx⟩ g => ⟨x, fun y => hx <| g y⟩
 #align category_theory.discrete_sieve CategoryTheory.discreteSieve
@@ -63,8 +61,7 @@ open Presieve
 theorem isSheaf_yoneda' {α : Type u} : IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
   fun β S hs x hx =>
   ⟨fun y => x _ (hs y) PUnit.unit, fun γ f h =>
-    funext fun z =>
-      by
+    funext fun z => by
       have := congr_fun (hx (𝟙 _) (fun _ => z) (hs <| f z) h rfl) PUnit.unit
       convert this
       exact rfl,
@@ -73,8 +70,7 @@ theorem isSheaf_yoneda' {α : Type u} : IsSheaf typesGrothendieckTopology (yoned
 
 /-- The yoneda functor that sends a type to a sheaf over the category of types -/
 @[simps]
-def yoneda' : Type u ⥤ SheafOfTypes typesGrothendieckTopology
-    where
+def yoneda' : Type u ⥤ SheafOfTypes typesGrothendieckTopology where
   obj α := ⟨yoneda.obj α, isSheaf_yoneda'⟩
   map α β f := ⟨yoneda.map f⟩
 #align category_theory.yoneda' CategoryTheory.yoneda'
@@ -99,8 +95,7 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGro
   (hs.IsSheafFor _ _ (generate_discretePresieve_mem α)).amalgamate
     (fun β g hg => S.map (↾fun x => PUnit.unit).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
-    (hs.IsSheafFor _ _ (generate_discretePresieve_mem δ)).IsSeparatedFor.ext fun ε g ⟨x, hx⟩ =>
-      by
+    (hs.IsSheafFor _ _ (generate_discretePresieve_mem δ)).IsSeparatedFor.ext fun ε g ⟨x, hx⟩ => by
       have : f₁ (Classical.choose hf₁) = f₂ (Classical.choose hf₂) :=
         Classical.choose_spec hf₁ (g₁ <| g x) ▸
           Classical.choose_spec hf₂ (g₂ <| g x) ▸ congr_fun h _
@@ -124,8 +119,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
 /-- Given a sheaf `S`, construct an equivalence `S(α) ≃ (α → S(*))`. -/
 @[simps]
 noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGrothendieckTopology S)
-    (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit))
-    where
+    (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit)) where
   toFun := eval S α
   invFun := typesGlue S hs α
   left_inv := typesGlue_eval
@@ -148,8 +142,7 @@ noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesG
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps]
 noncomputable def equivYoneda' (S : SheafOfTypes typesGrothendieckTopology) :
-    S ≅ yoneda'.obj (S.1.obj (op PUnit))
-    where
+    S ≅ yoneda'.obj (S.1.obj (op PUnit)) where
   Hom := ⟨(equivYoneda S.1 S.2).Hom⟩
   inv := ⟨(equivYoneda S.1 S.2).inv⟩
   hom_inv_id' := by ext1; apply (equiv_yoneda S.1 S.2).hom_inv_id
