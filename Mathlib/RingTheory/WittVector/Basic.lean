@@ -164,14 +164,14 @@ open Lean Elab Tactic
 --  I do not know what to do with `#align`
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
-  evalTactic (← `(tactic|
-  ext n  <;>
-  have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $_x n)) $_y <;>
+  evalTactic (← `(tactic|(
+  ext n
+  have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $_x n)) $_y
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, OfNat.ofNat, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
-    wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]  <;>
+    wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
-  ))
+  )))
 
 end Tactic
 
