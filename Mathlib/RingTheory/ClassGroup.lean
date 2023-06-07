@@ -396,27 +396,27 @@ of global fields.
 noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where
   elems := {1}
   complete := by
-    refine' ClassGroup.induction (FractionRing R) fun I => _
+    refine ClassGroup.induction (R := R) (FractionRing R) (fun I => ?_)
     rw [Finset.mem_singleton]
-    exact class_group.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).IsPrincipal
+    exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 
 /-- The class number of a principal ideal domain is `1`. -/
 theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGroup R) = 1 := by
   rw [Fintype.card_eq_one_iff]
   use 1
-  refine' ClassGroup.induction (FractionRing R) fun I => _
-  exact class_group.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).IsPrincipal
+  refine ClassGroup.induction (R := R) (FractionRing R) (fun I => ?_)
+  exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 #align card_class_group_eq_one card_classGroup_eq_one
 
 /-- The class number is `1` iff the ring of integers is a principal ideal domain. -/
 theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)] :
     Fintype.card (ClassGroup R) = 1 ↔ IsPrincipalIdealRing R := by
-  constructor; swap; · intros; convert card_classGroup_eq_one; assumption
+  constructor; swap; · intros; convert card_classGroup_eq_one (R := R)
   rw [Fintype.card_eq_one_iff]
   rintro ⟨I, hI⟩
-  have eq_one : ∀ J : ClassGroup R, J = 1 := fun J => trans (hI J) (hI 1).symm
-  refine' ⟨fun I => _⟩
+  have eq_one : ∀ J : ClassGroup R, J = 1 := fun J => (hI J).trans (hI 1).symm
+  refine ⟨fun I => ?_⟩
   by_cases hI : I = ⊥
   · rw [hI]; exact bot_isPrincipal
-  exact (ClassGroup.mk0_eq_one_iff (mem_non_zero_divisors_iff_ne_zero.mpr hI)).mp (eq_one _)
+  · exact (ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_iff_ne_zero.mpr hI)).mp (eq_one _)
 #align card_class_group_eq_one_iff card_classGroup_eq_one_iff
