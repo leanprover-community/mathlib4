@@ -21,33 +21,22 @@ of sheafification, which follows easily from the content in this file.
 
 -/
 
+noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open CategoryTheory Limits Opposite
 
 universe w₁ w₂ v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type w₁} [Category.{max v u} D]
-
 variable {E : Type w₂} [Category.{max v u} E]
-
 variable (F : D ⥤ E)
 
-noncomputable section
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
-
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-
 variable (P : Cᵒᵖ ⥤ D)
 
 /-- The diagram used to define `P⁺`, composed with `F`, is isomorphic
@@ -81,9 +70,7 @@ theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow)
 #align category_theory.grothendieck_topology.diagram_comp_iso_hom_ι CategoryTheory.GrothendieckTopology.diagramCompIso_hom_ι
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`. -/
@@ -105,7 +92,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
         erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P X.unop))).fac]
       slice_lhs 1 3 =>
         simp only [← F.map_comp]
-        dsimp [colim_map, IsColimit.map, colimit.pre]
+        dsimp [colimMap, IsColimit.map, colimit.pre]
         simp only [colimit.ι_desc_assoc, colimit.ι_desc]
         dsimp [Cocones.precompose]
         simp only [Category.assoc, colimit.ι_desc]
@@ -113,15 +100,14 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
         rw [F.map_comp]
       simp only [Category.assoc]
       slice_lhs 2 3 =>
-        simp only [(isColimitOfPreserves F (colimit.isColimit (J.diagram P Y.unop))).fac]
-
+        erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P Y.unop))).fac]
       dsimp
       simp only [HasColimit.isoOfNatIso_ι_hom_assoc, GrothendieckTopology.diagramPullback_app,
         colimit.ι_pre, HasColimit.isoOfNatIso_ι_hom, ι_colimMap_assoc]
       simp only [← Category.assoc]
+      dsimp
       congr 1
-      -- porting note: this used to work with `ext`
-      apply Multiequalizer.hom_ext
+      ext
       dsimp
       simp only [Category.assoc]
       erw [Multiequalizer.lift_ι, diagramCompIso_hom_ι, diagramCompIso_hom_ι, ← F.map_comp,
@@ -163,8 +149,11 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
   congr 1
   -- porting note: this used to work with `ext`
   apply Multiequalizer.hom_ext
+  intro a
   dsimp
   simp
+  -- Porting note: in mathlib3 `simp` managed to apply this.
+  erw [η.naturality]
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_left CategoryTheory.GrothendieckTopology.plusCompIso_whiskerLeft
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
@@ -188,7 +177,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [ι_colimMap, whiskerRight_app, ι_plusCompIso_hom_assoc,
     GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc, ← F.map_comp]
-  dsimp [colim_map, IsColimit.map]
+  dsimp [colimMap, IsColimit.map]
   simp only [colimit.ι_desc]
   dsimp [Cocones.precompose]
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
@@ -196,6 +185,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   congr 1
   -- porting note: this used to work with `ext`
   apply Multiequalizer.hom_ext
+  intro a
   dsimp
   simp only [diagramCompIso_hom_ι_assoc, Multiequalizer.lift_ι, diagramCompIso_hom_ι,
     Category.assoc]
