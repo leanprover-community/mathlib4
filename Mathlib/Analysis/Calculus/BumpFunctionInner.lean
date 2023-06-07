@@ -36,8 +36,8 @@ function cannot have:
   - `0 ≤ f x ≤ 1` for all `x`.
 
   The structure `ContDiffBump` contains the data required to construct the
-  function: real numbers `rIn`, `rOut`, and proofs of `0 < rIn < rOut`. The function itself is available
-  through `CoeFun`.
+  function: real numbers `rIn`, `rOut`, and proofs of `0 < rIn < rOut`. The function itself is
+  available through `CoeFun`.
 
 * If `f : ContDiffBump c` and `μ` is a measure on the domain of `f`, then `f.normed μ`
   is a smooth bump function with integral `1` w.r.t. `μ`.
