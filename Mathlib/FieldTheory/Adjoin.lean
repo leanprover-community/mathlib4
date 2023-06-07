@@ -905,9 +905,9 @@ variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : finset E` such that
 `intermediate_field.adjoin F t = S`. -/
-def Fg (S : IntermediateField F E) : Prop :=
+def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
-#align intermediate_field.fg IntermediateField.Fg
+#align intermediate_field.fg IntermediateField.FG
 
 theorem fg_adjoin_finset (t : Finset E) : (adjoin F (↑t : Set E)).FG :=
   ⟨t, rfl⟩
@@ -919,13 +919,12 @@ theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite 
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
   -- porting note: was `⟨∅, adjoin_empty F E⟩`
-  ⟨∅, by simp only [Finset.coe_empty, Algebra.adjoin_empty, bot_toSubalgebra]⟩
+  ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
 #align intermediate_field.fg_bot IntermediateField.fg_bot
 
 theorem fG_of_fG_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   cases' h with t ht
-  -- porting note: was `exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩`
-  exact ⟨t, ht⟩
+  exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
 #align intermediate_field.fg_of_fg_to_subalgebra IntermediateField.fG_of_fG_toSubalgebra
 
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
