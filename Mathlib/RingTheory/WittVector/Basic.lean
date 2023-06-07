@@ -15,16 +15,16 @@ import Mathlib.RingTheory.WittVector.Defs
 /-!
 # Witt vectors
 
-This file verifies that the ring operations on `witt_vector p R`
+This file verifies that the ring operations on `WittVector p R`
 satisfy the axioms of a commutative ring.
 
 ## Main definitions
 
-* `witt_vector.map`: lifts a ring homomorphism `R →+* S` to a ring homomorphism `𝕎 R →+* 𝕎 S`.
-* `witt_vector.ghost_component n x`: evaluates the `n`th Witt polynomial
+* `WittVector.map`: lifts a ring homomorphism `R →+* S` to a ring homomorphism `𝕎 R →+* 𝕎 S`.
+* `WittVector.ghostComponent n x`: evaluates the `n`th Witt polynomial
   on the first `n` coefficients of `x`, producing a value in `R`.
   This is a ring homomorphism.
-* `witt_vector.ghost_map`: a ring homomorphism `𝕎 R →+* (ℕ → R)`, obtained by packaging
+* `WittVector.ghostMap`: a ring homomorphism `𝕎 R →+* (ℕ → R)`, obtained by packaging
   all the ghost components together.
   If `p` is invertible in `R`, then the ghost map is an equivalence,
   which we use to define the ring operations on `𝕎 R`.
@@ -70,7 +70,7 @@ open scoped Witt
 namespace WittVector
 
 /-- `f : α → β` induces a map from `𝕎 α` to `𝕎 β` by applying `f` componentwise.
-If `f` is a ring homomorphism, then so is `f`, see `witt_vector.map f`. -/
+If `f` is a ring homomorphism, then so is `f`, see `WittVector.map f`. -/
 def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff)
 #align witt_vector.map_fun WittVector.mapFun
 
@@ -154,7 +154,7 @@ namespace WittVector
 
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`.
-This function will be bundled as the ring homomorphism `witt_vector.ghost_map`
+This function will be bundled as the ring homomorphism `WittVector.ghostMap`
 once the ring structure is available,
 but we rely on it to set up the ring structure in the first place. -/
 private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
@@ -233,7 +233,7 @@ end GhostFun
 variable (p) (R)
 
 /-- The bijection between `𝕎 R` and `ℕ → R`, under the assumption that `p` is invertible in `R`.
-In `witt_vector.ghost_equiv` we upgrade this to an isomorphism of rings. -/
+In `WittVector.ghostEquiv` we upgrade this to an isomorphism of rings. -/
 private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   toFun := ghostFun
   invFun x := mk p fun n => aeval x (xInTermsOfW p R n)
@@ -273,7 +273,7 @@ instance : CommRing (𝕎 R) :=
 
 variable {p R}
 
-/-- `witt_vector.map f` is the ring homomorphism `𝕎 R →+* 𝕎 S` naturally induced
+/-- `WittVector.map f` is the ring homomorphism `𝕎 R →+* 𝕎 S` naturally induced
 by a ring homomorphism `f : R →+* S`. It acts coefficientwise. -/
 noncomputable def map (f : R →+* S) : 𝕎 R →+* 𝕎 S where
   toFun := mapFun f
@@ -296,7 +296,7 @@ theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f
   rfl
 #align witt_vector.map_coeff WittVector.map_coeff
 
-/-- `witt_vector.ghost_map` is a ring homomorphism that maps each Witt vector
+/-- `WittVector.ghostMap` is a ring homomorphism that maps each Witt vector
 to the sequence of its ghost components. -/
 def ghostMap : 𝕎 R →+* ℕ → R where
   toFun := ghostFun
@@ -326,7 +326,7 @@ section Invertible
 variable (p R)
 variable [Invertible (p : R)]
 
-/-- `witt_vector.ghost_map` is a ring isomorphism when `p` is invertible in `R`. -/
+/-- `WittVector.ghostMap` is a ring isomorphism when `p` is invertible in `R`. -/
 def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
   { (ghostMap : 𝕎 R →+* ℕ → R), ghostEquiv' p R with }
 #align witt_vector.ghost_equiv WittVector.ghostEquiv
@@ -342,7 +342,7 @@ theorem ghostMap.bijective_of_invertible : Function.Bijective (ghostMap : 𝕎 R
 
 end Invertible
 
-/-- `witt_vector.coeff x 0` as a `ring_hom` -/
+/-- `WittVector.coeff x 0` as a `RingHom` -/
 @[simps]
 noncomputable def constantCoeff : 𝕎 R →+* R where
   toFun x := x.coeff 0
