@@ -8,8 +8,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
 /-!
 # Derivatives of the `tan` and `arctan` functions.
@@ -35,8 +35,7 @@ theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^
 #align real.has_deriv_at_tan Real.hasDerivAt_tan
 
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop :=
-  by
+    Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   have hx : Complex.cos x = 0 := by exact_mod_cast hx
   simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
   refine' (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp _
@@ -49,8 +48,7 @@ theorem tendsto_abs_tan_atTop (k : ℤ) :
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 #align real.tendsto_abs_tan_at_top Real.tendsto_abs_tan_atTop
 
-theorem continuousAt_tan {x : ℝ} : ContinuousAt tan x ↔ cos x ≠ 0 :=
-  by
+theorem continuousAt_tan {x : ℝ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
   refine' ⟨fun hc h₀ => _, fun h => (has_deriv_at_tan h).ContinuousAt⟩
   exact
     not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
@@ -63,8 +61,7 @@ theorem differentiableAt_tan {x : ℝ} : DifferentiableAt ℝ tan x ↔ cos x �
 
 @[simp]
 theorem deriv_tan (x : ℝ) : deriv tan x = 1 / cos x ^ 2 :=
-  if h : cos x = 0 then
-    by
+  if h : cos x = 0 then by
     have : ¬DifferentiableAt ℝ tan x := mt differentiableAt_tan.1 (Classical.not_not.2 h)
     simp [deriv_zero_of_not_differentiableAt this, h, sq]
   else (hasDerivAt_tan h).deriv
@@ -86,8 +83,7 @@ theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : �
   (hasDerivAt_tan_of_mem_Ioo h).DifferentiableAt
 #align real.differentiable_at_tan_of_mem_Ioo Real.differentiableAt_tan_of_mem_Ioo
 
-theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x :=
-  by
+theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
   simpa [cos_sq_arctan] using
     tan_local_homeomorph.has_strict_deriv_at_symm trivial (by simpa) (has_strict_deriv_at_tan A)
