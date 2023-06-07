@@ -25,23 +25,23 @@ case of the topology of weak convergence of finite measures.
 ## Main definitions
 
 The main definitions are
- * the type `measure_theory.probability_measure Ω` with the topology of convergence in
+ * the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
    distribution (a.k.a. convergence in law, weak convergence of measures);
- * `measure_theory.probability_measure.to_finite_measure`: Interpret a probability measure as
+ * `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
    a finite measure;
- * `measure_theory.finite_measure.normalize`: Normalize a finite measure to a probability measure
+ * `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
    (returns junk for the zero measure).
 
 ## Main results
 
- * `measure_theory.probability_measure.tendsto_iff_forall_integral_tendsto`: Convergence of
+ * `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto`: Convergence of
    probability measures is characterized by the convergence of expected values of all bounded
    continuous random variables. This shows that the chosen definition of topology coincides with
    the common textbook definition of convergence in distribution, i.e., weak convergence of
    measures. A similar characterization by the convergence of expected values (in the
-   `measure_theory.lintegral` sense) of all bounded continuous nonnegative random variables is
-   `measure_theory.probability_measure.tendsto_iff_forall_lintegral_tendsto`.
- * `measure_theory.finite_measure.tendsto_normalize_iff_tendsto`: The convergence of finite
+   `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative random variables is
+   `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto`.
+ * `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
    measures to a nonzero limit is characterized by the convergence of the probability-normalized
    versions and of the total masses.
 
@@ -50,13 +50,13 @@ TODO:
 
 ## Implementation notes
 
-The topology of convergence in distribution on `measure_theory.probability_measure Ω` is inherited
+The topology of convergence in distribution on `MeasureTheory.ProbabilityMeasure Ω` is inherited
 weak convergence of finite measures via the mapping
-`measure_theory.probability_measure.to_finite_measure`.
+`MeasureTheory.ProbabilityMeasure.toFiniteMeasure`.
 
-Like `measure_theory.finite_measure Ω`, the implementation of `measure_theory.probability_measure Ω`
-is directly as a subtype of `measure_theory.measure Ω`, and the coercion to a function is the
-composition `ennreal.to_nnreal` and the coercion to function of `measure_theory.measure Ω`.
+Like `MeasureTheory.FiniteMeasure Ω`, the implementation of `MeasureTheory.ProbabilityMeasure Ω`
+is directly as a subtype of `MeasureTheory.Measure Ω`, and the coercion to a function is the
+composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Measure Ω`.
 
 ## References
 
@@ -88,13 +88,13 @@ section ProbabilityMeasure
 /-! ### Probability measures
 
 In this section we define the type of probability measures on a measurable space `Ω`, denoted by
-`measure_theory.probability_measure Ω`.
+`MeasureTheory.ProbabilityMeasure Ω`.
 
 If `Ω` is moreover a topological space and the sigma algebra on `Ω` is finer than the Borel sigma
-algebra (i.e. `[opens_measurable_space Ω]`), then `measure_theory.probability_measure Ω` is
+algebra (i.e. `[OpensMeasurableSpace Ω]`), then `MeasureTheory.ProbabilityMeasure Ω` is
 equipped with the topology of weak convergence of measures. Since every probability measure is a
 finite measure, this is implemented as the induced topology from the mapping
-`measure_theory.probability_measure.to_finite_measure`.
+`MeasureTheory.ProbabilityMeasure.toFiniteMeasure`.
 -/
 
 
@@ -216,9 +216,9 @@ theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
   μ.mass_toFiniteMeasure ▸ μ.toFiniteMeasure.testAgainstNN_lipschitz
 #align measure_theory.probability_measure.test_against_nn_lipschitz MeasureTheory.ProbabilityMeasure.testAgainstNN_lipschitz
 
-/-- The topology of weak convergence on `measure_theory.probability_measure Ω`. This is inherited
+/-- The topology of weak convergence on `MeasureTheory.ProbabilityMeasure Ω`. This is inherited
 (induced) from the topology of weak convergence of finite measures via the inclusion
-`measure_theory.probability_measure.to_finite_measure`. -/
+`MeasureTheory.ProbabilityMeasure.toFiniteMeasure`. -/
 instance : TopologicalSpace (ProbabilityMeasure Ω) :=
   TopologicalSpace.induced toFiniteMeasure inferInstance
 
@@ -227,8 +227,8 @@ theorem toFiniteMeasure_continuous :
   continuous_induced_dom
 #align measure_theory.probability_measure.to_finite_measure_continuous MeasureTheory.ProbabilityMeasure.toFiniteMeasure_continuous
 
-/-- Probability measures yield elements of the `weak_dual` of bounded continuous nonnegative
-functions via `measure_theory.finite_measure.test_against_nn`, i.e., integration. -/
+/-- Probability measures yield elements of the `WeakDual` of bounded continuous nonnegative
+functions via `MeasureTheory.FiniteMeasure.testAgainstNN`, i.e., integration. -/
 def toWeakDualBCNN : ProbabilityMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) :=
   FiniteMeasure.toWeakDualBCNN ∘ toFiniteMeasure
 #align measure_theory.probability_measure.to_weak_dual_bcnn MeasureTheory.ProbabilityMeasure.toWeakDualBCNN
@@ -385,7 +385,7 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
 #align probability_measure.to_finite_measure_normalize_eq_self ProbabilityMeasure.toFiniteMeasure_normalize_eq_self
 
 /-- Averaging with respect to a finite measure is the same as integraing against
-`measure_theory.finite_measure.normalize`. -/
+`MeasureTheory.FiniteMeasure.normalize`. -/
 theorem average_eq_integral_normalize {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (nonzero : μ ≠ 0) (f : Ω → E) :
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
@@ -441,10 +441,9 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type _} {F : Filter γ}
   have eventually_nonzero : ∀ᶠ i in F, μs i ≠ 0 := by
     simp_rw [← mass_nonzero_iff]
     exact lim_mass aux
-  have eve :
-    ∀ᶠ i in F,
-      (μs i).normalize.toFiniteMeasure.testAgainstNN f = (μs i).mass⁻¹ * (μs i).testAgainstNN f :=
-    by
+  have eve : ∀ᶠ i in F,
+      (μs i).normalize.toFiniteMeasure.testAgainstNN f =
+        (μs i).mass⁻¹ * (μs i).testAgainstNN f := by
     filter_upwards [eventually_iff.mp eventually_nonzero]
     intro i hi
     apply normalize_testAgainstNN _ hi
