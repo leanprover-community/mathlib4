@@ -343,7 +343,9 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i
   refine' ⟨g_mem.toLp _, _, ⟨g, rfl⟩⟩
   simp only [dist_eq_norm, Metric.mem_closedBall']
   rw [Lp.norm_def]
-  -- porting note: the `convert` was completely borked and timed out
+  -- porting note: original proof started with:
+  -- convert ENNReal.toReal_le_of_le_ofReal hε.le hg using 2
+  -- the `convert` was completely borked and timed out
   have key : snorm ((f : α → E) - (g : α → E)) p μ = snorm (f - Memℒp.toLp (↑g) g_mem) p μ := by
     apply snorm_congr_ae
     filter_upwards [coeFn_sub f (g_mem.toLp g), g_mem.coeFn_toLp] with x hx h'x
