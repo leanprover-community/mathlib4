@@ -13,6 +13,7 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Data.Fin.Basic
 
 /-!
 The type `Vector` represents lists with fixed length.
@@ -257,5 +258,92 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   cases v
   rfl
 #align vector.to_list_take Vector.toList_take
+
+instance {α : Type u} {n : Nat} : GetElem (Vector α n) (Fin n) α (fun _ _ => True) where
+  getElem := fun v i _ => v.1[i.val]'(by
+    rw [v.2]
+    exact i.isLt)
+
+theorem vec_get_zero_eq_head {α : Type u} {n : Nat} {x : Vector α n.succ} : x[@Fin.ofNat n 0] = x.head := by
+  cases x
+  case mk x hx =>
+    cases x
+    case nil => contradiction
+    case cons head tail => rfl
+
+theorem get_castLE_eq (α : Type u) {n m : Nat} {i : Fin m} {i' : Fin n} (h : m ≤ n) (hi : i.val = i'.val) : forall x : Vector α n,  x[Fin.castLE h i] = x[i'] := by
+  simp [Fin.castLE, hi, GetElem.getElem]
+
+theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n) (h : x.toList = x'.toList) : x[i] = x'[i] := by
+  rw [Vector.eq x x' h]
+
+-- This proof certainly needs some golfing...
+-- `Vector` makes it much harder to prove this than `List` with the property of the lengths being equal
+theorem extensionality {α : Type u} {n : Nat} {x y : Vector α n} : (∀ i : Fin n, x[i] = y[i]) → x = y  := by
+  intro h
+  cases x
+  case mk x hx =>
+    cases y
+    case mk y hy =>
+    induction x generalizing y n
+    induction y
+    case nil.nil => rfl
+    case nil.cons =>
+      simp at hx
+      rw [← hx] at hy
+      contradiction
+    case cons head tail tail_ih =>
+      apply Vector.eq
+      simp
+      cases y
+      case a.nil =>
+        simp at hy
+        rw [← hy] at hx
+        contradiction
+      case a.cons head_y tail_y =>
+      cases n
+      case zero =>
+        simp at hx
+      case succ m =>
+      have h_heads : head = head_y := by
+        have h_zero := h (@Fin.ofNat m 0)
+        have h_head := @vec_get_zero_eq_head α m { val := head :: tail, property := hx }
+        have h_head_y := @vec_get_zero_eq_head α m { val := head_y :: tail_y, property := hy }
+        rw [h_head, h_head_y] at h_zero
+        simp [Vector.head] at h_zero
+        rw [h_zero]
+
+      rw [List.length_cons head tail, Nat.succ_inj'] at hx
+      rw [List.length_cons head_y tail_y, Nat.succ_inj'] at hy
+      have h_tails : { val:= tail, property := hx : Vector _ _} = { val := tail_y, property := hy} := by
+        apply tail_ih hx tail_y hy
+        intro i
+        have h_i := h (Fin.castLE (Nat.le_succ m) i)
+        have i_eq_i' : i.val = (Fin.castLE (Nat.le_succ m) i).val := by
+          simp [Fin.castLE]
+        simp at h_i
+        -- TODO: the below only works if I tell it explictly about α, but won't work if I use @ and pass everything. Weird.
+        have foo := get_castLE_eq α (Nat.le_succ m) i_eq_i'
+        -- TODO continue here
+
+        rename_i hx' hy'
+        have foo := get_eq_val_eq { val := head :: tail, property := hx' } { val := head_y :: tail_y, property := hy' }
+        apply get_eq_val_eq
+        simp
+        simp at foo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end Vector
