@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Complex.Log
-import Mathbin.RingTheory.RootsOfUnity.Basic
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Complex roots of unity
@@ -33,8 +33,7 @@ open Polynomial Real
 open scoped Nat Real
 
 theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprime n) :
-    IsPrimitiveRoot (exp (2 * π * I * (i / n))) n :=
-  by
+    IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast h0
@@ -55,8 +54,7 @@ theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 *
 #align complex.is_primitive_root_exp Complex.isPrimitiveRoot_exp
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
-    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ hi : i.coprime n, exp (2 * π * I * (i / n)) = ζ :=
-  by
+    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ hi : i.coprime n, exp (2 * π * I * (i / n)) = ζ := by
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast hn
   constructor; swap
   · rintro ⟨i, -, hi, rfl⟩; exact is_primitive_root_exp_of_coprime i n hn hi
@@ -72,8 +70,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `e ^ (2 * real.pi * complex.I * (i / n))` for some `i < n`. -/
 theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
-    x ∈ rootsOfUnity n ℂ ↔ ∃ i < (n : ℕ), exp (2 * π * I * (i / n)) = x :=
-  by
+    x ∈ rootsOfUnity n ℂ ↔ ∃ i < (n : ℕ), exp (2 * π * I * (i / n)) = x := by
   rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast n.ne_zero
   constructor
@@ -94,8 +91,7 @@ theorem card_rootsOfUnity (n : ℕ+) : Fintype.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n n.NeZero).card_rootsOfUnity
 #align complex.card_roots_of_unity Complex.card_rootsOfUnity
 
-theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k :=
-  by
+theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
   by_cases h : k = 0
   · simp [h]
   exact (is_primitive_root_exp k h).card_primitiveRoots
@@ -133,8 +129,7 @@ theorem IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoo
 #align is_primitive_root.arg_eq_pi_iff IsPrimitiveRoot.arg_eq_pi_iff
 
 theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
-    ∃ i : ℤ, ζ.arg = i / n * (2 * Real.pi) ∧ IsCoprime i n ∧ i.natAbs < n :=
-  by
+    ∃ i : ℤ, ζ.arg = i / n * (2 * Real.pi) ∧ IsCoprime i n ∧ i.natAbs < n := by
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h 
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
