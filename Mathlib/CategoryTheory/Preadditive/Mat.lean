@@ -187,7 +187,7 @@ open CategoryTheory.Limits
 Be warned, however, that `Mat_ C` is not necessarily Krull-Schmidt,
 and so the internal indexing of a biproduct may have nothing to do with the external indexing,
 even though the construction we give uses a sigma type.
-See however `iso_biproduct_embedding`.
+See however `isoBiproductEmbedding`.
 -/
 instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
     where out n :=
@@ -378,13 +378,32 @@ instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
+-- portong note: removed @[simps] attribute as the automatically generated lemmas
+-- are not very useful; two more useful lemmas have been added just after this
+-- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
-@[simps!]
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct CategoryTheory.Mat_.additiveObjIsoBiproduct
+
+@[reassoc (attr := simp)]
+lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
+    (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i  =
+      F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
+  dsimp [additiveObjIsoBiproduct]
+  rw [biproduct.lift_π, Category.assoc]
+  dsimp [Functor.mapBiproduct]
+  erw [biproduct.lift_π, ← F.map_comp]
+  simp
+
+@[reassoc (attr := simp)]
+lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
+    biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
+      F.map (biproduct.ι _ i ≫ M.isoBiproductEmbedding.inv) := by
+  dsimp [additiveObjIsoBiproduct, Functor.mapBiproduct, Functor.mapBicone]
+  simp only [biproduct.ι_desc, biproduct.ι_desc_assoc, ← F.map_comp]
 
 variable [HasFiniteBiproducts D]
 
@@ -394,24 +413,16 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
-  -- This is disappointingly tedious.
-  ext
-  simp only [additiveObjIsoBiproduct_hom, Category.assoc, biproduct.lift_π, Functor.mapBicone_π,
-    biproduct.bicone_π, biproduct.lift_matrix]
-  dsimp [embedding]
-  simp only [← F.map_comp, biproduct.lift_π, biproduct.matrix_π, Category.assoc]
-  simp only [← F.map_comp, ← F.map_sum, biproduct.lift_desc, biproduct.lift_π_assoc, comp_sum]
-  simp only [comp_def, comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, if_true]
-  dsimp
-  simp only [Finset.sum_singleton, dite_comp, zero_comp]
-  sorry
-  --congr
-  --symm
-  --convert Finset.sum_fn _ _
-  ---- It's hard to use this as a simp lemma!
-  --simp only [Finset.sum_fn, Finset.sum_dite_eq]
-  --ext
-  --simp
+  refine' biproduct.hom_ext _ _ (fun i => _)
+  simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
+    embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
+    ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
+  refine' biproduct.hom_ext' _ _ (fun j => _)
+  simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,
+    biproduct.ι_desc, ← F.map_comp]
+  congr 1
+  funext ⟨⟩ ⟨⟩
+  simp [comp_apply, dite_comp, comp_dite]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality
 
