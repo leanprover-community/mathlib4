@@ -52,8 +52,7 @@ variable {C : Type u} [Category.{v} C]
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=

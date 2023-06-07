@@ -197,8 +197,7 @@ variable [HasCoproducts.{0} C]
 
 section
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The total object of a graded object is the coproduct of the graded components.
 -/

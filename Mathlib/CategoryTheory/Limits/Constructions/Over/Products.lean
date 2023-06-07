@@ -78,8 +78,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 -- Porting note: this should help with the additional `naturality` proof we now have to give in
 -- `conesEquivFunctor`, but doesn't.
--- attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
---   CategoryTheory.Discrete.discreteCases
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -169,8 +168,7 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.

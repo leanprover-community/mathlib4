@@ -145,8 +145,7 @@ section
 
 variable {F : C ⥤ D}
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
