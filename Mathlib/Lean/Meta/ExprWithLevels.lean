@@ -148,3 +148,47 @@ def abstractAvoidingCapture (env : Environment) (e : Expr) {m : Type → Type} [
   let params ← abstractEnvironment env
   pure ⟨← instantiateMVars e, params⟩
 
+section Combinators
+
+variable [MonadControlT MetaM m] [Monad m]
+
+@[inline] private def mapWithLevelsMetaM
+    (f : forall {α}, ((β → γ → MetaM δ) → β' → γ' → MetaM α) → MetaM α) {α}
+    (k : (β → γ → m δ) → β' → γ' → m α) : m α :=
+  controlAt MetaM fun runInBase => f fun d b' c' =>
+    runInBase <| k (fun b c => liftWith fun _ => d b c) b' c'
+
+/-- Evaluates `k := fun abstract' env e' => ...` on the body `e'` of `e`, with the level params of
+`e` having been replaced by metavariables according to `env`.
+
+The arguments `abstract'` and `env` of `k` can be used within the body of `k` to "re-bind" any of
+these level metavariables that appear in some `x : Expr` to obtain an `ExprWithLevels`, e.g.
+`abstract' env x`. The argument `abstract` will be lifted to fulfill this functionality
+(`ExprWithLevels.abstract` by default). -/
+def withLevels (e : ExprWithLevels)
+    (k : (Environment → Expr → m ExprWithLevels) → Environment → Expr → m α)
+    (abstract := (abstract (m := MetaM))) : m α :=
+  mapWithLevelsMetaM
+    (fun k => do let (env, expr) ← levelMetaTelescope e; k abstract env expr) k
+
+/-- Evaluates `k := fun env e' => ...` on the body `e'` of `e`, with the level params of `e` having
+been replaced by metavariables according to `env`.
+
+The remaining unassigned level metavariables in the `Expr` produced by `k` will be abstracted out
+into an `ExprWithLevels` by `abstract`. -/
+def withLevelsExpr (e : ExprWithLevels) (k : Environment → Expr → m Expr)
+    (abstract := (abstract (m := MetaM))) : m ExprWithLevels :=
+  withLevels e (abstract := abstract) fun abstract env expr => do abstract env (← k env expr)
+
+/-- Evaluates `k := fun env e' => ...` on the body `e'` of `e`, with the level params of `e` having
+been replaced by metavariables according to `env`.
+
+The remaining unassigned level metavariables in the `Expr` produced in the first component of `k`'s
+output will be abstracted out into an `ExprWithLevels` by `abstract`. -/
+def withLevelsExpr' (e : ExprWithLevels) (k : Environment → Expr → m (Expr × α))
+    (abstract := abstract (m := MetaM)) : m (ExprWithLevels × α) :=
+  withLevels e (abstract := abstract) fun abstract env expr => do
+    let (e, a) ← k env expr
+    pure (← abstract env e, a)
+
+end Combinators
