@@ -126,14 +126,16 @@ def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ 
     ⟨F.toLinearMap.comp (ι Q), fun m => by
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
   left_inv f := by
-    ext
-    simp only [ι, AlgHom.toLinearMap_apply, Function.comp_apply, LinearMap.coe_comp, Subtype.coe_mk,
-      RingQuot.liftAlgHom_mkAlgHom_apply, TensorAlgebra.lift_ι_apply]
-  right_inv F := by
-    ext
-    simp only [ι, AlgHom.comp_toLinearMap, AlgHom.toLinearMap_apply, Function.comp_apply,
-      LinearMap.coe_comp, Subtype.coe_mk, RingQuot.liftAlgHom_mkAlgHom_apply,
-      TensorAlgebra.lift_ι_apply]
+    ext x
+    -- porting note: removed `simp only` proof which gets stuck simplifying `LinearMap.comp_apply`
+    exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ x)
+  right_inv F :=
+    -- porting note: replaced with proof derived from the one for `TensorAlgebra`
+    RingQuot.ringQuot_ext' _ _ _ <|
+      TensorAlgebra.hom_ext <|
+        LinearMap.ext fun x => by
+          exact
+            (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ _)
 #align clifford_algebra.lift CliffordAlgebra.lift
 
 variable {Q}
@@ -153,17 +155,16 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap 
 @[simp]
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMap _ _ (Q m))
     (g : CliffordAlgebra Q →ₐ[R] A) : g.toLinearMap.comp (ι Q) = f ↔ g = lift Q ⟨f, cond⟩ := by
-  convert (lift Q).symm_apply_eq
-  rw [lift_symm_apply]
-  simp only
+  convert (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
+  -- porting note: added `Subtype.mk_eq_mk`
+  rw [lift_symm_apply, Subtype.mk_eq_mk]
 #align clifford_algebra.lift_unique CliffordAlgebra.lift_unique
 
 @[simp]
 theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
     lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
-  convert (lift Q).apply_symm_apply g
-  rw [lift_symm_apply]
-  rfl
+  -- porting note: removed `rw [lift_symm_apply]; rfl`, changed `convert` to `exact`
+  exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 #align clifford_algebra.lift_comp_ι CliffordAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -290,17 +291,17 @@ variable {Q₁ Q₂ Q₃}
 
 /-- Two `clifford_algebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
-@[simps apply]
+@[simps! apply]
 def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map Q₁ Q₂ e e.map_app) (map Q₂ Q₁ e.symm e.symm.map_app)
     ((map_comp_map _ _ _ _ _ _ _).trans <| by
-      convert map_id _ using 2
+      convert map_id Q₂ using 2  -- porting note: replaced `_` with `Q₂`
       ext m
-      exact e.to_linear_equiv.apply_symm_apply m)
+      exact e.toLinearEquiv.apply_symm_apply m)
     ((map_comp_map _ _ _ _ _ _ _).trans <| by
-      convert map_id _ using 2
+      convert map_id Q₁ using 2  -- porting note: replaced `_` with `Q₁`
       ext m
-      exact e.to_linear_equiv.symm_apply_apply m)
+      exact e.toLinearEquiv.symm_apply_apply m)
 #align clifford_algebra.equiv_of_isometry CliffordAlgebra.equivOfIsometry
 
 @[simp]
