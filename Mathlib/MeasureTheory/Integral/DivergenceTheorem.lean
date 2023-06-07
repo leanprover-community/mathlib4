@@ -18,12 +18,12 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 # Divergence theorem for Bochner integral
 
 In this file we prove the Divergence theorem for Bochner integral on a box in
-`ℝⁿ⁺¹ = fin (n + 1) → ℝ`. More precisely, we prove the following theorem.
+`ℝⁿ⁺¹ = Fin (n + 1) → ℝ`. More precisely, we prove the following theorem.
 
 Let `E` be a complete normed space. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is
-continuous on a rectangular box `[a, b] : set ℝⁿ⁺¹`, `a ≤ b`, differentiable on its interior with
+continuous on a rectangular box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, differentiable on its interior with
 derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on
-`[a, b]`, where `eᵢ = pi.single i 1` is the `i`-th basis vector, then its integral is equal to the
+`[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the
 sum of integrals of `f` over the faces of `[a, b]`, taken with appropriate signs. Moreover, the same
 is true if the function is not differentiable at countably many points of the interior of `[a, b]`.
 
@@ -38,13 +38,13 @@ website shows the actual terms, not those abbreviated using local notations.
 Porting note (Yury Kudryashov): I disables some of these notations because I failed to make them
 work with Lean 4.
 
-* `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `fin n → ℝ`, `fin (n + 1) → ℝ`, `fin (n + 1) → E`;
+* `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
 * `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely `[a ∘
-  fin.succ_above i, b ∘ fin.succ_above i]`;
-* `e i` : `i`-th basis vector `pi.single i 1`;
+  Fin.succAbove i, b ∘ Fin.succAbove i]`;
+* `e i` : `i`-th basis vector `Pi.single i 1`;
 * `frontFace i`, `backFace i`: embeddings `ℝⁿ → ℝⁿ⁺¹` corresponding to the front face
   `{x | x i = b i}` and back face `{x | x i = a i}` of the box `[a, b]`, respectively.
-  They are given by `fin.insert_nth i (b i)` and `fin.insert_nth i (a i)`.
+  They are given by `Fin.insertNth i (b i)` and `Fin.insertNth i (a i)`.
 
 ## TODO
 
@@ -85,34 +85,34 @@ local notation "e " i => Pi.single i 1
 section
 
 /-!
-### Divergence theorem for functions on `ℝⁿ⁺¹ = fin (n + 1) → ℝ`.
+### Divergence theorem for functions on `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`.
 
 In this section we use the divergence theorem for a Henstock-Kurzweil-like integral
-`box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at` to prove the divergence
+`BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` to prove the divergence
 theorem for Bochner integral. The divergence theorem for Bochner integral
-`measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable` assumes that the function
+`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable` assumes that the function
 itself is continuous on a closed box, differentiable at all but countably many points of its
 interior, and the divergence is integrable on the box.
 
-This statement differs from `box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at`
+This statement differs from `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt`
 in several aspects.
 
 * We use Bochner integral instead of a Henstock-Kurzweil integral. This modification is done in
-  `measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable_aux₁`. As a side effect
+  `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁`. As a side effect
   of this change, we need to assume that the divergence is integrable.
 
 * We don't assume differentiability on the boundary of the box. This modification is done in
-  `measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable_aux₂`. To prove it, we
+  `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂`. To prove it, we
   choose an increasing sequence of smaller boxes that cover the interior of the original box, then
   apply the previous lemma to these smaller boxes and take the limit of both sides of the equation.
 
 * We assume `a ≤ b` instead of `∀ i, a i < b i`. This is the last step of the proof, and it is done
-  in the main theorem `measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable`.
+  in the main theorem `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`.
 -/
 
 /-- An auxiliary lemma for
-`measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable`. This is exactly
-`box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at` reformulated for the
+`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. This is exactly
+`BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` reformulated for the
 Bochner integral. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (Fin (n + 1)))
     (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
@@ -144,7 +144,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
 #align measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable_aux₁ MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁
 
 /-- An auxiliary lemma for
-`measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable`. Compared to the previous
+`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
     (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
@@ -259,19 +259,19 @@ local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove
 -- local notation "backFace " i:2000 => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
-box `[a, b] : set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
+box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
 `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
-where `eᵢ = pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
+where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
 integrals of `f` over the faces of `[a, b]`, taken with appropriat signs.
 
 Moreover, the same is true if the function is not differentiable at countably many
 points of the interior of `[a, b]`.
 
 We represent both faces `x i = a i` and `x i = b i` as the box
-`face i = [a ∘ fin.succ_above i, b ∘ fin.succ_above i]` in `ℝⁿ`, where
-`fin.succ_above : fin n ↪o fin (n + 1)` is the order embedding with range `{i}ᶜ`. The restrictions
+`face i = [a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]` in `ℝⁿ`, where
+`Fin.succAbove : Fin n ↪o Fin (n + 1)` is the order embedding with range `{i}ᶜ`. The restrictions
 of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i` and `f ∘ frontFace i`, where
-`backFace i = fin.insert_nth i (a i)` and `frontFace i = fin.insert_nth i (b i)` are embeddings
+`backFace i = Fin.insertNth i (a i)` and `frontFace i = Fin.insertNth i (b i)` are embeddings
 `ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
@@ -303,8 +303,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
       Hd Hi
 #align measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable
 
-/-- **Divergence theorem** for a family of functions `f : fin (n + 1) → ℝⁿ⁺¹ → E`. See also
-`measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable'` for a version formulated
+/-- **Divergence theorem** for a family of functions `f : Fin (n + 1) → ℝⁿ⁺¹ → E`. See also
+`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'` for a version formulated
 in terms of a vector-valued function `f : ℝⁿ⁺¹ → Eⁿ⁺¹`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
     (f : Fin (n + 1) → (Fin (n + 1) → ℝ) → E)
@@ -323,7 +323,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
 end
 
 /-- An auxiliary lemma that is used to specialize the general divergence theorem to spaces that do
-not have the form `fin n → ℝ`. -/
+not have the form `Fin n → ℝ`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type _}
     [NormedAddCommGroup F] [NormedSpace ℝ F] [PartialOrder F] [MeasureSpace F] [BorelSpace F]
     (eL : F ≃L[ℝ] (Fin (n + 1) → ℝ)) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
@@ -386,8 +386,8 @@ See also
 * `interval_integral.integral_eq_sub_of_has_deriv_right_of_le` for a version that only assumes right
 differentiability of `f`;
 
-* `measure_theory.integral_eq_of_has_deriv_within_at_off_countable` for a version that works both
-  for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `set.Icc`. -/
+* `MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable` for a version that works both
+  for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
 theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
     (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
@@ -444,7 +444,7 @@ two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1
 divergence of `F` inside the rectangle equals the integral of the normal derivative of `F` along the
 boundary.
 
-See also `measure_theory.integral2_divergence_prod_of_has_fderiv_within_at_off_countable` for a
+See also `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` for a
 version that does not assume `a ≤ b` and uses iterated interval integral instead of the integral
 over `Icc a b`. -/
 theorem integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f g : ℝ × ℝ → E)
@@ -496,7 +496,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f
 divergence of `F` inside the rectangle with vertices `(aᵢ, bⱼ)`, `i, j =1,2`, equals the integral of
 the normal derivative of `F` along the boundary.
 
-See also `measure_theory.integral_divergence_prod_Icc_of_has_fderiv_within_at_off_countable_of_le`
+See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`
 for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`. -/
 theorem integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (f g : ℝ × ℝ → E)
     (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a₁ a₂ b₁ b₂ : ℝ) (s : Set (ℝ × ℝ)) (hs : s.Countable)
