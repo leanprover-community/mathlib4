@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Algebra.PunitInstances
+import Mathlib.Algebra.PUnitInstances
 
 /-!
 # The category of monoids in a monoidal category.
@@ -394,12 +394,14 @@ theorem one_associator {M N P : Mon_ C} :
 
 theorem one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
-  slice_lhs 2 3 => rw [leftUnitor_naturality]; simp
+  slice_lhs 2 3 => rw [leftUnitor_naturality]
+  simp
 #align Mon_.one_left_unitor Mon_.one_leftUnitor
 
 theorem one_rightUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (M.one ⊗ 𝟙 (𝟙_ C))) ≫ (ρ_ M.X).hom = M.one := by
-  slice_lhs 2 3 => rw [rightUnitor_naturality, ← unitors_equal]; simp
+  slice_lhs 2 3 => rw [rightUnitor_naturality, ← unitors_equal]
+  simp
 #align Mon_.one_right_unitor Mon_.one_rightUnitor
 
 variable [BraidedCategory C]
@@ -435,7 +437,8 @@ theorem Mon_tensor_mul_assoc (M N : Mon_ C) :
   rw [← Category.id_comp (𝟙 (M.X ⊗ N.X)), tensor_comp]
   slice_lhs 2 3 => rw [← tensor_id, tensor_μ_natural]
   slice_lhs 3 4 => rw [← tensor_comp, mul_assoc M, mul_assoc N, tensor_comp, tensor_comp]
-  slice_lhs 1 3 => rw [tensor_associativity]
+  -- Porting note: needed to add `dsimp` here.
+  slice_lhs 1 3 => dsimp; rw [tensor_associativity]
   slice_lhs 3 4 => rw [← tensor_μ_natural]
   slice_lhs 2 3 => rw [← tensor_comp, tensor_id]
   simp only [Category.assoc]
@@ -476,25 +479,25 @@ theorem mul_rightUnitor {M : Mon_ C} :
 
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorObj M N :=
-    { pt := M.X ⊗ N.X
+    { X := M.X ⊗ N.X
       one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)
       mul := tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul)
-      one_mul' := Mon_tensor_one_mul M N
-      mul_one' := Mon_tensor_mul_one M N
-      mul_assoc' := Mon_tensor_mul_assoc M N }
-  tensorHom M N P Q f g :=
+      one_mul := Mon_tensor_one_mul M N
+      mul_one := Mon_tensor_mul_one M N
+      mul_assoc := Mon_tensor_mul_assoc M N }
+  tensorHom f g :=
     { hom := f.hom ⊗ g.hom
       one_hom := by
         dsimp
-        slice_lhs 2 3 => rw [← tensor_comp, hom.one_hom f, hom.one_hom g]
+        slice_lhs 2 3 => rw [← tensor_comp, Hom.one_hom f, Hom.one_hom g]
       mul_hom := by
         dsimp
         slice_rhs 1 2 => rw [tensor_μ_natural]
-        slice_lhs 2 3 => rw [← tensor_comp, hom.mul_hom f, hom.mul_hom g, tensor_comp]
+        slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
         simp only [Category.assoc] }
   tensor_id := by intros; ext; apply tensor_id
   tensor_comp := by intros; ext; apply tensor_comp
-  tensorUnit := trivial C
+  tensorUnit' := trivial C
   associator M N P := isoOfIso (α_ M.X N.X P.X) one_associator mul_associator
   associator_naturality := by intros; ext; dsimp; apply associator_naturality
   leftUnitor M := isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
