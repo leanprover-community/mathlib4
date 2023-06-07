@@ -29,15 +29,15 @@ variable (R M)
 
 /-- A version of `tensor_algebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `tensor_algebra.graded_algebra`. -/
-def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥((ι R : M →ₗ[_] _).range ^ i) :=
-  DirectSum.lof R ℕ (fun i => ↥((ι R : M →ₗ[_] _).range ^ i)) 1 ∘ₗ
+nonrec def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i) :=
+  DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align tensor_algebra.graded_algebra.ι TensorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
-      DirectSum.of (fun i => ↥((ι R : M →ₗ[_] _).range ^ i)) 1
-        ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
+      DirectSum.of (fun (i : ℕ) => ↥(LinearMap.range (TensorAlgebra.ι R : M →ₗ[_] _) ^ i)) 1
+        ⟨TensorAlgebra.ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align tensor_algebra.graded_algebra.ι_apply TensorAlgebra.GradedAlgebra.ι_apply
 
@@ -45,19 +45,21 @@ variable {R M}
 
 /-- The tensor algebra is graded by the powers of the submodule `(tensor_algebra.ι R).range`. -/
 instance gradedAlgebra :
-    GradedAlgebra ((· ^ ·) (ι R : M →ₗ[R] TensorAlgebra R M).range : ℕ → Submodule R _) :=
+    GradedAlgebra ((· ^ ·) (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M)) : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply]
-      rw [lift_ι_apply, graded_algebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
+      rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by
     cases' x with x hx
+    dsimp only at hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    refine'
-      Submodule.pow_induction_on_left' _ (fun r => _) (fun x y i hx hy ihx ihy => _)
-        (fun m hm i x hx ih => _) hx
+    refine
+      Submodule.pow_induction_on_left' (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
+        (fun r => ?_) (fun x y i hx hy ihx ihy => ?_) (fun m hm i x hx ih => ?_) hx
+    stop
     · rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     · rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
     · obtain ⟨_, rfl⟩ := hm
@@ -66,4 +68,3 @@ instance gradedAlgebra :
 #align tensor_algebra.graded_algebra TensorAlgebra.gradedAlgebra
 
 end TensorAlgebra
-
