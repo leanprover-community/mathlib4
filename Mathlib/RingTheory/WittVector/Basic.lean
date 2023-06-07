@@ -114,11 +114,9 @@ theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem one : mapFun f (1 : 𝕎 R) = 1 := by
-  ext n
-  simp only [mapFun, mk, comp_apply]
-  cases n
-  . simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, map_one]
-  . simp only [Nat.succ_pos', one_coeff_eq_of_pos, map_zero]
+  ext (_|n)
+  . simp only [mapFun, mk, Nat.zero_eq, comp_apply, lt_self_iff_false, one_coeff_zero, map_one]
+  . simp only [mapFun, mk, comp_apply, Nat.succ_pos', one_coeff_eq_of_pos, map_zero]
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
