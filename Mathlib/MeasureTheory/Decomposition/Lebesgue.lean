@@ -899,6 +899,15 @@ def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
 #align measure_theory.signed_measure.rn_deriv MeasureTheory.SignedMeasure.rnDeriv
 
+-- Porting note: The generated equation theorem is the form of `rnDeriv s μ x`.
+
+theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fun x =>
+    (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
+      (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal :=
+  rfl
+
+attribute [eqns rnDeriv_def] rnDeriv
+
 variable {s t : SignedMeasure α}
 
 @[measurability]
@@ -921,47 +930,46 @@ Given a signed measure `s` and a σ-finite measure `μ`, there exist a signed me
 measurable and integrable function `f`, such that `t` is mutually singular with respect to `μ`
 and `s = t + μ.with_densityᵥ f`. In this case `t = s.singular_part μ` and
 `f = s.rn_deriv μ`. -/
-theorem singularPart_add_with_density_rnDeriv_eq [s.HaveLebesgueDecomposition μ] :
+theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ] :
     s.singularPart μ + μ.withDensityᵥ (s.rnDeriv μ) = s := by
   conv_rhs =>
-    rw [← to_signed_measure_to_jordan_decomposition s, jordan_decomposition.to_signed_measure]
-  rw [singular_part, rn_deriv,
-    with_densityᵥ_sub' (integrable_to_real_of_lintegral_ne_top _ _)
-      (integrable_to_real_of_lintegral_ne_top _ _),
-    with_densityᵥ_to_real, with_densityᵥ_to_real, sub_eq_add_neg, sub_eq_add_neg,
-    add_comm (s.to_jordan_decomposition.pos_part.singular_part μ).toSignedMeasure, ← add_assoc,
-    add_assoc (-(s.to_jordan_decomposition.neg_part.singular_part μ).toSignedMeasure), ←
-    to_signed_measure_add, add_comm, ← add_assoc, ← neg_add, ← to_signed_measure_add, add_comm, ←
-    sub_eq_add_neg]
+    rw [← toSignedMeasure_toJordanDecomposition s, JordanDecomposition.toSignedMeasure]
+  rw [singularPart, rnDeriv,
+    withDensityᵥ_sub' (integrable_toReal_of_lintegral_ne_top _ _)
+      (integrable_toReal_of_lintegral_ne_top _ _),
+    withDensityᵥ_toReal, withDensityᵥ_toReal, sub_eq_add_neg, sub_eq_add_neg,
+    add_comm (s.toJordanDecomposition.posPart.singularPart μ).toSignedMeasure, ← add_assoc,
+    add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
+    ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
+    ← sub_eq_add_neg]
   convert rfl
   -- `convert rfl` much faster than `congr`
-  · exact s.to_jordan_decomposition.pos_part.have_lebesgue_decomposition_add μ
+  · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
   · rw [add_comm]
-    exact s.to_jordan_decomposition.neg_part.have_lebesgue_decomposition_add μ
+    exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
   all_goals
     first
-    | exact (lintegral_rn_deriv_lt_top _ _).Ne
+    | exact (lintegral_rnDeriv_lt_top _ _).ne
     | measurability
-#align measure_theory.signed_measure.singular_part_add_with_density_rn_deriv_eq MeasureTheory.SignedMeasure.singularPart_add_with_density_rnDeriv_eq
+#align measure_theory.signed_measure.singular_part_add_with_density_rn_deriv_eq MeasureTheory.SignedMeasure.singularPart_add_withDensity_rnDeriv_eq
 
 variable {s μ}
 
-theorem jordan_decomposition_add_withDensity_mutuallySingular {f : α → ℝ} (hf : Measurable f)
+theorem jordanDecomposition_add_withDensity_mutuallySingular {f : α → ℝ} (hf : Measurable f)
     (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) :
     (t.toJordanDecomposition.posPart + μ.withDensity fun x : α => ENNReal.ofReal (f x)) ⟂ₘ
       t.toJordanDecomposition.negPart + μ.withDensity fun x : α => ENNReal.ofReal (-f x) := by
-  rw [mutually_singular_ennreal_iff, total_variation_mutually_singular_iff] at htμ
+  rw [mutuallySingular_ennreal_iff, totalVariation_mutuallySingular_iff] at htμ
   change
-    _ ⟂ₘ vector_measure.equiv_measure.to_fun (vector_measure.equiv_measure.inv_fun μ) ∧
-      _ ⟂ₘ vector_measure.equiv_measure.to_fun (vector_measure.equiv_measure.inv_fun μ) at
-    htμ
-  rw [vector_measure.equiv_measure.right_inv] at htμ
+    _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) ∧
+      _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
+  rw [VectorMeasure.equivMeasure.right_inv] at htμ
   exact
-    ((jordan_decomposition.mutually_singular _).add_right
-          (htμ.1.mono_ac (refl _) (with_density_absolutely_continuous _ _))).add_left
-      ((htμ.2.symm.mono_ac (with_density_absolutely_continuous _ _) (refl _)).add_right
-        (with_density_of_real_mutually_singular hf))
-#align measure_theory.signed_measure.jordan_decomposition_add_with_density_mutually_singular MeasureTheory.SignedMeasure.jordan_decomposition_add_withDensity_mutuallySingular
+    ((JordanDecomposition.mutuallySingular _).add_right
+          (htμ.1.mono_ac (refl _) (withDensity_absolutelyContinuous _ _))).add_left
+      ((htμ.2.symm.mono_ac (withDensity_absolutelyContinuous _ _) (refl _)).add_right
+        (withDensity_ofReal_mutuallySingular hf))
+#align measure_theory.signed_measure.jordan_decomposition_add_with_density_mutually_singular MeasureTheory.SignedMeasure.jordanDecomposition_add_withDensity_mutuallySingular
 
 theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
@@ -969,137 +977,134 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
       @JordanDecomposition.mk α _
         (t.toJordanDecomposition.posPart + μ.withDensity fun x => ENNReal.ofReal (f x))
         (t.toJordanDecomposition.negPart + μ.withDensity fun x => ENNReal.ofReal (-f x))
-        (by haveI := is_finite_measure_with_density_of_real hfi.2; infer_instance)
-        (by haveI := is_finite_measure_with_density_of_real hfi.neg.2; infer_instance)
-        (jordan_decomposition_add_withDensity_mutuallySingular hf htμ) := by
-  haveI := is_finite_measure_with_density_of_real hfi.2
-  haveI := is_finite_measure_with_density_of_real hfi.neg.2
-  refine' to_jordan_decomposition_eq _
-  simp_rw [jordan_decomposition.to_signed_measure, hadd]
-  ext (i hi)
-  rw [vector_measure.sub_apply, to_signed_measure_apply_measurable hi,
-      to_signed_measure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
-      ENNReal.toReal_add, add_sub_add_comm, ← to_signed_measure_apply_measurable hi, ←
-      to_signed_measure_apply_measurable hi, ← vector_measure.sub_apply, ←
-      jordan_decomposition.to_signed_measure, to_signed_measure_to_jordan_decomposition,
-      vector_measure.add_apply, ← to_signed_measure_apply_measurable hi, ←
-      to_signed_measure_apply_measurable hi,
-      with_densityᵥ_eq_with_density_pos_part_sub_with_density_neg_part hfi,
-      vector_measure.sub_apply] <;>
-    exact (measure_lt_top _ _).Ne
+        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
+        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
+        (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
+  haveI := isFiniteMeasure_withDensity_ofReal hfi.2
+  haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
+  refine' toJordanDecomposition_eq _
+  simp_rw [JordanDecomposition.toSignedMeasure, hadd]
+  ext i; intro hi
+  rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
+      toSignedMeasure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
+      ENNReal.toReal_add, add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
+      ← toSignedMeasure_apply_measurable hi, ← VectorMeasure.sub_apply,
+      ← JordanDecomposition.toSignedMeasure, toSignedMeasure_toJordanDecomposition,
+      VectorMeasure.add_apply, ← toSignedMeasure_apply_measurable hi,
+      ← toSignedMeasure_apply_measurable hi,
+      withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part hfi,
+      VectorMeasure.sub_apply] <;>
+    exact (measure_lt_top _ _).ne
 #align measure_theory.signed_measure.to_jordan_decomposition_eq_of_eq_add_with_density MeasureTheory.SignedMeasure.toJordanDecomposition_eq_of_eq_add_withDensity
 
-private theorem have_lebesgue_decomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
+private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.HaveLebesgueDecomposition μ := by
   have htμ' := htμ
-  rw [mutually_singular_ennreal_iff] at htμ
-  change _ ⟂ₘ vector_measure.equiv_measure.to_fun (vector_measure.equiv_measure.inv_fun μ) at htμ
-  rw [vector_measure.equiv_measure.right_inv, total_variation_mutually_singular_iff] at htμ
+  rw [mutuallySingular_ennreal_iff] at htμ
+  change _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
+  rw [VectorMeasure.equivMeasure.right_inv, totalVariation_mutuallySingular_iff] at htμ
   refine'
     { posPart := by
-        use ⟨t.to_jordan_decomposition.pos_part, fun x => ENNReal.ofReal (f x)⟩
-        refine' ⟨hf.ennreal_of_real, htμ.1, _⟩
-        rw [to_jordan_decomposition_eq_of_eq_add_with_density hf hfi htμ' hadd]
+        use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
+        refine' ⟨hf.ennreal_ofReal, htμ.1, _⟩
+        rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
       negPart := by
-        use ⟨t.to_jordan_decomposition.neg_part, fun x => ENNReal.ofReal (-f x)⟩
-        refine' ⟨hf.neg.ennreal_of_real, htμ.2, _⟩
-        rw [to_jordan_decomposition_eq_of_eq_add_with_density hf hfi htμ' hadd] }
+        use ⟨t.toJordanDecomposition.negPart, fun x => ENNReal.ofReal (-f x)⟩
+        refine' ⟨hf.neg.ennreal_ofReal, htμ.2, _⟩
+        rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
 theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
     (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.HaveLebesgueDecomposition μ := by
-  by_cases hfi : integrable f μ
-  · exact have_lebesgue_decomposition_mk' μ hf hfi htμ hadd
-  · rw [with_densityᵥ, dif_neg hfi, add_zero] at hadd
-    refine' have_lebesgue_decomposition_mk' μ measurable_zero (integrable_zero _ _ μ) htμ _
-    rwa [with_densityᵥ_zero, add_zero]
+  by_cases hfi : Integrable f μ
+  · exact haveLebesgueDecomposition_mk' μ hf hfi htμ hadd
+  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+    refine' haveLebesgueDecomposition_mk' μ measurable_zero (integrable_zero _ _ μ) htμ _
+    rwa [withDensityᵥ_zero, add_zero]
 #align measure_theory.signed_measure.have_lebesgue_decomposition_mk MeasureTheory.SignedMeasure.haveLebesgueDecomposition_mk
 
-private theorem eq_singular_part' (t : SignedMeasure α) {f : α → ℝ} (hf : Measurable f)
+private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : Measurable f)
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     t = s.singularPart μ := by
   have htμ' := htμ
-  rw [mutually_singular_ennreal_iff, total_variation_mutually_singular_iff] at htμ
+  rw [mutuallySingular_ennreal_iff, totalVariation_mutuallySingular_iff] at htμ
   change
-    _ ⟂ₘ vector_measure.equiv_measure.to_fun (vector_measure.equiv_measure.inv_fun μ) ∧
-      _ ⟂ₘ vector_measure.equiv_measure.to_fun (vector_measure.equiv_measure.inv_fun μ) at
-    htμ
-  rw [vector_measure.equiv_measure.right_inv] at htμ
-  · rw [singular_part, ← t.to_signed_measure_to_jordan_decomposition,
-      jordan_decomposition.to_signed_measure]
+    _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) ∧
+      _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
+  rw [VectorMeasure.equivMeasure.right_inv] at htμ
+  · rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
+      JordanDecomposition.toSignedMeasure]
     congr
     · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := by measurability
-      refine' eq_singular_part hfpos htμ.1 _
-      rw [to_jordan_decomposition_eq_of_eq_add_with_density hf hfi htμ' hadd]
+      refine' eq_singularPart hfpos htμ.1 _
+      rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
     · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) := by measurability
-      refine' eq_singular_part hfneg htμ.2 _
-      rw [to_jordan_decomposition_eq_of_eq_add_with_density hf hfi htμ' hadd]
+      refine' eq_singularPart hfneg htμ.2 _
+      rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
 
 /-- Given a measure `μ`, signed measures `s` and `t`, and a function `f` such that `t` is
-mutually singular with respect to `μ` and `s = t + μ.with_densityᵥ f`, we have
-`t = singular_part s μ`, i.e. `t` is the singular part of the Lebesgue decomposition between
+mutually singular with respect to `μ` and `s = t + μ.withDensityᵥ f`, we have
+`t = singularPart s μ`, i.e. `t` is the singular part of the Lebesgue decomposition between
 `s` and `μ`. -/
 theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure)
     (hadd : s = t + μ.withDensityᵥ f) : t = s.singularPart μ := by
-  by_cases hfi : integrable f μ
-  · refine' eq_singular_part' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ _
+  by_cases hfi : Integrable f μ
+  · refine' eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ _
     convert hadd using 2
-    exact with_densityᵥ_eq.congr_ae hfi.1.ae_eq_mk.symm
-  · rw [with_densityᵥ, dif_neg hfi, add_zero] at hadd
-    refine' eq_singular_part' t measurable_zero (integrable_zero _ _ μ) htμ _
-    rwa [with_densityᵥ_zero, add_zero]
+    exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
+  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+    refine' eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ _
+    rwa [withDensityᵥ_zero, add_zero]
 #align measure_theory.signed_measure.eq_singular_part MeasureTheory.SignedMeasure.eq_singularPart
 
 theorem singularPart_zero (μ : Measure α) : (0 : SignedMeasure α).singularPart μ = 0 := by
-  refine' (eq_singular_part 0 0 vector_measure.mutually_singular.zero_left _).symm
-  rw [zero_add, with_densityᵥ_zero]
+  refine' (eq_singularPart 0 0 VectorMeasure.MutuallySingular.zero_left _).symm
+  rw [zero_add, withDensityᵥ_zero]
 #align measure_theory.signed_measure.singular_part_zero MeasureTheory.SignedMeasure.singularPart_zero
 
 theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
     (-s).singularPart μ = -s.singularPart μ := by
   have h₁ :
     ((-s).toJordanDecomposition.posPart.singularPart μ).toSignedMeasure =
-      (s.to_jordan_decomposition.neg_part.singular_part μ).toSignedMeasure := by
-    refine' to_signed_measure_congr _
-    rw [to_jordan_decomposition_neg, jordan_decomposition.neg_pos_part]
+      (s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure := by
+    refine' toSignedMeasure_congr _
+    rw [toJordanDecomposition_neg, JordanDecomposition.neg_posPart]
   have h₂ :
     ((-s).toJordanDecomposition.negPart.singularPart μ).toSignedMeasure =
-      (s.to_jordan_decomposition.pos_part.singular_part μ).toSignedMeasure := by
-    refine' to_signed_measure_congr _
-    rw [to_jordan_decomposition_neg, jordan_decomposition.neg_neg_part]
-  rw [singular_part, singular_part, neg_sub, h₁, h₂]
+      (s.toJordanDecomposition.posPart.singularPart μ).toSignedMeasure := by
+    refine' toSignedMeasure_congr _
+    rw [toJordanDecomposition_neg, JordanDecomposition.neg_negPart]
+  rw [singularPart, singularPart, neg_sub, h₁, h₂]
 #align measure_theory.signed_measure.singular_part_neg MeasureTheory.SignedMeasure.singularPart_neg
 
-theorem singularPart_smul_nNReal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
+theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
     (r • s).singularPart μ = r • s.singularPart μ := by
-  rw [singular_part, singular_part, smul_sub, ← to_signed_measure_smul, ← to_signed_measure_smul]
+  rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
   conv_lhs =>
     congr
-    congr
-    rw [to_jordan_decomposition_smul, jordan_decomposition.smul_pos_part, singular_part_smul]
-    skip
-    congr
-    rw [to_jordan_decomposition_smul, jordan_decomposition.smul_neg_part, singular_part_smul]
-#align measure_theory.signed_measure.singular_part_smul_nnreal MeasureTheory.SignedMeasure.singularPart_smul_nNReal
+    · congr
+      · rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart, singularPart_smul]
+    · congr
+      rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
+#align measure_theory.signed_measure.singular_part_smul_nnreal MeasureTheory.SignedMeasure.singularPart_smul_nnreal
 
-theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
+nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   by_cases hr : 0 ≤ r
   · lift r to ℝ≥0 using hr
-    exact singular_part_smul_nnreal s μ r
-  · rw [singular_part, singular_part]
+    exact singularPart_smul_nnreal s μ r
+  · rw [singularPart, singularPart]
     conv_lhs =>
       congr
-      congr
-      rw [to_jordan_decomposition_smul_real,
-        jordan_decomposition.real_smul_pos_part_neg _ _ (not_le.1 hr), singular_part_smul]
-      skip
-      congr
-      rw [to_jordan_decomposition_smul_real,
-        jordan_decomposition.real_smul_neg_part_neg _ _ (not_le.1 hr), singular_part_smul]
-    rw [to_signed_measure_smul, to_signed_measure_smul, ← neg_sub, ← smul_sub]
-    change -(((-r).toNNReal : ℝ) • _) = _
+      · congr
+        · rw [toJordanDecomposition_smul_real,
+            JordanDecomposition.real_smul_posPart_neg _ _ (not_le.1 hr), singularPart_smul]
+      · congr
+        · rw [toJordanDecomposition_smul_real,
+            JordanDecomposition.real_smul_negPart_neg _ _ (not_le.1 hr), singularPart_smul]
+    rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub]
+    change -(((-r).toNNReal : ℝ) • (_ : SignedMeasure α)) = _
     rw [← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr (not_le.1 hr))), neg_neg]
 #align measure_theory.signed_measure.singular_part_smul MeasureTheory.SignedMeasure.singularPart_smul
 
@@ -1107,69 +1112,69 @@ theorem singularPart_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebes
     [t.HaveLebesgueDecomposition μ] :
     (s + t).singularPart μ = s.singularPart μ + t.singularPart μ := by
   refine'
-    (eq_singular_part _ (s.rn_deriv μ + t.rn_deriv μ)
-        ((mutually_singular_singular_part s μ).add_left (mutually_singular_singular_part t μ))
+    (eq_singularPart _ (s.rnDeriv μ + t.rnDeriv μ)
+        ((mutuallySingular_singularPart s μ).add_left (mutuallySingular_singularPart t μ))
         _).symm
-  erw [with_densityᵥ_add (integrable_rn_deriv s μ) (integrable_rn_deriv t μ)]
-  rw [add_assoc, add_comm (t.singular_part μ), add_assoc, add_comm _ (t.singular_part μ),
-    singular_part_add_with_density_rn_deriv_eq, ← add_assoc,
-    singular_part_add_with_density_rn_deriv_eq]
+  erw [withDensityᵥ_add (integrable_rnDeriv s μ) (integrable_rnDeriv t μ)]
+  rw [add_assoc, add_comm (t.singularPart μ), add_assoc, add_comm _ (t.singularPart μ),
+    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc,
+    singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.singular_part_add MeasureTheory.SignedMeasure.singularPart_add
 
 theorem singularPart_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] :
     (s - t).singularPart μ = s.singularPart μ - t.singularPart μ := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, singular_part_add, singular_part_neg]
+  rw [sub_eq_add_neg, sub_eq_add_neg, singularPart_add, singularPart_neg]
 #align measure_theory.signed_measure.singular_part_sub MeasureTheory.SignedMeasure.singularPart_sub
 
 /-- Given a measure `μ`, signed measures `s` and `t`, and a function `f` such that `t` is
-mutually singular with respect to `μ` and `s = t + μ.with_densityᵥ f`, we have
-`f = rn_deriv s μ`, i.e. `f` is the Radon-Nikodym derivative of `s` and `μ`. -/
+mutually singular with respect to `μ` and `s = t + μ.withDensityᵥ f`, we have
+`f = rnDeriv s μ`, i.e. `f` is the Radon-Nikodym derivative of `s` and `μ`. -/
 theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f μ)
-    (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) : f =ᵐ[μ] s.rnDeriv μ :=
-  by
+    (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
+    f =ᵐ[μ] s.rnDeriv μ := by
   set f' := hfi.1.mk f
-  have hadd' : s = t + μ.with_densityᵥ f' := by
+  have hadd' : s = t + μ.withDensityᵥ f' := by
     convert hadd using 2
-    exact with_densityᵥ_eq.congr_ae hfi.1.ae_eq_mk.symm
-  haveI := have_lebesgue_decomposition_mk μ hfi.1.measurable_mk htμ hadd'
-  refine' (integrable.ae_eq_of_with_densityᵥ_eq (integrable_rn_deriv _ _) hfi _).symm
-  rw [← add_right_inj t, ← hadd, eq_singular_part _ f htμ hadd,
-    singular_part_add_with_density_rn_deriv_eq]
+    exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
+  haveI := haveLebesgueDecomposition_mk μ hfi.1.measurable_mk htμ hadd'
+  refine' (Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) hfi _).symm
+  rw [← add_right_inj t, ← hadd, eq_singularPart _ f htμ hadd,
+    singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.eq_rn_deriv MeasureTheory.SignedMeasure.eq_rnDeriv
 
 theorem rnDeriv_neg (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] :
     (-s).rnDeriv μ =ᵐ[μ] -s.rnDeriv μ := by
   refine'
-    integrable.ae_eq_of_with_densityᵥ_eq (integrable_rn_deriv _ _) (integrable_rn_deriv _ _).neg _
-  rw [with_densityᵥ_neg, ← add_right_inj ((-s).singularPart μ),
-    singular_part_add_with_density_rn_deriv_eq, singular_part_neg, ← neg_add,
-    singular_part_add_with_density_rn_deriv_eq]
+    Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) (integrable_rnDeriv _ _).neg _
+  rw [withDensityᵥ_neg, ← add_right_inj ((-s).singularPart μ),
+    singularPart_add_withDensity_rnDeriv_eq, singularPart_neg, ← neg_add,
+    singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_neg MeasureTheory.SignedMeasure.rnDeriv_neg
 
 theorem rnDeriv_smul (s : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ] (r : ℝ) :
     (r • s).rnDeriv μ =ᵐ[μ] r • s.rnDeriv μ := by
   refine'
-    integrable.ae_eq_of_with_densityᵥ_eq (integrable_rn_deriv _ _)
-      ((integrable_rn_deriv _ _).smul r) _
-  change _ = μ.with_densityᵥ ((r : ℝ) • s.rn_deriv μ)
-  rw [with_densityᵥ_smul (rn_deriv s μ) (r : ℝ), ← add_right_inj ((r • s).singularPart μ),
-    singular_part_add_with_density_rn_deriv_eq, singular_part_smul]
+    Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _)
+      ((integrable_rnDeriv _ _).smul r) _
+  change _ = μ.withDensityᵥ ((r : ℝ) • s.rnDeriv μ)
+  rw [withDensityᵥ_smul (rnDeriv s μ) (r : ℝ), ← add_right_inj ((r • s).singularPart μ),
+    singularPart_add_withDensity_rnDeriv_eq, singularPart_smul]
   change _ = _ + r • _
-  rw [← smul_add, singular_part_add_with_density_rn_deriv_eq]
+  rw [← smul_add, singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_smul MeasureTheory.SignedMeasure.rnDeriv_smul
 
 theorem rnDeriv_add (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
     [t.HaveLebesgueDecomposition μ] [(s + t).HaveLebesgueDecomposition μ] :
     (s + t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ + t.rnDeriv μ := by
   refine'
-    integrable.ae_eq_of_with_densityᵥ_eq (integrable_rn_deriv _ _)
-      ((integrable_rn_deriv _ _).add (integrable_rn_deriv _ _)) _
-  rw [← add_right_inj ((s + t).singularPart μ), singular_part_add_with_density_rn_deriv_eq,
-    with_densityᵥ_add (integrable_rn_deriv _ _) (integrable_rn_deriv _ _), singular_part_add,
-    add_assoc, add_comm (t.singular_part μ), add_assoc, add_comm _ (t.singular_part μ),
-    singular_part_add_with_density_rn_deriv_eq, ← add_assoc,
-    singular_part_add_with_density_rn_deriv_eq]
+    Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _)
+      ((integrable_rnDeriv _ _).add (integrable_rnDeriv _ _)) _
+  rw [← add_right_inj ((s + t).singularPart μ), singularPart_add_withDensity_rnDeriv_eq,
+    withDensityᵥ_add (integrable_rnDeriv _ _) (integrable_rnDeriv _ _), singularPart_add,
+    add_assoc, add_comm (t.singularPart μ), add_assoc, add_comm _ (t.singularPart μ),
+    singularPart_add_withDensity_rnDeriv_eq, ← add_assoc,
+    singularPart_add_withDensity_rnDeriv_eq]
 #align measure_theory.signed_measure.rn_deriv_add MeasureTheory.SignedMeasure.rnDeriv_add
 
 theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDecomposition μ]
@@ -1177,27 +1182,29 @@ theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDe
     (s - t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ - t.rnDeriv μ := by
   rw [sub_eq_add_neg] at hst
   rw [sub_eq_add_neg, sub_eq_add_neg]
-  exact ae_eq_trans (rn_deriv_add _ _ _) (Filter.EventuallyEq.add (ae_eq_refl _) (rn_deriv_neg _ _))
+  exact ae_eq_trans (rnDeriv_add _ _ _) (Filter.EventuallyEq.add (ae_eq_refl _) (rnDeriv_neg _ _))
 #align measure_theory.signed_measure.rn_deriv_sub MeasureTheory.SignedMeasure.rnDeriv_sub
 
 end SignedMeasure
 
 namespace ComplexMeasure
 
-/-- A complex measure is said to `have_lebesgue_decomposition` with respect to a positive measure
-if both its real and imaginary part `have_lebesgue_decomposition` with respect to that measure. -/
+/-- A complex measure is said to `HaveLebesgueDecomposition` with respect to a positive measure
+if both its real and imaginary part `HaveLebesgueDecomposition` with respect to that measure. -/
 class HaveLebesgueDecomposition (c : ComplexMeasure α) (μ : Measure α) : Prop where
-  re_part : c.re.HaveLebesgueDecomposition μ
-  im_part : c.im.HaveLebesgueDecomposition μ
+  rePart : c.re.HaveLebesgueDecomposition μ
+  imPart : c.im.HaveLebesgueDecomposition μ
 #align measure_theory.complex_measure.have_lebesgue_decomposition MeasureTheory.ComplexMeasure.HaveLebesgueDecomposition
+#align measure_theory.complex_measure.have_lebesgue_decomposition.re_part MeasureTheory.ComplexMeasure.HaveLebesgueDecomposition.rePart
+#align measure_theory.complex_measure.have_lebesgue_decomposition.im_part MeasureTheory.ComplexMeasure.HaveLebesgueDecomposition.imPart
 
-attribute [instance] have_lebesgue_decomposition.re_part
+attribute [instance] HaveLebesgueDecomposition.rePart
 
-attribute [instance] have_lebesgue_decomposition.im_part
+attribute [instance] HaveLebesgueDecomposition.imPart
 
 /-- The singular part between a complex measure `c` and a positive measure `μ` is the complex
-measure satisfying `c.singular_part μ + μ.with_densityᵥ (c.rn_deriv μ) = c`. This property is given
-by `measure_theory.complex_measure.singular_part_add_with_density_rn_deriv_eq`. -/
+measure satisfying `c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c`. This property is given
+by `MeasureTheory.ComplexMeasure.singularPart_add_withDensity_rnDeriv_eq`. -/
 def singularPart (c : ComplexMeasure α) (μ : Measure α) : ComplexMeasure α :=
   (c.re.singularPart μ).toComplexMeasure (c.im.singularPart μ)
 #align measure_theory.complex_measure.singular_part MeasureTheory.ComplexMeasure.singularPart
@@ -1210,31 +1217,31 @@ def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
 variable {c : ComplexMeasure α}
 
 theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrable (c.rnDeriv μ) μ := by
-  rw [← mem_ℒp_one_iff_integrable, ← mem_ℒp_re_im_iff]
+  rw [← memℒp_one_iff_integrable, ← memℒp_re_im_iff]
   exact
-    ⟨mem_ℒp_one_iff_integrable.2 (signed_measure.integrable_rn_deriv _ _),
-      mem_ℒp_one_iff_integrable.2 (signed_measure.integrable_rn_deriv _ _)⟩
+    ⟨memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
+      memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 #align measure_theory.complex_measure.integrable_rn_deriv MeasureTheory.ComplexMeasure.integrable_rnDeriv
 
-theorem singularPart_add_with_density_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
+theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
-  conv_rhs => rw [← c.to_complex_measure_to_signed_measure]
-  ext (i hi) : 1
-  rw [vector_measure.add_apply, signed_measure.to_complex_measure_apply]
+  conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
+  ext i : 1; intro hi
+  rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   ext
-  · rw [Complex.add_re, with_densityᵥ_apply (c.integrable_rn_deriv μ) hi, ← IsROrC.re_eq_complex_re,
-      ← integral_re (c.integrable_rn_deriv μ).IntegrableOn, IsROrC.re_eq_complex_re, ←
-      with_densityᵥ_apply _ hi]
-    · change (c.re.singular_part μ + μ.with_densityᵥ (c.re.rn_deriv μ)) i = _
-      rw [c.re.singular_part_add_with_density_rn_deriv_eq μ]
-    · exact signed_measure.integrable_rn_deriv _ _
-  · rw [Complex.add_im, with_densityᵥ_apply (c.integrable_rn_deriv μ) hi, ← IsROrC.im_eq_complex_im,
-      ← integral_im (c.integrable_rn_deriv μ).IntegrableOn, IsROrC.im_eq_complex_im, ←
-      with_densityᵥ_apply _ hi]
-    · change (c.im.singular_part μ + μ.with_densityᵥ (c.im.rn_deriv μ)) i = _
-      rw [c.im.singular_part_add_with_density_rn_deriv_eq μ]
-    · exact signed_measure.integrable_rn_deriv _ _
-#align measure_theory.complex_measure.singular_part_add_with_density_rn_deriv_eq MeasureTheory.ComplexMeasure.singularPart_add_with_density_rnDeriv_eq
+  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,
+      ← integral_re (c.integrable_rnDeriv μ).integrableOn, IsROrC.re_eq_complex_re,
+      ← withDensityᵥ_apply _ hi]
+    · change (c.re.singularPart μ + μ.withDensityᵥ (c.re.rnDeriv μ)) i = _
+      rw [c.re.singularPart_add_withDensity_rnDeriv_eq μ]
+    · exact SignedMeasure.integrable_rnDeriv _ _
+  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.im_eq_complex_im,
+      ← integral_im (c.integrable_rnDeriv μ).integrableOn, IsROrC.im_eq_complex_im,
+      ← withDensityᵥ_apply _ hi]
+    · change (c.im.singularPart μ + μ.withDensityᵥ (c.im.rnDeriv μ)) i = _
+      rw [c.im.singularPart_add_withDensity_rnDeriv_eq μ]
+    · exact SignedMeasure.integrable_rnDeriv _ _
+#align measure_theory.complex_measure.singular_part_add_with_density_rn_deriv_eq MeasureTheory.ComplexMeasure.singularPart_add_withDensity_rnDeriv_eq
 
 end ComplexMeasure
 
