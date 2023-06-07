@@ -100,7 +100,7 @@ variable (f : R →+* S) (x y : WittVector p R)
 macro "map_fun_tac" : tactic => `(tactic| (
   ( ext n ) <;>
   ( simp only [mapFun, mk, comp_apply,
-      -- porting note: these lemmas do not have the `simp` tag in mathlib4
+      -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
       add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
       peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] ) <;>
   ( apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl ) <;>
