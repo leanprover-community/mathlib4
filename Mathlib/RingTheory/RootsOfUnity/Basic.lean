@@ -986,11 +986,10 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   generalize_proofs h
   have := h.choose_spec
   dsimp only [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_algHom] at this
-  refine' (_ : ↑hμ.toRootsOfUnity ^ _ = _).trans this.symm
+  refine' (_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
-  congr 1
-  rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hμ.toRootsOfUnity_coe_val,
-    ← hμ.eq_order_of, ZMod.val_nat_cast]
+  congr 2
+  rw [pow_eq_pow_iff_modEq, ZMod.val_nat_cast, hμ.eq_orderOf, ← orderOf_subgroup, ← orderOf_units]
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
 
