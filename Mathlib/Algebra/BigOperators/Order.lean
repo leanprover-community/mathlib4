@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -120,6 +121,22 @@ theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏
 or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i in s, f i ≤ ∑ i in s, g i`. -/
 add_decl_doc sum_le_sum
+
+/-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
+equal to the corresponding factor `g i` of another finite product, then `s.prod f ≤ s.prod g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod'`, convenient
+for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_le_sum]
+theorem _root_.GCongr.prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : s.prod f ≤ s.prod g :=
+  s.prod_le_prod' h
+
+/-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
+or equal to the corresponding summand `g i` of another finite sum, then `s.sum f ≤ s.sum g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.sum_le_sum`, convenient
+for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_le_sum
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i in s, f i :=
@@ -440,6 +457,25 @@ theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g 
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
 
+/-- In an ordered commutative monoid, if each factor `f i` of one nontrivial finite product is
+strictly less than the corresponding factor `g i` of another nontrivial finite product, then
+`s.prod f < s.prod g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_lt_prod_of_nonempty'`,
+convenient for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_lt_sum_of_nonempty]
+theorem _root_.GCongr.prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
+    s.prod f < s.prod g :=
+  s.prod_lt_prod_of_nonempty' hs Hlt
+
+/-- In an ordered additive commutative monoid, if each summand `f i` of one nontrivial finite sum is
+strictly less than the corresponding summand `g i` of another nontrivial finite sum, then
+`s.sum f < s.sum g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_sum_of_nonempty`,
+convenient for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_lt_sum_of_nonempty
+
 -- Porting note: TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
@@ -568,8 +604,18 @@ theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g 
     · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
 
+/-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
+product of `f i` is less than or equal to the product of `g i`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod`, convenient
+for the `gcongr` tactic. -/
+@[gcongr]
+theorem _root_.GCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
+    s.prod f ≤ s.prod g :=
+  s.prod_le_prod h0 h1
+
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
-See also `finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
+See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 := by
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one

@@ -58,8 +58,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us
@@ -312,17 +312,17 @@ syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
-Equivalently, it can prove a linear inequality by assuming its negation and proving `false`.
+Equivalently, it can prove a linear inequality by assuming its negation and proving `False`.
 
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
-the rationals. While there is some special handling for non-dense orders like `nat` and `int`,
+the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
 goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
 example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : false :=
+        (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```
 

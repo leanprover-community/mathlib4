@@ -9,7 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.Top.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
@@ -51,7 +51,7 @@ instance : Category TopCommRingCat.{u} where
   comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
-      cases f;
+      cases f
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 

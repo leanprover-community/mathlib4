@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
+! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -431,11 +431,7 @@ theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s
 
 theorem smul_iSup [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {ι} (f : ι → OuterMeasure α) (c : R) :
     (c • ⨆ i, f i) = ⨆ i, c • f i :=
-  ext fun s => by
-  rw [smul_apply, ← smul_one_mul, iSup]
-  simp only [iSup_apply, smul_apply, ← smul_one_mul c (f _ _)]
-  rw [←iSup, ←ENNReal.mul_iSup]
-  simp
+  ext fun s => by simp only [smul_apply, iSup_apply, ENNReal.smul_iSup]
 #align measure_theory.outer_measure.smul_supr MeasureTheory.OuterMeasure.smul_iSup
 
 end Supremum
@@ -661,7 +657,7 @@ variable {α : Type _} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 /-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
 protected def ofFunction : OuterMeasure α :=
-  let μ s := ⨅ (f : ℕ → Set α) (_h : s ⊆ ⋃ i, f i), ∑' i, m (f i)
+  let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
     empty :=
       le_antisymm
@@ -698,7 +694,7 @@ protected def ofFunction : OuterMeasure α :=
 #align measure_theory.outer_measure.of_function MeasureTheory.OuterMeasure.ofFunction
 
 theorem ofFunction_apply (s : Set α) :
-    OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_h : s ⊆ iUnion t), ∑' n, m (t n) :=
+    OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=
   rfl
 #align measure_theory.outer_measure.of_function_apply MeasureTheory.OuterMeasure.ofFunction_apply
 
@@ -841,7 +837,7 @@ variable {α : Type _} (m : Set α → ℝ≥0∞)
   satisfying `μ s ≤ m s` for all `s : Set α`. This is the same as `OuterMeasure.ofFunction`,
   except that it doesn't require `m ∅ = 0`. -/
 def boundedBy : OuterMeasure α :=
-  OuterMeasure.ofFunction (fun s => ⨆ _h : s.Nonempty, m s) (by simp [Set.not_nonempty_empty])
+  OuterMeasure.ofFunction (fun s => ⨆ _ : s.Nonempty, m s) (by simp [Set.not_nonempty_empty])
 #align measure_theory.outer_measure.bounded_by MeasureTheory.OuterMeasure.boundedBy
 
 variable {m}
@@ -852,15 +848,15 @@ theorem boundedBy_le (s : Set α) : boundedBy m s ≤ m s :=
 
 theorem boundedBy_eq_ofFunction (m_empty : m ∅ = 0) (s : Set α) :
     boundedBy m s = OuterMeasure.ofFunction m m_empty s := by
-  have : (fun s : Set α => ⨆ _h : s.Nonempty, m s) = m := by
+  have : (fun s : Set α => ⨆ _ : s.Nonempty, m s) = m := by
     ext1 t
     cases' t.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty, m_empty]
   simp [boundedBy, this]
 #align measure_theory.outer_measure.bounded_by_eq_of_function MeasureTheory.OuterMeasure.boundedBy_eq_ofFunction
 
 theorem boundedBy_apply (s : Set α) :
-    boundedBy m s = ⨅ (t : ℕ → Set α) (_h : s ⊆ iUnion t),
-                      ∑' n, ⨆ _h : (t n).Nonempty, m (t n) := by
+    boundedBy m s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t),
+                      ∑' n, ⨆ _ : (t n).Nonempty, m (t n) := by
   simp [boundedBy, ofFunction_apply]
 #align measure_theory.outer_measure.bounded_by_apply MeasureTheory.OuterMeasure.boundedBy_apply
 
@@ -879,12 +875,26 @@ theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty]
 #align measure_theory.outer_measure.le_bounded_by MeasureTheory.OuterMeasure.le_boundedBy
 
-theorem le_bounded_by' {μ : OuterMeasure α} :
+theorem le_boundedBy' {μ : OuterMeasure α} :
     μ ≤ boundedBy m ↔ ∀ s : Set α, s.Nonempty → μ s ≤ m s := by
   rw [le_boundedBy, forall_congr']
   intro s
   cases' s.eq_empty_or_nonempty with h h <;> simp [h]
-#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_bounded_by'
+#align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_boundedBy'
+
+@[simp]
+theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
+  rw [eq_top_iff, le_boundedBy']
+  intro s hs
+  rw [top_apply hs]
+  exact le_rfl
+#align measure_theory.outer_measure.bounded_by_top MeasureTheory.OuterMeasure.boundedBy_top
+
+@[simp]
+theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 := by
+  rw [← coe_bot, eq_bot_iff]
+  apply boundedBy_le
+#align measure_theory.outer_measure.bounded_by_zero MeasureTheory.OuterMeasure.boundedBy_zero
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
   simp only [boundedBy , smul_ofFunction hc]
@@ -1127,11 +1137,11 @@ section sInfGen
   function is defined to be `0` on `∅`, even if the collection of outer measures is empty.
   The outer measure generated by this function is the infimum of the given outer measures. -/
 def sInfGen (m : Set (OuterMeasure α)) (s : Set α) : ℝ≥0∞ :=
-  ⨅ (μ : OuterMeasure α) (_h : μ ∈ m), μ s
+  ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ s
 #align measure_theory.outer_measure.Inf_gen MeasureTheory.OuterMeasure.sInfGen
 
 theorem sInfGen_def (m : Set (OuterMeasure α)) (t : Set α) :
-    sInfGen m t = ⨅ (μ : OuterMeasure α) (_h : μ ∈ m), μ t :=
+    sInfGen m t = ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ t :=
   rfl
 #align measure_theory.outer_measure.Inf_gen_def MeasureTheory.OuterMeasure.sInfGen_def
 
@@ -1146,7 +1156,7 @@ theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
 #align measure_theory.outer_measure.Inf_eq_bounded_by_Inf_gen MeasureTheory.OuterMeasure.sInf_eq_boundedBy_sInfGen
 
 theorem iSup_sInfGen_nonempty {m : Set (OuterMeasure α)} (h : m.Nonempty) (t : Set α) :
-    (⨆ _h : t.Nonempty, sInfGen m t) = ⨅ (μ : OuterMeasure α) (_h : μ ∈ m), μ t := by
+    (⨆ _ : t.Nonempty, sInfGen m t) = ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ t := by
   rcases t.eq_empty_or_nonempty with (rfl | ht)
   · rcases h with ⟨μ, hμ⟩
     rw [eq_false Set.not_nonempty_empty, iSup_false, eq_comm]
@@ -1161,7 +1171,7 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem sInf_apply {m : Set (OuterMeasure α)} {s : Set α} (h : m.Nonempty) :
     sInf m s =
-      ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_h3 : μ ∈ m), μ (t n) :=
+      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) :=
   by simp_rw [sInf_eq_boundedBy_sInfGen, boundedBy_apply, iSup_sInfGen_nonempty h]
 #align measure_theory.outer_measure.Inf_apply MeasureTheory.OuterMeasure.sInf_apply
 
@@ -1170,7 +1180,7 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem sInf_apply' {m : Set (OuterMeasure α)} {s : Set α} (h : s.Nonempty) :
     sInf m s =
-      ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_h3 : μ ∈ m), μ (t n) :=
+      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) :=
   m.eq_empty_or_nonempty.elim (fun hm => by simp [hm, h]) sInf_apply
 #align measure_theory.outer_measure.Inf_apply' MeasureTheory.OuterMeasure.sInf_apply'
 
@@ -1178,7 +1188,7 @@ theorem sInf_apply' {m : Set (OuterMeasure α)} {s : Set α} (h : s.Nonempty) :
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem iInf_apply {ι} [Nonempty ι] (m : ι → OuterMeasure α) (s : Set α) :
-    (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
+    (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
   rw [iInf, sInf_apply (range_nonempty m)]
   simp only [iInf_range]
 #align measure_theory.outer_measure.infi_apply MeasureTheory.OuterMeasure.iInf_apply
@@ -1187,7 +1197,7 @@ theorem iInf_apply {ι} [Nonempty ι] (m : ι → OuterMeasure α) (s : Set α) 
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem iInf_apply' {ι} (m : ι → OuterMeasure α) {s : Set α} (hs : s.Nonempty) :
-    (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
+    (⨅ i, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i, m i (t n) := by
   rw [iInf, sInf_apply' hs]
   simp only [iInf_range]
 #align measure_theory.outer_measure.infi_apply' MeasureTheory.OuterMeasure.iInf_apply'
@@ -1196,7 +1206,7 @@ theorem iInf_apply' {ι} (m : ι → OuterMeasure α) {s : Set α} (hs : s.Nonem
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure α) (s : Set α) :
-    (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
+    (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
   haveI := hI.to_subtype
   simp only [← iInf_subtype'', iInf_apply]
 #align measure_theory.outer_measure.binfi_apply MeasureTheory.OuterMeasure.biInf_apply
@@ -1205,7 +1215,7 @@ theorem biInf_apply {ι} {I : Set ι} (hI : I.Nonempty) (m : ι → OuterMeasure
 the minimum value of a measure on that set: it is the infimum sum of measures of countable set of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem biInf_apply' {ι} (I : Set ι) (m : ι → OuterMeasure α) {s : Set α} (hs : s.Nonempty) :
-    (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_h2 : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
+    (⨅ i ∈ I, m i) s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ i ∈ I, m i (t n) := by
   simp only [← iInf_subtype'', iInf_apply' _ hs]
 #align measure_theory.outer_measure.binfi_apply' MeasureTheory.OuterMeasure.biInf_apply'
 
@@ -1315,6 +1325,16 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 #align measure_theory.extend_eq_top MeasureTheory.extend_eq_top
 
+theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+    c • extend m = extend fun s h => c • m s h := by
+  ext1 s
+  dsimp [extend]
+  by_cases h : P s
+  · simp [h]
+  · simp [h, ENNReal.smul_top, hc]
+#align measure_theory.smul_extend MeasureTheory.smul_extend
+
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]
   intro
@@ -1327,6 +1347,11 @@ theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s →
     extend m sa = extend mb sb :=
   iInf_congr_Prop hP fun _h => hm _ _
 #align measure_theory.extend_congr MeasureTheory.extend_congr
+
+@[simp]
+theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+  funext fun _ => iInf_eq_top.mpr fun _ => rfl
+#align measure_theory.extend_top MeasureTheory.extend_top
 
 end Extend
 
@@ -1448,7 +1473,7 @@ theorem inducedOuterMeasure_eq' {s : Set α} (hs : P s) : inducedOuterMeasure m 
 #align measure_theory.induced_outer_measure_eq' MeasureTheory.inducedOuterMeasure_eq'
 
 theorem inducedOuterMeasure_eq_iInf (s : Set α) :
-    inducedOuterMeasure m P0 m0 s = ⨅ (t : Set α) (ht : P t) (_h : s ⊆ t), m t ht := by
+    inducedOuterMeasure m P0 m0 s = ⨅ (t : Set α) (ht : P t) (_ : s ⊆ t), m t ht := by
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
@@ -1627,7 +1652,7 @@ theorem trim_eq_trim_iff {m₁ m₂ : OuterMeasure α} :
   simp only [le_antisymm_iff, trim_le_trim_iff, forall_and]
 #align measure_theory.outer_measure.trim_eq_trim_iff MeasureTheory.OuterMeasure.trim_eq_trim_iff
 
-theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_st : s ⊆ t) (_ht : MeasurableSet t), m t := by
+theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), m t := by
   simp (config := { singlePass := true }) only [iInf_comm]
   exact
     inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => m.iUnion_nat f)
@@ -1641,6 +1666,11 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 #align measure_theory.outer_measure.trim_trim MeasureTheory.OuterMeasure.trim_trim
+
+@[simp]
+theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
+  eq_top_iff.2 <| le_trim _
+#align measure_theory.outer_measure.trim_top MeasureTheory.OuterMeasure.trim_top
 
 @[simp]
 theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=

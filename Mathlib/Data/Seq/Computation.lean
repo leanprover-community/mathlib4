@@ -11,7 +11,7 @@ Coinductive formalization of unbounded computations.
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -1221,7 +1221,7 @@ theorem liftRel_congr {R : α → β → Prop} {ca ca' : Computation α} {cb cb'
   and_congr
     (forall_congr' fun _ => imp_congr (ha _) <| exists_congr fun _ => and_congr (hb _) Iff.rfl)
     (forall_congr' fun _ => imp_congr (hb _) <| exists_congr fun _ => and_congr (ha _) Iff.rfl)
-#align computation.lift_rel_congr Computation.liftRel_congr
+#align computation.lift_gcongr Computation.liftRel_congr
 
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2)
@@ -1241,7 +1241,7 @@ theorem map_congr {s1 s2 : Computation α} {f : α → β}
     exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 #align computation.map_congr Computation.map_congr
 
-/-- Alternate defintion of `LiftRel` over relations between `Computation`s-/
+/-- Alternate definition of `LiftRel` over relations between `Computation`s-/
 def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β → Prop) :
     Sum α (Computation α) → Sum β (Computation β) → Prop
   | Sum.inl a, Sum.inl b => R a b

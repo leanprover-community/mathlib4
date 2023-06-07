@@ -13,8 +13,6 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.Set
-import Qq
 
 /-!
 # The finite type with `n` elements
@@ -395,7 +393,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 -- porting note: `fin.val_zero` previously existed in core with statement
--- `(0 : fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- `(0 : Fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
 -- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
@@ -986,10 +984,6 @@ theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n :=
   simp
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
--- HACK: CovariantClass lemma times out sigh
--- Investigate this during lean4#2210 cleanup.
-attribute [nolint simpNF] lt_add_one_iff add_one_lt_iff
-
 @[simp]
 theorem le_zero_iff {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
@@ -1191,7 +1185,7 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the succesor of the cast. See `Fin.succ_cast_eq` for rewriting in
+/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
 the reverse direction. -/
 @[simp]
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :

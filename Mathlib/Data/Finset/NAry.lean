@@ -40,7 +40,7 @@ variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ'] 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ :=
-  (s ×ᶠ t).image <| uncurry f
+  (s ×ˢ t).image <| uncurry f
 #align finset.image₂ Finset.image₂
 
 @[simp]
@@ -333,18 +333,18 @@ theorem image₂_image_right (f : α → γ → δ) (g : β → γ) :
 
 @[simp]
 theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
-    image₂ Prod.mk s t = s ×ᶠ t := by ext; simp [Prod.ext_iff]
+    image₂ Prod.mk s t = s ×ˢ t := by ext; simp [Prod.ext_iff]
 #align finset.image₂_mk_eq_product Finset.image₂_mk_eq_product
 
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
-    image₂ (curry f) s t = (s ×ᶠ t).image f := by
+    image₂ (curry f) s t = (s ×ˢ t).image f := by
   classical rw [← image₂_mk_eq_product, image_image₂]; dsimp [curry]
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    (s ×ᶠ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
+    (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
 theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
