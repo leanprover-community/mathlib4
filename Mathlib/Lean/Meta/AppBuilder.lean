@@ -234,3 +234,12 @@ def mkAppMWithLevelsUnifying' (f : ExprWithLevels) (xs : Array Expr) (reducing :
   let e ← withAppBuilderTrace f xs do
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
   abstract env e
+
+/-- Like `mkAppMWithLevelsUnifying'`, but returns any new mvars created. -/
+def mkAppMWithLevelsUnifyingWithNewMVars' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM (ExprWithLevels × Array MVarId × Array MVarId) := do
+  let (env, f) ← levelMetaTelescope f
+  let fType ← inferType f
+  let (e, implicitMVars, instMVars) ← withAppBuilderTrace' f xs do
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
+  return (← abstract env e, implicitMVars, instMVars)
