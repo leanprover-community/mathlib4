@@ -16,7 +16,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 ## Main statements
 
 This file contains upper and lower bounds for real trigonometric functions in terms
-of polynomials. See `trigonometric.basic` for more elementary inequalities, establishing
+of polynomials. See `Trigonometric.Basic` for more elementary inequalities, establishing
 the ranges of these functions, and their monotonicity in suitable intervals.
 
 Here we prove the following:
@@ -36,6 +36,8 @@ sin, cos, tan, angle
 
 noncomputable section
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 open Set
 
 namespace Real
@@ -48,7 +50,7 @@ theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x := by
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
   have := le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
-  rw [sub_le_iff_le_add', hx] at this 
+  rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
   refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
@@ -64,9 +66,9 @@ a simpler proof. -/
 theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin x := by
   have hx : |x| = x := abs_of_nonneg h.le
   have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
-  rw [le_sub_iff_add_le, hx] at this 
+  rw [le_sub_iff_add_le, hx] at this
   refine' lt_of_lt_of_le _ this
-  have : x ^ 3 / 4 - x ^ 3 / 6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
+  have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by ring
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
   refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
@@ -76,7 +78,7 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
-  HasDerivAt.deriv <| by simpa using (has_deriv_at_tan h).add (hasDerivAt_id x).neg
+  HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 #align real.deriv_tan_sub_id Real.deriv_tan_sub_id
 
 /-- For all `0 < x < π/2` we have `x < tan x`.
@@ -92,23 +94,24 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     exact cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
   have sin_pos : ∀ {y : ℝ}, y ∈ interior U → 0 < sin y := by
     intro y hy
-    rw [intU] at hy 
+    rw [intU] at hy
     exact sin_pos_of_mem_Ioo (Ioo_subset_Ioo_right (div_le_self pi_pos.le one_le_two) hy)
   have tan_cts_U : ContinuousOn tan U := by
-    apply ContinuousOn.mono continuous_on_tan
+    apply ContinuousOn.mono continuousOn_tan
     intro z hz
-    simp only [mem_set_of_eq]
+    simp only [mem_setOf_eq]
     exact (cos_pos hz).ne'
   have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
   have deriv_pos : ∀ y : ℝ, y ∈ interior U → 0 < deriv (fun y' : ℝ => tan y' - y') y := by
     intro y hy
     have := cos_pos (interior_subset hy)
     simp only [deriv_tan_sub_id y this.ne', one_div, gt_iff_lt, sub_pos]
+    norm_cast
     have bd2 : cos y ^ 2 < 1 := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
       simpa only [Ne.def, sub_eq_self, pow_eq_zero_iff, Nat.succ_pos'] using (sin_pos hy).ne'
-    rwa [lt_inv, inv_one]
+    rwa [one_div, lt_inv, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'
   have mono := Convex.strictMonoOn_of_deriv_pos (convex_Ico 0 (π / 2)) tan_minus_id_cts deriv_pos
@@ -124,14 +127,15 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
 #align real.le_tan Real.le_tan
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
-    (hx3 : x ≠ 0) : cos x < 1 / sqrt (x ^ 2 + 1) := by
-  suffices ∀ {y : ℝ} (hy1 : 0 < y) (hy2 : y ≤ 3 * π / 2), cos y < 1 / sqrt (y ^ 2 + 1) by
-    rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨⟩
+    (hx3 : x ≠ 0) : cos x < ↑1 / sqrt (x ^ 2 + 1) := by
+  suffices ∀ {y : ℝ} (_ : 0 < y) (_ : y ≤ 3 * π / 2), cos y < ↑1 / sqrt (y ^ 2 + 1) by
+    rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
     · convert this (by linarith : 0 < -x) (by linarith) using 1
-      · rw [cos_neg]; · rw [neg_sq]
+      · rw [cos_neg]
+      · rw [neg_sq]
   intro y hy1 hy2
-  have hy3 : 0 < y ^ 2 + 1 := by linarith [sq_nonneg y]
+  have hy3 : ↑0 < y ^ 2 + 1 := by linarith [sq_nonneg y]
   rcases lt_or_le y (π / 2) with (hy2' | hy1')
   · -- Main case : `0 < y < π / 2`
     have hy4 : 0 < cos y := cos_pos_of_mem_Ioo ⟨by linarith, hy2'⟩
@@ -147,11 +151,10 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
 #align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 
 theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2) :
-    cos x ≤ 1 / sqrt (x ^ 2 + 1) := by
+    cos x ≤ ↑1 / sqrt (x ^ 2 + 1) := by
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 #align real.cos_le_one_div_sqrt_sq_add_one Real.cos_le_one_div_sqrt_sq_add_one
 
 end Real
-
