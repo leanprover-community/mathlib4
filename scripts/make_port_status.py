@@ -75,6 +75,7 @@ def get_mathlib4_module_commit_info(contents):
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
 data = dict()
 for path4 in Path(mathlib4_root).glob('**/*.lean'):
+    # we definitely do not want to look in `port-repos` here!
     if path4.relative_to(mathlib4_root).parts[0] not in ('Mathlib', 'Archive', 'Counterexamples'):
         continue
     module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
