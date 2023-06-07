@@ -192,8 +192,8 @@ elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
   evalTactic (← `(tactic|
   ext n  <;>
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $_x n)) $_y <;>
-  simp only [HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg,
-    HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
+  simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, OfNat.ofNat, One.one,
+    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]  <;>
   simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
   ))
@@ -213,11 +213,9 @@ theorem matrix_vecEmpty_coeff {R} (i j) :
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
-  stop
   ghost_fun_tac 0, ![]
 
 private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
-  stop
   ghost_fun_tac 1, ![]
 
 private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
