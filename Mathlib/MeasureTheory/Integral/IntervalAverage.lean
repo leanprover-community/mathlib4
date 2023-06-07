@@ -15,7 +15,7 @@ import Mathlib.MeasureTheory.Integral.Average
 # Integral average over an interval
 
 In this file we introduce notation `⨍ x in a..b, f x` for the average `⨍ x in Ι a b, f x` of `f`
-over the interval `Ι a b = set.Ioc (min a b) (max a b)` w.r.t. the Lebesgue measure, then prove
+over the interval `Ι a b = Set.Ioc (min a b) (max a b)` w.r.t. the Lebesgue measure, then prove
 formulas for this average:
 
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
@@ -36,21 +36,19 @@ open scoped Interval
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
--- mathport name: «expr⨍ in .. , »
-notation3"⨍ "(...)" in "a".."b", "r:(scoped f => average Measure.restrict volume Ι a b f) => r
+notation3 (prettyPrint := false)
+  "⨍ "(...)" in "a".."b", "r:(scoped f => average (Measure.restrict volume (Ι a b)) f) => r
 
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
-  rw [set_average_eq, set_average_eq, uIoc_swap]
+  rw [set_average_eq, set_average_eq, uIoc_comm]
 #align interval_average_symm interval_average_symm
 
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   cases' le_or_lt a b with h h
-  ·
-    rw [set_average_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
+  · rw [set_average_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
       ENNReal.toReal_ofReal (sub_nonneg.2 h)]
-  ·
-    rw [set_average_eq, uIoc_of_lt h, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,
+  · rw [set_average_eq, uIoc_of_lt h, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,
       ENNReal.toReal_ofReal (sub_nonneg.2 h.le), smul_neg, ← neg_smul, ← inv_neg, neg_sub]
 #align interval_average_eq interval_average_eq
 
@@ -58,4 +56,3 @@ theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
     (⨍ x in a..b, f x) = (∫ x in a..b, f x) / (b - a) := by
   rw [interval_average_eq, smul_eq_mul, div_eq_inv_mul]
 #align interval_average_eq_div interval_average_eq_div
-
