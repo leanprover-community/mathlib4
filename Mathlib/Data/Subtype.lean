@@ -104,7 +104,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 #align subtype.coe_mk Subtype.coe_mk
 
 -- Porting note: comment out `@[simp, nolint simp_nf]`
--- Porting note: not clear if "build-in reduction doesn't always work" is still relevant
+-- Porting note: not clear if "built-in reduction doesn't always work" is still relevant
 -- built-in reduction doesn't always work
 -- @[simp, nolint simp_nf]
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=

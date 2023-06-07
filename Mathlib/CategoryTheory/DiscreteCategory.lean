@@ -116,8 +116,13 @@ attribute [local tidy] tactic.discrete_cases
 
 /- Porting note: rewrote `discrete_cases` tactic -/
 /-- A simple tactic to run `cases` on any `discrete α` hypotheses. -/
-macro "discrete_cases": tactic =>
-  `(tactic|casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
+macro "discrete_cases" : tactic =>
+  `(tactic| fail_if_no_progress casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
+
+open Lean Elab Tactic in
+/-- Wrapper for `discrete_cases` so `aesop_cat` can call it. -/
+def discreteCases : TacticM Unit := do
+  evalTactic (← `(tactic| discrete_cases))
 
 instance [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)

@@ -48,10 +48,11 @@ namespace Alias
 open Lean Elab Parser.Command
 
 /-- Adds some copies of a theorem or definition. -/
-syntax (name := alias) (docComment)? "alias " ident " ← " ident* : command
+syntax (name := alias) (docComment)? "alias " ident " ←" (ppSpace ident)* : command
 
 /-- Adds one-way implication declarations. -/
-syntax (name := aliasLR) (docComment)? "alias " ident " ↔ " binderIdent binderIdent : command
+syntax (name := aliasLR) (docComment)?
+  "alias " ident " ↔ " binderIdent ppSpace binderIdent : command
 
 /-- Adds one-way implication declarations, inferring names for them. -/
 syntax (name := aliasLRDots) (docComment)? "alias " ident " ↔ " ".." : command

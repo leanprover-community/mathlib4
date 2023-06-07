@@ -84,7 +84,7 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   choose t_inv ht_inv using hXt
   choose U hxU hU using htf
   -- Send each `i` to the union of `t a` over `a ∈ ind ⁻¹' {i}`
-  refine' ⟨fun i ↦ ⋃ (a : α) (_ha : ind a = i), t a, _, _, _, _⟩
+  refine' ⟨fun i ↦ ⋃ (a : α) (_ : ind a = i), t a, _, _, _, _⟩
   · exact fun a ↦ isOpen_iUnion fun a ↦ isOpen_iUnion fun _ ↦ hto a
   · simp only [eq_univ_iff_forall, mem_iUnion]
     exact fun x ↦ ⟨ind (t_inv x), _, rfl, ht_inv _⟩

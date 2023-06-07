@@ -10,7 +10,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.GroupTheory.EckmannHilton
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 /-!
 # Constructing a semiadditive structure from binary biproducts
 

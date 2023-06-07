@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.real.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
+! leanprover-community/mathlib commit cb42593171ba005beaaf4549fcfe0dece9ada4c9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -807,7 +807,7 @@ theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) =
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 := by
+theorem ciSup_const_zero {α : Sort _} : (⨆ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
@@ -835,7 +835,7 @@ theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨅ i, f i) =
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ)) = 0 := by
+theorem ciInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
@@ -852,7 +852,7 @@ theorem iInf_of_not_bddBelow {α : Sort _} {f : α → ℝ} (hf : ¬BddBelow (Se
 
 /--
 As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
-suffices to show that `S` is bounded below by `0` to show that `0 ≤ sInf S`.
+suffices to show that `S` is bounded below by `0` to show that `0 ≤ sSup S`.
 -/
 theorem sSup_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sSup S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
@@ -860,12 +860,34 @@ theorem sSup_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sS
   · apply dite _ (fun h => le_csSup_of_le h hy <| hS y hy) fun h => (sSup_of_not_bddAbove h).ge
 #align real.Sup_nonneg Real.sSup_nonneg
 
+/--
+As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
+suffices to show that `f i` is nonnegative to show that `0 ≤ ⨆ i, f i`.
+-/
+protected theorem iSup_nonneg {ι : Sort _} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
+  sSup_nonneg _ <| Set.forall_range_iff.2 hf
+#align real.supr_nonneg Real.iSup_nonneg
+
+/--
+As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
+suffices to show that all elements of `S` are bounded by a nonnagative number to show that `sSup S`
+is bounded by this number.
+-/
+protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by
+  rcases S.eq_empty_or_nonempty with (rfl | hS₂)
+  exacts [sSup_empty.trans_le ha, csSup_le hS₂ hS]
+#align real.Sup_le Real.sSup_le
+
+protected theorem iSup_le {ι : Sort _} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
+    (⨆ i, f i) ≤ a :=
+  Real.sSup_le (Set.forall_range_iff.2 hS) ha
+#align real.supr_le Real.iSup_le
+
 /-- As `0` is the default value for `Real.sSup` of the empty set, it suffices to show that `S` is
 bounded above by `0` to show that `sSup S ≤ 0`.
 -/
-theorem sSup_nonpos (S : Set ℝ) (hS : ∀ x ∈ S, x ≤ (0 : ℝ)) : sSup S ≤ 0 := by
-  rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sSup_empty.le, csSup_le hS₂ hS]
+theorem sSup_nonpos (S : Set ℝ) (hS : ∀ x ∈ S, x ≤ (0 : ℝ)) : sSup S ≤ 0 :=
+  Real.sSup_le hS le_rfl
 #align real.Sup_nonpos Real.sSup_nonpos
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `S` is

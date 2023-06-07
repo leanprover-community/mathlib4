@@ -335,7 +335,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
-    (⨆ (i) (_h : p i), S i) =
+    (⨆ (i) (_ : p i), S i) =
       LinearMap.range
         (LinearMap.comp
           (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))
@@ -368,7 +368,7 @@ theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p
 
 theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
     (x : N) :
-    (x ∈ ⨆ (i) (_h : p i), S i) ↔
+    (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i,
         Dfinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
@@ -391,7 +391,7 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         rw [mem_support_iff, not_ne_iff]
         ext
         rw [coe_zero, ← mem_bot R]
-        suffices : ⊥ = ⨆ (_H : x ∈ s), p x
+        suffices : ⊥ = ⨆ (_ : x ∈ s), p x
         · exact this.symm ▸ coe_mem (μ x)
         exact (iSup_neg hx).symm
       · intro x _ hx
