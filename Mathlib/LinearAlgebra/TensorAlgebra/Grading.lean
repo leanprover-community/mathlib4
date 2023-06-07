@@ -56,6 +56,8 @@ instance gradedAlgebra :
     cases' x with x hx
     dsimp only at hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
+    induction hx using Submodule.pow_induction_on_left'
+    #exit
     refine
       Submodule.pow_induction_on_left' (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
         (fun r => ?_) (fun x y i hx hy ihx ihy => ?_) (fun m hm i x hx ih => ?_) hx
