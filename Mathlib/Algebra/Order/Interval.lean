@@ -618,7 +618,8 @@ instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
-          |cases h|exact congr_arg some (inv_eq_of_mul_eq_one_right <| Option.some_injective _ h) }
+          | cases h
+          | exact congr_arg some (inv_eq_of_mul_eq_one_right <| Option.some_injective _ h) }
 
 end Interval
 
