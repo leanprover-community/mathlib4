@@ -729,26 +729,6 @@ end Interval
 
 end Length
 
--- Porting note: Commented out tactic
--- namespace Tactic
-
--- open Positivity
-
--- /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
--- @[positivity]
--- unsafe def positivity_interval_length : expr → tactic strictness
---   | q(NonemptyInterval.length $(s)) =>
---       nonnegative <$> mk_app `nonempty_interval.length_nonneg [s]
---   | q(Interval.length $(s)) => nonnegative <$> mk_app `interval.length_nonneg [s]
---   | e =>
---     pp e >>=
---       fail ∘
---         format.bracket "The expression `"
---           "` isn't of the form `nonempty_interval.length s` or `interval.length s`"
--- #align tactic.positivity_interval_length tactic.positivity_interval_length
-
--- end Tactic
-
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
