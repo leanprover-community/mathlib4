@@ -238,8 +238,8 @@ theorem int_coeff_of_cyclotomic' {K : Type _} [CommRing K] [IsDomain K] {ζ : K}
 /-- If `K` is of characteristic `0` and there is a primitive `n`-th root of unity in `K`,
 then `cyclotomic n K` comes from a unique polynomial with integer coefficients. -/
 theorem unique_int_coeff_of_cycl {K : Type _} [CommRing K] [IsDomain K] [CharZero K] {ζ : K}
-    {n : ℕ+} (h : IsPrimitiveRoot ζ n) : ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K :=
-  by
+    {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
+    ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
   obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
   refine' ⟨P, hP.1, fun Q hQ => _⟩
   apply map_injective (Int.castRingHom K) Int.cast_injective
