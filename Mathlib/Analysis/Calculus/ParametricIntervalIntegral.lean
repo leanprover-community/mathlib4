@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.ParametricIntegral
-import Mathbin.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 /-!
 # Derivatives of interval integrals depending on parameters
@@ -41,8 +41,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F : H → ℝ → E} {F' :
     (bound_integrable : IntervalIntegrable bound μ a b)
     (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasFDerivAt (fun x => F x t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
-      HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ :=
-  by
+      HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   simp only [intervalIntegrable_iff, interval_integral_eq_integral_uIoc, ←
     ae_restrict_iff' measurableSet_uIoc] at *
   have :=
@@ -63,8 +62,7 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F : H → ℝ → E} {F'
     (h_bound : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
     (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x => F x t) (F' x t) x) :
-    HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ :=
-  by
+    HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   simp only [intervalIntegrable_iff, interval_integral_eq_integral_uIoc, ←
     ae_restrict_iff' measurableSet_uIoc] at *
   exact
@@ -86,8 +84,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → ℝ → E} {F'
     (bound_integrable : IntervalIntegrable (bound : ℝ → ℝ) μ a b)
     (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasDerivAt (fun x => F x t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
-      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ :=
-  by
+      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   simp only [intervalIntegrable_iff, interval_integral_eq_integral_uIoc, ←
     ae_restrict_iff' measurableSet_uIoc] at *
   have :=
@@ -108,8 +105,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le {F : 𝕜 → ℝ → E
     (bound_integrable : IntervalIntegrable bound μ a b)
     (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasDerivAt (fun x => F x t) (F' x t) x) :
     IntervalIntegrable (F' x₀) μ a b ∧
-      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ :=
-  by
+      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   simp only [intervalIntegrable_iff, interval_integral_eq_integral_uIoc, ←
     ae_restrict_iff' measurableSet_uIoc] at *
   have :=
