@@ -16,20 +16,20 @@ import Mathlib.Topology.Sheaves.Init
 /-!
 # Presheaves on a topological space
 
-We define `presheaf C X` simply as `(opens X)ᵒᵖ ⥤ C`,
+We define `TopCat.Presheaf C X` simply as `(TopologicalSpace.Opens X)ᵒᵖ ⥤ C`,
 and inherit the category structure with natural transformations as morphisms.
 
 We define
-* `pushforward_obj {X Y : Top.{w}} (f : X ⟶ Y) (ℱ : X.presheaf C) : Y.presheaf C`
+* `TopCat.Presheaf.pushforwardObj {X Y : Top.{w}} (f : X ⟶ Y) (ℱ : X.Presheaf C) : Y.Presheaf C`
 with notation `f _* ℱ`
-and for `ℱ : X.presheaf C` provide the natural isomorphisms
-* `pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
-* `pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
+and for `ℱ : X.Presheaf C` provide the natural isomorphisms
+* `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
+* `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
 along with their `@[simp]` lemmas.
 
 We also define the functors `pushforward` and `pullback` between the categories
-`X.presheaf C` and `Y.presheaf C`, and provide their adjunction at
-`pushforward_pullback_adjunction`.
+`X.Presheaf C` and `Y.Presheaf C`, and provide their adjunction at
+`TopCat.Presheaf.pushforwardPullbackAdjunction`.
 -/
 
 

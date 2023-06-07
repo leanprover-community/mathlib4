@@ -520,9 +520,18 @@ lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
 
+@[ext]
+lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
+    (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
+  simpa only [leftHomology_ext_iff] using h
+
 lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
+
+@[ext]
+lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+  simpa only [cycles_ext_iff] using h
 
 end
 
@@ -792,29 +801,33 @@ section
 variable (C)
 variable [HasKernels C] [HasCokernels C]
 
+/-- The left homology functor `ShortComplex C ⥤ C`, where the left homology of a
+short complex `S` is understood as a cokernel of the obvious map `S.toCycles : S.X₁ ⟶ S.cycles`
+where `S.cycles` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
 @[simps]
-noncomputable def leftHomologyFunctor :
-    ShortComplex C ⥤ C where
+noncomputable def leftHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.leftHomology
   map := leftHomologyMap
 
+/-- The cycles functor `ShortComplex C ⥤ C` which sends a short complex `S` to `S.cycles`
+which is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
 @[simps]
-noncomputable def cyclesFunctor :
-    ShortComplex C ⥤ C where
+noncomputable def cyclesFunctor : ShortComplex C ⥤ C where
   obj S := S.cycles
   map := cyclesMap
 
+/-- The natural transformation `S.cycles ⟶ S.leftHomology` for all short complexes `S`. -/
 @[simps]
-noncomputable def leftHomologyπNatTrans :
-    cyclesFunctor C ⟶ leftHomologyFunctor C where
+noncomputable def leftHomologyπNatTrans : cyclesFunctor C ⟶ leftHomologyFunctor C where
   app S := leftHomologyπ S
   naturality := fun _ _ φ => (leftHomologyπ_naturality φ).symm
 
+/-- The natural transformation `S.cycles ⟶ S.X₂` for all short complexes `S`. -/
 @[simps]
-noncomputable def iCyclesNatTrans :
-    cyclesFunctor C ⟶ ShortComplex.π₂ where
+noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
   app S := S.iCycles
 
+/-- The natural transformation `S.X₁ ⟶ S.cycles` for all short complexes `S`. -/
 @[simps]
 noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
@@ -825,9 +838,12 @@ end
 
 namespace LeftHomologyData
 
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a left homology data for `S₁` induces a left homology data for `S₂` with
+the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. -/
 @[simps]
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
-  [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
   have wi : i ≫ S₂.g = 0 := by simp only [assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
@@ -850,11 +866,14 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
 
 @[simp]
-lemma ofEpiOfIsIsoOfMono_τ₁_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+lemma τ₁_ofEpiOfIsIsoOfMono_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : φ.τ₁ ≫ (ofEpiOfIsIsoOfMono φ h).f' = h.f' := by
   rw [← cancel_mono (ofEpiOfIsIsoOfMono φ h).i, assoc, f'_i,
     ofEpiOfIsIsoOfMono_i, f'_i_assoc, φ.comm₁₂]
 
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a left homology data for `S₂` induces a left homology data for `S₁` with
+the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono`. -/
 @[simps]
 noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₁ := by
@@ -882,11 +901,12 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
 
 @[simp]
 lemma ofEpiOfIsIsoOfMono'_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
-    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
-  (ofEpiOfIsIsoOfMono' φ h).f' = φ.τ₁ ≫ h.f' :=
-by rw [← cancel_mono (ofEpiOfIsIsoOfMono' φ h).i, f'_i, ofEpiOfIsIsoOfMono'_i,
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : (ofEpiOfIsIsoOfMono' φ h).f' = φ.τ₁ ≫ h.f' := by
+  rw [← cancel_mono (ofEpiOfIsIsoOfMono' φ h).i, f'_i, ofEpiOfIsIsoOfMono'_i,
     assoc, f'_i_assoc, φ.comm₁₂_assoc, IsIso.hom_inv_id, comp_id]
 
+/-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : LeftHomologyData S₁`,
+this is the left homology data for `S₂` deduced from the isomorphism. -/
 noncomputable def ofIso (e : S₁ ≅ S₂) (h₁ : LeftHomologyData S₁) : LeftHomologyData S₂ :=
   h₁.ofEpiOfIsIsoOfMono e.hom
 
@@ -898,14 +918,16 @@ lemma hasLeftHomology_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [HasLeftHomol
 
 lemma hasLeftHomology_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [HasLeftHomology S₂]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasLeftHomology S₁ :=
-HasLeftHomology.mk' (LeftHomologyData.ofEpiOfIsIsoOfMono' φ S₂.leftHomologyData)
+  HasLeftHomology.mk' (LeftHomologyData.ofEpiOfIsIsoOfMono' φ S₂.leftHomologyData)
 
-lemma hasLeftHomology_of_iso {S₁ S₂ : ShortComplex C}
-    (e : S₁ ≅ S₂) [HasLeftHomology S₁] : HasLeftHomology S₂ :=
+lemma hasLeftHomology_of_iso {S₁ S₂ : ShortComplex C} (e : S₁ ≅ S₂) [HasLeftHomology S₁] :
+    HasLeftHomology S₂ :=
   hasLeftHomology_of_epi_of_isIso_of_mono e.hom
 
 namespace LeftHomologyMapData
 
+/-- This left homology map data expresses compatibilities of the left homology data
+constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
 def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
@@ -913,9 +935,11 @@ def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
   φK := 𝟙 _
   φH := 𝟙 _
 
+/-- This left homology map data expresses compatibilities of the left homology data
+constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono'` -/
 @[simps]
 noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₂)
-  [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ (LeftHomologyData.ofEpiOfIsIsoOfMono' φ h) h where
   φK := 𝟙 _
   φH := 𝟙 _
@@ -926,7 +950,7 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap' φ h₁ h₂) := by
   let h₂' := LeftHomologyData.ofEpiOfIsIsoOfMono φ h₁
-  haveI : IsIso (leftHomologyMap' φ h₁ h₂') := by
+  have : IsIso (leftHomologyMap' φ h₁ h₂') := by
     rw [(LeftHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).leftHomologyMap'_eq]
     dsimp
     infer_instance
@@ -935,6 +959,8 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
   rw [eq]
   infer_instance
 
+/-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
+and `φ.τ₃` is mono, then the induced morphism on left homology is an isomorphism. -/
 instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap φ) := by
@@ -943,9 +969,10 @@ instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
 
 section
 
-variable (S) (h : LeftHomologyData S)
-  {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [HasLeftHomology S]
+variable (S) (h : LeftHomologyData S) {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0)
+  [HasLeftHomology S]
 
+/-- A morphism `k : A ⟶ S.X₂` such that `k ≫ S.g = 0` lifts to a morphism `A ⟶ S.cycles`. -/
 noncomputable def liftCycles : A ⟶ S.cycles :=
   S.leftHomologyData.liftK k hk
 
