@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Subobjects
@@ -28,7 +28,7 @@ There is a coercion from `Subobject X` back to the ambient category `C`
 `P.arrow : (P : C) ⟶ X` is the inclusion morphism.
 
 We provide
-* `def pullback [HasPpullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
+* `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
 and prove their basic properties and relationships.

@@ -876,8 +876,7 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=
   calc
     f x < x + ⌊τ f⌋ + 1 := f.map_lt_add_floor_translationNumber_add_one x
-    _ ≤ x + τ f + 1 := add_le_add_right (add_le_add_left (floor_le _) _) _
-    -- porting note: this ^ used to be `by mono; apply floor_le`
+    _ ≤ x + τ f + 1 := by gcongr; apply floor_le
 #align circle_deg1_lift.map_lt_add_translation_number_add_one CircleDeg1Lift.map_lt_add_translationNumber_add_one
 
 theorem lt_map_of_int_lt_translationNumber {n : ℤ} (h : ↑n < τ f) (x : ℝ) : x + n < f x :=
@@ -956,7 +955,7 @@ theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous (f ^ n : Circl
 
 theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn : 0 < n) :
     τ f = m / n ↔ ∃ x, (f ^ n) x = x + m := by
-  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
+  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip; exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 #align circle_deg1_lift.translation_number_eq_rat_iff CircleDeg1Lift.translationNumber_eq_rat_iff
 
@@ -991,12 +990,12 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type _} [Gr
   set F₂ := toOrderIso.comp f₂.toHomUnits
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
-  -- Now we apply `csupₛ_div_semiconj` and go back to `f₁` and `f₂`.
-  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csupₛ_div_semiconj F₂ F₁ fun x => _⟩ <;>
+  -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
+  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csSup_div_semiconj F₂ F₁ fun x => _⟩ <;>
     simp only [hF₁, hF₂, ← map_inv, coe_mk]
-  · exact csupᵢ_mono (this y) fun g => mono _ (mono _ hxy)
+  · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact (Monotone.map_csupᵢ_of_continuousAt (continuousAt_id.add continuousAt_const)
+    exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
       (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 #align circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq

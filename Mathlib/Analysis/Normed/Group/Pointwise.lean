@@ -205,10 +205,10 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 
 @[to_additive]
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
-  rw [thickening_eq_bunionᵢ_ball]
-  convert unionᵢ₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
-  exact s.bunionᵢ_of_singleton.symm
-  ext (x y)
+  rw [thickening_eq_biUnion_ball]
+  convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
+  exact s.biUnion_of_singleton.symm
+  ext x
   simp_rw [singleton_mul_ball, mul_one]
 #align mul_ball_one mul_ball_one
 #align add_ball_zero add_ball_zero
@@ -254,9 +254,9 @@ variable {ε δ s t x y}
 @[to_additive]
 theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
-  rw [hs.cthickening_eq_bunionᵢ_closedBall hδ]
+  rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_unionᵢ, mem_closedBall, exists_and_left,
+  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall, exists_and_left,
     mem_closedBall_one_iff, ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 #align is_compact.mul_closed_ball_one IsCompact.mul_closedBall_one
 #align is_compact.add_closed_ball_zero IsCompact.add_closedBall_zero
@@ -308,4 +308,3 @@ theorem IsCompact.closedBall_div (hs : IsCompact s) (hδ : 0 ≤ δ) (x : E) :
 #align is_compact.closed_ball_sub IsCompact.closedBall_sub
 
 end SeminormedCommGroup
-

@@ -268,7 +268,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
   · nth_rw 1 [Nat.succ_eq_one_add]
     simp only [pow_add, pow_one, finsetWalkLength, ih, mul_eq_mul, adjMatrix_mul_apply]
-    rw [Finset.card_bunionᵢ]
+    rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
       apply Finset.sum_toFinset_eq_subtype

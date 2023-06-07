@@ -10,6 +10,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Tactic.NormNum
 
 /-!
 # Congruences modulo a natural number
@@ -95,7 +96,7 @@ alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
 #align nat.modeq.dvd Nat.ModEq.dvd
 #align nat.modeq_of_dvd Nat.modEq_of_dvd
 
-/-- A variant of `modEq_iff_dvd` with `nat` divisibility -/
+/-- A variant of `modEq_iff_dvd` with `Nat` divisibility -/
 theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
   rw [modEq_iff_dvd, ← Int.coe_nat_dvd, Int.ofNat_sub h]
 #align nat.modeq_iff_dvd' Nat.modEq_iff_dvd'

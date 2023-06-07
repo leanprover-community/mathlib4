@@ -51,8 +51,7 @@ section Sym2
 variable {m : Sym2 α}
 
 /-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
--- Porting note: changed ×ˢ to xᶠ
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ˢ s).image Quotient.mk'
 #align finset.sym2 Finset.sym2
 
 @[simp]

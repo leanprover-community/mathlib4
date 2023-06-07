@@ -54,18 +54,18 @@ variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
 def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : ↑k > n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 #align polynomial.degree_le Polynomial.degreeLE
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLT (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLT
 
 variable {R}
 
 theorem mem_degreeLE {n : WithBot ℕ} {f : R[X]} : f ∈ degreeLE R n ↔ degree f ≤ n := by
-  simp only [degreeLE, Submodule.mem_infᵢ, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
+  simp only [degreeLE, Submodule.mem_iInf, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
 #align polynomial.mem_degree_le Polynomial.mem_degreeLE
 
 @[mono]
@@ -96,8 +96,8 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.degree_le_eq_span_X_pow Polynomial.degreeLE_eq_span_X_pow
 
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
-  rw [degreeLT, Submodule.mem_infᵢ]
-  conv_lhs => intro i; rw [Submodule.mem_infᵢ]
+  rw [degreeLT, Submodule.mem_iInf]
+  conv_lhs => intro i; rw [Submodule.mem_iInf]
   rw [degree, Finset.max_eq_sup_coe]
   rw [Finset.sup_lt_iff ?_]
   rotate_left
@@ -447,19 +447,15 @@ section ModByMonic
 
 variable {q : R[X]}
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
-theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
-#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
+#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem ker_modByMonicHom (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_mod_by_monic hq).trans Ideal.mem_span_singleton.symm
+  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 #align polynomial.ker_mod_by_monic_hom Polynomial.ker_modByMonicHom
 
 end ModByMonic
@@ -551,9 +547,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
 set_option linter.uppercaseLean3 false in
 #align ideal.mem_map_C_iff Ideal.mem_map_C_iff
 
-
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
--- set_option synthInstance.etaExperiment true in fails
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
     LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
   ext
@@ -606,7 +599,7 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
 #align ideal.leading_coeff_nth_mono Ideal.leadingCoeffNth_mono
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
-  rw [leadingCoeff, Submodule.mem_supᵢ_of_directed]
+  rw [leadingCoeff, Submodule.mem_iSup_of_directed]
   simp only [mem_leadingCoeffNth]
   · constructor
     · rintro ⟨i, p, hpI, _, rfl⟩
@@ -672,8 +665,6 @@ section CommRing
 
 variable [CommRing R]
 
--- Porting note: failed to synthesize semilinearmapclass on modByMonic
-set_option synthInstance.etaExperiment true in
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) ↔ IsPrime P := by
@@ -739,7 +730,7 @@ set_option linter.uppercaseLean3 false in
 #align ideal.is_prime_map_C_of_is_prime Ideal.isPrime_map_C_of_isPrime
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
-    Submodule.Fg (I.degreeLE n) :=
+    Submodule.FG (I.degreeLE n) :=
   isNoetherian_submodule_left.1
     -- porting note: times out without explicit `R`.
     (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow (R := R)).symm⟩) _
@@ -891,7 +882,6 @@ instance (priority := 100) {R : Type _} [CommRing R] [IsDomain R] [WfDvdMonoid R
 
 end Polynomial
 
-set_option synthInstance.etaExperiment true in
 /-- Hilbert basis theorem: a polynomial ring over a noetherian ring is a noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
@@ -993,8 +983,6 @@ theorem exists_irreducible_of_natDegree_ne_zero {R : Type u} [CommRing R] [IsDom
   exists_irreducible_of_natDegree_pos <| Nat.pos_of_ne_zero hf
 #align polynomial.exists_irreducible_of_nat_degree_ne_zero Polynomial.exists_irreducible_of_natDegree_ne_zero
 
--- Porting note: failed to synthesize  HPow (M →ₗ[R] M) ℕ ?m
-set_option synthInstance.etaExperiment true in
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]

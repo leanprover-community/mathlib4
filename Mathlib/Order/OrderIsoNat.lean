@@ -25,7 +25,7 @@ defines the limit value of an eventually-constant sequence.
 * `natLt`/`natGt`: Make an order embedding `Nat ↪ α` from
    an increasing/decreasing function `Nat → α`.
 * `monotonicSequenceLimit`: The limit of an eventually-constant monotone sequence `Nat →o α`.
-* `monotonicSequenceLimitIndex`: The index of the first occurence of `monotonicSequenceLimit`
+* `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
 -/
 
@@ -242,7 +242,7 @@ type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which 
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
 is defined, but is a junk value. -/
 noncomputable def monotonicSequenceLimitIndex [Preorder α] (a : ℕ →o α) : ℕ :=
-  infₛ { n | ∀ m, n ≤ m → a n = a m }
+  sInf { n | ∀ m, n ≤ m → a n = a m }
 #align monotonic_sequence_limit_index monotonicSequenceLimitIndex
 
 /-- The constant value of an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a
@@ -251,13 +251,13 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
   a (monotonicSequenceLimitIndex a)
 #align monotonic_sequence_limit monotonicSequenceLimit
 
-theorem WellFounded.supᵢ_eq_monotonicSequenceLimit [CompleteLattice α]
+theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
-    supᵢ a = monotonicSequenceLimit a := by
-  refine' (supᵢ_le fun m => _).antisymm (le_supᵢ a _)
+    iSup a = monotonicSequenceLimit a := by
+  refine' (iSup_le fun m => _).antisymm (le_iSup a _)
   cases' le_or_lt m (monotonicSequenceLimitIndex a) with hm hm
   · exact a.monotone hm
   · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
-    exact (Nat.infₛ_mem ⟨n, this⟩ m hm.le).ge
-#align well_founded.supr_eq_monotonic_sequence_limit WellFounded.supᵢ_eq_monotonicSequenceLimit
+    exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
+#align well_founded.supr_eq_monotonic_sequence_limit WellFounded.iSup_eq_monotonicSequenceLimit

@@ -17,11 +17,11 @@ import Mathlib.GroupTheory.Perm.Cycle.Type
 We prove some results relating characteristic and cardinality of finite rings
 
 ## Tags
-characterstic, cardinality, ring
+characteristic, cardinality, ring
 -/
 
 
-/-- A prime `p` is a unit in a commutative ring `R` of nonzero characterstic iff it does not divide
+/-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
 the characteristic. -/
 theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type _) [CommRing R] (p : ℕ) [Fact p.Prime]
     (hR : ringChar R ≠ 0) : IsUnit (p : R) ↔ ¬p ∣ ringChar R := by

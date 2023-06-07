@@ -111,7 +111,6 @@ theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
 
 variable (S)
 
-set_option synthInstance.etaExperiment true in
 theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
@@ -119,7 +118,7 @@ theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ :=
   exact Submodule.smul_mem _ _ (Submodule.subset_span (toInvSubmonoid M S m).prop)
 #align is_localization.span_inv_submonoid IsLocalization.span_invSubmonoid
 
-theorem finiteType_of_monoid_fg [Monoid.Fg M] : Algebra.FiniteType R S := by
+theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
   rw [Monoid.fg_iff_submonoid_fg] at this
   rcases this with ⟨s, hs⟩
