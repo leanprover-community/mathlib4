@@ -27,13 +27,13 @@ This file is the place to find definitions and basic properties of the classical
 
 ## Main definitions
 
-  * `lie_algebra.special_linear.sl`
-  * `lie_algebra.symplectic.sp`
-  * `lie_algebra.orthogonal.so`
-  * `lie_algebra.orthogonal.so'`
-  * `lie_algebra.orthogonal.so_indefinite_equiv`
-  * `lie_algebra.orthogonal.type_D`
-  * `lie_algebra.orthogonal.type_B`
+  * `LieAlgebra.SpecialLinear.sl`
+  * `LieAlgebra.Symplectic.sp`
+  * `LieAlgebra.Orthogonal.so`
+  * `LieAlgebra.Orthogonal.so'`
+  * `LieAlgebra.Orthogonal.soIndefiniteEquiv`
+  * `LieAlgebra.Orthogonal.typeD`
+  * `LieAlgebra.Orthogonal.typeB`
   * `lie_algebra.orthogonal.type_D_equiv_so'`
   * `lie_algebra.orthogonal.type_B_equiv_so'`
 
