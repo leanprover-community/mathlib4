@@ -14,7 +14,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 /-!
 # Results about the grading structure of the tensor algebra
 
-The main result is `tensor_algebra.graded_algebra`, which says that the tensor algebra is a
+The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor algebra is a
 ℕ-graded algebra.
 -/
 
@@ -27,8 +27,8 @@ open scoped DirectSum
 
 variable (R M)
 
-/-- A version of `tensor_algebra.ι` that maps directly into the graded structure. This is
-primarily an auxiliary construction used to provide `tensor_algebra.graded_algebra`. -/
+/-- A version of `TensorAlgebra.ι` that maps directly into the graded structure. This is
+primarily an auxiliary construction used to provide `TensorAlgebra.gradedAlgebra`. -/
 nonrec def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i) :=
   DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
@@ -43,7 +43,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 variable {R M}
 
-/-- The tensor algebra is graded by the powers of the submodule `(tensor_algebra.ι R).range`. -/
+/-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra ((· ^ ·) (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M)) : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
