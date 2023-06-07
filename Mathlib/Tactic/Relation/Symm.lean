@@ -62,20 +62,19 @@ and in `Lean.MVarId.symm` and `Lean.MVarId.symmAt` this result will be a new goa
 -- This function is rather opaque, but the design with a generic continuation `k`
 -- is necessary in order to factor out all the common requirements below.
 def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MetaM α) : MetaM α := do
-  let .app (.app rel _) _ := tgt
-    | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
-  for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
+  let s ← saveState
+  for lem in ← (symmExt.getState (← getEnv)).getMatch (← whnfR <|← instantiateMVars tgt) do
     try
       let lem ← mkConstWithFreshMVarLevels lem
-      let (args, _, body) ← withReducible <| forallMetaTelescopeReducing (← inferType lem)
+      let (args, _, body) ← withReducible <| forallMetaTelescope (← inferType lem)
       return (← k lem args body)
-    catch _ => pure ()
+    catch _ => s.restore
   throwError "no applicable symmetry lemma found for{indentExpr tgt}"
 
 /-- Given a term `e : a ~ b`, construct a term in `b ~ a` using `@[symm]` lemmas. -/
 def symm (e : Expr) : MetaM Expr := do
-  symmAux (← instantiateMVars (← inferType e)) fun lem args body => do
-    let .true ← isDefEq args.back e | failure
+  symmAux (← inferType e) fun lem args body => do
+    unless ← isDefEq args.back e do throwError "{args.back} is not defeq to {e}"
     mkExpectedTypeHint (mkAppN lem args) (← instantiateMVars body)
 
 end Lean.Expr
