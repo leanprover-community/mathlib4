@@ -194,7 +194,7 @@ elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $_x n)) $_y <;>
   simp only [HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg,
     HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
-    wittNSMul, HSMul.hSMul, SMul.smul]  <;>
+    wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]  <;>
   simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
   ))
 
@@ -246,8 +246,9 @@ private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
-  stop
-  ghost_fun_tac m • X 0, ![x.coeff]
+  --  porting note: I had to add the explicit type ascription.  This could very well be due to
+  --  my poor tactic writing!
+  ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
