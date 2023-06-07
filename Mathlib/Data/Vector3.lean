@@ -51,38 +51,12 @@ def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
   exact v
 #align vector3.cons Vector3.cons
 
--- Porting note: was
--- scoped notation3 "["(l", "* => foldr (h t => cons h t) nil)"]" => l
-
 section
 open Lean
 
--- this is copied from `src/Init/Notation.lean`
-scoped macro_rules
-  | `([ $elems,* ]) => do
-    -- NOTE: we do not have `TSepArray.getElems` yet at this point
-    let rec expandLit (i : Nat) (skip : Bool) (result : TSyntax `term) : MacroM Syntax := do
-      match i, skip with
-      | 0,   _     => pure result
-      | i+1, true  => expandLit i false result
-      | i+1, false => expandLit i true (←``(Vector3.cons $(⟨elems.elemsAndSeps.get! i⟩) $result))
-    if elems.elemsAndSeps.size < 64 then
-      expandLit elems.elemsAndSeps.size false (← ``(Vector3.nil))
-    else
-      `(%[ $elems,* | Vector3.nil ])
-
--- this is copied from `src/Init/NotationExtra.lean`
-scoped macro_rules
-  | `(%[ $[$x],* | $k ]) =>
-    if x.size < 8 then
-      x.foldrM (β := Term) (init := k) fun x k =>
-        `(Vector3.cons $x $k)
-    else
-      let m := x.size / 2
-      let y := x[m:]
-      let z := x[:m]
-      `(let y := %[ $[$y],* | $k ]
-        %[ $[$z],* | y ])
+-- Porting note: was
+-- scoped notation3 "["(l", "* => foldr (h t => cons h t) nil)"]" => l
+scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
 -- this is copied from `src/Init/NotationExtra.lean`
 @[app_unexpander Vector3.nil] def unexpandNil : Lean.PrettyPrinter.Unexpander
