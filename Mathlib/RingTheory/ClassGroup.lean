@@ -176,7 +176,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
     exact h _
 #align class_group.induction ClassGroup.induction
 
--- qting note: This proof needs a lot of heartbeats to complete even with some help
+-- Porting note: This proof needs a lot of heartbeats to complete even with some help
 set_option maxHeartbeats 600000 in
 /-- The definition of the class group does not depend on the choice of field of fractions. -/
 noncomputable def ClassGroup.equiv :
