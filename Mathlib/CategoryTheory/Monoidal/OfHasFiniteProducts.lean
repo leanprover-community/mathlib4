@@ -47,26 +47,27 @@ open CategoryTheory.Limits
 
 section
 
-attribute [local tidy] tactic.case_bash
+--porting note: this no longer seems necessary, the default tactic is now aesop_cat instead of tidy.
+--attribute [local tidy] tactic.case_bash
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C where
-  tensorUnit := ⊤_ C
+  tensorUnit' := ⊤_ C
   tensorObj X Y := X ⨯ Y
-  tensorHom _ _ _ _ f g := Limits.prod.map f g
+  tensorHom f g := Limits.prod.map f g
   associator := prod.associator
   leftUnitor P := prod.leftUnitor P
   rightUnitor P := prod.rightUnitor P
-  pentagon' := prod.pentagon
-  triangle' := prod.triangle
-  associator_naturality' := @prod.associator_naturality _ _ _
+  pentagon := prod.pentagon
+  triangle := prod.triangle
+  associator_naturality := @prod.associator_naturality _ _ _
 #align category_theory.monoidal_of_has_finite_products CategoryTheory.monoidalOfHasFiniteProducts
 
 end
 
 section
 
-attribute [local instance] monoidal_of_has_finite_products
+attribute [local instance] monoidalOfHasFiniteProducts
 
 open MonoidalCategory
 
@@ -75,34 +76,34 @@ open MonoidalCategory
 @[simps]
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
   braiding X Y := Limits.prod.braiding X Y
-  braiding_naturality' X X' Y Y' f g := by dsimp [tensor_hom]; simp
-  hexagon_forward' X Y Z := by dsimp [monoidal_of_has_finite_products]; simp
-  hexagon_reverse' X Y Z := by dsimp [monoidal_of_has_finite_products]; simp
-  symmetry' X Y := by dsimp; simp; rfl
+  braiding_naturality f g := by dsimp [tensorHom]; simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts]; simp
+  symmetry X Y := by dsimp; simp; rfl
 #align category_theory.symmetric_of_has_finite_products CategoryTheory.symmetricOfHasFiniteProducts
 
 end
 
-namespace MonoidalOfHasFiniteProducts
+namespace monoidalOfHasFiniteProducts
 
 variable [HasTerminal C] [HasBinaryProducts C]
 
-attribute [local instance] monoidal_of_has_finite_products
+attribute [local instance] monoidalOfHasFiniteProducts
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+open scoped MonoidalCategory
+
 @[simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.tensor_obj CategoryTheory.monoidalOfHasFiniteProducts.tensorObj
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.tensor_hom CategoryTheory.monoidalOfHasFiniteProducts.tensorHom
 
 @[simp]
-theorem leftUnitor_hom (X : C) : (λ_ X).Hom = Limits.prod.snd :=
+theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.left_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_hom
 
@@ -112,7 +113,7 @@ theorem leftUnitor_inv (X : C) : (λ_ X).inv = prod.lift (terminal.from X) (𝟙
 #align category_theory.monoidal_of_has_finite_products.left_unitor_inv CategoryTheory.monoidalOfHasFiniteProducts.leftUnitor_inv
 
 @[simp]
-theorem rightUnitor_hom (X : C) : (ρ_ X).Hom = Limits.prod.fst :=
+theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.right_unitor_hom CategoryTheory.monoidalOfHasFiniteProducts.rightUnitor_hom
 
@@ -125,36 +126,37 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.fro
 -- categories the right hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
-    (α_ X Y Z).Hom =
+    (α_ X Y Z).hom =
       prod.lift (Limits.prod.fst ≫ Limits.prod.fst)
         (prod.lift (Limits.prod.fst ≫ Limits.prod.snd) Limits.prod.snd) :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.associator_hom CategoryTheory.monoidalOfHasFiniteProducts.associator_hom
 
-end MonoidalOfHasFiniteProducts
+end monoidalOfHasFiniteProducts
 
 section
 
-attribute [local tidy] tactic.case_bash
+--porting note: this no longer seems necessary, the default tactic is now aesop_cat instead of tidy.
+--attribute [local tidy] tactic.case_bash
 
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C where
-  tensorUnit := ⊥_ C
+  tensorUnit' := ⊥_ C
   tensorObj X Y := X ⨿ Y
-  tensorHom _ _ _ _ f g := Limits.coprod.map f g
+  tensorHom f g := Limits.coprod.map f g
   associator := coprod.associator
   leftUnitor := coprod.leftUnitor
   rightUnitor := coprod.rightUnitor
-  pentagon' := coprod.pentagon
-  triangle' := coprod.triangle
-  associator_naturality' := @coprod.associator_naturality _ _ _
+  pentagon := coprod.pentagon
+  triangle := coprod.triangle
+  associator_naturality := @coprod.associator_naturality _ _ _
 #align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
 
 end
 
 section
 
-attribute [local instance] monoidal_of_has_finite_coproducts
+attribute [local instance] monoidalOfHasFiniteCoproducts
 
 open MonoidalCategory
 
@@ -164,21 +166,22 @@ open MonoidalCategory
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : SymmetricCategory C
     where
   braiding := Limits.coprod.braiding
-  braiding_naturality' X X' Y Y' f g := by dsimp [tensor_hom]; simp
-  hexagon_forward' X Y Z := by dsimp [monoidal_of_has_finite_coproducts]; simp
-  hexagon_reverse' X Y Z := by dsimp [monoidal_of_has_finite_coproducts]; simp
-  symmetry' X Y := by dsimp; simp; rfl
+  braiding_naturality f g := by dsimp [tensorHom]; simp
+  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts]; simp
+  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts]; simp
+  symmetry X Y := by dsimp; simp; rfl
 #align category_theory.symmetric_of_has_finite_coproducts CategoryTheory.symmetricOfHasFiniteCoproducts
 
 end
 
-namespace MonoidalOfHasFiniteCoproducts
+namespace monoidalOfHasFiniteCoproducts
 
 variable [HasInitial C] [HasBinaryCoproducts C]
 
-attribute [local instance] monoidal_of_has_finite_coproducts
+attribute [local instance] monoidalOfHasFiniteCoproducts
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+open scoped MonoidalCategory
+
 @[simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
@@ -191,12 +194,12 @@ theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.c
 #align category_theory.monoidal_of_has_finite_coproducts.tensor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.tensorHom
 
 @[simp]
-theorem leftUnitor_hom (X : C) : (λ_ X).Hom = coprod.desc (initial.to X) (𝟙 _) :=
+theorem leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.left_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.leftUnitor_hom
 
 @[simp]
-theorem rightUnitor_hom (X : C) : (ρ_ X).Hom = coprod.desc (𝟙 _) (initial.to X) :=
+theorem rightUnitor_hom (X : C) : (ρ_ X).hom = coprod.desc (𝟙 _) (initial.to X) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.right_unitor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.rightUnitor_hom
 
@@ -214,12 +217,11 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
 -- categories the right hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
-    (α_ X Y Z).Hom =
+    (α_ X Y Z).hom =
       coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr) :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.associator_hom CategoryTheory.monoidalOfHasFiniteCoproducts.associator_hom
 
-end MonoidalOfHasFiniteCoproducts
+end monoidalOfHasFiniteCoproducts
 
 end CategoryTheory
-
