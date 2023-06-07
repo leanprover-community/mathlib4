@@ -67,7 +67,7 @@ open scoped Classical
 
 In particular, if `p` is not contained in `P^n`, then the ramification index is 0.
 
-If there is no largest such `n` (e.g. because `p = ⊥`), then `ramification_idx` is
+If there is no largest such `n` (e.g. because `p = ⊥`), then `ramificationIdx` is
 defined to be 0.
 -/
 noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
@@ -186,7 +186,7 @@ extension `(S / P) : (R / p)`.
 
 We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
-See `inertia_deg_algebra_map` for the common case where `f = algebraMap R S`
+See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
 -/
 noncomputable def inertiaDeg [_hp : p.IsMaximal] : ℕ :=
@@ -260,7 +260,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedek
     LinearIndependent K (f ∘ b) := by
   contrapose! hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
-  -- then we can find a linear dependence with coefficients `I.quotient.mk g'` in `R/I`,
+  -- then we can find a linear dependence with coefficients `I.Quotient.mk g'` in `R/I`,
   -- where `I = ker (algebraMap R S)`.
   -- We make use of the same principle but stay in `R` everywhere.
   simp only [linearIndependent_iff', not_forall] at hb ⊢
@@ -503,8 +503,8 @@ theorem powQuotSuccInclusion_injective (i : ℕ) :
 #align ideal.pow_quot_succ_inclusion_injective Ideal.powQuotSuccInclusion_injective
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
-See `quotient_to_quotient_range_pow_quot_succ` for this as a linear map,
-and `quotient_range_pow_quot_succ_inclusion_equiv` for this as a linear equivalence.
+See `quotientToQuotientRangePowQuotSucc` for this as a linear map,
+and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
 -/
 noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
     S ⧸ P →
@@ -850,5 +850,3 @@ theorem sum_ramification_inertia (K L : Type _) [Field K] [Field L] [IsDomain R]
 end FactorsMap
 
 end Ideal
-
-#lint
