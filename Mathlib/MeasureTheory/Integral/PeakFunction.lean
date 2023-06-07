@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.SetIntegral
-import Mathbin.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 
 /-!
 # Integrals against peak functions
@@ -55,21 +55,18 @@ variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [Topolog
 theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
     (hiφ : ∀ᶠ i in l, (∫ x in s, φ i x ∂μ) = 1) (hmg : IntegrableOn g s μ)
-    (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ :=
-  by
+    (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
   obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ x ∈ u ∩ s, g x ∈ ball (g x₀) 1
   exact mem_nhdsWithin.1 (hcg (ball_mem_nhds _ zero_lt_one))
   filter_upwards [tendsto_uniformly_on_iff.1 (hlφ u u_open x₀u) 1 zero_lt_one, hiφ] with i hi h'i
-  have A : integrable_on (fun x => φ i x • g x) (s \ u) μ :=
-    by
+  have A : integrable_on (fun x => φ i x • g x) (s \ u) μ := by
     refine' integrable.smul_of_top_right (hmg.mono (diff_subset _ _) le_rfl) _
     apply
       mem_ℒp_top_of_bound
         ((integrable_of_integral_eq_one h'i).AEStronglyMeasurable.mono_set (diff_subset _ _)) 1
     filter_upwards [self_mem_ae_restrict (hs.diff u_open.measurable_set)] with x hx
     simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
-  have B : integrable_on (fun x => φ i x • g x) (s ∩ u) μ :=
-    by
+  have B : integrable_on (fun x => φ i x • g x) (s ∩ u) μ := by
     apply integrable.smul_of_top_left
     · exact integrable_on.mono_set (integrable_of_integral_eq_one h'i) (inter_subset_left _ _)
     · apply
@@ -93,8 +90,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     (hcg : ContinuousWithinAt g s x₀) : Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) :=
   by
   refine' Metric.tendsto_nhds.2 fun ε εpos => _
-  obtain ⟨δ, hδ, δpos⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + δ < ε ∧ 0 < δ :=
-    by
+  obtain ⟨δ, hδ, δpos⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + δ < ε ∧ 0 < δ := by
     have A :
       tendsto (fun δ => (δ * ∫ x in s, ‖g x‖ ∂μ) + δ) (𝓝[>] 0) (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 0)) :=
       by
@@ -102,8 +98,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
       exact (tendsto_id.mul tendsto_const_nhds).add tendsto_id
     rw [MulZeroClass.zero_mul, zero_add] at A 
     exact (((tendsto_order.1 A).2 ε εpos).And self_mem_nhdsWithin).exists
-  suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ
-    by
+  suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ by
     filter_upwards [this] with i hi
     simp only [dist_zero_right]
     exact hi.trans_lt hδ
@@ -116,8 +111,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     calc
       ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ ≤ ∫ x in s ∩ u, ‖φ i x • g x‖ ∂μ :=
         norm_integral_le_integral_norm _
-      _ ≤ ∫ x in s ∩ u, ‖φ i x‖ * δ ∂μ :=
-        by
+      _ ≤ ∫ x in s ∩ u, ‖φ i x‖ * δ ∂μ := by
         refine' set_integral_mono_on _ _ (hs.inter u_open.measurable_set) fun x hx => _
         · exact integrable_on.mono_set h''i.norm (inter_subset_left _ _)
         ·
@@ -133,8 +127,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
         · exact (integrable_of_integral_eq_one h'i).norm.mul_const _
         · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
         · apply eventually_of_forall; exact inter_subset_left s u
-      _ = ∫ x in s, φ i x * δ ∂μ :=
-        by
+      _ = ∫ x in s, φ i x * δ ∂μ := by
         apply set_integral_congr hs fun x hx => _
         rw [Real.norm_of_nonneg (hφpos _ hx)]
       _ = δ := by rw [integral_mul_right, h'i, one_mul]
@@ -143,8 +136,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     calc
       ‖∫ x in s \ u, φ i x • g x ∂μ‖ ≤ ∫ x in s \ u, ‖φ i x • g x‖ ∂μ :=
         norm_integral_le_integral_norm _
-      _ ≤ ∫ x in s \ u, δ * ‖g x‖ ∂μ :=
-        by
+      _ ≤ ∫ x in s \ u, δ * ‖g x‖ ∂μ := by
         refine' set_integral_mono_on _ _ (hs.diff u_open.measurable_set) fun x hx => _
         · exact integrable_on.mono_set h''i.norm (diff_subset _ _)
         · exact integrable_on.mono_set (hmg.norm.const_mul _) (diff_subset _ _)
@@ -175,13 +167,11 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt (hs
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
     (hiφ : (fun i => ∫ x in s, φ i x ∂μ) =ᶠ[l] 1) (hmg : IntegrableOn g s μ)
     (hcg : ContinuousWithinAt g s x₀) :
-    Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 (g x₀)) :=
-  by
+    Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 (g x₀)) := by
   let h := g - fun y => g x₀
   have A :
     tendsto (fun i : ι => (∫ x in s, φ i x • h x ∂μ) + (∫ x in s, φ i x ∂μ) • g x₀) l
-      (𝓝 (0 + (1 : ℝ) • g x₀)) :=
-    by
+      (𝓝 (0 + (1 : ℝ) • g x₀)) := by
     refine' tendsto.add _ (tendsto.smul (tendsto_const_nhds.congr' hiφ.symm) tendsto_const_nhds)
     apply tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux hs hnφ hlφ hiφ
     · apply integrable.sub hmg
@@ -229,8 +219,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     exact set_integral_nonneg hs.measurable_set fun x hx => pow_nonneg (hnc x hx) _
   have I : ∀ n, integrable_on (fun x => c x ^ n) s μ := fun n =>
     ContinuousOn.integrableOn_compact hs (hc.pow n)
-  have J : ∀ n, 0 ≤ᵐ[μ.restrict s] fun x : α => c x ^ n :=
-    by
+  have J : ∀ n, 0 ≤ᵐ[μ.restrict s] fun x : α => c x ^ n := by
     intro n
     filter_upwards [ae_restrict_mem hs.measurable_set] with x hx
     exact pow_nonneg (hnc x hx) n
@@ -243,11 +232,9 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (hu hx) _), hx.2⟩
   have hiφ : ∀ n, (∫ x in s, φ n x ∂μ) = 1 := fun n => by
     rw [integral_mul_left, inv_mul_cancel (P n).ne']
-  have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 at_top (s \ u) :=
-    by
+  have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 at_top (s \ u) := by
     intro u u_open x₀u
-    obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t :=
-      by
+    obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
       rcases eq_empty_or_nonempty (s \ u) with (h | h)
       ·
         exact
@@ -261,16 +248,14 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     have t'_pos : 0 < t' := t_pos.trans_lt tt'
     obtain ⟨v, v_open, x₀_v, hv⟩ : ∃ v : Set α, IsOpen v ∧ x₀ ∈ v ∧ v ∩ s ⊆ c ⁻¹' Ioi t' :=
       _root_.continuous_on_iff.1 hc x₀ h₀ (Ioi t') isOpen_Ioi t'x₀
-    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n :=
-      by
+    have M : ∀ n, ∀ x ∈ s \ u, φ n x ≤ (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n := by
       intro n x hx
       have B : t' ^ n * (μ (v ∩ s)).toReal ≤ ∫ y in s, c y ^ n ∂μ :=
         calc
           t' ^ n * (μ (v ∩ s)).toReal = ∫ y in v ∩ s, t' ^ n ∂μ := by
             simp only [integral_const, measure.restrict_apply, MeasurableSet.univ, univ_inter,
               Algebra.id.smul_eq_mul, mul_comm]
-          _ ≤ ∫ y in v ∩ s, c y ^ n ∂μ :=
-            by
+          _ ≤ ∫ y in v ∩ s, c y ^ n ∂μ := by
             apply set_integral_mono_on _ _ (v_open.measurable_set.inter hs.measurable_set) _
             · apply integrable_on_const.2 (Or.inr _)
               exact lt_of_le_of_lt (measure_mono (inter_subset_right _ _)) hs.measure_lt_top
@@ -288,8 +273,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
         exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
     have N :
       tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) at_top
-        (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) :=
-      by
+        (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by
       apply tendsto.mul tendsto_const_nhds _; · infer_instance
       apply tendsto_pow_atTop_nhds_0_of_lt_1 (div_nonneg t_pos t'_pos.le)
       exact (div_lt_one t'_pos).2 tt'
