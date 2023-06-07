@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Thomas Murrills
 -/
 import Lean
 import Std.Tactic.OpenPrivate
+import Mathlib.Control.Basic
 
 /-!
 
@@ -85,6 +86,16 @@ private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Exp
     throwAppBuilderException methodName ("result contains new metavariables" ++ indentExpr result)
   return result
 
+/-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. Returns any
+unassigned new implicit mvars and instance MVars. -/
+private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array Expr)
+    (mvars instMVars : Array MVarId) : MetaM (Expr × Array MVarId × Array MVarId) := do
+  instMVars.forM fun mvarId => tryM do
+    unless ← mvarId.isAssigned do
+      mvarId.assign (← synthInstance (← mvarId.getType))
+  let result ← instantiateMVars (mkAppN f args)
+  return (result, ← mvars.filterM (notM ·.isAssigned), ← instMVars.filterM (notM ·.isAssigned))
+
 /-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal` and keeps track
 of any created implicit mvars. -/
 private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) (xs : Array Expr)
@@ -145,6 +156,29 @@ def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true)
   withAppBuilderTrace f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifying
 
+local instance : ToMessageData (Expr × Array MVarId × Array MVarId) where
+  toMessageData := fun (e, m₁, m₂) =>
+    toMessageData e ++
+      "\nimplicit mvars:\n" ++ toMessageData m₁ ++
+      "\ninstance mvars:\n" ++ toMessageData m₂
+
+/-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)` where `implicitMVars` and
+`instMVars` are any newly-created metavariables for the implicit and instance arguments of `const`.
+Useful in case we want to e.g. try assigning the `implicitMVars` with `isDefEq` afterwards, or if
+we want to try synthesizing instance arguments later. -/
+def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (reducing := true)
+    : MetaM (Expr × Array MVarId × Array MVarId) :=
+  withAppBuilderTrace' const xs do
+    let (f, fType) ← mkFun const
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
+
+/-- Like `mkAppNUnifyingWithNewMVars'`, but returns `(e, implicitMVars, instMVars)`. Useful in case
+we want to e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing
+instance arguments later. -/
+def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
+    : MetaM (Expr × Array MVarId × Array MVarId) :=
+  withAppBuilderTrace' f xs do
+    mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifyingWithNewMVars
+
 
 -/
-
