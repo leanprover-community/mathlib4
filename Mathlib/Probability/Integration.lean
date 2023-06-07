@@ -22,11 +22,11 @@ reals, `E[X * Y] = E[X] * E[Y]`, and similar results.
 
 Many lemmas in this file take two arguments of the same typeclass. It is worth remembering that lean
 will always pick the later typeclass in this situation, and does not care whether the arguments are
-`[]`, `{}`, or `()`. All of these use the `measurable_space` `M2` to define `μ`:
+`[]`, `{}`, or `()`. All of these use the `MeasurableSpace` `M2` to define `μ`:
 
 ```lean
-example {M1 : measurable_space Ω} [M2 : measurable_space Ω] {μ : measure Ω} : sorry := sorry
-example [M1 : measurable_space Ω] {M2 : measurable_space Ω} {μ : measure Ω} : sorry := sorry
+example {M1 : MeasurableSpace Ω} [M2 : MeasurableSpace Ω] {μ : measure Ω} : sorry := sorry
+example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : measure Ω} : sorry := sorry
 ```
 
 -/
