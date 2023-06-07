@@ -23,7 +23,7 @@ GITHUB_TOKEN_FILE = 'port-repos/github-token'
 github_token = open(GITHUB_TOKEN_FILE).read().strip()
 
 mathlib3_root = 'port-repos/mathlib/src'
-mathlib4_root = '/'
+mathlib4_root = './'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
