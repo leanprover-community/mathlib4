@@ -161,10 +161,19 @@ end mapFun
 
 end WittVector
 
+namespace WittVector
+
+/-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
+producing a value in `R`.
+This function will be bundled as the ring homomorphism `witt_vector.ghost_map`
+once the ring structure is available,
+but we rely on it to set up the ring structure in the first place. -/
+private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
+
 section Tactic
+open Lean Elab Tactic
 
 /- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-open Tactic
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
@@ -179,24 +188,22 @@ open Tactic
 --      note `this none
 --  sorry
 --#align tactic.interactive.ghost_fun_tac tactic.interactive.ghost_fun_tac
-
-macro "ghost_fun_tac" _x:term "," _y:term : tactic => `(tactic| (sorry))
+elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
+  evalTactic (← `(tactic|
+  ext n  <;>
+  have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $_x n)) $_y <;>
+  simp only [HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg,
+    HMul.hMul, Mul.mul,HPow.hPow, Pow.pow]  <;>
+  simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
+  ))
 
 end Tactic
 
-namespace WittVector
-
-/-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
-producing a value in `R`.
-This function will be bundled as the ring homomorphism `witt_vector.ghost_map`
-once the ring structure is available,
-but we rely on it to set up the ring structure in the first place. -/
-private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ n)
-
 section GhostFun
 
--- The following lemmas are not `@[simp]` because they will be bundled in `ghost_map` later on.
 variable (x y : WittVector p R)
+
+-- The following lemmas are not `@[simp]` because they will be bundled in `ghost_map` later on.
 
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
@@ -205,9 +212,11 @@ theorem matrix_vecEmpty_coeff {R} (i j) :
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
+  stop
   ghost_fun_tac 0, ![]
 
 private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
+  stop
   ghost_fun_tac 1, ![]
 
 private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
@@ -231,9 +240,11 @@ private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
 private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
+  stop
   ghost_fun_tac m • X 0, ![x.coeff]
 
 private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
+  stop
   ghost_fun_tac m • X 0, ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
