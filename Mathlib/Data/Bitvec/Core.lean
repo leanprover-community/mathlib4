@@ -283,18 +283,10 @@ protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
   | succ n, x => Bitvec.ofNat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
 #align bitvec.of_nat Bitvec.ofNat
 
-/-- Create a bitvector from an `Int`. This is the ring homorphism, and
-it is not sign preserving. -/
+/-- Create a bitvector from an `Int`. The ring homomorphism from Int to bitvectors. -/
 protected def ofInt : ∀ n : ℕ, Int → Bitvec n
   | n, Int.ofNat m => Bitvec.ofNat n m
   | n, Int.negSucc m => (Bitvec.ofNat n m).not
-
-/-- The sign preserving map from `Int` to `Bitvec` in two's complements.
-This function is not a ring homomorphism -/
-protected def ofIntSign : ∀ n : ℕ, Int → Bitvec (succ n)
-  | n, Int.ofNat m => false ::ᵥ Bitvec.ofNat n m
-  | n, Int.negSucc m => true ::ᵥ (Bitvec.ofNat n m).not
-#align bitvec.of_int Bitvec.ofIntSign
 
 /-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
 def addLsb (r : ℕ) (b : Bool) :=
