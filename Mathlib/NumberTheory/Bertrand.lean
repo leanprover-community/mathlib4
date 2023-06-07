@@ -13,6 +13,7 @@ import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Tactic.RunCmd
 
 /-!
 # Bertrand's Postulate
@@ -69,15 +70,16 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
-  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
-    refine'
-        ((strict_concave_on_log_Ioi.concave_on.subset (Set.Ioi_subset_Ioi _) (convex_Ioi 0.5)).add
-              ((strict_concave_on_sqrt_mul_log_Ioi.concave_on.comp_linear_map
-                    ((2 : ℝ) • LinearMap.id)).Subset
+  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by sorry
+   /- refine'
+        ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _) (convex_Ioi 0.5)).add
+              ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
+                    ((2 : ℝ) • LinearMap.id)).subset
                 (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_left two_pos).mpr ha))
                 (convex_Ioi 0.5))).sub
           ((convexOn_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _)) <;>
       norm_num1
+    -/
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
@@ -106,7 +108,7 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   simp only [cast_bit0, cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
   have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' trans (mul_le_mul _ _ _ _) (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  refine' _root_.trans (mul_le_mul _ _ _ _) (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
     refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
     exact_mod_cast Real.nat_sqrt_le_real_sqrt
@@ -122,17 +124,17 @@ factorization of the central binomial coefficent only has factors at most `2 * n
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
     centralBinom n = ∏ p in Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
-  refine' (Eq.trans _ n.prod_pow_factorization_central_binom).symm
+  refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
-  rw [Finset.mem_range, lt_succ_iff] at hx h2x 
-  rw [not_le, div_lt_iff_lt_mul' three_pos, mul_comm x] at h2x 
+  rw [Finset.mem_range, lt_succ_iff] at hx h2x
+  rw [not_le, div_lt_iff_lt_mul' three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
-  rw [← and_assoc', not_and', not_and_or, not_lt] at no_prime 
+  rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
   cases' no_prime hx with h h
-  · rw [factorization_eq_zero_of_non_prime n.central_binom h, pow_zero]
-  · rw [factorization_central_binom_of_two_mul_self_lt_three_mul n_large h h2x, pow_zero]
+  · rw [factorization_eq_zero_of_non_prime n.centralBinom h, Nat.pow_zero]
+  · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 #align central_binom_factorization_small centralBinom_factorization_small
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
@@ -148,12 +150,12 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) := by
   have n_pos : 0 < n := (Nat.zero_le _).trans_lt n_big
   have n2_pos : 1 ≤ 2 * n := mul_pos (zero_lt_two' ℕ) n_pos
-  let S := (Finset.range (2 * n / 3 + 1)).filterₓ Nat.Prime
-  let f x := x ^ n.central_binom.factorization x
+  let S := (Finset.range (2 * n / 3 + 1)).filter Nat.Prime
+  let f x := x ^ n.centralBinom.factorization x
   have : (∏ x : ℕ in S, f x) = ∏ x : ℕ in Finset.range (2 * n / 3 + 1), f x := by
     refine' Finset.prod_filter_of_ne fun p hp h => _
-    contrapose! h; dsimp only [f]
-    rw [factorization_eq_zero_of_non_prime n.central_binom h, pow_zero]
+    contrapose! h; dsimp only
+    rw [factorization_eq_zero_of_non_prime n.centralBinom h, pow_zero]
   rw [centralBinom_factorization_small n n_big no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
   apply mul_le_mul'
@@ -163,7 +165,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     rw [Finset.prod_const]
     refine' pow_le_pow n2_pos ((Finset.card_le_of_subset fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
-    exact finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
+    exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
@@ -185,9 +187,9 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) 
   -- We now couple this bound with an exponential lower bound on the central binomial coefficient,
   -- yielding an inequality which we have seen is false for large enough n.
   have H1 : n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := bertrand_main_inequality n_big
-  have H2 : 4 ^ n < n * n.central_binom :=
+  have H2 : 4 ^ n < n * n.centralBinom :=
     Nat.four_pow_lt_mul_centralBinom n (le_trans (by norm_num1) n_big)
-  have H3 : n.central_binom ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) :=
+  have H3 : n.centralBinom ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) :=
     centralBinom_le_of_no_bertrand_prime n (lt_of_lt_of_le (by norm_num1) n_big) no_prime
   rw [mul_assoc] at H1 ; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
 #align nat.exists_prime_lt_and_le_two_mul_eventually Nat.exists_prime_lt_and_le_two_mul_eventually
@@ -211,7 +213,7 @@ it, but no more than twice as large.
 theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
-  cases lt_or_le 511 n
+  cases' lt_or_le 511 n with h h
   -- If `n` is large, apply the lemma derived from the inequalities on the central binomial
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
@@ -229,4 +231,3 @@ alias Nat.exists_prime_lt_and_le_two_mul ← bertrand
 end Nat
 
 end Nat
-
