@@ -8,7 +8,7 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
 # Polynomial bounds for trigonometric functions
@@ -43,8 +43,7 @@ namespace Real
 open scoped Real
 
 /-- For 0 < x, we have sin x < x. -/
-theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x :=
-  by
+theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x := by
   cases' lt_or_le 1 x with h' h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
@@ -62,8 +61,7 @@ theorem sin_lt {x : ℝ} (h : 0 < x) : sin x < x :=
 This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
 tight; the tighter inequality is sin x > x - x ^ 3 / 6 for all x > 0, but this inequality has
 a simpler proof. -/
-theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin x :=
-  by
+theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < sin x := by
   have hx : |x| = x := abs_of_nonneg h.le
   have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
   rw [le_sub_iff_add_le, hx] at this 
@@ -85,29 +83,24 @@ theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
 
 This is proved by checking that the function `tan x - x` vanishes
 at zero and has non-negative derivative. -/
-theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x :=
-  by
+theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   let U := Ico 0 (π / 2)
   have intU : interior U = Ioo 0 (π / 2) := interior_Ico
   have half_pi_pos : 0 < π / 2 := div_pos pi_pos two_pos
-  have cos_pos : ∀ {y : ℝ}, y ∈ U → 0 < cos y :=
-    by
+  have cos_pos : ∀ {y : ℝ}, y ∈ U → 0 < cos y := by
     intro y hy
     exact cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
-  have sin_pos : ∀ {y : ℝ}, y ∈ interior U → 0 < sin y :=
-    by
+  have sin_pos : ∀ {y : ℝ}, y ∈ interior U → 0 < sin y := by
     intro y hy
     rw [intU] at hy 
     exact sin_pos_of_mem_Ioo (Ioo_subset_Ioo_right (div_le_self pi_pos.le one_le_two) hy)
-  have tan_cts_U : ContinuousOn tan U :=
-    by
+  have tan_cts_U : ContinuousOn tan U := by
     apply ContinuousOn.mono continuous_on_tan
     intro z hz
     simp only [mem_set_of_eq]
     exact (cos_pos hz).ne'
   have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
-  have deriv_pos : ∀ y : ℝ, y ∈ interior U → 0 < deriv (fun y' : ℝ => tan y' - y') y :=
-    by
+  have deriv_pos : ∀ y : ℝ, y ∈ interior U → 0 < deriv (fun y' : ℝ => tan y' - y') y := by
     intro y hy
     have := cos_pos (interior_subset hy)
     simp only [deriv_tan_sub_id y this.ne', one_div, gt_iff_lt, sub_pos]
@@ -124,18 +117,15 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x :=
   simpa only [tan_zero, sub_zero, sub_pos] using mono zero_in_U x_in_U h1
 #align real.lt_tan Real.lt_tan
 
-theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x :=
-  by
+theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
   rcases eq_or_lt_of_le h1 with (rfl | h1')
   · rw [tan_zero]
   · exact le_of_lt (lt_tan h1' h2)
 #align real.le_tan Real.le_tan
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
-    (hx3 : x ≠ 0) : cos x < 1 / sqrt (x ^ 2 + 1) :=
-  by
-  suffices ∀ {y : ℝ} (hy1 : 0 < y) (hy2 : y ≤ 3 * π / 2), cos y < 1 / sqrt (y ^ 2 + 1)
-    by
+    (hx3 : x ≠ 0) : cos x < 1 / sqrt (x ^ 2 + 1) := by
+  suffices ∀ {y : ℝ} (hy1 : 0 < y) (hy2 : y ≤ 3 * π / 2), cos y < 1 / sqrt (y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨⟩
     · exact this h hx2
     · convert this (by linarith : 0 < -x) (by linarith) using 1
@@ -157,8 +147,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
 #align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 
 theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2) :
-    cos x ≤ 1 / sqrt (x ^ 2 + 1) :=
-  by
+    cos x ≤ 1 / sqrt (x ^ 2 + 1) := by
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
