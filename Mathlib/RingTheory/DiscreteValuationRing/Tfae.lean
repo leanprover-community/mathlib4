@@ -171,7 +171,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     haveI : UniqueFactorizationMonoid R := ufm_of_gcd_of_wfDvdMonoid
     apply DiscreteValuationRing.of_ufd_of_unique_irreducible
     · obtain ⟨x, hx₁, hx₂⟩ := Ring.exists_not_isUnit_of_not_isField h
-      obtain ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor hx₂ hx₁
+      obtain ⟨p, hp₁, -⟩ := WfDvdMonoid.exists_irreducible_factor hx₂ hx₁
       exact ⟨p, hp₁⟩
     · exact ValuationRing.unique_irreducible
   tfae_have 1 → 4
@@ -207,26 +207,26 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
       exact ⟨Ideal.Quotient.mk _ a, rfl⟩
   tfae_have 6 → 5
   · rintro ⟨x, hx, hx'⟩
-    induction x using Quotient.inductionOn'
+    induction x using Quotient.inductionOn' with | h x => ?_
     use x
     apply le_antisymm
     swap; · rw [Submodule.span_le, Set.singleton_subset_iff]; exact x.prop
     have h₁ :
-      (Ideal.span {x} : Ideal R) ⊔ maximalIdeal R ≤
-        Ideal.span {x} ⊔ maximalIdeal R • maximalIdeal R := by
+      (Ideal.span {(x : R)} : Ideal R) ⊔ maximalIdeal R ≤
+        Ideal.span {(x : R)} ⊔ maximalIdeal R • maximalIdeal R := by
       refine' sup_le le_sup_left _
       rintro m hm
       obtain ⟨c, hc⟩ := hx' (Submodule.Quotient.mk ⟨m, hm⟩)
-      induction c using Quotient.inductionOn'
+      induction c using Quotient.inductionOn' with | h c => ?_
       rw [← sub_sub_cancel (c * x) m]
       apply sub_mem _ _
-      · infer_instance
       · refine' Ideal.mem_sup_left (Ideal.mem_span_singleton'.mpr ⟨c, rfl⟩)
       · have := (Submodule.Quotient.eq _).mp hc
         rw [Submodule.mem_smul_top_iff] at this
         exact Ideal.mem_sup_right this
     have h₂ : maximalIdeal R ≤ (⊥ : Ideal R).jacobson := by
-      rw [LocalRing.jacobson_eq_maximalIdeal]; exacts [le_refl _, bot_ne_top]
+      rw [LocalRing.jacobson_eq_maximalIdeal]
+      exact bot_ne_top
     have :=
       Submodule.smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
     rw [Submodule.bot_smul, sup_bot_eq] at this
