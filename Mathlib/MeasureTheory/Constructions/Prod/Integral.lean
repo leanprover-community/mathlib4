@@ -18,14 +18,14 @@ In this file we prove Fubini's theorem.
 
 ## Main results
 
-* `measure_theory.integrable_prod_iff` states that a binary function is integrable iff both
+* `MeasureTheory.integrable_prod_iff` states that a binary function is integrable iff both
   * `y ↦ f (x, y)` is integrable for almost every `x`, and
   * the function `x ↦ ∫ ‖f (x, y)‖ dy` is integrable.
-* `measure_theory.integral_prod`: Fubini's theorem. It states that for a integrable function
+* `MeasureTheory.integral_prod`: Fubini's theorem. It states that for a integrable function
   `α × β → E` (where `E` is a second countable Banach space) we have
   `∫ z, f z ∂(μ.prod ν) = ∫ x, ∫ y, f (x, y) ∂ν ∂μ`. This theorem has the same variants as
-  Tonelli's theorem (see `measure_theory.lintegral_prod`). The lemma
-  `measure_theory.integrable.integral_prod_right` states that the inner integral of the right-hand
+  Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma
+  `MeasureTheory.Integrable.integral_prod_right` states that the inner integral of the right-hand
   side is integrable.
 
 ## Tags
@@ -451,7 +451,7 @@ theorem continuous_integral_integral :
 /-- **Fubini's Theorem**: For integrable functions on `α × β`,
   the Bochner integral of `f` is equal to the iterated Bochner integral.
   `integrable_prod_iff` can be useful to show that the function in question in integrable.
-  `measure_theory.integrable.integral_prod_right` is useful to show that the inner integral
+  `MeasureTheory.Integrable.integral_prod_right` is useful to show that the inner integral
   of the right-hand side is integrable. -/
 theorem integral_prod :
     ∀ (f : α × β → E) (_ : Integrable f (μ.prod ν)),
