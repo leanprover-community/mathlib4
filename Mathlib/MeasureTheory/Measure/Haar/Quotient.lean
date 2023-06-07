@@ -20,12 +20,12 @@ subgroup of a group `G` on `G` itself.
 
 ## Main results
 
-* `measure_theory.is_fundamental_domain.smul_invariant_measure_map `: given a subgroup `Γ` of a
+* `MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map `: given a subgroup `Γ` of a
   topological group `G`, the pushforward to the coset space `G ⧸ Γ` of the restriction of a both
   left- and right-invariant measure on `G` to a fundamental domain `𝓕` is a `G`-invariant measure
   on `G ⧸ Γ`.
 
-* `measure_theory.is_fundamental_domain.is_mul_left_invariant_map `: given a normal subgroup `Γ` of
+* `MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map `: given a normal subgroup `Γ` of
   a topological group `G`, the pushforward to the quotient group `G ⧸ Γ` of the restriction of
   a both left- and right-invariant measure on `G` to a fundamental domain `𝓕` is a left-invariant
   measure on `G ⧸ Γ`.
