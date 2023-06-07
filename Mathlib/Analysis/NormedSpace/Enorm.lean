@@ -55,6 +55,9 @@ namespace Enorm
 
 variable {𝕜 : Type _} {V : Type _} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] (e : Enorm 𝕜 V)
 
+-- Porting note: added to appease norm_cast complaints
+attribute [coe] Enorm.toFun
+
 instance : CoeFun (Enorm 𝕜 V) fun _ => V → ℝ≥0∞ :=
   ⟨Enorm.toFun⟩
 
