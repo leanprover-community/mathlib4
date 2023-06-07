@@ -249,6 +249,7 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
 variable (C D)
 
 /-- `mapMon` is functorial in the lax monoidal functor. -/
+@[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj := mapMon
   map α := { app := fun A => { hom := α.app A.X } }
@@ -292,7 +293,7 @@ attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
 attribute [local simp] eqToIso_map
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
-@[simps]
+@[simps!]
 def unitIso :
     𝟭 (LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C) ≅ laxMonoidalToMon C ⋙ monToLaxMonoidal C :=
   NatIso.ofComponents
@@ -303,7 +304,7 @@ def unitIso :
 #align Mon_.equiv_lax_monoidal_functor_punit.unit_iso Mon_.EquivLaxMonoidalFunctorPUnit.unitIso
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
-@[simps]
+@[simps!]
 def counitIso : monToLaxMonoidal C ⋙ laxMonoidalToMon C ≅ 𝟭 (Mon_ C) :=
   NatIso.ofComponents
     (fun F =>
