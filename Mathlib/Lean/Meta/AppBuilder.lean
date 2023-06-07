@@ -184,6 +184,3 @@ def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
 /-- `mkFun constName` returns `(f, fType)` with fresh level mvars, and updates caches
 appropriately. -/
 alias mkFun ← mkFun
-
-
--/
