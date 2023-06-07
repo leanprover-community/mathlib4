@@ -8,7 +8,7 @@ Authors: Yury G. Kudryashov, Patrick Massot, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.FderivMeasurable
+import Mathlib.Analysis.Calculus.FDerivMeasurable
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Slope
@@ -196,14 +196,12 @@ class FTCFilter (a : outParam ℝ) (outer : Filter ℝ) (inner : outParam <| Fil
   pure_le : pure a ≤ outer
   le_nhds : inner ≤ 𝓝 a
   [meas_gen : IsMeasurablyGenerated inner]
+set_option linter.uppercaseLean3 false in
 #align interval_integral.FTC_filter intervalIntegral.FTCFilter
 
-/- The `dangerous_instance` linter doesn't take `out_param`s into account, so it thinks that
-`FTC_filter.to_tendsto_Ixx_class` is dangerous. Disable this linter using `nolint`.
--/
-attribute [nolint dangerous_instance] FTC_filter.to_tendsto_Ixx_class
-
 namespace FTCFilter
+
+set_option linter.uppercaseLean3 false -- `FTC` in every name
 
 instance pure (a : ℝ) : FTCFilter a (pure a) ⊥ where
   pure_le := le_rfl
@@ -216,7 +214,7 @@ instance nhdsWithinSingleton (a : ℝ) : FTCFilter a (𝓝[{a}] a) ⊥ := by
 
 theorem finite_at_inner {a : ℝ} (l : Filter ℝ) {l'} [h : FTCFilter a l l'] {μ : Measure ℝ}
     [IsLocallyFiniteMeasure μ] : μ.FiniteAtFilter l' :=
-  (μ.finiteAtNhds a).filter_mono h.le_nhds
+  (μ.finiteAt_nhds a).filter_mono h.le_nhds
 #align interval_integral.FTC_filter.finite_at_inner intervalIntegral.FTCFilter.finite_at_inner
 
 instance nhds (a : ℝ) : FTCFilter a (𝓝 a) (𝓝 a) where
@@ -237,15 +235,15 @@ instance nhdsRight (a : ℝ) : FTCFilter a (𝓝[≥] a) (𝓝[>] a) where
   le_nhds := inf_le_left
 #align interval_integral.FTC_filter.nhds_right intervalIntegral.FTCFilter.nhdsRight
 
-instance nhdsIcc {x a b : ℝ} [h : Fact (x ∈ Icc a b)] : FTCFilter x (𝓝[Icc a b] x) (𝓝[Icc a b] x)
-    where
+instance nhdsIcc {x a b : ℝ} [h : Fact (x ∈ Icc a b)] :
+    FTCFilter x (𝓝[Icc a b] x) (𝓝[Icc a b] x) where
   pure_le := pure_le_nhdsWithin h.out
   le_nhds := inf_le_left
 #align interval_integral.FTC_filter.nhds_Icc intervalIntegral.FTCFilter.nhdsIcc
 
-instance nhdsUIcc {x a b : ℝ} [h : Fact (x ∈ [a, b])] : FTCFilter x (𝓝[[a, b]] x) (𝓝[[a, b]] x) :=
-  haveI : Fact (x ∈ Set.Icc (min a b) (max a b)) := h
-  FTC_filter.nhds_Icc
+instance nhdsUIcc {x a b : ℝ} [h : Fact (x ∈ [[a, b]])] :
+    FTCFilter x (𝓝[[[a, b]]] x) (𝓝[[[a, b]]] x) :=
+  .nhdsIcc (h := h)
 #align interval_integral.FTC_filter.nhds_uIcc intervalIntegral.FTCFilter.nhdsUIcc
 
 end FTCFilter
@@ -276,10 +274,10 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae' [IsMeasurablyGenera
     (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ x in u t..v t, c ∂μ) =o[lt] fun t =>
       ∫ x in u t..v t, (1 : ℝ) ∂μ := by
-  have A := hf.integral_sub_linear_is_o_ae hfm hl (hu.Ioc hv)
-  have B := hf.integral_sub_linear_is_o_ae hfm hl (hv.Ioc hu)
-  simp only [integral_const']
-  convert (A.trans_le _).sub (B.trans_le _)
+  have A := hf.integral_sub_linear_isLittleO_ae hfm hl (hu.Ioc hv)
+  have B := hf.integral_sub_linear_isLittleO_ae hfm hl (hv.Ioc hu)
+  simp_rw [integral_const']
+  have := (A.trans_le _).sub (B.trans_le _)
   · ext t
     simp_rw [intervalIntegral, sub_smul]
     abel
@@ -332,10 +330,6 @@ section
 
 variable [IsLocallyFiniteMeasure μ] [FTCFilter a l l']
 
-include a
-
-attribute [local instance] FTC_filter.meas_gen
-
 /-- Fundamental theorem of calculus-1, local version for any measure.
 Let filters `l` and `l'` be related by `[FTC_filter a l l']`; let `μ` be a locally finite measure.
 If `f` has a finite limit `c` at `l' ⊓ μ.ae`, then
@@ -349,8 +343,9 @@ a statement that works in both cases `u ≤ v` and `v ≤ u`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae
     (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
-    (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ x in u t..v t, c ∂μ) =o[lt] fun t =>
-      ∫ x in u t..v t, (1 : ℝ) ∂μ :=
+    (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
+      ∫ _ in u t..v t, (1 : ℝ) ∂μ :=
+  haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae' hfm hf (FTCFilter.finite_at_inner l) hu hv
 #align interval_integral.measure_integral_sub_linear_is_o_of_tendsto_ae intervalIntegral.measure_integral_sub_linear_isLittleO_of_tendsto_ae
 
@@ -366,6 +361,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - (μ (Ioc (u t) (v t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (u t) (v t)).toReal :=
+  haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' hfm hf (FTCFilter.finite_at_inner l) hu
     hv huv
 #align interval_integral.measure_integral_sub_linear_is_o_of_tendsto_ae_of_le intervalIntegral.measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
@@ -382,13 +378,12 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
     (fun t => (∫ x in u t..v t, f x ∂μ) + (μ (Ioc (v t) (u t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (v t) (u t)).toReal :=
+  haveI := FTCFilter.meas_gen l
   measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge' hfm hf (FTCFilter.finite_at_inner l) hu
     hv huv
 #align interval_integral.measure_integral_sub_linear_is_o_of_tendsto_ae_of_ge intervalIntegral.measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge
 
 end
-
-attribute [local instance] FTC_filter.meas_gen
 
 variable [FTCFilter a la la'] [FTCFilter b lb lb'] [IsLocallyFiniteMeasure μ]
 
