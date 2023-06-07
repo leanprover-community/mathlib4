@@ -8,8 +8,8 @@ Authors: Michael Jendrusch, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Types.Basic
-import Mathbin.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
