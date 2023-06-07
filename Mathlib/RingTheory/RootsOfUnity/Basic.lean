@@ -249,7 +249,6 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
     _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_of_le (Multiset.dedup_le _))
     _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
     _ ≤ k := card_nthRoots k 1
-
 #align card_roots_of_unity card_rootsOfUnity
 
 variable {k R}
@@ -257,8 +256,7 @@ variable {k R}
 theorem map_root_of_unity_eq_pow_self [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
-  rw [← restrictRootsOfUnity_coe_apply, hm, zpow_eq_mod_orderOf, ←
-    Int.toNat_of_nonneg
+  rw [← restrictRootsOfUnity_coe_apply, hm, zpow_eq_mod_orderOf, ← Int.toNat_of_nonneg
       (m.emod_nonneg (Int.coe_nat_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_ofNat, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
@@ -356,8 +354,8 @@ theorem of_subsingleton [Subsingleton M] (x : M) : IsPrimitiveRoot x 1 :=
 #align is_primitive_root.of_subsingleton IsPrimitiveRoot.of_subsingleton
 
 theorem pow_eq_one_iff_dvd (l : ℕ) : ζ ^ l = 1 ↔ k ∣ l :=
-  ⟨h.dvd_of_pow_eq_one l,
-    by rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow, PNat.mul_coe]⟩
+  ⟨h.dvd_of_pow_eq_one l, by
+    rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow, PNat.mul_coe]⟩
 #align is_primitive_root.pow_eq_one_iff_dvd IsPrimitiveRoot.pow_eq_one_iff_dvd
 
 theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) : IsUnit ζ := by
@@ -401,7 +399,8 @@ theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
 @[simp]
 theorem coe_submonoidClass_iff {M B : Type _} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
-  simp [iff_def, ← SubmonoidClass.coe_pow]
+  simp_rw [iff_def]
+  norm_cast
 #align is_primitive_root.coe_submonoid_class_iff IsPrimitiveRoot.coe_submonoidClass_iff
 
 @[simp]
@@ -410,8 +409,7 @@ theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoo
 #align is_primitive_root.coe_units_iff IsPrimitiveRoot.coe_units_iff
 
 -- Porting note `variable` above already contains `(h : IsPrimitiveRoot ζ k)`
-theorem pow_of_coprime (i : ℕ) (hi : i.coprime k) :
-    IsPrimitiveRoot (ζ ^ i) k := by
+theorem pow_of_coprime (i : ℕ) (hi : i.coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
   · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
   rcases h.isUnit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
@@ -422,8 +420,8 @@ theorem pow_of_coprime (i : ℕ) (hi : i.coprime k) :
       dvd_of_pow_eq_one := _ }
   intro l hl
   apply h.dvd_of_pow_eq_one
-  rw [← pow_one ζ, ← zpow_ofNat ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow, ←
-    zpow_ofNat, ← zpow_mul, mul_right_comm]
+  rw [← pow_one ζ, ← zpow_ofNat ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
+    ← zpow_ofNat, ← zpow_mul, mul_right_comm]
   simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_ofNat]
 #align is_primitive_root.pow_of_coprime IsPrimitiveRoot.pow_of_coprime
 
@@ -462,16 +460,15 @@ theorem eq_orderOf : k = orderOf ζ :=
 
 protected theorem iff (hk : 0 < k) :
     IsPrimitiveRoot ζ k ↔ ζ ^ k = 1 ∧ ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1 := by
-  refine'
-    ⟨fun h => ⟨h.pow_eq_one, fun l hl' hl => _⟩, fun ⟨hζ, hl⟩ =>
-      IsPrimitiveRoot.mk_of_lt ζ hk hζ hl⟩
+  refine' ⟨fun h => ⟨h.pow_eq_one, fun l hl' hl => _⟩,
+    fun ⟨hζ, hl⟩ => IsPrimitiveRoot.mk_of_lt ζ hk hζ hl⟩
   rw [h.eq_orderOf] at hl
   exact pow_ne_one_of_lt_orderOf' hl'.ne' hl
 #align is_primitive_root.iff IsPrimitiveRoot.iff
 
 protected theorem not_iff : ¬IsPrimitiveRoot ζ k ↔ orderOf ζ ≠ k :=
-  ⟨fun h hk => h <| hk ▸ IsPrimitiveRoot.orderOf ζ, fun h hk =>
-    h.symm <| hk.unique <| IsPrimitiveRoot.orderOf ζ⟩
+  ⟨fun h hk => h <| hk ▸ IsPrimitiveRoot.orderOf ζ,
+    fun h hk => h.symm <| hk.unique <| IsPrimitiveRoot.orderOf ζ⟩
 #align is_primitive_root.not_iff IsPrimitiveRoot.not_iff
 
 theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p ∣ k) :
@@ -651,8 +648,8 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
   · simp only [h.pow_eq_one, one_pow]
 #align is_primitive_root.eq_neg_one_of_two_right IsPrimitiveRoot.eq_neg_one_of_two_right
 
-theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) : IsPrimitiveRoot (-1 : R) 2 :=
-  by
+theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
+    IsPrimitiveRoot (-1 : R) 2 := by
   convert IsPrimitiveRoot.orderOf (-1 : R)
   rw [orderOf_neg_one, if_neg]
   rwa [ringChar.eq_iff.mpr h]
@@ -693,7 +690,7 @@ def zmodEquivZpowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rw [← (CharP.int_cast_eq_zero_iff (ZMod k) k _).mpr this, eq_comm]
         exact ZMod.int_cast_rightInverse i
       · rintro ⟨ξ, i, rfl⟩
-        refine' ⟨Int.castAddHom _ i, _⟩
+        refine' ⟨Int.castAddHom (ZMod k) i, _⟩
         rw [AddMonoidHom.liftOfRightInverse_comp_apply]
         rfl)
 #align is_primitive_root.zmod_equiv_zpowers IsPrimitiveRoot.zmodEquivZpowers
@@ -709,7 +706,6 @@ theorem zmodEquivZpowers_apply_coe_nat (i : ℕ) :
     h.zmodEquivZpowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
   simp only [this, zmodEquivZpowers_apply_coe_int, zpow_ofNat]
-  rfl
 #align is_primitive_root.zmod_equiv_zpowers_apply_coe_nat IsPrimitiveRoot.zmodEquivZpowers_apply_coe_nat
 
 @[simp]
@@ -804,7 +800,6 @@ theorem card_roots_of_unity' {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
       Fintype.card_congr <| by rw [h.zpowers_eq]
     _ = Fintype.card (ZMod n) := (Fintype.card_congr e.toEquiv.symm)
     _ = n := ZMod.card n
-
 #align is_primitive_root.card_roots_of_unity' IsPrimitiveRoot.card_roots_of_unity'
 
 theorem card_rootsOfUnity {ζ : R} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
@@ -824,7 +819,7 @@ nonrec theorem card_nthRoots {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
   use card_nthRoots n 1
   · rw [not_lt]
     have hcard :
-      Fintype.card { x // x ∈ nthRoots n (1 : R) } ≤ Multiset.card (nthRoots n (1 : R)).attach :=
+        Fintype.card { x // x ∈ nthRoots n (1 : R) } ≤ Multiset.card (nthRoots n (1 : R)).attach :=
       Multiset.card_le_of_le (Multiset.dedup_le _)
     rw [Multiset.card_attach] at hcard
     rw [← PNat.toPNat'_coe hpos] at hcard h ⊢
@@ -838,7 +833,7 @@ if there is a primitive root of unity in `R`. -/
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots n (1 : R)).Nodup := by
   cases' Nat.eq_zero_or_pos n with hzero hpos
   · simp only [hzero, Multiset.nodup_zero, nthRoots_zero]
-  apply (@Multiset.dedup_eq_self R _ _).1
+  apply (Multiset.dedup_eq_self (α := R)).1
   rw [eq_iff_le_not_lt]
   constructor
   · exact Multiset.dedup_le (nthRoots n (1 : R))
@@ -848,7 +843,7 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) : (nthRoots
     have hrw : Multiset.card (nthRoots n (1 : R)).dedup =
         Fintype.card { x // x ∈ nthRoots n (1 : R) } := by
       set fs := (⟨(nthRoots n (1 : R)).dedup, Multiset.nodup_dedup _⟩ : Finset R)
-      rw [← Finset.card_mk, ← Fintype.card_of_subtype fs _]
+      rw [← Finset.card_mk, Fintype.card_of_subtype fs _]
       intro x
       simp only [Multiset.mem_dedup, Finset.mem_mk]
     rw [← PNat.toPNat'_coe hpos] at h hrw ha
@@ -902,8 +897,8 @@ theorem nth_roots_one_eq_biUnion_primitive_roots' {ζ : R} {n : ℕ+} (h : IsPri
   symm
   apply Finset.eq_of_subset_of_card_le
   · intro x
-    simp only [nth_roots_finset, ← Multiset.toFinset_eq (nth_roots_nodup h), exists_prop,
-      Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nth_roots, Finset.mem_mk,
+    simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup h), exists_prop,
+      Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
       Nat.mem_divisors, and_true_iff, Ne.def, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
@@ -913,15 +908,15 @@ theorem nth_roots_one_eq_biUnion_primitive_roots' {ζ : R} {n : ℕ+} (h : IsPri
     rw [mem_primitiveRoots hazero] at ha
     rw [hd, pow_mul, ha.pow_eq_one, one_pow]
   · apply le_of_eq
-    rw [h.card_nth_roots_finset, Finset.card_biUnion]
-    · nth_rw_lhs 1 [← Nat.sum_totient n]
+    rw [h.card_nthRootsFinset, Finset.card_biUnion]
+    · nth_rw 1 [← Nat.sum_totient n]
       refine' sum_congr rfl _
       simp only [Nat.mem_divisors]
       rintro k ⟨⟨d, hd⟩, -⟩
       rw [mul_comm] at hd
       rw [(h.pow n.pos hd).card_primitiveRoots]
-    · intro i hi j hj hdiff
-      exact Disjoint hdiff
+    · intro i _ j _ hdiff
+      exact disjoint hdiff
 #align is_primitive_root.nth_roots_one_eq_bUnion_primitive_roots' IsPrimitiveRoot.nth_roots_one_eq_biUnion_primitive_roots'
 
 /-- `nth_roots n` as a `finset` is equal to the union of `primitive_roots i R` for `i ∣ n`
@@ -930,7 +925,7 @@ theorem nth_roots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ} (h : IsPrimit
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i => primitiveRoots i R := by
   by_cases hn : n = 0
   · simp [hn]
-  exact @nth_roots_one_eq_biUnion_primitive_roots' _ _ _ _ ⟨n, Nat.pos_of_ne_zero hn⟩ h
+  exact nth_roots_one_eq_biUnion_primitive_roots' (n := ⟨n, Nat.pos_of_ne_zero hn⟩) h
 #align is_primitive_root.nth_roots_one_eq_bUnion_primitive_roots IsPrimitiveRoot.nth_roots_one_eq_biUnion_primitiveRoots
 
 end IsDomain
@@ -949,15 +944,16 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   MonoidHom.toHomUnits
     { toFun := fun σ => (map_root_of_unity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
+        dsimp only
         generalize_proofs h1
-        have h := h1.some_spec
+        have h := h1.choose_spec
         dsimp only [AlgEquiv.one_apply, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv] at *
-        replace h : μ' = μ' ^ h1.some :=
+        replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
         rw [← pow_one μ'] at h
-        rw [← @Nat.cast_one <| ZMod n, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ←
-          pow_eq_pow_iff_modEq μ', h]
+        rw [← Nat.cast_one, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq μ', h,
+          pow_one]
       map_mul' := by
         generalize_proofs hxy' hx' hy'
         have hxy := hxy'.some_spec
@@ -990,8 +986,8 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   refine' (_ : ↑hμ.toRootsOfUnity ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 1
-  rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hμ.toRootsOfUnity_coe_val, ←
-    hμ.eq_order_of, ZMod.val_nat_cast]
+  rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hμ.toRootsOfUnity_coe_val,
+    ← hμ.eq_order_of, ZMod.val_nat_cast]
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
 
