@@ -10,7 +10,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Tactic.NoncommRing
+--import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
@@ -85,12 +85,12 @@ noncomputable def resolvent (a : A) (r : R) : A :=
 
 /-- The unit `1 - r⁻¹ • a` constructed from `r • 1 - a` when the latter is a unit. -/
 @[simps]
-noncomputable def IsUnit.subInvSmul {r : Rˣ} {s : R} {a : A} (h : IsUnit <| r • ↑ₐ s - a) : Aˣ where
+noncomputable def IsUnit.subInvSMul {r : Rˣ} {s : R} {a : A} (h : IsUnit <| r • ↑ₐ s - a) : Aˣ where
   val := ↑ₐ s - r⁻¹ • a
-  inv := r • ↑h.Unit⁻¹
-  val_inv := by rw [mul_smul_comm, ← smul_mul_assoc, smul_sub, smul_inv_smul, h.mul_coe_inv]
-  inv_val := by rw [smul_mul_assoc, ← mul_smul_comm, smul_sub, smul_inv_smul, h.coe_inv_mul]
-#align is_unit.sub_inv_smul IsUnit.subInvSmul
+  inv := r • ↑h.unit⁻¹
+  val_inv := by rw [mul_smul_comm, ← smul_mul_assoc, smul_sub, smul_inv_smul, h.mul_val_inv]
+  inv_val := by rw [smul_mul_assoc, ← mul_smul_comm, smul_sub, smul_inv_smul, h.val_inv_mul]
+#align is_unit.sub_inv_smul IsUnit.subInvSMul
 
 end Defs
 
@@ -112,7 +112,8 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 #align spectrum.mem_iff spectrum.mem_iff
 
-theorem not_mem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by apply not_iff_not.mp;
+theorem not_mem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
+  apply not_iff_not.mp
   simp [Set.not_not_mem, mem_iff]
 #align spectrum.not_mem_iff spectrum.not_mem_iff
 
@@ -144,27 +145,27 @@ theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a
 
 @[simp]
 theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
-  rw [spectrum, resolvent_set_of_subsingleton, Set.compl_univ]
+  rw [spectrum, resolventSet_of_subsingleton, Set.compl_univ]
 #align spectrum.of_subsingleton spectrum.of_subsingleton
 
-theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a r = ↑h.Unit⁻¹ :=
-  Ring.inverse_unit h.Unit
+theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a r = ↑h.unit⁻¹ :=
+  Ring.inverse_unit h.unit
 #align spectrum.resolvent_eq spectrum.resolvent_eq
 
 theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
     r • resolvent a (s : R) = resolvent (r⁻¹ • a) (r⁻¹ • s : R) := by
   by_cases h : s ∈ spectrum R a
-  · rw [mem_iff] at h 
+  · rw [mem_iff] at h
     simp only [resolvent, Algebra.algebraMap_eq_smul_one] at *
     rw [smul_assoc, ← smul_sub]
-    have h' : ¬IsUnit (r⁻¹ • (s • 1 - a)) := fun hu =>
+    have h' : ¬IsUnit (r⁻¹ • (s • (1 : A) - a)) := fun hu =>
       h (by simpa only [smul_inv_smul] using IsUnit.smul r hu)
     simp only [Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ h', smul_zero]
   · simp only [resolvent]
     have h' : IsUnit (r • algebraMap R A (r⁻¹ • s) - a) := by
       simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using not_mem_iff.mp h
-    rw [← h'.coe_sub_inv_smul, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
-      h'.coe_inv_sub_inv_smul]
+    rw [← h'.subInvSMul_val, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
+      ←h'.subInvSMul.inv_eq_val_inv, h'.subInvSMul_inv]
     simp only [Algebra.algebraMap_eq_smul_one, smul_assoc, smul_inv_smul]
 #align spectrum.units_smul_resolvent spectrum.units_smul_resolvent
 
@@ -181,14 +182,14 @@ theorem isUnit_resolvent {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit (re
 
 theorem inv_mem_resolventSet {r : Rˣ} {a : Aˣ} (h : (r : R) ∈ resolventSet R (a : A)) :
     (↑r⁻¹ : R) ∈ resolventSet R (↑a⁻¹ : A) := by
-  rw [mem_resolvent_set_iff, Algebra.algebraMap_eq_smul_one, ← Units.smul_def] at h ⊢
+  rw [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, ← Units.smul_def] at h ⊢
   rw [IsUnit.smul_sub_iff_sub_inv_smul, inv_inv, IsUnit.sub_iff]
-  have h₁ : (a : A) * (r • (↑a⁻¹ : A) - 1) = r • 1 - a := by
+  have h₁ : (a : A) * (r • (↑a⁻¹ : A) - 1) = r • (1 : A) - a := by
     rw [mul_sub, mul_smul_comm, a.mul_inv, mul_one]
-  have h₂ : (r • (↑a⁻¹ : A) - 1) * a = r • 1 - a := by
+  have h₂ : (r • (↑a⁻¹ : A) - 1) * a = r • (1 : A) - a := by
     rw [sub_mul, smul_mul_assoc, a.inv_mul, one_mul]
-  have hcomm : Commute (a : A) (r • (↑a⁻¹ : A) - 1) := by rwa [← h₂] at h₁ 
-  exact (hcomm.is_unit_mul_iff.mp (h₁.symm ▸ h)).2
+  have hcomm : Commute (a : A) (r • (↑a⁻¹ : A) - 1) := by rwa [← h₂] at h₁
+  exact (hcomm.isUnit_mul_iff.mp (h₁.symm ▸ h)).2
 #align spectrum.inv_mem_resolvent_set spectrum.inv_mem_resolventSet
 
 theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ : R) ∈ σ (↑a⁻¹ : A) :=
@@ -196,7 +197,7 @@ theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ 
 #align spectrum.inv_mem_iff spectrum.inv_mem_iff
 
 theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
-  simpa only [mem_resolvent_set_iff, ← not_mem_iff, zero_not_mem_iff] using a.is_unit
+  simpa only [mem_resolventSet_iff, ← not_mem_iff, zero_not_mem_iff] using a.isUnit
 #align spectrum.zero_mem_resolvent_set_of_unit spectrum.zero_mem_resolventSet_of_unit
 
 theorem ne_zero_of_mem_of_unit {a : Aˣ} {r : R} (hr : r ∈ σ (a : A)) : r ≠ 0 := fun hn =>
@@ -217,13 +218,14 @@ theorem smul_mem_smul_iff {a : A} {s : R} {r : Rˣ} : r • s ∈ σ (r • a) �
 #align spectrum.smul_mem_smul_iff spectrum.smul_mem_smul_iff
 
 theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
-  ext
+  ext x
   have x_eq : x = r • r⁻¹ • x := by simp
   nth_rw 1 [x_eq]
   rw [smul_mem_smul_iff]
   constructor
-  · exact fun h => ⟨r⁻¹ • x, ⟨h, by simp⟩⟩
-  · rintro ⟨_, _, x'_eq⟩; simpa [← x'_eq]
+  · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
+  · rintro ⟨w, _, (x'_eq : r • w = x)⟩
+    simpa [← x'_eq ]
 #align spectrum.unit_smul_eq_smul spectrum.unit_smul_eq_smul
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
@@ -233,22 +235,22 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
     calc
       (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
           1 - y * x + y * ((1 - x * y) * h.unit.inv) * x :=
-        by noncomm_ring
+        by sorry --noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
-      
+
     calc
       (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
           1 - y * x + y * (h.unit.inv * (1 - x * y)) * x :=
-        by noncomm_ring
+        by sorry --noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
-      
+  have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
+  rw [mul_smul_comm r⁻¹ b a] at this
   simpa only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, ← Units.smul_def,
-    IsUnit.smul_sub_iff_sub_inv_smul, ← smul_mul_assoc, ← mul_smul_comm r⁻¹ b a] using
-    Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
+    IsUnit.smul_sub_iff_sub_inv_smul, smul_mul_assoc]
 #align spectrum.unit_mem_mul_iff_mem_swap_mul spectrum.unit_mem_mul_iff_mem_swap_mul
 
 theorem preimage_units_mul_eq_swap_mul {a b : A} :
-    (coe : Rˣ → R) ⁻¹' σ (a * b) = coe ⁻¹' σ (b * a) :=
+    ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
   Set.ext fun _ => unit_mem_mul_iff_mem_swap_mul
 #align spectrum.preimage_units_mul_eq_swap_mul spectrum.preimage_units_mul_eq_swap_mul
 
@@ -259,12 +261,13 @@ variable [InvolutiveStar R] [StarRing A] [StarModule R A]
 theorem star_mem_resolventSet_iff {r : R} {a : A} :
     star r ∈ resolventSet R a ↔ r ∈ resolventSet R (star a) := by
   refine' ⟨fun h => _, fun h => _⟩ <;>
-    simpa only [mem_resolvent_set_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
+    simpa only [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
       star_star, star_one] using IsUnit.star h
 #align spectrum.star_mem_resolvent_set_iff spectrum.star_mem_resolventSet_iff
 
-protected theorem map_star (a : A) : σ (star a) = star (σ a) := by ext;
-  simpa only [Set.mem_star, mem_iff, not_iff_not] using star_mem_resolvent_set_iff.symm
+protected theorem map_star (a : A) : σ (star a) = star (σ a) := by
+  ext
+  simpa only [Set.mem_star, mem_iff, not_iff_not] using star_mem_resolventSet_iff.symm
 #align spectrum.map_star spectrum.map_star
 
 end Star
@@ -291,12 +294,14 @@ theorem subset_subalgebra {S : Subalgebra R A} (a : S) : spectrum R (a : A) ⊆ 
 -- this is why it would be nice if `subset_subalgebra` was registered for `subalgebra_class`.
 theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : StarSubalgebra R A}
     (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  compl_subset_compl.2 fun _ => IsUnit.map S.Subtype
+  compl_subset_compl.2 fun _ => IsUnit.map S.subtype
 #align spectrum.subset_star_subalgebra spectrum.subset_starSubalgebra
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
-    rw [singleton_add, image_add_left, mem_preimage, add_comm, add_mem_iff, map_neg, neg_neg]
+    rw [singleton_add, image_add_left, mem_preimage]
+    simp only
+    rw [add_comm, add_mem_iff, map_neg, neg_neg]
 #align spectrum.singleton_add_eq spectrum.singleton_add_eq
 
 theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
@@ -340,9 +345,9 @@ theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
   refine' Set.Subset.antisymm _ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
   rw [spectrum, Set.compl_subset_comm]
   intro k hk
-  rw [Set.mem_compl_singleton_iff] at hk 
+  rw [Set.mem_compl_singleton_iff] at hk
   have : IsUnit (Units.mk0 k hk • (1 : A)) := IsUnit.smul (Units.mk0 k hk) isUnit_one
-  simpa [mem_resolvent_set_iff, Algebra.algebraMap_eq_smul_one]
+  simpa [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one]
 #align spectrum.zero_eq spectrum.zero_eq
 
 @[simp]
@@ -355,7 +360,7 @@ theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
   calc
     σ (1 : A) = σ (↑ₐ 1) := by rw [Algebra.algebraMap_eq_smul_one, one_smul]
     _ = {1} := scalar_eq 1
-    
+
 #align spectrum.one_eq spectrum.one_eq
 
 /-- the assumption `(σ a).nonempty` is necessary and cannot be removed without
@@ -363,7 +368,7 @@ theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
 theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) : σ (k • a) = k • σ a :=
   by
   rcases eq_or_ne k 0 with (rfl | h)
-  · simpa [ha, zero_smul_set]
+  · simpa [ha, zero_smul_set] using (show {(0 : 𝕜)} = (0 : Set 𝕜) from rfl)
   · exact unit_smul_eq_smul a (Units.mk0 k h)
 #align spectrum.smul_eq_smul spectrum.smul_eq_smul
 
@@ -371,18 +376,18 @@ theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} 
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0}
   · exact Set.eq_of_subset_of_subset (h a b) (h b a)
   · rintro _ _ k ⟨k_mem, k_neq⟩
-    change k with ↑(Units.mk0 k k_neq) at k_mem 
+    change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
     exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   refine' Set.eq_of_subset_of_subset (fun k hk => _) fun k hk => _
-  · rw [Set.mem_inv] at hk 
+  · rw [Set.mem_inv] at hk
     have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
-    lift k to 𝕜ˣ using is_unit_iff_ne_zero.mpr this
-    rw [← Units.val_inv_eq_inv_val k] at hk 
+    lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this
+    rw [← Units.val_inv_eq_inv_val k] at hk
     exact inv_mem_iff.mp hk
-  · lift k to 𝕜ˣ using is_unit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
+  · lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
     simpa only [Units.val_inv_eq_inv_val] using inv_mem_iff.mp hk
 #align spectrum.map_inv spectrum.map_inv
 
@@ -428,13 +433,13 @@ local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
 theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
-  have h : ↑ₐ (φ a) - a ∈ (φ : A →+* R).ker := by
+  have h : ↑ₐ (φ a) - a ∈ RingHom.ker (φ : A →+* R) := by
     simp only [RingHom.mem_ker, map_sub, RingHom.coe_coe, AlgHomClass.commutes,
       Algebra.id.map_eq_id, RingHom.id_apply, sub_self]
-  simp only [spectrum.mem_iff, ← mem_nonunits_iff, coe_subset_nonunits (φ : A →+* R).ker_ne_top h]
+  simp only [spectrum.mem_iff, ← mem_nonunits_iff,
+    coe_subset_nonunits (RingHom.ker_ne_top (φ : A →+* R)) h]
 #align alg_hom.apply_mem_spectrum AlgHom.apply_mem_spectrum
 
 end CommRing
 
 end AlgHom
-
