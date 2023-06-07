@@ -39,6 +39,12 @@ private def withAppBuilderTrace' [ToMessageData α] [ToMessageData β] [ToMessag
       trace[Meta.appBuilder.error] ex.toMessageData
       throw ex
 
+private def tooManyExplicitArgsException (n : Name) (f : Expr) (used : Nat) (provided : Array Expr)
+    : MetaM α :=
+  throwAppBuilderException n m!"too many explicit arguments provided to{indentExpr f}\nexpected {
+    used}, got {provided.size}.\nused:{indentD provided[0:used]}\nunused:{indentD provided[used:]
+    }"
+
 
 -/
 
