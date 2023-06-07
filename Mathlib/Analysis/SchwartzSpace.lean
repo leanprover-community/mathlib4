@@ -143,7 +143,7 @@ variable (f : 𝓢(E, F))
 /-- Auxiliary lemma, used in proving the more general result `is_O_cocompact_zpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ (-k : ℤ) := by
-  obtain ⟨d, hd, hd'⟩ := f.decay k 0
+  obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp_rw [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite _⟩
@@ -155,6 +155,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   convert hd' x
   norm_cast
   exact zpow_pos_of_pos (norm_pos_iff.mpr hx) k
+set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow_neg_nat SchwartzMap.isBigO_cocompact_zpow_neg_nat
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
@@ -173,11 +174,13 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
     Int.cast_ofNat]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
+set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_rpow SchwartzMap.isBigO_cocompact_rpow
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
     Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ k := by
   simpa only [Real.rpow_int_cast] using isBigO_cocompact_rpow f k
+set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow SchwartzMap.isBigO_cocompact_zpow
 
 end IsO
@@ -418,7 +421,7 @@ theorem coe_coeHom : (coeHom E F : 𝓢(E, F) → E → F) = coeFn :=
   rfl
 #align schwartz_map.coe_coe_hom SchwartzMap.coe_coeHom
 
-theorem coeHom_injective : Function.Injective (coeHom E F) := by rw [coe_coe_hom];
+theorem coeHom_injective : Function.Injective (coeHom E F) := by rw [coe_coeHom];
   exact FunLike.coe_injective
 #align schwartz_map.coe_hom_injective SchwartzMap.coeHom_injective
 
@@ -429,7 +432,7 @@ section Module
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 instance : Module 𝕜 𝓢(E, F) :=
-  coeHom_injective.Module 𝕜 (coeHom E F) fun _ _ => rfl
+  coeHom_injective.module 𝕜 (coeHom E F) fun _ _ => rfl
 
 end Module
 
@@ -444,8 +447,7 @@ variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
 `𝓢(E, F)`. -/
-@[protected]
-def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
+protected def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
   Seminorm.ofSMulLE (seminormAux k n) (seminormAux_zero k n) (seminormAux_add_le k n)
     (seminormAux_smul_le k n)
 #align schwartz_map.seminorm SchwartzMap.seminorm
@@ -696,8 +698,7 @@ section EvalClm
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
-@[protected]
-def evalClm (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
+protected def evalClm (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
   mkClm (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
     (fun f => ContDiff.clm_apply f.2 contDiff_const)
     (by
@@ -938,13 +939,13 @@ theorem iteratedPderiv_succ_left {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, 
 theorem iteratedPderiv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
     iteratedPderiv 𝕜 m f = iteratedPderiv 𝕜 (Fin.init m) (pderivClm 𝕜 (m (Fin.last n)) f) := by
   induction' n with n IH
-  · rw [iterated_pderiv_zero, iterated_pderiv_one]
+  · rw [iteratedPderiv_zero, iteratedPderiv_one]
     rfl
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
   have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
   have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
     simp only [Fin.tail_def, Fin.succ_last]
-  simp only [iterated_pderiv_succ_left, IH (Fin.tail m), hmzero, hmtail, Fin.tail_init_eq_init_tail]
+  simp only [iteratedPderiv_succ_left, IH (Fin.tail m), hmzero, hmtail, Fin.tail_init_eq_init_tail]
 #align schwartz_map.iterated_pderiv_succ_right SchwartzMap.iteratedPderiv_succ_right
 
 -- Todo: `iterated_pderiv 𝕜 m f x = iterated_fderiv ℝ f x m`
@@ -996,7 +997,7 @@ map. -/
 def toBoundedContinuousFunctionClm : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
   { toBoundedContinuousFunctionLm 𝕜 E F with
     cont := by
-      change Continuous (to_bounded_continuous_function_lm 𝕜 E F)
+      change Continuous (toBoundedContinuousFunctionLm 𝕜 E F)
       refine'
         Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
           (norm_withSeminorms 𝕜 (E →ᵇ F)) _ fun i => ⟨{0}, 1, fun f => _⟩
