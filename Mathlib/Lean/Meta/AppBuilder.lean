@@ -243,3 +243,47 @@ def mkAppMWithLevelsUnifyingWithNewMVars' (f : ExprWithLevels) (xs : Array Expr)
   let (e, implicitMVars, instMVars) ← withAppBuilderTrace' f xs do
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
   return (← abstract env e, implicitMVars, instMVars)
+
+section Combinators
+
+variable [MonadControlT MetaM m] [Monad m]
+
+@[inline] private def mapWithConstLevelsMetaM
+    (f : forall {α}, ((β → γ → MetaM δ) → β → γ → γ → MetaM α) → MetaM α) {α}
+    (k : (β → γ → m δ) → β → γ → γ → m α) : m α :=
+  controlAt MetaM fun runInBase => f fun a b' c' d' =>
+    runInBase <| k (fun b c => liftWith fun _ => a b c) b' c' d'
+
+/-- Evaluates `k := fun abstract env f fType => ...` on the `Expr` `f` referred to by `const` and
+its type `fType`, with the const's level params replaced with metavariables according to `env`.
+
+The arguments `abstract` and `env` of `k` can be used within the body of `k` to "re-bind" any of
+these level metavariables that appear in some `e` to obtain an `ExprWithLevels`, e.g.
+`abstract env e`. -/
+def withConstLevels (const : Name)
+    (k : (Environment → Expr → m ExprWithLevels) → Environment → Expr → Expr → m α)
+    (abstract := abstract (m := MetaM)) : m α :=
+  mapWithConstLevelsMetaM (fun k => do
+    let (f, fType, env) ← mkFunWithLevels const
+    k abstract env f fType) k
+
+/-- Evaluates `k := fun env f fType => ...` on the `Expr` `f` referred to by `const` and
+its type `fType`, with the const's level params replaced with metavariables according to `env`. The
+remaining unassigned level metavariables in the `Expr` produced by `k` will be abstracted out into
+an `ExprWithLevels` by `abstract`. -/
+def withConstLevelsExpr (const : Name) (k : Environment → Expr → Expr → m Expr)
+    (abstract := abstract (m := MetaM)) : m ExprWithLevels :=
+  withConstLevels const (abstract := abstract) fun abstract env f fType => do
+    abstract env (← k env f fType)
+
+/-- Evaluates `k := fun env f fType => ...` on the `Expr` `f` referred to by `const` and
+its type `fType`, with the const's level params replaced with metavariables according to `env`. The
+remaining unassigned level metavariables in the `Expr` produced in the first component of `k`'s
+output will be abstracted out into an `ExprWithLevels` by `abstract`. -/
+def withConstLevelsExpr' (const : Name) (k : Environment → Expr → Expr → m (Expr × α))
+    (abstract := abstract (m := MetaM)) : m (ExprWithLevels × α) :=
+  withConstLevels const (abstract := abstract) fun abstract env f fType => do
+    let (e, a) ← k env f fType
+    return (← abstract env e, a)
+
+end Combinators
