@@ -995,37 +995,37 @@ theorem Lifts.eq_of_le {x y : Lifts F E K} (hxy : x ≤ y) (s : x.1) : x.2 s = y
 #align intermediate_field.lifts.eq_of_le IntermediateField.Lifts.eq_of_le
 
 theorem Lifts.exists_max_two {c : Set (Lifts F E K)} {x y : Lifts F E K} (hc : IsChain (· ≤ ·) c)
-    (hx : x ∈ Insert.insert ⊥ c) (hy : y ∈ Insert.insert ⊥ c) :
-    ∃ z : Lifts F E K, z ∈ Insert.insert ⊥ c ∧ x ≤ z ∧ y ≤ z := by
-  cases' (hc.insert fun _ _ _ => Or.inl bot_le).Total hx hy with hxy hyx
+    (hx : x ∈ insert ⊥ c) (hy : y ∈ insert ⊥ c) :
+    ∃ z : Lifts F E K, z ∈ insert ⊥ c ∧ x ≤ z ∧ y ≤ z := by
+  cases' (hc.insert fun _ _ _ => Or.inl bot_le).total hx hy with hxy hyx
   · exact ⟨y, hy, hxy, le_refl y⟩
   · exact ⟨x, hx, le_refl x, hyx⟩
 #align intermediate_field.lifts.exists_max_two IntermediateField.Lifts.exists_max_two
 
 theorem Lifts.exists_max_three {c : Set (Lifts F E K)} {x y z : Lifts F E K}
-    (hc : IsChain (· ≤ ·) c) (hx : x ∈ Insert.insert ⊥ c) (hy : y ∈ Insert.insert ⊥ c)
-    (hz : z ∈ Insert.insert ⊥ c) :
-    ∃ w : Lifts F E K, w ∈ Insert.insert ⊥ c ∧ x ≤ w ∧ y ≤ w ∧ z ≤ w := by
-  obtain ⟨v, hv, hxv, hyv⟩ := lifts.exists_max_two hc hx hy
-  obtain ⟨w, hw, hzw, hvw⟩ := lifts.exists_max_two hc hz hv
+    (hc : IsChain (· ≤ ·) c) (hx : x ∈ insert ⊥ c) (hy : y ∈ insert ⊥ c)
+    (hz : z ∈ insert ⊥ c) :
+    ∃ w : Lifts F E K, w ∈ insert ⊥ c ∧ x ≤ w ∧ y ≤ w ∧ z ≤ w := by
+  obtain ⟨v, hv, hxv, hyv⟩ := Lifts.exists_max_two hc hx hy
+  obtain ⟨w, hw, hzw, hvw⟩ := Lifts.exists_max_two hc hz hv
   exact ⟨w, hw, le_trans hxv hvw, le_trans hyv hvw, hzw⟩
 #align intermediate_field.lifts.exists_max_three IntermediateField.Lifts.exists_max_three
 
 /-- An upper bound on a chain of lifts -/
 def Lifts.upperBoundIntermediateField {c : Set (Lifts F E K)} (hc : IsChain (· ≤ ·) c) :
     IntermediateField F E where
-  carrier s := ∃ x : Lifts F E K, x ∈ Insert.insert ⊥ c ∧ (s ∈ x.1 : Prop)
+  carrier s := ∃ x : Lifts F E K, x ∈ insert ⊥ c ∧ (s ∈ x.1 : Prop)
   zero_mem' := ⟨⊥, Set.mem_insert ⊥ c, zero_mem ⊥⟩
   one_mem' := ⟨⊥, Set.mem_insert ⊥ c, one_mem ⊥⟩
   neg_mem' := by rintro _ ⟨x, y, h⟩; exact ⟨x, ⟨y, x.1.neg_mem h⟩⟩
   inv_mem' := by rintro _ ⟨x, y, h⟩; exact ⟨x, ⟨y, x.1.inv_mem h⟩⟩
   add_mem' := by
     rintro _ _ ⟨x, hx, ha⟩ ⟨y, hy, hb⟩
-    obtain ⟨z, hz, hxz, hyz⟩ := lifts.exists_max_two hc hx hy
+    obtain ⟨z, hz, hxz, hyz⟩ := Lifts.exists_max_two hc hx hy
     exact ⟨z, hz, z.1.add_mem (hxz.1 ha) (hyz.1 hb)⟩
   mul_mem' := by
     rintro _ _ ⟨x, hx, ha⟩ ⟨y, hy, hb⟩
-    obtain ⟨z, hz, hxz, hyz⟩ := lifts.exists_max_two hc hx hy
+    obtain ⟨z, hz, hxz, hyz⟩ := Lifts.exists_max_two hc hx hy
     exact ⟨z, hz, z.1.mul_mem (hxz.1 ha) (hyz.1 hb)⟩
   algebraMap_mem' s := ⟨⊥, Set.mem_insert ⊥ c, algebraMap_mem ⊥ s⟩
 #align intermediate_field.lifts.upper_bound_intermediate_field IntermediateField.Lifts.upperBoundIntermediateField
@@ -1033,21 +1033,25 @@ def Lifts.upperBoundIntermediateField {c : Set (Lifts F E K)} (hc : IsChain (· 
 /-- The lift on the upper bound on a chain of lifts -/
 noncomputable def Lifts.upperBoundAlgHom {c : Set (Lifts F E K)} (hc : IsChain (· ≤ ·) c) :
     Lifts.upperBoundIntermediateField hc →ₐ[F] K where
-  toFun s := (Classical.choose s.Mem).2 ⟨s, (Classical.choose_spec s.Mem).2⟩
+  toFun s := (Classical.choose s.mem).2 ⟨s, (Classical.choose_spec s.mem).2⟩
   map_zero' := AlgHom.map_zero _
   map_one' := AlgHom.map_one _
   map_add' s t := by
-    obtain ⟨w, hw, hxw, hyw, hzw⟩ :=
-      lifts.exists_max_three hc (Classical.choose_spec s.mem).1 (Classical.choose_spec t.mem).1
-        (Classical.choose_spec (s + t).Mem).1
-    rw [lifts.eq_of_le hxw, lifts.eq_of_le hyw, lifts.eq_of_le hzw, ← w.2.map_add]
-    rfl
+    obtain ⟨w, _, hxw, hyw, hzw⟩ :=
+      Lifts.exists_max_three hc (Classical.choose_spec s.mem).1 (Classical.choose_spec t.mem).1
+        (Classical.choose_spec (s + t).mem).1
+
+    simp only [Subsemiring.coe_add, Subalgebra.coe_toSubsemiring, coe_toSubalgebra,
+        Lifts.eq_of_le hzw, Lifts.eq_of_le hxw, Lifts.eq_of_le hyw, ← w.2.map_add,
+          AddMemClass.mk_add_mk]
   map_mul' s t := by
-    obtain ⟨w, hw, hxw, hyw, hzw⟩ :=
-      lifts.exists_max_three hc (Classical.choose_spec s.mem).1 (Classical.choose_spec t.mem).1
-        (Classical.choose_spec (s * t).Mem).1
-    rw [lifts.eq_of_le hxw, lifts.eq_of_le hyw, lifts.eq_of_le hzw, ← w.2.map_mul]
-    rfl
+    obtain ⟨w, _, hxw, hyw, hzw⟩ :=
+      Lifts.exists_max_three hc (Classical.choose_spec s.mem).1 (Classical.choose_spec t.mem).1
+        (Classical.choose_spec (s * t).mem).1
+    simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Subalgebra.coe_toSubsemiring,
+      coe_toSubalgebra, Lifts.eq_of_le hzw, Lifts.eq_of_le hxw, Lifts.eq_of_le hyw, ← w.2.map_mul,
+        Submonoid.mk_mul_mk]
+
   commutes' _ := AlgHom.commutes _ _
 #align intermediate_field.lifts.upper_bound_alg_hom IntermediateField.Lifts.upperBoundAlgHom
 
@@ -1064,15 +1068,12 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
     · exact fun s hs => ⟨x, Set.mem_insert_of_mem ⊥ hx, hs⟩
     · intro s t hst
       change x.2 s = (Classical.choose t.mem).2 ⟨t, (Classical.choose_spec t.mem).2⟩
-      obtain ⟨z, hz, hxz, hyz⟩ :=
-        lifts.exists_max_two hc (Set.mem_insert_of_mem ⊥ hx) (Classical.choose_spec t.mem).1
-      rw [lifts.eq_of_le hxz, lifts.eq_of_le hyz]
+      obtain ⟨z, _, hxz, hyz⟩ :=
+        Lifts.exists_max_two hc (Set.mem_insert_of_mem ⊥ hx) (Classical.choose_spec t.mem).1
+      rw [Lifts.eq_of_le hxz, Lifts.eq_of_le hyz]
       exact congr_arg z.2 (Subtype.ext hst)⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- Extend a lift `x : lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : Lifts F E K :=
@@ -1081,9 +1082,9 @@ noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral 
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
       ((splits_map_iff _ _).mpr (by convert h2; exact RingHom.ext fun y => x.2.commutes y))
       (minpoly.dvd_map_of_isScalarTower _ _ _)
-  ⟨x.1⟮⟯.restrictScalars F,
-    (@algHomEquivSigma F x.1 (x.1⟮⟯.restrictScalars F) K _ _ _ _ _ _ _
-          (IntermediateField.algebra x.1⟮⟯) (IsScalarTower.of_algebraMap_eq fun _ => rfl)).invFun
+  ⟨x.1⟮s⟯.restrictScalars F,
+    (@algHomEquivSigma F x.1 (x.1⟮s⟯.restrictScalars F) K _ _ _ _ _ _ _
+          (IntermediateField.algebra x.1⟮s⟯) (IsScalarTower.of_algebraMap_eq fun _ => rfl)).invFun
       ⟨x.2,
         (@algHomAdjoinIntegralEquiv x.1 _ E _ _ s K _ x.2.toRingHom.toAlgebra h3).invFun
           ⟨rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3)), by
@@ -1091,14 +1092,12 @@ noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral 
             exact map_root_of_splits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3))⟩⟩⟩
 #align intermediate_field.lifts.lift_of_splits IntermediateField.Lifts.liftOfSplits
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem Lifts.le_lifts_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : x ≤ x.lift_of_splits h1 h2 :=
-  ⟨fun z hz => algebraMap_mem x.1⟮⟯ ⟨z, hz⟩, fun t u htu =>
+  ⟨fun z hz => algebraMap_mem x.1⟮s⟯ ⟨z, hz⟩, fun t u htu =>
     Eq.symm
       (by
-        rw [← show algebraMap x.1 x.1⟮⟯ t = u from Subtype.ext htu]
+        rw [← show algebraMap x.1 x.1⟮s⟯ t = u from Subtype.ext htu]
         letI : Algebra x.1 K := x.2.toRingHom.toAlgebra
         exact AlgHom.commutes _ t)⟩
 #align intermediate_field.lifts.le_lifts_of_splits IntermediateField.Lifts.le_lifts_of_splits
@@ -1145,13 +1144,13 @@ theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2
 
 theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
-  let S1 := E1.to_subalgebra
-  let S2 := E2.to_subalgebra
+  let S1 := E1.toSubalgebra
+  let S2 := E2.toSubalgebra
   refine'
     le_antisymm
       (show _ ≤ (S1 ⊔ S2).toIntermediateField _ from
         sup_le (show S1 ≤ _ from le_sup_left) (show S2 ≤ _ from le_sup_right))
-      (le_sup_to_subalgebra E1 E2)
+      (le_sup_toSubalgebra E1 E2)
   suffices IsField ↥(S1 ⊔ S2) by
     intro x hx
     by_cases hx' : (⟨x, hx⟩ : S1 ⊔ S2) = 0
@@ -1200,7 +1199,6 @@ instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → Intermediate
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
 #align intermediate_field.finite_dimensional_supr_of_finset IntermediateField.finiteDimensional_iSup_of_finset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type _} {f : ι → IntermediateField K L}
     (h : ∀ i, Algebra.IsAlgebraic K (f i)) :
@@ -1208,7 +1206,7 @@ theorem isAlgebraic_iSup {ι : Type _} {f : ι → IntermediateField K L}
   rintro ⟨x, hx⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
   rw [is_algebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk x hx, ← is_algebraic_iff]
-  haveI : ∀ i : Σ i, f i, FiniteDimensional K K⟮⟯ := fun ⟨i, x⟩ =>
+  haveI : ∀ i : Σ i, f i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ =>
     adjoin.finite_dimensional (is_integral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
   apply Algebra.isAlgebraic_of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
