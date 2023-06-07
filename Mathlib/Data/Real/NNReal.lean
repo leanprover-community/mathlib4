@@ -612,10 +612,6 @@ theorem toNNReal_zero : Real.toNNReal 0 = 0 := NNReal.eq <| coe_toNNReal _ le_rf
 theorem toNNReal_one : Real.toNNReal 1 = 1 := NNReal.eq <| coe_toNNReal _ zero_le_one
 #align real.to_nnreal_one Real.toNNReal_one
 
--- porting note: new lemma
-theorem coe_toNNReal_sub_coe_toNNReal_neg : (r.toNNReal : ℝ) - (-r).toNNReal = r :=
-  max_zero_sub_max_neg_zero_eq_self r
-
 @[simp]
 theorem toNNReal_pos {r : ℝ} : 0 < Real.toNNReal r ↔ 0 < r := by
   simp [← NNReal.coe_lt_coe, lt_irrefl]
