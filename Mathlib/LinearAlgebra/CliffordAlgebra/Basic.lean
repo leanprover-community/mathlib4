@@ -343,8 +343,8 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
 #align clifford_algebra.invertible_ι_of_invertible CliffordAlgebra.invertibleιOfInvertible
 
 /-- For a vector with invertible quadratic form, $v^{-1} = \frac{v}{Q(v)}$ -/
-theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] : ⅟ (ι Q m) = ι Q (⅟ (Q m) • m) :=
-  by
+theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
+    ⅟ (ι Q m) = ι Q (⅟ (Q m) • m) := by
   letI := invertibleιOfInvertible Q m
   convert (rfl : ⅟ (ι Q m) = _)
 #align clifford_algebra.inv_of_ι CliffordAlgebra.invOf_ι
