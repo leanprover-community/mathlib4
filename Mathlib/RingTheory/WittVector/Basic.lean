@@ -107,43 +107,36 @@ macro "map_fun_tac" : tactic => `(tactic| (
   ( ext ⟨i, k⟩ <;>
     ( fin_cases i <;> rfl ) ) ))
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
+--  porting note: mathport left a long line, probably due to the presence of meta code, from here
+--  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
 theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
 #align witt_vector.map_fun.zero WittVector.mapFun.zero
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem one : mapFun f (1 : 𝕎 R) = 1 := by
   ext (_|n)
   . simp only [mapFun, mk, Nat.zero_eq, comp_apply, lt_self_iff_false, one_coeff_zero, map_one]
   . simp only [mapFun, mk, comp_apply, Nat.succ_pos', one_coeff_eq_of_pos, map_zero]
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.add WittVector.mapFun.add
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.sub WittVector.mapFun.sub
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.mul WittVector.mapFun.mul
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
@@ -173,21 +166,8 @@ private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ 
 section Tactic
 open Lean Elab Tactic
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/-- An auxiliary tactic for proving that `ghost_fun` respects the ring operations. -/
---unsafe def tactic.interactive.ghost_fun_tac (φ fn : parse parser.pexpr) : tactic Unit := do
---  let fn ← to_expr `(($(fn) : Fin _ → ℕ → R))
---  let q(Fin $(k) → _ → _) ← infer_type fn
---  sorry
---  sorry
---  to_expr `(congr_fun (congr_arg (@peval R _ $(k)) (wittStructureInt_prop p $(φ) n)) $(fn)) >>=
---      note `this none
---  sorry
---#align tactic.interactive.ghost_fun_tac tactic.interactive.ghost_fun_tac
+--  porting note: removed mathport output related to meta code.
+--  I do not know what to do with `#align`
 elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
   evalTactic (← `(tactic|
   ext n  <;>
