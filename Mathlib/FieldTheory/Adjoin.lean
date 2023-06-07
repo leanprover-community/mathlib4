@@ -931,28 +931,24 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
   S.fG_of_fG_toSubalgebra S.toSubalgebra.fg_of_noetherian
 #align intermediate_field.fg_of_noetherian IntermediateField.fg_of_noetherian
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F ↑S) := by
-  apply Finset.induction_on' S
-  · exact base
-  · intro a s h1 _ _ h4
-    rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
-    exact ih (adjoin F s) a h1 h4
+  refine' Finset.induction_on' S _ (fun ha _ _ h => _)
+  · simp [base]
+  · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
+    exact ih (adjoin F _) _ ha h
 #align intermediate_field.induction_on_adjoin_finset IntermediateField.induction_on_adjoin_finset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮⟯.restrictScalars F))
+    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) (hK : K.FG) : P K := by
   obtain ⟨S, rfl⟩ := hK
   exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
 #align intermediate_field.induction_on_adjoin_fg IntermediateField.induction_on_adjoin_fg
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem induction_on_adjoin [fd : FiniteDimensional F E] (P : IntermediateField F E → Prop)
-    (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮⟯.restrictScalars F))
+theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
+    (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) : P K :=
   letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
   induction_on_adjoin_fg P base ih K K.fg_of_noetherian
