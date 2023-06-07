@@ -34,15 +34,15 @@ This file is the place to find definitions and basic properties of the classical
   * `LieAlgebra.Orthogonal.soIndefiniteEquiv`
   * `LieAlgebra.Orthogonal.typeD`
   * `LieAlgebra.Orthogonal.typeB`
-  * `lie_algebra.orthogonal.type_D_equiv_so'`
-  * `lie_algebra.orthogonal.type_B_equiv_so'`
+  * `LieAlgebra.Orthogonal.typeDEquivSo'`
+  * `LieAlgebra.Orthogonal.typeBEquivSo'`
 
 ## Implementation notes
 
 ### Matrices or endomorphisms
 
 Given a finite type and a commutative ring, the corresponding square matrices are equivalent to the
-endomorphisms of the corresponding finite-rank free module as Lie algebras, see `lie_equiv_matrix'`.
+endomorphisms of the corresponding finite-rank free module as Lie algebras, see `lieEquivMatrix'`.
 We can thus define the classical Lie algebras as Lie subalgebras either of matrices or of
 endomorphisms. We have opted for the former. At the time of writing (August 2020) it is unclear
 which approach should be preferred so the choice should be assumed to be somewhat arbitrary.
@@ -61,7 +61,7 @@ defines a symmetric bilinear form equivalent to that defined by the identity mat
 define the algebras of type `D` to be the Lie subalgebra of skew-adjoint matrices either for `J` or
 for `I`. Both definitions have their advantages (in particular the `J`-skew-adjoint matrices define
 a Lie algebra for which the diagonal matrices form a Cartan subalgebra) and so we provide both.
-We thus also provide equivalences `type_D_equiv_so'`, `so_indefinite_equiv` which show the two
+We thus also provide equivalences `typeDEquivSo'`, `soIndefiniteEquiv` which show the two
 definitions are equivalent. Similarly for the algebras of type `B`.
 
 ## Tags
@@ -111,7 +111,7 @@ section ElementaryBasis
 variable {n} [Fintype n] (i j : n)
 
 /-- When j ≠ i, the elementary matrices are elements of sl n R, in fact they are part of a natural
-basis of sl n R. -/
+basis of `sl n R`. -/
 def Eb (h : j ≠ i) : sl n R :=
   ⟨Matrix.stdBasisMatrix i j (1 : R),
     show Matrix.stdBasisMatrix i j (1 : R) ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
