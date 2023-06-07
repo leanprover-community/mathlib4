@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Thomas Murrills
 import Lean
 import Std.Tactic.OpenPrivate
 import Mathlib.Control.Basic
+import Mathlib.Lean.Meta.ExprWithLevels
 import Mathlib.Tactic.Alias
 
 /-!
@@ -184,6 +185,24 @@ def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
 /-- `mkFun constName` returns `(f, fType)` with fresh level mvars, and updates caches
 appropriately. -/
 alias mkFun ← mkFun
+
+namespace ExprWithLevels
+
+/-- Given a `const : Name`, produce `(f, fType, env)`, where
+
+* `f` is the expression representing `const`
+* `fType` is the type of `f`
+* `env` is the assignment of the level params of `const` to new level metavariables.
+
+The level params in `f` and `fType` are instantiated with these new level metavariables.
+-/
+def mkFunWithLevels (const : Name) : MetaM (Expr × Expr × Environment) := do
+  let cinfo ← getConstInfo const
+  let paramList := cinfo.levelParams
+  let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
+  let f := Expr.const const us
+  let fType ← instantiateTypeLevelParams cinfo us
+  return (f, fType, ⟨paramList.toArray, us.toArray⟩)
 
 
 -/
