@@ -210,6 +210,7 @@ import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Character
+import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Matrix
