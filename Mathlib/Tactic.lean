@@ -139,5 +139,6 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Zify.Attr
