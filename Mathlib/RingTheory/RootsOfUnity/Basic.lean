@@ -955,17 +955,20 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         rw [← Nat.cast_one, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq μ', h,
           pow_one]
       map_mul' := by
+        intro x y
+        dsimp only
         generalize_proofs hxy' hx' hy'
-        have hxy := hxy'.some_spec
-        have hx := hx'.some_spec
-        have hy := hy'.some_spec
+        have hxy := hxy'.choose_spec
+        have hx := hx'.choose_spec
+        have hy := hy'.choose_spec
         dsimp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.mul_apply] at *
-        replace hxy : x (↑μ' ^ hy'.some) = ↑μ' ^ hxy'.some := hy ▸ hxy
+        replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose := hy ▸ hxy
         rw [x.map_pow] at hxy
-        replace hxy : ((μ' : S) ^ hx'.some) ^ hy'.some = μ' ^ hxy'.some := hx ▸ hxy
+        replace hxy : (((μ' : Sˣ) : S) ^ hx'.choose) ^ hy'.choose = ((μ' : Sˣ) : S) ^ hxy'.choose :=
+          hx ▸ hxy
         rw [← pow_mul] at hxy
-        replace hxy : μ' ^ (hx'.some * hy'.some) = μ' ^ hxy'.some :=
+        replace hxy : μ' ^ (hx'.choose * hy'.choose) = μ' ^ hxy'.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using hxy)
         rw [← Nat.cast_mul, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq μ', hxy] }
 #align is_primitive_root.aut_to_pow IsPrimitiveRoot.autToPow
