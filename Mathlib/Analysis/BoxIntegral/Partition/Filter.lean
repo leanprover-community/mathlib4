@@ -305,8 +305,8 @@ It is also automatically satisfied for any `c > 1`, see TODO section of the modu
 details. -/
 structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
-  protected IsSubordinate : π.IsSubordinate r
-  protected IsHenstock : l.bHenstock → π.IsHenstock
+  protected isSubordinate : π.IsSubordinate r
+  protected isHenstock : l.bHenstock → π.IsHenstock
   protected distortion_le : l.bDistortion → π.distortion ≤ c
   protected exists_compl : l.bDistortion → ∃ π' : Prepartition I,
     π'.iUnion = ↑I \ π.iUnion ∧ π'.distortion ≤ c

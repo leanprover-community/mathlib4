@@ -61,25 +61,24 @@ open Box Prepartition Finset
 variable {N : Type _} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : CoeFun (ι →ᵇᵃ[I₀] M) fun _ => Box ι → M :=
-  ⟨toFun⟩
+instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
 
 initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 
 #noalign box_integral.box_additive_map.to_fun_eq_coe
 
--- Porting note: Left-hand side has variable as head symbol @[simp]
+@[simp]
 theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 #align box_integral.box_additive_map.coe_mk BoxIntegral.BoxAdditiveMap.coe_mk
 
-theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x := by
-  rintro ⟨f, hf⟩ ⟨g, hg⟩ (rfl : f = g)
-  rfl
+theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
+  FunLike.coe_injective
 #align box_integral.box_additive_map.coe_injective BoxIntegral.BoxAdditiveMap.coe_injective
 
-@[simp]
-theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g :=
-  coe_injective.eq_iff
+-- porting note: was @[simp], now can be proved by `simp`
+theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := FunLike.coe_fn_eq
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
