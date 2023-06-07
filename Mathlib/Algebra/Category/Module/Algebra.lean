@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.RestrictScalars
-import Mathbin.CategoryTheory.Linear.Basic
-import Mathbin.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Category.Module.Basic
 
 /-!
 # Additional typeclass for modules over an algebra
