@@ -31,13 +31,13 @@ function cannot have:
 * `f : ContDiffBump c`, where `c` is a point in a real vector space, is
   a bundled smooth function such that
 
-  - `f` is equal to `1` in `Metric.closedBall c f.r`;
-  - `support f = Metric.ball c f.R`;
+  - `f` is equal to `1` in `Metric.closedBall c f.rIn`;
+  - `support f = Metric.ball c f.rOut`;
   - `0 ≤ f x ≤ 1` for all `x`.
 
   The structure `ContDiffBump` contains the data required to construct the
-  function: real numbers `r`, `R`, and proofs of `0 < r < R`. The function itself is available
-  through `coe_fn`.
+  function: real numbers `rIn`, `rOut`, and proofs of `0 < rIn < rOut`. The function itself is available
+  through `CoeFun`.
 
 * If `f : ContDiffBump c` and `μ` is a measure on the domain of `f`, then `f.normed μ`
   is a smooth bump function with integral `1` w.r.t. `μ`.
@@ -56,7 +56,7 @@ open scoped Polynomial
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property
 is that it vanishes for `x ≤ 0`, it is positive for `x > 0`, and the junction between the two
 behaviors is flat enough to retain smoothness. The fact that this function is `C^∞` is proved in
-`exp_neg_inv_glue.smooth`. -/
+`expNegInvGlue.contDiff `. -/
 def expNegInvGlue (x : ℝ) : ℝ :=
   if x ≤ 0 then 0 else exp (-x⁻¹)
 #align exp_neg_inv_glue expNegInvGlue
@@ -89,7 +89,7 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 /-!
 ### Smoothness of `expNegInvGlue`
 
-Porting note: Yury Kudryashov rewrote the proof whlie porting, generalizing auxiliary lemmas and
+Porting note: Yury Kudryashov rewrote the proof while porting, generalizing auxiliary lemmas and
 removing some auxiliary definitions.
 
 In this section we prove that the function `f = expNegInvGlue` is infinitely smooth. To do
@@ -255,8 +255,8 @@ variable {E X : Type _}
 /-- `f : ContDiffBump c`, where `c` is a point in a normed vector space, is a
 bundled smooth function such that
 
-- `f` is equal to `1` in `Metric.closedBall c f.r`;
-- `support f = Metric.ball c f.R`;
+- `f` is equal to `1` in `Metric.closedBall c f.rIn`;
+- `support f = Metric.ball c f.rOut`;
 - `0 ≤ f x ≤ 1` for all `x`.
 
 The structure `ContDiffBump` contains the data required to construct the function:
