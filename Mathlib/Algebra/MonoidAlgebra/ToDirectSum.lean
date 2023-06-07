@@ -44,15 +44,15 @@ as well as preserving arithmetic operations.
 For the bundled equivalences, we provide lemmas that they reduce to
 `AddMonoidAlgebra.toDirectSum`:
 
-* `add_monoid_algebra_add_equiv_direct_sum_apply`
+* `addMonoidAlgebraAddEquivDirectSum_apply`
 * `add_monoid_algebra_lequiv_direct_sum_apply`
-* `add_monoid_algebra_add_equiv_direct_sum_symm_apply`
+* `addMonoidAlgebraAddEquivDirectSum_symm_apply`
 * `add_monoid_algebra_lequiv_direct_sum_symm_apply`
 
 ## Implementation notes
 
-This file largely just copies the API of `data/Finsupp/to_dfinsupp`, and reuses the proofs.
-Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
+This file largely just copies the API of `Mathlib/Data/Finsupp/ToDfinsupp.lean`, and reuses the
+proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
 `Π₀ i : ι, M`.
 
 Note that there is no `AddMonoidAlgebra` equivalent to `Finsupp.single`, so many statements
