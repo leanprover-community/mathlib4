@@ -737,7 +737,7 @@ lemma δ₃PullbackKernelSequenceCycles_exact :
     (X.δ₃PullbackKernelSequenceCycles n₀ n₁ hn₁).Exact :=
   (X.kernelSequenceCycles_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₃)))
 
-noncomputable def δHToCycles : Arrow₃.hMor ⋙ X.H n₀ ⟶ Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ :=
+/-noncomputable def δHToCycles : Arrow₃.hMor ⋙ X.H n₀ ⟶ Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ :=
   (X.δ₃PullbackKernelSequenceCycles_exact n₁ n₂ hn₂).lift
     (whiskerLeft Arrow₃.δ₀ (X.δ n₀ n₁ hn₁)) (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero
 
@@ -745,7 +745,21 @@ noncomputable def δHToCycles : Arrow₃.hMor ⋙ X.H n₀ ⟶ Arrow₃.δ₃ �
 lemma δHToCycles_comp_iCycles :
     X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft (Arrow₃.δ₃) (X.iCycles n₁ n₂ hn₂) =
       whiskerLeft Arrow₃.δ₀ (X.δ n₀ n₁ hn₁) :=
-  ShortComplex.Exact.lift_f _ _ _
+  ShortComplex.Exact.lift_f _ _ _-/
+
+/-lemma δHToCycles_eq : X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ =
+    whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.Hδ₁ToCycles n₁ n₂ hn₂) :=  by
+  rw [← cancel_mono (whiskerLeft (Arrow₃.δ₃) (X.iCycles n₁ n₂ hn₂))]
+  simp only [δHToCycles_comp_iCycles, assoc]
+  ext D
+  let φ := (Arrow₃.δ₁Toδ₀).app D
+  have eq := (X.δ n₀ n₁ hn₁).naturality φ
+  dsimp [Arrow₃.δ₀, Arrow₃.δ₁, Arrow₃.δ₂, Arrow₃.δ₃, Arrow₂.δ₂, Arrow₂.δ₀, Arrow₂.δ₁Toδ₀] at eq ⊢
+  simp at eq ⊢
+  dsimp [Arrow₃.δ₀, Arrow₃.δ₁, Arrow₃.δ₂, Arrow₃.δ₃, Arrow₂.δ₂, Arrow₂.δ₀, Arrow₂.δ₁Toδ₀] at eq ⊢
+  erw [←eq]
+  erw [Functor.map_id]
+  erw [id_comp]-/
 
 noncomputable def δ₃PullbackCyclesIsoShortComplexECycles :
     Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ ≅ (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).cycles :=
@@ -759,7 +773,7 @@ lemma δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles :
       whiskerLeft Arrow₃.δ₃ (X.iCycles n₁ n₂ hn₂) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
 
-@[reassoc (attr := simp)]
+/-@[reassoc (attr := simp)]
 lemma δHToCycles_comp_δ₃PullbackCyclesIsoShortComplexECycles_hom :
   X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ ≫
     (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).hom =
@@ -767,7 +781,7 @@ lemma δHToCycles_comp_δ₃PullbackCyclesIsoShortComplexECycles_hom :
   rw [← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).iCycles]
   simp only [assoc, ShortComplex.toCycles_i,
     δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles, δHToCycles_comp_iCycles]
-  rfl
+  rfl-/
 
 noncomputable def cyclesπ : Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ :=
   (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).hom ≫
@@ -778,12 +792,25 @@ instance : Epi (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂) := by
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma δHToCycles_comp_cyclesπ :
-    X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ ≫ X.cyclesπ n₀ n₁ n₂ hn₁ hn₂ = 0 := by simp [cyclesπ]
+lemma δ_Hδ₁ToCycles :
+  (whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.Hδ₁ToCycles n₁ n₂ hn₂)) =
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).toCycles ≫
+      (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).inv := by
+  simp only [← cancel_mono (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).hom, assoc,
+    Iso.inv_hom_id, comp_id, ← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).iCycles,
+    δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles, ShortComplex.toCycles_i,
+    ← whiskerLeft_comp, Hδ₁ToCycles_iCycles, Hδ₁ToCycles_iCycles]
+  dsimp [shortComplexE]
+  ext D
+  refine' ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₁Toδ₀.app D)).symm.trans _
+  erw [Functor.map_id, id_comp]
+  rfl
 
 @[simps]
 noncomputable def cokernelSequenceE : ShortComplex (Arrow₃ ι ⥤ C) :=
-  ShortComplex.mk _ _ (X.δHToCycles_comp_cyclesπ n₀ n₁ n₂ hn₁ hn₂)
+  ShortComplex.mk
+    (whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.Hδ₁ToCycles n₁ n₂ hn₂))
+    (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂) (by simp [cyclesπ])
 
 instance : Epi (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp [cokernelSequenceE]
@@ -822,13 +849,17 @@ instance : Mono (X.δ₄PullbackKernelSequenceTgtΦ n₀ n₁ hn₁).f := by
   dsimp [δ₄PullbackKernelSequenceTgtΦ]
   infer_instance
 
-/-def dToTgtΦ :
+noncomputable def dToTgtΦ :
     Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ ⟶ Arrow₄.δ₄ ⋙ X.tgtΦ n₁ n₂ hn₂ := by
   refine' (X.δ₄PullbackKernelSequenceTgtΦ_exact n₁ n₂ hn₂).lift
     ((X.δ₀PullbackCokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).desc
       (whiskerLeft Arrow₄.δ₄ (X.Ψ n₁ n₂ hn₂)) _) _
+  . ext ⟨f₁, f₂, f₃, f₄⟩
+    have eq := congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero (Arrow₃.mk f₁ (f₂ ≫ f₃) f₄)
+    dsimp [shortComplexE] at eq
+    dsimp [Arrow₃.δ₁, Arrow₃.δ₃, Arrow₄.δ₄]
+    erw [assoc, X.comp_ψ_app n₁ n₂ hn₂ (Arrow₃.mk f₁ f₂ f₃), reassoc_of% eq, zero_comp]
   . sorry
-  . sorry-/
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
