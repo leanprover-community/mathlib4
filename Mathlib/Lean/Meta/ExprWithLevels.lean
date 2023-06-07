@@ -102,3 +102,49 @@ def levelMetaTelescope : ExprWithLevels → MetaM (Environment × Expr)
   let levels ← mkFreshLevelMVarsArray params.size
   return ({ params, levels }, expr.instantiateLevelParamsArray params levels)
 
+/-- Assigns any unassigned level mvars in the `Environment` to their corresponding level param,
+effectively "abstracting the levels out" into the parameter names, which repesent "bound" universe
+variables. -/
+def abstractEnvironment {m : Type → Type} [Monad m] [MonadMCtx m] : Environment → m (Array Name)
+| { params, levels } => do
+  let mut unresolvedParams : Array Name := #[]
+  for i in [: levels.size] do
+    match levels[i]! with
+    | .mvar mvarId => do
+      if ! (← isLevelMVarAssigned mvarId) then
+        let p := params[i]!
+        assignLevelMVar mvarId (.param p)
+        unresolvedParams := unresolvedParams.push p
+    | l => panic! s!"{l} was expected to be a level mvar"
+  pure unresolvedParams
+
+/-- Abstract out the unassigned level mvars in `e` according to the environment `env`.
+
+Note that this does not prevent capture of any level params in `e` which might clash with the level
+params in `env`. -/
+def abstract (env : Environment) (e : Expr) {m : Type → Type} [Monad m] [MonadMCtx m]
+    : m ExprWithLevels := do
+  let params ← abstractEnvironment env
+  pure ⟨← instantiateMVars e, params⟩
+
+/-- Abstract out the unassigned level mvars in `e` according to the environment `env`, ignoring
+params which no longer appear in the resulting expression. -/
+def abstract' (env : Environment) (e : Expr) {m : Type → Type} [Monad m] [MonadMCtx m]
+    : m ExprWithLevels :=
+  return removeConstantLevelArgs (← abstract env e)
+
+/-- Abstract out the unassigned level mvars in `e` according to the environment `env`.
+
+This avoids capture of level params in `e` which might clash with those in `env`, renaming the
+params in `env` as necessary. -/
+def abstractAvoidingCapture (env : Environment) (e : Expr) {m : Type → Type} [Monad m] [MonadMCtx m]
+    : m ExprWithLevels := do
+  let eParams := collectLevelParams {} e
+  let newParams := env.params.map fun p =>
+    match eParams.getUnusedLevelParam p with
+    | .param n => n
+    | l => panic! s!"expected {l} to be a level param"
+  let env := { env with params := newParams }
+  let params ← abstractEnvironment env
+  pure ⟨← instantiateMVars e, params⟩
+
