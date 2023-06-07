@@ -170,15 +170,17 @@ open Tactic
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /-- An auxiliary tactic for proving that `ghost_fun` respects the ring operations. -/
-unsafe def tactic.interactive.ghost_fun_tac (φ fn : parse parser.pexpr) : tactic Unit := do
-  let fn ← to_expr `(($(fn) : Fin _ → ℕ → R))
-  let q(Fin $(k) → _ → _) ← infer_type fn
-  sorry
-  sorry
-  to_expr `(congr_fun (congr_arg (@peval R _ $(k)) (wittStructureInt_prop p $(φ) n)) $(fn)) >>=
-      note `this none
-  sorry
-#align tactic.interactive.ghost_fun_tac tactic.interactive.ghost_fun_tac
+--unsafe def tactic.interactive.ghost_fun_tac (φ fn : parse parser.pexpr) : tactic Unit := do
+--  let fn ← to_expr `(($(fn) : Fin _ → ℕ → R))
+--  let q(Fin $(k) → _ → _) ← infer_type fn
+--  sorry
+--  sorry
+--  to_expr `(congr_fun (congr_arg (@peval R _ $(k)) (wittStructureInt_prop p $(φ) n)) $(fn)) >>=
+--      note `this none
+--  sorry
+--#align tactic.interactive.ghost_fun_tac tactic.interactive.ghost_fun_tac
+
+macro "ghost_fun_tac" _x:term "," _y:term : tactic => `(tactic| (sorry))
 
 end Tactic
 
@@ -194,7 +196,7 @@ private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ 
 section GhostFun
 
 -- The following lemmas are not `@[simp]` because they will be bundled in `ghost_map` later on.
-variable (x y : 𝕎 R)
+variable (x y : WittVector p R)
 
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
@@ -202,37 +204,39 @@ theorem matrix_vecEmpty_coeff {R} (i j) :
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
 #align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
-private theorem ghost_fun_zero : ghostFun (0 : 𝕎 R) = 0 := by ghost_fun_tac 0, ![]
+private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
+  ghost_fun_tac 0, ![]
 
-private theorem ghost_fun_one : ghostFun (1 : 𝕎 R) = 1 := by ghost_fun_tac 1, ![]
+private theorem ghostFun_one : ghostFun (1 : 𝕎 R) = 1 := by
+  ghost_fun_tac 1, ![]
 
-private theorem ghost_fun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
+private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
   ghost_fun_tac X 0 + X 1, ![x.coeff, y.coeff]
 
-private theorem ghost_fun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
+private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
     induction i <;>
-      simp [*, Nat.unaryCast, ghost_fun_zero, ghost_fun_one, ghost_fun_add, -Pi.coe_nat]
+      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
 
-private theorem ghost_fun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
+private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
 
-private theorem ghost_fun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
+private theorem ghostFun_mul : ghostFun (x * y) = ghostFun x * ghostFun y := by
   ghost_fun_tac X 0 * X 1, ![x.coeff, y.coeff]
 
-private theorem ghost_fun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
+private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -X 0, ![x.coeff]
 
-private theorem ghost_fun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
+private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
-    cases i <;> simp [*, Int.castDef, ghost_fun_nat_cast, ghost_fun_neg, -Pi.coe_nat, -Pi.coe_int]
+    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
-private theorem ghost_fun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
+private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
   ghost_fun_tac m • X 0, ![x.coeff]
 
-private theorem ghost_fun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
+private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
   ghost_fun_tac m • X 0, ![x.coeff]
 
-private theorem ghost_fun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
+private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
   ghost_fun_tac X 0 ^ m, ![x.coeff]
 
 end GhostFun
@@ -260,9 +264,9 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 @[local instance]
 private def comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   -- Porting note: needed? letI : CommRing (MvPolynomial R ℚ) := MvPolynomial.commRing
-  (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghost_fun_zero ghost_fun_one
-    ghost_fun_add ghost_fun_mul ghost_fun_neg ghost_fun_sub ghost_fun_nsmul ghost_fun_zsmul
-    ghost_fun_pow ghost_fun_nat_cast ghost_fun_int_cast
+  (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
+    ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
+    ghostFun_pow ghostFun_nat_cast ghostFun_int_cast
 
 @[local instance]
 private def comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
