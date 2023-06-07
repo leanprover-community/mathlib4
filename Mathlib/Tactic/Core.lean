@@ -66,6 +66,30 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
+open private getIntrosSize from Lean.Meta.Tactic.Intro in
+/-- Introduce variables, giving them names from a specified list. -/
+def MVarId.introsWithBinderIdents
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
+  let type ← g.getType
+  let type ← instantiateMVars type
+  let n := getIntrosSize type
+  if n == 0 then
+    return (ids, #[], g)
+  let mut ids := ids
+  let mut names := #[]
+  for _ in [0:n] do
+    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
+    ids := ids.tail
+  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
+    match stx.raw with
+    | `(binderIdent| $n:ident) => n.getId
+    | _ => `_
+  g.withContext do
+    for n in names, fvar in xs do
+      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
+  return (ids, xs, g)
+
 end Lean
 
 namespace Mathlib.Tactic
