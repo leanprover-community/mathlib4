@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.IntervalIntegral
-import Mathbin.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Integral average over an interval
@@ -44,8 +44,7 @@ theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x)
 #align interval_average_symm interval_average_symm
 
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
-    (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x :=
-  by
+    (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   cases' le_or_lt a b with h h
   ·
     rw [set_average_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
