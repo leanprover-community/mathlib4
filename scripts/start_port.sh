@@ -19,7 +19,9 @@ mathlib4_path="$1"
 
 case $mathlib4_path in
     Mathlib/*) true ;;
-    *) echo "argument must begin with Mathlib/"
+    Archive/*) true ;;
+    Counterexamples/*) true ;;
+    *) echo "argument must begin with Mathlib/, Archive/, or Counterexamples/"
        exit 1 ;;
 esac
 
@@ -29,7 +31,7 @@ PORT_STATUS_YAML=https://raw.githubusercontent.com/wiki/leanprover-community/mat
 # process path name
 mathlib4_mod=$(basename $(echo "$mathlib4_path" | tr / .) .lean)
 mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
-mathlib3port_url=$MATHLIB3PORT_BASE_URL/Mathbin/${1#Mathlib/}
+mathlib3port_url=$MATHLIB3PORT_BASE_URL/${1/#Mathlib/Mathbin}
 
 # start the port from the latest master
 git fetch
@@ -72,8 +74,11 @@ echo "Applying automated fixes"
     python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
     mv "$mathlib4_path.tmp" "$mathlib4_path"
 
-    (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
-    mv -f Mathlib.lean.tmp Mathlib.lean
+    # TODO: note the commit message claims we did this even if we didn't!
+    if [[ "$mathlib4_mod" =~ ^Mathlib. ]]; then
+        (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
+        mv -f Mathlib.lean.tmp Mathlib.lean
+    fi
 )
 
 # Commit them
