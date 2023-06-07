@@ -29,3 +29,21 @@ the mvars that didn't get assigned.
 
 -/
 
+open Lean Expr Meta
+
+namespace Lean.Meta
+
+/-- A "universe-polymorphic" expression. `{ expr, params } : ExprWithLevels` should be thought of
+as a lambda `fun {params} => expr`, with the levels named by `params` being bound in `expr` and
+regarded as implicit arguments. Displayed as `lfun params => expr` in `MessageData`. -/
+structure ExprWithLevels where
+  expr   : Expr
+  params : Array Name
+deriving Repr
+
+instance : ToMessageData ExprWithLevels where
+  toMessageData e := "lfun " ++ toMessageData e.params ++ " => " ++ toMessageData e.expr
+
+/-- Given some `e : Expr`, create an `ExprWithLevels` with no level param arguments. -/
+def _root_.Lean.Expr.toExprWithLevels (e : Expr) : ExprWithLevels := ⟨e,#[]⟩
+
