@@ -13,6 +13,7 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Commuting Probability
@@ -43,6 +44,21 @@ theorem commProb_def :
     commProb M = Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } / (Nat.card M : ℚ) ^ 2 :=
   rfl
 #align comm_prob_def commProb_def
+
+theorem commProb_prod (M' : Type _) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
+    ←Nat.card_prod, Prod.ext_iff]
+  congr 2
+  exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
+    fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
+
+theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Group (i a)] :
+    commProb (∀ a, i a) = ∏ a, commProb (i a) := by
+  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
+    ←Nat.card_pi, Function.funext_iff]
+  congr 2
+  exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
+    fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
 variable [Finite M]
 
@@ -125,3 +141,43 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
       (commutator G).commProb_quotient_le)
 #align inv_card_commutator_le_comm_prob inv_card_commutator_le_commProb
+
+namespace CommutingProbability
+
+def reciprocalFactors (n : ℕ) : List ℕ :=
+  if h0 : n = 0 then [0]
+  else if h1 : n = 1 then []
+  else if 2 ∣ n then
+    have : n / 2 < n := Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
+    (reciprocalFactors (n / 2)).cons 3
+  else
+    have : n / 4 + 1 < n := by
+      rw [←lt_tsub_iff_right, Nat.div_lt_iff_lt_mul four_pos, tsub_mul, one_mul,
+          lt_tsub_iff_right]
+      calc
+        n + 4 < n * 1 + 2 * 3 := by rw [mul_one, add_lt_add_iff_left]; norm_num
+        _ ≤ n * 1 + n * 3 :=
+          add_le_add_left (mul_le_mul_right' ((Nat.two_le_iff n).mpr ⟨h0, h1⟩) 3) (n * 1)
+        _ = n * 4 := by rw [←mul_add]
+    (reciprocalFactors (n / 4 + 1)).cons ((n % 4) * n)
+
+lemma reciprocalFactorsZero : reciprocalFactors 0 = [0] := rfl
+
+lemma reciprocalFactorsOne : reciprocalFactors 1 = [] := rfl
+
+def ReciprocalGroup (n : ℕ) : Type :=
+  ∀ i : Fin (reciprocalFactors n).length, DihedralGroup ((reciprocalFactors n).nthLe i i.2)
+
+instance (n : ℕ) : Group (ReciprocalGroup n) := by
+  dsimp only [ReciprocalGroup]
+  infer_instance
+
+theorem commProb_ReciprocalGroup (n : ℕ) : commProb (ReciprocalGroup n) = 1 / n := by
+  simp_rw [ReciprocalGroup, commProb_pi]
+  refine' n.strong_induction_on _
+  intro k h
+  sorry
+
+#eval reciprocalFactors 15
+
+end CommutingProbability
