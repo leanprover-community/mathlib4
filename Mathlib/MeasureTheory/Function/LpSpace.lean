@@ -1717,6 +1717,7 @@ theorem range_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] :
 
 variable {p}
 
+-- TODO: remove [Fact (1 ≤ p)] assumption
 theorem coeFn_toLp [NormedField 𝕜] [NormedSpace 𝕜 E] (f : C(α, E)) :
     toLp (E := E) p μ 𝕜 f =ᵐ[μ] f :=
   AEEqFun.coeFn_mk f _
