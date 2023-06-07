@@ -11,7 +11,7 @@ Authors: Anne Baanen
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathbin.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.QuotientPi
 
 /-! # Ideals in free modules over PIDs
