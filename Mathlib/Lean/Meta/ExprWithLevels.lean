@@ -47,3 +47,29 @@ instance : ToMessageData ExprWithLevels where
 /-- Given some `e : Expr`, create an `ExprWithLevels` with no level param arguments. -/
 def _root_.Lean.Expr.toExprWithLevels (e : Expr) : ExprWithLevels := ⟨e,#[]⟩
 
+namespace ExprWithLevels
+
+/-- Apply `f` to the body of some `ExprWithLevels`. -/
+def map : (e : ExprWithLevels) → (f : Expr → Expr) → ExprWithLevels
+| ⟨expr, params⟩, f => ⟨f expr, params⟩
+
+/-- Apply `f` to the body of some `ExprWithLevels`. -/
+def mapM [Monad m] : (e : ExprWithLevels) → (f : Expr → m Expr) → m ExprWithLevels
+| ⟨expr, params⟩, f => return ⟨← f expr, params⟩
+
+/-- Checks if some `e : ExprWithLevels` represents a "constant" function in its bound level params.
+I.e., that no level param in `e.expr` is contained in `e.params`. -/
+def isConstantInLevelArgs (e : ExprWithLevels) : Bool :=
+  ! (collectLevelParams {} e.expr |>.params.any e.params.contains)
+
+/-- Removes parameter arguments which are unused in `(e : ExprWithLevels).expr`. -/
+def removeConstantLevelArgs : ExprWithLevels → ExprWithLevels
+| ⟨expr, params⟩ => ⟨expr, params.filter (collectLevelParams {} expr |>.params.contains)⟩
+
+/-- Returns the body of an `ExprWithLevels` if `params` is empty. -/
+def toExpr? (e : ExprWithLevels) : Option Expr := if e.params.isEmpty then some e.expr else none
+
+/-- Returns the body of an `ExprWithLevels` if `params` is empty or if `ExprWithLevels` represents
+a constant function with respect to `params`. -/
+def toExpr'? (e : ExprWithLevels) : Option Expr :=
+  if e.params.isEmpty || e.isConstantInLevelArgs then some e.expr else none
