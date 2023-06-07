@@ -221,7 +221,7 @@ variable {k R}
 
 @[simp]
 theorem rootsOfUnityEquivNthRoots_apply (x : rootsOfUnity k R) :
-    (rootsOfUnityEquivNthRoots R k x : R) = ((x:Rˣ) : R) :=
+    (rootsOfUnityEquivNthRoots R k x : R) = ((x : Rˣ) : R) :=
   rfl
 #align roots_of_unity_equiv_nth_roots_apply rootsOfUnityEquivNthRoots_apply
 
@@ -489,7 +489,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   subst n
   simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and_iff]
   intro l hl
-  -- Porting note: was by rintro rfl; simpa only [Nat.not_lt_zero, MulZeroClass.zero_mul] using hn
+  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, MulZeroClass.zero_mul] using hn`
   have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
   rw [← mul_dvd_mul_iff_left ha0]
   exact h.dvd_of_pow_eq_one _ hl
@@ -697,8 +697,9 @@ def zmodEquivZpowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
 
 @[simp]
 theorem zmodEquivZpowers_apply_coe_int (i : ℤ) :
-    h.zmodEquivZpowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) :=
-  AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.int_cast_rightInverse _ _
+    h.zmodEquivZpowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
+  rw [zmodEquivZpowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
+  exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.int_cast_rightInverse _ _
 #align is_primitive_root.zmod_equiv_zpowers_apply_coe_int IsPrimitiveRoot.zmodEquivZpowers_apply_coe_int
 
 @[simp]
