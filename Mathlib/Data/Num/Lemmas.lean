@@ -935,22 +935,23 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
 theorem lor'_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor' m n := by
   -- Porting note: An name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
-  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;>
+   intros <;> (try cases_type* Bool) <;> rfl
 #align num.lor_to_nat Num.lor'_to_nat
 
 @[simp, norm_cast]
 theorem land'_to_nat : ∀ m n, (land m n : ℕ) = Nat.land' m n := by
-  apply bitwise'_to_nat PosNum.land <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.land_to_nat Num.land'_to_nat
 
 @[simp, norm_cast]
 theorem ldiff'_to_nat : ∀ m n, (ldiff m n : ℕ) = Nat.ldiff' m n := by
-  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.ldiff_to_nat Num.ldiff'_to_nat
 
 @[simp, norm_cast]
 theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
-  apply bitwise'_to_nat PosNum.lxor <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
