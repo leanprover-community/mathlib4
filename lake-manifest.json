@@ -2,6 +2,12 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/EdAyers/ProofWidgets4",
+    "subDir?": null,
+    "rev": "3b157dc3f6162615de001a8ebe7e01d629c97448",
+    "name": "proofwidgets",
+    "inputRev?": "v0.0.10"}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",

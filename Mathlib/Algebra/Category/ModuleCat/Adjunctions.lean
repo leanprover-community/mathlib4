@@ -67,6 +67,8 @@ end
 
 namespace Free
 
+open MonoidalCategory
+
 variable [CommRing R]
 
 attribute [local ext] TensorProduct.ext
@@ -213,6 +215,8 @@ instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
       Finsupp.single_eq_same]
 
 end Free
+
+open MonoidalCategory
 
 variable [CommRing R]
 
