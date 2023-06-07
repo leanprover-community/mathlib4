@@ -99,7 +99,7 @@ variable (f : R →+* S) (x y : WittVector p R)
 --  porting note: a very crude port.  It does not work for `zero` and `one`.
 macro "map_fun_tac" : tactic => `(tactic| (
   ( ext n ) <;>
-  ( simp only [mapFun, mk, comp_apply,
+  ( simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
       -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
       add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
       peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] ) <;>
@@ -109,10 +109,9 @@ macro "map_fun_tac" : tactic => `(tactic| (
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
-theorem zero : mapFun f (0 : 𝕎 R) = 0 := by
-  ext n
-  simp only [mapFun, mk, comp_apply, zero_coeff, map_zero]
+theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
 #align witt_vector.map_fun.zero WittVector.mapFun.zero
+
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
 theorem one : mapFun f (1 : 𝕎 R) = 1 := by
   ext n
