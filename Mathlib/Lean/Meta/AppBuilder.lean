@@ -45,6 +45,34 @@ private def tooManyExplicitArgsException (n : Name) (f : Expr) (used : Nat) (pro
     used}, got {provided.size}.\nused:{indentD provided[0:used]}\nunused:{indentD provided[used:]
     }"
 
+namespace Lean.Meta
+
+/-- Like `mkAppN f xs`, but unifies the types of the arguments `xs` with the function `f`'s input
+types, and therefore (unlike `mkAppN`) fails if any argument types are not defeq to the
+corresponding input type. Note that, by design, this may assign metavariables at the current
+MCtxDepth. -/
+def mkAppNUnifying (f : Expr) (xs : Array Expr) (reducing := true): MetaM Expr := do
+  mkAppNUnifyingArgs f (← inferType f) xs
+where
+  mkAppNUnifyingArgs (f fType : Expr) (xs : Array Expr) : MetaM Expr := withAppBuilderTrace f xs do
+    let (args, _) ← xs.foldlM (init := (#[], 0, fType)) fun (args, j, type) x => do
+      match type with
+      | .forallE _ d b _ => do
+        let d := d.instantiateRevRange j args.size args
+        if (← isDefEq d (← inferType x)) then
+          pure (args.push x, j, b)
+        else
+          throwAppTypeMismatch (mkAppN f args) x
+      | type =>
+        try
+          guard reducing
+          let type ← whnfD type
+          guard type.isForall
+          pure (args, args.size, type)
+        catch _ =>
+          tooManyExplicitArgsException `mkAppNUnifying f args.size xs
+    instantiateMVars (mkAppN f args)
+
 
 -/
 
