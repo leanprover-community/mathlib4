@@ -24,8 +24,8 @@ is a statement and proof of the universal property of these quotients.
 
 ## Main definitions
 
-  * `lie_submodule.quotient.lie_quotient_lie_module`
-  * `lie_submodule.quotient.lie_quotient_lie_algebra`
+  * `LieSubmodule.Quotient.lieQuotientLieModule`
+  * `LieSubmodule.Quotient.lieQuotientLieAlgebra`
 
 ## Tags
 
@@ -180,7 +180,7 @@ instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
     apply congr_arg; apply lie_smul
 #align lie_submodule.quotient.lie_quotient_lie_algebra LieSubmodule.Quotient.lieQuotientLieAlgebra
 
-/-- `lie_submodule.quotient.mk` as a `lie_module_hom`. -/
+/-- `LieSubmodule.Quotient.mk` as a `LieModuleHom`. -/
 @[simps]
 def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
   { N.toSubmodule.mkQ with
@@ -207,8 +207,8 @@ theorem map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
   rw [← LieModuleHom.le_ker_iff_map, mk'_ker]
 #align lie_submodule.quotient.map_mk'_eq_bot_le LieSubmodule.Quotient.map_mk'_eq_bot_le
 
-/-- Two `lie_module_hom`s from a quotient lie module are equal if their compositions with
-`lie_submodule.quotient.mk'` are equal.
+/-- Two `LieModuleHom`s from a quotient lie module are equal if their compositions with
+`LieSubmodule.Quotient.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
