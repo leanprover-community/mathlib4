@@ -105,7 +105,7 @@ open Nat
 theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
-  simp only [cast_bit0, cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
+  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
   have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
   refine' _root_.trans (mul_le_mul _ _ _ _) (Bertrand.real_main_inequality (by exact_mod_cast n_large))
@@ -220,8 +220,17 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   replace h : n < 521 := h.trans_lt (by norm_num1)
   revert h
   -- For small `n`, supply a list of primes to cover the initial cases.
-  run_tac
-    [317, 163, 83, 43, 23, 13, 7, 5, 3, 2].mapM' fun n => sorry
+  -- porting note: this used to be `run_tac` with `mapM'` on the list of those numbers
+  refine' exists_prime_lt_and_le_two_mul_succ 317 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 163 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 83 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 43 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 23 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 13 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 7 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 5 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 3 (by norm_num) (by norm_num) _
+  refine' exists_prime_lt_and_le_two_mul_succ 2 (by norm_num) (by norm_num) _
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
