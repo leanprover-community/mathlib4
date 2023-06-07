@@ -13,7 +13,6 @@ import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Tactic.RunCmd
 
 /-!
 # Bertrand's Postulate
@@ -70,8 +69,8 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
-  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by sorry
-   /- refine'
+  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
+      refine'
         ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _) (convex_Ioi 0.5)).add
               ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
                     ((2 : ℝ) • LinearMap.id)).subset
@@ -79,7 +78,6 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
                 (convex_Ioi 0.5))).sub
           ((convexOn_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _)) <;>
       norm_num1
-    -/
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
