@@ -6,6 +6,7 @@ Authors: Kyle Miller
 import Lean
 import Mathlib.Tactic.Relation.Rfl
 import Std.Logic
+import Std.Tactic.RCases
 
 /-!
 # The `congr!` tactic
@@ -638,6 +639,22 @@ def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId))
     if not lhs.cleanupAnnotations.isLambda && not rhs.cleanupAnnotations.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
+/-- Like `implies_congr` but provides an additional assumption to the second hypothesis.
+This is a non-dependent version of `pi_congr` that allows the domains to be different. -/
+private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
+    (α → β) = (α' → β') := by
+  cases h
+  show (∀ (x : α), (fun _ => β) x) = _
+  rw [funext h']
+
+/-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`
+instead of `implies_congr`. -/
+def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+  observing? do
+    let [mvarId₁, mvarId₂] ← mvarId.apply (← mkConstWithFreshMVarLevels ``implies_congr')
+      | throwError "unexpected number of goals"
+    return [mvarId₁, mvarId₂]
+
 /--
 Try to apply `Subsingleton.helim` if the goal is a `HEq`. Tries synthesizing a `Subsingleton`
 instance for both the LHS and the RHS.
@@ -671,12 +688,39 @@ def Lean.MVarId.congrPasses! :
    ("Subsingleton.helim", fun _ => subsingletonHelim?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
-   ("congr_implies", fun _ => congrImplies?),
+   ("congr_implies", fun _ => congrImplies?'),
    ("congr_pi", fun _ => congrPi?)]
+
+structure CongrState where
+  /-- Accumulated goals that `congr!` could not handle. -/
+  goals : Array MVarId
+  /-- Patterns to use when doing intro. -/
+  patterns : List (TSyntax `rcasesPat)
+
+abbrev CongrMetaM := StateRefT CongrState MetaM
+
+/-- Pop the next pattern from the current state. -/
+def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
+  modifyGet fun s =>
+    if let p :: ps := s.patterns then
+      (p, {s with patterns := ps})
+    else
+      (none, s)
+
+private theorem heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
+    (he : HEq x y) : p he := by
+  cases he
+  exact h rfl
+
+private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
+    (he : x = y) : p he := by
+  cases he
+  exact h Iff.rfl
 
 /--
 Does `Lean.MVarId.intros` but then cleans up the introduced hypotheses, removing anything
-that is trivial.
+that is trivial. If there are any patterns in the current `CongrMetaM` state then instead
+of `Lean.MVarId.intros` it does `Std.Tactic.RCases.rintro`.
 
 Cleaning up includes:
 - deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
@@ -685,41 +729,39 @@ Cleaning up includes:
 - converting `x = y` to `x ↔ y` if possible.
 -/
 partial
-def Lean.MVarId.introsClean (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
-  loop #[] mvarId
+def Lean.MVarId.introsClean (mvarId : MVarId) : CongrMetaM (List MVarId) :=
+  loop mvarId
 where
-  fvarEqOfHEq (mvarId : MVarId) (fvarId : FVarId) : MetaM (Option (FVarId × MVarId)) :=
-    observing? <| mvarId.withContext do
-      let pf ← mkEqOfHEq (.fvar fvarId)
-      let decl ← fvarId.getDecl
-      let mvarId ← mvarId.assert decl.userName (← inferType pf) pf
-      let (fvarId', mvarId) ← mvarId.intro1
-      return (fvarId', ← mvarId.clear fvarId)
-  fvarIffOfEq (mvarId : MVarId) (fvarId : FVarId) : MetaM (Option (FVarId × MVarId)) :=
-    observing? <| mvarId.withContext do
-      let pf ← mkIffOfEq (.fvar fvarId)
-      let decl ← fvarId.getDecl
-      let mvarId ← mvarId.assert decl.userName (← inferType pf) pf
-      let (fvarId', mvarId) ← mvarId.intro1
-      return (fvarId', ← mvarId.clear fvarId)
-  loop (fvars : Array FVarId) (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
+  heqImpOfEqImp (mvarId : MVarId) : MetaM (Option MVarId) :=
+    observing? <| withReducible do
+      let [mvarId] ← mvarId.apply (← mkConstWithFreshMVarLevels ``heq_imp_of_eq_imp) | failure
+      return mvarId
+  eqImpOfIffImp (mvarId : MVarId) : MetaM (Option MVarId) :=
+    observing? <| withReducible do
+      let [mvarId] ← mvarId.apply (← mkConstWithFreshMVarLevels ``eq_imp_of_iff_imp) | failure
+      return mvarId
+  loop (mvarId : MVarId) : CongrMetaM (List MVarId) :=
     mvarId.withContext do
       let ty ← withReducible <| mvarId.getType'
       if ty.isForall then
-        let (fvarId, mvarId) ← mvarId.intro1
-        if not ty.isArrow then
-          return ← loop (fvars.push fvarId) mvarId
-        let (fvarId, mvarId) := (← fvarEqOfHEq mvarId fvarId).getD (fvarId, mvarId)
-        let (fvarId, mvarId) := (← fvarIffOfEq mvarId fvarId).getD (fvarId, mvarId)
-        mvarId.withContext do
-          let ty ← instantiateMVars (← fvarId.getType)
-          if (← isTrivialType ty)
-              || (← getLCtx).any (fun decl => decl.fvarId != fvarId && decl.type == ty) then
-            let mvarId ← mvarId.clear fvarId
-            return ← loop fvars mvarId
-          return ← loop (fvars.push fvarId) mvarId
+        let mvarId := (← heqImpOfEqImp mvarId).getD mvarId
+        let mvarId := (← eqImpOfIffImp mvarId).getD mvarId
+        let ty ← withReducible <| mvarId.getType'
+        if ty.isArrow then
+          if (← isTrivialType ty.bindingDomain!)
+              || (← getLCtx).any (fun decl => decl.type == ty.bindingDomain!) then
+            -- Don't intro, clear it
+            let mvar ← mkFreshExprSyntheticOpaqueMVar ty.bindingBody! (← mvarId.getTag)
+            mvarId.assign <| .lam .anonymous ty.bindingDomain! mvar .default
+            return ← loop mvar.mvarId!
+        if let some patt ← CongrMetaM.nextPattern then
+          let gs ← Term.TermElabM.run' <| Std.Tactic.RCases.rintro #[patt] none mvarId
+          List.join <$> gs.mapM loop
+        else
+          let (_, mvarId) ← mvarId.intro1
+          loop mvarId
       else
-        return (fvars, mvarId)
+        return [mvarId]
   isTrivialType (ty : Expr) : MetaM Bool := do
     let ty ← instantiateMVars ty
     unless ← Meta.isProp ty do
@@ -736,8 +778,6 @@ where
 /-- Convert a goal into an `Eq` goal if possible (since we have a better shot at those).
 Also try to dispatch the goal using an assumption, `Subsingleton.Elim`, or definitional equality. -/
 def Lean.MVarId.preCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
-  -- Congr lemmas might have created additional hypotheses.
-  let (_, mvarId) ← mvarId.introsClean
   -- Next, turn `HEq` and `Iff` into `Eq`
   let mvarId ← mvarId.heqOfEq
   -- This is a good time to check whether we have a relevant hypothesis.
@@ -762,7 +802,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
-        trace[congr!] "pass succeded: {passName}"
+        trace[congr!] "pass succeeded: {passName}"
         return mvarIds
     catch e =>
       throwTacticEx `congr! mvarId
@@ -793,30 +833,34 @@ See the documentation on the `congr!` syntax.
 The `depth?` argument controls the depth of the recursion. If `none`, then it uses a reasonably
 large bound that is linear in the expression depth. -/
 def Lean.MVarId.congrN! (mvarId : MVarId)
-    (depth? : Option Nat := none) (config : Congr!.Config := {}) : MetaM (List MVarId) := do
+    (depth? : Option Nat := none) (config : Congr!.Config := {})
+    (patterns : List (TSyntax `rcasesPat) := []) :
+    MetaM (List MVarId) := do
   let ty ← withReducible <| mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
   let defaultDepth := max 1000000 (8 * (1 + ty.approxDepth.toNat))
   let depth := depth?.getD defaultDepth
-  let (_, s) ← go depth depth mvarId |>.run #[]
-  return s.toList
+  let (_, s) ← go depth depth mvarId |>.run {goals := #[], patterns := patterns}
+  return s.goals.toList
 where
-  post (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
-    let some mvarId ← mvarId.postCongr! config
-        | do trace[congr!] "Dispatched goal by post-processing step."
-             return
-    modify (·.push mvarId)
-  go (depth : Nat) (n : Nat) (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
-    let some mvarId ← withTransparency config.preTransparency mvarId.preCongr! | return
-    match n with
-      | 0 =>
-        trace[congr!] "At level {depth - n}, doing post-processing. {mvarId}"
-        post mvarId
-      | n + 1 =>
-        trace[congr!] "At level {depth - n}, trying congrCore!. {mvarId}"
-        let some mvarIds ← mvarId.congrCore! config
-          | post mvarId
-        mvarIds.forM (go depth n)
+  post (mvarId : MVarId) : CongrMetaM Unit := do
+    for mvarId in ← mvarId.introsClean do
+      let some mvarId ← mvarId.postCongr! config
+          | do trace[congr!] "Dispatched goal by post-processing step."
+              return
+      modify (fun s => {s with goals := s.goals.push mvarId})
+  go (depth : Nat) (n : Nat) (mvarId : MVarId) : CongrMetaM Unit := do
+    for mvarId in ← mvarId.introsClean do
+      let some mvarId ← withTransparency config.preTransparency mvarId.preCongr! | return
+      match n with
+        | 0 =>
+          trace[congr!] "At level {depth - n}, doing post-processing. {mvarId}"
+          post mvarId
+        | n + 1 =>
+          trace[congr!] "At level {depth - n}, trying congrCore!. {mvarId}"
+          let some mvarIds ← mvarId.congrCore! config
+            | post mvarId
+          mvarIds.forM (go depth n)
 
 namespace Congr!
 
@@ -826,6 +870,16 @@ declare_config_elab elabConfig Config
 Equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand side by
 recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
 two goals `⊢ f = g` and `⊢ as = bs`.
+
+Syntax:
+```
+congr!
+congr! n
+congr! with x y z
+congr! n with x y z
+```
+Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
+`_`, `-`, `(h | h)`, etc.).
 
 The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
 to right-hand sides of goals. Here is a list of things it can try:
@@ -842,12 +896,11 @@ to right-hand sides of goals. Here is a list of things it can try:
   If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
   to generate an equality for it.
 
-- It uses `implies_congr` and `pi_congr` to do congruences of pi types.
+- It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
 
 - Before applying congruences, it will run the `intros` tactic automatically.
-  The introduced variables can be given names using the `rename_i` tactic as needed.
-  This helps when user congruence lemmas are applied, since they often provide
-  additional hypotheses.
+  The introduced variables can be given names using a `with` clause.
+  This helps when congruence lemmas provide additional assumptions in hypotheses.
 
 - When there is an equality between functions, so long as at least one is obviously a lambda, we
   apply `funext` or `Function.hfunext`, which allows for congruence of lambda bodies.
@@ -880,13 +933,15 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-syntax (name := congr!) "congr!" (Parser.Tactic.config)? (num)? : tactic
+syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| congr! $[$cfg:config]? $[$n]?) => do
+| `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig (mkOptionalNode cfg)
+  let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
-    g.congrN! depth config
+    g.congrN! depth config patterns
 
 end Congr!

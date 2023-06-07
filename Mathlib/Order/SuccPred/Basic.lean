@@ -53,7 +53,7 @@ Is `GaloisConnection pred succ` always true? If not, we should introduce
 class SuccPredOrder (α : Type _) [Preorder α] extends SuccOrder α, PredOrder α :=
 (pred_succ_gc : GaloisConnection (pred : α → α) succ)
 ```
-`covby` should help here.
+`Covby` should help here.
 -/
 
 
@@ -70,9 +70,9 @@ class SuccOrder (α : Type _) [Preorder α] where
   le_succ : ∀ a, a ≤ succ a
   /--Proof of interaction between `succ` and maximal element-/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /--Proof that `succ` satifies ordering invariants betweeen `LT` and `LE`-/
+  /--Proof that `succ` satisfies ordering invariants between `LT` and `LE`-/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
-  /--Proof that `succ` satifies ordering invariants betweeen `LE` and `LT`-/
+  /--Proof that `succ` satisfies ordering invariants between `LE` and `LT`-/
   le_of_lt_succ {a b} : a < succ b → a ≤ b
 #align succ_order SuccOrder
 #align succ_order.ext_iff SuccOrder.ext_iff
@@ -87,9 +87,9 @@ class PredOrder (α : Type _) [Preorder α] where
   pred_le : ∀ a, pred a ≤ a
   /--Proof of interaction between `pred` and minimal element-/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /--Proof that `pred` satifies ordering invariants betweeen `LT` and `LE`-/
+  /--Proof that `pred` satisfies ordering invariants between `LT` and `LE`-/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
-  /--Proof that `pred` satifies ordering invariants betweeen `LE` and `LT`-/
+  /--Proof that `pred` satisfies ordering invariants between `LE` and `LT`-/
   le_of_pred_lt {a b} : pred a < b → a ≤ b
 #align pred_order PredOrder
 #align pred_order.ext PredOrder.ext
@@ -425,15 +425,15 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   · exact ⟨le_succ a, le_rfl⟩
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
-theorem Covby.succ_eq (h : a ⋖ b) : succ a = b :=
+theorem _root_.Covby.succ_eq (h : a ⋖ b) : succ a = b :=
   (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
-#align covby.succ_eq Order.Covby.succ_eq
+#align covby.succ_eq Covby.succ_eq
 
-theorem Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
+theorem _root_.Wcovby.le_succ (h : a ⩿ b) : b ≤ succ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.succ_eq h).ge
   · exact le_succ _
-#align wcovby.le_succ Order.Wcovby.le_succ
+#align wcovby.le_succ Wcovby.le_succ
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
@@ -574,13 +574,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [SuccOrder α]
 
-theorem succ_eq_infᵢ (a : α) : succ a = ⨅ (b) (_h : a < b), b := by
-  refine' le_antisymm (le_infᵢ fun b => le_infᵢ succ_le_of_lt) _
+theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
+  refine' le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) _
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
-  exact infᵢ₂_le _ (lt_succ_iff_ne_top.2 ha)
-#align order.succ_eq_infi Order.succ_eq_infᵢ
+  exact iInf₂_le _ (lt_succ_iff_ne_top.2 ha)
+#align order.succ_eq_infi Order.succ_eq_iInf
 
 end CompleteLattice
 
@@ -781,15 +781,15 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
+theorem _root_.Covby.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
   (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
-#align covby.pred_eq Order.Covby.pred_eq
+#align covby.pred_eq Covby.pred_eq
 
-theorem Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
+theorem _root_.Wcovby.pred_le (h : a ⩿ b) : pred b ≤ a := by
   obtain h | rfl := h.covby_or_eq
   · exact (Covby.pred_eq h).le
   · exact pred_le _
-#align wcovby.pred_le Order.Wcovby.pred_le
+#align wcovby.pred_le Wcovby.pred_le
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -922,13 +922,13 @@ section CompleteLattice
 
 variable [CompleteLattice α] [PredOrder α]
 
-theorem pred_eq_supᵢ (a : α) : pred a = ⨆ (b) (_h : b < a), b := by
-  refine' le_antisymm _ (supᵢ_le fun b => supᵢ_le le_pred_of_lt)
+theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
+  refine' le_antisymm _ (iSup_le fun b => iSup_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]
     exact bot_le
-  · exact @le_supᵢ₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
-#align order.pred_eq_supr Order.pred_eq_supᵢ
+  · exact @le_iSup₂ _ _ (fun b => b < a) _ (fun a _ => a) (pred a) (pred_lt_iff_ne_bot.2 ha)
+#align order.pred_eq_supr Order.pred_eq_iSup
 
 end CompleteLattice
 

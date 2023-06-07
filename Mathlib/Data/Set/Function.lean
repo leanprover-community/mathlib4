@@ -1043,7 +1043,6 @@ theorem LeftInvOn.injOn (h : LeftInvOn f₁' f s) : InjOn f s := fun x₁ h₁ x
     x₁ = f₁' (f x₁) := Eq.symm <| h h₁
     _ = f₁' (f x₂) := congr_arg f₁' heq
     _ = x₂ := h h₂
-
 #align set.left_inv_on.inj_on Set.LeftInvOn.injOn
 
 theorem LeftInvOn.surjOn (h : LeftInvOn f' f s) (hf : MapsTo f s t) : SurjOn f' t s := fun x hx =>
@@ -1064,7 +1063,6 @@ theorem LeftInvOn.comp (hf' : LeftInvOn f' f s) (hg' : LeftInvOn g' g t) (hf : M
   calc
     (f' ∘ g') ((g ∘ f) x) = f' (f x) := congr_arg f' (hg' (hf h))
     _ = x := hf' h
-
 #align set.left_inv_on.comp Set.LeftInvOn.comp
 
 theorem LeftInvOn.mono (hf : LeftInvOn f' f s) (ht : s₁ ⊆ s) : LeftInvOn f' f s₁ := fun _ hx =>
@@ -1155,7 +1153,6 @@ theorem eqOn_of_leftInvOn_of_rightInvOn (h₁ : LeftInvOn f₁' f s) (h₂ : Rig
   calc
     f₁' y = (f₁' ∘ f ∘ f₂') y := congr_arg f₁' (h₂ hy).symm
     _ = f₂' y := h₁ (h hy)
-
 #align set.eq_on_of_left_inv_on_of_right_inv_on Set.eqOn_of_leftInvOn_of_rightInvOn
 
 theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f' s) :
@@ -1504,7 +1501,7 @@ theorem piecewise_same : s.piecewise f f = f := by
 theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪ g '' sᶜ := by
   ext y; constructor
   · rintro ⟨x, rfl⟩
-    by_cases h : x ∈ s <;> [left, right] <;> use x <;> simp [h]
+    by_cases h : x ∈ s <;> [left; right] <;> use x <;> simp [h]
   · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;> use x <;> simp_all
 #align set.range_piecewise Set.range_piecewise
 

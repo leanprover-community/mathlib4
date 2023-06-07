@@ -56,8 +56,8 @@ theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) 
   rfl
 #align polynomial.derivative_apply Polynomial.derivative_apply
 
-theorem coeff_derivative (p : R[X]) (n : ℕ) : coeff (derivative p) n = coeff p (n + 1) * (n + 1) :=
-  by
+theorem coeff_derivative (p : R[X]) (n : ℕ) :
+    coeff (derivative p) n = coeff p (n + 1) * (n + 1) := by
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
@@ -314,8 +314,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
             simp_rw [add_smul, mul_smul_comm, smul_mul_assoc, X_pow_mul_assoc, ← mul_assoc, ←
               C_mul, mul_assoc, ← pow_add] <;>
             simp [Nat.add_succ, Nat.succ_add, Nat.succ_sub_one, zero_smul, add_comm])
-    _ = derivative f * g + f * derivative g :=
-      by
+    _ = derivative f * g + f * derivative g := by
       conv =>
         rhs
         congr
@@ -392,9 +391,8 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     exact hp
 #align polynomial.degree_derivative_eq Polynomial.degree_derivative_eq
 
-theorem coeff_iterate_derivative_as_prod_Ico {k} (p : R[X]) :
-    ∀ m : ℕ, ((derivative^[k]) p).coeff m = (∏ i in Ico m.succ (m + k.succ), i) • p.coeff (m + k) :=
-  by
+theorem coeff_iterate_derivative_as_prod_Ico {k} (p : R[X]) : ∀ m : ℕ,
+    ((derivative^[k]) p).coeff m = (∏ i in Ico m.succ (m + k.succ), i) • p.coeff (m + k) := by
   induction' k with k ih
   · simp  [add_zero, forall_const, one_smul, Ico_self, eq_self_iff_true,
       Function.iterate_zero_apply, prod_empty]
@@ -402,8 +400,7 @@ theorem coeff_iterate_derivative_as_prod_Ico {k} (p : R[X]) :
     rw [Function.iterate_succ_apply', coeff_derivative, ih (m + 1), ← Nat.cast_add_one, ←
       nsmul_eq_mul', smul_smul, mul_comm]
     apply congr_arg₂
-    · have set_eq : Ico m.succ (m + k.succ.succ) = Ico (m + 1).succ (m + 1 + k.succ) ∪ {m + 1} :=
-        by
+    · have set_eq : Ico m.succ (m + k.succ.succ) = Ico (m + 1).succ (m + 1 + k.succ) ∪ {m + 1} := by
         simp_rw [← Nat.Ico_succ_singleton, union_comm, Nat.succ_eq_add_one, add_comm (k + 1),
           add_assoc]
         rw [Ico_union_Ico_eq_Ico] <;> simp
@@ -438,34 +435,29 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
         derivative (∑ k : ℕ in range n.succ,
             n.choose k • ((derivative^[n - k]) p * (derivative^[k]) q)) :=
       by rw [Function.iterate_succ_apply', IH]
-    _ =
-        (∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k + 1]) p * (derivative^[k]) q)) +
-          ∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q) :=
-      by
+    _ = (∑ k : ℕ in range n.succ,
+          n.choose k • ((derivative^[n - k + 1]) p * (derivative^[k]) q)) +
+        ∑ k : ℕ in range n.succ,
+          n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q) := by
       simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
         smul_add, sum_add_distrib]
-    _ =
-        (∑ k : ℕ in range n.succ,
+    _ = (∑ k : ℕ in range n.succ,
               n.choose k.succ • ((derivative^[n - k]) p * (derivative^[k + 1]) q)) +
             1 • ((derivative^[n + 1]) p * (derivative^[0]) q) +
           ∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q) :=
       ?_
-    _ =
-        ((∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q)) +
+    _ = ((∑ k : ℕ in range n.succ, n.choose k • ((derivative^[n - k]) p * (derivative^[k + 1]) q)) +
             ∑ k : ℕ in range n.succ,
               n.choose k.succ • ((derivative^[n - k]) p * (derivative^[k + 1]) q)) +
           1 • ((derivative^[n + 1]) p * (derivative^[0]) q) :=
       by rw [add_comm, add_assoc]
-    _ =
-        (∑ i : ℕ in range n.succ,
+    _ = (∑ i : ℕ in range n.succ,
             (n + 1).choose (i + 1) • ((derivative^[n + 1 - (i + 1)]) p * (derivative^[i + 1]) q)) +
           1 • ((derivative^[n + 1]) p * (derivative^[0]) q) :=
       by simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
-    _ =
-        ∑ k : ℕ in range n.succ.succ,
+    _ = ∑ k : ℕ in range n.succ.succ,
           n.succ.choose k • ((derivative^[n.succ - k]) p * (derivative^[k]) q) :=
       by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
-
   congr
   refine' (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) _ _)
   · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
@@ -551,8 +543,8 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_add_pow Polynomial.iterate_derivative_X_add_pow
 
-theorem derivative_comp (p q : R[X]) : derivative (p.comp q) = derivative q * p.derivative.comp q :=
-  by
+theorem derivative_comp (p q : R[X]) :
+    derivative (p.comp q) = derivative q * p.derivative.comp q := by
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,

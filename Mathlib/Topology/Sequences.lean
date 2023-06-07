@@ -342,7 +342,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   unfold IsSeqCompact at h
   contrapose! h
   obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
-    simp only [not_subset, mem_unionᵢ₂, not_exists, exists_prop] at h
+    simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
     simpa only [forall_and, ball_image_iff, not_and] using seq_of_forall_finite_exists h
   refine' ⟨u, u_in, fun x _ φ hφ huφ => _⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
@@ -364,14 +364,14 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
       ∃ t : ℕ → Set X, Antitone t ∧ (∀ n, t n ∈ l) ∧ (∀ n, t n ×ˢ t n ⊆ W n) ∧ ∀ n, t n ⊆ s := by
     have : ∀ n, ∃ t ∈ l, t ×ˢ t ⊆ W n ∧ t ⊆ s := by
       rw [le_principal_iff] at hls
-      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ᶠ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
+      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this
-    have : ∀ n : ℕ, (⋂ k ≤ n, t k) ⊆ t n := fun n => by apply interᵢ₂_subset; rfl
+    have : ∀ n : ℕ, (⋂ k ≤ n, t k) ⊆ t n := fun n => by apply iInter₂_subset; rfl
     exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
-      binterᵢ_subset_binterᵢ_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
-      (binterᵢ_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
+      biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
+      (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
       (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
   choose u hu using fun n => Filter.nonempty_of_mem (htl n)
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>

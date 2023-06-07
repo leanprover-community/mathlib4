@@ -84,8 +84,8 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
 #align multiset.fold_add Multiset.fold_add
 
 theorem fold_bind {ι : Type _} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
-    (s.bind t).fold op ((s.map b).fold op b₀) = (s.map fun i => (t i).fold op (b i)).fold op b₀ :=
-  by
+    (s.bind t).fold op ((s.map b).fold op b₀) =
+    (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
   induction' s using Multiset.induction_on with a ha ih
   · rw [zero_bind, map_zero, map_zero, fold_zero]
   · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
@@ -128,8 +128,7 @@ end Fold
 section Order
 
 theorem max_le_of_forall_le {α : Type _} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
-    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n :=
-  by
+    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
 #align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le

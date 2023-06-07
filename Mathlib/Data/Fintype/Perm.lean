@@ -49,17 +49,12 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
-  induction l generalizing f
-  -- with a l IH
-  case nil =>
-    -- Porting note: Previous code was:
-    -- exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
-    --
-    -- `h x` does not work as expected.
-    -- This is because `x ∈ []` is not `False` before `simp`.
-    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| by
-      intro h'; simp at h; apply h x; intro h''; apply h'; simp; exact h'')
-  case cons a l IH =>
+  induction l generalizing f with
+  | nil =>
+    -- Porting note: applied `not_mem_nil` because it is no longer true definitionally.
+    simp only [not_mem_nil] at h
+    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
+  | cons a l IH =>
   by_cases hfa : f a = a
   · refine' mem_append_left _ (IH fun x hx => mem_of_ne_of_mem _ (h x hx))
     rintro rfl
@@ -99,7 +94,7 @@ theorem mem_of_mem_permsOfList :
         if hxy : x = y then mem_cons_of_mem _ <| by rwa [hxy]
         else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ _ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def]
-              split_ifs <;> [exact Ne.symm hxy, exact Ne.symm hxa, exact hx]
+              split_ifs <;> [exact Ne.symm hxy; exact Ne.symm hxa; exact hx]
 #align mem_of_mem_perms_of_list mem_of_mem_permsOfList
 
 theorem mem_permsOfList_iff {l : List α} {f : Perm α} :

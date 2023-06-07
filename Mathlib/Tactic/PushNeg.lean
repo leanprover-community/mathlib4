@@ -28,17 +28,31 @@ theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not
 variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
+theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
+theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-/-- Make `push_neg` use `not_and_distrib` rather than the default `not_and`. -/
+/-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     group := ""
-    descr := "Make `push_neg` use `not_and_distrib` rather than the default `not_and`." }
+    descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
 /-- Push negations at the top level of the current expression. -/
 def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
+  -- Wrapper around `Simp.Step.visit`
   let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
     Simp.Step.visit { expr := e, proof? := some pf }
+  -- Try applying the inequality lemma and verify that we do get a defeq type.
+  -- Sometimes there might be the wrong LinearOrder available!
+  let handleIneq (e₁ e₂ : Expr) (notThm : Name) : SimpM (Option Simp.Step) := do
+    try
+      -- Allowed to fail if it can't synthesize an instance:
+      let thm ← mkAppM notThm #[e₁, e₂]
+      let some (_, lhs, rhs) := (← inferType thm).eq? | failure -- this should never fail
+      -- Make sure the inferred instances are right:
+      guard <| ← isDefEq e lhs
+      return some <| mkSimpStep rhs thm
+    catch _ => return none
   let e_whnf ← whnfR e
   let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
   match ex.getAppFnArgs with
@@ -54,16 +68,10 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
-  | (``LE.le, #[ty, _inst, e₁, e₂]) =>
-      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
-      match linOrd with
-      | some _ => return mkSimpStep (← mkAppM ``LT.lt #[e₂, e₁]) (← mkAppM ``not_le_eq #[e₁, e₂])
-      | none => return none
-  | (``LT.lt, #[ty, _inst, e₁, e₂]) =>
-      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
-      match linOrd with
-      | some _ => return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
-      | none => return none
+  | (``LE.le, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_le_eq
+  | (``LT.lt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_lt_eq
+  | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
+  | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
@@ -110,7 +118,7 @@ writing `push_neg` will turn the target into
 ```lean
 | ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`
@@ -161,7 +169,7 @@ writing `push_neg at h` will turn `h` into
 ```lean
 h : ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
 ```
-(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
 has nothing to do with `push_neg`).
 
 Note that names are conserved by this tactic, contrary to what would happen with `simp`
@@ -172,7 +180,7 @@ using say `push_neg at h h' ⊢` as usual.
 This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
-elab "push_neg" loc:(ppSpace location)? : tactic =>
+elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
     pushNegLocalDecl

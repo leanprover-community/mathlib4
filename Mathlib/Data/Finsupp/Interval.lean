@@ -109,7 +109,6 @@ theorem icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := r
 -- porting note: removed [DecidableEq ι]
 theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
   simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
-
 #align finsupp.card_Icc Finsupp.card_Icc
 
 -- porting note: removed [DecidableEq ι]

@@ -14,7 +14,6 @@ import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Intervals.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
-import Mathlib.Tactic.WLOG
 
 /-!
 # Order of an element
@@ -36,9 +35,7 @@ order of an element
 -/
 
 
-open Function Nat
-
-open Pointwise
+open Function Nat Pointwise
 
 universe u v
 
@@ -61,7 +58,7 @@ theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`.-/
-@[to_additive "`isOfFinAddOrder` is a predicate on an element `a` of an
+@[to_additive "`IsOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
 def IsOfFinOrder (x : G) : Prop :=
   (1 : G) ∈ periodicPts ((· * ·) x)
@@ -106,8 +103,7 @@ theorem isOfFinOrder_iff_coe (H : Submonoid G) (x : H) : IsOfFinOrder x ↔ IsOf
 @[to_additive "The image of an element of finite additive order has finite additive order."]
 theorem MonoidHom.isOfFinOrder {H : Type v} [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
     IsOfFinOrder <| f x :=
-  (isOfFinOrder_iff_pow_eq_one _).mpr <|
-    by
+  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
     rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
     exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩
 #align monoid_hom.is_of_fin_order MonoidHom.isOfFinOrder
@@ -134,8 +130,8 @@ end IsOfFinOrder
 /-- `orderOf x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
 Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention.-/
 @[to_additive
-  "`add_order_of a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
-  exists. Otherwise, i.e. if `a` is of infinite order, then `add_order_of a` is `0` by convention."]
+  "`addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
+  exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention."]
 noncomputable def orderOf (x : G) : ℕ :=
   minimalPeriod (x * .) 1
 #align order_of orderOf
@@ -281,8 +277,8 @@ theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
 #align nsmul_eq_zero_iff_modeq nsmul_eq_zero_iff_modEq
 
 @[to_additive]
-theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) : orderOf (ψ x) ∣ orderOf x :=
-  by
+theorem orderOf_map_dvd {H : Type _} [Monoid H] (ψ : G →* H) (x : G) :
+    orderOf (ψ x) ∣ orderOf x := by
   apply orderOf_dvd_of_pow_eq_one
   rw [← map_pow, pow_orderOf_eq_one]
   apply map_one
@@ -312,8 +308,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
   suffices a = 1 by simp [this, ha]
   -- Assume `a` is not one...
   by_contra h
-  have a_min_fac_dvd_p_sub_one : a.minFac ∣ n :=
-    by
+  have a_min_fac_dvd_p_sub_one : a.minFac ∣ n := by
     obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd
     rw [hb, ← mul_assoc] at ha
     exact Dvd.intro_left (orderOf x * b) ha.symm
@@ -337,7 +332,7 @@ theorem orderOf_eq_orderOf_iff {H : Type _} [Monoid H] {y : H} :
 @[to_additive]
 theorem orderOf_injective {H : Type _} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
-  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, iff_self_iff, forall_const]
+  simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
 
@@ -430,7 +425,7 @@ theorem isOfFinOrder_mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
   with `y`, then `x * y` has the same order as `y`. -/
 @[to_additive addOrderOf_add_eq_right_of_forall_prime_mul_dvd
   "If each prime factor of
-  `add_order_of x` has higher multiplicity in `add_order_of y`, and `x` commutes with `y`,
+  `addOrderOf x` has higher multiplicity in `addOrderOf y`, and `x` commutes with `y`,
   then `x + y` has the same order as `y`."]
 theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ orderOf x → p * orderOf x ∣ orderOf y) :
@@ -470,8 +465,7 @@ theorem orderOf_eq_prime_pow (hnot : ¬x ^ p ^ n = 1) (hfin : x ^ p ^ (n + 1) = 
 @[to_additive exists_addOrderOf_eq_prime_pow_iff]
 theorem exists_orderOf_eq_prime_pow_iff :
     (∃ k : ℕ, orderOf x = p ^ k) ↔ ∃ m : ℕ, x ^ (p : ℕ) ^ m = 1 :=
-  ⟨fun ⟨k, hk⟩ => ⟨k, by rw [← hk, pow_orderOf_eq_one]⟩, fun ⟨_, hm⟩ =>
-    by
+  ⟨fun ⟨k, hk⟩ => ⟨k, by rw [← hk, pow_orderOf_eq_one]⟩, fun ⟨_, hm⟩ => by
     obtain ⟨k, _, hk⟩ := (Nat.dvd_prime_pow hp.elim).mp (orderOf_dvd_of_pow_eq_one hm)
     exact ⟨k, hk⟩⟩
 #align exists_order_of_eq_prime_pow_iff exists_orderOf_eq_prime_pow_iff
@@ -545,8 +539,7 @@ variable [Group G] [AddGroup A] {i : ℤ}
 /-- Inverses of elements of finite order have finite order. -/
 @[to_additive "Inverses of elements of finite additive order have finite additive order."]
 theorem IsOfFinOrder.inv {x : G} (hx : IsOfFinOrder x) : IsOfFinOrder x⁻¹ :=
-  (isOfFinOrder_iff_pow_eq_one _).mpr <|
-    by
+  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
     rcases(isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
     refine' ⟨n, npos, by simp_rw [inv_pow, hn, inv_one]⟩
 #align is_of_fin_order.inv IsOfFinOrder.inv
@@ -661,7 +654,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
   calc
     (∑ m in (Finset.range n.succ).filter (· ∣ n),
           (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
-      (Finset.card_bunionᵢ
+      (Finset.card_biUnion
           (by
             intros
             apply Finset.disjoint_filter.2
@@ -705,7 +698,7 @@ theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `add_order_of_pos' but with one fewer explicit
+@[to_additive "This is the same as `addOrderOf_pos' but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
   orderOf_pos' (exists_pow_eq_one x)
@@ -716,8 +709,8 @@ open Nat
 
 /-- This is the same as `orderOf_pow'` and `orderOf_pow''` but with one assumption less which is
 automatic in the case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `add_order_of_nsmul'` and
-`add_order_of_nsmul` but with one assumption less which is automatic in the case of a
+@[to_additive "This is the same as `addOrderOf_nsmul'` and
+`addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid."]
 theorem orderOf_pow [Finite G] (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
   orderOf_pow'' _ _ (exists_pow_eq_one _)
@@ -739,8 +732,8 @@ noncomputable instance decidablePowers : DecidablePred (· ∈ Submonoid.powers 
 
 /-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i`."-/
 @[to_additive finEquivMultiples
-  "The equivalence between `fin (add_order_of a)` and
-  `add_submonoid.multiples a`, sending `i` to `i • a`."]
+  "The equivalence between `Fin (addOrderOf a)` and
+  `AddSubmonoid.multiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivPowers [Finite G] (x : G) :
     Fin (orderOf x) ≃ (Submonoid.powers x : Set G) :=
   Equiv.ofBijective (fun n => ⟨x ^ (n:ℕ), ⟨n, rfl⟩⟩)
@@ -847,8 +840,8 @@ noncomputable instance decidableZpowers : DecidablePred (· ∈ Subgroup.zpowers
 #align decidable_zmultiples decidableZmultiples
 
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
-@[to_additive finEquivZmultiples "The equivalence between `fin (add_order_of a)` and
-`subgroup.zmultiples a`, sending `i` to `i • a`."]
+@[to_additive finEquivZmultiples "The equivalence between `Fin (addOrderOf a)` and
+`Subgroup.zmultiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivZpowers [Finite G] (x : G) :
     Fin (orderOf x) ≃ (Subgroup.zpowers x : Set G) :=
   (finEquivPowers x).trans (Equiv.Set.ofEq (powers_eq_zpowers x))
@@ -873,7 +866,7 @@ theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : �
 /-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive zmultiplesEquivZmultiples
-  "The equivalence between `subgroup.zmultiples` of two elements `a, b` of the same additive order,
+  "The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZpowers [Finite G] (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
@@ -1026,8 +1019,7 @@ theorem image_range_orderOf [DecidableEq G] :
 /- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive gcd_nsmul_card_eq_zero_iff]
 theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
-  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h =>
-    by
+  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
 #align pow_gcd_card_eq_one_iff pow_gcd_card_eq_one_iff
@@ -1076,7 +1068,7 @@ def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonem
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ $ by
     classical!
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
-    simp_rw [← pow_add, Group.card_pow_eq_card_pow_card_univ S (Fintype.card G) le_rfl,
+    simp_rw [← pow_add,
         Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self]
 #align pow_card_subgroup powCardSubgroup
 #align smul_card_add_subgroup smulCardAddSubgroup

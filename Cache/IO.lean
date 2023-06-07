@@ -68,6 +68,7 @@ def mathlibDepPath : FilePath :=
 
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("Qq", LAKEPACKAGESDIR / "Qq")
@@ -81,6 +82,19 @@ def getPackageDir (path : FilePath) : IO FilePath :=
   | some pkg => match pkgDirs.find? pkg with
     | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
+
+/-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
+partial def runCurlStreaming (args : Array String) (init : α)
+    (processLine : α → String → IO α) : IO α := do
+  let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
+  loop child.stdout init
+where
+  loop (h : IO.FS.Handle) (a : α) : IO α := do
+    let line ← h.getLine
+    if line.isEmpty then
+      return a
+    else
+      loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
@@ -146,19 +160,23 @@ end HashMap
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
-/-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
+/--
+Given a path to a Lean file, concatenates the paths to its build files.
+Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
+-/
+def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return #[
-    packageDir / LIBDIR / path.withExtension "olean",
-    packageDir / LIBDIR / path.withExtension "ilean",
-    packageDir / LIBDIR / path.withExtension "trace",
-    packageDir / IRDIR  / path.withExtension "c",
-    packageDir / IRDIR  / path.withExtension "c.trace"]
+    (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "ilean", true),
+    (packageDir / LIBDIR / path.withExtension "trace", true),
+    (packageDir / IRDIR  / path.withExtension "c", true),
+    (packageDir / LIBDIR / path.withExtension "extra", false)]
 
-def allExist (paths : Array FilePath) : IO Bool := do
-  for path in paths do
-    if !(← path.pathExists) then return false
+/-- Check that all required build files exist. -/
+def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
+  for (path, required) in paths do
+    if required then if !(← path.pathExists) then return false
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
@@ -171,16 +189,16 @@ def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
-      if (overwrite || !(← zipPath.pathExists)) then
+      if overwrite || !(← zipPath.pathExists) then
         discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
-          (buildPaths.map toString)
+          ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
   return acc
 
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
-  return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
+  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
@@ -203,10 +221,9 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
         mkDir $ packageDir / LIBDIR / path
         mkDir $ packageDir / IRDIR / path
       if isMathlibRoot || !isPathFromMathlib path then
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
-          "-C", mathlibDepPath.toString]
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
@@ -221,6 +238,6 @@ instance : Ord FilePath where
 /-- Removes all cache files except for what's in the `keep` set -/
 def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "gz" do
-    if ! keep.contains path then IO.FS.removeFile path
+    if !keep.contains path then IO.FS.removeFile path
 
 end Cache.IO

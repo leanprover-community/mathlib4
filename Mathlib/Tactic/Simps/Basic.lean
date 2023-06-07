@@ -182,7 +182,7 @@ derives two `simp` lemmas:
 * If one of the fields itself is a structure, this command will recursively create
   `simp` lemmas for all fields in that structure.
   * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
-    `Prod` and `PProd`. You can give explicit projection names or change the value of
+    `Prod`, `PProd`, and `Opposite`. You can give explicit projection names or change the value of
     `Simps.Config.notRecursive` to override this behavior.
 
   Example:
@@ -267,11 +267,11 @@ syntax simpsRule.erase := "-" ident
 /-- Syntax for making a projection default in `initialize_simps_projections`. -/
 syntax simpsRule.add := "+" ident
 /-- Syntax for making a projection prefix. -/
-syntax simpsRule.prefix := &"as_prefix" ident
+syntax simpsRule.prefix := &"as_prefix " ident
 /-- Syntax for a single rule in `initialize_simps_projections`. -/
 syntax simpsRule := simpsRule.prefix <|> simpsRule.rename <|> simpsRule.erase <|> simpsRule.add
 /-- Syntax for `initialize_simps_projections`. -/
-syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
+syntax simpsProj := ppSpace ident (" (" simpsRule,+ ")")?
 
 /--
 This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
@@ -585,7 +585,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
     }custom projection)."
   pure projs
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
@@ -681,7 +681,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
       return (projExpr, projName)
   return none
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
@@ -834,7 +834,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd]
+  notRecursive := [`Prod, `PProd, `Opposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   deriving Inhabited

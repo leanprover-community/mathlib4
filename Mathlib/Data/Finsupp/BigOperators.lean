@@ -128,5 +128,4 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
         List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
       intro x y hxy
       exact symmetric_disjoint hxy
-
 #align finset.support_sum_eq Finset.support_sum_eq

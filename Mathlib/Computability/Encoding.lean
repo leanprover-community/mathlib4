@@ -193,7 +193,7 @@ def unaryEncodeNat : Nat → List Bool
   | n + 1 => true :: unaryEncodeNat n
 #align computability.unary_encode_nat Computability.unaryEncodeNat
 
-/-- A unary decoding function from `List bool` to ℕ. -/
+/-- A unary decoding function from `List Bool` to ℕ. -/
 def unaryDecodeNat : List Bool → Nat :=
   List.length
 #align computability.unary_decode_nat Computability.unaryDecodeNat
@@ -247,8 +247,8 @@ theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
 #align computability.encoding.card_le_card_list Computability.Encoding.card_le_card_list
 
-theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodable e.Γ] : (#α) ≤ ℵ₀ :=
-  by
+theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodable e.Γ] :
+    (#α) ≤ ℵ₀ := by
   refine' Cardinal.lift_le.1 (e.card_le_card_list.trans _)
   simp only [Cardinal.lift_aleph0, Cardinal.lift_le_aleph0]
   cases' isEmpty_or_nonempty e.Γ with h h

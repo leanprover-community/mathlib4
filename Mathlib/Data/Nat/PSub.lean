@@ -110,7 +110,6 @@ theorem psub_add (m n k) :
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
     simp [*, Nat.add_succ]
-
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/

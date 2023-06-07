@@ -101,15 +101,15 @@ theorem div_conj_eq_sub_one : p / q = p - 1 := by
   rw [h.sub_one_mul_conj]
 #align real.is_conjugate_exponent.div_conj_eq_sub_one Real.IsConjugateExponent.div_conj_eq_sub_one
 
-theorem one_lt_nNReal : 1 < Real.toNNReal p := by
+theorem one_lt_nnreal : 1 < Real.toNNReal p := by
   rw [← Real.toNNReal_one, Real.toNNReal_lt_toNNReal_iff h.pos]
   exact h.one_lt
-#align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nNReal
+#align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nnreal
 
-theorem inv_add_inv_conj_nNReal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
+theorem inv_add_inv_conj_nnreal : 1 / Real.toNNReal p + 1 / Real.toNNReal q = 1 := by
   rw [← Real.toNNReal_one, ← Real.toNNReal_div' h.nonneg, ← Real.toNNReal_div' h.symm.nonneg,
       ← Real.toNNReal_add h.one_div_nonneg h.symm.one_div_nonneg, h.inv_add_inv_conj]
-#align real.is_conjugate_exponent.inv_add_inv_conj_nnreal Real.IsConjugateExponent.inv_add_inv_conj_nNReal
+#align real.is_conjugate_exponent.inv_add_inv_conj_nnreal Real.IsConjugateExponent.inv_add_inv_conj_nnreal
 
 theorem inv_add_inv_conj_ennreal : 1 / ENNReal.ofReal p + 1 / ENNReal.ofReal q = 1 := by
   rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_div_of_pos h.pos,

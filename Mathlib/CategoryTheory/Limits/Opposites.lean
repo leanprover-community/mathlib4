@@ -463,7 +463,6 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     _ ≅ walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
       (Functor.associator _ _ _)
     _ ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op := isoWhiskerLeft _ (cospanOp f g).symm
-
 #align category_theory.limits.op_span CategoryTheory.Limits.opSpan
 
 namespace PushoutCocone
@@ -591,7 +590,7 @@ def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
   . intro h
-    exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
+    exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
   . intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
@@ -647,8 +646,8 @@ theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.op g.op] : pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op :=
-  by
+    [HasPushout f.op g.op] :
+    pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pullbackIsoUnopPushout_inv_fst, Iso.hom_inv_id_assoc]
@@ -656,8 +655,8 @@ theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_hom_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.op g.op] : pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.snd.op :=
-  by
+    [HasPushout f.op g.op] : pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op =
+    pullback.snd.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pullbackIsoUnopPushout_inv_snd, Iso.hom_inv_id_assoc]
@@ -694,8 +693,7 @@ theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 @[simp]
 theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op :=
-  by
+    (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pushoutIsoUnopPullback_inl_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
@@ -704,8 +702,7 @@ theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 @[simp]
 theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op :=
-  by
+    (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pushoutIsoUnopPullback_inr_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]

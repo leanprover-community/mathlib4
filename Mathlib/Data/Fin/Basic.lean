@@ -13,7 +13,6 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.Set
 
 /-!
 # The finite type with `n` elements
@@ -394,7 +393,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 -- porting note: `fin.val_zero` previously existed in core with statement
--- `(0 : fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- `(0 : Fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
 -- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
@@ -1186,7 +1185,7 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the succesor of the cast. See `Fin.succ_cast_eq` for rewriting in
+/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
 the reverse direction. -/
 @[simp]
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
@@ -1255,7 +1254,7 @@ theorem castLT_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLT (cast
   cases a; rfl
 #align fin.cast_lt_cast_succ Fin.castLT_castSucc
 
-@[simp]
+--@[simp] Porting note: simp can prove it
 theorem castSucc_lt_castSucc_iff {a b : Fin n}: Fin.castSucc a < Fin.castSucc b ↔ a < b :=
   (@castSucc n).lt_iff_lt
 #align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
@@ -2542,5 +2541,16 @@ protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 #align fin.zero_mul Fin.zero_mul
 
 end Mul
+
+open Qq in
+instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
+  toTypeExpr := q(Fin $n)
+  toExpr := match n with
+    | 0 => finZeroElim
+    | k + 1 => fun i => show Q(Fin $n) from
+      have i : Q(Nat) := Lean.mkNatLit i -- raw literal to avoid ofNat-double-wrapping
+      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
+      q(OfNat.ofNat $i)
+#align fin.reflect Fin.toExprₓ
 
 end Fin

@@ -47,7 +47,6 @@ These definitions are for sums over a `Finset`; versions for a
 -/
 
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 noncomputable section
 
@@ -885,7 +884,7 @@ theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
 #align finset.centroid_pair_fin Finset.centroid_pair_fin
 
 /-- A centroid, over the image of an embedding, equals a centroid with
-the same points and weights over the original `finset`. -/
+the same points and weights over the original `Finset`. -/
 theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) : (s₂.map e).centroid k p = s₂.centroid k (p ∘ e) :=
   by simp [centroid_def, affineCombination_map, centroidWeights]
 #align finset.centroid_map Finset.centroid_map
@@ -1063,9 +1062,8 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
         have hw : (∑ i in insert i0 l.support, w i) = 0 := by
           rw [hwdef]
           simp_rw [Pi.sub_apply, Finset.sum_sub_distrib,
-            Finset.sum_update_of_mem (Finset.mem_insert_self _ _), Finset.sum_const_zero,
-            Finset.sum_insert_of_eq_zero_if_not_mem Finsupp.not_mem_support_iff.1, add_zero,
-            sub_self]
+            Finset.sum_update_of_mem (Finset.mem_insert_self _ _),
+            Finset.sum_insert_of_eq_zero_if_not_mem Finsupp.not_mem_support_iff.1]
           simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_insert, true_or, not_true,
             Function.const_apply, Finset.sum_const_zero, add_zero, sub_self]
         use hw
@@ -1195,14 +1193,8 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
     <;> erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢
     <;> obtain ⟨t, μ, rfl⟩ := hq
     <;> use t
-    -- Porting note: remaining proof was:
-    --<;> [use fun x => μ x * ↑(w x), use fun x => μ x * ↑(w x)⁻¹]
-    --<;> simp [smul_smul]
-    -- but this fails with `no enough tactics` error
-  { use fun x => μ x * ↑(w x)
-    simp [smul_smul] }
-  { use fun x => μ x * ↑(w x)⁻¹
-    simp [smul_smul] }
+    <;> [use fun x => μ x * ↑(w x); use fun x => μ x * ↑(w x)⁻¹]
+    <;> simp [smul_smul]
 #align affine_span_eq_affine_span_line_map_units affineSpan_eq_affineSpan_lineMap_units
 
 end AffineSpace'
@@ -1255,27 +1247,15 @@ variable [AffineSpace V P] {ι : Type _} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`
 /-- A weighted sum, as an affine map on the points involved. -/
-def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V
-    where
+def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
   toFun p := s.weightedVSubOfPoint p.fst p.snd w
   linear := ∑ i in s, w i • ((LinearMap.proj i).comp (LinearMap.fst _ _ _) - LinearMap.snd _ _ _)
   map_vadd' := by
     rintro ⟨p, b⟩ ⟨v, b'⟩
-    simp only [Finset.weightedVSubOfPoint_apply, LinearMap.coeFn_sum, Finset.sum_apply,
-      LinearMap.smul_apply, LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.coe_proj,
-      Function.eval, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply, vadd_eq_add]
-    rw [← Finset.sum_add_distrib]
-    refine Finset.sum_congr rfl (fun x _ => ?_)
-    rw [← smul_add]
-    congr
-    -- Porting note: `simp` fails to simplify `Prod.fst` and `Prod.snd`
-    change (v +ᵥ p) x -ᵥ (b' +ᵥ b) = _
-    rw [Pi.vadd_apply', sub_add_eq_add_sub, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc]
-    -- Porting note proof was:
-    --rintro ⟨p, b⟩ ⟨v, b'⟩
-    --simp only [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
-    --  vadd_vsub_assoc,
-    --  add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
+    -- Porting note: needed to give `Prod.mk_vadd_mk` a hint
+    simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
+     vadd_vsub_assoc,
+     add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib, Prod.mk_vadd_mk v]
 #align affine_map.weighted_vsub_of_point AffineMap.weightedVSubOfPoint
 
 end AffineMap

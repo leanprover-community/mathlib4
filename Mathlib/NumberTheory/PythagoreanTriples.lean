@@ -50,7 +50,7 @@ def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z
 #align pythagorean_triple PythagoreanTriple
 
-/-- Pythagorean triples are interchangable, i.e `x * x + y * y = y * y + x * x = z * z`.
+/-- Pythagorean triples are interchangeable, i.e `x * x + y * y = y * y + x * x = z * z`.
 This comes from additive commutativity. -/
 theorem pythagoreanTriple_comm {x y z : ℤ} : PythagoreanTriple x y z ↔ PythagoreanTriple y x z := by
   delta PythagoreanTriple
@@ -81,7 +81,6 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
     k * x * (k * x) + k * y * (k * y) = k ^ 2 * (x * x + y * y) := by ring
     _ = k ^ 2 * (z * z) := by rw [h.eq]
     _ = k * z * (k * z) := by ring
-
 #align pythagorean_triple.mul PythagoreanTriple.mul
 
 /-- `(k*x, k*y, k*z)` is a Pythagorean triple if and only if

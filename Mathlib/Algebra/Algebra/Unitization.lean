@@ -455,33 +455,26 @@ instance nonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
           rw [smul_zero, zero_add, zero_smul, MulZeroClass.mul_zero, add_zero]
     left_distrib := fun x₁ x₂ x₃ =>
       ext (mul_add x₁.1 x₂.1 x₃.1) <|
-        show
-          x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =
-            x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 + (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2)
-          by
+        show x₁.1 • (x₂.2 + x₃.2) + (x₂.1 + x₃.1) • x₁.2 + x₁.2 * (x₂.2 + x₃.2) =
+            x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 + (x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2) by
           simp only [smul_add, add_smul, mul_add]
           abel
     right_distrib := fun x₁ x₂ x₃ =>
       ext (add_mul x₁.1 x₂.1 x₃.1) <|
-        show
-          (x₁.1 + x₂.1) • x₃.2 + x₃.1 • (x₁.2 + x₂.2) + (x₁.2 + x₂.2) * x₃.2 =
-            x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 + (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2)
-          by
+        show (x₁.1 + x₂.1) • x₃.2 + x₃.1 • (x₁.2 + x₂.2) + (x₁.2 + x₂.2) * x₃.2 =
+            x₁.1 • x₃.2 + x₃.1 • x₁.2 + x₁.2 * x₃.2 + (x₂.1 • x₃.2 + x₃.1 • x₂.2 + x₂.2 * x₃.2) by
           simp only [add_smul, smul_add, add_mul]
           abel }
 
-set_option synthInstance.etaExperiment true in
 instance monoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Monoid (Unitization R A) :=
   { Unitization.mulOneClass with
     mul_assoc := fun x y z =>
       ext (mul_assoc x.1 y.1 z.1) <|
-        show
-          (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
-              (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) * z.2 =
+        show (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
+            (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) * z.2 =
             x.1 • (y.1 • z.2 + z.1 • y.2 + y.2 * z.2) + (y.1 * z.1) • x.2 +
-              x.2 * (y.1 • z.2 + z.1 • y.2 + y.2 * z.2)
-          by
+            x.2 * (y.1 • z.2 + z.1 • y.2 + y.2 * z.2) by
           simp only [smul_add, mul_add, add_mul, smul_smul, smul_mul_assoc, mul_smul_comm,
             mul_assoc]
           rw [mul_comm z.1 x.1]
@@ -657,8 +650,6 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
       φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A) =
         ψ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)) :
     φ = ψ :=
-    -- porting note: this is due to lean4#2074 and it succeeds with
-    -- `set_option synthInstance.etaExperiment true`
   algHom_ext (NonUnitalAlgHom.congr_fun h) (by simp [AlgHom.commutes])
 #align unitization.alg_hom_ext' Unitization.algHom_ext'
 

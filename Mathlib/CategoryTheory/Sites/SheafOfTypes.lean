@@ -511,7 +511,6 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     convert h f hf
     rw [yonedaEquiv_naturality]
     simp [yonedaEquiv]
-    rfl
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -666,7 +665,7 @@ theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sie
 #align category_theory.presieve.is_sheaf_for_top_sieve CategoryTheory.Presieve.isSheafFor_top_sieve
 
 /-- If `P` is a sheaf for `S`, and it is iso to `P'`, then `P'` is a sheaf for `S`. This shows that
-"being a sheaf for a presieve" is a mathematical or hygenic property.
+"being a sheaf for a presieve" is a mathematical or hygienic property.
 -/
 theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') : IsSheafFor P R → IsSheafFor P' R := by
   intro h x hx

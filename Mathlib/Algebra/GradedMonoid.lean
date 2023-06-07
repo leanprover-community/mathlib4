@@ -77,7 +77,7 @@ which respectively provide the API lemmas
 * `SetLike.mul_mem_graded`
 * `SetLike.pow_mem_graded`, `SetLike.list_prod_map_mem_graded`
 
-Strictly this last class is unecessary as it has no fields not present in its parents, but it is
+Strictly this last class is unnecessary as it has no fields not present in its parents, but it is
 included for convenience. Note that there is no need for `SetLike.GradedRing` or similar, as all
 the information it would contain is already supplied by `GradedMonoid` when `A` is a collection
 of objects satisfying `AddSubmonoidClass` such as `Submodule`s. These constructions are explored
@@ -171,11 +171,11 @@ theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
 end GMonoid
 
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_zero'' -/
-macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_zero)
+macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_zero)
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
-macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_succ)
+macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
 
-/-- A graded version of `monoid`
+/-- A graded version of `Monoid`
 
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
 natural powers of a graded monoid. -/
@@ -212,8 +212,7 @@ instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A)
 #align graded_monoid.gmonoid.to_monoid GradedMonoid.GMonoid.toMonoid
 
 theorem mk_pow [AddMonoid ι] [GMonoid A] {i} (a : A i) (n : ℕ) :
-    mk i a ^ n = mk (n • i) (GMonoid.gnpow _ a) :=
-  by
+    mk i a ^ n = mk (n • i) (GMonoid.gnpow _ a) := by
   match n with
   | 0 =>
     rw [pow_zero]
@@ -374,8 +373,8 @@ theorem List.dProdIndex_cons (a : α) (l : List α) (fι : α → ι) :
   rfl
 #align list.dprod_index_cons List.dProdIndex_cons
 
-theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) : l.dProdIndex fι = (l.map fι).sum :=
-  by
+theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) :
+    l.dProdIndex fι = (l.map fι).sum := by
   match l with
   | [] => simp
   | head::tail => simp [List.dProdIndex_eq_map_sum tail fι]
@@ -384,7 +383,7 @@ theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) : l.dProdInde
 /-- A dependent product for graded monoids represented by the indexed family of types `A i`.
 This is a dependent version of `(l.map fA).prod`.
 
-For a list `l : list α`, this computes the product of `fA a` over `a`, where each `fA` is of type
+For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
   l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
@@ -405,8 +404,7 @@ theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : 
 #align list.dprod_cons List.dProd_cons
 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
-    GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod :=
-  by
+    GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod := by
   match l with
   | [] => simp; rfl
   | head::tail =>
@@ -415,8 +413,7 @@ theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, 
 
 /-- A variant of `GradedMonoid.mk_list_dProd` for rewriting in the other direction. -/
 theorem GradedMonoid.list_prod_map_eq_dProd (l : List α) (f : α → GradedMonoid A) :
-    (l.map f).prod = GradedMonoid.mk _ (l.dProd (fun i => (f i).1) fun i => (f i).2) :=
-  by
+    (l.map f).prod = GradedMonoid.mk _ (l.dProd (fun i => (f i).1) fun i => (f i).2) := by
   rw [GradedMonoid.mk_list_dProd, GradedMonoid.mk]
   simp_rw [Sigma.eta]
 #align graded_monoid.list_prod_map_eq_dprod GradedMonoid.list_prod_map_eq_dProd
@@ -471,8 +468,7 @@ instance CommMonoid.gCommMonoid [AddCommMonoid ι] [CommMonoid R] :
 /-- When all the indexed types are the same, the dependent product is just the regular product. -/
 @[simp]
 theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α → ι) (fA : α → R) :
-    @List.dProd _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod  :=
-  by
+    @List.dProd _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod := by
   match l with
   | [] =>
     rw [List.dProd_nil, List.map_nil, List.prod_nil]
@@ -560,8 +556,7 @@ variable {S : Type _} [SetLike S R] [Monoid R] [AddMonoid ι]
 
 variable {A : ι → S} [SetLike.GradedMonoid A]
 
-theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) :=
-  by
+theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) := by
   match n with
   | 0 =>
     rw [pow_zero, zero_nsmul]
@@ -572,8 +567,7 @@ theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A 
 #align set_like.pow_mem_graded SetLike.pow_mem_graded
 
 theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' → R)
-    (h : ∀ j ∈ l, r j ∈ A (i j)) : (l.map r).prod ∈ A (l.map i).sum :=
-  by
+    (h : ∀ j ∈ l, r j ∈ A (i j)) : (l.map r).prod ∈ A (l.map i).sum := by
   match l with
   | [] =>
     rw [List.map_nil, List.map_nil, List.prod_nil, List.sum_nil]
@@ -586,8 +580,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
 #align set_like.list_prod_map_mem_graded SetLike.list_prod_map_mem_graded
 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :
-    (List.ofFn r).prod ∈ A (List.ofFn i).sum :=
-  by
+    (List.ofFn r).prod ∈ A (List.ofFn i).sum := by
   rw [List.ofFn_eq_map, List.ofFn_eq_map]
   exact list_prod_map_mem_graded _ _ _ fun _ _ => h _
 #align set_like.list_prod_of_fn_mem_graded SetLike.list_prod_ofFn_mem_graded

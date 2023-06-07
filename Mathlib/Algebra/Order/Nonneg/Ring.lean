@@ -78,24 +78,24 @@ instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
   show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
 #align nonneg.densely_ordered Nonneg.densely_ordered
 
-/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
+/-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 #align nonneg.conditionally_complete_linear_order Nonneg.conditionallyCompleteLinearOrder
 
-/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
+/-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
-This instance uses data fields from `Subtype.LinearOrder` to help type-class inference.
+This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    {a : α} (h : supₛ ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+    {a : α} (h : sSup ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csupₛ_empty :=
-      (Function.funext_iff.1 (@subset_supₛ_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
+    csSup_empty :=
+      (Function.funext_iff.1 (@subset_sSup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
         Subtype.eq <| by
           rw [bot_eq]
           cases' h.lt_or_eq with h2 h2
@@ -122,10 +122,10 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_zero Nonneg.mk_eq_zero
 
-instance hasAdd [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
     Add { x : α // 0 ≤ x } :=
   ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
-#align nonneg.has_add Nonneg.hasAdd
+#align nonneg.has_add Nonneg.add
 
 @[simp]
 theorem mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] {x y : α}
@@ -140,10 +140,10 @@ protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α 
   rfl
 #align nonneg.coe_add Nonneg.coe_add
 
-instance NSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
     SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
-#align nonneg.has_nsmul Nonneg.NSMul
+#align nonneg.has_nsmul Nonneg.nsmul
 
 @[simp]
 theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ) {x : α}
@@ -180,7 +180,7 @@ instance linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid α] 
     (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_cancel_add_comm_monoid Nonneg.linearOrderedCancelAddCommMonoid
 
-/-- Coercion `{x : α // 0 ≤ x} → α` as a `add_monoid_hom`. -/
+/-- Coercion `{x : α // 0 ≤ x} → α` as a `AddMonoidHom`. -/
 def coeAddMonoidHom [OrderedAddCommMonoid α] : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero
@@ -311,19 +311,15 @@ instance linearOrderedSemiring [LinearOrderedSemiring α] :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_semiring Nonneg.linearOrderedSemiring
 
--- Porting note: was
--- `{ Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with`
--- changing the order somehow prevented a timeout... also adding `(α := α)`
--- helped. Both can be reverted once stuff is fixed.
 instance linearOrderedCommMonoidWithZero [LinearOrderedCommRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.orderedCommSemiring, Nonneg.linearOrderedSemiring with
-    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop (α := α) }
+  { Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with
+    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
 #align nonneg.linear_ordered_comm_monoid_with_zero Nonneg.linearOrderedCommMonoidWithZero
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
 def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
-  { toFun :=((↑) : { x : α // 0 ≤ x } → α)
+  { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_one' := Nonneg.coe_one
     map_mul' := Nonneg.coe_mul
     map_zero' := Nonneg.coe_zero,
@@ -334,7 +330,7 @@ instance canonicallyOrderedAddMonoid [OrderedRing α] :
     CanonicallyOrderedAddMonoid { x : α // 0 ≤ x } :=
   { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
-    exists_add_of_le := @fun a b h =>
+    exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddMonoid
 
@@ -381,8 +377,7 @@ theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ 
 #align nonneg.to_nonneg_le Nonneg.toNonneg_le
 
 @[simp]
-theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b :=
-  by
+theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
   cases' a with a ha
   simp [toNonneg, ha.not_lt]
 #align nonneg.to_nonneg_lt Nonneg.toNonneg_lt

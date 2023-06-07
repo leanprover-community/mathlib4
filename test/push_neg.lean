@@ -53,6 +53,11 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
   guard_target = y < x
   exact h
 
+example (a b : β) (h : a ≤ b) : ¬ a > b := by
+  push_neg
+  guard_target = a ≤ b
+  exact h
+
 example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
   push_neg
   guard_target = x = y
@@ -107,6 +112,17 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
   guard_hyp h : ∀ k, ¬(m < k)
   exact h₂
 
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
+  push_neg
+  guard_target = s.lt a b ∧ r.le b a
+  sorry
+
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
+  push_neg
+  guard_target = r.lt a b ∧ ¬ s.lt a b
+  sorry
+
+section use_distrib
 set_option push_neg.use_distrib true
 
 example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
@@ -123,3 +139,5 @@ example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
   push_neg
   guard_target = x = 0 ∧ y ≠ 0
   exact h
+
+end use_distrib

@@ -337,8 +337,8 @@ theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset
     exact le_self_add
 #align pnat.factor_multiset_le_iff PNat.factorMultiset_le_iff
 
-theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} : factorMultiset m ≤ v ↔ m ∣ v.prod :=
-  by
+theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} :
+    factorMultiset m ≤ v ↔ m ∣ v.prod := by
   let h := @factorMultiset_le_iff m v.prod
   rw [v.factorMultiset_prod] at h
   exact h

@@ -97,6 +97,20 @@ def isInternal' (declName : Name) : Bool :=
   | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
   | _        => true
 
+
+open Meta
+
+-- from Lean.Server.Completion
+def isBlackListed (declName : Name) : MetaM Bool := do
+  if declName == ``sorryAx then return true
+  if declName matches .str _ "inj" then return true
+  if declName matches .str _ "noConfusionType" then return true
+  let env ← getEnv
+  pure $ declName.isInternal'
+   || isAuxRecursor env declName
+   || isNoConfusion env declName
+  <||> isRec declName <||> isMatcher declName
+
 end Name
 
 
@@ -299,9 +313,13 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
 
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
-| `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-| tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
+  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
+  -- which we assume is always false for this function
+  discard <| TermElabM.run do
+    match tk with
+    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
@@ -325,6 +343,30 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
     let .const _structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   mkDirectProjection e fieldName
+
+/-- Returns true if `e` contains a name `n` where `p n` is true. -/
+def containsConst (e : Expr) (p : Name → Bool) : Bool :=
+  Option.isSome <| e.find? fun | .const n _ => p n | _ => false
+
+/--
+Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
+
+Rewrites with a fresh metavariable as the ambient goal.
+Fails if the rewrite produces any subgoals.
+-/
+def rewrite (e eq : Expr) : MetaM Expr := do
+  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
+    | throwError "Expr.rewrite may not produce subgoals."
+  return eq'
+
+/--
+Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
+
+Rewrites with a fresh metavariable as the ambient goal.
+Fails if the rewrite produces any subgoals.
+-/
+def rewriteType (e eq : Expr) : MetaM Expr := do
+  mkEqMP (← (← inferType e).rewrite eq) e
 
 end Expr
 

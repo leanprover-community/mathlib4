@@ -57,6 +57,8 @@ structure MonoidalNatTrans (F G : LaxMonoidalFunctor C D) extends
 attribute [reassoc (attr := simp)] MonoidalNatTrans.tensor
 attribute [reassoc (attr := simp)] MonoidalNatTrans.unit
 
+initialize_simps_projections MonoidalNatTrans (+toNatTrans, -app)
+
 #align category_theory.monoidal_nat_trans.unit CategoryTheory.MonoidalNatTrans.unit
 #align category_theory.monoidal_nat_trans.unit_assoc CategoryTheory.MonoidalNatTrans.unit_assoc
 #align category_theory.monoidal_nat_trans.tensor CategoryTheory.MonoidalNatTrans.tensor
@@ -95,6 +97,11 @@ theorem comp_toNatTrans_lax {F G H : LaxMonoidalFunctor C D} {α : F ⟶ G} {β 
 instance categoryMonoidalFunctor : Category (MonoidalFunctor C D) :=
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
 #align category_theory.monoidal_nat_trans.category_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
+
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : LaxMonoidalFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
@@ -154,14 +161,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
       dsimp
       rw [Iso.comp_inv_eq, assoc, tensor', ← tensor_comp_assoc,
         Iso.inv_hom_id, Iso.inv_hom_id, tensor_id, id_comp] }
-  hom_inv_id := by
-    apply MonoidalNatTrans.ext
-    ext x
-    exact (app x).hom_inv_id
-  inv_hom_id := by
-    apply MonoidalNatTrans.ext
-    ext x
-    exact (app x).inv_hom_id
 #align category_theory.monoidal_nat_iso.of_components CategoryTheory.MonoidalNatIso.ofComponents
 
 @[simp]

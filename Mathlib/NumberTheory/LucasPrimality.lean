@@ -64,5 +64,4 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
-
 #align lucas_primality lucas_primality

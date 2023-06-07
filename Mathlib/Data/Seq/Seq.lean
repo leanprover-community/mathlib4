@@ -17,7 +17,7 @@ import Mathlib.Data.Seq.Computation
 /-!
 # Possibly infinite lists
 
-This file provides a `Seq α` type repesenting possibly infinite lists (referred here as sequences).
+This file provides a `Seq α` type representing possibly infinite lists (referred here as sequences).
   It is encoded as an infinite stream of options such that if `f n = none`, then
   `f m = none` for all `m ≥ n`.
 -/
@@ -201,7 +201,7 @@ theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → 
 
 @[simp]
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
-  ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons, exact mem_cons_of_mem _ m]⟩
+  ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 #align stream.seq.mem_cons_iff Stream'.Seq.mem_cons_iff
 
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
@@ -244,7 +244,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
-    apply Subtype.eq; dsimp [tail]; rw [Stream'.tail_cons]
+    apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
 -- porting note: needed universe annotation to avoid universe issues
@@ -272,7 +272,6 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
   cases' s with f al
   apply Subtype.eq
   dsimp [tail, cons]
-  rw [Stream'.tail_cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
@@ -343,8 +342,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 #align stream.seq.corec Stream'.Seq.corec
 
 @[simp]
-theorem corec_eq (f : β → Option (α × β)) (b : β) : destruct (corec f b) = omap (corec f) (f b) :=
-  by
+theorem corec_eq (f : β → Option (α × β)) (b : β) :
+    destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, nth]
   dsimp
   -- porting note: next two lines were `change`...`with`...
@@ -710,13 +709,12 @@ theorem map_id : ∀ s : Seq α, map id s = s
 
 @[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map] ; rw [Stream'.map_tail]
+  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map]
 #align stream.seq.map_tail Stream'.Seq.map_tail
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
     apply Subtype.eq ; dsimp [map]
-    rw [Stream'.map_map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 #align stream.seq.map_comp Stream'.Seq.map_comp

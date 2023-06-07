@@ -414,7 +414,6 @@ variable [HasProduct I.left] [HasProduct I.right]
 @[reassoc (attr := simp)]
 theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multifork.pi_condition CategoryTheory.Limits.Multifork.pi_condition
 
@@ -528,7 +527,7 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
       fun {K₁ K₂} f => by dsimp; ext; simp
   counitIso :=
     NatIso.ofComponents
-      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext ⟨j⟩; dsimp; simp))
+      (fun K => Fork.ext (Iso.refl _) (by dsimp; ext j; dsimp; simp))
       fun {K₁ K₂} f => by dsimp; ext; simp
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 
@@ -613,7 +612,6 @@ variable [HasCoproduct I.left] [HasCoproduct I.right]
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
   ext
-  discrete_cases
   simp
 #align category_theory.limits.multicofork.sigma_condition CategoryTheory.Limits.Multicofork.sigma_condition
 

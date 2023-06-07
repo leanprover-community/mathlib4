@@ -286,7 +286,7 @@ commutes with the cone legs. -/
 structure ConeMorphism (A B : Cone F) where
   /-- A morphism between the two vertex objects of the cones -/
   Hom : A.pt ⟶ B.pt
-  /-- The triangle consisting of the two natural tranformations and `Hom` commutes -/
+  /-- The triangle consisting of the two natural transformations and `Hom` commutes -/
   w : ∀ j : J, Hom ≫ B.π.app j = A.π.app j := by aesop_cat
 #align category_theory.limits.cone_morphism CategoryTheory.Limits.ConeMorphism
 #align category_theory.limits.cone_morphism.w' CategoryTheory.Limits.ConeMorphism.w
@@ -605,7 +605,6 @@ def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) 
         Cocones.ext (Iso.refl _)
           (by
             intro k
-            dsimp
             simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)))
       (by aesop_cat)
 #align category_theory.limits.cocones.whiskering_equivalence CategoryTheory.Limits.Cocones.whiskeringEquivalence
@@ -673,19 +672,13 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
       NatIso.ofComponents (fun c => Cocones.ext (e.unitIso.app _) (by aesop_cat)) (by aesop_cat)
     counitIso :=
       NatIso.ofComponents
-        (fun c =>
-          Cocones.ext (e.counitIso.app _)
+        (fun c => Cocones.ext (e.counitIso.app _)
             (by
-              -- Unfortunately this doesn't work by `tidy`.
+              -- Unfortunately this doesn't work by `aesop_cat`.
               -- In this configuration `simp` reaches a dead-end and needs help.
               intro j
-              dsimp
-              simp only [← Equivalence.counitInv_app_functor, Iso.inv_hom_id_app, map_comp,
-                Equivalence.fun_inv_map, assoc, id_comp, Iso.inv_hom_id_app_assoc]
-              dsimp; simp))-- See note [dsimp, simp].
-      fun {c} {c'} f => by
-        apply CoconeMorphism.ext
-        simp
+              simp [← Equivalence.counitInv_app_functor]))
+      (by aesop_cat)
   }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
@@ -720,11 +713,15 @@ def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cones.functoriality F H).obj c
 #align category_theory.functor.map_cone CategoryTheory.Functor.mapCone
 
+pp_extended_field_notation Functor.mapCone
+
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
 #align category_theory.functor.map_cocone CategoryTheory.Functor.mapCocone
+
+pp_extended_field_notation Functor.mapCocone
 
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially.  -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
@@ -931,31 +928,19 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
             apply ConeMorphism.w } }
   unitIso :=
     NatIso.ofComponents
-      (fun c =>
-        Cocones.ext (Iso.refl _)
-          (by
-            dsimp
-            simp))
+      (fun c => Cocones.ext (Iso.refl _) (by simp))
       fun {X} {Y} f => by
       apply CoconeMorphism.ext
       simp
   counitIso :=
     NatIso.ofComponents
       (fun c => by
-        induction c using Opposite.rec
+        induction c using Opposite.rec'
         dsimp
         apply Iso.op
-        exact
-          Cones.ext (Iso.refl _)
-            (by
-              dsimp
-              simp))
+        exact Cones.ext (Iso.refl _) (by simp))
       fun {X} {Y} f =>
-      Quiver.Hom.unop_inj
-        (ConeMorphism.ext _ _
-          (by
-            dsimp
-            simp))
+      Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
   functor_unitIso_comp c := by
     apply Quiver.Hom.unop_inj
     apply ConeMorphism.ext
@@ -970,13 +955,7 @@ end
 section
 
 variable {F : J ⥤ Cᵒᵖ}
-/- Porting note: removed a few simps configs
-`@[simps (config :=
-      { rhsMd := semireducible
-        simpRhs := true })]`
-and replace with `@[simps]`-/
--- Here and below we only automatically generate the `@[simp]` lemma for the `X` field,
--- as we can write a simpler `rfl` lemma for the components of the natural transformation by hand.
+
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
 @[simps!]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where

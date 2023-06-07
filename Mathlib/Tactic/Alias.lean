@@ -48,10 +48,11 @@ namespace Alias
 open Lean Elab Parser.Command
 
 /-- Adds some copies of a theorem or definition. -/
-syntax (name := alias) (docComment)? "alias " ident " ← " ident* : command
+syntax (name := alias) (docComment)? "alias " ident " ←" (ppSpace ident)* : command
 
 /-- Adds one-way implication declarations. -/
-syntax (name := aliasLR) (docComment)? "alias " ident " ↔ " binderIdent binderIdent : command
+syntax (name := aliasLR) (docComment)?
+  "alias " ident " ↔ " binderIdent ppSpace binderIdent : command
 
 /-- Adds one-way implication declarations, inferring names for them. -/
 syntax (name := aliasLRDots) (docComment)? "alias " ident " ↔ " ".." : command
@@ -116,7 +117,11 @@ def Target.toString : Target → String
     }
     -- TODO add @alias attribute
     Command.liftTermElabM do
-      Lean.addDecl decl
+      if isNoncomputable (← getEnv) resolved then
+        addDecl decl
+        setEnv $ addNoncomputable (← getEnv) declName
+      else
+        addAndCompile decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
       let target := Target.plain resolved
       let docString := match doc with | none => target.toString

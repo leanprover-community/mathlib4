@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 
 ! This file was ported from Lean 3 source module linear_algebra.alternating
-! leanprover-community/mathlib commit 284fdd2962e67d2932fa3a79ce19fcf92d38e228
+! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -56,6 +56,8 @@ variable {R : Type _} [Semiring R]
 variable {M : Type _} [AddCommMonoid M] [Module R M]
 
 variable {N : Type _} [AddCommMonoid N] [Module R N]
+
+variable {P : Type _} [AddCommMonoid P] [Module R P]
 
 -- semiring / add_comm_group
 
@@ -275,6 +277,55 @@ instance isCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S N] :
 
 end SMul
 
+/-- The cartesian product of two alternating maps, as an alternating map. -/
+@[simps!]
+def prod (f : AlternatingMap R M N ι) (g : AlternatingMap R M P ι) : AlternatingMap R M (N × P) ι :=
+  { f.toMultilinearMap.prod g.toMultilinearMap with
+    map_eq_zero_of_eq' := fun _ _ _ h hne =>
+      Prod.ext (f.map_eq_zero_of_eq _ h hne) (g.map_eq_zero_of_eq _ h hne) }
+#align alternating_map.prod AlternatingMap.prod
+#align alternating_map.prod_apply AlternatingMap.prod_apply
+
+@[simp]
+theorem coe_prod (f : AlternatingMap R M N ι) (g : AlternatingMap R M P ι) :
+    (f.prod g : MultilinearMap R (fun _ : ι => M) (N × P)) = MultilinearMap.prod f g :=
+  rfl
+#align alternating_map.coe_prod AlternatingMap.coe_prod
+
+/-- Combine a family of alternating maps with the same domain and codomains `N i` into an
+alternating map taking values in the space of functions `Π i, N i`. -/
+@[simps!]
+def pi {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+    (f : ∀ i, AlternatingMap R M (N i) ι) : AlternatingMap R M (∀ i, N i) ι :=
+  { MultilinearMap.pi fun a => (f a).toMultilinearMap with
+    map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a => (f a).map_eq_zero_of_eq _ h hne }
+#align alternating_map.pi AlternatingMap.pi
+#align alternating_map.pi_apply AlternatingMap.pi_apply
+
+@[simp]
+theorem coe_pi {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+    (f : ∀ i, AlternatingMap R M (N i) ι) :
+    (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
+  rfl
+#align alternating_map.coe_pi AlternatingMap.coe_pi
+
+/-- Given an alternating `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the map
+sending `m` to `f m • z`. -/
+@[simps!]
+def smulRight {R M₁ M₂ ι : Type _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+    [Module R M₁] [Module R M₂] (f : AlternatingMap R M₁ R ι) (z : M₂) : AlternatingMap R M₁ M₂ ι :=
+  { f.toMultilinearMap.smulRight z with
+    map_eq_zero_of_eq' := fun v i j h hne => by simp [f.map_eq_zero_of_eq v h hne] }
+#align alternating_map.smul_right AlternatingMap.smulRight
+#align alternating_map.smul_right_apply AlternatingMap.smulRight_apply
+
+@[simp]
+theorem coe_smulRight {R M₁ M₂ ι : Type _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+    [Module R M₁] [Module R M₂] (f : AlternatingMap R M₁ R ι) (z : M₂) :
+    (f.smulRight z : MultilinearMap R (fun _ : ι => M₁) M₂) = MultilinearMap.smulRight f z :=
+  rfl
+#align alternating_map.coe_smul_right AlternatingMap.coe_smulRight
+
 instance add : Add (AlternatingMap R M N ι) :=
   ⟨fun a b =>
     { (a + b : MultilinearMap R (fun _ : ι => M) N) with
@@ -397,6 +448,8 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : AlternatingMap R M M ι :=
 #align alternating_map.of_subsingleton AlternatingMap.ofSubsingleton
 #align alternating_map.of_subsingleton_apply AlternatingMap.ofSubsingleton_apply
 
+variable (ι)
+
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps (config := { fullyApplied := false })]
 def constOfIsEmpty [IsEmpty ι] (m : N) : AlternatingMap R M N ι :=
@@ -453,6 +506,12 @@ theorem compAlternatingMap_apply (g : N →ₗ[R] N₂) (f : AlternatingMap R M 
     g.compAlternatingMap f m = g (f m) :=
   rfl
 #align linear_map.comp_alternating_map_apply LinearMap.compAlternatingMap_apply
+
+theorem smulRight_eq_comp {R M₁ M₂ ι : Type _} [CommSemiring R] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : AlternatingMap R M₁ R ι) (z : M₂) :
+    f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
+  rfl
+#align linear_map.smul_right_eq_comp LinearMap.smulRight_eq_comp
 
 @[simp]
 theorem subtype_compAlternatingMap_codRestrict (f : AlternatingMap R M N ι) (p : Submodule R N)
@@ -627,16 +686,16 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
     (by rw [Function.update_same, Function.update_noteq hij, Function.update_same]) hij
 #align alternating_map.map_update_update AlternatingMap.map_update_update
 
-theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) : f (v ∘ Equiv.swap i j) + f v = 0 :=
-  by
+theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+    f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
   convert f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 #align alternating_map.map_swap_add AlternatingMap.map_swap_add
 
-theorem map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : f v + f (v ∘ Equiv.swap i j) = 0 :=
-  by
+theorem map_add_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
+    f v + f (v ∘ Equiv.swap i j) = 0 := by
   rw [add_comm]
   exact f.map_swap_add v hij
 #align alternating_map.map_add_swap AlternatingMap.map_add_swap
@@ -840,8 +899,7 @@ namespace AlternatingMap
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : AlternatingMap R M N' ι) :
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
-      = Nat.factorial (Fintype.card ι) • a :=
-  by
+    = Nat.factorial (Fintype.card ι) • a := by
   apply AlternatingMap.coe_injective
   simp_rw [MultilinearMap.alternatization_def, ← coe_domDomCongr, domDomCongr_perm, coe_smul,
     smul_smul, Int.units_mul_self, one_smul, Finset.sum_const, Finset.card_univ, Fintype.card_perm,
@@ -1006,7 +1064,7 @@ Here, we generalize this by replacing:
 * the filtering of $[1, m+n]$ to shuffles with an isomorphic quotient
 * the additions in the subscripts of $\sigma$ with an index of type `Sum`
 
-The specialized version can be obtained by combining this definition with `fin_sum_fin_equiv` and
+The specialized version can be obtained by combining this definition with `finSumFinEquiv` and
 `LinearMap.mul'`.
 -/
 @[simps]
@@ -1075,7 +1133,7 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
           MultilinearMap.domCoprod (a.domDomCongr σa) (b.domDomCongr σb) := by
   simp_rw [← MultilinearMap.domCoprod'_apply, MultilinearMap.alternatization_coe]
   simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, LinearMap.map_sum, ←
-    TensorProduct.smul_tmul', TensorProduct.tmul_smul, LinearMap.map_smul_of_tower]
+    TensorProduct.smul_tmul', TensorProduct.tmul_smul]
   rfl
 #align multilinear_map.dom_coprod_alternization_coe MultilinearMap.domCoprod_alternization_coe
 
@@ -1153,8 +1211,8 @@ variable [Module R' N₁] [Module R' N₂]
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : AlternatingMap R' N₁ N₂ ι} (e : Basis ι₁ R' N₁)
-    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) : f = g :=
-  by
+    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
+    f = g := by
   classical
     refine' AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => _)
     by_cases hi : Function.Injective v
@@ -1255,7 +1313,7 @@ theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
 to an empty family. -/
 @[simps]
 def constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] AlternatingMap R' M'' N'' ι where
-  toFun := AlternatingMap.constOfIsEmpty R' M''
+  toFun := AlternatingMap.constOfIsEmpty R' M'' ι
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0

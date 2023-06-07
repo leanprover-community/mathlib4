@@ -81,7 +81,7 @@ class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J :
   [is_nonempty : Nonempty J]
 #align category_theory.is_connected CategoryTheory.IsConnected
 
-attribute [instance] IsConnected.is_nonempty
+attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 
@@ -317,7 +317,7 @@ theorem isConnected_zigzag [IsConnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isConnected_zigzag
 
-/-- If any two objects in an nonempty category are related by `zigzag`, the category is connected.
+/-- If any two objects in a nonempty category are related by `zigzag`, the category is connected.
 -/
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J := by
   apply IsConnected.of_induct
@@ -338,7 +338,7 @@ theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
   List.exists_chain_of_relationReflTransGen (isConnected_zigzag _ _)
 #align category_theory.exists_zigzag' CategoryTheory.exists_zigzag'
 
-/-- If any two objects in an nonempty category are linked by a sequence of (potentially reversed)
+/-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
 
 The converse of `exists_zigzag'`.

@@ -13,7 +13,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.Replace
+import Mathlib.Util.AssertExists
 
 /-!
 # Order homomorphisms
@@ -48,8 +48,8 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
-* `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
-* `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
+* `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
+* `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
@@ -652,14 +652,12 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
--- Porting note: `simp` can prove this.
--- @[simp]
+@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -983,7 +981,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-@[simp]
+--@[simp] porting note: simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
@@ -1031,7 +1029,7 @@ theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
     (e : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop)) : α ≃o β :=
-  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff]⟩
+  ⟨e.toEquiv, by simp [le_iff_eq_or_lt, e.map_rel_iff, e.injective.eq_iff]⟩
 #align order_iso.of_rel_iso_lt OrderIso.ofRelIsoLT
 
 @[simp]
@@ -1391,6 +1389,5 @@ end BoundedOrder
 
 end LatticeIsos
 
--- Developments relating order homs and sets belong in `order.hom.set` or later.
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists set.range
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range

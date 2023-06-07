@@ -158,6 +158,19 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 #align category_theory.limits.sigma.ι CategoryTheory.Limits.Sigma.ι
 
+-- porting note: added the next two lemmas to ease automation; without these lemmas,
+-- `limit.hom_ext` would be applied, but the goal would involve terms
+-- in `Discete β` rather than `β` itself
+@[ext 1050]
+lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
+    (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
+  limit.hom_ext (fun ⟨j⟩ => h j)
+
+@[ext 1050]
+lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
+    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂ ) : g₁ = g₂ :=
+  colimit.hom_ext (fun ⟨j⟩ => h j)
+
 /-- The fan constructed of the projections from the product is limiting. -/
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _) (by aesop_cat))
@@ -241,7 +254,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 @[reassoc (attr := simp)]
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
-  ext ⟨j⟩
+  ext j
   simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 #align category_theory.limits.map_lift_pi_comparison CategoryTheory.Limits.map_lift_piComparison
@@ -263,7 +276,7 @@ theorem ι_comp_sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f
 theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, f j ⟶ P) :
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
-  ext ⟨j⟩
+  ext j
   simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
 #align category_theory.limits.sigma_comparison_map_desc CategoryTheory.Limits.sigmaComparison_map_desc
@@ -323,8 +336,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j  =>
-        by
+      fac := fun s j  => by
         have h := Subsingleton.elim j default
         subst h
         dsimp
@@ -357,8 +369,7 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isColimit :=
     { desc := fun s => s.ι.app default
-      fac := fun s j =>
-        by
+      fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
         apply Category.id_comp

@@ -57,7 +57,7 @@ class AddTorsor (G : outParam (Type _)) (P : Type _) [outParam <| AddGroup G] ex
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.Nonempty -- porting note: removers `nolint instance_priority`
 
 --Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
@@ -117,8 +117,7 @@ theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P
 /-- Adding a group element to a point, then subtracting another point,
 produces the same result as subtracting the points then adding the
 group element. -/
-theorem vadd_vsub_assoc (g : G) (p1 p2 : P) : g +ᵥ p1 -ᵥ p2 = g + (p1 -ᵥ p2) :=
-  by
+theorem vadd_vsub_assoc (g : G) (p1 p2 : P) : g +ᵥ p1 -ᵥ p2 = g + (p1 -ᵥ p2) := by
   apply vadd_right_cancel p2
   rw [vsub_vadd, add_vadd, vsub_vadd]
 #align vadd_vsub_assoc vadd_vsub_assoc
@@ -147,8 +146,7 @@ theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
 
 /-- Cancellation adding the results of two subtractions. -/
 @[simp]
-theorem vsub_add_vsub_cancel (p1 p2 p3 : P) : p1 -ᵥ p2 + (p2 -ᵥ p3) = p1 -ᵥ p3 :=
-  by
+theorem vsub_add_vsub_cancel (p1 p2 p3 : P) : p1 -ᵥ p2 + (p2 -ᵥ p3) = p1 -ᵥ p3 := by
   apply vadd_right_cancel p3
   rw [add_vadd, vsub_vadd, vsub_vadd, vsub_vadd]
 #align vsub_add_vsub_cancel vsub_add_vsub_cancel
@@ -156,8 +154,7 @@ theorem vsub_add_vsub_cancel (p1 p2 p3 : P) : p1 -ᵥ p2 + (p2 -ᵥ p3) = p1 -�
 /-- Subtracting two points in the reverse order produces the negation
 of subtracting them. -/
 @[simp]
-theorem neg_vsub_eq_vsub_rev (p1 p2 : P) : -(p1 -ᵥ p2) = p2 -ᵥ p1 :=
-  by
+theorem neg_vsub_eq_vsub_rev (p1 p2 : P) : -(p1 -ᵥ p2) = p2 -ᵥ p1 := by
   refine' neg_eq_of_add_eq_zero_right (vadd_right_cancel p1 _)
   rw [vsub_add_vsub_cancel, vsub_self]
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
@@ -228,8 +225,7 @@ theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G)
 
 /-- If subtracting two points from the same point produces equal
 results, those points are equal. -/
-theorem vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 :=
-  by
+theorem vsub_right_cancel {p1 p2 p : P} (h : p -ᵥ p1 = p -ᵥ p2) : p1 = p2 := by
   refine' vadd_left_cancel (p -ᵥ p2) _
   rw [vsub_vadd, ← h, vsub_vadd]
 #align vsub_right_cancel vsub_right_cancel
@@ -473,9 +469,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
     pointReflection x y = y ↔ y = x := by
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
-#align
-  equiv.point_reflection_fixed_iff_of_injective_bit0
-  Equiv.pointReflection_fixed_iff_of_injective_bit0
+#align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
 
 -- Porting note: Removed:
 -- omit G
@@ -488,9 +482,7 @@ theorem injective_pointReflection_left_of_injective_bit0 {G P : Type _} [AddComm
   rwa [pointReflection_apply, pointReflection_apply, vadd_eq_vadd_iff_sub_eq_vsub,
     vsub_sub_vsub_cancel_right, ← neg_vsub_eq_vsub_rev, neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero,
     h.eq_iff, vsub_eq_zero_iff_eq] at hy
-#align
-  equiv.injective_point_reflection_left_of_injective_bit0
-  Equiv.injective_pointReflection_left_of_injective_bit0
+#align equiv.injective_point_reflection_left_of_injective_bit0 Equiv.injective_pointReflection_left_of_injective_bit0
 
 end Equiv
 

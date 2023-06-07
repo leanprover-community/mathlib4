@@ -11,8 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
+import Mathlib.Util.AssertExists
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -95,8 +94,7 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
-  simp only [Units.isUnit, inverse, dif_pos]
-  exact Units.inv_unique rfl
+  rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 #align ring.inverse_unit Ring.inverse_unit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -243,7 +241,6 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
     exact h
   · right
     simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
-
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -358,5 +355,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 end NoncomputableDefs
 
 -- Guard against import creep
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists multiplicative
+assert_not_exists Multiplicative

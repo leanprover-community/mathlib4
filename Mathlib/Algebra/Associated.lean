@@ -54,7 +54,7 @@ theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p �
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction' n with n ih
   · rw [pow_zero] at h
-    have := isUnit_of_dvd_one  h
+    have := isUnit_of_dvd_one h
     have := not_unit hp
     contradiction
   rw [pow_succ] at h
@@ -895,7 +895,6 @@ theorem isUnit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
     IsUnit (Associates.mk a) ↔ a ~ᵤ 1 :=
     by rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
-
 #align associates.is_unit_mk Associates.isUnit_mk
 
 section Order
@@ -926,8 +925,7 @@ end Order
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
     let step : ∀ (c : α),
-      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b :=
-    by
+      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b := by
       intro c hc
       let ⟨d, hd⟩ := (Quotient.exact hc).symm
       exact ⟨↑d * c,
@@ -1232,5 +1230,4 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- assert_not_exists multiset
+assert_not_exists Multiset

@@ -74,7 +74,7 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 #align category_theory.coe_comonad CategoryTheory.coeComonad
 
--- porting note: these lemmas are syntatic tautologies
+-- porting note: these lemmas are syntactic tautologies
 --@[simp]
 --theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
 --  rfl
@@ -183,6 +183,8 @@ structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ 
     aesop_cat
 #align category_theory.monad_hom CategoryTheory.MonadHom
 
+initialize_simps_projections MonadHom (+toNatTrans, -app)
+
 /-- A morphism of comonads is a natural transformation compatible with ε and δ. -/
 @[ext]
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
@@ -190,8 +192,11 @@ structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
   app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ (N : C ⥤ C).map (app X) := by aesop_cat
 #align category_theory.comonad_hom CategoryTheory.ComonadHom
 
+initialize_simps_projections ComonadHom (+toNatTrans, -app)
+
 attribute [reassoc (attr := simp)] MonadHom.app_η MonadHom.app_μ
 attribute [reassoc (attr := simp)] ComonadHom.app_ε ComonadHom.app_δ
+
 
 instance : Category (Monad C) where
   Hom := MonadHom
@@ -253,10 +258,9 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
   rfl
 #align category_theory.comp_to_nat_trans CategoryTheory.comp_toNatTrans
 
--- porting note: was @[simps]
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
-@[simp]
+@[simps]
 def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
     (f_η : ∀ (X : C), M.η.app X ≫ f.hom.app X = N.η.app X)
     (f_μ : ∀ (X : C), M.μ.app X ≫ f.hom.app X =
@@ -275,10 +279,9 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
         simp }
 #align category_theory.monad_iso.mk CategoryTheory.MonadIso.mk
 
--- porting note: was @[simps]
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
-@[simp]
+@[simps]
 def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
     (f_ε : ∀ (X : C), f.hom.app X ≫ N.ε.app X = M.ε.app X)
     (f_δ : ∀ (X : C), f.hom.app X ≫ N.δ.app X =

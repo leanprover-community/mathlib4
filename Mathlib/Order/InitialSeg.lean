@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit 1a313d8bba1bad05faba71a4a4e9742ab5bd9efd
+! leanprover-community/mathlib commit 730c6d4cab72b9d84fcfb9e95e8796e9cd8f40ba
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -131,21 +131,18 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 #align initial_seg.trans_apply InitialSeg.trans_apply
 
-theorem unique_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s] :
-    WellFounded r → Subsingleton (r ≼i s)
-  | ⟨h⟩ =>
-    ⟨fun f g => by
-      ext a
-      induction' h a with a _ IH
-      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-      simp only [f.init_iff, g.init_iff]
-      exact exists_congr fun y => and_congr_left fun h => IH _ h ▸ Iff.rfl⟩
-#align initial_seg.unique_of_trichotomous_of_irrefl InitialSeg.unique_of_trichotomous_of_irrefl
+instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
+    [IsWellFounded α r] : Subsingleton (r ≼i s) :=
+  ⟨fun f g => by
+    ext a
+    refine' IsWellFounded.induction r a fun b IH =>
+      extensional_of_trichotomous_of_irrefl s fun x => _
+    rw [f.init_iff, g.init_iff]
+    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
+#align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a =>
-    @Subsingleton.elim _
-      (unique_of_trichotomous_of_irrefl (@RelEmbedding.wellFounded _ _ r s a IsWellFounded.wf)) a⟩
+  ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -207,7 +204,7 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
 /-- Initial segment embedding of an order `r` into the disjoint union of `r` and `s`. -/
 def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s :=
   ⟨⟨⟨Sum.inl, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩, fun a b => by
-    cases b <;> [exact fun _ => ⟨_, rfl⟩, exact False.elim ∘ Sum.lex_inr_inl]⟩
+    cases b <;> [exact fun _ => ⟨_, rfl⟩; exact False.elim ∘ Sum.lex_inr_inl]⟩
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
@@ -425,7 +422,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
-/-- Principal segment from the empty relation on `pempty` to the empty relation on `punit`. -/
+/-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
 @[reducible]
 def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false

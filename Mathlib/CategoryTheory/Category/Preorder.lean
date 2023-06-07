@@ -10,6 +10,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Order.Hom.Basic
+import Mathlib.Data.ULift
 
 /-!
 
@@ -51,6 +52,10 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   id X := ⟨⟨le_refl X⟩⟩
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
+
+-- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
+instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+  Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
@@ -103,9 +108,9 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
-def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
+def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op
-#align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
+#align category_theory.op_hom_of_le CategoryTheory.opHomOfLE
 
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le

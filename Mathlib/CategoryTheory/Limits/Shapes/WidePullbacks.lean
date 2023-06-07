@@ -172,7 +172,7 @@ namespace WidePushoutShape
 
 variable {J}
 
-/-- The type of arrows for the shape indexing a wide psuhout. -/
+/-- The type of arrows for the shape indexing a wide pushout. -/
 inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | id : ∀ X, Hom X X
   | init : ∀ j : J, Hom none (some j)
@@ -273,19 +273,19 @@ abbrev HasWidePullbacks : Prop :=
   ∀ J : Type w, HasLimitsOfShape (WidePullbackShape J) C
 #align category_theory.limits.has_wide_pullbacks CategoryTheory.Limits.HasWidePullbacks
 
-/-- `has_wide_pushouts` represents a choice of wide pushout for every collection of morphisms -/
+/-- `HasWidePushouts` represents a choice of wide pushout for every collection of morphisms -/
 abbrev HasWidePushouts : Prop :=
   ∀ J : Type w, HasColimitsOfShape (WidePushoutShape J) C
 #align category_theory.limits.has_wide_pushouts CategoryTheory.Limits.HasWidePushouts
 
 variable {C J}
 
-/-- `has_wide_pullback B objs arrows` means that `wideCospan B objs arrows` has a limit. -/
+/-- `HasWidePullback B objs arrows` means that `wideCospan B objs arrows` has a limit. -/
 abbrev HasWidePullback (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Prop :=
   HasLimit (WidePullbackShape.wideCospan B objs arrows)
 #align category_theory.limits.has_wide_pullback CategoryTheory.Limits.HasWidePullback
 
-/-- `has_wide_pushout B objs arrows` means that `wideSpan B objs arrows` has a colimit. -/
+/-- `HasWidePushout B objs arrows` means that `wideSpan B objs arrows` has a colimit. -/
 abbrev HasWidePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : Prop :=
   HasColimit (WidePushoutShape.wideSpan B objs arrows)
 #align category_theory.limits.has_wide_pushout CategoryTheory.Limits.HasWidePushout
@@ -368,10 +368,9 @@ theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
   rfl  -- Porting note: quite a few missing refl's in aesop_cat now
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
-@[ext]
-theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) :
-    (∀ j : J, g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 :=
-  by
+@[ext 1100]
+theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
+    g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 := by
   intro h1 h2
   apply limit.hom_ext
   rintro (_ | _)
@@ -442,8 +441,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
 
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
-      desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j =>
-        by
+      desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
         simp := by
   apply eq_desc_of_comp_eq
@@ -451,10 +449,9 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
   rfl -- Porting note: another missing rfl
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
-@[ext]
-theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) :
-    (∀ j : J, ι arrows j ≫ g1 = ι arrows j ≫ g2) → head arrows ≫ g1 = head arrows ≫ g2 → g1 = g2 :=
-  by
+@[ext 1100]
+theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,
+    ι arrows j ≫ g1 = ι arrows j ≫ g2) → head arrows ≫ g1 = head arrows ≫ g2 → g1 = g2 := by
   intro h1 h2
   apply colimit.hom_ext
   rintro (_ | _)
@@ -483,7 +480,7 @@ def widePullbackShapeOp : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ whe
 #align category_theory.limits.wide_pullback_shape_op CategoryTheory.Limits.widePullbackShapeOp
 
 /-- The action on morphisms of the obvious functor
-`WidePushoutShapeOp : `WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ` -/
+`widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ` -/
 def widePushoutShapeOpMap :
     ∀ X Y : WidePushoutShape J,
       (X ⟶ Y) → ((op X : (WidePullbackShape J)ᵒᵖ) ⟶ (op Y : (WidePullbackShape J)ᵒᵖ))
@@ -511,25 +508,25 @@ def widePushoutShapeUnop : (WidePushoutShape J)ᵒᵖ ⥤ WidePullbackShape J :=
 #align category_theory.limits.wide_pushout_shape_unop CategoryTheory.Limits.widePushoutShapeUnop
 
 /-- The inverse of the unit isomorphism of the equivalence
-`WidePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
+`widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePushoutShapeOpUnop : widePushoutShapeUnop J ⋙ widePullbackShapeOp J ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
 #align category_theory.limits.wide_pushout_shape_op_unop CategoryTheory.Limits.widePushoutShapeOpUnop
 
 /-- The counit isomorphism of the equivalence
-`WidePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
+`widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePushoutShapeUnopOp : widePushoutShapeOp J ⋙ widePullbackShapeUnop J ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
 #align category_theory.limits.wide_pushout_shape_unop_op CategoryTheory.Limits.widePushoutShapeUnopOp
 
 /-- The inverse of the unit isomorphism of the equivalence
-`WidePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
+`widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePullbackShapeOpUnop : widePullbackShapeUnop J ⋙ widePushoutShapeOp J ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
 #align category_theory.limits.wide_pullback_shape_op_unop CategoryTheory.Limits.widePullbackShapeOpUnop
 
 /-- The counit isomorphism of the equivalence
-`WidePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
+`widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePullbackShapeUnopOp : widePullbackShapeOp J ⋙ widePushoutShapeUnop J ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => Iso.refl _) fun {X} {Y} f => by aesop
 #align category_theory.limits.wide_pullback_shape_unop_op CategoryTheory.Limits.widePullbackShapeUnopOp
