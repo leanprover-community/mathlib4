@@ -51,7 +51,9 @@ variable {C : Type u} [Category.{v} C]
 
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
---attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
+
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+  CategoryTheory.Discrete.discreteCases
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=
@@ -107,9 +109,7 @@ def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
     (fac : ∀ (s : Fan f) (j : β), lift s ≫ t.proj j = s.proj j)
     (uniq : ∀ (s : Fan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, m ≫ t.proj j = s.proj j), m = lift s) :
     IsLimit t :=
-  { lift
-    fac := fun s j => fac s j.as
-    uniq := fun s m w => uniq s m fun j => w (Discrete.mk j) }
+  { lift }
 #align category_theory.limits.mk_fan_limit CategoryTheory.Limits.mkFanLimit
 
 section
@@ -339,11 +339,9 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
       fac := fun s j  => by
         have h := Subsingleton.elim j default
         subst h
-        dsimp
         simp
       uniq := fun s m w => by
         specialize w default
-        dsimp at w
         simpa using w }
 #align category_theory.limits.limit_cone_of_unique CategoryTheory.Limits.limitConeOfUnique
 
@@ -375,7 +373,6 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
-        dsimp at w
         erw [Category.id_comp] at w
         exact w }
 #align category_theory.limits.colimit_cocone_of_unique CategoryTheory.Limits.colimitCoconeOfUnique

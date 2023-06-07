@@ -50,7 +50,8 @@ open CategoryTheory.Limits
 
 namespace CategoryTheory.Limits.Types
 
--- attribute [local tidy] tactic.discrete_cases -- Porting note: no local, tidy or discrete_cases
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+  CategoryTheory.Discrete.discreteCases
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
