@@ -92,16 +92,17 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
 variable (f : R →+* S) (x y : WittVector p R)
 
 /-- Auxiliary tactic for showing that `map_fun` respects the ring operations. -/
---  porting note: a very crude port.  It does not work for `one`.
+--  porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
-  ( ext n ) <;>
-  ( simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
-      -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
-      add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
-      peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] ) <;>
-  ( apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl ) <;>
-  ( ext ⟨i, k⟩ <;>
-    ( fin_cases i <;> rfl ) ) ))
+  ext n
+  simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
+    -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
+    add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
+    peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom]  <;>
+  try { cases n <;> simp <;> done }  <;>  -- porting note: this line solves `one`
+  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl  <;>
+  ext ⟨i, k⟩ <;>
+    fin_cases i <;> rfl ))
 
 --  porting note: mathport left a long line, probably due to the presence of meta code, from here
 --  and until `pow`.
@@ -109,10 +110,7 @@ macro "map_fun_tac" : tactic => `(tactic| (
 theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
 #align witt_vector.map_fun.zero WittVector.mapFun.zero
 
-theorem one : mapFun f (1 : 𝕎 R) = 1 := by
-  ext (_|n)
-  . simp only [mapFun, mk, Nat.zero_eq, comp_apply, lt_self_iff_false, one_coeff_zero, map_one]
-  . simp only [mapFun, mk, comp_apply, Nat.succ_pos', one_coeff_eq_of_pos, map_zero]
+theorem one : mapFun f (1 : 𝕎 R) = 1 := by map_fun_tac
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
 theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
