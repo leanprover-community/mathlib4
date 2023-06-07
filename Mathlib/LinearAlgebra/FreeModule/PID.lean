@@ -625,7 +625,7 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 
 instance (F : Type u) [CommRing F] [Algebra F R] (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥) (i) :
     Module F (R ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set R)) := by
-  infer_instance -- quotient.module' _
+  Quotient.module' _
 
 end Ideal
 
