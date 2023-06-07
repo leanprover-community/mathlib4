@@ -299,7 +299,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
       suffices
         Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
           ({ f | f '' {1} ⊆ {1}ᶜ } ∪
-              ⋃ (x) (y) (U) (V) (W) (_hU : IsOpen U) (_hV : IsOpen V) (_hW : IsOpen W) (_h :
+              ⋃ (x) (y) (U) (V) (W) (_ : IsOpen U) (_ : IsOpen V) (_ : IsOpen W) (_ :
                 Disjoint (U * V) W),
                 { f | f '' {x} ⊆ U } ∩ { f | f '' {y} ⊆ V } ∩ { f | f '' {x * y} ⊆ W } :
                   Set C(A , B))ᶜ by

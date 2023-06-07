@@ -1281,7 +1281,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance : CauSeq.IsComplete ℂ Complex.abs :=
+instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq

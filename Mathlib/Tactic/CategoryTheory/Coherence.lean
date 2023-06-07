@@ -283,14 +283,15 @@ Rewrites an equation `f = g` as `f₀ ≫ f₁ = g₀ ≫ g₁`,
 where `f₀` and `g₀` are maximal prefixes of `f` and `g` (possibly after reassociating)
 which are "liftable" (i.e. expressible as compositions of unitors and associators).
 -/
-macro (name := liftable_prefixes) "liftable_prefixes" : tactic => do
-  -- TODO we used to set the max instance search depth higher. Is this still needed?
-  `(tactic|
+elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
+  withOptions (fun opts => synthInstance.maxSize.set opts
+    (max 256 (synthInstance.maxSize.get opts))) do
+  evalTactic (← `(tactic|
     simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     -- TODO add `Bicategory.Coherence.assoc_LiftHom₂` when
     -- `category_theory.bicategory.coherence` is ported.
-    simp only [assoc_LiftHom])
+    simp only [assoc_LiftHom]))
 
 lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) : f = g :=
 by simpa using w

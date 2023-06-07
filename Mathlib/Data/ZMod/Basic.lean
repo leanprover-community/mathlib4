@@ -38,7 +38,7 @@ open Function
 
 namespace ZMod
 
-instance : CharZero (ZMod 0) :=
+instance charZero : CharZero (ZMod 0) :=
   (by infer_instance : CharZero ℤ)
 
 /-- `val a` is a natural number defined as:

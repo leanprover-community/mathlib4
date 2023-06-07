@@ -84,12 +84,18 @@ attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
 namespace ModuleCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
+Since the universe the ring lives in can be inferred, we put that last. -/
+@[nolint checkUnivs]
+abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
+
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
 
 attribute [coe] ModuleCat.carrier
 
-instance moduleCategory : Category (ModuleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
   id _ := LinearMap.id -- porting note: was `1`
   comp f g := g.comp f

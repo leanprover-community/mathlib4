@@ -63,12 +63,12 @@ def balancedCore (s : Set E) :=
 
 /-- Helper definition to prove `balanced_core_eq_iInter`-/
 def balancedCoreAux (s : Set E) :=
-  ⋂ (r : 𝕜) (_hr : 1 ≤ ‖r‖), r • s
+  ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 #align balanced_core_aux balancedCoreAux
 
 /-- The smallest balanced superset of `s`.-/
 def balancedHull (s : Set E) :=
-  ⋃ (r : 𝕜) (_hr : ‖r‖ ≤ 1), r • s
+  ⋃ (r : 𝕜) (_ : ‖r‖ ≤ 1), r • s
 #align balanced_hull balancedHull
 
 variable {𝕜}
@@ -199,7 +199,7 @@ theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCo
 #align balanced_core_subset_balanced_core_aux balancedCore_subset_balancedCoreAux
 
 theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
-    balancedCore 𝕜 s = ⋂ (r : 𝕜) (_hr : 1 ≤ ‖r‖), r • s := by
+    balancedCore 𝕜 s = ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s := by
   refine' balancedCore_subset_balancedCoreAux.antisymm _
   refine' (balancedCoreAux_balanced _).subset_balancedCore_of_subset (balancedCoreAux_subset s)
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
