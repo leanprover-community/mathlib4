@@ -412,9 +412,18 @@ lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
 
+@[ext]
+lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
+    (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
+  simpa only [leftHomology_ext_iff] using h
+
 lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
+
+@[ext]
+lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+  simpa only [cycles_ext_iff] using h
 
 end
 
@@ -865,8 +874,7 @@ lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
 
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
-    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by
-  simp only [← cancel_mono S.iCycles, assoc, liftCycles_i]
+    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by aesop_cat
 
 /-- Via `S.iCycles : S.cycles ⟶ S.X₂`, the object `S.cycles` identifies to the
 kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
