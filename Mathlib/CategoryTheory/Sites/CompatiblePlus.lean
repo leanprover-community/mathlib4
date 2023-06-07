@@ -192,8 +192,6 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← F.map_comp, Multiequalizer.lift_ι]
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_right CategoryTheory.GrothendieckTopology.plusCompIso_whiskerRight
 
--- porting note: investigate how to speed this up
-set_option maxHeartbeats 400000
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `P`. -/
 @[simps! hom_app inv_app]
 def plusFunctorWhiskerRightIso :
