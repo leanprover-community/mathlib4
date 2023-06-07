@@ -14,15 +14,15 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 /-!
 # Ramification index and inertia degree
 
-Given `P : ideal S` lying over `p : ideal R` for the ring extension `f : R →+* S`
+Given `P : Ideal S` lying over `p : Ideal R` for the ring extension `f : R →+* S`
 (assuming `P` and `p` are prime or maximal where needed),
-the **ramification index** `ideal.ramification_idx f p P` is the multiplicity of `P` in `map f p`,
-and the **inertia degree** `ideal.inertia_deg f p P` is the degree of the field extension
+the **ramification index** `Ideal.ramificationIdx f p P` is the multiplicity of `P` in `map f p`,
+and the **inertia degree** `Ideal.inertiaDeg f p P` is the degree of the field extension
 `(S / P) : (R / p)`.
 
 ## Main results
 
-The main theorem `ideal.sum_ramification_inertia` states that for all coprime `P` lying over `p`,
+The main theorem `Ideal.sum_ramification_inertia` states that for all coprime `P` lying over `p`,
 `Σ P, ramification_idx f p P * inertia_deg f p P` equals the degree of the field extension
 `Frac(S) : Frac(R)`.
 
@@ -181,20 +181,20 @@ variable (f p P)
 
 attribute [local instance] Ideal.Quotient.field
 
-/-- The inertia degree of `P : ideal S` lying over `p : ideal R` is the degree of the
+/-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
 
 We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
-See `inertia_deg_algebra_map` for the common case where `f = algebra_map R S`
+See `inertia_deg_algebra_map` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
 -/
-noncomputable def inertiaDeg [hp : p.IsMaximal] : ℕ :=
+noncomputable def inertiaDeg [_hp : p.IsMaximal] : ℕ :=
   if hPp : comap f P = p then
     @finrank (R ⧸ p) (S ⧸ P) _ _ <|
       @Algebra.toModule _ _ _ _ <|
         RingHom.toAlgebra <|
-          Ideal.Quotient.lift p ((Ideal.Quotient.mk P).comp f) fun a ha =>
+          Ideal.Quotient.lift p ((Ideal.Quotient.mk P).comp f) fun _a ha =>
             Quotient.eq_zero_iff_mem.mpr <| mem_comap.mp <| hPp.symm ▸ ha
   else 0
 #align ideal.inertia_deg Ideal.inertiaDeg
@@ -251,7 +251,7 @@ and `V'` a module over `S`. If `b`, in the intersection `V''` of `V` and `V'`,
 is linear independent over `S` in `V'`, then it is linear independent over `R` in `V`.
 
 The statement we prove is actually slightly more general:
- * it suffices that the inclusion `algebra_map R S : R → S` is nontrivial
+ * it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
  * the function `f' : V'' → V'` doesn't need to be injective
 -/
 theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedekindDomain R]
@@ -261,7 +261,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedek
   contrapose! hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
   -- then we can find a linear dependence with coefficients `I.quotient.mk g'` in `R/I`,
-  -- where `I = ker (algebra_map R S)`.
+  -- where `I = ker (algebraMap R S)`.
   -- We make use of the same principle but stay in `R` everywhere.
   simp only [linearIndependent_iff', not_forall] at hb ⊢
   obtain ⟨s, g, eq, j', hj's, hj'g⟩ := hb
@@ -429,7 +429,7 @@ theorem finrank_quotient_map [IsDomain R] [IsDomain S] [IsDedekindDomain R] [Alg
     -- However, this would imply distinguishing between `pS` as `S`-ideal,
     -- and `pS` as `R`-submodule, since they have different (non-defeq) quotients.
     -- Instead we'll lift `x mod pS ∈ span b` to `y ∈ span b'` for some `y - x ∈ pS`.
-    intro x hx
+    intro x _hx
     have mem_span_b : ((Submodule.mkQ (map (algebraMap R S) p)) x : S ⧸ map (algebraMap R S) p) ∈
         Submodule.span (R ⧸ p) (Set.range b) := b.mem_span _
     rw [← @Submodule.restrictScalars_mem R,
@@ -490,8 +490,8 @@ def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
   toFun x := ⟨x, Ideal.map_mono (Ideal.pow_le_pow i.le_succ) x.2⟩
-  map_add' x y := rfl
-  map_smul' c x := rfl
+  map_add' _x _y := rfl
+  map_smul' _c _x := rfl
 #align ideal.pow_quot_succ_inclusion Ideal.powQuotSuccInclusion
 
 theorem powQuotSuccInclusion_injective (i : ℕ) :
@@ -637,7 +637,7 @@ theorem rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine @Nat.decreasingInduction' Q i e (fun j lt_e le_j ih => ?_) hi ?_
+  refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
   · dsimp only
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul, Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
@@ -691,7 +691,7 @@ section FactorsMap
 
 open scoped Classical
 
-/-! ## Properties of the factors of `p.map (algebra_map R S)` -/
+/-! ## Properties of the factors of `p.map (algebraMap R S)` -/
 
 
 variable [IsDomain S] [IsDedekindDomain S] [Algebra R S]
@@ -759,7 +759,7 @@ instance Factors.finiteDimensional_quotient_pow [IsNoetherian R S] [p.IsMaximal]
 
 universe w
 
-/-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : ideal R`
+/-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : Ideal R`
 factors in `S` as `∏ i, P i ^ e i`, then `S ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
     S ⧸ map (algebraMap R S) p ≃+*
@@ -777,18 +777,18 @@ noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R 
 
 @[simp]
 theorem Factors.piQuotientEquiv_mk (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : S) :
-    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun P => Ideal.Quotient.mk _ x := rfl
+    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun _P => Ideal.Quotient.mk _ x := rfl
 #align ideal.factors.pi_quotient_equiv_mk Ideal.Factors.piQuotientEquiv_mk
 
 @[simp]
 theorem Factors.piQuotientEquiv_map (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : R) :
-    Factors.piQuotientEquiv p hp (algebraMap _ _ x) = fun P =>
+    Factors.piQuotientEquiv p hp (algebraMap _ _ x) = fun _P =>
       Ideal.Quotient.mk _ (algebraMap _ _ x) := rfl
 #align ideal.factors.pi_quotient_equiv_map Ideal.Factors.piQuotientEquiv_map
 
 variable (S)
 
-/-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : ideal R`
+/-- **Chinese remainder theorem** for a ring of integers: if the prime ideal `p : Ideal R`
 factors in `S` as `∏ i, P i ^ e i`,
 then `S ⧸ I` factors `R ⧸ I`-linearly as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) :
