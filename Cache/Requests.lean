@@ -34,9 +34,9 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     -- this does not exactly match the requirements for quoting for curl:
     -- ```
     -- If the parameter contains whitespace (or starts with : or =),
-    --  the parameter must be enclosed within quotes. 
+    --  the parameter must be enclosed within quotes.
     -- Within double quotes, the following escape sequences are available:
-    --  \, ", \t, \n, \r and \v. 
+    --  \, ", \t, \n, \r and \v.
     -- A backslash preceding any other letter is ignored.
     -- ```
     -- If this becomes an issue we can implement the curl spec.
@@ -67,13 +67,17 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let (_, failed, done) ← IO.runCurlStreaming args (← IO.monoMsNow, 0, 0) fun a line => do
-        let mut (last, failed, done) := a
+      let (_, success, failed, done) ←
+          IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
+        let mut (last, success, failed, done) := a
         -- output errors other than 404 and remove corresponding partial downloads
         let line := line.trim
         if !line.isEmpty then
           let result ← IO.ofExcept <| Lean.Json.parse line
-          if !(result.getObjValAs? Nat "http_code" matches .ok 200 | .ok 404) then
+          match result.getObjValAs? Nat "http_code" with
+          | .ok 200 => success := success + 1
+          | .ok 404 => pure ()
+          | _ =>
             failed := failed + 1
             if let .ok e := result.getObjValAs? String "errormsg" then
               IO.println e
@@ -84,17 +88,17 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           done := done + 1
           let now ← IO.monoMsNow
           if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded {done}/{size} file(s) [{100*done/size}%]"
+            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
             if failed != 0 then
-              msg := msg ++ ", {failed} failed"
+              msg := msg ++ s!", {failed} failed"
             IO.eprint msg
             last := now
-        pure (last, failed, done)
+        pure (last, success, failed, done)
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded {size}/{size} file(s) [100%]"
+        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
         if failed != 0 then
-          msg := msg ++ ", {failed} failed"
+          msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
       pure failed

@@ -823,7 +823,7 @@ end ProdLemmas
 section CoprodLemmas
 
 -- @[reassoc (attr := simp)]
-@[simp] -- Porting note: removing reassoc tag since result is not hygenic (two h's)
+@[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   apply coprod.hom_ext; simp; simp
@@ -1105,7 +1105,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1191,7 +1191,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1214,7 +1214,7 @@ end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/

@@ -305,8 +305,8 @@ It is also automatically satisfied for any `c > 1`, see TODO section of the modu
 details. -/
 structure MemBaseSet (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) (r : (ι → ℝ) → Ioi (0 : ℝ))
     (π : TaggedPrepartition I) : Prop where
-  protected IsSubordinate : π.IsSubordinate r
-  protected IsHenstock : l.bHenstock → π.IsHenstock
+  protected isSubordinate : π.IsSubordinate r
+  protected isHenstock : l.bHenstock → π.IsHenstock
   protected distortion_le : l.bDistortion → π.distortion ≤ c
   protected exists_compl : l.bDistortion → ∃ π' : Prepartition I,
     π'.iUnion = ↑I \ π.iUnion ∧ π'.distortion ≤ c
@@ -322,7 +322,7 @@ a function `r : ℝⁿ → (0, ∞)` (or a constant `r` if `l.bRiemann = true`) 
 prepartition `π` such that `l.MemBaseSet I c r π`. -/
 def toFilterDistortion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) :
     Filter (TaggedPrepartition I) :=
-  ⨅ (r : (ι → ℝ) → Ioi (0 : ℝ)) (_hr : l.RCond r), 𝓟 { π | l.MemBaseSet I c r π }
+  ⨅ (r : (ι → ℝ) → Ioi (0 : ℝ)) (_ : l.RCond r), 𝓟 { π | l.MemBaseSet I c r π }
 #align box_integral.integration_params.to_filter_distortion BoxIntegral.IntegrationParams.toFilterDistortion
 
 /-- A set `s : Set (TaggedPrepartition I)` belongs to `l.toFilter I` if for any `c : ℝ≥0` there

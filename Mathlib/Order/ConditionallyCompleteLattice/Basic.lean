@@ -828,12 +828,12 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
 #align cinfi_set_le ciInf_set_le
 
 @[simp]
-theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _b : ι, a) = a := by
+theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _ : ι, a) = a := by
   rw [iSup, range_const, csSup_singleton]
 #align csupr_const ciSup_const
 
 @[simp]
-theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _b : ι, a) = a :=
+theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _ : ι, a) = a :=
   @ciSup_const αᵒᵈ _ _ _ _
 #align cinfi_const ciInf_const
 

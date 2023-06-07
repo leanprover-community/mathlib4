@@ -1,6 +1,7 @@
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-! # Tests for the `positivity` tactic
 
@@ -167,11 +168,12 @@ example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivit
 -- example {a b : Cardinal.{u}} (ha : 0 < a) : 0 < a ^ b := by positivity
 -- example {a b : Ordinal.{u}} (ha : 0 < a) : 0 < a ^ b := by positivity
 
--- example {a b : ℝ} (ha : 0 ≤ a) : 0 ≤ a ^ b := by positivity
--- example {a b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
--- example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
+example {a b : ℝ} (ha : 0 ≤ a) : 0 ≤ a ^ b := by positivity
+example {a b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
+example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a ^ b := by positivity
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
+example {a : ℝ} : 0 < a ^ 0 := by positivity
 
 -- example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
 -- example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
