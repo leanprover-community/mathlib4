@@ -680,6 +680,8 @@ theorem sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 :=
 
 variable {x y : R}
 
+-- Porting note: added `simp` to replace `pow_bit0_abs`
+@[simp]
 theorem sq_abs (x : R) : |x| ^ 2 = x ^ 2 := by simpa only [sq] using abs_mul_abs_self x
 #align sq_abs sq_abs
 
