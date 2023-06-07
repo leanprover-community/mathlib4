@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.TensorAlgebra.Basic
-import Mathbin.RingTheory.GradedAlgebra.Basic
+import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the tensor algebra
