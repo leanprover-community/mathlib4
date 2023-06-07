@@ -10,7 +10,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Additional typeclass for modules over an algebra
@@ -66,4 +66,3 @@ instance linearOverField : Linear k (ModuleCat.{v} A) where homModule M N := by 
 #align Module.linear_over_field ModuleCat.linearOverField
 
 end ModuleCat
-
