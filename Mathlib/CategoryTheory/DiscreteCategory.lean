@@ -104,7 +104,7 @@ instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y
   show Subsingleton (ULift (PLift _)) from inferInstance
 
 /- Porting note: rewrote `discrete_cases` tactic -/
-/-- A simple tactic to run `cases` on any `discrete α` hypotheses. -/
+/-- A simple tactic to run `cases` on any `Discrete α` hypotheses. -/
 macro "discrete_cases" : tactic =>
   `(tactic| fail_if_no_progress casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
 
