@@ -30,6 +30,8 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
+set_option linter.uppercaseLean3 false
+
 noncomputable section
 
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter
@@ -248,7 +250,7 @@ theorem inner_indicatorConstLp_eq_set_integral_inner (f : Lp E 2 μ) (hs : Measu
     suffices h_ae_eq : ∀ᵐ x ∂μ, x ∉ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = 0
     · simp_rw [← Set.mem_compl_iff] at h_ae_eq
       suffices h_int_zero :
-        (∫ x in sᶜ, inner (indicatorConstLp 2 hs hμs c x) (f x) ∂μ) = ∫ x in sᶜ, (0 : 𝕜) ∂μ
+        (∫ x in sᶜ, inner (indicatorConstLp 2 hs hμs c x) (f x) ∂μ) = ∫ _ in sᶜ, (0 : 𝕜) ∂μ
       · rw [h_int_zero]
         simp
       exact set_integral_congr_ae hs.compl h_ae_eq
@@ -316,8 +318,9 @@ theorem ContinuousMap.inner_toLp (f g : C(α, 𝕜)) :
     ⟪ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 f, ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
       ∫ x, conj (f x) * g x ∂μ := by
   apply integral_congr_ae
-  have hf_ae := f.coeFn_toLp (𝕜 := 𝕜) μ
-  have hg_ae := g.coeFn_toLp μ
+  -- Porting note: added explicitly passed arguments
+  have hf_ae := f.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
+  have hg_ae := g.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
   filter_upwards [hf_ae, hg_ae] with _ hf hg
   rw [hf, hg]
   simp
