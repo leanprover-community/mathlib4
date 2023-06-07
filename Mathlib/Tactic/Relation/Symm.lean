@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Mario Carneiro
 -/
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Expr.Basic
 import Lean.Elab.Tactic.Location
 
 /-!
@@ -28,15 +29,16 @@ initialize symmExt :
 initialize registerBuiltinAttribute {
   name := `symm
   descr := "symmetric relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind ↦ MetaM.run' <| withReducible do
     let declTy := (← getConstInfo decl).type
-    let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
-    let fail := throwError
-      "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy}"
-    let some _ := xs.back? | fail
-    let targetTy ← reduce targetTy
-    let .app (.app rel _) _ := targetTy | fail
-    let key ← withReducible <| DiscrTree.mkPath rel
+    let (hs, _, targetTy) ← forallMetaTelescope declTy
+    let failMsg := "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x"
+    let some h := hs.back? | throwError "{failMsg}, could not find hypothesis x ∼ y"
+    let yx ← targetTy.getNumExplicitArgs 2
+    let xy ← (← inferType h).getNumExplicitArgs 2
+    unless ← withNewMCtxDepth <| isDefEq yx[0]! xy[1]! <&&> isDefEq yx[1]! xy[0]! do
+      throwError "{failMsg}, but got {xy[0]!} ∼ {xy[1]!} → {yx[0]!} ∼ {yx[1]!}"
+    let key ← DiscrTree.mkPath (← whnfR targetTy)
     symmExt.add (decl, key) kind
 }
 
