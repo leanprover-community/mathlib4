@@ -97,7 +97,8 @@ def toContinuousMap (f : P →A[R] Q) : C(P, Q) :=
   ⟨f, f.cont⟩
 #align continuous_affine_map.to_continuous_map ContinuousAffineMap.toContinuousMap
 
-instance : Coe (P →A[R] Q) C(P, Q) :=
+-- Porting note: changed to CoeHead due to difficulty with synthesization order
+instance : CoeHead (P →A[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
 @[simp]
