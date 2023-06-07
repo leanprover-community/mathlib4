@@ -8,9 +8,9 @@ Authors: Eric Wieser, Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Module
-import Mathbin.Algebra.Group.ConjFinite
-import Mathbin.Tactic.FinCases
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Tactic.FinCases
 
 /-!
 # Not all complementary decompositions of a module over a semiring make up a direct sum
@@ -56,8 +56,7 @@ theorem mem_withSign_neg_one {x : ℤ} : x ∈ ℤ≤0 ↔ x ≤ 0 :=
 #align counterexample.mem_with_sign_neg_one Counterexample.mem_withSign_neg_one
 
 /-- The two submodules are complements. -/
-theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 :=
-  by
+theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
   constructor
   · apply Submodule.disjoint_def.2
     intro x hx hx'
@@ -69,24 +68,21 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 :=
     exact Submodule.mem_sup_right (mem_with_sign_neg_one.mpr hn)
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
-def withSign.independent : CompleteLattice.Independent withSign :=
-  by
+def withSign.independent : CompleteLattice.Independent withSign := by
   refine'
     (CompleteLattice.independent_pair units_int.one_ne_neg_one _).mpr with_sign.is_compl.disjoint
   intro i
   fin_cases i <;> simp
 #align counterexample.with_sign.independent Counterexample.withSign.independent
 
-theorem withSign.iSup : iSup withSign = ⊤ :=
-  by
+theorem withSign.iSup : iSup withSign = ⊤ := by
   rw [← Finset.sup_univ_eq_iSup, UnitsInt.univ, Finset.sup_insert, Finset.sup_singleton]
   exact with_sign.is_compl.sup_eq_top
 #align counterexample.with_sign.supr Counterexample.withSign.iSup
 
 /-- But there is no embedding into `ℤ` from the direct sum. -/
 theorem withSign.not_injective :
-    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i => (withSign i).Subtype) :=
-  by
+    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i => (withSign i).Subtype) := by
   intro hinj
   let p1 : ℤ≥0 := ⟨1, mem_with_sign_one.2 zero_le_one⟩
   let n1 : ℤ≤0 := ⟨-1, mem_with_sign_neg_one.2 <| neg_nonpos.2 zero_le_one⟩
