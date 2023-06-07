@@ -30,6 +30,6 @@ def heartbeatsPercent : CoreM Nat := do
 
 /-- Log a message if it looks like we ran out of time. -/
 def reportOutOfHeartbeats (tac : Name) (stx : Syntax) (threshold : Nat := 90) : CoreM Unit := do
-  if (← heartbeatsPercent) ≥ 90 threshold
+  if (← heartbeatsPercent) ≥ threshold then
     logInfoAt stx (s!"`{tac}` stopped because it was running out of time.\n" ++
       "You may get better results using `set_option maxHeartbeats 0`.")
