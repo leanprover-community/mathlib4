@@ -748,3 +748,36 @@ end Length
 -- #align tactic.positivity_interval_length tactic.positivity_interval_length
 
 -- end Tactic
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
+@[positivity NonemptyInterval.length _]
+def evalNonemptyIntervalLength : PositivityExt where
+  eval {u α} _ _ e := do
+    let .app (f : Q(NonemptyInterval $α → $α)) (a : Q(NonemptyInterval $α)) ←
+      withReducible (whnf e) | throwError "not NonemptyInterval.length"
+    let _eq : $e =Q $f $a := ⟨⟩
+    let _I ← synthInstanceQ (q(OrderedAddCommGroup $α) : Q(Type u))
+    assumeInstancesCommute
+    let ⟨_f_eq⟩ ←
+      withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(NonemptyInterval.length)
+    return .nonnegative q(NonemptyInterval.length_nonneg $a)
+
+/-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
+@[positivity Interval.length _]
+def evalIntervalLength : PositivityExt where
+  eval {u α} _ _ e := do
+    let .app (f : Q(Interval $α → $α)) (a : Q(Interval $α)) ←
+      withReducible (whnf e) | throwError "not NonemptyInterval.length"
+    let _eq : $e =Q $f $a := ⟨⟩
+    let _I ← synthInstanceQ (q(OrderedAddCommGroup $α) : Q(Type u))
+    assumeInstancesCommute
+    let ⟨_f_eq⟩ ←
+      withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Interval.length)
+    return .nonnegative q(Interval.length_nonneg $a)
+
+end Mathlib.Meta.Positivity
+
+open Interval
