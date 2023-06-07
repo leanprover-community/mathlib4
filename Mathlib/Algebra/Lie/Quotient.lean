@@ -97,9 +97,10 @@ variable (N)
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural Lie algebra morphism from `L` to the linear endomorphism of the quotient `M/N`. -/
 def actionAsEndoMap : L →ₗ⁅R⁆ Module.End R (M ⧸ N) :=
-  { LinearMap.comp (Submodule.mapQLinear (N : Submodule R M) ↑N) lieSubmoduleInvariant with
-    map_lie' := fun x y =>
-      Submodule.linearMap_qext _ <| LinearMap.ext fun m => congr_arg mk <| lie_lie _ _ _ }
+  { LinearMap.comp (Submodule.mapQLinear (N : Submodule R M) (N : Submodule R M))
+      lieSubmoduleInvariant with
+    map_lie' := fun {_ _} =>
+      Submodule.linearMap_qext _ <| LinearMap.ext fun _ => congr_arg mk <| lie_lie _ _ _ }
 #align lie_submodule.quotient.action_as_endo_map LieSubmodule.Quotient.actionAsEndoMap
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there is
@@ -122,8 +123,8 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     intro x y
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
-    apply (Submodule.Quotient.eq I.to_submodule).2
-    rw [Submodule.quotientRel_r_def] at h₁ h₂ 
+    apply (Submodule.Quotient.eq I.toSubmodule).2
+    rw [Submodule.quotientRel_r_def] at h₁ h₂
     have h : ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ = ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ := by
       simp [-lie_skew, sub_eq_add_neg, add_assoc]
     rw [h]
@@ -139,7 +140,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
-    intro x' y' z'; apply Quotient.inductionOn₃' x' y' z'; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -147,7 +148,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add]
     apply congr_arg; apply add_lie
   lie_add := by
-    intro x' y' z'; apply Quotient.inductionOn₃' x' y' z'; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -155,11 +156,11 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add]
     apply congr_arg; apply lie_add
   lie_self := by
-    intro x'; apply Quotient.inductionOn' x'; intro x
+    intro x'; refine Quotient.inductionOn' x' ?_; intro x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
   leibniz_lie := by
-    intro x' y' z'; apply Quotient.inductionOn₃' x' y' z'; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -168,9 +169,9 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
     apply congr_arg; apply leibniz_lie
 #align lie_submodule.quotient.lie_quotient_lie_ring LieSubmodule.Quotient.lieQuotientLieRing
 
-instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I)
-    where lie_smul := by
-    intro t x' y'; apply Quotient.inductionOn₂' x' y'; intro x y
+instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
+  lie_smul := by
+    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
     repeat'
       first
       | rw [is_quotient_mk]
@@ -226,8 +227,7 @@ variable (f : L →ₗ⁅R⁆ L')
 @[simps]
 noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
   {
-    (f : L →ₗ[R]
-          L').quotKerEquivRange with
+    (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
       rintro ⟨x⟩ ⟨y⟩
@@ -237,4 +237,3 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
 #align lie_hom.quot_ker_equiv_range LieHom.quotKerEquivRange
 
 end LieHom
-
