@@ -137,6 +137,9 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
+/--
+Ring equivalence are isomorphisms in category of semirings
+-/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
@@ -336,7 +339,9 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
-
+/--
+Ring equivalence are isomorphisms in category of commutative semirings
+-/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
@@ -500,7 +505,8 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
   ext
@@ -508,7 +514,8 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
