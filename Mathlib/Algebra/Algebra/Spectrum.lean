@@ -10,7 +10,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
---import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
@@ -19,11 +19,11 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 ## Main definitions
 
-* `resolvent_set a : set R`: the resolvent set of an element `a : A` where
+* `resolventSet a : Set R`: the resolvent set of an element `a : A` where
   `A` is an  `R`-algebra.
-* `spectrum a : set R`: the spectrum of an element `a : A` where
+* `spectrum a : Set R`: the spectrum of an element `a : A` where
   `A` is an  `R`-algebra.
-* `resolvent : R → A`: the resolvent function is `λ r, ring.inverse (↑ₐr - a)`, and hence
+* `resolvent : R → A`: the resolvent function is `λ r, Ring.inverse (↑ₐr - a)`, and hence
   when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐr - a)`.
 
 ## Main statements
@@ -54,19 +54,18 @@ variable (R : Type u) {A : Type v}
 
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap R A
 
 -- definition and basic properties
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
-is the `set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
+is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
 algebra `A`.  -/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 #align resolvent_set resolventSet
 
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *spectrum* of `a : A`
-is the `set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
+is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
 The spectrum is simply the complement of the resolvent set.  -/
@@ -77,7 +76,7 @@ def spectrum (a : A) : Set R :=
 variable {R}
 
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
-    a map `R → A` which sends `r : R` to `(algebra_map R A r - a)⁻¹` when
+    a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
     `r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
 noncomputable def resolvent (a : A) (r : R) : A :=
   Ring.inverse (↑ₐ r - a)
@@ -102,10 +101,8 @@ variable {R : Type u} {A : Type v}
 
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
--- mathport name: exprσ
 local notation "σ" => spectrum R
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap R A
 
 theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
@@ -235,13 +232,12 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
     calc
       (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
           1 - y * x + y * ((1 - x * y) * h.unit.inv) * x :=
-        by sorry --noncomm_ring
+        by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
-
     calc
       (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
           1 - y * x + y * (h.unit.inv * (1 - x * y)) * x :=
-        by sorry --noncomm_ring
+        by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
@@ -280,10 +276,8 @@ variable {R : Type u} {A : Type v}
 
 variable [CommRing R] [Ring A] [Algebra R A]
 
--- mathport name: exprσ
 local notation "σ" => spectrum R
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap R A
 
 -- it would be nice to state this for `subalgebra_class`, but we don't have such a thing yet
@@ -333,13 +327,11 @@ variable {𝕜 : Type u} {A : Type v}
 
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
--- mathport name: exprσ
 local notation "σ" => spectrum 𝕜
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap 𝕜 A
 
-/-- Without the assumption `nontrivial A`, then `0 : A` would be invertible. -/
+/-- Without the assumption `Nontrivial A`, then `0 : A` would be invertible. -/
 @[simp]
 theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
   refine' Set.Subset.antisymm _ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
@@ -363,10 +355,10 @@ theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
 
 #align spectrum.one_eq spectrum.one_eq
 
-/-- the assumption `(σ a).nonempty` is necessary and cannot be removed without
-    further conditions on the algebra `A` and scalar field `𝕜`. -/
-theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) : σ (k • a) = k • σ a :=
-  by
+/-- the assumption `(σ a).Nonempty` is necessary and cannot be removed without
+further conditions on the algebra `A` and scalar field `𝕜`. -/
+theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
+    σ (k • a) = k • σ a := by
   rcases eq_or_ne k 0 with (rfl | h)
   · simpa [ha, zero_smul_set] using (show {(0 : 𝕜)} = (0 : Set 𝕜) from rfl)
   · exact unit_smul_eq_smul a (Units.mk0 k h)
@@ -403,10 +395,8 @@ variable {F R A B : Type _} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Al
 
 variable [AlgHomClass F R A B]
 
--- mathport name: exprσ
 local notation "σ" => spectrum R
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap R A
 
 theorem mem_resolventSet_apply (φ : F) {a : A} {r : R} (h : r ∈ resolventSet R a) :
@@ -426,10 +416,8 @@ variable {F R A B : Type _} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebr
 
 variable [AlgHomClass F R A R]
 
--- mathport name: exprσ
 local notation "σ" => spectrum R
 
--- mathport name: «expr↑ₐ»
 local notation "↑ₐ" => algebraMap R A
 
 theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
