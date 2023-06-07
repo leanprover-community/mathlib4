@@ -224,3 +224,13 @@ def mkAppMWithLevels' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
     let e ← withAppBuilderTrace f xs do
       mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
     abstract env e
+
+/-- Like `mkAppMWithLevels'`, but unifies the types of the arguments, and thus may assign
+metavariables, akin to `mkAppMUnifying'`. -/
+def mkAppMWithLevelsUnifying' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM ExprWithLevels := do
+  let (env, f) ← levelMetaTelescope f
+  let fType ← inferType f
+  let e ← withAppBuilderTrace f xs do
+    mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
+  abstract env e
