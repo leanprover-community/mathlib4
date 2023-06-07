@@ -37,7 +37,8 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
     (ε_pos : 0 < ε) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict (Ι a b)))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable F' (μ.restrict (Ι a b)))
-    (h_lip : ∀ᵐ t ∂μ, t ∈ Ι a b → LipschitzOnWith (Real.nnabs <| bound t) (fun x => F x t) (ball x₀ ε))
+    (h_lip : ∀ᵐ t ∂μ, t ∈ Ι a b →
+      LipschitzOnWith (Real.nnabs <| bound t) (fun x => F x t) (ball x₀ ε))
     (bound_integrable : IntervalIntegrable bound μ a b)
     (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasFDerivAt (fun x => F x t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
