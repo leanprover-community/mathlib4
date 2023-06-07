@@ -21,27 +21,27 @@ a quadratic_form `Q`.
 ## Notation
 
 The Clifford algebra of the `R`-module `M` equipped with a quadratic_form `Q` is
-an `R`-algebra denoted `clifford_algebra Q`.
+an `R`-algebra denoted `CliffordAlgebra Q`.
 
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
-`cond : ∀ m, f m * f m = algebra_map _ _ (Q m)`, there is a (unique) lift of `f` to an `R`-algebra
-morphism from `clifford_algebra Q` to `A`, which is denoted `clifford_algebra.lift Q f cond`.
+`cond : ∀ m, f m * f m = algebraMap _ _ (Q m)`, there is a (unique) lift of `f` to an `R`-algebra
+morphism from `CliffordAlgebra Q` to `A`, which is denoted `CliffordAlgebra.lift Q f cond`.
 
-The canonical linear map `M → clifford_algebra Q` is denoted `clifford_algebra.ι Q`.
+The canonical linear map `M → CliffordAlgebra Q` is denoted `CliffordAlgebra.ι Q`.
 
 ## Theorems
 
-The main theorems proved ensure that `clifford_algebra Q` satisfies the universal property
+The main theorems proved ensure that `CliffordAlgebra Q` satisfies the universal property
 of the Clifford algebra.
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
-Additionally, when `Q = 0` an `alg_equiv` to the `exterior_algebra` is provided as `as_exterior`.
+Additionally, when `Q = 0` an `AlgEquiv` to the `exterior_algebra` is provided as `as_exterior`.
 
 ## Implementation details
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
-1. We define a relation `clifford_algebra.rel Q` on `tensor_algebra R M`.
+1. We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.
    This is the smallest relation which identifies squares of elements of `M` with `Q m`.
 2. The Clifford algebra is the quotient of the tensor algebra by this relation.
 
@@ -61,7 +61,7 @@ namespace CliffordAlgebra
 
 open TensorAlgebra
 
-/-- `rel` relates each `ι m * ι m`, for `m : M`, with `Q m`.
+/-- `Rel` relates each `ι m * ι m`, for `m : M`, with `Q m`.
 
 The Clifford algebra of `M` is defined as the quotient modulo this relation.
 -/
@@ -87,7 +87,7 @@ instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 instance instAlgebra: Algebra R (CliffordAlgebra Q) := RingQuot.instAlgebraRingQuotInstSemiring _
 #align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
-/-- The canonical linear map `M →ₗ[R] clifford_algebra Q`.
+/-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
 def ι : M →ₗ[R] CliffordAlgebra Q :=
   (RingQuot.mkAlgHom R _).toLinearMap.comp (TensorAlgebra.ι R)
@@ -112,7 +112,7 @@ variable (Q)
 
 /-- Given a linear map `f : M →ₗ[R] A` into an `R`-algebra `A`, which satisfies the condition:
 `cond : ∀ m : M, f m * f m = Q(m)`, this is the canonical lift of `f` to a morphism of `R`-algebras
-from `clifford_algebra Q` to `A`.
+from `CliffordAlgebra Q` to `A`.
 -/
 @[simps symm_apply]
 def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A)
@@ -177,9 +177,9 @@ theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q
   simp only [h]
 #align clifford_algebra.hom_ext CliffordAlgebra.hom_ext
 
--- This proof closely follows `tensor_algebra.induction`
-/-- If `C` holds for the `algebra_map` of `r : R` into `clifford_algebra Q`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `clifford_algebra Q`.
+-- This proof closely follows `TensorAlgebra.induction`
+/-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
+and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
 
 See also the stronger `clifford_algebra.left_induction` and `clifford_algebra.right_induction`.
 -/
@@ -251,9 +251,9 @@ variable [Module R M₁] [Module R M₂] [Module R M₃]
 
 variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
 
-/-- Any linear map that preserves the quadratic form lifts to an `alg_hom` between algebras.
+/-- Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.
 
-See `clifford_algebra.equiv_of_isometry` for the case when `f` is a `quadratic_form.isometry`. -/
+See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.Isometry`. -/
 def map (f : M₁ →ₗ[R] M₂) (hf : ∀ m, Q₂ (f m) = Q₁ m) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁
@@ -294,7 +294,7 @@ theorem ι_range_map_map (f : M₁ →ₗ[R] M₂) (hf : ∀ m, Q₂ (f m) = Q�
 
 variable {Q₁ Q₂ Q₃}
 
-/-- Two `clifford_algebra`s are equivalent as algebras if their quadratic forms are
+/-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
 @[simps! apply]
 def equivOfIsometry (e : Q₁.Isometry Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
@@ -375,8 +375,8 @@ namespace TensorAlgebra
 
 variable {Q}
 
-/-- The canonical image of the `tensor_algebra` in the `clifford_algebra`, which maps
-`tensor_algebra.ι R x` to `clifford_algebra.ι Q x`. -/
+/-- The canonical image of the `TensorAlgebra` in the `CliffordAlgebra`, which maps
+`TensorAlgebra.ι R x` to `CliffordAlgebra.ι Q x`. -/
 def toClifford : TensorAlgebra R M →ₐ[R] CliffordAlgebra Q :=
   TensorAlgebra.lift R (CliffordAlgebra.ι Q)
 #align tensor_algebra.to_clifford TensorAlgebra.toClifford
