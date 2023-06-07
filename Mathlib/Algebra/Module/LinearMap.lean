@@ -989,7 +989,7 @@ section Module
 
 variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
 
-instance : Module S (M →ₛₗ[σ₁₂] M₂)
+instance module : Module S (M →ₛₗ[σ₁₂] M₂)
     where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _

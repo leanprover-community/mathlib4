@@ -149,6 +149,21 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
+---- porting note: added to ease the port of `RepresentationTheory.Action`
+@[to_additive]
+instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
+
+@[to_additive (attr := simp)]
+lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
+
+---- porting note: added to ease the port of `RepresentationTheory.Action`
+@[to_additive (attr := simp)]
+lemma one_of {A : Type _} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
+
+@[to_additive (attr := simp)]
+lemma mul_of {A : Type _} [Monoid A] (a b : A) :
+    @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
+
 @[to_additive]
 instance {G : Type _} [Group G] : Group (MonCat.of G) := by assumption
 

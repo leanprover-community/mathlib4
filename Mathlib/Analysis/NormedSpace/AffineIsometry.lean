@@ -720,44 +720,44 @@ theorem vaddConst_toAffineEquiv (p : P) :
 variable (𝕜)
 
 /-- `p' ↦ p -ᵥ p'` as an affine isometric equivalence. -/
-def constVsub (p : P) : P ≃ᵃⁱ[𝕜] V :=
+def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
   { AffineEquiv.constVSub 𝕜 p with norm_map := norm_neg }
-#align affine_isometry_equiv.const_vsub AffineIsometryEquiv.constVsub
+#align affine_isometry_equiv.const_vsub AffineIsometryEquiv.constVSub
 
 variable {𝕜}
 
 @[simp]
-theorem coe_constVsub (p : P) : ⇑(constVsub 𝕜 p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (· -ᵥ ·) p :=
   rfl
-#align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVsub
+#align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVSub
 
 @[simp]
-theorem symm_constVsub (p : P) :
-    (constVsub 𝕜 p).symm =
+theorem symm_constVSub (p : P) :
+    (constVSub 𝕜 p).symm =
       (LinearIsometryEquiv.neg 𝕜).toAffineIsometryEquiv.trans (vaddConst 𝕜 p) := by
   ext
   rfl
-#align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVsub
+#align affine_isometry_equiv.symm_const_vsub AffineIsometryEquiv.symm_constVSub
 
 variable (𝕜 P)
 
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
-def constVadd (v : V) : P ≃ᵃⁱ[𝕜] P :=
+def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
-#align affine_isometry_equiv.const_vadd AffineIsometryEquiv.constVadd
+#align affine_isometry_equiv.const_vadd AffineIsometryEquiv.constVAdd
 
 variable {𝕜 P}
 
 @[simp]
-theorem coe_constVadd (v : V) : ⇑(constVadd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
   rfl
-#align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVadd
+#align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVAdd
 
 @[simp]
-theorem constVadd_zero : constVadd 𝕜 P (0 : V) = refl 𝕜 P :=
+theorem constVAdd_zero : constVAdd 𝕜 P (0 : V) = refl 𝕜 P :=
   ext <| zero_vadd V
-#align affine_isometry_equiv.const_vadd_zero AffineIsometryEquiv.constVadd_zero
+#align affine_isometry_equiv.const_vadd_zero AffineIsometryEquiv.constVAdd_zero
 
 /-- The map `g` from `V` to `V₂` corresponding to a map `f` from `P` to `P₂`, at a base point `p`,
 is an isometry if `f` is one. -/
@@ -771,7 +771,7 @@ variable (𝕜)
 
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
-  (constVsub 𝕜 x).trans (vaddConst 𝕜 x)
+  (constVSub 𝕜 x).trans (vaddConst 𝕜 x)
 #align affine_isometry_equiv.point_reflection AffineIsometryEquiv.pointReflection
 
 variable {𝕜}
@@ -883,8 +883,7 @@ This is the affine version of `Submodule.equivMapOfInjective`.
 @[simps]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
-  { Equiv.Set.image _ (E : Set P₁)
-      hφ with
+  { Equiv.Set.image _ (E : Set P₁) hφ with
     linear :=
       (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)

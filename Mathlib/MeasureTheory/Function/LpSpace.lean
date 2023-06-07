@@ -107,11 +107,9 @@ def Lp {α} (E : Type _) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : �
   neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, snorm_congr_ae (AEEqFun.coeFn_neg f), snorm_neg]
 #align measure_theory.Lp MeasureTheory.Lp
 
--- mathport name: measure_theory.L1
-scoped notation:25 α " →₁[" μ "] " E => MeasureTheory.Lp (α := α) E 1 μ
-
--- mathport name: measure_theory.L2
-scoped notation:25 α " →₂[" μ "] " E => MeasureTheory.Lp (α := α) E 2 μ
+-- Porting note: calling the first argument `α` breaks the `(α := ·)` notation
+scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
+scoped notation:25 α' " →₂[" μ "] " E => MeasureTheory.Lp (α := α') E 2 μ
 
 namespace Memℒp
 
