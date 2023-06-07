@@ -6,6 +6,15 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 import Lean
 import Mathlib.Data.Array.Defs
 
+namespace Mathlib.Tactic
+open Lean Elab.Tactic Meta Parser Term
+
+def optBinderIdent : Parser := leading_parser
+  (ppSpace >> Term.binderIdent) <|> hygieneInfo
+
+def optBinderIdent.name (id : TSyntax ``optBinderIdent) : Name :=
+  if id.raw[0].isIdent then id.raw[0].getId else HygieneInfo.mkIdent ⟨id.raw[0]⟩ `this |>.getId
+
 /--
 Uses `checkColGt` to prevent
 
@@ -20,25 +29,21 @@ have h
   exact Nat
 ```
 -/
-def Lean.Parser.Term.haveIdLhs' : Parser :=
-  optional (ppSpace >> ident >> many (ppSpace >>
-    checkColGt "expected to be indented" >>
-    letIdBinder)) >> optType
+def haveIdLhs' : Parser :=
+  optBinderIdent >> many (ppSpace >>
+    checkColGt "expected to be indented" >> letIdBinder) >> optType
 
-namespace Mathlib.Tactic
-
-open Lean Elab.Tactic Meta
-
-syntax "have" Parser.Term.haveIdLhs' : tactic
-syntax "let " Parser.Term.haveIdLhs' : tactic
-syntax "suffices" Parser.Term.haveIdLhs' : tactic
+syntax "have" haveIdLhs' : tactic
+syntax "let " haveIdLhs' : tactic
+syntax "suffices" haveIdLhs' : tactic
 
 open Elab Term in
-def haveLetCore (goal : MVarId) (name : Option Syntax) (bis : Array Syntax)
-  (t : Option Syntax) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
+def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
+  (bis : Array (TSyntax ``letIdBinder))
+  (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
   let declFn := if keepTerm then MVarId.define else MVarId.assert
   goal.withContext do
-    let n := if let some n := name then n.getId else `this
+    let n := optBinderIdent.name name
     let elabBinders k := if bis.isEmpty then k #[] else elabBinders bis k
     let (goal1, t, p) ← elabBinders fun es ↦ do
       let t ← match t with
@@ -50,22 +55,21 @@ def haveLetCore (goal : MVarId) (name : Option Syntax) (bis : Array Syntax)
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, goal2) ← (← declFn goal n t p).intro1P
-    if let some stx := name then
-      goal2.withContext do
-        Term.addTermInfo' (isBinder := true) stx (mkFVar fvar)
+    goal2.withContext do
+      Term.addTermInfo' (isBinder := true) name (mkFVar fvar)
     pure (goal1, goal2)
 
 elab_rules : tactic
-| `(tactic| have $[$n:ident $bs*]? $[: $t:term]?) => do
-  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+| `(tactic| have $n:optBinderIdent $bs* $[: $t:term]?) => do
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal1, goal2]
 
 elab_rules : tactic
-| `(tactic| suffices $[$n:ident $bs*]? $[: $t:term]?) => do
-  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+| `(tactic| suffices $n:optBinderIdent $bs* $[: $t:term]?) => do
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal2, goal1]
 
 elab_rules : tactic
-| `(tactic| let $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
-  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t true
+| `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true
   replaceMainGoal [goal1, goal2]
