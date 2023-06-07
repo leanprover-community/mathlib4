@@ -194,15 +194,20 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       mul_mem' := @h_mul
       add_mem' := @h_add
       algebraMap_mem' := h_grade0 }
+  -- porting note: Added `h`. `h` is needed for `of`.
+  letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = algebraMap _ _ (Q m) } :=
-    ⟨(ι Q).codRestrict s.toSubmodule h_grade1, fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+    ⟨(ι Q).codRestrict (Subalgebra.toSubmodule s) h_grade1, fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
-    simp [of]
+    simp
+    -- porting note: `simp` can't apply this
+    erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
-  convert Subtype.prop (lift Q of a)
-  exact AlgHom.congr_fun of_id a
+  -- porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
+  rw [← AlgHom.id_apply (R := R) a, of_id]
+  exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
 
 /-- The symmetric product of vectors is a scalar -/
