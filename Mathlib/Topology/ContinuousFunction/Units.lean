@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Units
-import Mathbin.Algebra.Algebra.Spectrum
-import Mathbin.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.NormedSpace.Units
+import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Topology.ContinuousFunction.Algebra
 
 /-!
 # Units of continuous functions
@@ -33,8 +33,7 @@ and the units of the monoid of continuous maps. -/
 @[to_additive
       "Equivalence between continuous maps into the additive units of an additive monoid\nwith continuous addition and the additive units of the additive monoid of continuous maps.",
   simps]
-def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ
-    where
+def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
     { val := ⟨fun x => f x, Units.continuous_val.comp f.Continuous⟩
       inv := ⟨fun x => ↑(f x)⁻¹, Units.continuous_val.comp (continuous_inv.comp f.Continuous)⟩
@@ -59,8 +58,7 @@ section NormedRing
 variable [NormedRing R] [CompleteSpace R]
 
 theorem NormedRing.isUnit_unit_continuous {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
-    Continuous fun x => (h x).Unit :=
-  by
+    Continuous fun x => (h x).Unit := by
   refine'
     continuous_induced_rng.2
       (Continuous.prod_mk f.continuous
@@ -73,8 +71,7 @@ theorem NormedRing.isUnit_unit_continuous {f : C(X, R)} (h : ∀ x, IsUnit (f x)
 /-- Construct a continuous map into the group of units of a normed ring from a function into the
 normed ring and a proof that every element of the range is a unit. -/
 @[simps]
-noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : C(X, Rˣ)
-    where
+noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : C(X, Rˣ) where
   toFun x := (h x).Unit
   continuous_toFun := NormedRing.isUnit_unit_continuous h
 #align continuous_map.units_of_forall_is_unit ContinuousMap.unitsOfForallIsUnit
@@ -100,8 +97,7 @@ theorem isUnit_iff_forall_ne_zero (f : C(X, 𝕜)) : IsUnit f ↔ ∀ x, f x ≠
   simp_rw [f.is_unit_iff_forall_is_unit, isUnit_iff_ne_zero]
 #align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
-theorem spectrum_eq_range (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f :=
-  by
+theorem spectrum_eq_range (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
   ext
   simp only [spectrum.mem_iff, is_unit_iff_forall_ne_zero, not_forall, coe_sub, Pi.sub_apply,
     algebraMap_apply, Algebra.id.smul_eq_mul, mul_one, Classical.not_not, Set.mem_range,
