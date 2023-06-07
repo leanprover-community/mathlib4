@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Submodule
-import Mathbin.Algebra.Lie.OfAssociative
-import Mathbin.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.Lie.Submodule
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -137,8 +137,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
   rfl
 #align lie_submodule.quotient.mk_bracket LieSubmodule.Quotient.mk_bracket
 
-instance lieQuotientLieRing : LieRing (L ⧸ I)
-    where
+instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
     intro x' y' z'; apply Quotient.inductionOn₃' x' y' z'; intro x y z
     repeat'
