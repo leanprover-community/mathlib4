@@ -372,7 +372,8 @@ protected theorem apply (x : E) :
   rfl
 #align cont_diff_bump.def ContDiffBump.apply
 
-protected theorem sub (x : E) : f (c - x) = f (c + x) := by simp [f.apply, ContDiffBumpBase.symmetric]
+protected theorem sub (x : E) : f (c - x) = f (c + x) := by
+  simp [f.apply, ContDiffBumpBase.symmetric]
 #align cont_diff_bump.sub ContDiffBump.sub
 
 protected theorem neg (f : ContDiffBump (0 : E)) (x : E) : f (-x) = f x := by
@@ -532,16 +533,16 @@ theorem integral_normed : (∫ x, f.normed μ x ∂μ) = 1 := by
 #align cont_diff_bump.integral_normed ContDiffBump.integral_normed
 
 theorem support_normed_eq : Function.support (f.normed μ) = Metric.ball c f.rOut := by
-  simp_rw [ContDiffBump.normed, support_div, f.support_eq, support_const f.integral_pos.ne',
-    inter_univ]
+  unfold ContDiffBump.normed
+  rw [support_div, f.support_eq, support_const f.integral_pos.ne', inter_univ]
 #align cont_diff_bump.support_normed_eq ContDiffBump.support_normed_eq
 
 theorem tsupport_normed_eq : tsupport (f.normed μ) = Metric.closedBall c f.rOut := by
-  simp_rw [tsupport, f.support_normed_eq, closure_ball _ f.rOut_pos.ne']
+  rw [tsupport, f.support_normed_eq, closure_ball _ f.rOut_pos.ne']
 #align cont_diff_bump.tsupport_normed_eq ContDiffBump.tsupport_normed_eq
 
 theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
-  simp_rw [HasCompactSupport, f.tsupport_normed_eq, isCompact_closedBall]
+  simp only [HasCompactSupport, f.tsupport_normed_eq (μ := μ), isCompact_closedBall]
 #align cont_diff_bump.has_compact_support_normed ContDiffBump.hasCompactSupport_normed
 
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
@@ -551,7 +552,7 @@ theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : 
     abs_eq_self.mpr (φ _).rOut_pos.le] at hφ
   rw [nhds_basis_ball.smallSets.tendsto_right_iff]
   refine fun ε hε ↦ (hφ ε hε).mono fun i hi ↦ ?_
-  simp_rw [(φ i).support_normed_eq]
+  rw [(φ i).support_normed_eq]
   exact ball_subset_ball hi.le
 #align cont_diff_bump.tendsto_support_normed_small_sets ContDiffBump.tendsto_support_normed_smallSets
 
