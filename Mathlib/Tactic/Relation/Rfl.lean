@@ -5,6 +5,7 @@ Authors: Newell Jensen
 -/
 import Lean
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -28,14 +29,14 @@ initialize reflExt :
 initialize registerBuiltinAttribute {
   name := `refl
   descr := "reflexivity relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind ↦ MetaM.run' <| withReducible do
     let declTy := (← getConstInfo decl).type
-    let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+    let (_, _, targetTy) ← forallMetaTelescope declTy
     let fail := throwError
-      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
-    let .app (.app rel lhs) rhs := targetTy | fail
-    unless ← withNewMCtxDepth <| isDefEq lhs rhs do fail
-    let key ← DiscrTree.mkPath rel
+      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy} with target {targetTy}"
+    let xx ← targetTy.getNumExplicitArgs 2
+    unless ← withNewMCtxDepth <| isDefEq xx[0]! xx[1]! do fail
+    let key ← DiscrTree.mkPath (← whnfR targetTy)
     reflExt.add (decl, key) kind
 }
 
