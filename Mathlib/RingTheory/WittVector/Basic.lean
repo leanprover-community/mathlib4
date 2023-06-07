@@ -214,13 +214,13 @@ private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
     cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
 
 private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.  This could very well be due to
-  --  my poor tactic writing!
+  --  porting note: I had to add the explicit type ascription.
+  --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_zsmul (m : ℤ) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.  This could very well be due to
-  --  my poor tactic writing!
+  --  porting note: I had to add the explicit type ascription.
+  --  This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by
