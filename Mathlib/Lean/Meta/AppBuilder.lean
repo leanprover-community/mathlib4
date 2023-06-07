@@ -204,5 +204,23 @@ def mkFunWithLevels (const : Name) : MetaM (Expr × Expr × Environment) := do
   let fType ← instantiateTypeLevelParams cinfo us
   return (f, fType, ⟨paramList.toArray, us.toArray⟩)
 
+/-- Like `mkAppN (f : ExprWithLevels).expr xs`, but handles level arguments appropriately by
+instantiating them with metavariables and then abstracting any that are not assigned. -/
+def mkAppNWithLevels (f : ExprWithLevels) (xs : Array Expr) : MetaM ExprWithLevels :=
+  withNewMCtxDepth do
+    let (env, f) ← levelMetaTelescope f
+    let e ← mkAppNUnifying f xs
+    abstract env e
 
+/-- Like `mkAppM'`, but handles "free" universe levels in `f` given by `params`. This converts
+`params` in `f` and its type to level mvars `us`, constructs `f xs₁ xs₂ ... xsₙ`, then reverts any
+`us` that were not assigned to their original universe params and returns the names of those params.
 -/
+def mkAppMWithLevels' (f : ExprWithLevels) (xs : Array Expr) (reducing := true)
+    : MetaM ExprWithLevels :=
+  withNewMCtxDepth do
+    let (env, f) ← levelMetaTelescope f
+    let fType ← inferType f
+    let e ← withAppBuilderTrace f xs do
+      mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
+    abstract env e
