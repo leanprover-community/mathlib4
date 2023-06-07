@@ -22,6 +22,7 @@ does not set a new MCtx depth
 if newly-created implicit argument mvars are unassigned, instead returning them along with the
 `Expr`. Useful if we want to delay the assignment of these metavariables.
 
+This includes specialized appbuilder functionality for `ExprWithLevels`.
 
 -/
 
