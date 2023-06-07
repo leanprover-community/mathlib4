@@ -9,8 +9,8 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 
-import Mathlib.Tactic.Positivity
-import Mathlib.Data.FunLike.Basic
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Algebraic order homomorphism classes
@@ -155,17 +155,19 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
 #align le_map_div_add_map_div le_map_div_add_map_div
 -- #align le_map_sub_add_map_sub le_map_sub_add_map_sub -- Porting note: TODO: `to_additive` clashes
 
---namespace Mathlib.Meta.Positivity
+namespace Mathlib.Meta.Positivity
 
---Porting note: tactic extension commented as decided in the weekly porting meeting
--- /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
--- @[positivity _ _]
--- unsafe def positivity_map : expr → tactic strictness
---   | expr.app (quote.1 ⇑(%%f)) (quote.1 (%%ₓa)) => nonnegative <$> mk_app `` map_nonneg [f, a]
---   | _ => failed
--- #align tactic.positivity_map tactic.positivity_map
+open Lean Meta Qq Function
 
---end Mathlib.Meta.Positivity
+/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
+@[positivity FunLike.coe _ _]
+def evalMap : PositivityExt where eval {_ β} _ _ e := do
+  let .app (.app _ f) a ← whnfR e
+    | throwError "not ↑f · where f is of NonnegHomClass"
+  let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, f, a]
+  pure (.nonnegative pa)
+
+end Mathlib.Meta.Positivity
 
 /-! ### Group (semi)norms -/
 

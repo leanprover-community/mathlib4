@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -235,12 +235,12 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
 instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
-  has_limits_of_has_limits_creates_limits compHausToTop
+  hasLimits_of_hasLimits_createsLimits compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_limits CompHaus.hasLimits
 
 instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
-  has_colimits_of_reflective compHausToTop
+  hasColimits_of_reflective compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_colimits CompHaus.hasColimits
 
@@ -261,13 +261,13 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
             ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
-          simp only [Set.mem_interᵢ, Set.mem_setOf_eq]
+          simp only [Set.mem_iInter, Set.mem_setOf_eq]
         rw [this]
-        apply isClosed_interᵢ
+        apply isClosed_iInter
         intro i
-        apply isClosed_interᵢ
+        apply isClosed_iInter
         intro j
-        apply isClosed_interᵢ
+        apply isClosed_iInter
         intro f
         apply isClosed_eq
         · exact (ContinuousMap.continuous (F.map f)).comp (continuous_apply i)

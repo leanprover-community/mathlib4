@@ -83,7 +83,6 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
-set_option maxHeartbeats 800000 in
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
@@ -138,7 +137,6 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
-set_option maxHeartbeats 800000 in
 @[simp]
 theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
     (X : Sheaf J D) :

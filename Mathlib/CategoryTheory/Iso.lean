@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Isomorphisms
@@ -72,6 +72,10 @@ attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
 #align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
 
+-- Pretty printer support for additional arguments when in a concrete category
+pp_extended_field_notation Iso.hom
+pp_extended_field_notation Iso.inv
+
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
@@ -99,6 +103,8 @@ def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
 #align category_theory.iso.symm CategoryTheory.Iso.symm
+
+pp_extended_field_notation Iso.symm
 
 @[simp]
 theorem symm_hom (α : X ≅ Y) : α.symm.hom = α.inv :=
@@ -589,6 +595,8 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
 #align category_theory.functor.map_iso CategoryTheory.Functor.mapIso
 #align category_theory.functor.map_iso_inv CategoryTheory.Functor.mapIso_inv
 #align category_theory.functor.map_iso_hom CategoryTheory.Functor.mapIso_hom
+
+pp_extended_field_notation Functor.mapIso
 
 @[simp]
 theorem mapIso_symm (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.mapIso i.symm = (F.mapIso i).symm :=

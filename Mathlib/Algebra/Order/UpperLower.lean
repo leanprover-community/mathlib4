@@ -66,8 +66,8 @@ theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected := 
 
 @[to_additive]
 theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) := by
-  rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-  exact isUpperSet_unionᵢ₂ fun x _ ↦ ht.smul
+  rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+  exact isUpperSet_iUnion₂ fun x _ ↦ ht.smul
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
@@ -181,8 +181,8 @@ instance commSemigroup : CommSemigroup (UpperSet α) :=
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ left_mem_Ici).antisymm' <| by
-      rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ ↦ s.upper.smul_subset
+      rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
@@ -244,8 +244,8 @@ instance commSemigroup : CommSemigroup (LowerSet α) :=
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
     (subset_mul_right _ right_mem_Iic).antisymm' <| by
-      rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ ↦ s.lower.smul_subset
+      rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+      exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
@@ -286,16 +286,16 @@ theorem lowerClosure_smul : lowerClosure (a • s) = a • lowerClosure s :=
 
 @[to_additive]
 theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
-  simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, upperClosure_unionᵢ, upperClosure_smul,
-    UpperSet.coe_infᵢ₂]
+  simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, upperClosure_iUnion, upperClosure_smul,
+    UpperSet.coe_iInf₂]
   rfl
 #align mul_upper_closure mul_upperClosure
 #align add_upper_closure add_upperClosure
 
 @[to_additive]
 theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
-  simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, lowerClosure_unionᵢ, lowerClosure_smul,
-    LowerSet.coe_supᵢ₂]
+  simp_rw [← smul_eq_mul, ← Set.iUnion_smul_set, lowerClosure_iUnion, lowerClosure_smul,
+    LowerSet.coe_iSup₂]
   rfl
 #align mul_lower_closure mul_lowerClosure
 #align add_lower_closure add_lowerClosure

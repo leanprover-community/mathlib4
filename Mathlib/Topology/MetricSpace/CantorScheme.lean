@@ -84,7 +84,7 @@ variable {A}
 its image under this map is in each set along the corresponding branch. -/
 theorem map_mem (x : (inducedMap A).1) (n : ℕ) : (inducedMap A).2 x ∈ A (res x n) := by
   have := x.property.some_mem
-  rw [mem_interᵢ] at this
+  rw [mem_iInter] at this
   exact this n
 #align cantor_scheme.map_mem CantorScheme.map_mem
 
@@ -188,7 +188,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     apply hn <;> apply umem <;> assumption
   cases' cauchySeq_tendsto_of_complete this with y hy
   use y
-  rw [mem_interᵢ]
+  rw [mem_iInter]
   intro n
   apply hanti _ (x n)
   apply mem_closure_of_tendsto hy

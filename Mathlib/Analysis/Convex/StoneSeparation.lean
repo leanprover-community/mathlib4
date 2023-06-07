@@ -90,9 +90,9 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     zorn_subset_nonempty S
       (fun c hcS hc ⟨_, _⟩ =>
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_unionₛ  fun s hs => (hcS hs).1,
-            disjoint_unionₛ_left.2 fun c hc => (hcS hc).2⟩,
-          fun s => subset_unionₛ_of_mem⟩)
+          ⟨hc.directedOn.convex_sUnion  fun s hs => (hcS hs).1,
+            disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
+          fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
   refine'
     ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => _, hsC, hC.2.subset_compl_left⟩
@@ -110,6 +110,6 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc
     exact hc (subset_convexHull _ _ <| mem_insert _ _)
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]
-  refine' disjoint_unionᵢ₂_left.2 fun a ha => disjoint_iff_inf_le.mpr fun b hb => h a _ ⟨b, hb⟩
+  refine' disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inf_le.mpr fun b hb => h a _ ⟨b, hb⟩
   rwa [← hC.1.convexHull_eq]
 #align exists_convex_convex_compl_subset exists_convex_convex_compl_subset

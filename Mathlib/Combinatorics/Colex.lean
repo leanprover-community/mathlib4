@@ -221,11 +221,11 @@ instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
     le_total := fun A B =>
       (lt_trichotomy A B).elim3 (Or.inl ∘ Or.inl) (Or.inl ∘ Or.inr) (Or.inr ∘ Or.inl)
     -- Porting note: we must give some hints for instances
-    decidable_le := by
+    decidableLE := by
       letI : DecidableEq (Finset.Colex α) := inferInstanceAs (DecidableEq (Finset α))
       exact fun A B => inferInstanceAs (Decidable (A < B ∨ A = B))
-    decidable_lt := inferInstance
-    decidable_eq := inferInstanceAs (DecidableEq (Finset α))
+    decidableLT := inferInstance
+    decidableEq := inferInstanceAs (DecidableEq (Finset α))
     lt_iff_le_not_le := fun A B => by
       constructor
       · intro t

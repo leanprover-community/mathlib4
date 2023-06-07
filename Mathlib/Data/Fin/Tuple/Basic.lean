@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 
 ! This file was ported from Lean 3 source module data.fin.tuple.basic
-! leanprover-community/mathlib commit d97a0c9f7a7efe6d76d652c5a6b7c9c634b70e0a
+! leanprover-community/mathlib commit ef997baa41b5c428be3fb50089a7139bf4ee886b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -607,7 +607,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
     simp
 #align fin.comp_snoc Fin.comp_snoc
 
-/-- Appending a one-tuple to the right is the same as `fin.snoc`. -/
+/-- Appending a one-tuple to the right is the same as `Fin.snoc`. -/
 theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i
@@ -948,6 +948,44 @@ theorem mem_find_of_unique {p : Fin n → Prop} [DecidablePred p] (h : ∀ i j, 
 #align fin.mem_find_of_unique Fin.mem_find_of_unique
 
 end Find
+
+section ContractNth
+
+variable {α : Type _}
+
+/-- Sends `(g₀, ..., gₙ)` to `(g₀, ..., op gⱼ gⱼ₊₁, ..., gₙ)`. -/
+def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n) : α :=
+  if (k : ℕ) < j then g (Fin.castSucc k)
+  else if (k : ℕ) = j then op (g (Fin.castSucc k)) (g k.succ) else g k.succ
+#align fin.contract_nth Fin.contractNth
+
+theorem contractNth_apply_of_lt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (k : ℕ) < j) : contractNth j op g k = g (Fin.castSucc k) :=
+  if_pos h
+#align fin.contract_nth_apply_of_lt Fin.contractNth_apply_of_lt
+
+theorem contractNth_apply_of_eq (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (k : ℕ) = j) : contractNth j op g k = op (g (Fin.castSucc k)) (g k.succ) := by
+  have : ¬(k : ℕ) < j := not_lt.2 (le_of_eq h.symm)
+  rw [contractNth, if_neg this, if_pos h]
+#align fin.contract_nth_apply_of_eq Fin.contractNth_apply_of_eq
+
+theorem contractNth_apply_of_gt (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (h : (j : ℕ) < k) : contractNth j op g k = g k.succ := by
+  rw [contractNth, if_neg (not_lt_of_gt h), if_neg (Ne.symm <| ne_of_lt h)]
+#align fin.contract_nth_apply_of_gt Fin.contractNth_apply_of_gt
+
+theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n)
+    (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
+  rcases lt_trichotomy (k : ℕ) j with (h | h | h)
+  · rwa [j.succAbove_below, contractNth_apply_of_lt]
+    · rwa [Fin.lt_iff_val_lt_val]
+  · exact False.elim (hjk h.symm)
+  · rwa [j.succAbove_above, contractNth_apply_of_gt]
+    · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+#align fin.contract_nth_apply_of_ne Fin.contractNth_apply_of_ne
+
+end ContractNth
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
 `Fin.cast`. -/

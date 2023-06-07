@@ -38,7 +38,7 @@ open Function
 
 namespace ZMod
 
-instance : CharZero (ZMod 0) :=
+instance charZero : CharZero (ZMod 0) :=
   (by infer_instance : CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
@@ -355,7 +355,6 @@ theorem cast_nat_cast (h : m ∣ n) (k : ℕ) : ((k : ZMod n) : R) = k :=
   map_natCast (castHom h R) k
 #align zmod.cast_nat_cast ZMod.cast_nat_cast
 
-set_option synthInstance.etaExperiment true in
 @[simp, norm_cast]
 theorem cast_int_cast (h : m ∣ n) (k : ℤ) : ((k : ZMod n) : R) = k :=
   map_intCast (castHom h R) k
@@ -407,7 +406,6 @@ theorem cast_int_cast' (k : ℤ) : ((k : ZMod n) : R) = k :=
 
 variable (R)
 
-set_option synthInstance.etaExperiment true in
 theorem castHom_injective : Function.Injective (ZMod.castHom (dvd_refl n) R) := by
   rw [injective_iff_map_eq_zero]
   intro x
@@ -427,7 +425,6 @@ theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
   apply ZMod.castHom_injective
 #align zmod.cast_hom_bijective ZMod.castHom_bijective
 
-set_option synthInstance.etaExperiment true in
 /-- The unique ring isomorphism between `ZMod n` and a ring `R`
 of characteristic `n` and cardinality `n`. -/
 noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* R :=
@@ -1162,7 +1159,6 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
     apply RingHom.ext_zmod _ _⟩
 #align zmod.subsingleton_ring_equiv ZMod.subsingleton_ringEquiv
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f k = k := by
   cases n

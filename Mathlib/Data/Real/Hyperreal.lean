@@ -297,9 +297,9 @@ theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
   dif_neg <| fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 #align hyperreal.st_infinite Hyperreal.Infinite.st_eq
 
-theorem isSt_supₛ {x : ℝ*} (hni : ¬Infinite x) : IsSt x (supₛ { y : ℝ | (y : ℝ*) < x }) :=
+theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) :=
   let S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
-  let R : ℝ := supₛ S
+  let R : ℝ := sSup S
   let ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
   let ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
   have HR₁ : S.Nonempty :=
@@ -310,29 +310,29 @@ theorem isSt_supₛ {x : ℝ*} (hni : ¬Infinite x) : IsSt x (supₛ { y : ℝ |
   ⟨lt_of_not_le fun c =>
       have hc : ∀ y ∈ S, y ≤ R - δ := fun _y hy =>
         coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
-      not_lt_of_le (csupₛ_le HR₁ hc) <| sub_lt_self R hδ,
+      not_lt_of_le (csSup_le HR₁ hc) <| sub_lt_self R hδ,
     lt_of_not_le fun c =>
       have hc : ↑(R + δ / 2) < x :=
         lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
-      not_lt_of_le (le_csupₛ HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
-#align hyperreal.is_st_Sup Hyperreal.isSt_supₛ
+      not_lt_of_le (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
+#align hyperreal.is_st_Sup Hyperreal.isSt_sSup
 
 theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ, IsSt x r :=
-  ⟨supₛ { y : ℝ | (y : ℝ*) < x }, isSt_supₛ hni⟩
+  ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩
 #align hyperreal.exists_st_of_not_infinite Hyperreal.exists_st_of_not_infinite
 
-theorem st_eq_supₛ {x : ℝ*} : st x = supₛ { y : ℝ | (y : ℝ*) < x } := by
+theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
   rcases _root_.em (Infinite x) with (hx|hx)
   · rw [hx.st_eq]
     cases hx with
     | inl hx =>
-      convert Real.supₛ_univ.symm
+      convert Real.sSup_univ.symm
       exact Set.eq_univ_of_forall hx
     | inr hx =>
-      convert Real.supₛ_empty.symm
+      convert Real.sSup_empty.symm
       exact Set.eq_empty_of_forall_not_mem fun y hy ↦ hy.out.not_lt (hx _)
-  · exact (isSt_supₛ hx).st_eq
-#align hyperreal.st_eq_Sup Hyperreal.st_eq_supₛ
+  · exact (isSt_sSup hx).st_eq
+#align hyperreal.st_eq_Sup Hyperreal.st_eq_sSup
 
 theorem exists_st_iff_not_infinite {x : ℝ*} : (∃ r : ℝ, IsSt x r) ↔ ¬Infinite x :=
   ⟨not_infinite_of_exists_st, exists_st_of_not_infinite⟩
@@ -351,7 +351,7 @@ theorem isSt_st_of_exists_st {x : ℝ*} (hx : ∃ r : ℝ, IsSt x r) : IsSt x (s
 #align hyperreal.is_st_st_of_exists_st Hyperreal.isSt_st_of_exists_st
 
 theorem isSt_st' {x : ℝ*} (hx : ¬Infinite x) : IsSt x (st x) :=
-  (isSt_supₛ hx).isSt_st
+  (isSt_sSup hx).isSt_st
 #align hyperreal.is_st_st' Hyperreal.isSt_st'
 
 theorem isSt_st {x : ℝ*} (hx : st x ≠ 0) : IsSt x (st x) :=

@@ -101,16 +101,7 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
-/--
-A structure that holds the cached discrimination tree,
-and possibly a pointer to a memory region, if we unpickled the tree from disk.
--/
-structure CachedData where
-  pointer? : Option CompactedRegion
-  cache : DiscrTreeCache (Name × DeclMod)
-deriving Nonempty
-
-initialize cachedData : CachedData ← unsafe do
+initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × DeclMod) true) path
@@ -133,7 +124,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
-Try applying the given lemma (with symmetry modifer) to the goal,
+Try applying the given lemma (with symmetry modifier) to the goal,
 then try to close subsequent goals using `solveByElim`.
 If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
 otherwise the full list of subgoals.
@@ -242,12 +233,6 @@ def librarySearch (goal : MVarId) (required : List Expr)
       setMCtx ctx
       return none)
 
-/-- Log a message if it looks like we ran out of time. -/
-def reportOutOfHeartbeats (stx : Syntax) : MetaM Unit := do
-  if (← heartbeatsPercent) ≥ 90 then
-    logInfoAt stx ("`library_search` stopped because it was running out of time.\n" ++
-      "You may get better results using `set_option maxHeartbeats 0`.")
-
 open Lean.Parser.Tactic
 
 -- TODO: implement the additional options for `library_search` from Lean 3,
@@ -262,16 +247,16 @@ syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?) => do
+elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required],*]?) => do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
     let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal required then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addRefineSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
       if suggestions.isEmpty then logError "library_search didn't find any relevant lemmas"
       admitGoal goal
     else
@@ -283,7 +268,7 @@ elab tk:"library_search%" : term <= expectedType => do
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
     if let some suggestions ← librarySearch introdGoal [] then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal).headBeta
@@ -301,7 +286,8 @@ If `hp` is omitted, then the placeholder `this` is used.
 
 The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
 This may be particularly useful to speed up proofs. -/
-syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
+syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
+  (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
@@ -313,7 +299,7 @@ elab_rules : tactic |
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
     if let some _ ← librarySearch goal [] then
-      reportOutOfHeartbeats tk
+      reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
@@ -323,9 +309,9 @@ elab_rules : tactic |
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
-@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
 @[inherit_doc observe]
-macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)

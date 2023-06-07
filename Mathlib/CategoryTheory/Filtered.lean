@@ -42,7 +42,7 @@ of finsets of morphisms.
 
 Furthermore, we give special support for two diagram categories: The `bowtie` and the `tulip`.
 This is because these shapes show up in the proofs that forgetful functors of algebraic categories
-(e.g. `Mon`, `CommRing`, ...) preserve filtered colimits.
+(e.g. `MonCat`, `CommRingCat`, ...) preserve filtered colimits.
 
 All of the above API, except for the `bowtie` and the `tulip`, is also provided for cofiltered
 categories.
@@ -286,8 +286,8 @@ theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.bunionᵢ   fun X : J =>
-      Finset.univ.bunionᵢ fun Y : J =>
+    Finset.univ.biUnion   fun X : J =>
+      Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
   refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
@@ -295,7 +295,7 @@ theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
   dsimp
   simp only [Category.comp_id]
   apply w
-  simp only [Finset.mem_bunionᵢ, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
+  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
     true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_filtered.cocone_nonempty CategoryTheory.IsFiltered.cocone_nonempty
@@ -552,14 +552,14 @@ noncomputable def min (j j' : C) : C :=
   (IsCofilteredOrEmpty.cone_objs j j').choose
 #align category_theory.is_cofiltered.min CategoryTheory.IsCofiltered.min
 
-/-- `min_to_left j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
+/-- `minToLeft j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToLeft (j j' : C) : min j j' ⟶ j :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose
 #align category_theory.is_cofiltered.min_to_left CategoryTheory.IsCofiltered.minToLeft
 
-/-- `min_to_right j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
+/-- `minToRight j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
 whose existence is ensured by `IsCofiltered`.
 -/
 noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
@@ -700,8 +700,8 @@ theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.bunionᵢ fun X : J =>
-      Finset.univ.bunionᵢ fun Y : J =>
+    Finset.univ.biUnion fun X : J =>
+      Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
   refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
@@ -710,7 +710,7 @@ theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
   simp only [Category.id_comp]
   symm
   apply w
-  simp only [Finset.mem_bunionᵢ, Finset.mem_univ, Finset.mem_image,
+  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image,
     PSigma.mk.injEq, true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_cofiltered.cone_nonempty CategoryTheory.IsCofiltered.cone_nonempty
