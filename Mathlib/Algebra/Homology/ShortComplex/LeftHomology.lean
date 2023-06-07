@@ -516,6 +516,14 @@ instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
+lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
+    f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
+  rw [cancel_epi]
+
+lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
+    f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
+  rw [cancel_mono]
+
 end
 
 section
@@ -1011,14 +1019,10 @@ lemma LeftHomologyData.liftCycles_comp_cyclesIso_hom :
 by simp only [← cancel_mono h.i, assoc, LeftHomologyData.cyclesIso_hom_comp_i,
   liftCycles_i, LeftHomologyData.liftK_i]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma LeftHomologyData.lift_K_comp_cyclesIso_inv :
     h.liftK k hk ≫ h.cyclesIso.inv = S.liftCycles k hk := by
   rw [← h.liftCycles_comp_cyclesIso_hom, assoc, Iso.hom_inv_id, comp_id]
-
-lemma LeftHomologyData.ext_iff' (f₁ f₂ : S.leftHomology ⟶ A) :
-    f₁ = f₂ ↔ h.π ≫ h.leftHomologyIso.inv ≫ f₁ = h.π ≫ h.leftHomologyIso.inv ≫ f₂ := by
-  rw [← cancel_epi h.leftHomologyIso.inv, cancel_epi h.π]
 
 end
 

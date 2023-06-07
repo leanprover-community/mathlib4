@@ -466,6 +466,14 @@ instance [HasRightHomology S] : Mono S.rightHomologyι := by
   dsimp only [rightHomologyι]
   infer_instance
 
+lemma rightHomology_ext_iff [HasRightHomology S] (f₁ f₂ : A ⟶ S.rightHomology) :
+    f₁ = f₂ ↔ f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι := by
+  rw [cancel_mono]
+
+lemma cyclesCo_ext_iff [HasRightHomology S] (f₁ f₂ : S.cyclesCo ⟶ A) :
+    f₁ = f₂ ↔ S.pCyclesCo ≫ f₁ = S.pCyclesCo ≫ f₂ := by
+  rw [cancel_epi]
+
 variable {S}
 
 def rightHomologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
@@ -1040,10 +1048,6 @@ lemma RightHomologyData.cyclesCoIso_inv_comp_descCyclesCo :
 lemma RightHomologyData.cyclesCoIso_hom_comp_descQ :
     h.cyclesCoIso.hom ≫ h.descQ k hk = S.descCyclesCo k hk := by
   rw [← h.cyclesCoIso_inv_comp_descCyclesCo, Iso.hom_inv_id_assoc]
-
-lemma RightHomologyData.ext_iff' (f₁ f₂ : A ⟶ S.rightHomology) :
-    f₁ = f₂ ↔ f₁ ≫ h.rightHomologyIso.hom ≫ h.ι = f₂ ≫ h.rightHomologyIso.hom ≫ h.ι := by
-  rw [← cancel_mono h.rightHomologyIso.hom, ← cancel_mono h.ι, assoc, assoc]
 
 end
 
