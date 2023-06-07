@@ -384,7 +384,7 @@ set_option linter.uppercaseLean3 false in
 @[simps!]
 def coneEquivUnitIso :
     𝟭 (Limits.Cone ((diagram U).op ⋙ F)) ≅ coneEquivFunctor F U ⋙ coneEquivInverse F U :=
-  NatIso.ofComponents (coneEquivUnitIsoApp F U) (fun {_ _} f => by aesop_cat)
+  NatIso.ofComponents (coneEquivUnitIsoApp F U)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.cone_equiv_unit_iso TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivUnitIso
 

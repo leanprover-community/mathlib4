@@ -138,7 +138,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   wi := by rw [id_comp, hg]
   hi := KernelFork.IsLimit.ofId _ hg
   wπ := CokernelCofork.condition _
-  hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by aesop_cat))
+  hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _))
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
@@ -163,7 +163,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   i := c.ι
   π := 𝟙 _
   wi := KernelFork.condition _
-  hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by aesop_cat))
+  hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _))
   wπ := Fork.IsLimit.hom_ext hc (by
     dsimp
     simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf])
