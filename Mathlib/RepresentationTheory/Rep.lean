@@ -160,7 +160,7 @@ theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_obj_ρ Rep.linearization_obj_ρ
 
-/- porting note: seemed worth generalising from `r = 1`, and helps fixing
+/- Porting note: seemed worth generalising from `r = 1`, and helps fixing
 `linearizationTrivialIso`-/
 @[simp]
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
@@ -190,7 +190,7 @@ theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_μ_hom Rep.linearization_μ_hom
 
--- porting note: broken proof was
+-- Porting note: broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
@@ -259,7 +259,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {k G}
 
-/- porting note: broken proof was
+/- Porting note: broken proof was
    refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
@@ -286,7 +286,7 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
-/- porting note: broken proof of left_inv was
+/- Porting note: broken proof of left_inv was
    refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
    have :
     f.hom ((of_mul_action k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
@@ -338,7 +338,7 @@ variable [Group G] (A B C : Rep k G)
 noncomputable instance : MonoidalClosed (Rep k G) :=
   MonoidalClosed.ofEquiv (functorCategoryMonoidalEquivalence _ _)
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Explicit description of the 'internal Hom' `iHom(A, B)` of two representations `A, B`:
 this is `F⁻¹(iHom(F(A), F(B)))`, where `F` is an equivalence
 `Rep k G ≌ (SingleObj G ⥤ ModuleCat k)`. Just used to prove `Rep.ihom_obj_ρ`. -/
@@ -369,7 +369,7 @@ theorem ihom_map_hom {B C : Rep k G} (f : B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_map_hom Rep.ihom_map_hom
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Unfolds the unit in the adjunction `A ⊗ - ⊣ iHom(A, -)`; just used to prove
 `Rep.ihom_coev_app_hom`. -/
 theorem ihom_coev_app_def :
@@ -383,7 +383,7 @@ theorem ihom_coev_app_def :
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_coev_app_def Rep.ihom_coev_app_def
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Describes the unit in the adjunction `A ⊗ - ⊣ iHom(A, -)`; given another `k`-linear
 `G`-representation `B,` the `k`-linear map underlying the resulting map `B ⟶ iHom(A, A ⊗ B)` is
 given by flipping the arguments in the natural `k`-bilinear map `A →ₗ[k] B →ₗ[k] A ⊗ B`. -/
@@ -412,7 +412,7 @@ theorem monoidalClosed_curry_hom (f : A ⊗ B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed_curry_hom Rep.monoidalClosed_curry_hom
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Given a `k`-linear `G`-representation `A`, the adjunction `A ⊗ - ⊣ iHom(A, -)` defines a
 bijection `Hom(A ⊗ B, C) ≃ Hom(B, iHom(A, C))` for all `B, C`. Given `f : B ⟶ iHom(A, C)`, this
 lemma describes the `k`-linear map underlying `f`'s image under the bijection. It is given by
@@ -430,7 +430,7 @@ theorem monoidalClosed_uncurry_hom (f : B ⟶ (ihom A).obj C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed_uncurry_hom Rep.monoidalClosed_uncurry_hom
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Describes the counit in the adjunction `A ⊗ - ⊣ iHom(A, -)`; given another `k`-linear
 `G`-representation `B,` the `k`-linear map underlying the resulting morphism `A ⊗ iHom(A, B) ⟶ B`
 is given by uncurrying the map `A →ₗ[k] (A →ₗ[k] B) →ₗ[k] B` defined by flipping the arguments in
@@ -614,7 +614,7 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
-/- porting note: broken `map_smul'` proof was
+/- Porting note: broken `map_smul'` proof was
    dsimp [counitIsoAddEquiv]
    simp } -/
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
@@ -641,7 +641,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
--- porting note: needs fixing
+-- Porting note: TODO needs fixing
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
