@@ -94,3 +94,11 @@ instance : ToMessageData Environment where
     let a := env.params.zipWith env.levels fun p l => toMessageData p ++ " ↤ " ++ toMessageData l
     MessageData.ofArray a
 
+/-- Instantiate all bound level params in the body of an `ExprWithLevels` with fresh level
+metavariables. Returns the resulting expression along with an environment associating the original
+bound level params to the fresh metavariables.  -/
+def levelMetaTelescope : ExprWithLevels → MetaM (Environment × Expr)
+| ⟨expr, params⟩ => do
+  let levels ← mkFreshLevelMVarsArray params.size
+  return ({ params, levels }, expr.instantiateLevelParamsArray params levels)
+
