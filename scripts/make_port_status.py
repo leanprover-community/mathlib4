@@ -75,9 +75,6 @@ def get_mathlib4_module_commit_info(contents):
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
 data = dict()
 for path4 in Path(mathlib4_root).glob('**/*.lean'):
-    if path4.relative_to(mathlib4_root).parts[0] in \
-       ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
-        continue
     module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
         continue
