@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Thomas Murrills
 import Lean
 import Std.Tactic.OpenPrivate
 import Mathlib.Control.Basic
+import Mathlib.Tactic.Alias
 
 /-!
 
@@ -179,6 +180,10 @@ def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
   withAppBuilderTrace' f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifyingWithNewMVars
+
+/-- `mkFun constName` returns `(f, fType)` with fresh level mvars, and updates caches
+appropriately. -/
+alias mkFun ← mkFun
 
 
 -/
