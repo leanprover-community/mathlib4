@@ -8,13 +8,13 @@ Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathbin.CategoryTheory.Monoidal.OfHasFiniteProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Adjunction.Limits
-import Mathbin.CategoryTheory.Adjunction.Mates
-import Mathbin.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Cartesian closed categories
@@ -277,20 +277,17 @@ theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [
 end Pre
 
 /-- The internal hom functor given by the cartesian closed structure. -/
-def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C
-    where
+def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := exp X.unop
   map X Y f := pre f.unop
 #align category_theory.internal_hom CategoryTheory.internalHom
 
 /-- If an initial object `I` exists in a CCC, then `A ⨯ I ≅ I`. -/
 @[simps]
-def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I
-    where
+def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   Hom := Limits.prod.snd
   inv := t.to _
-  hom_inv_id' :=
-    by
+  hom_inv_id' := by
     have : (limits.prod.snd : A ⨯ I ⟶ I) = cartesian_closed.uncurry (t.to _)
     rw [← curry_eq_iff]
     apply t.hom_ext
@@ -305,12 +302,10 @@ def mulZero {I : C} (t : IsInitial I) : I ⨯ A ≅ I :=
 #align category_theory.mul_zero CategoryTheory.mulZero
 
 /-- If an initial object `0` exists in a CCC then `0^B ≅ 1` for any `B`. -/
-def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C
-    where
+def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C where
   Hom := default
   inv := CartesianClosed.curry ((mulZero t).Hom ≫ t.to _)
-  hom_inv_id' :=
-    by
+  hom_inv_id' := by
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (MulZeroClass.mul_zero t).inv]
     · apply t.hom_ext
     · infer_instance
@@ -321,8 +316,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
 def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
-    (Z ⨯ X) ⨿ Z ⨯ Y ≅ Z ⨯ X ⨿ Y
-    where
+    (Z ⨯ X) ⨿ Z ⨯ Y ≅ Z ⨯ X ⨿ Y where
   Hom := coprod.desc (Limits.prod.map (𝟙 _) coprod.inl) (Limits.prod.map (𝟙 _) coprod.inr)
   inv :=
     CartesianClosed.uncurry
@@ -345,8 +339,7 @@ i.e. any morphism to `I` is an iso.
 This actually shows a slightly stronger version: any morphism to an initial object from an
 exponentiable object is an isomorphism.
 -/
-theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f :=
-  by
+theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   haveI : mono (limits.prod.lift (𝟙 A) f ≫ (MulZeroClass.zero_mul t).Hom) := mono_comp _ _
   rw [zero_mul_hom, prod.lift_snd] at _inst 
   haveI : is_split_epi f := is_split_epi.mk' ⟨t.to _, t.hom_ext _ _⟩
@@ -404,8 +397,7 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             adjunction.left_adjoint_of_comp e.inverse _
           have :
             (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
-              prod.functor.obj X :=
-            by
+              prod.functor.obj X := by
             apply iso_whisker_right e.counit_iso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply iso_whisker_left (prod.functor.obj X) e.counit_iso
