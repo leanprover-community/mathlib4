@@ -145,7 +145,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
-      | rw [← Submodule.Quotient.mk_add]
+      | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
   lie_add := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
@@ -153,7 +153,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
-      | rw [← Submodule.Quotient.mk_add]
+      | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
   lie_self := by
     intro x'; refine Quotient.inductionOn' x' ?_; intro x
@@ -165,7 +165,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
-      | rw [← Submodule.Quotient.mk_add]
+      | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply leibniz_lie
 #align lie_submodule.quotient.lie_quotient_lie_ring LieSubmodule.Quotient.lieQuotientLieRing
 
@@ -176,7 +176,7 @@ instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
       first
       | rw [is_quotient_mk]
       | rw [← mk_bracket]
-      | rw [← Submodule.Quotient.mk_smul]
+      | rw [← Submodule.Quotient.mk_smul (R := R) (M := L)]
     apply congr_arg; apply lie_smul
 #align lie_submodule.quotient.lie_quotient_lie_algebra LieSubmodule.Quotient.lieQuotientLieAlgebra
 
@@ -185,13 +185,18 @@ instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
 def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
   { N.toSubmodule.mkQ with
     toFun := mk
-    map_lie' := fun r m => rfl }
+    map_lie' := fun {_ _} => rfl }
 #align lie_submodule.quotient.mk' LieSubmodule.Quotient.mk'
 
-@[simp]
+-- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 #align lie_submodule.quotient.mk_eq_zero LieSubmodule.Quotient.mk_eq_zero
+
+-- Porting note: added to replace `mk_eq_zero` as simp lemma.
+@[simp]
+theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
+  Submodule.Quotient.mk_eq_zero N.toSubmodule
 
 @[simp]
 theorem mk'_ker : (mk' N).ker = N := by ext; simp
@@ -226,14 +231,13 @@ variable (f : L →ₗ⁅R⁆ L')
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
 @[simps]
 noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
-  {
-    (f : L →ₗ[R] L').quotKerEquivRange with
+  { (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
       rintro ⟨x⟩ ⟨y⟩
       rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
       simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
-        LieSubmodule.Quotient.mk_bracket, coe_to_linear_map, map_lie] }
+        LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
 #align lie_hom.quot_ker_equiv_range LieHom.quotKerEquivRange
 
 end LieHom
