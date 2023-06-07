@@ -22,24 +22,24 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 In this file we construct several infinitely smooth functions with properties that an analytic
 function cannot have:
 
-* `exp_neg_inv_glue` is equal to zero for `x ≤ 0` and is strictly positive otherwise; it is given by
+* `expNegInvGlue` is equal to zero for `x ≤ 0` and is strictly positive otherwise; it is given by
   `x ↦ exp (-1/x)` for `x > 0`;
 
-* `real.smooth_transition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
-  by `exp_neg_inv_glue x / (exp_neg_inv_glue x + exp_neg_inv_glue (1 - x))`;
+* `Real.smoothTransition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
+  by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 
-* `f : cont_diff_bump c`, where `c` is a point in a real vector space, is
+* `f : ContDiffBump c`, where `c` is a point in a real vector space, is
   a bundled smooth function such that
 
-  - `f` is equal to `1` in `metric.closed_ball c f.r`;
-  - `support f = metric.ball c f.R`;
+  - `f` is equal to `1` in `Metric.closedBall c f.r`;
+  - `support f = Metric.ball c f.R`;
   - `0 ≤ f x ≤ 1` for all `x`.
 
-  The structure `cont_diff_bump` contains the data required to construct the
+  The structure `ContDiffBump` contains the data required to construct the
   function: real numbers `r`, `R`, and proofs of `0 < r < R`. The function itself is available
   through `coe_fn`.
 
-* If `f : cont_diff_bump c` and `μ` is a measure on the domain of `f`, then `f.normed μ`
+* If `f : ContDiffBump c` and `μ` is a measure on the domain of `f`, then `f.normed μ`
   is a smooth bump function with integral `1` w.r.t. `μ`.
 -/
 
@@ -52,7 +52,7 @@ open Polynomial Real Filter Set Function
 
 open scoped Polynomial
 
-/-- `exp_neg_inv_glue` is the real function given by `x ↦ exp (-1/x)` for `x > 0` and `0`
+/-- `expNegInvGlue` is the real function given by `x ↦ exp (-1/x)` for `x > 0` and `0`
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property
 is that it vanishes for `x ≤ 0`, it is positive for `x > 0`, and the junction between the two
 behaviors is flat enough to retain smoothness. The fact that this function is `C^∞` is proved in
@@ -63,19 +63,19 @@ def expNegInvGlue (x : ℝ) : ℝ :=
 
 namespace expNegInvGlue
 
-/-- The function `exp_neg_inv_glue` vanishes on `(-∞, 0]`. -/
+/-- The function `expNegInvGlue` vanishes on `(-∞, 0]`. -/
 theorem zero_of_nonpos {x : ℝ} (hx : x ≤ 0) : expNegInvGlue x = 0 := by simp [expNegInvGlue, hx]
 #align exp_neg_inv_glue.zero_of_nonpos expNegInvGlue.zero_of_nonpos
 
 @[simp] -- porting note: new lemma
 protected theorem zero : expNegInvGlue 0 = 0 := zero_of_nonpos le_rfl
 
-/-- The function `exp_neg_inv_glue` is positive on `(0, +∞)`. -/
+/-- The function `expNegInvGlue` is positive on `(0, +∞)`. -/
 theorem pos_of_pos {x : ℝ} (hx : 0 < x) : 0 < expNegInvGlue x := by
   simp [expNegInvGlue, not_le.2 hx, exp_pos]
 #align exp_neg_inv_glue.pos_of_pos expNegInvGlue.pos_of_pos
 
-/-- The function `exp_neg_inv_glue` is nonnegative. -/
+/-- The function `expNegInvGlue` is nonnegative. -/
 theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   cases le_or_gt x 0 with
   | inl h => exact ge_of_eq (zero_of_nonpos h)
@@ -155,7 +155,7 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
-/-- The function `exp_neg_inv_glue` is smooth. -/
+/-- The function `expNegInvGlue` is smooth. -/
 protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue := by
   simpa using contDiff_polynomial_eval_inv_mul 1
 #align exp_neg_inv_glue.cont_diff expNegInvGlue.contDiff
@@ -202,7 +202,7 @@ protected theorem one : smoothTransition 1 = 1 :=
   one_of_one_le le_rfl
 #align real.smooth_transition.one Real.smoothTransition.one
 
-/-- Since `real.smooth_transition` is constant on $(-∞, 0]$ and $[1, ∞)$, applying it to the
+/-- Since `Real.smoothTransition` is constant on $(-∞, 0]$ and $[1, ∞)$, applying it to the
 projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`. -/
 @[simp]
 protected theorem projIcc :
@@ -252,16 +252,16 @@ end Real
 
 variable {E X : Type _}
 
-/-- `f : cont_diff_bump c`, where `c` is a point in a normed vector space, is a
+/-- `f : ContDiffBump c`, where `c` is a point in a normed vector space, is a
 bundled smooth function such that
 
-- `f` is equal to `1` in `metric.closed_ball c f.r`;
-- `support f = metric.ball c f.R`;
+- `f` is equal to `1` in `Metric.closedBall c f.r`;
+- `support f = Metric.ball c f.R`;
 - `0 ≤ f x ≤ 1` for all `x`.
 
-The structure `cont_diff_bump` contains the data required to construct the function:
+The structure `ContDiffBump` contains the data required to construct the function:
 real numbers `rIn`, `rOut`, and proofs of `0 < rIn < rOut`. The function itself is available through
-`CoeFun` when the space is nice enough, i.e., satisfies the `has_cont_diff_bump` typeclass. -/
+`CoeFun` when the space is nice enough, i.e., satisfies the `HasContDiffBump` typeclass. -/
 structure ContDiffBump (c : E) where
   (rIn rOut : ℝ)
   rIn_pos : 0 < rIn
@@ -291,7 +291,7 @@ structure ContDiffBumpBase (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ 
 
 /-- A class registering that a real vector space admits bump functions. This will be instantiated
 first for inner product spaces, and then for finite-dimensional normed spaces.
-We use a specific class instead of `nonempty (cont_diff_bump_base E)` for performance reasons. -/
+We use a specific class instead of `Nonempty (ContDiffBumpBase E)` for performance reasons. -/
 class HasContDiffBump (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop where
   out : Nonempty (ContDiffBumpBase E)
 #align has_cont_diff_bump HasContDiffBump
@@ -358,7 +358,7 @@ instance (c : E) : Inhabited (ContDiffBump c) :=
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup X] [NormedSpace ℝ X]
   [HasContDiffBump E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞}
 
-/-- The function defined by `f : cont_diff_bump c`. Use automatic coercion to
+/-- The function defined by `f : ContDiffBump c`. Use automatic coercion to
 function instead. -/
 @[coe] def toFun {c : E} (f : ContDiffBump c) : E → ℝ :=
   (someContDiffBumpBase E).toFun (f.rOut / f.rIn) ∘ fun x ↦ (f.rIn⁻¹ • (x - c))
@@ -391,7 +391,7 @@ theorem nonneg : 0 ≤ f x :=
   (ContDiffBumpBase.mem_Icc (someContDiffBumpBase E) _ _).1
 #align cont_diff_bump.nonneg ContDiffBump.nonneg
 
-/-- A version of `cont_diff_bump.nonneg` with `x` explicit -/
+/-- A version of `ContDiffBump.nonneg` with `x` explicit -/
 theorem nonneg' (x : E) : 0 ≤ f x := f.nonneg
 #align cont_diff_bump.nonneg' ContDiffBump.nonneg'
 
@@ -431,7 +431,7 @@ theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
 #align cont_diff_bump.eventually_eq_one ContDiffBump.eventuallyEq_one
 
 -- porting note: new lemma
-/-- `cont_diff_bump` is `𝒞ⁿ` in all its arguments. -/
+/-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)
     (hr : ContDiffWithinAt ℝ n (fun x => (f x).rIn) s x)
@@ -444,7 +444,7 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
   · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 
-/-- `cont_diff_bump` is `𝒞ⁿ` in all its arguments. -/
+/-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected nonrec theorem _root_.ContDiffAt.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c x)}
     {x : X} (hc : ContDiffAt ℝ n c x) (hr : ContDiffAt ℝ n (fun x => (f x).rIn) x)
     (hR : ContDiffAt ℝ n (fun x => (f x).rOut) x) (hg : ContDiffAt ℝ n g x) :
