@@ -76,8 +76,11 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 
 namespace mapFun
 
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := fun _ _ h =>
-  ext p fun n => hf (congr_arg (fun x => coeff x n) h : _)
+-- porting note: switched the proof to tactic mode. I think that `ext` was the issue.
+theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
+  intros _ _ h
+  ext p
+  exact hf (congr_arg (fun x => coeff x p) h : _)
 #align witt_vector.map_fun.injective WittVector.mapFun.injective
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
