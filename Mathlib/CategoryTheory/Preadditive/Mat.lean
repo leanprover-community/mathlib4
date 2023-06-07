@@ -8,16 +8,16 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.BigOperators.Pi
-import Mathbin.CategoryTheory.Limits.Shapes.Biproducts
-import Mathbin.CategoryTheory.Preadditive.Basic
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.Data.Matrix.Dmatrix
-import Mathbin.Data.Matrix.Basic
-import Mathbin.CategoryTheory.Fintype
-import Mathbin.CategoryTheory.Preadditive.SingleObj
-import Mathbin.Algebra.Opposites
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Data.Matrix.Dmatrix
+import Mathlib.Data.Matrix.Basic
+import Mathlib.CategoryTheory.Fintype
+import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.Algebra.Opposites
 
 /-!
 # Matrices over a category.
@@ -148,8 +148,7 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
-instance : Preadditive (Mat_ C)
-    where
+instance : Preadditive (Mat_ C) where
   homGroup M N := by change AddCommGroup (DMatrix M.ι N.ι _); infer_instance
   add_comp M N K f f' g := by ext; simp [Finset.sum_add_distrib]
   comp_add M N K f g g' := by ext; simp [Finset.sum_add_distrib]
@@ -235,8 +234,7 @@ attribute [local simp] Mat_.id_apply eq_to_hom_map
 /-- A functor induces a functor of matrix categories.
 -/
 @[simps]
-def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D
-    where
+def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
   obj M := ⟨M.ι, fun i => F.obj (M.pt i)⟩
   map M N f i j := F.map (f i j)
   map_comp' M N K f g := by ext (i k); simp
@@ -246,8 +244,7 @@ def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D
 -/
 @[simps]
 def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
-  NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun M N f =>
-    by
+  NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun M N f => by
     ext (i j)
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -258,8 +255,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
 @[simps]
 def mapMatComp {E : Type _} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
-  NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun M N f =>
-    by
+  NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun M N f => by
     ext (i j)
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -302,8 +298,7 @@ variable {C}
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
 @[simps]
-def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.pt i)
-    where
+def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.pt i) where
   hom := biproduct.lift fun i j k => if h : j = i then eqToHom (congr_arg M.pt h) else 0
   inv := biproduct.desc fun i j k => if h : i = k then eqToHom (congr_arg M.pt h) else 0
   hom_inv_id' := by
@@ -348,8 +343,7 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     (f : M ⟶ N) :
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
-        biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) :=
-  by
+        biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
   -- This is disappointingly tedious.
   ext
   simp only [additive_obj_iso_biproduct_hom, category.assoc, biproduct.lift_π, functor.map_bicone_π,
@@ -381,8 +375,7 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
 /-- Any additive functor `C ⥤ D` to a category `D` with finite biproducts extends to
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
-def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D
-    where
+def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.pt i)
   map X Y f := biproduct.matrix fun i j => F.map (f i j)
   map_id' X := by
@@ -498,8 +491,7 @@ instance (R : Type u) : CoeSort (Mat R) (Type u) :=
 
 open scoped Classical Matrix
 
-instance (R : Type u) [Semiring R] : Category (Mat R)
-    where
+instance (R : Type u) [Semiring R] : Category (Mat R) where
   hom X Y := Matrix X Y R
   id X := 1
   comp X Y Z f g := f ⬝ g
@@ -550,8 +542,7 @@ open Opposite
 
 /-- Auxiliary definition for `category_theory.Mat.equivalence_single_obj`. -/
 @[simps]
-def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R
-    where
+def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
   obj X := FintypeCat.of X.ι
   map X Y f i j := MulOpposite.unop (f i j)
   map_id' X := by ext (i j); simp [id_def, Mat_.id_def]; split_ifs <;> rfl
@@ -577,8 +568,7 @@ def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalence_single_obj_inverse R).asEquivalence.symm
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
 
-instance : Preadditive (Mat R)
-    where
+instance : Preadditive (Mat R) where
   add_comp := by intros; ext; simp [add_mul, Finset.sum_add_distrib]
   comp_add := by intros; ext; simp [mul_add, Finset.sum_add_distrib]
 
