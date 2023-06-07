@@ -91,11 +91,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
 -- porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
 variable (f : R →+* S) (x y : WittVector p R)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /-- Auxiliary tactic for showing that `map_fun` respects the ring operations. -/
---unsafe def map_fun_tac : tactic Unit :=
---  sorry
---#align witt_vector.map_fun.map_fun_tac witt_vector.map_fun.map_fun_tac
 --  porting note: a very crude port.  It does not work for `zero` and `one`.
 macro "map_fun_tac" : tactic => `(tactic| (
   ( ext n ) <;>
@@ -168,6 +164,7 @@ open Lean Elab Tactic
 
 --  porting note: removed mathport output related to meta code.
 --  I do not know what to do with `#align`
+/-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" _x:term "," _y:term : tactic => do
   evalTactic (← `(tactic|
   ext n  <;>
