@@ -8,10 +8,10 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathbin.MeasureTheory.Measure.Haar.Quotient
-import Mathbin.MeasureTheory.Integral.IntervalIntegral
-import Mathbin.Topology.Algebra.Order.Floor
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Measure.Haar.Quotient
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Integrals of periodic functions
@@ -50,8 +50,7 @@ protected theorem AddCircle.measurable_mk' {a : ℝ} : Measurable (coe : ℝ →
 
 theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by exact MeasureTheory.MeasureSpace.volume) :
-    IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ :=
-  by
+    IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
   refine' is_add_fundamental_domain.mk' measurable_set_Ioc.null_measurable_set fun x => _
   have : bijective (cod_restrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).Injective).Bijective
@@ -61,8 +60,7 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by exact MeasureTheory.MeasureSpace.volume) :
-    IsAddFundamentalDomain (AddSubgroup.zmultiples T).opposite (Ioc t (t + T)) μ :=
-  by
+    IsAddFundamentalDomain (AddSubgroup.zmultiples T).opposite (Ioc t (t + T)) μ := by
   refine' is_add_fundamental_domain.mk' measurable_set_Ioc.null_measurable_set fun x => _
   have : bijective (cod_restrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).Injective).Bijective
@@ -83,8 +81,7 @@ noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
 #align add_circle.measure_space AddCircle.measureSpace
 
 @[simp]
-protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T :=
-  by
+protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
   dsimp [volume]
   rw [← positive_compacts.coe_top]
   simp [add_haar_measure_self, -positive_compacts.coe_top]
@@ -109,19 +106,16 @@ protected theorem measurePreserving_mk (t : ℝ) :
 #align add_circle.measure_preserving_mk AddCircle.measurePreserving_mk
 
 theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
-    volume (Metric.closedBall x ε) = ENNReal.ofReal (min T (2 * ε)) :=
-  by
+    volume (Metric.closedBall x ε) = ENNReal.ofReal (min T (2 * ε)) := by
   have hT' : |T| = T := abs_eq_self.mpr hT.out.le
   let I := Ioc (-(T / 2)) (T / 2)
-  have h₁ : ε < T / 2 → Metric.closedBall (0 : ℝ) ε ∩ I = Metric.closedBall (0 : ℝ) ε :=
-    by
+  have h₁ : ε < T / 2 → Metric.closedBall (0 : ℝ) ε ∩ I = Metric.closedBall (0 : ℝ) ε := by
     intro hε
     rw [inter_eq_left_iff_subset, Real.closedBall_eq_Icc, zero_sub, zero_add]
     rintro y ⟨hy₁, hy₂⟩; constructor <;> linarith
   have h₂ :
     coe ⁻¹' Metric.closedBall (0 : AddCircle T) ε ∩ I =
-      if ε < T / 2 then Metric.closedBall (0 : ℝ) ε else I :=
-    by
+      if ε < T / 2 then Metric.closedBall (0 : ℝ) ε else I := by
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closed_ball_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
@@ -133,8 +127,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
   · simp [hε, min_eq_left (by linarith : T ≤ 2 * ε)]
 #align add_circle.volume_closed_ball AddCircle.volume_closedBall
 
-instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) :=
-  by
+instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
   refine' ⟨⟨Real.toNNReal 2, Filter.eventually_of_forall fun ε x => _⟩⟩
   simp only [volume_closed_ball]
   erw [← ENNReal.ofReal_mul zero_le_two]
@@ -171,8 +164,7 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
 /-- The lower integral of a function over `add_circle T` is equal to the lower integral over an
 interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
 protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) :
-    (∫⁻ a in Ioc t (t + T), f a) = ∫⁻ b : AddCircle T, f b :=
-  by
+    (∫⁻ a in Ioc t (t + T), f a) = ∫⁻ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
   have := lintegral_map_equiv f (measurable_equiv_Ioc T t).symm
   swap; exact volume
@@ -196,8 +188,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace 
 /-- The integral of an almost-everywhere strongly measurable function over `add_circle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
 protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
-    (∫ a in Ioc t (t + T), f a) = ∫ b : AddCircle T, f b :=
-  by
+    (∫ a in Ioc t (t + T), f a) = ∫ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
   have := integral_map_equiv (measurable_equiv_Ioc T t).symm f
   simp only [measurable_equiv_Ioc, equiv_Ioc, QuotientAddGroup.equivIocMod, MeasurableEquiv.symm_mk,
@@ -213,8 +204,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
 /-- The integral of an almost-everywhere strongly measurable function over `add_circle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
-    (∫ a in t..t + T, f a) = ∫ b : AddCircle T, f b :=
-  by
+    (∫ a in t..t + T, f a) = ∫ b : AddCircle T, f b := by
   rw [integral_of_le, AddCircle.integral_preimage T t f]
   linarith [hT.out]
 #align add_circle.interval_integral_preimage AddCircle.intervalIntegral_preimage
@@ -281,8 +271,7 @@ variable {f : ℝ → E} {T : ℝ}
 
 /-- An auxiliary lemma for a more general `function.periodic.interval_integral_add_eq`. -/
 theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : ℝ) :
-    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x :=
-  by
+    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x := by
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : vadd_invariant_measure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s hs => measure_preimage_add _ _ _⟩
@@ -294,8 +283,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
 /-- If `f` is a periodic function with period `T`, then its integral over `[t, t + T]` does not
 depend on `t`. -/
 theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
-    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x :=
-  by
+    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x := by
   rcases lt_trichotomy 0 T with (hT | rfl | hT)
   · exact hf.interval_integral_add_eq_of_pos hT t s
   · simp
@@ -316,15 +304,13 @@ theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
 integral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. -/
 theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
-    (∫ x in t..t + n • T, f x) = n • ∫ x in t..t + T, f x :=
-  by
+    (∫ x in t..t + n • T, f x) = n • ∫ x in t..t + T, f x := by
   -- Reduce to the case `b = 0`
   suffices (∫ x in 0 ..n • T, f x) = n • ∫ x in 0 ..T, f x by
     simp only [hf.interval_integral_add_eq t 0, (hf.zsmul n).intervalIntegral_add_eq t 0, zero_add,
       this]
   -- First prove it for natural numbers
-  have : ∀ m : ℕ, (∫ x in 0 ..m • T, f x) = m • ∫ x in 0 ..T, f x :=
-    by
+  have : ∀ m : ℕ, (∫ x in 0 ..m • T, f x) = m • ∫ x in 0 ..T, f x := by
     intros
     induction' m with m ih
     · simp
@@ -354,8 +340,7 @@ include hg h_int
 `Y`. -/
 theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
     (sInf ((fun t => ∫ x in 0 ..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in 0 ..T, g x) ≤
-      ∫ x in 0 ..t, g x :=
-  by
+      ∫ x in 0 ..t, g x := by
   let ε := Int.fract (t / T) * T
   conv_rhs =>
     rw [← Int.fract_div_mul_self_add_zsmul_eq T t (by linarith), ←
@@ -372,8 +357,7 @@ theorem sInf_add_zsmul_le_integral_of_pos (hT : 0 < T) (t : ℝ) :
 `Y`. -/
 theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
     (∫ x in 0 ..t, g x) ≤
-      sSup ((fun t => ∫ x in 0 ..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in 0 ..T, g x :=
-  by
+      sSup ((fun t => ∫ x in 0 ..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in 0 ..T, g x := by
   let ε := Int.fract (t / T) * T
   conv_lhs =>
     rw [← Int.fract_div_mul_self_add_zsmul_eq T t (by linarith), ←
@@ -388,8 +372,7 @@ theorem integral_le_sSup_add_zsmul_of_pos (hT : 0 < T) (t : ℝ) :
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in 0 ..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in 0 ..t, g x) atTop atTop :=
-  by
+    Tendsto (fun t => ∫ x in 0 ..t, g x) atTop atTop := by
   apply tendsto_at_top_mono (hg.Inf_add_zsmul_le_integral_of_pos h_int hT)
   apply at_top.tendsto_at_top_add_const_left (Inf <| (fun t => ∫ x in 0 ..t, g x) '' Icc 0 T)
   apply tendsto.at_top_zsmul_const h₀
@@ -399,8 +382,7 @@ theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in 0 ..T, g x) (
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in 0 ..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in 0 ..t, g x) atBot atBot :=
-  by
+    Tendsto (fun t => ∫ x in 0 ..t, g x) atBot atBot := by
   apply tendsto_at_bot_mono (hg.integral_le_Sup_add_zsmul_of_pos h_int hT)
   apply at_bot.tendsto_at_bot_add_const_left (Sup <| (fun t => ∫ x in 0 ..t, g x) '' Icc 0 T)
   apply tendsto.at_bot_zsmul_const h₀
