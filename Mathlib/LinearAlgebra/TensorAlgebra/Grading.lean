@@ -56,16 +56,15 @@ instance gradedAlgebra :
     cases' x with x hx
     dsimp only at hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    induction hx using Submodule.pow_induction_on_left'
-    #exit
-    refine
-      Submodule.pow_induction_on_left' (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
-        (fun r => ?_) (fun x y i hx hy ihx ihy => ?_) (fun m hm i x hx ih => ?_) hx
-    stop
-    · rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-    · rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
-    · obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, graded_algebra.ι_apply R M, DirectSum.of_mul_of]
+    -- porting note: use new `induction using` support that failed in Lean 3
+    induction hx using Submodule.pow_induction_on_left' with
+    | hr r =>
+      rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
+    | hadd x y i hx hy ihx ihy =>
+      rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
+    | hmul m hm i x hx ih =>
+      obtain ⟨_, rfl⟩ := hm
+      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
 #align tensor_algebra.graded_algebra TensorAlgebra.gradedAlgebra
 
