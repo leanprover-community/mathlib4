@@ -123,38 +123,31 @@ theorem one : mapFun f (1 : 𝕎 R) = 1 := by
 #align witt_vector.map_fun.one WittVector.mapFun.one
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by
-  map_fun_tac
+theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.add WittVector.mapFun.add
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by
-  map_fun_tac
+theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.sub WittVector.mapFun.sub
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by
-  map_fun_tac
+theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
 #align witt_vector.map_fun.mul WittVector.mapFun.mul
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem neg : mapFun f (-x) = -mapFun f x := by
-  map_fun_tac
+theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.neg WittVector.mapFun.neg
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by
-  map_fun_tac
+theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by
-  map_fun_tac
+theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
 #align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic witt_vector.map_fun.map_fun_tac -/
-theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by
-  map_fun_tac
+theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
 #align witt_vector.map_fun.pow WittVector.mapFun.pow
 
 theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
