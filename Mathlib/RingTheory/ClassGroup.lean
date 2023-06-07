@@ -169,7 +169,6 @@ we can choose a fraction field `K` and show it holds for the equivalence class o
 theorem ClassGroup.induction {P : ClassGroup R → Prop}
     (h : ∀ I : (FractionalIdeal R⁰ K)ˣ, P (ClassGroup.mk I)) (x : ClassGroup R) : P x :=
   QuotientGroup.induction_on x fun I => by
--- Porting note: TODO
     have : I = (Units.mapEquiv (canonicalEquiv R⁰ K (FractionRing R)).toMulEquiv)
       (Units.mapEquiv (canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv I) := by
       simp [← Units.eq_iff]
@@ -177,12 +176,12 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
     exact h _
 #align class_group.induction ClassGroup.induction
 
--- Porting note: TODO
+-- qting note: This proof needs a lot of heartbeats to complete even with some help
 set_option maxHeartbeats 600000 in
 /-- The definition of the class group does not depend on the choice of field of fractions. -/
 noncomputable def ClassGroup.equiv :
     ClassGroup R ≃* (FractionalIdeal R⁰ K)ˣ ⧸ (toPrincipalIdeal R K).range := by
-  have : Subgroup.map
+  haveI : Subgroup.map
     (Units.mapEquiv (canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv).toMonoidHom
     (toPrincipalIdeal R (FractionRing R)).range = (toPrincipalIdeal R K).range := by
     ext I
@@ -207,15 +206,14 @@ noncomputable def ClassGroup.equiv :
     (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 #align class_group.equiv ClassGroup.equiv
 
--- Porting note: TODO
+-- Porting note: This proof needs a lot of heartbeats to complete
 set_option maxHeartbeats 600000 in
 @[simp]
 theorem ClassGroup.equiv_mk (K' : Type _) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.equiv K' (ClassGroup.mk I) =
       QuotientGroup.mk' _ (Units.mapEquiv (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) I) := by
-  rw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply]
-  rw [QuotientGroup.congr_mk']
+  rw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
   congr
   rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
@@ -317,7 +315,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 #align class_group.mk0_eq_mk0_iff ClassGroup.mk0_eq_mk0_iff
 
--- Porting note: TODO
+-- Porting note: This proof needs some extra heartbeats to complete
 set_option maxHeartbeats 300000 in
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
