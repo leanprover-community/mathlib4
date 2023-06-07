@@ -91,7 +91,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
 -- porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
 variable (f : R →+* S) (x y : WittVector p R)
 
-/-- Auxiliary tactic for showing that `map_fun` respects the ring operations. -/
+/-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
 --  porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
   ext n
