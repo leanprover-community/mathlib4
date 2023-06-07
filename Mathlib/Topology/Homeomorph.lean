@@ -673,6 +673,7 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
 variable (β)
+
 /-- A product of copies of a topological space can be split as the binary product of one copy and
   the product of all the remaining copies. -/
 @[simps!]
