@@ -9,6 +9,7 @@ Authors: Alexander Bentkamp, François Dupuis
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.Tactic.GCongr
 
 /-!
 # Convex and concave functions
@@ -235,8 +236,7 @@ theorem ConvexOn.convex_le (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x 
   ⟨hf.1 hx.1 hy.1 ha hb hab,
     calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha hb hab
-      _ ≤ a • r + b • r :=
-        (add_le_add (smul_le_smul_of_nonneg hx.2 ha) (smul_le_smul_of_nonneg hy.2 hb))
+      _ ≤ a • r + b • r := by gcongr; exact hx.2; exact hy.2
       _ = r := Convex.combo_self hab r
       ⟩
 #align convex_on.convex_le ConvexOn.convex_le
@@ -251,7 +251,7 @@ theorem ConvexOn.convex_epigraph (hf : ConvexOn 𝕜 s f) :
   refine' ⟨hf.1 hx hy ha hb hab, _⟩
   calc
     f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha hb hab
-    _ ≤ a • r + b • t := add_le_add (smul_le_smul_of_nonneg hr ha) (smul_le_smul_of_nonneg ht hb)
+    _ ≤ a • r + b • t := by gcongr
 #align convex_on.convex_epigraph ConvexOn.convex_epigraph
 
 theorem ConcaveOn.convex_hypograph (hf : ConcaveOn 𝕜 s f) :
@@ -387,8 +387,7 @@ theorem StrictConvexOn.convex_lt (hf : StrictConvexOn 𝕜 s f) (r : β) :
     ⟨hf.1 hx.1 hy.1 ha.le hb.le hab,
       calc
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx.1 hy.1 hxy ha hb hab
-        _ ≤ a • r + b • r :=
-          (add_le_add (smul_lt_smul_of_pos hx.2 ha).le (smul_lt_smul_of_pos hy.2 hb).le)
+        _ ≤ a • r + b • r := by gcongr; exact hx.2.le; exact hy.2.le
         _ = r := Convex.combo_self hab r
         ⟩
 #align strict_convex_on.convex_lt StrictConvexOn.convex_lt
@@ -601,12 +600,10 @@ theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexO
   refine' ⟨hf.left, fun x hx y hy a b ha hb hab => sup_le _ _⟩
   · calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.right hx hy ha hb hab
-      _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
-        add_le_add (smul_le_smul_of_nonneg le_sup_left ha) (smul_le_smul_of_nonneg le_sup_left hb)
+      _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_left
   · calc
       g (a • x + b • y) ≤ a • g x + b • g y := hg.right hx hy ha hb hab
-      _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
-        add_le_add (smul_le_smul_of_nonneg le_sup_right ha) (smul_le_smul_of_nonneg le_sup_right hb)
+      _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_right
 #align convex_on.sup ConvexOn.sup
 
 /-- The pointwise minimum of concave functions is concave. -/
@@ -621,14 +618,10 @@ theorem StrictConvexOn.sup (hf : StrictConvexOn 𝕜 s f) (hg : StrictConvexOn �
     max_lt
       (calc
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx hy hxy ha hb hab
-        _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
-          add_le_add (smul_le_smul_of_nonneg le_sup_left ha.le)
-            (smul_le_smul_of_nonneg le_sup_left hb.le))
+        _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_left)
       (calc
         g (a • x + b • y) < a • g x + b • g y := hg.2 hx hy hxy ha hb hab
-        _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) :=
-          add_le_add (smul_le_smul_of_nonneg le_sup_right ha.le)
-            (smul_le_smul_of_nonneg le_sup_right hb.le))⟩
+        _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_right)⟩
 #align strict_convex_on.sup StrictConvexOn.sup
 
 /-- The pointwise minimum of strictly concave functions is strictly concave. -/
@@ -642,9 +635,10 @@ theorem ConvexOn.le_on_segment' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s
     (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) : f (a • x + b • y) ≤ max (f x) (f y) :=
   calc
     f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha hb hab
-    _ ≤ a • max (f x) (f y) + b • max (f x) (f y) :=
-      (add_le_add (smul_le_smul_of_nonneg (le_max_left _ _) ha)
-        (smul_le_smul_of_nonneg (le_max_right _ _) hb))
+    _ ≤ a • max (f x) (f y) + b • max (f x) (f y) := by
+      gcongr
+      · apply le_max_left
+      · apply le_max_right
     _ = max (f x) (f y) := Convex.combo_self hab _
 #align convex_on.le_on_segment' ConvexOn.le_on_segment'
 
@@ -674,9 +668,10 @@ theorem StrictConvexOn.lt_on_open_segment' (hf : StrictConvexOn 𝕜 s f) {x y :
     f (a • x + b • y) < max (f x) (f y) :=
   calc
     f (a • x + b • y) < a • f x + b • f y := hf.2 hx hy hxy ha hb hab
-    _ ≤ a • max (f x) (f y) + b • max (f x) (f y) :=
-      (add_le_add (smul_le_smul_of_nonneg (le_max_left _ _) ha.le)
-        (smul_le_smul_of_nonneg (le_max_right _ _) hb.le))
+    _ ≤ a • max (f x) (f y) + b • max (f x) (f y) := by
+      gcongr
+      · apply le_max_left
+      · apply le_max_right
     _ = max (f x) (f y) := Convex.combo_self hab _
 #align strict_convex_on.lt_on_open_segment' StrictConvexOn.lt_on_open_segment'
 
