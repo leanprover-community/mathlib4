@@ -24,7 +24,7 @@ nonzero elements of an eigenspace are eigenvectors `x`. They have the property `
 there are eigenvectors for a scalar `μ`, the scalar `μ` is called an eigenvalue.
 
 There is no consensus in the literature whether `0` is an eigenvector. Our definition of
-`has_eigenvector` permits only nonzero vectors. For an eigenvector `x` that may also be `0`, we
+`HasEigenvector` permits only nonzero vectors. For an eigenvector `x` that may also be `0`, we
 write `x ∈ f.eigenspace μ`.
 
 A generalized eigenspace of a linear map `f` for a natural number `k` and a scalar `μ` is the kernel
@@ -33,11 +33,11 @@ eigenvectors `x`. If there are generalized eigenvectors for a natural number `k`
 the scalar `μ` is called a generalized eigenvalue.
 
 The fact that the eigenvalues are the roots of the minimal polynomial is proved in
-`linear_algebra.eigenspace.minpoly`.
+`LinearAlgebra.Eigenspace.Minpoly`.
 
 The existence of eigenvalues over an algebraically closed field
 (and the fact that the generalized eigenspaces then span) is deferred to
-`linear_algebra.eigenspace.is_alg_closed`.
+`LinearAlgebra.Eigenspace.IsAlgClosed`.
 
 ## References
 
@@ -87,7 +87,7 @@ def Eigenvalues (f : End R M) : Type _ :=
   { μ : R // f.HasEigenvalue μ }
 #align module.End.eigenvalues Module.End.Eigenvalues
 
--- Porting note: what is that?
+-- Porting note: this instance does not compile and does not seem to be used in this file
 -- instance (f : End R M) : Coe f.Eigenvalues R := coeSubtype
 
 theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
@@ -462,5 +462,3 @@ theorem map_generalizedEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
 end End
 
 end Module
-
-#lint
