@@ -563,10 +563,17 @@ theorem isSplittingField_iSup {ι : Type _} {t : ι → IntermediateField F E} {
 
 open Set CompleteLattice
 
-@[simp]
+/- Porting note: this was a `simp` lemma, but the LHS can be simplified, see `insert_le_iff` below
+for the corresponding declaration. -/
 theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ α ∈ K :=
   adjoin_le_iff.trans singleton_subset_iff
 #align intermediate_field.adjoin_simple_le_iff IntermediateField.adjoin_simple_le_iff
+
+/- Porting note: added because `adjoin_simple_le_iff` cannot be a `simp` lemma.-/
+@[simp]
+theorem insert_le_iff {K : IntermediateField F E} :
+    IntermediateField.Insert.insert ∅ α ⊆ ↑K ↔ α ∈ K := by
+  simp only [← adjoin_le_iff, ← le_eq_subset, adjoin_simple_le_iff]
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
 theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
