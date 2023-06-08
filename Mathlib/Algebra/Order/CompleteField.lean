@@ -88,8 +88,8 @@ namespace LinearOrderedField
 ### Rational cut map
 
 The idea is that a conditionally complete linear ordered field is fully characterized by its copy of
-the rationals. Hence we define `rat.cut_map β : α → Set β` which sends `a : α` to the "rationals in
-`β`" that are less than `a`.
+the rationals. Hence we define `LinearOrderedField.cutMap β : α → Set β` which sends `a : α` to the
+"rationals in `β`" that are less than `a`.
 -/
 
 
@@ -168,7 +168,7 @@ end CutMap
 /-!
 ### Induced map
 
-`rat.cut_map` spits out a `Set β`. To get something in `β`, we now take the supremum.
+`LinearOrderField.cutMap` spits out a `Set β`. To get something in `β`, we now take the supremum.
 -/
 
 
@@ -256,7 +256,7 @@ theorem inducedMap_add (x y : α) :
 
 variable {α β}
 
-/-- Preparatory lemma for `induced_ring_hom`. -/
+/-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ cutMap β (a * a)) :
     b ≤ inducedMap α β a * inducedMap α β a := by
   obtain ⟨q, hb, rfl⟩ := hb
@@ -270,7 +270,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
       coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
 #align linear_ordered_field.le_induced_map_mul_self_of_mem_cut_map LinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
 
-/-- Preparatory lemma for `induced_ring_hom`. -/
+/-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
     (hba : b < inducedMap α β a * inducedMap α β a) : ∃ c ∈ cutMap β (a * a), b < c := by
   obtain hb | hb := lt_or_le b 0
@@ -289,12 +289,12 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
 
 variable (α β)
 
-/-- `induced_map` as an additive homomorphism. -/
+/-- `inducedMap` as an additive homomorphism. -/
 def inducedAddHom : α →+ β := by
   refine ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
-/-- `induced_map` as an `OrderRingHom`. -/
+/-- `inducedMap` as an `OrderRingHom`. -/
 @[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
