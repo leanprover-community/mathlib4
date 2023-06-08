@@ -272,4 +272,3 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime : IsPrinci
     and_iff_right_of_imp fun hP =>
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)
 #align is_dedekind_domain.is_principal_ideal_ring_localization_over_prime IsDedekindDomain.isPrincipalIdealRing_localization_over_prime
-
