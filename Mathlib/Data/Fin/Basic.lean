@@ -1695,6 +1695,20 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     exact IH (lt_of_succ_lt hi)
 #align fin.induction Fin.induction
 
+/-- Define `C i` by induction on `i : Fin n` via induction on the underlying `Nat` value.
+    This function is a bit more flexible than `induction` above, because it deals with `i : Fin n`
+    rather than just `i : Fin (n+1)`
+-/
+@[elab_as_elim]
+def induction' {C : ∀ n, Fin n → Sort _} (h0 : ∀ {n}, C (n+1) 0)
+    (hs : ∀ {n} (i : Fin n), C (n+1) (castSucc i) → C _ i.succ) {m : Nat} :
+    ∀ i : Fin m, C m i := by
+  intro ⟨i, h⟩
+  cases m
+  case zero => contradiction
+  case succ m =>
+    exact induction (n:=m) (C := C (m+1)) h0 hs _
+
 --Porting note: This proof became a lot more complicated
 @[simp]
 theorem induction_zero {C : Fin (n + 1) → Sort _} : ∀ (h0 : C 0)
@@ -2556,5 +2570,22 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
       have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
       q(OfNat.ofNat $i)
 #align fin.reflect Fin.toExprₓ
+
+
+
+@[simp]
+theorem ofNat_n_plus_one_eq_zero : (@Fin.ofNat n n) + 1 = 0 := by
+  simp [Fin.ofNat, HAdd.hAdd, Add.add, Fin.add]
+
+@[simp]
+theorem natCast_n_plus_one_eq_zero {n : Nat} : (↑n : Fin (n + 1)) + 1 = 0 :=
+  ofNat_n_plus_one_eq_zero
+
+theorem natCast_val_i_eq_i (i : Fin (n+1)) : ↑(Fin.val i) = i := by
+  rcases i with ⟨i, isLt⟩
+  simp only [Fin.val, Nat.cast, NatCast.natCast, ofNat'', mod_eq_of_lt isLt]
+
+
+
 
 end Fin

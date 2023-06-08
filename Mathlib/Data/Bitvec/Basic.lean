@@ -38,7 +38,7 @@ theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate 
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat
 
-/-- convert `fin` to `Bitvec` -/
+/-- convert `Fin` to `Bitvec` -/
 def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
   Bitvec.ofNat _ i.val
 #align bitvec.of_fin Bitvec.ofFin
@@ -48,7 +48,7 @@ theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
   apply i.is_lt
 #align bitvec.of_fin_val Bitvec.ofFin_val
 
-/-- convert `Bitvec` to `fin` -/
+/-- convert `Bitvec` to `Fin` -/
 def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
   i.toNat
 #align bitvec.to_fin Bitvec.toFin
@@ -274,9 +274,16 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) 
 
 def width : Bitvec n → Nat := fun _ => n
 
+def get (v : Bitvec n) (i : Fin n) : Bool :=
+  v.1[i.val]
+
+@[simp]
+theorem get_succ : get (b ::ᵥ v) (Fin.succ i) = get v i := by
+  simp[get]
+
 -- Shouldn't this be inferred from the instance above? (as Bitvec is @[reducible])
 instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
-  getElem := fun v i _ => v.1[i.val]
+  getElem := fun v i _ => get v i
 
 instance (n : Nat) : Inhabited (Bitvec n) :=
   ⟨List.replicate n true, by apply List.length_replicate⟩
@@ -285,27 +292,47 @@ def Fun (width : Nat) := Fin width → Bool
 
 /-- convert `Bitvec n` to `Fin n → Bool` -/
 def ofFun {width : Nat} : Fun width → Bitvec width :=
-  match width with
-    | 0 => fun _ => ⟨List.nil, rfl⟩
-    | n + 1 => fun f => f (n + 1) ::ᵥ @ofFun n (fun i => f i)
+  fun f => match width with
+    | 0 => ⟨List.nil, rfl⟩
+    | n + 1 => f (n + 1) ::ᵥ @ofFun n (fun i => f i)
 
 /-- convert `Fin n → Bool` to `Bitvec n` -/
 def toFun {width : Nat} : Bitvec width → Fun width :=
-    match width with
-        | 0 => fun _ => Fin.elim0
-        | n + 1 => fun bv i =>
-          have instGetElem : GetElem (Bitvec (n + 1)) (Fin (n + 1)) Bool (fun _ _ => True) := inferInstance
-          bv[i]
+  fun bv i => match width with
+    | 0 => Fin.elim0 i
+    | n + 1 =>
+        have instGetElem : GetElem (Bitvec (n + 1)) (Fin (n + 1)) Bool (fun _ _ => True) := inferInstance
+        bv[i]
 
-/- TODO: fix these
+@[ext]
+theorem Fun.ext {f f' : Fun n} : (∀ i, f i = f' i) → f = f' :=
+  funext
+
+@[simp]
+theorem get_ofFun : get (ofFun f) i = f i := by
+  simp[get]
+  induction i using Fin.induction'
+  case h0 => simp[List.get]
+  case hs i ih =>
+    simp[List.get]
+    sorry
+
 theorem ofFun_toFun {width : Nat} {f : Fun width} : toFun (ofFun f) = f := by
   funext i
   cases width
-  case zero => exact Fin.elim0 i
+  case zero =>
+    exact Fin.elim0 i
   case succ n =>
     simp [toFun, ofFun]
-    sorry
+    induction i using Fin.induction
+    case h0 =>
+      rfl
+    case hs i ih =>
+      simp [GetElem.getElem]
+      congr
+      simp[Fin.castSucc, Fin.castAdd, Fin.succ, Fin.castLE, Fin.castLT]
 
+/- TODO: fix these
 theorem toFun_ofFun {width : Nat} {bv : Bitvec width} : ofFun (toFun bv) = bv := by
   cases width
   case zero => simp
