@@ -1248,14 +1248,12 @@ namespace PowerBasis
 
 open IntermediateField
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- `pb.equiv_adjoin_simple` is the equivalence between `K⟮pb.gen⟯` and `L` itself. -/
-noncomputable def equivAdjoinSimple (pb : PowerBasis K L) : K⟮⟯ ≃ₐ[K] L :=
+noncomputable def equivAdjoinSimple (pb : PowerBasis K L) : K⟮pb.gen⟯ ≃ₐ[K] L :=
   (adjoin.powerBasis pb.isIntegral_gen).equivOfMinpoly pb
-    (minpoly.eq_of_algebraMap_eq (algebraMap K⟮⟯ L).Injective
+    (minpoly.eq_of_algebraMap_eq (algebraMap K⟮pb.gen⟯ L).injective
       (adjoin.powerBasis pb.isIntegral_gen).isIntegral_gen
-      (by rw [adjoin.power_basis_gen, adjoin_simple.algebra_map_gen]))
+      (by rw [adjoin.powerBasis_gen, AdjoinSimple.algebraMap_gen]))
 #align power_basis.equiv_adjoin_simple PowerBasis.equivAdjoinSimple
 
 @[simp]
@@ -1273,13 +1271,13 @@ theorem equivAdjoinSimple_gen (pb : PowerBasis K L) :
 @[simp]
 theorem equivAdjoinSimple_symm_aeval (pb : PowerBasis K L) (f : K[X]) :
     pb.equivAdjoinSimple.symm (aeval pb.gen f) = aeval (AdjoinSimple.gen K pb.gen) f := by
-  rw [equiv_adjoin_simple, equiv_of_minpoly_symm, equiv_of_minpoly_aeval, adjoin.power_basis_gen]
+  rw [equivAdjoinSimple, equivOfMinpoly_symm, equivOfMinpoly_aeval, adjoin.powerBasis_gen]
 #align power_basis.equiv_adjoin_simple_symm_aeval PowerBasis.equivAdjoinSimple_symm_aeval
 
 @[simp]
 theorem equivAdjoinSimple_symm_gen (pb : PowerBasis K L) :
     pb.equivAdjoinSimple.symm pb.gen = AdjoinSimple.gen K pb.gen := by
-  rw [equiv_adjoin_simple, equiv_of_minpoly_symm, equiv_of_minpoly_gen, adjoin.power_basis_gen]
+  rw [equivAdjoinSimple, equivOfMinpoly_symm, equivOfMinpoly_gen, adjoin.powerBasis_gen]
 #align power_basis.equiv_adjoin_simple_symm_gen PowerBasis.equivAdjoinSimple_symm_gen
 
 end PowerBasis
