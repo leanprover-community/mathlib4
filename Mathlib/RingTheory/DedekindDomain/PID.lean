@@ -256,8 +256,8 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/
-theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime : IsPrincipalIdealRing Sₚ :=
-  by
+theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime :
+    IsPrincipalIdealRing Sₚ := by
   letI := Classical.decEq (Ideal Sₚ)
   letI := Classical.decPred fun P : Ideal Sₚ => P.IsPrime
   refine'
