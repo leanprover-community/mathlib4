@@ -567,7 +567,7 @@ theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ �
 #align intermediate_field.adjoin_simple_le_iff IntermediateField.adjoin_simple_le_iff
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
-theorem adjoin_simple_isCompactElement (_ : E) : IsCompactElement F⟮α⟯ := by
+theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
   rw [isCompactElement_iff_le_of_directed_sSup_le]
   rintro s ⟨F₀, hF₀⟩ hs hx
   simp only [adjoin_simple_le_iff] at hx ⊢
