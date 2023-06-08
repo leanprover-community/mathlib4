@@ -196,10 +196,10 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
       neg' := fun f => by
         simp [(ContinuousAffineMap.neg_apply)]
-        -- Porting note: added
-        rw [ContinuousAffineMap.neg_apply, norm_neg, neg_contLinear, norm_neg]
       add_le' := fun f g => by
         simp only [Pi.add_apply, add_contLinear, coe_add, max_le_iff]
+        -- Porting note: added
+        rw [ContinuousAffineMap.add_apply, add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
@@ -208,11 +208,15 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
         · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
           obtain ⟨q, rfl⟩ := h₂
           simp only [Function.const_apply, coe_const, norm_eq_zero] at h₁
+          -- Porting note: added
+          rw [coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
         · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
           simp only [Function.const_apply, coe_const, norm_le_zero_iff] at h₂
+          -- Porting note: added
+          rw [coe_const, Function.const_apply] at h₂
           rw [h₂]
           rfl }
 
