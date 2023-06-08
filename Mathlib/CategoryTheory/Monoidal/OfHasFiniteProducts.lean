@@ -47,9 +47,6 @@ open CategoryTheory.Limits
 
 section
 
---porting note: this no longer seems necessary, the default tactic is now aesop_cat instead of tidy.
---attribute [local tidy] tactic.case_bash
-
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C where
   tensorUnit' := ⊤_ C
