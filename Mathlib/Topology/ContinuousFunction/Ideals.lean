@@ -8,12 +8,12 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Algebra
-import Mathbin.Topology.ContinuousFunction.Compact
-import Mathbin.Topology.UrysohnsLemma
-import Mathbin.Data.IsROrC.Basic
-import Mathbin.Analysis.NormedSpace.Units
-import Mathbin.Topology.Algebra.Module.CharacterSpace
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.Units
+import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -89,8 +89,7 @@ variable (R)
 
 /-- Given a topological ring `R` and `s : set X`, construct the ideal in `C(X, R)` of functions
 which vanish on the complement of `s`. -/
-def idealOfSet (s : Set X) : Ideal C(X, R)
-    where
+def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
   add_mem' f g hf hg x hx := by simp only [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
@@ -98,8 +97,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
 theorem idealOfSet_closed [LocallyCompactSpace X] [T2Space R] (s : Set X) :
-    IsClosed (idealOfSet R s : Set C(X, R)) :=
-  by
+    IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [ideal_of_set, Submodule.coe_set_mk, Set.setOf_forall]
   exact
     isClosed_iInter fun x =>
@@ -133,8 +131,7 @@ theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
   simp_rw [set_of_ideal, Set.mem_compl_iff, Set.mem_setOf, exists_prop]; push_neg
 #align continuous_map.mem_set_of_ideal ContinuousMap.mem_setOfIdeal
 
-theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) :=
-  by
+theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) := by
   simp only [set_of_ideal, Set.setOf_forall, isOpen_compl_iff]
   exact
     isClosed_iInter fun f =>
@@ -167,8 +164,7 @@ theorem mem_idealOfSet_compl_singleton (x : X) (f : C(X, R)) :
 
 variable (X R)
 
-theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) :=
-  by
+theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
   refine' fun I s => ⟨fun h f hf => _, fun h x hx => _⟩
   · by_contra h'
     rcases not_mem_ideal_of_set.mp h' with ⟨x, hx, hfx⟩
@@ -205,8 +201,7 @@ variable [CompactSpace X] [T2Space X]
 
 @[simp]
 theorem idealOfSet_of_ideal_eq_closure (I : Ideal C(X, 𝕜)) :
-    idealOfSet 𝕜 (setOfIdeal I) = I.closure :=
-  by
+    idealOfSet 𝕜 (setOfIdeal I) = I.closure := by
   /- Since `ideal_of_set 𝕜 (set_of_ideal I)` is closed and contains `I`, it contains `I.closure`.
     For the reverse inclusion, given `f ∈ ideal_of_set 𝕜 (set_of_ideal I)` and `(ε : ℝ≥0) > 0` it
     suffices to show that `f` is within `ε` of `I`.-/
@@ -221,8 +216,7 @@ theorem idealOfSet_of_ideal_eq_closure (I : Ideal C(X, 𝕜)) :
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
-  have htI : Disjoint t (set_of_ideal Iᶜ) :=
-    by
+  have htI : Disjoint t (set_of_ideal Iᶜ) := by
     refine' set.subset_compl_iff_disjoint_left.mp fun x hx => _
     simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using
       (nnnorm_eq_zero.mpr (mem_ideal_of_set.mp hf hx)).trans_lt (half_pos hε)
@@ -231,8 +225,7 @@ theorem idealOfSet_of_ideal_eq_closure (I : Ideal C(X, 𝕜)) :
     Indeed, then `‖f - f * ↑g‖ ≤ ‖f * (1 - ↑g)‖ ≤ ⨆ ‖f * (1 - ↑g) x‖`. When `x ∉ t`, `‖f x‖ < ε / 2`
     and `‖(1 - ↑g) x‖ ≤ 1`, and when `x ∈ t`, `(1 - ↑g) x = 0`, and clearly `f * ↑g ∈ I`. -/
   suffices
-    ∃ g : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g ∈ I ∧ (∀ x, g x ≤ 1) ∧ t.eq_on g 1
-    by
+    ∃ g : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g ∈ I ∧ (∀ x, g x ≤ 1) ∧ t.eq_on g 1 by
     obtain ⟨g, hgI, hg, hgt⟩ := this
     refine' ⟨f * (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, _⟩
     rw [nndist_eq_nnnorm]
@@ -246,8 +239,7 @@ theorem idealOfSet_of_ideal_eq_closure (I : Ideal C(X, 𝕜)) :
       have :=
         calc
           ‖((1 - (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x : 𝕜)‖₊ =
-              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ :=
-            by
+              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by
             simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_coe, Pi.sub_apply,
               Pi.one_apply, Function.comp_apply, algebraMapClm_apply]
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
@@ -270,8 +262,7 @@ theorem idealOfSet_of_ideal_eq_closure (I : Ideal C(X, 𝕜)) :
     `fₓ x ≠ 0` for some `fₓ ∈ I` and so `λ y, ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
-  have : ∃ g' : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x :=
-    by
+  have : ∃ g' : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
     refine'
       @IsCompact.induction_on _ _ _ ht.is_compact
         (fun s =>
@@ -331,8 +322,7 @@ theorem idealOfSet_of_ideal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : 
 variable (𝕜)
 
 @[simp]
-theorem setOfIdeal_of_set_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s) = interior s :=
-  by
+theorem setOfIdeal_of_set_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s) = interior s := by
   refine'
     Set.Subset.antisymm
       ((set_of_ideal_open (ideal_of_set 𝕜 s)).subset_interior_iff.mpr fun x hx =>
@@ -380,8 +370,7 @@ def idealOpensGi : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X)
 variable {X}
 
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
-    (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s :=
-  by
+    (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]
   refine' (ideal_opens_gi X 𝕜).isCoatom_iff (fun I hI => _) s
   rw [← Ideal.isMaximal_def] at hI 
@@ -396,8 +385,7 @@ theorem ideal_of_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : 
 variable {𝕜}
 
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
-    ∃ x : X, setOfIdeal I = {x}ᶜ :=
-  by
+    ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (ideal_of_set 𝕜 (set_of_ideal I)).IsMaximal :=
     (ideal_of_set_of_ideal_is_closed (inferInstance : IsClosed (I : Set C(X, 𝕜)))).symm ▸ hI
   obtain ⟨x, hx⟩ := opens.is_coatom_iff.1 ((ideal_of_set_is_maximal_iff 𝕜 (opens_of_ideal I)).1 h)
@@ -405,8 +393,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
 #align continuous_map.set_of_ideal_eq_compl_singleton ContinuousMap.setOfIdeal_eq_compl_singleton
 
 theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
-    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 ({x}ᶜ) = I :=
-  by
+    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 ({x}ᶜ) = I := by
   refine'
     ⟨_, fun h =>
       let ⟨x, hx⟩ := h
@@ -439,8 +426,7 @@ variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the
 `character_space 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
-def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜))
-    where
+def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
     ⟨{  toFun := fun f => f x
         map_add' := fun f g => rfl
@@ -459,8 +445,7 @@ end ContinuousMapEval
 
 variable [CompactSpace X] [T2Space X] [IsROrC 𝕜]
 
-theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) :=
-  by
+theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
   refine' ⟨fun x y hxy => _, fun φ => _⟩
   · contrapose! hxy
     haveI := @normalOfCompactT2 X _ _ _
