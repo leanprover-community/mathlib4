@@ -1010,7 +1010,8 @@ open LinearMap
 
 namespace LinearEquiv
 
-variable (R M) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] (x : M) (h : x ≠ 0)
+variable (R M)
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] (x : M) (h : x ≠ 0)
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
 isomorphism from `R` to the span of `x` given by $r \mapsto r \cdot x$. -/
