@@ -291,11 +291,7 @@ def ofFun {width : Nat} : Fun width → Bitvec width :=
 
 /-- convert `Fin n → Bool` to `Bitvec n` -/
 def toFun {width : Nat} : Bitvec width → Fun width :=
-    match width with
-        | 0 => fun _ => Fin.elim0
-        | n + 1 => fun bv i =>
-          have instGetElem : GetElem (Bitvec (n + 1)) (Fin (n + 1)) Bool (fun _ _ => True) := inferInstance
-          bv[i]
+   fun bv i => bv[i]
 
 /- TODO: fix these
 theorem ofFun_toFun {width : Nat} {f : Fun width} : toFun (ofFun f) = f := by
