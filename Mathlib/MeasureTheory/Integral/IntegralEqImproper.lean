@@ -323,34 +323,30 @@ end AECover
 
 theorem AECover.comp_tendsto {α ι ι' : Type _} [MeasurableSpace α] {μ : Measure α} {l : Filter ι}
     {l' : Filter ι'} {φ : ι → Set α} (hφ : AECover μ l φ) {u : ι' → ι} (hu : Tendsto u l' l) :
-    AECover μ l' (φ ∘ u) :=
-  { ae_eventually_mem := hφ.ae_eventually_mem.mono fun x hx => hu.eventually hx
-    measurableSet i := hφ.Measurable (u i) }
+    AECover μ l' (φ ∘ u) where
+  ae_eventually_mem := hφ.ae_eventually_mem.mono fun _x hx => hu.eventually hx
+  measurableSet i := hφ.measurableSet (u i)
 #align measure_theory.ae_cover.comp_tendsto MeasureTheory.AECover.comp_tendsto
 
 section AECoverUnionInterCountable
 
 variable {α ι : Type _} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 
-theorem AECover.bUnion_Iic_aeCover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
-    AECover μ atTop fun n : ι => ⋃ (k) (h : k ∈ Iic n), φ k :=
-  { ae_eventually_mem :=
-      hφ.ae_eventually_mem.mono fun x h => h.mono fun i hi => mem_biUnion right_mem_Iic hi
-    measurableSet i := MeasurableSet.biUnion (to_countable _) fun n _ => hφ.Measurable n }
-#align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.bUnion_Iic_aeCover
+theorem AECover.biUnion_Iic_aeCover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
+    AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
+  hφ.superset (fun _ ↦ subset_biUnion_of_mem right_mem_Iic) fun _ ↦ .biUnion (to_countable _)
+    fun _ _ ↦ (hφ.2 _)
+#align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.biUnion_Iic_aeCover
 
 theorem AECover.bInter_Ici_aeCover [SemilatticeSup ι] [Nonempty ι] {φ : ι → Set α}
-    (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (h : k ∈ Ici n), φ k :=
-  { ae_eventually_mem :=
-      hφ.ae_eventually_mem.mono
-        (by
-          intro x h
-          rw [eventually_atTop] at *
-          rcases h with ⟨i, hi⟩
-          use i
-          intro j hj
-          exact mem_bInter fun k hk => hi k (le_trans hj hk))
-    measurableSet i := MeasurableSet.biInter (to_countable _) fun n _ => hφ.Measurable n }
+    (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
+  ae_eventually_mem := hφ.ae_eventually_mem.mono <| fun x h ↦ by
+    rw [eventually_atTop] at *
+    rcases h with ⟨i, hi⟩
+    use i
+    intro j hj
+    exact mem_biInter fun k hk => hi k (le_trans hj hk)
+  measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
 #align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.bInter_Ici_aeCover
 
 end AECoverUnionInterCountable
@@ -701,7 +697,7 @@ on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     (∫ x in Ioi a, f' x) = m - f a := by
-  apply integral_Ioi_of_has_deriv_at_of_tendsto _ (fun x hx => hderiv x (le_of_lt hx)) f'int hf
+  apply integral_Ioi_ofhasDerivAt_of_tendsto _ (fun x hx => hderiv x (le_of_lt hx)) f'int hf
   intro x hx
   exact (hderiv x hx).continuousAt.continuousWithinAt
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto' MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto'
