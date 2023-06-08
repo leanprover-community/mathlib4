@@ -8,9 +8,10 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Ring.Ulift
+import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.Data.MvPolynomial.Funext
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # The `is_poly` predicate
@@ -93,6 +94,7 @@ end
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+set_option autoImplicit false
 
 
 /- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
@@ -102,68 +104,69 @@ end
      `ghost_simps)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
 /-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
 
-namespace Tactic
-
-namespace Interactive
-
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-/-- A macro for a common simplification when rewriting with ghost component equations. -/
-unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
-  tactic.try tactic.intro1
-  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
-      (loc.ns [none])
-#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
-
-/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
-Typically, when faced with a goal like
-```lean
-∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
-```
-you can
-1. call `ghost_calc`
-2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
-3. call `ghost_simp`
-
-and this will close the goal.
-
-`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
-You must give it arguments to determine this.
-If you are proving a universally quantified goal like the above,
-call `ghost_calc _ _`.
-If the variables are introduced already, call `ghost_calc x y`.
-In the unary case, use `ghost_calc _` or `ghost_calc x`.
-
-`ghost_calc` is a light wrapper around type class inference.
-All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
-This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
-so it is easier (and prettier) to put it in a tactic script.
--/
-unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
-  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
-  let q(@Eq (WittVector _ $(R)) _ _) ← target
-  match ids with
-    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
-    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
-    | _ => fail "ghost_calc takes one or two arguments"
-  let nm ←
-    match R with
-      | expr.local_const _ nm _ _ => return nm
-      | _ => get_unused_name `R
-  iterate_exactly 2 apply_instance
-  unfreezingI (tactic.clear' tt [R])
-  introsI <| [nm, .str nm "_inst"] ++ ids'
-  skip
-#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
-
-end Interactive
-
-end Tactic
+--  porting note: todo later
+--namespace Tactic
+--
+--namespace Interactive
+--
+--/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
+--/-- A macro for a common simplification when rewriting with ghost component equations. -/
+--unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
+--  tactic.try tactic.intro1
+--  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
+--      (loc.ns [none])
+--#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
+--
+--/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
+--Typically, when faced with a goal like
+--```lean
+--∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
+--```
+--you can
+--1. call `ghost_calc`
+--2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
+--3. call `ghost_simp`
+--
+--and this will close the goal.
+--
+--`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
+--You must give it arguments to determine this.
+--If you are proving a universally quantified goal like the above,
+--call `ghost_calc _ _`.
+--If the variables are introduced already, call `ghost_calc x y`.
+--In the unary case, use `ghost_calc _` or `ghost_calc x`.
+--
+--`ghost_calc` is a light wrapper around type class inference.
+--All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
+--This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
+--so it is easier (and prettier) to put it in a tactic script.
+---/
+--unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
+--  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
+--  let q(@Eq (WittVector _ $(R)) _ _) ← target
+--  match ids with
+--    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
+--    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
+--    | _ => fail "ghost_calc takes one or two arguments"
+--  let nm ←
+--    match R with
+--      | expr.local_const _ nm _ _ => return nm
+--      | _ => get_unused_name `R
+--  iterate_exactly 2 apply_instance
+--  unfreezingI (tactic.clear' tt [R])
+--  introsI <| [nm, .str nm "_inst"] ++ ids'
+--  skip
+--#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
+--
+--end Interactive
+--
+--end Tactic
 
 namespace WittVector
 
 universe u
 
-variable {p : ℕ} {R S : Type u} {σ idx : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type u} {σ idx : Type _} [CommRing R] [CommRing S]
 
 -- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
@@ -172,8 +175,6 @@ local notation "𝕎" => WittVector p
 open MvPolynomial
 
 open Function (uncurry)
-
-include hp
 
 variable (p)
 
@@ -184,29 +185,27 @@ noncomputable section
 -/
 
 
-theorem poly_eq_of_wittPolynomial_bind_eq' (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
+theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h 
+  rw [← Function.funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 #align witt_vector.poly_eq_of_witt_polynomial_bind_eq' WittVector.poly_eq_of_wittPolynomial_bind_eq'
 
-theorem poly_eq_of_wittPolynomial_bind_eq (f g : ℕ → MvPolynomial ℕ ℤ)
+theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  rw [← Function.funext_iff] at h 
+  rw [← Function.funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 #align witt_vector.poly_eq_of_witt_polynomial_bind_eq WittVector.poly_eq_of_wittPolynomial_bind_eq
-
-omit hp
 
 -- Ideally, we would generalise this to n-ary functions
 -- But we don't have a good theory of n-ary compositions in mathlib
@@ -243,28 +242,27 @@ instance : Inhabited (IsPoly p fun _ _ => id) :=
 
 variable {p}
 
-include hp
-
-theorem ext {f g} (hf : IsPoly p f) (hg : IsPoly p g)
+theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     (h :
       ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
-        ghost_component n (f x) = ghost_component n (g x)) :
+        ghostComponent n (f x) = ghostComponent n (g x)) :
     ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   intros
   ext n
-  rw [hf, hg, poly_eq_of_witt_polynomial_bind_eq p φ ψ]
+  rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq p φ ψ]
   intro k
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
   specialize h (ULift ℤ) (mk p fun i => ⟨x i⟩) k
-  simp only [ghost_component_apply, aeval_eq_eval₂_hom] at h 
-  apply (ulift.ring_equiv.symm : ℤ ≃+* _).Injective
-  simp only [← RingEquiv.coe_toRingHom, map_eval₂_hom]
+  simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
+  apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
+  simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
   convert h using 1
   all_goals
+    stop
     funext i
     simp only [hf, hg, MvPolynomial.eval, map_eval₂_hom]
     apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
@@ -272,8 +270,6 @@ theorem ext {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
     simp only [coeff_mk]; rfl
 #align witt_vector.is_poly.ext WittVector.IsPoly.ext
-
-omit hp
 
 /-- The composition of polynomial functions is polynomial. -/
 theorem comp {g f} (hg : IsPoly p g) (hf : IsPoly p f) :
@@ -323,10 +319,10 @@ theorem IsPoly₂.comp {h f g} (hh : IsPoly₂ p h) (hf : IsPoly p f) (hg : IsPo
   intros
   funext n
   simp only [peval, aeval_bind₁, Function.comp, hh, hf, hg, uncurry]
-  apply eval₂_hom_congr rfl _ rfl
+  apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;>
-    simp only [aeval_eq_eval₂_hom, eval₂_hom_rename, Function.comp, Matrix.cons_val_zero,
+    simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
       Matrix.head_cons, Matrix.cons_val_one]
 #align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
@@ -346,9 +342,14 @@ theorem IsPoly₂.diag {f} (hf : IsPoly₂ p f) : IsPoly p fun R _Rcr x => f x x
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
   simp only [hf, peval, uncurry, aeval_bind₁]
-  apply eval₂_hom_congr rfl _ rfl
+  apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩;
   fin_cases i <;> simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one]
+    --  porting note: the end of the proof was added in the port.
+    <;>
+    open Matrix in
+    simp only [Fin.mk_zero, Fin.mk_one, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
+      aeval_X, head_fin_const, cons_val_one]
 #align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
 open Tactic
@@ -415,6 +416,7 @@ unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tac
   add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
   set_attribute `instance nm
 #align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
+#exit
 
 /-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
 -/
@@ -493,6 +495,7 @@ theorem bind₁_zero_wittPolynomial (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
 #align witt_vector.bind₁_zero_witt_polynomial WittVector.bind₁_zero_wittPolynomial
+#exit
 
 omit hp
 
@@ -540,6 +543,7 @@ theorem addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
 theorem mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   ⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
+#exit
 
 include hp
 
@@ -596,7 +600,7 @@ theorem ext {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   intro x
   simp only [hom_bind₁]
   specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
-  simp only [ghost_component_apply, aeval_eq_eval₂_hom] at h 
+  simp only [ghost_component_apply, aeval_eq_eval₂_hom] at h
   apply (ulift.ring_equiv.symm : ℤ ≃+* _).Injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂_hom]
   convert h using 1
@@ -622,6 +626,7 @@ theorem map {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
   try ext ⟨i, k⟩; fin_cases i
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
 #align witt_vector.is_poly₂.map WittVector.IsPoly₂.map
+#exit
 
 end IsPoly₂
 
@@ -633,4 +638,3 @@ attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map
   forall₃_true_iff
 
 end WittVector
-
