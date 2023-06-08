@@ -478,7 +478,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply]
   rw [← smul_sub, norm_smul, mul_comm]
-  exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+  gcongr
 #align uniform_cauchy_seq_on_filter.one_smul_right UniformCauchySeqOnFilter.one_smulRight
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
@@ -526,7 +526,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
-    exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+    gcongr
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 #align has_deriv_at_of_tendsto_uniformly_on_filter hasDerivAt_of_tendstoUniformlyOnFilter
 

@@ -581,10 +581,9 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C 
   calc
     ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_op_norm T f
-    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
-      (sum_le_sum fun b _ =>
-        mul_le_mul_of_nonneg_right (hT_norm _ <| SimpleFunc.measurableSet_fiber _ _) <|
-          norm_nonneg _)
+    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
+      gcongr
+      exact hT_norm _ <| SimpleFunc.measurableSet_fiber _ _
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm
 
@@ -599,11 +598,9 @@ theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →
       refine' Finset.sum_le_sum fun b hb => _
       obtain rfl | hb := eq_or_ne b 0
       · simp
-      exact
-        mul_le_mul_of_nonneg_right
-          (hT_norm _ (SimpleFunc.measurableSet_fiber _ _) <|
-            SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hb)
-          (norm_nonneg _)
+      gcongr
+      exact hT_norm _ (SimpleFunc.measurableSet_fiber _ _) <|
+        SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hb
     _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm_of_integrable MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm_of_integrable
 
