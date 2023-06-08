@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 
 import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lawson topology
@@ -35,13 +36,13 @@ It is shown that `WithLawsonTopology α` is an instance of `LawsonTopology`.
 Lawson topology, preorder
 -/
 
-variable (α : Type _)
+variable (α β : Type _)
 
 open Set
 
 section preorder
 
-variable {α}
+variable {α} {β}
 
 variable [Preorder α]
 
@@ -58,7 +59,7 @@ Type synonym for a preorder equipped with the Lawson topology
 -/
 def WithLawsonTopology := α
 
-variable {α}
+variable {α β}
 
 namespace WithLawsonTopology
 
@@ -78,17 +79,9 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 lemma ofLawson_inj {a b : WithLawsonTopology α} : ofLawson a = ofLawson b ↔ a = b :=
 Iff.rfl
 
-section rec
-
-variable (β : Type _)
-
-variable {β}
-
 /-- A recursor for `WithLawsonTopology`. Use as `induction x using WithLawsonTopology.rec`. -/
 protected def rec {β : WithLawsonTopology α → Sort _}
   (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
-
-end rec
 
 instance [Nonempty α] : Nonempty (WithLawsonTopology α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLawsonTopology α) := ‹Inhabited α›
@@ -98,6 +91,16 @@ variable [Preorder α]
 instance : Preorder (WithLawsonTopology α) := ‹Preorder α›
 
 instance : TopologicalSpace (WithLawsonTopology α) := LawsonTopology'
+
+theorem isOpen_preimage_ofLawson (S : Set α) :
+    IsOpen (WithLawsonTopology.ofLawson ⁻¹' S) ↔
+      LawsonTopology'.IsOpen S :=
+  Iff.rfl
+
+theorem isOpen_def (T : Set (WithLawsonTopology α)) :
+    IsOpen T ↔
+      LawsonTopology'.IsOpen (WithLawsonTopology.toLawson ⁻¹' T) :=
+  Iff.rfl
 
 end WithLawsonTopology
 
@@ -128,6 +131,19 @@ variable {α}
 def withLawsonTopologyHomeomorph : WithLawsonTopology α ≃ₜ α :=
   WithLawsonTopology.ofLawson.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
+/-
+lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : LawsonTopology'.IsOpen u
+↔ (LowerTopology'.IsOpen u ∧ ScottTopology'.IsOpen u) := by
+-/
+
+
+
+lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : IsOpen (WithLawsonTopology.ofLawson ⁻¹' u) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := by
+  rw [WithLawsonTopology.isOpen_preimage_ofLawson]
+  sorry
+
+
+
 end preorder
 
 end LawsonTopology
@@ -157,6 +173,15 @@ end ts
 
 section csh
 
+--lemma isOpen_iff_Lower_and_Scott_Open  (u : Set α) : IsOpen (WithLawsonTopology.toLawson u ) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := sorry
+
+lemma ScottLawsonCont' [Preorder α] : Continuous (WithScottTopology.toScott ∘ WithLawsonTopology.ofLawson : WithLawsonTopology α → _) := by
+  rw [continuous_def]
+  intro s hs
+  simp
+  sorry
+
+
 variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 
 variable [Preorder α]  [@LawsonTopology α L _] [@LowerTopology α l _] [@ScottTopology α S _]
@@ -164,9 +189,6 @@ variable [Preorder α]  [@LawsonTopology α L _] [@LowerTopology α l _] [@Scott
 lemma Scott_le_Lawson : L ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
   apply inf_le_right
-
---lemma Lawson_le_Scott : WithLawsonTopology.instTopologicalSpaceWithLawsonTopology ≤ WithScottTopology.instTopologicalSpaceWithScottTopology := sorry
-
 
 lemma Scott_Hausdorff_le_Lawson : (@ScottHausdorffTopology α _) ≤ L := by
   rw [@LawsonTopology.topology_eq α _ L _,  LawsonTopology', le_inf_iff,
@@ -181,58 +203,25 @@ lemma LawsonOpen_implies_ScottHausdorffOpen : IsOpen[L] ≤ IsOpen[ScottHausdorf
   rw [←TopologicalSpace.le_def]
   apply (@Scott_Hausdorff_le_Lawson _ L l _ _ _)
 
---lemma LawsonOpen_implies_ScottHausdorffOpen'' : WithLawsonTopology α ≤ ScottHausdorffTopology.IsOpen := sorry
-
 
 lemma LawsonOpen_implies_ScottHausdorffOpen' (s : Set α) :
 IsOpen[L] s → IsOpen[ScottHausdorffTopology] s := by
   apply (@LawsonOpen_implies_ScottHausdorffOpen _ _ l)
-
-
 
 end csh
 
 -- Can we say something without CL?
 section CompleteLattice
 
-section csh1
-
 variable [CompleteLattice α]
-
---variable {α}
-
-open Topology
-
-#check IsOpen[LawsonTopology']
-
-variable {t : Set α}
-
-#check @ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open (WithScottTopology α) _ ScottTopology' _
-
-lemma LawsonOpen_iff_ScottOpen' {s : Set α} (h : IsUpperSet s) :
-  IsOpen[LawsonTopology'] s ↔ IsOpen[ScottTopology'] s := by
-  constructor
-  . intro hs
-    rw [@ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open (WithScottTopology α)]
-    constructor
-    . exact h
-    . sorry --exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s)
-      --  hs d d₁ d₂ d₃
-  . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
-
-
-variable  (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
-  [@ScottTopology α S _]   [@LowerTopology α l _] [@LawsonTopology α L _]
-
-
-
-#check IsOpen[S] t
+  (S :TopologicalSpace α) (l : TopologicalSpace α) (L : TopologicalSpace α)
+  [@ScottTopology α S _]  [@LawsonTopology α L _] [@LowerTopology α l _]
 
 -- Scott open iff UpperSet and STopology open
 
 open Topology
 
-lemma LawsonOpen_iff_ScottOpen {s : Set α} (h : IsUpperSet s) :
+lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
   IsOpen[L] s ↔ IsOpen[S] s := by
   constructor
   . intro hs
@@ -242,49 +231,5 @@ lemma LawsonOpen_iff_ScottOpen {s : Set α} (h : IsUpperSet s) :
     . exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s)
         hs d d₁ d₂ d₃
   . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
-
-lemma LawsonOpen_iff_ScottOpen'' {s : Set α} (h : IsUpperSet s) :
-  L.IsOpen s ↔ S.IsOpen s := by
-  constructor
-  . intro hs
-    rw [@ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open α _ S]
-    constructor
-    . exact h
-    . exact fun d d₁ d₂ d₃ => (@LawsonOpen_implies_ScottHausdorffOpen' _ _ l S _ _ _ _ s)
-        hs d d₁ d₂ d₃
-  . apply TopologicalSpace.le_def.mp (Scott_le_Lawson _ _)
-
-end csh1
-
-section csh2
-
-variable [CompleteLattice α]
-  --(L : TopologicalSpace α)  (l : TopologicalSpace α)
-  (S :TopologicalSpace α)
-  [@ScottTopology α S _]
-  --  [@LowerTopology α l _] [@LawsonTopology α L _]
-
-#check (@LawsonOpen_iff_ScottOpen α _ _ _ _ )
-
-lemma LawsonClosed_iff_ScottClosed (s : Set α) (h : IsLowerSet s) :
-  IsClosed[L] s ↔ IsClosed[S] s := by
-    rw [← isOpen_compl_iff]
-    rw [← isUpperSet_compl] at h
-    rw [(@LawsonOpen_iff_ScottOpen α _ _ S L l s h) ]
-
-#check @(isClosed_iff_lower_and_closed_under_Directed_Sup.mp _ )
-
-#check isClosed_iff_lower_and_closed_under_Directed_Sup.mpr
-
-end csh2
-
-lemma LowerSetLawsonClosed_iff_ClosedUnderDirectedSetSups (s : Set α) (h : IsLowerSet s) :
-  IsClosed[L] s ↔  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  --rw [← (@isClosed_iff_lower_and_closed_under_Directed_Sup α _ S _ s)]
-  constructor
-  . sorry --apply (@(isClosed_iff_lower_and_closed_under_Directed_Sup.mp) α _ S _ s)
-  . intros hd
-    rw [(@isClosed_iff_lower_and_closed_under_Directed_Sup α _ S _ s)]
-
 
 end CompleteLattice
