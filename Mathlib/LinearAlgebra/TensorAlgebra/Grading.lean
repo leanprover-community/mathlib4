@@ -45,7 +45,7 @@ variable {R M}
 
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
-    GradedAlgebra ((· ^ ·) (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M)) : ℕ → Submodule R _) :=
+    GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m
@@ -54,7 +54,6 @@ instance gradedAlgebra :
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by
     cases' x with x hx
-    dsimp only at hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
     -- porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
