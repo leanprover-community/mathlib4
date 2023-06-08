@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Bounds
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Pi
@@ -26,10 +26,8 @@ open scoped Real
 
 namespace Real
 
-theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) < π :=
-  by
-  have : sqrt (2 - sqrt_two_add_series 0 n) / 2 * 2 ^ (n + 2) < π :=
-    by
+theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) < π := by
+  have : sqrt (2 - sqrt_two_add_series 0 n) / 2 * 2 ^ (n + 2) < π := by
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
@@ -37,10 +35,8 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSer
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
-    π < 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n :=
-  by
-  have : π < (sqrt (2 - sqrt_two_add_series 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * 2 ^ (n + 2) :=
-    by
+    π < 2 ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n := by
+  have : π < (sqrt (2 - sqrt_two_add_series 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * 2 ^ (n + 2) := by
     rw [← div_lt_iff, ← sin_pi_over_two_pow_succ]
     refine' lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube _ _)) _
     · apply div_pos pi_pos; apply pow_pos; norm_num
@@ -71,8 +67,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
 `sqrt_two_add_series 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2)`, one can deduce the lower bound `a < π`
 thanks to basic trigonometric inequalities as expressed in `pi_gt_sqrt_two_add_series`. -/
 theorem pi_lower_bound_start (n : ℕ) {a}
-    (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2) : a < π :=
-  by
+    (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2) : a < π := by
   refine' lt_of_le_of_lt _ (pi_gt_sqrt_two_add_series n); rw [mul_comm]
   refine' (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le _)
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
@@ -80,8 +75,7 @@ theorem pi_lower_bound_start (n : ℕ) {a}
 
 theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
-    sqrtTwoAddSeries (a / b) (n + 1) ≤ z :=
-  by
+    sqrtTwoAddSeries (a / b) (n + 1) ≤ z := by
   refine' le_trans _ hz; rw [sqrt_two_add_series_succ]; apply sqrt_two_add_series_monotone_left
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
@@ -115,8 +109,7 @@ unsafe def pi_lower_bound (l : List ℚ) : tactic Unit := do
 `π < a` thanks to basic trigonometric formulas as expressed in `pi_lt_sqrt_two_add_series`. -/
 theorem pi_upper_bound_start (n : ℕ) {a}
     (h : 2 - ((a - 1 / 4 ^ n) / 2 ^ (n + 1)) ^ 2 ≤ sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
-    (h₂ : 1 / 4 ^ n ≤ a) : π < a :=
-  by
+    (h₂ : 1 / 4 ^ n ≤ a) : π < a := by
   refine' lt_of_lt_of_le (pi_lt_sqrt_two_add_series n) _
   rw [← le_sub_iff_add_le, ← le_div_iff', sqrt_le_left, sub_le_comm]
   · rwa [Nat.cast_zero, zero_div] at h 
@@ -126,8 +119,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
 
 theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
     (hz : z ≤ sqrtTwoAddSeries (a / b) n) (hb : 0 < b) (hd : 0 < d)
-    (h : a ^ 2 * d ≤ (2 * d + c) * b ^ 2) : z ≤ sqrtTwoAddSeries (c / d) (n + 1) :=
-  by
+    (h : a ^ 2 * d ≤ (2 * d + c) * b ^ 2) : z ≤ sqrtTwoAddSeries (c / d) (n + 1) := by
   apply le_trans hz; rw [sqrt_two_add_series_succ]; apply sqrt_two_add_series_monotone_left
   apply le_sqrt_of_sq_le
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
