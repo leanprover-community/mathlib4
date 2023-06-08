@@ -1214,7 +1214,8 @@ instance finiteDimensional_iSup_of_finite {ι : Type _} {t : ι → Intermediate
 
 instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → IntermediateField K L}
     /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (f i)` because this caused an
-      error.-/
+      error. See `finiteDimensional_iSup_of_finset'` for a stringer version, that was the one
+      used in mathlib3.-/
     {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i
@@ -1223,6 +1224,17 @@ instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → Intermediate
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
 #align intermediate_field.finite_dimensional_supr_of_finset IntermediateField.finiteDimensional_iSup_of_finset
+
+theorem finiteDimensional_iSup_of_finset' {ι : Type _} {f : ι → IntermediateField K L}
+    /-Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
+    error "invalid parametric local instance".-/
+    {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (f i)) :
+    FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
+  haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i i.2
+  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+    le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
+      (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
+  exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
 
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type _} {f : ι → IntermediateField K L}
