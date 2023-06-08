@@ -58,8 +58,6 @@ variable [NormedField R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
-include V W
-
 /-- The linear map underlying a continuous affine map is continuous. -/
 def contLinear (f : P →A[R] Q) : V →L[R] W :=
   { f.linear with
@@ -88,15 +86,11 @@ theorem coe_linear_eq_coe_contLinear (f : P →A[R] Q) :
   rfl
 #align continuous_affine_map.coe_linear_eq_coe_cont_linear ContinuousAffineMap.coe_linear_eq_coe_contLinear
 
-include W₂
-
 @[simp]
 theorem comp_contLinear (f : P →A[R] Q) (g : Q →A[R] Q₂) :
     (g.comp f).contLinear = g.contLinear.comp f.contLinear :=
   rfl
 #align continuous_affine_map.comp_cont_linear ContinuousAffineMap.comp_contLinear
-
-omit W₂
 
 @[simp]
 theorem map_vadd (f : P →A[R] Q) (p : P) (v : V) : f (v +ᵥ p) = f.contLinear v +ᵥ f p :=
@@ -115,21 +109,22 @@ theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
 
 theorem contLinear_eq_zero_iff_exists_const (f : P →A[R] Q) :
     f.contLinear = 0 ↔ ∃ q, f = const R P q := by
-  have h₁ : f.cont_linear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
+  have h₁ : f.contLinear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
     refine' ⟨fun h => _, fun h => _⟩ <;> ext
-    · rw [← coe_cont_linear_eq_linear, h]; rfl
-    · rw [← coe_linear_eq_coe_cont_linear, h]; rfl
+    · rw [← coe_contLinear_eq_linear, h]; rfl
+    · rw [← coe_linear_eq_coe_contLinear, h]; rfl
   have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q := by
     intro q
     refine' ⟨fun h => _, fun h => _⟩ <;> ext
     · rw [h]; rfl
-    · rw [← coe_to_affine_map, h]; rfl
+    · rw [← coe_to_affineMap, h]; rfl
   simp_rw [h₁, h₂]
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
 #align continuous_affine_map.cont_linear_eq_zero_iff_exists_const ContinuousAffineMap.contLinear_eq_zero_iff_exists_const
 
 @[simp]
-theorem to_affine_map_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f := by ext;
+theorem to_affine_map_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f := by
+  ext
   rfl
 #align continuous_affine_map.to_affine_map_cont_linear ContinuousAffineMap.to_affine_map_contLinear
 
@@ -160,7 +155,8 @@ theorem smul_contLinear (t : R) (f : P →A[R] W) : (t • f).contLinear = t •
 
 theorem decomp (f : V →A[R] W) : (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
-  rw [coe_mk_const_linear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add]
+  rw [coe_mk_const_linear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add,
+    ← Function.const_def]
 #align continuous_affine_map.decomp ContinuousAffineMap.decomp
 
 section NormedSpaceStructure
@@ -191,7 +187,7 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     ‖f‖ = max ‖f 0‖ ‖f.contLinear‖ := by rw [norm_def]
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
-    
+
 #align continuous_affine_map.norm_eq ContinuousAffineMap.norm_eq
 
 noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
@@ -200,49 +196,48 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
       map_zero' := by simp
       neg' := fun f => by simp
       add_le' := fun f g => by
-        simp only [Pi.add_apply, add_cont_linear, coe_add, max_le_iff]
+        simp only [Pi.add_apply, add_contLinear, coe_add, max_le_iff]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
       eq_zero_of_map_eq_zero' := fun f h₀ => by
-        rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂ 
-        · rw [norm_le_zero_iff, cont_linear_eq_zero_iff_exists_const] at h₂ 
+        rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂
+        · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
           obtain ⟨q, rfl⟩ := h₂
-          simp only [Function.const_apply, coe_const, norm_eq_zero] at h₁ 
+          simp only [Function.const_apply, coe_const, norm_eq_zero] at h₁
           rw [h₁]
           rfl
-        · rw [norm_eq_zero', cont_linear_eq_zero_iff_exists_const] at h₁ 
+        · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
-          simp only [Function.const_apply, coe_const, norm_le_zero_iff] at h₂ 
+          simp only [Function.const_apply, coe_const, norm_le_zero_iff] at h₂
           rw [h₂]
           rfl }
 
-instance : NormedSpace 𝕜 (V →A[𝕜] W)
-    where norm_smul_le t f := by
-    simp only [norm_def, smul_cont_linear, coe_smul, Pi.smul_apply, norm_smul, ←
+instance : NormedSpace 𝕜 (V →A[𝕜] W) where
+  norm_smul_le t f := by
+    simp only [norm_def, (smul_contLinear), coe_smul, Pi.smul_apply, norm_smul, ←
       mul_max_of_nonneg _ _ (norm_nonneg t)]
+    -- Porting note: added
+    rw [coe_smul, Pi.smul_apply, norm_smul, ← mul_max_of_nonneg _ _ (norm_nonneg t)]
 
 theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]
   constructor
-  ·
-    calc
+  · calc
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
-      _ = ‖f.cont_linear (g 0) + f 0‖ := by rw [f.decomp]; simp
-      _ ≤ ‖f.cont_linear‖ * ‖g 0‖ + ‖f 0‖ :=
-        ((norm_add_le _ _).trans (add_le_add_right (f.cont_linear.le_op_norm _) _))
+      _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
+      _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ :=
+        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_op_norm _) _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
         add_le_add_right
-          (mul_le_mul f.norm_cont_linear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
-      
-  ·
-    calc
-      ‖(f.comp g).contLinear‖ ≤ ‖f.cont_linear‖ * ‖g.cont_linear‖ :=
-        (g.comp_cont_linear f).symm ▸ f.cont_linear.op_norm_comp_le _
+          (mul_le_mul f.norm_contLinear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
+  · calc
+      ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
+        (g.comp_contLinear f).symm ▸ f.contLinear.op_norm_comp_le _
       _ ≤ ‖f‖ * ‖g‖ :=
-        (mul_le_mul f.norm_cont_linear_le g.norm_cont_linear_le (norm_nonneg _) (norm_nonneg _))
+        (mul_le_mul f.norm_contLinear_le g.norm_contLinear_le (norm_nonneg _) (norm_nonneg _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg
-      
+
 #align continuous_affine_map.norm_comp_le ContinuousAffineMap.norm_comp_le
 
 variable (𝕜 V W)
@@ -253,7 +248,12 @@ linear part. -/
 def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W) where
   toFun f := ⟨f 0, f.contLinear⟩
   invFun p := p.2.toContinuousAffineMap + const 𝕜 V p.1
-  left_inv f := by ext; rw [f.decomp]; simp
+  left_inv f := by
+    ext
+    rw [f.decomp]
+    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, coe_contLinear, Pi.add_apply,
+      Function.const_apply]
+    rw [ContinuousAffineMap.coe_const, Function.const_apply]
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -275,4 +275,3 @@ theorem toConstProdContinuousLinearMap_snd (f : V →A[𝕜] W) :
 end NormedSpaceStructure
 
 end ContinuousAffineMap
-
