@@ -2412,11 +2412,11 @@ import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Defs
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.RingTheory.WittVector.StructurePolynomial
+import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
 import Mathlib.SetTheory.Cardinal.Basic
