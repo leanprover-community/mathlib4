@@ -18,20 +18,20 @@ In this file we prove that the derivative of a function that tends to infinity i
 integrable, see `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter` and
 `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured`. Then we apply the
 latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b` if and only if
-`a = b` or `0 ∉ [[a, b]]`.
+`a = b` or `0 ∉ [a, b]`.
 
 ## Main results
 
 * `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured`: if `f` tends to infinity
   along `𝓝[≠] c` and `f' = O(g)` along the same filter, then `g` is not interval integrable on any
-  nontrivial integral `a..b`, `c ∈ [[a, b]]`.
+  nontrivial integral `a..b`, `c ∈ [a, b]`.
 
 * `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter`: a version of
   `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured` that works for one-sided
   neighborhoods;
 
 * `not_intervalIntegrable_of_sub_inv_isBigO_punctured`: if `1 / (x - c) = O(f)` as `x → c`, `x ≠ c`,
-  then `f` is not interval integrable on any nontrivial interval `a..b`, `c ∈ [[a, b]]`;
+  then `f` is not interval integrable on any nontrivial interval `a..b`, `c ∈ [a, b]`;
 
 * `intervalIntegrable_sub_inv_iff`, `intervalIntegrable_inv_iff`: integrability conditions for
   `(x - c)⁻¹` and `x⁻¹`.
@@ -52,7 +52,7 @@ variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCounta
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`
 is the derivative of `f`, then `g` is not integrable on any interval `a..b` such that
-`[[a, b]] ∈ l`. -/
+`[a, b] ∈ l`. -/
 theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f : ℝ → E} {g : ℝ → F}
     {a b : ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l] (hl : [[a, b]] ∈ l)
     (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
@@ -99,9 +99,9 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
 set_option linter.uppercaseLean3 false in
 #align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_filter not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter
 
-/-- If `a ≠ b`, `c ∈ [[a, b]]`, `f` is differentiable in the neighborhood of `c` within
-`[[a, b]] \ {c}`, `‖f x‖ → ∞` as `x → c` within `[[a, b]] \ {c}`, and `f' = O(g)` along
-`𝓝[[[a, b]] \ {c}] c`, where `f'` is the derivative of `f`, then `g` is not interval integrable on
+/-- If `a ≠ b`, `c ∈ [a, b]`, `f` is differentiable in the neighborhood of `c` within
+`[a, b] \ {c}`, `‖f x‖ → ∞` as `x → c` within `[a, b] \ {c}`, and `f' = O(g)` along
+`𝓝[[a, b] \ {c}] c`, where `f'` is the derivative of `f`, then `g` is not interval integrable on
 `a..b`. -/
 theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton
     {f : ℝ → E} {g : ℝ → F} {a b c : ℝ} (hne : a ≠ b) (hc : c ∈ [[a, b]])
@@ -127,7 +127,7 @@ set_option linter.uppercaseLean3 false in
 /-- If `f` is differentiable in a punctured neighborhood of `c`, `‖f x‖ → ∞` as `x → c` (more
 formally, along the filter `𝓝[≠] c`), and `f' = O(g)` along `𝓝[≠] c`, where `f'` is the derivative
 of `f`, then `g` is not interval integrable on any nontrivial interval `a..b` such that
-`c ∈ [[a, b]]`. -/
+`c ∈ [a, b]`. -/
 theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured {f : ℝ → E}
     {g : ℝ → F} {a b c : ℝ} (h_deriv : ∀ᶠ x in 𝓝[≠] c, DifferentiableAt ℝ f x)
     (h_infty : Tendsto (fun x => ‖f x‖) (𝓝[≠] c) atTop) (hg : deriv f =O[𝓝[≠] c] g) (hne : a ≠ b)
@@ -139,7 +139,7 @@ set_option linter.uppercaseLean3 false in
 #align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_punctured not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured
 
 /-- If `f` grows in the punctured neighborhood of `c : ℝ` at least as fast as `1 / (x - c)`,
-then it is not interval integrable on any nontrivial interval `a..b`, `c ∈ [[a, b]]`. -/
+then it is not interval integrable on any nontrivial interval `a..b`, `c ∈ [a, b]`. -/
 theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b c : ℝ}
     (hf : (fun x => (x - c)⁻¹) =O[𝓝[≠] c] f) (hne : a ≠ b) (hc : c ∈ [[a, b]]) :
     ¬IntervalIntegrable f volume a b := by
@@ -157,7 +157,7 @@ set_option linter.uppercaseLean3 false in
 #align not_interval_integrable_of_sub_inv_is_O_punctured not_intervalIntegrable_of_sub_inv_isBigO_punctured
 
 /-- The function `fun x => (x - c)⁻¹` is integrable on `a..b` if and only if
-`a = b` or `c ∉ [[a, b]]`. -/
+`a = b` or `c ∉ [a, b]`. -/
 @[simp]
 theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
     IntervalIntegrable (fun x => (x - c)⁻¹) volume a b ↔ a = b ∨ c ∉ [[a, b]] := by
@@ -171,7 +171,7 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
 #align interval_integrable_sub_inv_iff intervalIntegrable_sub_inv_iff
 
 /-- The function `fun x => x⁻¹` is integrable on `a..b` if and only if
-`a = b` or `0 ∉ [[a, b]]`. -/
+`a = b` or `0 ∉ [a, b]`. -/
 @[simp]
 theorem intervalIntegrable_inv_iff {a b : ℝ} :
     IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ (0 : ℝ) ∉ [[a, b]] := by
