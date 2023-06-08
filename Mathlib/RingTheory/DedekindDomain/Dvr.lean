@@ -21,13 +21,13 @@ namely a Noetherian integral domain where the localization at all nonzero prime 
 
 ## Main definitions
 
- - `is_dedekind_domain_dvr` alternatively defines a Dedekind domain as an integral domain that
+ - `IsDedekindDomainDvr` alternatively defines a Dedekind domain as an integral domain that
    is Noetherian, and the localization at every nonzero prime ideal is a DVR.
 
 ## Main results
- - `is_localization.at_prime.discrete_valuation_ring_of_dedekind_domain` shows that
-   `is_dedekind_domain` implies the localization at each nonzero prime ideal is a DVR.
- - `is_dedekind_domain.is_dedekind_domain_dvr` is one direction of the equivalence of definitions
+ - `IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain` shows that
+   `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
+ - `IsDedekindDomain.isDedekindDomainDvr` is one direction of the equivalence of definitions
    of a Dedekind domain
 
 ## Implementation notes
@@ -36,7 +36,7 @@ The definitions that involve a field of fractions choose a canonical field of fr
 but are independent of that choice. The `..._iff` lemmas express this independence.
 
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
-to add a `(h : ¬ is_field A)` assumption whenever this is explicitly needed.
+to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
@@ -57,7 +57,7 @@ open scoped nonZeroDivisors Polynomial
 /-- A Dedekind domain is an integral domain that is Noetherian, and the
 localization at every nonzero prime is a discrete valuation ring.
 
-This is equivalent to `is_dedekind_domain`.
+This is equivalent to `IsDedekindDomain`.
 TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
