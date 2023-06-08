@@ -11,8 +11,7 @@ Authors: Johan Commelin, Robert Y. Lewis
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.Data.MvPolynomial.Funext
-import Mathlib.Tactic.LibrarySearch
-
+import Mathlib.RingTheory.WittVector.WittAttributes
 /-!
 # The `is_poly` predicate
 
@@ -94,7 +93,6 @@ end
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
-set_option autoImplicit false
 
 
 /- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
@@ -102,7 +100,7 @@ set_option autoImplicit false
      [(Command.docComment "/--" "Simplification rules for ghost equations -/")]
      "register_simp_attr"
      `ghost_simps)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-/-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
+--/-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
 
 --  porting note: todo later
 --namespace Tactic
@@ -324,6 +322,12 @@ theorem IsPoly₂.comp {h f g} (hh : IsPoly₂ p h) (hf : IsPoly p f) (hg : IsPo
   fin_cases i <;>
     simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
       Matrix.head_cons, Matrix.cons_val_one]
+    -- porting note: added the rest of the proof.
+    <;>
+    open Matrix in
+    simp only [algebraMap_int_eq, coe_eval₂Hom, Fin.mk_zero, Fin.mk_one, cons_val', empty_val',
+      cons_val_fin_one, cons_val_zero, cons_val_one, eval₂Hom_rename, Function.comp, head_fin_const]
+
 #align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
@@ -352,115 +356,112 @@ theorem IsPoly₂.diag {f} (hf : IsPoly₂ p f) : IsPoly p fun R _Rcr x => f x x
       aeval_X, head_fin_const, cons_val_one]
 #align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
-open Tactic
-
-namespace Tactic
-
-/-!
-### The `@[is_poly]` attribute
-
-This attribute is used to derive specialized composition instances
-for `is_poly` and `is_poly₂` declarations.
--/
-
-
-/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly p _`,
-`mk_poly_comp_lemmas n vars p` adds composition instances to the environment
-`n.comp_i` and `n.comp₂_i`.
--/
-unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
-  let c ← mk_const n
-  let appd := vars.foldl expr.app c
-  let tgt_bod ←
-    to_expr ``(fun f [hf : IsPoly $(p) f] => IsPoly.comp $(appd) hf) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod
-  let nm := .str n "comp_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-  let tgt_bod ←
-    to_expr ``(fun f [hf : IsPoly₂ $(p) f] => IsPoly.comp₂ $(appd) hf) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod
-  let nm := .str n "comp₂_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-#align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
-
-/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly₂ p _`,
-`mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
-`n.comp₂_i` and `n.comp_diag`.
--/
-unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
-  let c ← mk_const n
-  let appd := vars.foldl expr.app c
-  let tgt_bod ←
-    to_expr
-          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] => IsPoly₂.comp $(appd) hf hg) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
-  let nm := .str n "comp₂_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-  let tgt_bod ←
-    to_expr
-          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] =>
-            (IsPoly₂.comp $(appd) hf hg).diag) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
-  let nm := .str n "comp_diag"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-#align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
-#exit
-
-/-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
--/
-unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
-  let d ← get_decl n
-  let (vars, tp) ← open_pis d.type
-  match tp with
-    | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
-    | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
-    | _ => fail "@[is_poly] should only be applied to terms of type `is_poly _ _` or `is_poly₂ _ _`"
-#align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
-
-/-- `@[is_poly]` is applied to lemmas of the form `is_poly f φ` or `is_poly₂ f φ`.
-These lemmas should *not* be tagged as instances, and only atomic `is_poly` defs should be tagged:
-composition lemmas should not. Roughly speaking, lemmas that take `is_poly` proofs as arguments
-should not be tagged.
-
-Type class inference struggles with function composition, and the higher order unification problems
-involved in inferring `is_poly` proofs are complex. The standard style writing these proofs by hand
-doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
-limited forms of composition.
-
-Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
-proof of `is_poly f φ`, the instances added have the form
-```lean
-∀ g ψ, [is_poly g ψ] → is_poly (f ∘ g) _
-```
-Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
-applied. Composition lemmas relating `is_poly` with `is_poly₂` are also added.
-`id_is_poly` is an atomic instance.
-
-The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
-"as normal" if the tactic fails.
--/
-@[user_attribute]
-unsafe def is_poly_attr : user_attribute where
-  Name := `is_poly
-  descr := "Lemmas with this attribute describe the polynomial structure of functions"
-  after_set := some fun n _ _ => mk_comp_lemmas n
-#align witt_vector.tactic.is_poly_attr witt_vector.tactic.is_poly_attr
-
-end Tactic
-
-include hp
+--open Tactic
+--
+--namespace Tactic
+--
+--/-!
+--### The `@[is_poly]` attribute
+--
+--This attribute is used to derive specialized composition instances
+--for `is_poly` and `is_poly₂` declarations.
+---/
+--
+--  porting note: port later
+--/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly p _`,
+--`mk_poly_comp_lemmas n vars p` adds composition instances to the environment
+--`n.comp_i` and `n.comp₂_i`.
+---/
+--unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
+--  let c ← mk_const n
+--  let appd := vars.foldl expr.app c
+--  let tgt_bod ←
+--    to_expr ``(fun f [hf : IsPoly $(p) f] => IsPoly.comp $(appd) hf) >>=
+--        replace_univ_metas_with_univ_params
+--  let tgt_bod ← lambdas vars tgt_bod
+--  let tgt_tp ← infer_type tgt_bod
+--  let nm := .str n "comp_i"
+--  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+--  set_attribute `instance nm
+--  let tgt_bod ←
+--    to_expr ``(fun f [hf : IsPoly₂ $(p) f] => IsPoly.comp₂ $(appd) hf) >>=
+--        replace_univ_metas_with_univ_params
+--  let tgt_bod ← lambdas vars tgt_bod
+--  let tgt_tp ← infer_type tgt_bod
+--  let nm := .str n "comp₂_i"
+--  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+--  set_attribute `instance nm
+--#align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
+--
+--/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly₂ p _`,
+--`mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
+--`n.comp₂_i` and `n.comp_diag`.
+---/
+--unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
+--  let c ← mk_const n
+--  let appd := vars.foldl expr.app c
+--  let tgt_bod ←
+--    to_expr
+--          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] => IsPoly₂.comp $(appd) hf hg) >>=
+--        replace_univ_metas_with_univ_params
+--  let tgt_bod ← lambdas vars tgt_bod
+--  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
+--  let nm := .str n "comp₂_i"
+--  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+--  set_attribute `instance nm
+--  let tgt_bod ←
+--    to_expr
+--          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] =>
+--            (IsPoly₂.comp $(appd) hf hg).diag) >>=
+--        replace_univ_metas_with_univ_params
+--  let tgt_bod ← lambdas vars tgt_bod
+--  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
+--  let nm := .str n "comp_diag"
+--  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+--  set_attribute `instance nm
+--#align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
+--
+--/-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
+---/
+--unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
+--  let d ← get_decl n
+--  let (vars, tp) ← open_pis d.type
+--  match tp with
+--    | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
+--    | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
+--    | _ => fail "@[is_poly] should only be applied to terms of type `is_poly _ _` or `is_poly₂ _ _`"
+--#align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
+--
+--/-- `@[is_poly]` is applied to lemmas of the form `is_poly f φ` or `is_poly₂ f φ`.
+--These lemmas should *not* be tagged as instances, and only atomic `is_poly` defs should be tagged:
+--composition lemmas should not. Roughly speaking, lemmas that take `is_poly` proofs as arguments
+--should not be tagged.
+--
+--Type class inference struggles with function composition, and the higher order unification problems
+--involved in inferring `is_poly` proofs are complex. The standard style writing these proofs by hand
+--doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
+--limited forms of composition.
+--
+--Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
+--proof of `is_poly f φ`, the instances added have the form
+--```lean
+--∀ g ψ, [is_poly g ψ] → is_poly (f ∘ g) _
+--```
+--Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
+--applied. Composition lemmas relating `is_poly` with `is_poly₂` are also added.
+--`id_is_poly` is an atomic instance.
+--
+--The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
+--"as normal" if the tactic fails.
+---/
+--@[user_attribute]
+--unsafe def is_poly_attr : user_attribute where
+--  Name := `is_poly
+--  descr := "Lemmas with this attribute describe the polynomial structure of functions"
+--  after_set := some fun n _ _ => mk_comp_lemmas n
+--#align witt_vector.tactic.is_poly_attr witt_vector.tactic.is_poly_attr
+--
+--end Tactic
 
 /-!
 ### `is_poly` instances
@@ -473,11 +474,11 @@ Users are expected to use the non-instance versions manually.
 
 /-- The additive negation is a polynomial function on Witt vectors. -/
 @[is_poly]
-theorem negIsPoly : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
+theorem negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
-      rw [neg_coeff, aeval_eq_eval₂_hom, eval₂_hom_rename]
-      apply eval₂_hom_congr rfl _ rfl
+      rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
+      apply eval₂Hom_congr rfl _ rfl
       ext ⟨i, k⟩; fin_cases i; rfl⟩⟩
 #align witt_vector.neg_is_poly WittVector.negIsPoly
 
@@ -486,125 +487,125 @@ section ZeroOne
 /- To avoid a theory of 0-ary functions (a.k.a. constants)
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
-instance zeroIsPoly : IsPoly p fun _ _ _ => 0 :=
+instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, AlgHom.map_zero, zero_coeff]⟩⟩
 #align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
 @[simp]
-theorem bind₁_zero_wittPolynomial (n : ℕ) :
+theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
 #align witt_vector.bind₁_zero_witt_polynomial WittVector.bind₁_zero_wittPolynomial
-#exit
-
-omit hp
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if n = 0 then 1 else 0
 #align witt_vector.one_poly WittVector.onePoly
 
-include hp
-
 @[simp]
-theorem bind₁_onePoly_wittPolynomial (n : ℕ) : bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
+theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) : bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
+  stop
   rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   ·
-    simp only [one_poly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
-      eq_self_iff_true]
+    simp only [Nat.sub_zero, onePoly, map_pow, map_natCast, ge_iff_le, map_mul, bind₁_X_right,
+      ite_pow, one_pow, ne_eq, tsub_pos_iff_lt, mul_ite, mul_one, Finset.sum_ite, Finset.mem_range,
+      Finset.range_filter_eq, add_pos_iff, or_true, ite_true, Finset.sum_singleton, pow_zero,
+      add_right_eq_self]
+    apply Finset.sum_eq_zero
+    intros
+    simpa only [ge_iff_le, ne_eq, tsub_pos_iff_lt, mul_eq_zero, gt_iff_lt, zero_pow_eq_zero] using
+      Or.inr Fin.size_positive'
+--    simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
+--      eq_self_iff_true]
   · intro i hi hi0
-    simp only [one_poly, if_neg hi0, zero_pow (pow_pos hp.1.Pos _), MulZeroClass.mul_zero,
+    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
-  · rw [Finset.mem_range]; decide
+    simp
+  · rw [Finset.mem_range]
+    -- porting note: was `decide`
+    simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
+      tsub_zero, one_mul, gt_iff_lt, IsEmpty.forall_iff]
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
-instance oneIsPoly : IsPoly p fun _ _ _ => 1 :=
+instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · simp only [one_poly, if_true, eq_self_iff_true, one_coeff_zero, AlgHom.map_one]
-      ·
-        simp only [one_poly, Nat.succ_pos', one_coeff_eq_of_pos, if_neg n.succ_ne_zero,
-          AlgHom.map_zero]⟩⟩
+      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+        simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+        simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false, map_zero]
+  ⟩⟩
 #align witt_vector.one_is_poly WittVector.oneIsPoly
 
 end ZeroOne
 
-omit hp
-
 /-- Addition of Witt vectors is a polynomial function. -/
 @[is_poly]
 theorem addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
-  ⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩
+  sorry -- ⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩
 #align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 @[is_poly]
 theorem mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
-  ⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩
+  sorry -- ⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
-#exit
-
-include hp
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
-theorem IsPoly.map {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) : map g (f x) = f (map g x) := by
+theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) : map g (f x) = f (map g x) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
   -- see `is_poly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
   ext n
   simp only [map_coeff, hf, map_aeval]
-  apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
+  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
+  ext  -- porting note: this `ext` was not present in the mathport output
   simp only [map_coeff]
 #align witt_vector.is_poly.map WittVector.IsPoly.map
 
 namespace IsPoly₂
 
-omit hp
-
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p _) :=
   ⟨addIsPoly₂⟩
-
-variable {p}
 
 /-- The composition of a binary polynomial function
  with a unary polynomial function in the first argument is polynomial. -/
 theorem compLeft {g f} (hg : IsPoly₂ p g) (hf : IsPoly p f) :
-    IsPoly₂ p fun R _Rcr x y => g (f x) y :=
+    IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
   hg.comp hf (WittVector.idIsPoly _)
 #align witt_vector.is_poly₂.comp_left WittVector.IsPoly₂.compLeft
 
 /-- The composition of a binary polynomial function
  with a unary polynomial function in the second argument is polynomial. -/
 theorem compRight {g f} (hg : IsPoly₂ p g) (hf : IsPoly p f) :
-    IsPoly₂ p fun R _Rcr x y => g x (f y) :=
+    IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
   hg.comp (WittVector.idIsPoly p) hf
 #align witt_vector.is_poly₂.comp_right WittVector.IsPoly₂.compRight
 
-include hp
-
-theorem ext {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
+theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h :
       ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
-        ghost_component n (f x y) = ghost_component n (g x y)) :
+        ghostComponent n (f x y) = ghostComponent n (g x y)) :
     ∀ (R) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   intros
   ext n
-  rw [hf, hg, poly_eq_of_witt_polynomial_bind_eq' p φ ψ]
-  clear x y
+  rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
+  --  porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
   specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
-  simp only [ghost_component_apply, aeval_eq_eval₂_hom] at h
-  apply (ulift.ring_equiv.symm : ℤ ≃+* _).Injective
-  simp only [← RingEquiv.coe_toRingHom, map_eval₂_hom]
+  simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
+  apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
+  simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
   convert h using 1
   all_goals
+    stop
     funext i
     simp only [hf, hg, MvPolynomial.eval, map_eval₂_hom]
     apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
@@ -615,18 +616,21 @@ theorem ext {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
 #align witt_vector.is_poly₂.ext WittVector.IsPoly₂.ext
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
-theorem map {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
+theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
     map g (f x y) = f (map g x) (map g y) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
   simp only [map_coeff, hf, map_aeval, peval, uncurry]
-  apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
+  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   try ext ⟨i, k⟩; fin_cases i
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
+  -- porting note: added the rest of the proof
+  all_goals
+    simp only [Fin.mk_zero, Fin.mk_one, Matrix.cons_val', Matrix.empty_val', Matrix.cons_val_one,
+      Matrix.cons_val_fin_one, Matrix.cons_val_zero, map_coeff, Matrix.head_fin_const]
 #align witt_vector.is_poly₂.map WittVector.IsPoly₂.map
-#exit
 
 end IsPoly₂
 
@@ -636,5 +640,7 @@ attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map
   mul_one one_mul MulZeroClass.mul_zero MulZeroClass.zero_mul Nat.succ_ne_zero add_tsub_cancel_right
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
+
+end  -- porting note: ends the `noncomputable section`?
 
 end WittVector
