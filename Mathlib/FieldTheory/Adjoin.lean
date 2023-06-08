@@ -1215,9 +1215,11 @@ instance finiteDimensional_iSup_of_finite {ι : Type _} {t : ι → Intermediate
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
 instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → IntermediateField K L}
-    {s : Finset ι} [h : ∀ i ∈ s, FiniteDimensional K (f i)] :
+    /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (f i)` because this caused an
+      error.-/
+    {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
-  haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i i.2
+  haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i
   have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
@@ -1230,9 +1232,10 @@ theorem isAlgebraic_iSup {ι : Type _} {f : ι → IntermediateField K L}
     Algebra.IsAlgebraic K (⨆ i, f i : IntermediateField K L) := by
   rintro ⟨x, hx⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
-  rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk x hx, ← is_algebraic_iff]
+  rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := fun x => x ∈ _) x hx,
+    ← isAlgebraic_iff]
   haveI : ∀ i : Σ i, f i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ =>
-    adjoin.finite_dimensional (is_integral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
+    adjoin.finiteDimensional (isIntegral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
   apply Algebra.isAlgebraic_of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 
