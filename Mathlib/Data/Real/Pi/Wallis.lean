@@ -8,7 +8,7 @@ Authors: Hanting Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals
 
 /-! # The Wallis formula for Pi
 
@@ -84,15 +84,13 @@ theorem w_eq_integral_sin_pow_div_integral_sin_pow (k : ℕ) :
   rfl
 #align real.wallis.W_eq_integral_sin_pow_div_integral_sin_pow Real.Wallis.w_eq_integral_sin_pow_div_integral_sin_pow
 
-theorem w_le (k : ℕ) : w k ≤ π / 2 :=
-  by
+theorem w_le (k : ℕ) : w k ≤ π / 2 := by
   rw [← div_le_one pi_div_two_pos, div_eq_inv_mul]
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, div_le_one (integral_sin_pow_pos _)]
   apply integral_sin_pow_succ_le
 #align real.wallis.W_le Real.Wallis.w_le
 
-theorem le_w (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ w k :=
-  by
+theorem le_w (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ w k := by
   rw [← le_div_iff pi_div_two_pos, div_eq_inv_mul (W k) _]
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff (integral_sin_pow_pos _)]
   convert integral_sin_pow_succ_le (2 * k + 1)
@@ -101,13 +99,11 @@ theorem le_w (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ w k :=
     sin_pi, tsub_zero, Nat.cast_mul, Nat.cast_bit0, algebraMap.coe_one, zero_div, zero_add]
 #align real.wallis.le_W Real.Wallis.le_w
 
-theorem tendsto_w_nhds_pi_div_two : Tendsto w atTop (𝓝 <| π / 2) :=
-  by
+theorem tendsto_w_nhds_pi_div_two : Tendsto w atTop (𝓝 <| π / 2) := by
   refine' tendsto_of_tendsto_of_tendsto_of_le_of_le _ tendsto_const_nhds le_W W_le
   have : 𝓝 (π / 2) = 𝓝 ((1 - 0) * (π / 2)) := by rw [sub_zero, one_mul]; rw [this]
   refine' tendsto.mul _ tendsto_const_nhds
-  have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) :=
-    by
+  have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) := by
     intro n
     rw [sub_div' _ _ _
         (ne_of_gt
