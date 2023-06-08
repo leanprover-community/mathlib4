@@ -138,7 +138,8 @@ lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : LawsonTopology'.IsOpen u
 
 
 
-lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : IsOpen (WithLawsonTopology.ofLawson ⁻¹' u) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := by
+lemma isOpen_iff_Lower_and_Scott_Open (u : Set α) : IsOpen (WithLawsonTopology.ofLawson ⁻¹' u) ↔
+  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := by
   rw [WithLawsonTopology.isOpen_preimage_ofLawson]
   sorry
 
@@ -173,9 +174,14 @@ end ts
 
 section csh
 
---lemma isOpen_iff_Lower_and_Scott_Open  (u : Set α) : IsOpen (WithLawsonTopology.toLawson u ) ↔  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := sorry
+/-
+lemma isOpen_iff_Lower_and_Scott_Open  (u : Set α) : IsOpen (WithLawsonTopology.toLawson u ) ↔
+  IsOpen (WithLowerTopology.toLower u) ∧  IsOpen (WithScottTopology.toScott u) := sorry
+-/
 
-lemma ScottLawsonCont' [Preorder α] : Continuous (WithScottTopology.toScott ∘ WithLawsonTopology.ofLawson : WithLawsonTopology α → _) := by
+lemma ScottLawsonCont' [Preorder α] :
+  Continuous (WithScottTopology.toScott ∘ WithLawsonTopology.ofLawson : WithLawsonTopology α → _) :=
+by
   rw [continuous_def]
   intro s hs
   simp
