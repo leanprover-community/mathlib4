@@ -298,12 +298,12 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
   by_cases hN1 : Nat.card N = 0
   · rw [hN1, Nat.coprime_zero_left, index_eq_one] at hN
     rw [hN]
-    exact ⟨⊥, IsComplement'_top_bot⟩
+    exact ⟨⊥, isComplement'_top_bot⟩
   by_cases hN2 : N.index = 0
   · rw [hN2, Nat.coprime_zero_right] at hN
     haveI := (Cardinal.toNat_eq_one_iff_unique.mp hN).1
     rw [N.eq_bot_of_subsingleton]
-    exact ⟨⊤, IsComplement'_bot_top⟩
+    exact ⟨⊤, isComplement'_bot_top⟩
   have hN3 : Nat.card G ≠ 0 := by
     rw [← N.card_mul_index]
     exact mul_ne_zero hN1 hN2
