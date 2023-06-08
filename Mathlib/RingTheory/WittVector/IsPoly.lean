@@ -604,12 +604,11 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
   convert h using 1
   all_goals
-    stop
-    funext i
-    simp only [hf, hg, MvPolynomial.eval, map_eval₂_hom]
-    apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
+    --  porting note: this proof started with `funext i`
+    simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
+    apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1
-    apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
+    apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext ⟨b, _⟩
     fin_cases b <;> simp only [coeff_mk, uncurry] <;> rfl
 #align witt_vector.is_poly₂.ext WittVector.IsPoly₂.ext
