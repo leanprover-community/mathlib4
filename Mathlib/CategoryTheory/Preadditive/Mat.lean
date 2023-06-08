@@ -636,7 +636,7 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
     simp only [Mat_.id_def, id_def]
     split_ifs <;> rfl
   map_comp f g := by
-    -- this proof was automatic in mathlib3
+    -- Porting note: this proof was automatic in mathlib3
     ext
     simp only [Mat_.comp_apply, comp_apply]
     apply Finset.unop_sum
