@@ -1310,8 +1310,8 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
 is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
-    [CompleteSpace (V i)] : orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i :=
-  by
+    [CompleteSpace (V i)] :
+    orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
   induction' x using DirectSum.induction_on with j x x y hx hy
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
