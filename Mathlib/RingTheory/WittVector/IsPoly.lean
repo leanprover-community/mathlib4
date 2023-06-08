@@ -99,66 +99,66 @@ end
 [PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
      [(Command.docComment "/--" "Simplification rules for ghost equations -/")]
      "register_simp_attr"
-     `ghost_simps)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
+     `ghost_simps)-/-- unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
 --/-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
 
---  porting note: todo later
---namespace Tactic
---
---namespace Interactive
---
---/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
---/-- A macro for a common simplification when rewriting with ghost component equations. -/
---unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
---  tactic.try tactic.intro1
---  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
---      (loc.ns [none])
---#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
---
---/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
---Typically, when faced with a goal like
---```lean
---∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
---```
---you can
---1. call `ghost_calc`
---2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
---3. call `ghost_simp`
---
---and this will close the goal.
---
---`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
---You must give it arguments to determine this.
---If you are proving a universally quantified goal like the above,
---call `ghost_calc _ _`.
---If the variables are introduced already, call `ghost_calc x y`.
---In the unary case, use `ghost_calc _` or `ghost_calc x`.
---
---`ghost_calc` is a light wrapper around type class inference.
---All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
---This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
---so it is easier (and prettier) to put it in a tactic script.
----/
---unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
---  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
---  let q(@Eq (WittVector _ $(R)) _ _) ← target
---  match ids with
---    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
---    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
---    | _ => fail "ghost_calc takes one or two arguments"
---  let nm ←
---    match R with
---      | expr.local_const _ nm _ _ => return nm
---      | _ => get_unused_name `R
---  iterate_exactly 2 apply_instance
---  unfreezingI (tactic.clear' tt [R])
---  introsI <| [nm, .str nm "_inst"] ++ ids'
---  skip
---#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
---
---end Interactive
---
---end Tactic
+/-  --  porting note: todo later
+namespace Tactic
+
+namespace Interactive
+
+/-- A macro for a common simplification when rewriting with ghost component equations. -/
+unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
+  tactic.try tactic.intro1
+  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
+      (loc.ns [none])
+#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
+
+/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
+Typically, when faced with a goal like
+```lean
+∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
+```
+you can
+1. call `ghost_calc`
+2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
+3. call `ghost_simp`
+
+and this will close the goal.
+
+`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
+You must give it arguments to determine this.
+If you are proving a universally quantified goal like the above,
+call `ghost_calc _ _`.
+If the variables are introduced already, call `ghost_calc x y`.
+In the unary case, use `ghost_calc _` or `ghost_calc x`.
+
+`ghost_calc` is a light wrapper around type class inference.
+All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
+This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
+so it is easier (and prettier) to put it in a tactic script.
+-/
+unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
+  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
+  let q(@Eq (WittVector _ $(R)) _ _) ← target
+  match ids with
+    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
+    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
+    | _ => fail "ghost_calc takes one or two arguments"
+  let nm ←
+    match R with
+      | expr.local_const _ nm _ _ => return nm
+      | _ => get_unused_name `R
+  iterate_exactly 2 apply_instance
+  unfreezingI (tactic.clear' tt [R])
+  introsI <| [nm, .str nm "_inst"] ++ ids'
+  skip
+#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
+
+end Interactive
+
+end Tactic
+-/
 
 namespace WittVector
 
@@ -207,7 +207,8 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
 
 -- Ideally, we would generalise this to n-ary functions
 -- But we don't have a good theory of n-ary compositions in mathlib
-/-- A function `f : Π R, 𝕎 R → 𝕎 R` that maps Witt vectors to Witt vectors over arbitrary base rings
+/--
+A function `f : Π R, 𝕎 R → 𝕎 R` that maps Witt vectors to Witt vectors over arbitrary base rings
 is said to be *polynomial* if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
 coefficient of `f x` is given by evaluating `φₙ` at the coefficients of `x`.
 
@@ -355,112 +356,113 @@ theorem IsPoly₂.diag {f} (hf : IsPoly₂ p f) : IsPoly p fun R _Rcr x => f x x
       aeval_X, head_fin_const, cons_val_one]
 #align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
---open Tactic
---
---namespace Tactic
---
---/-!
---### The `@[is_poly]` attribute
---
---This attribute is used to derive specialized composition instances
---for `is_poly` and `is_poly₂` declarations.
----/
---
---  porting note: port later
---/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly p _`,
---`mk_poly_comp_lemmas n vars p` adds composition instances to the environment
---`n.comp_i` and `n.comp₂_i`.
----/
---unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
---  let c ← mk_const n
---  let appd := vars.foldl expr.app c
---  let tgt_bod ←
---    to_expr ``(fun f [hf : IsPoly $(p) f] => IsPoly.comp $(appd) hf) >>=
---        replace_univ_metas_with_univ_params
---  let tgt_bod ← lambdas vars tgt_bod
---  let tgt_tp ← infer_type tgt_bod
---  let nm := .str n "comp_i"
---  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
---  set_attribute `instance nm
---  let tgt_bod ←
---    to_expr ``(fun f [hf : IsPoly₂ $(p) f] => IsPoly.comp₂ $(appd) hf) >>=
---        replace_univ_metas_with_univ_params
---  let tgt_bod ← lambdas vars tgt_bod
---  let tgt_tp ← infer_type tgt_bod
---  let nm := .str n "comp₂_i"
---  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
---  set_attribute `instance nm
---#align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
---
---/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly₂ p _`,
---`mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
---`n.comp₂_i` and `n.comp_diag`.
----/
---unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
---  let c ← mk_const n
---  let appd := vars.foldl expr.app c
---  let tgt_bod ←
---    to_expr
---          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] => IsPoly₂.comp $(appd) hf hg) >>=
---        replace_univ_metas_with_univ_params
---  let tgt_bod ← lambdas vars tgt_bod
---  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
---  let nm := .str n "comp₂_i"
---  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
---  set_attribute `instance nm
---  let tgt_bod ←
---    to_expr
---          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] =>
---            (IsPoly₂.comp $(appd) hf hg).diag) >>=
---        replace_univ_metas_with_univ_params
---  let tgt_bod ← lambdas vars tgt_bod
---  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
---  let nm := .str n "comp_diag"
---  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
---  set_attribute `instance nm
---#align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
---
---/-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
----/
---unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
---  let d ← get_decl n
---  let (vars, tp) ← open_pis d.type
---  match tp with
---    | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
---    | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
---    | _ => fail "@[is_poly] should only be applied to terms of type `is_poly _ _` or `is_poly₂ _ _`"
---#align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
---
---/-- `@[is_poly]` is applied to lemmas of the form `is_poly f φ` or `is_poly₂ f φ`.
---These lemmas should *not* be tagged as instances, and only atomic `is_poly` defs should be tagged:
---composition lemmas should not. Roughly speaking, lemmas that take `is_poly` proofs as arguments
---should not be tagged.
---
---Type class inference struggles with function composition, and the higher order unification problems
---involved in inferring `is_poly` proofs are complex. The standard style writing these proofs by hand
---doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
---limited forms of composition.
---
---Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
---proof of `is_poly f φ`, the instances added have the form
---```lean
---∀ g ψ, [is_poly g ψ] → is_poly (f ∘ g) _
---```
---Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
---applied. Composition lemmas relating `is_poly` with `is_poly₂` are also added.
---`id_is_poly` is an atomic instance.
---
---The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
---"as normal" if the tactic fails.
----/
---@[user_attribute]
---unsafe def is_poly_attr : user_attribute where
---  Name := `is_poly
---  descr := "Lemmas with this attribute describe the polynomial structure of functions"
---  after_set := some fun n _ _ => mk_comp_lemmas n
---#align witt_vector.tactic.is_poly_attr witt_vector.tactic.is_poly_attr
---
---end Tactic
+/-  porting note: port later
+open Tactic
+
+namespace Tactic
+
+/-!
+### The `@[is_poly]` attribute
+
+This attribute is used to derive specialized composition instances
+for `is_poly` and `is_poly₂` declarations.
+-/
+
+/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly p _`,
+`mk_poly_comp_lemmas n vars p` adds composition instances to the environment
+`n.comp_i` and `n.comp₂_i`.
+-/
+unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
+  let c ← mk_const n
+  let appd := vars.foldl expr.app c
+  let tgt_bod ←
+    to_expr ``(fun f [hf : IsPoly $(p) f] => IsPoly.comp $(appd) hf) >>=
+        replace_univ_metas_with_univ_params
+  let tgt_bod ← lambdas vars tgt_bod
+  let tgt_tp ← infer_type tgt_bod
+  let nm := .str n "comp_i"
+  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+  set_attribute `instance nm
+  let tgt_bod ←
+    to_expr ``(fun f [hf : IsPoly₂ $(p) f] => IsPoly.comp₂ $(appd) hf) >>=
+        replace_univ_metas_with_univ_params
+  let tgt_bod ← lambdas vars tgt_bod
+  let tgt_tp ← infer_type tgt_bod
+  let nm := .str n "comp₂_i"
+  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+  set_attribute `instance nm
+#align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
+
+/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly₂ p _`,
+`mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
+`n.comp₂_i` and `n.comp_diag`.
+-/
+unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
+  let c ← mk_const n
+  let appd := vars.foldl expr.app c
+  let tgt_bod ←
+    to_expr
+          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] => IsPoly₂.comp $(appd) hf hg) >>=
+        replace_univ_metas_with_univ_params
+  let tgt_bod ← lambdas vars tgt_bod
+  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
+  let nm := .str n "comp₂_i"
+  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+  set_attribute `instance nm
+  let tgt_bod ←
+    to_expr
+          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] =>
+            (IsPoly₂.comp $(appd) hf hg).diag) >>=
+        replace_univ_metas_with_univ_params
+  let tgt_bod ← lambdas vars tgt_bod
+  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
+  let nm := .str n "comp_diag"
+  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
+  set_attribute `instance nm
+#align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
+
+/-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
+-/
+unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
+  let d ← get_decl n
+  let (vars, tp) ← open_pis d.type
+  match tp with
+    | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
+    | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
+    | _ => fail "@[is_poly] should only be applied to terms of type `is_poly _ _` or `is_poly₂ _ _`"
+#align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
+
+/-- `@[is_poly]` is applied to lemmas of the form `is_poly f φ` or `is_poly₂ f φ`.
+These lemmas should *not* be tagged as instances, and only atomic `is_poly` defs should be tagged:
+composition lemmas should not. Roughly speaking, lemmas that take `is_poly` proofs as arguments
+should not be tagged.
+
+Type class inference struggles with function composition, and the higher order unification problems
+involved in inferring `is_poly` proofs are complex. The standard style writing these proofs by hand
+doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
+limited forms of composition.
+
+Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
+proof of `is_poly f φ`, the instances added have the form
+```lean
+∀ g ψ, [is_poly g ψ] → is_poly (f ∘ g) _
+```
+Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
+applied. Composition lemmas relating `is_poly` with `is_poly₂` are also added.
+`id_is_poly` is an atomic instance.
+
+The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
+"as normal" if the tactic fails.
+-/
+@[user_attribute]
+unsafe def is_poly_attr : user_attribute where
+  Name := `is_poly
+  descr := "Lemmas with this attribute describe the polynomial structure of functions"
+  after_set := some fun n _ _ => mk_comp_lemmas n
+#align witt_vector.tactic.is_poly_attr witt_vector.tactic.is_poly_attr
+
+end Tactic
+-/
 
 /-!
 ### `is_poly` instances
