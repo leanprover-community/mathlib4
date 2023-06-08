@@ -227,12 +227,11 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
--- attribute [local tidy] tactic.discrete_cases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The identity structured arrow is initial. -/
 def mkIdInitial [Full T] [Faithful T] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom) (by simp)
-  fac := fun _ ⟨a⟩ => by cases a
   uniq c m _ := by
     apply CommaMorphism.ext
     · aesop_cat
@@ -452,12 +451,11 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
--- attribute [local tidy] tactic.discrete_cases -- Porting note: removed
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The identity costructured arrow is terminal. -/
 def mkIdTerminal [Full S] [Faithful S] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom) (by simp)
-  fac := fun _ ⟨a⟩ => by cases a
   uniq := by
     rintro c m -
     apply CommaMorphism.ext
