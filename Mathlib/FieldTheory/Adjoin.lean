@@ -1076,7 +1076,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
 
 set_option maxHeartbeats 410000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
-/-- Extend a lift `x : lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
+/-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : Lifts F E K :=
   let h3 : IsIntegral x.1 s := isIntegral_of_isScalarTower h1
@@ -1251,7 +1251,7 @@ namespace PowerBasis
 
 open IntermediateField
 
-/-- `pb.equiv_adjoin_simple` is the equivalence between `K⟮pb.gen⟯` and `L` itself. -/
+/-- `pb.equivAdjoinSimple` is the equivalence between `K⟮pb.gen⟯` and `L` itself. -/
 noncomputable def equivAdjoinSimple (pb : PowerBasis K L) : K⟮pb.gen⟯ ≃ₐ[K] L :=
   (adjoin.powerBasis pb.isIntegral_gen).equivOfMinpoly pb
     (minpoly.eq_of_algebraMap_eq (algebraMap K⟮pb.gen⟯ L).injective
