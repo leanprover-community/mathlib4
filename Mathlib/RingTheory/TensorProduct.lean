@@ -534,7 +534,7 @@ theorem ext {g h : A ⊗[R] B →ₐ[R] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a �
   simp [H]
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
 
--- TODO: with `smul_comm_class R S A` we can have this as an `S`-algebra morphism
+-- TODO: with `SMulCommClass R S A` we can have this as an `S`-algebra morphism
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft : A →ₐ[R] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
