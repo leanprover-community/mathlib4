@@ -8,10 +8,10 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.OfAssociative
-import Mathbin.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathbin.Algebra.Lie.UniversalEnveloping
-import Mathbin.Algebra.FreeNonUnitalNonAssocAlgebra
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+import Mathlib.Algebra.Lie.UniversalEnveloping
+import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 
 /-!
 # Free Lie algebras
@@ -109,8 +109,7 @@ theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (
 #align free_lie_algebra.rel.sub_right FreeLieAlgebra.Rel.subRight
 
 theorem Rel.smulOfTower {S : Type _} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
-    (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) :=
-  by
+    (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
 #align free_lie_algebra.rel.smul_of_tower FreeLieAlgebra.Rel.smulOfTower
@@ -159,8 +158,7 @@ instance {S : Type _} [Semiring S] [Module S R] [IsScalarTower S R R] :
 
 /-- Note that here we turn the `has_mul` coming from the `non_unital_non_assoc_semiring` structure
 on `lib R X` into a `has_bracket` on `free_lie_algebra`. -/
-instance : LieRing (FreeLieAlgebra R X)
-    where
+instance : LieRing (FreeLieAlgebra R X) where
   bracket := Quot.map₂ (· * ·) (fun _ _ _ => Rel.mul_left _) fun _ _ _ => Rel.mul_right _
   add_lie := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; rw [add_mul]
   lie_add := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; rw [mul_add]
@@ -215,8 +213,7 @@ theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a
 #align free_lie_algebra.lift_aux_spec FreeLieAlgebra.liftAux_spec
 
 /-- The quotient map as a `non_unital_alg_hom`. -/
-def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X)
-    where
+def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   toFun := Quot.mk (Rel R X)
   map_smul' t a := rfl
   map_zero' := rfl
@@ -226,8 +223,7 @@ def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X)
 
 /-- The functor `X ↦ free_lie_algebra R X` from the category of types to the category of Lie
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
-def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L)
-    where
+def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   toFun f :=
     { toFun := fun c => Quot.liftOn c (liftAux R f) (liftAux_spec R f)
       map_add' := by rintro ⟨a⟩ ⟨b⟩; rw [← lift_aux_map_add]; rfl
