@@ -1096,30 +1096,46 @@ noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral 
             exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos h3))⟩⟩⟩
 #align intermediate_field.lifts.lift_of_splits IntermediateField.Lifts.liftOfSplits
 
+-- Porting note: instance `alg` added by hand.
+-- Porting note: Lean3 is able to guess `φ`
 theorem Lifts.le_lifts_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
-    (h2 : (minpoly F s).Splits (algebraMap F K)) : x ≤ x.lift_of_splits h1 h2 :=
+    (h2 : (minpoly F s).Splits (algebraMap F K)) : x ≤ x.liftOfSplits h1 h2 :=
   ⟨fun z hz => algebraMap_mem x.1⟮s⟯ ⟨z, hz⟩, fun t u htu =>
     Eq.symm
       (by
+        let alg : Algebra x.1 x.1⟮s⟯ := x.1⟮s⟯.toSubalgebra.algebra
         rw [← show algebraMap x.1 x.1⟮s⟯ t = u from Subtype.ext htu]
         letI : Algebra x.1 K := x.2.toRingHom.toAlgebra
-        exact AlgHom.commutes _ t)⟩
+        let I1 : IsIntegral x.1 s := isIntegral_of_isScalarTower h1
+        let key : (minpoly x.1 s).Splits x.2.toRingHom :=
+          splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
+            ((splits_map_iff _ _).mpr (by convert h2; exact RingHom.ext fun y => x.2.commutes y))
+              (minpoly.dvd_map_of_isScalarTower _ _ _)
+        have I2 := (ne_of_gt (minpoly.degree_pos I1))
+        have I3 : rootOfSplits (AlgHom.toRingHom x.2) key (ne_of_gt (minpoly.degree_pos I1)) ∈
+            (Polynomial.map (algebraMap x.1 K) (minpoly x.1 s)).roots := by
+          rw [mem_roots (map_ne_zero (minpoly.ne_zero I1)), IsRoot, ← eval₂_eq_eval_map]
+          exact map_rootOfSplits x.2.toRingHom key (ne_of_gt (minpoly.degree_pos I1))
+        let φ : x.1⟮s⟯ →ₐ[x.1] K := ((algHomAdjoinIntegralEquiv x.1 I1).invFun
+          ⟨rootOfSplits (AlgHom.toRingHom x.2) key I2, I3⟩)
+
+        exact AlgHom.commutes φ t)⟩
 #align intermediate_field.lifts.le_lifts_of_splits IntermediateField.Lifts.le_lifts_of_splits
 
 theorem Lifts.mem_lifts_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
-    (h2 : (minpoly F s).Splits (algebraMap F K)) : s ∈ (x.lift_of_splits h1 h2).1 :=
+    (h2 : (minpoly F s).Splits (algebraMap F K)) : s ∈ (x.liftOfSplits h1 h2).1 :=
   mem_adjoin_simple_self x.1 s
 #align intermediate_field.lifts.mem_lifts_of_splits IntermediateField.Lifts.mem_lifts_of_splits
 
 theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.1 :=
-  ⟨x.lift_of_splits h1 h2, x.le_lifts_of_splits h1 h2, x.mem_lifts_of_splits h1 h2⟩
+  ⟨x.liftOfSplits h1 h2, x.le_lifts_of_splits h1 h2, x.mem_lifts_of_splits h1 h2⟩
 #align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
 
 theorem algHom_mk_adjoin_splits
     (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
     Nonempty (adjoin F S →ₐ[F] K) := by
-  obtain ⟨x : lifts F E K, hx⟩ := zorn_partialOrder lifts.exists_upper_bound
+  obtain ⟨x : Lifts F E K, hx⟩ := zorn_partialOrder Lifts.exists_upper_bound
   refine'
     ⟨AlgHom.mk (fun s => x.2 ⟨s, adjoin_le_iff.mpr (fun s hs => _) s.Mem⟩) x.2.map_one
         (fun s t => x.2.map_mul ⟨s, _⟩ ⟨t, _⟩) x.2.map_zero (fun s t => x.2.map_add ⟨s, _⟩ ⟨t, _⟩)
