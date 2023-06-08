@@ -527,7 +527,7 @@ Note that the constant is far from optimal. -/
 theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m.1) (hn : n ≤ m.2)
     (f : 𝓢(E, F)) (x : E) :
     (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤
-      2 ^ m.1 * (Finset.Iic m).sup (fun m => Seminorm 𝕜 m.1 m.2) f := by
+      2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
   simp only [one_pow, mul_one, Finset.sum_congr, Finset.sum_mul]
   norm_cast
@@ -607,8 +607,8 @@ def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
 
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
-    ∃ (k : ℕ) (C : ℝ) (hC : 0 ≤ C),
-      ∀ (N : ℕ) (hN : N ≤ n) (x : E), ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
+    ∃ (k : ℕ) (C : ℝ) (_ : 0 ≤ C), ∀ (N : ℕ) (_ : N ≤ n) (x : E),
+      ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
@@ -620,6 +620,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   · simp only [Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
+  simp_rw [Real.rpow_nat_cast]
   refine' pow_le_pow (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
@@ -668,15 +669,11 @@ def mkClm [RingHomIsometric σ] (A : (D → E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ⊤ (A f))
-    (hbound :
-      ∀ n : ℕ × ℕ,
-        ∃ (s : Finset (ℕ × ℕ)) (C : ℝ) (hC : 0 ≤ C),
-          ∀ (f : 𝓢(D, E)) (x : F),
-            ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤
-              C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
+    (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ) (_ : 0 ≤ C), ∀ (f : 𝓢(D, E)) (x : F),
+      ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →SL[σ] 𝓢(F, G) where
   cont := by
-    change Continuous (mk_lm A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
+    change Continuous (mkLm A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine'
       Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => _
@@ -684,7 +681,7 @@ def mkClm [RingHomIsometric σ] (A : (D → E) → F → G)
     refine' ⟨s, ⟨C, hC⟩, fun f => _⟩
     simp only [Seminorm.comp_apply, Seminorm.smul_apply, NNReal.smul_def, Algebra.id.smul_eq_mul,
       Subtype.coe_mk]
-    exact (mk_lm A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
+    exact (mkLm A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
   toLinearMap := mkLm A hadd hsmul hsmooth hbound
 #align schwartz_map.mk_clm SchwartzMap.mkClm
 
@@ -731,9 +728,9 @@ def bilinLeftClm (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
         ContinuousLinearMap.add_apply])
     (fun _ _ _ => by
-      simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul', ContinuousLinearMap.map_smul,
+      simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
-    (fun f => (B.IsBoundedBilinearMap.ContDiff.restrictScalars ℝ).comp (f.smooth'.Prod hg.1))
+    (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1))
     (by
       -- Porting note: rewrite this proof with `rel_congr`
       rintro ⟨k, n⟩
@@ -999,7 +996,7 @@ def toBoundedContinuousFunctionClm : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
         Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
           (norm_withSeminorms 𝕜 (E →ᵇ F)) _ fun i => ⟨{0}, 1, fun f => _⟩
       rw [Finset.sup_singleton, one_smul, Seminorm.comp_apply, coe_normSeminorm,
-        schwartz_seminorm_family_apply_zero, BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+        schwartzSeminormFamily_apply_zero, BoundedContinuousFunction.norm_le (map_nonneg _ _)]
       intro x
       exact norm_le_seminorm 𝕜 _ _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionClm
