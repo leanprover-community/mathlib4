@@ -19,9 +19,9 @@ principal.
 
 ## Main results
 
- * `ideal.is_principal.of_finite_maximals_of_is_unit`: an invertible ideal in a commutative ring
+ * `Ideal.IsPrincipal.of_finite_maximals_of_isUnit`: an invertible ideal in a commutative ring
    with finitely many maximal ideals, is a principal ideal.
- * `is_principal_ideal_ring.of_finite_primes`: if a Dedekind domain has finitely many prime ideals,
+ * `IsPrincipalIdealRing.of_finite_primes`: if a Dedekind domain has finitely many prime ideals,
    it is a principal ideal domain.
 -/
 
