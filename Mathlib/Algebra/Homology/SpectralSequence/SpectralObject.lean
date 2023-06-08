@@ -468,7 +468,7 @@ lemma cyclesCoToHδ₁_Hδ₁Toδ₀ :
   rw [← cancel_epi (X.pCyclesCo n₀ n₁ hn₁), pCyclesCo_cyclesCoToHδ₁_assoc, comp_zero]
   exact (X.shortComplex₂ n₁).zero
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma cyclesCoToHδ₁_Hδ₁Toδ₀_app (D : Arrow₂ ι) :
     (X.cyclesCoToHδ₁ n₀ n₁ hn₁).app D ≫ (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁)).app D = 0 :=
   congr_app (X.cyclesCoToHδ₁_Hδ₁Toδ₀ n₀ n₁ hn₁) D
@@ -639,7 +639,6 @@ lemma shortComplex₄Ψ_exact₂ : (X.shortComplex₄Ψ n₀ n₁ hn₁).shortCo
       congr
       ext <;> dsimp <;> simp)
   dsimp at x₂ hx₂
-  have := (X.δ n₀ n₁ hn₁).app (Arrow₂.mk (f₁ ≫ f₂) f₃)
   refine' ⟨A₁, π₁, hπ₁,
     (X.kernelSequenceCycles_obj_exact n₀ n₁ hn₁ (Arrow₂.mk f₂ f₃)).lift x₂ _, _⟩
   . dsimp
@@ -722,6 +721,17 @@ instance : Epi (X.cokernelSequenceSrcΦ n₀ n₁ hn₁).g := by
 
 noncomputable def Φ : X.srcΦ n₀ n₁ hn₁ ≅ X.tgtΦ n₀ n₁ hn₁ :=
   (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
+
+@[reassoc (attr := simp)]
+lemma toSrcΦ_Φ_hom_fromTgtΦ :
+    X.toSrcΦ n₀ n₁ hn₁ ≫ (X.Φ n₀ n₁ hn₁).hom ≫ X.fromTgtΦ n₀ n₁ hn₁ = X.Ψ n₀ n₁ hn₁ :=
+  (X.shortComplex₄Ψ n₀ n₁ hn₁).cokerToKer_fac
+
+@[reassoc (attr := simp)]
+lemma toSrcΦ_Φ_hom_fromTgtΦ_app (D : Arrow₃ ι) :
+  (X.toSrcΦ n₀ n₁ hn₁).app D ≫ (X.Φ n₀ n₁ hn₁).hom.app D ≫ (X.fromTgtΦ n₀ n₁ hn₁).app D =
+    (X.Ψ n₀ n₁ hn₁).app D :=
+  congr_app (X.toSrcΦ_Φ_hom_fromTgtΦ n₀ n₁ hn₁) D
 
 pp_extended_field_notation Φ
 
@@ -859,7 +869,43 @@ noncomputable def dToTgtΦ :
     dsimp [shortComplexE] at eq
     dsimp [Arrow₃.δ₁, Arrow₃.δ₃, Arrow₄.δ₄]
     erw [assoc, X.comp_ψ_app n₁ n₂ hn₂ (Arrow₃.mk f₁ f₂ f₃), reassoc_of% eq, zero_comp]
-  . sorry
+  . rw [← cancel_epi (X.δ₀PullbackCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂).g,
+      ShortComplex.Exact.g_desc_assoc, comp_zero]
+    ext D
+    exact congr_app (X.shortComplex₄Ψ n₁ n₂ hn₂).zero₂ (Arrow₄.δ₄.obj D)
+
+@[reassoc (attr := simp)]
+lemma dToTgtΦ_fac :
+    whiskerLeft Arrow₄.δ₀ (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂) ≫
+      X.dToTgtΦ n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft Arrow₄.δ₄ (X.fromTgtΦ n₁ n₂ hn₂) =
+        whiskerLeft Arrow₄.δ₄ (X.Ψ n₁ n₂ hn₂) := by
+  dsimp only [dToTgtΦ]
+  erw [(X.δ₄PullbackKernelSequenceTgtΦ_exact n₁ n₂ hn₂).lift_f,
+    (X.δ₀PullbackCokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).g_desc]
+
+@[reassoc (attr := simp)]
+lemma dToTgtΦ_fac_app (D : Arrow₄ ι):
+  (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₀.obj D) ≫
+    (X.dToTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D ≫ (X.fromTgtΦ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D) =
+      (X.Ψ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D) :=
+  congr_app (X.dToTgtΦ_fac n₀ n₁ n₂ hn₁ hn₂) D
+
+noncomputable def dToSrcΦ :
+    Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ ⟶ Arrow₄.δ₄ ⋙ X.srcΦ n₁ n₂ hn₂ :=
+  X.dToTgtΦ  n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft Arrow₄.δ₄ (X.Φ n₁ n₂ hn₂).inv
+
+@[reassoc (attr := simp)]
+lemma dToSrcΦ_Φ_app (D : Arrow₄ ι) :
+    (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D ≫ (X.Φ n₁ n₂ hn₂).hom.app (Arrow₄.δ₄.obj D) =
+      (X.dToTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D := by
+  simp [dToSrcΦ]
+
+lemma cyclesπ_dToSrcΦ_app (D : Arrow₄ ι) :
+    (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₀.obj D) ≫ (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D =
+      (X.toSrcΦ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D) := by
+  rw [← cancel_mono ((X.Φ n₁ n₂ hn₂).hom.app (Arrow₄.δ₄.obj D)), assoc, dToSrcΦ_Φ_app,
+    ← cancel_mono ((X.fromTgtΦ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D)), assoc, assoc,
+    toSrcΦ_Φ_hom_fromTgtΦ_app, dToTgtΦ_fac_app]
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
