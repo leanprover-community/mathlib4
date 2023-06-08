@@ -116,7 +116,7 @@ variable {β}
 theorem mem_cutMap_iff : b ∈ cutMap β a ↔ ∃ q : ℚ, (q : α) < a ∧ (q : β) = b := Iff.rfl
 #align linear_ordered_field.mem_cut_map_iff LinearOrderedField.mem_cutMap_iff
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α) < a :=
   Rat.cast_injective.mem_set_image
 #align linear_ordered_field.coe_mem_cut_map_iff LinearOrderedField.coe_mem_cutMap_iff
@@ -186,7 +186,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun a b h =>
+theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _  h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 #align linear_ordered_field.induced_map_mono LinearOrderedField.inducedMap_mono
 
@@ -231,7 +231,7 @@ theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q
 
 @[simp]
 theorem inducedMap_self (b : β) : inducedMap β β b = b :=
-  eq_of_forall_rat_lt_iff_lt fun q => coe_lt_inducedMap_iff
+  eq_of_forall_rat_lt_iff_lt fun _ => coe_lt_inducedMap_iff
 #align linear_ordered_field.induced_map_self LinearOrderedField.inducedMap_self
 
 variable (α β)
@@ -242,7 +242,7 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 #align linear_ordered_field.induced_map_induced_map LinearOrderedField.inducedMap_inducedMap
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 #align linear_ordered_field.induced_map_inv_self LinearOrderedField.inducedMap_inv_self
@@ -377,3 +377,5 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
 #align real.ring_hom.unique Real.RingHom.unique
 
 end Real
+
+#lint
