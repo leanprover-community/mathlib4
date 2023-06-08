@@ -7,10 +7,46 @@ import Lean
 import Mathlib.Data.Array.Defs
 
 namespace Mathlib.Tactic
-open Lean Elab.Tactic Meta Parser Term
+open Lean Elab.Tactic Meta Parser Term Syntax.MonadTraverser
+
+section deleteme -- once lean4#2262 is merged
+
+def hygieneInfoFn : ParserFn := fun c s =>
+  let input := c.input
+  let finish pos str trailing s :=
+    let info  := SourceInfo.original str pos trailing pos
+    let ident := mkIdent info str .anonymous
+    let stx   := mkNode `hygieneInfo' #[ident]
+    s.pushSyntax stx
+  let els s :=
+    let str := mkEmptySubstringAt input s.pos
+    finish s.pos str str s
+  if s.stxStack.isEmpty then els s else
+    let prev := s.stxStack.back
+    if let .original leading pos trailing endPos := prev.getTailInfo then
+      let str := mkEmptySubstringAt input endPos
+      let s := s.popSyntax.pushSyntax <| prev.setTailInfo (.original leading pos str endPos)
+      finish endPos str trailing s
+    else els s
+
+def hygieneInfoNoAntiquot : Parser := {
+  fn   := hygieneInfoFn
+  info := nodeInfo `hygieneInfo' epsilonInfo
+}
+
+@[combinator_formatter hygieneInfoNoAntiquot]
+def hygieneInfoNoAntiquot.formatter : PrettyPrinter.Formatter := goLeft
+@[combinator_parenthesizer hygieneInfoNoAntiquot]
+def hygieneInfoNoAntiquot.parenthesizer : PrettyPrinter.Parenthesizer := goLeft
+@[run_parser_attribute_hooks] def hygieneInfo : Parser :=
+  withAntiquot (mkAntiquot "hygieneInfo" `hygieneInfo' (anonymous := false)) hygieneInfoNoAntiquot
+
+end deleteme
 
 def optBinderIdent : Parser := leading_parser
-  (ppSpace >> Term.binderIdent) <|> hygieneInfo
+  -- Note: the withResetCache is because leading_parser seems to add a cache boundary,
+  -- which causes the `hygieneInfo` parser not to be able to undo the trailing whitespace
+  (ppSpace >> Term.binderIdent) <|> withResetCache hygieneInfo
 
 def optBinderIdent.name (id : TSyntax ``optBinderIdent) : Name :=
   if id.raw[0].isIdent then id.raw[0].getId else HygieneInfo.mkIdent ⟨id.raw[0]⟩ `this |>.getId
@@ -56,7 +92,7 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, goal2) ← (← declFn goal n t p).intro1P
     goal2.withContext do
-      Term.addTermInfo' (isBinder := true) name (mkFVar fvar)
+      Term.addTermInfo' (isBinder := true) name.raw[0] (mkFVar fvar)
     pure (goal1, goal2)
 
 elab_rules : tactic
