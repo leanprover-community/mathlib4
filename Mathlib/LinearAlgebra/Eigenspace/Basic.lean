@@ -8,9 +8,9 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Spectrum
-import Mathbin.LinearAlgebra.GeneralLinearGroup
-import Mathbin.LinearAlgebra.FiniteDimensional
+import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 /-!
 # Eigenvectors and eigenvalues
@@ -150,8 +150,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
     @Dfinsupp.lsum K K ℕ _ V _ _ _ _ _ _ _ _ _ fun μ => (f.eigenspace μ).Subtype
   -- We need to show that if a finitely-supported collection `l` of representatives of the
   -- eigenspaces has sum `0`, then it itself is zero.
-  suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0
-    by
+  suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0 by
     rw [CompleteLattice.independent_iff_dfinsupp_lsum_injective]
     change Function.Injective S
     rw [←
@@ -172,8 +171,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
   · let l' :=
       Dfinsupp.mapRange.linearMap (fun μ => (μ - μ₀) • @LinearMap.id K (f.eigenspace μ) _ _ _) l
     -- The support of `l'` is the support of `l` without `μ₀`.
-    have h_l_support' : l'.support = l_support' :=
-      by
+    have h_l_support' : l'.support = l_support' := by
       rw [← Finset.erase_insert hμ₀, ← h_l_support]
       ext a
       have : ¬(a = μ₀ ∨ l a = 0) ↔ ¬a = μ₀ ∧ ¬l a = 0 := not_or
@@ -210,8 +208,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
     -- Therefore, by the induction hypothesis, all entries of `l'` are zero.
     have l'_eq_0 := ih l' total_l' h_l_support'
     -- By the definition of `l'`, this means that `(μ - μ₀) • l μ = 0` for all `μ`.
-    have h_smul_eq_0 : ∀ μ, (μ - μ₀) • l μ = 0 :=
-      by
+    have h_smul_eq_0 : ∀ μ, (μ - μ₀) • l μ = 0 := by
       intro μ
       calc
         (μ - μ₀) • l μ = l' μ := by
@@ -220,14 +217,12 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
         _ = 0 := by rw [l'_eq_0]; rfl
         
     -- Thus, the eigenspace-representatives in `l` for all `μ ≠ μ₀` are `0`.
-    have h_lμ_eq_0 : ∀ μ : K, μ ≠ μ₀ → l μ = 0 :=
-      by
+    have h_lμ_eq_0 : ∀ μ : K, μ ≠ μ₀ → l μ = 0 := by
       intro μ hμ
       apply or_iff_not_imp_left.1 (smul_eq_zero.1 (h_smul_eq_0 μ))
       rwa [sub_eq_zero]
     -- So if we sum over all these representatives, we obtain `0`.
-    have h_sum_l_support'_eq_0 : (Finset.sum l_support' fun μ => (l μ : V)) = 0 :=
-      by
+    have h_sum_l_support'_eq_0 : (Finset.sum l_support' fun μ => (l μ : V)) = 0 := by
       rw [← Finset.sum_const_zero]
       apply Finset.sum_congr rfl
       intro μ hμ
@@ -236,8 +231,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
       exact hμ₀ hμ
     -- The only potentially nonzero eigenspace-representative in `l` is the one corresponding to
     -- `μ₀`. But since the overall sum is `0` by assumption, this representative must also be `0`.
-    have : l μ₀ = 0 :=
-      by
+    have : l μ₀ = 0 := by
       simp only [S, Dfinsupp.lsum_apply_apply, Dfinsupp.sumAddHom_apply,
         LinearMap.toAddMonoidHom_coe, Dfinsupp.sum, h_l_support, Submodule.subtype_apply,
         Submodule.coe_eq_zero, Finset.sum_insert hμ₀, h_sum_l_support'_eq_0, add_zero] at hl 
@@ -265,8 +259,7 @@ theorem eigenvectors_linearIndependent (f : End K V) (μs : Set K) (xs : μs →
 /-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
 kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
 some exponent `k` is contained in the generalized eigenspace for exponents larger than `k`. -/
-def generalizedEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M
-    where
+def generalizedEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
   toFun k := ((f - algebraMap R (End R M) μ) ^ k).ker
   monotone' k m hm := by
     simp only [← pow_sub_mul_pow _ hm]
@@ -306,8 +299,7 @@ def generalizedEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (h : f.HasGeneralizedEigenvalue μ k) : k ≠ 0 :=
-  by
+    (h : f.HasGeneralizedEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
   exact h LinearMap.ker_id
 #align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGeneralizedEigenvalue
@@ -340,8 +332,7 @@ noncomputable def maximalGeneralizedEigenspaceIndex (f : End R M) (μ : R) :=
 `(f - μ • id) ^ k` for some `k`. -/
 theorem maximalGeneralizedEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
     maximalGeneralizedEigenspace f μ =
-      f.generalizedEigenspace μ (maximalGeneralizedEigenspaceIndex f μ) :=
-  by
+      f.generalizedEigenspace μ (maximalGeneralizedEigenspaceIndex f μ) := by
   rw [isNoetherian_iff_wellFounded] at h 
   exact (WellFounded.iSup_eq_monotonicSequenceLimit h (f.generalized_eigenspace μ) : _)
 #align module.End.maximal_generalized_eigenspace_eq Module.End.maximalGeneralizedEigenspace_eq
@@ -365,8 +356,7 @@ theorem eigenspace_le_generalizedEigenspace {f : End R M} {μ : R} {k : ℕ} (hk
 
 /-- All eigenvalues are generalized eigenvalues. -/
 theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
-    (hμ : f.HasEigenvalue μ) : f.HasGeneralizedEigenvalue μ k :=
-  by
+    (hμ : f.HasEigenvalue μ) : f.HasGeneralizedEigenvalue μ k := by
   apply has_generalized_eigenvalue_of_has_generalized_eigenvalue_of_le hk
   rw [has_generalized_eigenvalue, generalized_eigenspace, OrderHom.coe_fun_mk, pow_one]
   exact hμ
@@ -374,8 +364,7 @@ theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : �
 
 /-- All generalized eigenvalues are eigenvalues. -/
 theorem hasEigenvalue_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (hμ : f.HasGeneralizedEigenvalue μ k) : f.HasEigenvalue μ :=
-  by
+    (hμ : f.HasGeneralizedEigenvalue μ k) : f.HasEigenvalue μ := by
   intro contra; apply hμ
   erw [LinearMap.ker_eq_bot] at contra ⊢; rw [LinearMap.coe_pow]
   exact Function.Injective.iterate contra k
@@ -407,8 +396,7 @@ theorem generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDime
 theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     generalizedEigenspace (LinearMap.restrict f hfp) μ k =
-      Submodule.comap p.Subtype (f.generalizedEigenspace μ k) :=
-  by
+      Submodule.comap p.Subtype (f.generalizedEigenspace μ k) := by
   simp only [generalized_eigenspace, OrderHom.coe_fun_mk, ← LinearMap.ker_comp]
   induction' k with k ih
   · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
@@ -421,8 +409,7 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
 theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
-    (μ : R) : (eigenspace (f.restrict hfp) μ).map p.Subtype ≤ f.eigenspace μ :=
-  by
+    (μ : R) : (eigenspace (f.restrict hfp) μ).map p.Subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
   exact congr_arg coe hx
@@ -451,8 +438,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
 /-- If an invariant subspace `p` of an endomorphism `f` is disjoint from the `μ`-eigenspace of `f`,
 then the restriction of `f` to `p` has trivial `μ`-eigenspace. -/
 theorem eigenspace_restrict_eq_bot {f : End R M} {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
-    {μ : R} (hμp : Disjoint (f.eigenspace μ) p) : eigenspace (f.restrict hfp) μ = ⊥ :=
-  by
+    {μ : R} (hμp : Disjoint (f.eigenspace μ) p) : eigenspace (f.restrict hfp) μ = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   simpa using hμp.le_bot ⟨eigenspace_restrict_le_eigenspace f hfp μ ⟨x, hx, rfl⟩, x.prop⟩
