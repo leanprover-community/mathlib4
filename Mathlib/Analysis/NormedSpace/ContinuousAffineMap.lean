@@ -193,8 +193,11 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
 noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
-      map_zero' := by simp
-      neg' := fun f => by simp
+      map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
+      neg' := fun f => by
+        simp [(ContinuousAffineMap.neg_apply)]
+        -- Porting note: added
+        rw [ContinuousAffineMap.neg_apply, norm_neg, neg_contLinear, norm_neg]
       add_le' := fun f g => by
         simp only [Pi.add_apply, add_contLinear, coe_add, max_le_iff]
         exact
@@ -253,6 +256,7 @@ def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V �
     rw [f.decomp]
     simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, coe_contLinear, Pi.add_apply,
       Function.const_apply]
+    -- Porting note: added
     rw [ContinuousAffineMap.coe_const, Function.const_apply]
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
