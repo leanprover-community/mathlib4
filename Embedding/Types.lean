@@ -23,9 +23,9 @@ def parseResponse (response : String) :
   | .ok json =>
     if let .ok out := json.getObjValAs? (Array IndexedEmbedding) "data" then
       .ok <| .ok out
-    else if let .ok err := json.getObjValAs? Error "error" then 
+    else if let .ok err := json.getObjValAs? Error "error" then
       .ok <| .error err
-    else 
+    else
       .error s!"Unknown error:\n{json}"
 
 structure Decl where
@@ -41,7 +41,7 @@ structure EmbeddedDecl extends Decl where
   typeEmb : Option (Array JsonNumber) := none
 
 def EmbeddedDecl.json (e : EmbeddedDecl) (env : Environment) : IO Json := do
-  let tp := toString (toJson <| toString <| (← ppExprWithInfos { env := env } e.type).fmt).compress
+  let tp := toJson <| toString <| (← ppExprWithInfos { env := env } e.type).fmt
   return Json.mkObj [
     ("name", toJson e.name),
     ("module", toJson e.module),
