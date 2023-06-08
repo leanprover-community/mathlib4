@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Basic
+import Mathlib.RingTheory.WittVector.Basic
 
 /-!
 # Teichmüller lifts
@@ -66,8 +66,7 @@ satisfy the ring axioms.
 include hp
 
 private theorem ghost_component_teichmuller_fun (r : R) (n : ℕ) :
-    ghostComponent n (teichmullerFun p r) = r ^ p ^ n :=
-  by
+    ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by
   rw [ghost_component_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
     tsub_zero]
   · rfl
@@ -82,16 +81,14 @@ private theorem map_teichmuller_fun (f : R →+* S) (r : R) :
   · exact f.map_zero
 
 private theorem teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
-    teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y :=
-  by
+    teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   apply (ghost_map.bijective_of_invertible p (MvPolynomial R ℚ)).1
   rw [RingHom.map_mul]
   ext1 n
   simp only [Pi.mul_apply, ghost_map_apply, ghost_component_teichmuller_fun, mul_pow]
 
 private theorem teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
-    teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y :=
-  by
+    teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
   refine'
     map_injective (MvPolynomial.map (Int.castRingHom ℚ))
       (MvPolynomial.map_injective _ Int.cast_injective) _
