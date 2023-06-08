@@ -167,7 +167,7 @@ elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   evalTactic (← `(tactic|(
   ext n
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
-  simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, OfNat.ofNat, One.one,
+  simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
@@ -179,7 +179,7 @@ section GhostFun
 
 variable (x y : WittVector p R)
 
--- The following lemmas are not `@[simp]` because they will be bundled in `ghost_map` later on.
+-- The following lemmas are not `@[simp]` because they will be bundled in `ghostMap` later on.
 
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
