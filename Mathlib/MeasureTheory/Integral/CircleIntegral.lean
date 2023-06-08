@@ -212,9 +212,11 @@ theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs 
 
 theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     Continuous fun θ => (circleMap z R θ - w)⁻¹ := by
-  have : ∀ θ, circleMap z R θ - w ≠ 0 := by simp_rw [sub_ne_zero];
+  have : ∀ θ, circleMap z R θ - w ≠ 0 := by
+    simp_rw [sub_ne_zero]
     exact fun θ => circleMap_ne_mem_ball hw θ
-  continuity
+  -- Porting note: was `continuity`
+  exact Continuous.inv₀ (by continuity) this
 #align continuous_circle_map_inv continuous_circleMap_inv
 
 /-!
@@ -241,12 +243,12 @@ namespace CircleIntegrable
 
 variable {f g : ℂ → E} {c : ℂ} {R : ℝ}
 
-theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
+nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
   hf.add hg
 #align circle_integrable.add CircleIntegrable.add
 
-theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
+nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 #align circle_integrable.neg CircleIntegrable.neg
 
@@ -257,9 +259,8 @@ theorem out [NormedSpace ℂ E] (hf : CircleIntegrable f c R) :
       (2 * π) := by
   simp only [CircleIntegrable, deriv_circleMap, intervalIntegrable_iff] at *
   refine' (hf.norm.const_mul (|R|)).mono' _ _
-  ·
-    exact
-      ((continuous_circleMap _ _).AEStronglyMeasurable.mul_const I).smul hf.ae_strongly_measurable
+  · exact
+      ((continuous_circleMap _ _).aestronglyMeasurable.mul_const I).smul hf.aestronglyMeasurable
   · simp [norm_smul]
 #align circle_integrable.out CircleIntegrable.out
 
@@ -281,15 +282,15 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   refine' (h.norm.const_mul (|R|)⁻¹).mono' _ _
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun θ => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H] using
-      ((continuous_circleMap 0 R).AEStronglyMeasurable.mul_const
-                  I).AEMeasurable.inv.AEStronglyMeasurable.smul
-        h.ae_strongly_measurable
+      ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const
+                  I).aemeasurable.inv.aestronglyMeasurable.smul
+        h.aestronglyMeasurable
   · simp [norm_smul, h₀]
 #align circle_integrable_iff circleIntegrable_iff
 
 theorem ContinuousOn.circle_integrable' {f : ℂ → E} {c : ℂ} {R : ℝ}
     (hf : ContinuousOn f (sphere c (|R|))) : CircleIntegrable f c R :=
-  (hf.comp_continuous (continuous_circleMap _ _) (circleMap_mem_sphere' _ _)).IntervalIntegrable _ _
+  (hf.comp_continuous (continuous_circleMap _ _) (circleMap_mem_sphere' _ _)).intervalIntegrable _ _
 #align continuous_on.circle_integrable' ContinuousOn.circle_integrable'
 
 theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R)
@@ -334,7 +335,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine' (zpow_strictAnti this.1 this.2).le_iff_le.2 (Int.lt_add_one_iff.1 _); exact hn
   · rintro (rfl | H)
     exacts [circleIntegrable_zero_radius,
-      ((continuous_on_id.sub continuousOn_const).zpow₀ _ fun z hz =>
+      ((continuousOn_id.sub continuousOn_const).zpow₀ _ fun z hz =>
           H.symm.imp_left fun hw => sub_ne_zero.2 <| ne_of_mem_of_not_mem hz hw).circle_integrable']
 #align circle_integrable_sub_zpow_iff circleIntegrable_sub_zpow_iff
 
@@ -348,7 +349,7 @@ variable [NormedSpace ℂ E] [CompleteSpace E]
 
 /-- Definition for $\oint_{|z-c|=R} f(z)\,dz$. -/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
-  ∫ θ : ℝ in 0 ..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
+  ∫ θ : ℝ in 0..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 #align circle_integral circleIntegral
 
 -- mathport name: «expr∮ inC( , ), »
@@ -357,7 +358,7 @@ notation3"∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π), deriv (circleMap c R) θ • f (circleMap c R θ) :=
   by
-  simp only [circleIntegral, intervalIntegral.integral_of_le real.two_pi_pos.le,
+  simp only [circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
     measure.restrict_congr_set Ioc_ae_eq_Icc]
 #align circle_integral_def_Icc circleIntegral_def_Icc
 
@@ -442,8 +443,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       refine'
         intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt Real.two_pi_pos _
           continuousOn_const (fun θ hθ => _) ⟨θ₀, Ioc_subset_Icc_self hmem, _⟩
-      ·
-        exact
+      · exact
           continuous_on_const.mul
             (hc.comp (continuous_circleMap _ _).ContinuousOn fun θ hθ =>
                 circleMap_mem_sphere _ hR.le _).norm
