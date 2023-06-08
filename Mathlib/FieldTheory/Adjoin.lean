@@ -460,6 +460,7 @@ theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s)
 Used to preferentially use `singleton` rather than `insert` when adjoining one element.
 -/
 class Insert {α : Type _} (s : Set α) where
+  /-- Variation on `set.insert`. -/
   insert : α → Set α
 #align intermediate_field.insert IntermediateField.Insert
 
