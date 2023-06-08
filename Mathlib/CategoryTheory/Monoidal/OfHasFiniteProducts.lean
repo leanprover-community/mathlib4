@@ -133,9 +133,6 @@ end monoidalOfHasFiniteProducts
 
 section
 
---porting note: this no longer seems necessary, the default tactic is now aesop_cat instead of tidy.
---attribute [local tidy] tactic.case_bash
-
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C where
   tensorUnit' := ⊥_ C
