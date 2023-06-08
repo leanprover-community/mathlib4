@@ -1078,11 +1078,11 @@ namespace RightHomologyData
 
 variable {S}
 
-lemma isIso_p_of_zero_f (h : RightHomologyData S) (hf : S.f = 0) : IsIso h.p :=
+lemma isIso_p (h : RightHomologyData S) (hf : S.f = 0) : IsIso h.p :=
   ⟨⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
     rw [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩⟩
 
-lemma isIso_ι_of_zero_g (h : RightHomologyData S) (hg : S.g = 0) : IsIso h.ι := by
+lemma isIso_ι (h : RightHomologyData S) (hg : S.g = 0) : IsIso h.ι := by
   have ⟨φ, hφ⟩ := KernelFork.IsLimit.lift' h.hι' (𝟙 _)
     (by rw [← cancel_epi h.p, id_comp, p_g', comp_zero, hg])
   dsimp at hφ
@@ -1091,7 +1091,7 @@ lemma isIso_ι_of_zero_g (h : RightHomologyData S) (hg : S.g = 0) : IsIso h.ι :
 end RightHomologyData
 
 lemma isIso_rightHomologyι (hg : S.g = 0) [S.HasRightHomology] :
-    IsIso S.rightHomologyι := RightHomologyData.isIso_ι_of_zero_g _ hg
+    IsIso S.rightHomologyι := RightHomologyData.isIso_ι _ hg
 
 @[simps! hom]
 noncomputable def asIsoRightHomologyι (hg : S.g = 0) [S.HasRightHomology] :

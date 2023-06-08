@@ -750,7 +750,7 @@ noncomputable def preservesLeftHomologyOf_of_zero_right (hg : S.g = 0)
       rw [hg]
       infer_instance
     f' := by
-      have := h.isIso_i_of_zero_g hg
+      have := h.isIso_i hg
       let e : parallelPair h.f' 0 ≅ parallelPair S.f 0 :=
         parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
       exact Limits.preservesColimitOfIsoDiagram F e.symm}⟩
@@ -762,11 +762,10 @@ noncomputable def preservesRightHomologyOf_of_zero_left (hf : S.f = 0)
       rw [hf]
       infer_instance
     g' := by
-      have := h.isIso_p_of_zero_f hf
+      have := h.isIso_p hf
       let e : parallelPair S.g 0 ≅ parallelPair h.g' 0 :=
         parallelPair.ext (asIso h.p) (Iso.refl _) (by aesop_cat) (by aesop_cat)
-      exact Limits.preservesLimitOfIsoDiagram F e }
-      ⟩
+      exact Limits.preservesLimitOfIsoDiagram F e }⟩
 
 end Functor
 

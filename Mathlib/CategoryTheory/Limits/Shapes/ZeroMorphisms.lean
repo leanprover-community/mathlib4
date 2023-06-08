@@ -78,12 +78,15 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
-instance hasZeroMorphismsPempty : HasZeroMorphisms (Discrete PEmpty) where Zero := by dee
-#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPempty
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
-instance hasZeroMorphismsPunit : HasZeroMorphisms (Discrete PUnit) where
+instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
+  Zero := by aesop_cat
+#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty
+
+instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   Zero := fun X Y => by repeat (constructor)
-#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPunit
+#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPUnit
 
 namespace HasZeroMorphisms
 

@@ -747,30 +747,6 @@ lemma δ₃PullbackKernelSequenceCycles_exact :
     (X.δ₃PullbackKernelSequenceCycles n₀ n₁ hn₁).Exact :=
   (X.kernelSequenceCycles_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₃)))
 
-/-noncomputable def δHToCycles : Arrow₃.hMor ⋙ X.H n₀ ⟶ Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ :=
-  (X.δ₃PullbackKernelSequenceCycles_exact n₁ n₂ hn₂).lift
-    (whiskerLeft Arrow₃.δ₀ (X.δ n₀ n₁ hn₁)) (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero
-
-@[reassoc (attr := simp)]
-lemma δHToCycles_comp_iCycles :
-    X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft (Arrow₃.δ₃) (X.iCycles n₁ n₂ hn₂) =
-      whiskerLeft Arrow₃.δ₀ (X.δ n₀ n₁ hn₁) :=
-  ShortComplex.Exact.lift_f _ _ _-/
-
-/-lemma δHToCycles_eq : X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ =
-    whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.Hδ₁ToCycles n₁ n₂ hn₂) :=  by
-  rw [← cancel_mono (whiskerLeft (Arrow₃.δ₃) (X.iCycles n₁ n₂ hn₂))]
-  simp only [δHToCycles_comp_iCycles, assoc]
-  ext D
-  let φ := (Arrow₃.δ₁Toδ₀).app D
-  have eq := (X.δ n₀ n₁ hn₁).naturality φ
-  dsimp [Arrow₃.δ₀, Arrow₃.δ₁, Arrow₃.δ₂, Arrow₃.δ₃, Arrow₂.δ₂, Arrow₂.δ₀, Arrow₂.δ₁Toδ₀] at eq ⊢
-  simp at eq ⊢
-  dsimp [Arrow₃.δ₀, Arrow₃.δ₁, Arrow₃.δ₂, Arrow₃.δ₃, Arrow₂.δ₂, Arrow₂.δ₀, Arrow₂.δ₁Toδ₀] at eq ⊢
-  erw [←eq]
-  erw [Functor.map_id]
-  erw [id_comp]-/
-
 noncomputable def δ₃PullbackCyclesIsoShortComplexECycles :
     Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ ≅ (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).cycles :=
   IsLimit.conePointUniqueUpToIso (X.δ₃PullbackKernelSequenceCycles_exact n₁ n₂ hn₂).fIsKernel
@@ -782,16 +758,6 @@ lemma δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).iCycles =
       whiskerLeft Arrow₃.δ₃ (X.iCycles n₁ n₂ hn₂) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
-
-/-@[reassoc (attr := simp)]
-lemma δHToCycles_comp_δ₃PullbackCyclesIsoShortComplexECycles_hom :
-  X.δHToCycles n₀ n₁ n₂ hn₁ hn₂ ≫
-    (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).hom =
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).toCycles := by
-  rw [← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).iCycles]
-  simp only [assoc, ShortComplex.toCycles_i,
-    δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles, δHToCycles_comp_iCycles]
-  rfl-/
 
 noncomputable def cyclesπ : Arrow₃.δ₃ ⋙ X.cycles n₁ n₂ hn₂ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ :=
   (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂).hom ≫
