@@ -290,8 +290,8 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
 variable (α β)
 
 /-- `induced_map` as an additive homomorphism. -/
-def inducedAddHom : α →+ β :=
-  ⟨inducedMap α β, inducedMap_zero α β, inducedMap_add α β⟩
+def inducedAddHom : α →+ β := by
+  refine ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
 /-- `induced_map` as an `order_ring_hom`. -/
@@ -302,7 +302,7 @@ def inducedOrderRingHom : α →+*o β :=
       (-- reduce to the case of x = y by
         -- reduce to the case of 0 < x
         suffices
-          ∀ x, 0 < x → induced_add_hom α β (x * x) = induced_add_hom α β x * induced_add_hom α β x
+          ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x
           by
           rintro x
           obtain h | rfl | h := lt_trichotomy x 0
