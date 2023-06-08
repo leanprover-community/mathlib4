@@ -162,7 +162,7 @@ theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R �
 
 @[simp]
 theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
-  funext fun θ => circleMap_eq_center_iff.2 rfl
+  funext fun _ => circleMap_eq_center_iff.2 rfl
 #align circle_map_zero_radius circleMap_zero_radius
 
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
@@ -171,24 +171,24 @@ theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circ
 
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
-  simpa only [mul_assoc, one_mul, of_real_clm_apply, circleMap, of_real_one, zero_add] using
-    ((of_real_clm.has_deriv_at.mul_const I).cexp.const_mul (R : ℂ)).const_add c
+  simpa only [mul_assoc, one_mul, ofRealClm_apply, circleMap, ofReal_one, zero_add] using
+    ((ofRealClm.hasDerivAt.mul_const I).cexp.const_mul (R : ℂ)).const_add c
 #align has_deriv_at_circle_map hasDerivAt_circleMap
 
 /- TODO: prove `cont_diff ℝ (circle_map c R)`. This needs a version of `cont_diff.mul`
 for multiplication in a normed algebra over the base field. -/
 theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
-  (hasDerivAt_circleMap c R θ).DifferentiableAt
+  (hasDerivAt_circleMap c R θ).differentiableAt
 #align differentiable_circle_map differentiable_circleMap
 
 @[continuity]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
-  (differentiable_circleMap c R).Continuous
+  (differentiable_circleMap c R).continuous
 #align continuous_circle_map continuous_circleMap
 
 @[measurability]
 theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
-  (continuous_circleMap c R).Measurable
+  (continuous_circleMap c R).measurable
 #align measurable_circle_map measurable_circleMap
 
 @[simp]
@@ -205,7 +205,7 @@ theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
   mt deriv_circleMap_eq_zero_iff.1 hR
 #align deriv_circle_map_ne_zero deriv_circleMap_ne_zero
 
-theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith R.nnabs (circleMap c R) :=
+theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs R) (circleMap c R) :=
   lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
     NNReal.coe_le_coe.1 <| by simp
 #align lipschitz_with_circle_map lipschitzWith_circleMap
