@@ -129,15 +129,17 @@ theorem sum_bernoulli (n : ℕ) :
     Finset.sum_Ico_eq_sum_range]
   simp only [add_tsub_cancel_left, tsub_zero, zero_add, map_add]
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
-  have : ∑ x in range (n + 1), ∑ x_1 in range (n + 1 - x),
-      (monomial x) (↑(Nat.choose (n + 1) (x + x_1)) * ↑(Nat.choose (x + x_1) x) * _root_.bernoulli x_1) =
-      ∑ x in range (n + 1), (∑ i in range (n + 1 - x), ((n + 1 - x).choose i : ℚ) • bernoulli i) •
-      ((monomial x)) (((n + 1).choose x) : ℚ) := by
-   congr
-   ext x m
-   simp?
-   
-  rw [this]
+  conv_lhs =>
+    apply_congr
+    skip
+    conv =>
+      apply_congr
+      skip
+      rw [← Nat.cast_mul,
+        choose_mul ((le_tsub_iff_left <| mem_range_le H).1 <| mem_range_le H_1) (le.intro rfl),
+        Nat.cast_mul, add_comm x x_1, add_tsub_cancel_right, mul_assoc, mul_comm, ← smul_eq_mul, ←
+        smul_monomial]
+    rw [← sum_smul]
   rw [sum_range_succ_comm]
   simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
