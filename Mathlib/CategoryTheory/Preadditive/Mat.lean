@@ -373,7 +373,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
--- porting note: added because it was found automatically
+-- porting note: added because it was not found automatically
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
