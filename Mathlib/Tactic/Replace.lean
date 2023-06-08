@@ -39,16 +39,18 @@ h : β
 
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
-syntax "replace" haveDecl : tactic
+syntax "replace" (ident)? (" : " term)? " := " term : tactic
 
 elab_rules : tactic
   | `(tactic| replace $[$n?:ident]? $[: $t?:term]? := $v:term) =>
     withMainContext do
+      match n? with
+      | none   => evalTactic $ ← `(tactic| have $[: $t?]? := $v)
+      | some n => evalTactic $ ← `(tactic| have $n $[: $t?]? := $v)
       let name : Name := match n? with
       | none   => `this
       | some n => n.getId
       let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
-      evalTactic $ ← `(tactic| have $[$n?]? $[: $t?]? := $v)
       match hId? with
       | some hId =>
         try replaceMainGoal [← (← getMainGoal).clear hId]
