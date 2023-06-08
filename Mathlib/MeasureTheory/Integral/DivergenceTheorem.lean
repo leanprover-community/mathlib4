@@ -250,8 +250,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
 variable (a b : Fin (n + 1) → ℝ)
 
 local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove i)
-local notation "frontFace " i:2000 => Fin.insertNth i (b i)
-local notation "backFace " i:2000 => Fin.insertNth i (a i)
+local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
+local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
@@ -275,8 +275,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     (Hd : ∀ x ∈ (Set.pi univ fun i => Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' x (e i) i) =
-      ∑ i : Fin (n + 1), ((∫ x in face i, f (i.insertNth (b i) x) i) -
-        ∫ x in face i, f (i.insertNth (a i) x) i) := by
+      ∑ i : Fin (n + 1), ((∫ x in face i, f (frontFace i x) i) -
+        ∫ x in face i, f (backFace i x) i) := by
   rcases em (∃ i, a i = b i) with (⟨i, hi⟩ | hne)
   · -- First we sort out the trivial case `∃ i, a i = b i`.
     rw [volume_pi, ← set_integral_congr_set_ae Measure.univ_pi_Ioc_ae_eq_Icc]
@@ -308,8 +308,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
     (Hd : ∀ x ∈ (pi Set.univ fun i => Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' i x (e i)) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' i x (e i)) =
-      ∑ i : Fin (n + 1), ((∫ x in face i, f i (i.insertNth (b i) x)) -
-        ∫ x in face i, f i (i.insertNth (a i) x)) :=
+      ∑ i : Fin (n + 1), ((∫ x in face i, f i (frontFace i x)) -
+        ∫ x in face i, f i (backFace i x)) :=
   integral_divergence_of_hasFDerivWithinAt_off_countable a b hle (fun x i => f i x)
     (fun x => ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)
     (fun x hx => hasFDerivAt_pi.2 (Hd x hx)) Hi
