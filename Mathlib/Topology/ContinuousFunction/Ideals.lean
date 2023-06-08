@@ -33,9 +33,9 @@ we simply register this as a Galois insertion between `Ideal C(X, 𝕜)` and `op
 ideals corresponding to (complements of) singletons in `X`.
 
 In addition, when `X` is locally compact and `𝕜` is a nontrivial topological integral domain, then
-there is a natural continuous map from `X` to `character_space 𝕜 C(X, 𝕜)` given by point evaluation,
-which is herein called `WeakDual.CharacterSpace.continuousMapEval`. Again, when `X` is compact
-Hausdorff and `IsROrC 𝕜`, more can be obtained. In particular, in that context this map is
+there is a natural continuous map from `X` to `WeakDual.characterSpace 𝕜 C(X, 𝕜)` given by point
+evaluation, which is herein called `WeakDual.CharacterSpace.continuousMapEval`. Again, when `X` is
+compact Hausdorff and `IsROrC 𝕜`, more can be obtained. In particular, in that context this map is
 bijective, and since the domain is compact and the codomain is Hausdorff, it is a homeomorphism,
 herein called `WeakDual.CharacterSpace.homeoEval`.
 
@@ -47,19 +47,19 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
 * `ContinuousMap.idealOpensGI`: The Galois insertion `ContinuousMap.opensOfIdeal` and
   `λ s, ContinuousMap.idealOfSet ↑s`.
 * `WeakDual.CharacterSpace.continuousMapEval`: the natural continuous map from a locally compact
-  topological space `X` to the `character_space 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation
-  at `x`, with modest hypothesis on `𝕜`.
+  topological space `X` to the `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point
+  evaluation at `x`, with modest hypothesis on `𝕜`.
 * `WeakDual.CharacterSpace.homeoEval`: this is `WeakDual.CharacterSpace.continuousMapEval`
   upgraded to a homeomorphism when `X` is compact Hausdorff and `IsROrC 𝕜`.
 
 ## Main statements
 
-* `ContinuousMap.idealOfSet_of_ideal_eq_closure`: when `X` is compact Hausdorff and
-  `IsROrC 𝕜`, `ideal_of_set 𝕜 (set_of_ideal I) = I.closure` for any ideal `I : Ideal C(X, 𝕜)`.
-* `ContinuousMap.setOfIdeal_of_set_eq_interior`: when `X` is compact Hausdorff and `IsROrC 𝕜`,
-  `set_of_ideal (ideal_of_set 𝕜 s) = interior s` for any `s : Set X`.
+* `ContinuousMap.idealOfSet_ofIdeal_eq_closure`: when `X` is compact Hausdorff and
+  `IsROrC 𝕜`, `idealOfSet 𝕜 (setOfIdeal I) = I.closure` for any ideal `I : Ideal C(X, 𝕜)`.
+* `ContinuousMap.setOfIdeal_ofSet_eq_interior`: when `X` is compact Hausdorff and `IsROrC 𝕜`,
+  `setOfIdeal (idealOfSet 𝕜 s) = interior s` for any `s : Set X`.
 * `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `IsROrC 𝕜`, a closed
-  ideal of `C(X, 𝕜)` is maximal if and only if it is `ideal_of_set 𝕜 {x}ᶜ` for some `x : X`.
+  ideal of `C(X, 𝕜)` is maximal if and only if it is `idealOfSet 𝕜 {x}ᶜ` for some `x : X`.
 
 ## Implementation details
 
