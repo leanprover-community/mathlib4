@@ -39,7 +39,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
     (hasStrictDerivAt_exp <| log x).of_local_left_inverse (continuousAt_log hx.ne')
         (ne_of_gt <| exp_pos _) <|
       Eventually.mono (lt_mem_nhds hx) @exp_log
-  rwa [exp_log hx] at this 
+  rwa [exp_log hx] at this
 #align real.has_strict_deriv_at_log_of_pos Real.hasStrictDerivAt_log_of_pos
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
@@ -252,10 +252,11 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   have B : ∀ y ∈ Icc (-|x|) (|x|), |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
     calc
       |F' y| = |y| ^ n / |1 - y| := by simp [abs_div]
-      _ ≤ |x| ^ n / (1 - |x|) :=
+      _ ≤ |x| ^ n / (1 - |x|) := by
         have : |y| ≤ |x| := abs_le.2 hy
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
-        div_le_div (by positivity) (pow_le_pow_of_le_left (abs_nonneg _) ‹_› _) (sub_pos.2 h) ‹_›
+        gcongr
+        exact sub_pos.2 h
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ n / (1 - |x|) * ‖x - 0‖ := by
     refine Convex.norm_image_sub_le_of_norm_hasDerivWithin_le
@@ -287,8 +288,8 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
         have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)
         rw [norm_eq_abs, abs_div, ← pow_abs, abs_of_nonneg this]
       _ ≤ |x| ^ (i + 1) / (0 + 1) := by
-        apply_rules [div_le_div_of_le_left, pow_nonneg, abs_nonneg, add_le_add_right, i.cast_nonneg]
-        norm_num
+        gcongr
+        exact i.cast_nonneg
       _ ≤ |x| ^ i := by
         simpa [pow_succ'] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 #align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_1
@@ -310,7 +311,7 @@ theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
     convert h₁.add (hasSum_pow_div_log_of_abs_lt_1 h) using 1
     ring_nf
   · intro m hm
-    rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm 
+    rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
     dsimp
     rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
 #align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_1
@@ -337,4 +338,3 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
 #align real.has_sum_log_one_add_inv Real.hasSum_log_one_add_inv
 
 end Real
-
