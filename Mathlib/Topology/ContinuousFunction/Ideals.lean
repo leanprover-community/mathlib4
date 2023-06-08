@@ -19,53 +19,53 @@ import Mathlib.Topology.Algebra.Module.CharacterSpace
 # Ideals of continuous functions
 
 For a topological semiring `R` and a topological space `X` there is a Galois connection between
-`ideal C(X, R)` and `set X` given by sending each `I : ideal C(X, R)` to
-`{x : X | ∀ f ∈ I, f x = 0}ᶜ` and mapping `s : set X` to the ideal with carrier
-`{f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}`, and we call these maps `continuous_map.set_of_ideal` and
-`continuous_map.ideal_of_set`. As long as `R` is Hausdorff, `continuous_map.set_of_ideal I` is open,
-and if, in addition, `X` is locally compact, then `continuous_map.set_of_ideal s` is closed.
+`Ideal C(X, R)` and `Set X` given by sending each `I : Ideal C(X, R)` to
+`{x : X | ∀ f ∈ I, f x = 0}ᶜ` and mapping `s : Set X` to the ideal with carrier
+`{f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}`, and we call these maps `ContinuousMap.setOfIdeal` and
+`ContinuousMap.idealOfSet`. As long as `R` is Hausdorff, `ContinuousMap.setOfIdeal I` is open,
+and if, in addition, `X` is locally compact, then `ContinuousMap.setOfIdeal s` is closed.
 
-When `R = 𝕜` with `is_R_or_C 𝕜` and `X` is compact Hausdorff, then this Galois connection can be
+When `R = 𝕜` with `IsROrC 𝕜` and `X` is compact Hausdorff, then this Galois connection can be
 improved to a true Galois correspondence (i.e., order isomorphism) between the type `opens X` and
 the subtype of closed ideals of `C(X, 𝕜)`. Because we do not have a bundled type of closed ideals,
-we simply register this as a Galois insertion between `ideal C(X, 𝕜)` and `opens X`, which is
-`continuous_map.ideal_opens_gi`. Consequently, the maximal ideals of `C(X, 𝕜)` are precisely those
+we simply register this as a Galois insertion between `Ideal C(X, 𝕜)` and `opens X`, which is
+`ContinuousMap.idealOpensGi`. Consequently, the maximal ideals of `C(X, 𝕜)` are precisely those
 ideals corresponding to (complements of) singletons in `X`.
 
 In addition, when `X` is locally compact and `𝕜` is a nontrivial topological integral domain, then
 there is a natural continuous map from `X` to `character_space 𝕜 C(X, 𝕜)` given by point evaluation,
-which is herein called `weak_dual.character_space.continuous_map_eval`. Again, when `X` is compact
-Hausdorff and `is_R_or_C 𝕜`, more can be obtained. In particular, in that context this map is
+which is herein called `WeakDual.characterSpace.continuousMapEval`. Again, when `X` is compact
+Hausdorff and `IsROrC 𝕜`, more can be obtained. In particular, in that context this map is
 bijective, and since the domain is compact and the codomain is Hausdorff, it is a homeomorphism,
-herein called `weak_dual.character_space.homeo_eval`.
+herein called `WeakDual.characterSpace.homeoEval`.
 
 ## Main definitions
 
-* `continuous_map.ideal_of_set`: ideal of functions which vanish on the complement of a set.
-* `continuous_map.set_of_ideal`: complement of the set on which all functions in the ideal vanish.
-* `continuous_map.opens_of_ideal`: `continuous_map.set_of_ideal` as a term of `opens X`.
-* `continuous_map.ideal_opens_gi`: The Galois insertion `continuous_map.opens_of_ideal` and
-  `λ s, continuous_map.ideal_of_set ↑s`.
-* `weak_dual.character_space.continuous_map_eval`: the natural continuous map from a locally compact
+* `ContinuousMap.idealOfSet`: ideal of functions which vanish on the complement of a set.
+* `ContinuousMap.setOfIdeal`: complement of the set on which all functions in the ideal vanish.
+* `ContinuousMap.opensOfIdeal`: `ContinuousMap.setOfIdeal` as a term of `opens X`.
+* `ContinuousMap.idealOpensGi`: The Galois insertion `ContinuousMap.opensOfIdeal` and
+  `λ s, ContinuousMap.idealOfSet ↑s`.
+* `WeakDual.characterSpace.continuousMapEval`: the natural continuous map from a locally compact
   topological space `X` to the `character_space 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation
   at `x`, with modest hypothesis on `𝕜`.
-* `weak_dual.character_space.homeo_eval`: this is `weak_dual.character_space.continuous_map_eval`
-  upgraded to a homeomorphism when `X` is compact Hausdorff and `is_R_or_C 𝕜`.
+* `WeakDual.characterSpace.homeoEval`: this is `WeakDual.characterSpace.continuousMapEval`
+  upgraded to a homeomorphism when `X` is compact Hausdorff and `IsROrC 𝕜`.
 
 ## Main statements
 
-* `continuous_map.ideal_of_set_of_ideal_eq_closure`: when `X` is compact Hausdorff and
-  `is_R_or_C 𝕜`, `ideal_of_set 𝕜 (set_of_ideal I) = I.closure` for any ideal `I : ideal C(X, 𝕜)`.
-* `continuous_map.set_of_ideal_of_set_eq_interior`: when `X` is compact Hausdorff and `is_R_or_C 𝕜`,
-  `set_of_ideal (ideal_of_set 𝕜 s) = interior s` for any `s : set X`.
-* `continuous_map.ideal_is_maximal_iff`: when `X` is compact Hausdorff and `is_R_or_C 𝕜`, a closed
+* `ContinuousMap.idealOfSet_of_ideal_eq_closure`: when `X` is compact Hausdorff and
+  `IsROrC 𝕜`, `ideal_of_set 𝕜 (set_of_ideal I) = I.closure` for any ideal `I : Ideal C(X, 𝕜)`.
+* `ContinuousMap.setOfIdeal_of_set_eq_interior`: when `X` is compact Hausdorff and `IsROrC 𝕜`,
+  `set_of_ideal (ideal_of_set 𝕜 s) = interior s` for any `s : Set X`.
+* `ContinuousMap.ideal_isMaximal_iff`: when `X` is compact Hausdorff and `IsROrC 𝕜`, a closed
   ideal of `C(X, 𝕜)` is maximal if and only if it is `ideal_of_set 𝕜 {x}ᶜ` for some `x : X`.
 
 ## Implementation details
 
 Because there does not currently exist a bundled type of closed ideals, we don't provide the actual
 order isomorphism described above, and instead we only consider the Galois insertion
-`continuous_map.ideal_opens_gi`.
+`ContinuousMap.idealOpensGi`.
 
 ## Tags
 
@@ -87,7 +87,7 @@ variable [TopologicalSpace R] [TopologicalSemiring R]
 
 variable (R)
 
-/-- Given a topological ring `R` and `s : set X`, construct the ideal in `C(X, R)` of functions
+/-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
@@ -349,8 +349,8 @@ theorem setOfIdeal_of_set_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (id
 
 variable (X)
 
-/-- The Galois insertion `continuous_map.opens_of_ideal : ideal C(X, 𝕜) → opens X` and
-`λ s, continuous_map.ideal_of_set ↑s`. -/
+/-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
+`λ s, ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGi : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
     where
