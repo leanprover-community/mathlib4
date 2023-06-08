@@ -237,8 +237,6 @@ theorem sub_apply (f g : P →A[R] W) (x : P) : (f - g) x = f x - g x := rfl
 #align continuous_affine_map.sub_apply ContinuousAffineMap.sub_apply
 
 instance : Neg (P →A[R] W) :=
-  -- Porting note: Why does this instance need to be given explicitly
-  let _ : ContinuousNeg W := TopologicalAddGroup.toContinuousNeg
   { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
 @[norm_cast, simp]
