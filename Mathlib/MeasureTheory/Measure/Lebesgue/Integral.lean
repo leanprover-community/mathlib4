@@ -51,8 +51,8 @@ section SummableNormIcc
 open ContinuousMap
 
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
-`measure_theory.integral.set_integral`, but it is placed here because it needs to know that
-`Icc a b` has volume `b - a`. -/
+`Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
+that `Icc a b` has volume `b - a`. -/
 /-- If the sequence with `n`-th term the the sup norm of `λ x, f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E] {f : C(ℝ, E)}
@@ -66,16 +66,16 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E]
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _
   -- porting note: `refine` was able to find that on its own before
-  intro n
-  exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
-  simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
-    mul_one, norm_le _ (norm_nonneg _)]
-  intro x
-  have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
-      ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
-  simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
-    sub_add_cancel] using this
-  exact iUnion_Icc_int_cast ℝ
+  · intro n
+    exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
+  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
+      mul_one, norm_le _ (norm_nonneg _)]
+    intro x
+    have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
+        ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
+    simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
+      sub_add_cancel] using this
+  · exact iUnion_Icc_int_cast ℝ
 #align real.integrable_of_summable_norm_Icc Real.integrable_of_summable_norm_Icc
 
 end SummableNormIcc
@@ -84,12 +84,12 @@ end SummableNormIcc
 ### Substituting `-x` for `x`
 
 These lemmas are stated in terms of either `Iic` or `Ioi` (neglecting `Iio` and `Ici`) to match
-mathlib's conventions for integrals over finite intervals (see `interval_integral`). For the case
-of finite integrals, see `interval_integral.integral_comp_neg`.
+mathlib's conventions for integrals over finite intervals (see `intervalIntegral`). For the case
+of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: false positive "Left-hand side does not simplify"
 theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
@@ -99,7 +99,7 @@ theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace �
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
 #align integral_comp_neg_Iic integral_comp_neg_Iic
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: false positive "Left-hand side does not simplify"
 theorem integral_comp_neg_Ioi {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
