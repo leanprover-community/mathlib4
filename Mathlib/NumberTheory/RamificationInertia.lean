@@ -189,12 +189,12 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
 -/
-noncomputable def inertiaDeg [_hp : p.IsMaximal] : ℕ :=
+noncomputable def inertiaDeg [p.IsMaximal] : ℕ :=
   if hPp : comap f P = p then
     @finrank (R ⧸ p) (S ⧸ P) _ _ <|
       @Algebra.toModule _ _ _ _ <|
         RingHom.toAlgebra <|
-          Ideal.Quotient.lift p ((Ideal.Quotient.mk P).comp f) fun _a ha =>
+          Ideal.Quotient.lift p ((Ideal.Quotient.mk P).comp f) fun _ ha =>
             Quotient.eq_zero_iff_mem.mpr <| mem_comap.mp <| hPp.symm ▸ ha
   else 0
 #align ideal.inertia_deg Ideal.inertiaDeg
@@ -429,7 +429,7 @@ theorem finrank_quotient_map [IsDomain R] [IsDomain S] [IsDedekindDomain R] [Alg
     -- However, this would imply distinguishing between `pS` as `S`-ideal,
     -- and `pS` as `R`-submodule, since they have different (non-defeq) quotients.
     -- Instead we'll lift `x mod pS ∈ span b` to `y ∈ span b'` for some `y - x ∈ pS`.
-    intro x _hx
+    intro x _
     have mem_span_b : ((Submodule.mkQ (map (algebraMap R S) p)) x : S ⧸ map (algebraMap R S) p) ∈
         Submodule.span (R ⧸ p) (Set.range b) := b.mem_span _
     rw [← @Submodule.restrictScalars_mem R,
@@ -490,8 +490,8 @@ def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
   toFun x := ⟨x, Ideal.map_mono (Ideal.pow_le_pow i.le_succ) x.2⟩
-  map_add' _x _y := rfl
-  map_smul' _c _x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align ideal.pow_quot_succ_inclusion Ideal.powQuotSuccInclusion
 
 theorem powQuotSuccInclusion_injective (i : ℕ) :
@@ -777,12 +777,12 @@ noncomputable def Factors.piQuotientEquiv (p : Ideal R) (hp : map (algebraMap R 
 
 @[simp]
 theorem Factors.piQuotientEquiv_mk (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : S) :
-    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun _P => Ideal.Quotient.mk _ x := rfl
+    Factors.piQuotientEquiv p hp (Ideal.Quotient.mk _ x) = fun _ => Ideal.Quotient.mk _ x := rfl
 #align ideal.factors.pi_quotient_equiv_mk Ideal.Factors.piQuotientEquiv_mk
 
 @[simp]
 theorem Factors.piQuotientEquiv_map (p : Ideal R) (hp : map (algebraMap R S) p ≠ ⊥) (x : R) :
-    Factors.piQuotientEquiv p hp (algebraMap _ _ x) = fun _P =>
+    Factors.piQuotientEquiv p hp (algebraMap _ _ x) = fun _ =>
       Ideal.Quotient.mk _ (algebraMap _ _ x) := rfl
 #align ideal.factors.pi_quotient_equiv_map Ideal.Factors.piQuotientEquiv_map
 
