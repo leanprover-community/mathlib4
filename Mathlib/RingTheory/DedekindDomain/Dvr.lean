@@ -10,7 +10,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.DiscreteValuationRing.Tfae
+import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
 /-!
 # Dedekind domains
@@ -76,14 +76,14 @@ theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing 
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
     (h : Ring.DimensionLEOne R) : Ring.DimensionLEOne Rₘ := by
   intro p hp0 hpp
-  refine' ideal.is_maximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => _⟩
-  have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.is_prime⟩ := hpP
-  rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP' 
+  refine' Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => _⟩
+  have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
+  rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) p) :=
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨p, hpp⟩).2.1
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) P) :=
-    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.is_prime⟩).2.1
-  have hlt : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
+    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
+  have _ : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
   refine' h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨_, hpP'⟩
   exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0
 #align ring.dimension_le_one.localization Ring.DimensionLEOne.localization
@@ -92,22 +92,22 @@ theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing 
 theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (hM : M ≤ A⁰)
     (Aₘ : Type _) [CommRing Aₘ] [IsDomain Aₘ] [Algebra A Aₘ] [IsLocalization M Aₘ] :
     IsDedekindDomain Aₘ := by
-  have : ∀ y : M, IsUnit (algebraMap A (FractionRing A) y) := by
+  have h : ∀ y : M, IsUnit (algebraMap A (FractionRing A) y) := by
     rintro ⟨y, hy⟩
-    exact IsUnit.mk0 _ (mt is_fraction_ring.to_map_eq_zero_iff.mp (nonZeroDivisors.ne_zero (hM hy)))
-  letI : Algebra Aₘ (FractionRing A) := RingHom.toAlgebra (IsLocalization.lift this)
+    exact IsUnit.mk0 _ (mt IsFractionRing.to_map_eq_zero_iff.mp (nonZeroDivisors.ne_zero (hM hy)))
+  letI : Algebra Aₘ (FractionRing A) := RingHom.toAlgebra (IsLocalization.lift h)
   haveI : IsScalarTower A Aₘ (FractionRing A) :=
-    IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.lift_eq this x).symm
+    IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.lift_eq h x).symm
   haveI : IsFractionRing Aₘ (FractionRing A) :=
     IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M _ _
   refine' (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨_, _, _⟩
   · exact IsLocalization.isNoetherianRing M _ (by infer_instance)
-  · exact is_dedekind_domain.dimension_le_one.localization Aₘ hM
+  · exact IsDedekindDomain.dimensionLEOne.localization Aₘ hM
   · intro x hx
-    obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_is_localization M _
+    obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
     obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp IsDedekindDomain.isIntegrallyClosed hy
     refine' ⟨IsLocalization.mk' Aₘ z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr _⟩
-    rw [hz, SetLike.coe_mk, ← Algebra.smul_def]
+    rw [hz, ← Algebra.smul_def]
     rfl
 #align is_localization.is_dedekind_domain IsLocalization.isDedekindDomain
 
@@ -121,15 +121,15 @@ theorem IsLocalization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal 
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type _)
     [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬IsField Aₘ := by
   intro h
-  letI := h.to_field
+  letI := h.toField
   obtain ⟨x, x_mem, x_ne⟩ := P.ne_bot_iff.mp hP
   exact
     (LocalRing.maximalIdeal.isMaximal _).ne_top
       (Ideal.eq_top_of_isUnit_mem _
         ((IsLocalization.AtPrime.to_map_mem_maximal_iff Aₘ P _).mpr x_mem)
-        (is_unit_iff_ne_zero.mpr
+        (isUnit_iff_ne_zero.mpr
           ((map_ne_zero_iff (algebraMap A Aₘ)
-                (IsLocalization.injective Aₘ P.prime_compl_le_non_zero_divisors)).mpr
+                (IsLocalization.injective Aₘ P.primeCompl_le_nonZeroDivisors)).mpr
             x_ne)))
 #align is_localization.at_prime.not_is_field IsLocalization.AtPrime.not_isField
 
@@ -139,7 +139,7 @@ theorem IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain [IsDedek
     [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : DiscreteValuationRing Aₘ := by
   classical
   letI : IsNoetherianRing Aₘ :=
-    IsLocalization.isNoetherianRing P.prime_compl _ IsDedekindDomain.isNoetherianRing
+    IsLocalization.isNoetherianRing P.primeCompl _ IsDedekindDomain.isNoetherianRing
   letI : LocalRing Aₘ := IsLocalization.AtPrime.localRing Aₘ P
   have hnf := IsLocalization.AtPrime.not_isField A hP Aₘ
   exact
@@ -155,4 +155,3 @@ theorem IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDo
     is_dvr_at_nonzero_prime := fun P hP pP =>
       IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _ }
 #align is_dedekind_domain.is_dedekind_domain_dvr IsDedekindDomain.isDedekindDomainDvr
-
