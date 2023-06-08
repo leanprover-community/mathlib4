@@ -1227,7 +1227,7 @@ instance finiteDimensional_iSup_of_finite {ι : Type _} {t : ι → Intermediate
 
 instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → IntermediateField K L}
     /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (f i)` because this caused an
-      error. See `finiteDimensional_iSup_of_finset'` for a stringer version, that was the one
+      error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
       used in mathlib3.-/
     {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
