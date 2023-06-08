@@ -271,11 +271,16 @@ theorem vec_get_zero_eq_head {α : Type u} {n : Nat} {x : Vector α n.succ} : x[
     case nil => contradiction
     case cons head tail => rfl
 
-theorem get_castLE_eq (α : Type u) {n m : Nat} {i : Fin m} {i' : Fin n} (h : m ≤ n) (hi : i.val = i'.val) : forall x : Vector α n,  x[Fin.castLE h i] = x[i'] := by
+theorem get_castLE_eq {α : Type u} {n m : Nat} {i : Fin m} {i' : Fin n} (h : m ≤ n) (hi : i.val = i'.val) : forall x : Vector α n,  x[Fin.castLE h i] = x[i'] := by
   simp [Fin.castLE, hi, GetElem.getElem]
 
 theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n) (h : x.toList = x'.toList) : x[i] = x'[i] := by
   rw [Vector.eq x x' h]
+
+-- Annoyingly trivial
+theorem get_cons_succ_eq {α: Type u} {n : Nat} {a : α} {x : Vector α n} (i : Fin n) : (x.cons a)[Fin.castLE (Nat.le_succ n) i] = x[i] := by
+  sorry
+
 
 -- This proof certainly needs some golfing...
 -- `Vector` makes it much harder to prove this than `List` with the property of the lengths being equal
@@ -318,32 +323,8 @@ theorem extensionality {α : Type u} {n : Nat} {x y : Vector α n} : (∀ i : Fi
       have h_tails : { val:= tail, property := hx : Vector _ _} = { val := tail_y, property := hy} := by
         apply tail_ih hx tail_y hy
         intro i
-        have h_i := h (Fin.castLE (Nat.le_succ m) i)
-        have i_eq_i' : i.val = (Fin.castLE (Nat.le_succ m) i).val := by
-          simp [Fin.castLE]
-        simp at h_i
-        -- TODO: the below only works if I tell it explictly about α, but won't work if I use @ and pass everything. Weird.
-        have foo := get_castLE_eq α (Nat.le_succ m) i_eq_i'
-        -- TODO continue here
-
-        rename_i hx' hy'
-        have foo := get_eq_val_eq { val := head :: tail, property := hx' } { val := head_y :: tail_y, property := hy' }
-        apply get_eq_val_eq
-        simp
-        simp at foo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        have h_i := h i
+        rename_i α hx' hy'
+        sorry -- Should work with `get_cons_succ_eq` somehow
 
 end Vector
