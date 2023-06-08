@@ -37,14 +37,14 @@ namespace EMetric
 
 variable [EMetricSpace X] {K : ι → Set X} {U : ι → Set X}
 
-/-- Let `K : ι → Set X` be a locally finitie family of closed sets in an emetric space. Let
+/-- Let `K : ι → Set X` be a locally finite family of closed sets in an emetric space. Let
 `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then for any point
 `x : X`, for sufficiently small `r : ℝ≥0∞` and for `y` sufficiently close to `x`, for all `i`, if
 `y ∈ K i`, then `EMetric.closedBall y r ⊆ U i`. -/
 theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i))
     (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
-    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
-  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ᶠ 𝓝 x, closedBall p.2 p.1 ⊆ U i by
+    ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, ∀ i, p.2 ∈ K i → closedBall p.2 p.1 ⊆ U i := by
+  suffices ∀ i, x ∈ K i → ∀ᶠ p : ℝ≥0∞ × X in 𝓝 0 ×ˢ 𝓝 x, closedBall p.2 p.1 ⊆ U i by
     apply mp_mem ((eventually_all_finite (hfin.point_finite x)).2 this)
       (mp_mem (@tendsto_snd ℝ≥0∞ _ (𝓝 0) _ _ (hfin.iInter_compl_mem_nhds hK x)) _)
     apply univ_mem'
@@ -66,7 +66,7 @@ theorem eventually_nhds_zero_forall_closedBall_subset (hK : ∀ i, IsClosed (K i
 theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i))
     (hKU : ∀ i, K i ⊆ U i) (hfin : LocallyFinite K) (x : X) :
     ∃ r : ℝ, ∀ᶠ y in 𝓝 x,
-      r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i } := by
+      r ∈ Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i } := by
   have := (ENNReal.continuous_ofReal.tendsto' 0 0 ENNReal.ofReal_zero).eventually
     (eventually_nhds_zero_forall_closedBall_subset hK hU hKU hfin x).curry
   rcases this.exists_gt with ⟨r, hr0, hr⟩
@@ -76,7 +76,7 @@ theorem exists_forall_closedBall_subset_aux₁ (hK : ∀ i, IsClosed (K i)) (hU 
 
 theorem exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
-      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_hi : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
+      (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
     ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
       ordConnected_setOf_closedBall_subset y (U i)

@@ -31,6 +31,8 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require llm from git "https://github.com/leanprover-community/llm" @ "main"
 
+require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.10"
+
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
   roots := #[`Cache]

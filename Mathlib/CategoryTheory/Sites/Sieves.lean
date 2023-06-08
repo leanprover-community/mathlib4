@@ -198,7 +198,7 @@ def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
 #align category_theory.presieve.functor_pushforward CategoryTheory.Presieve.functorPushforward
 
 --porting note: removed @[nolint hasNonemptyInstance]
-/-- An auxillary definition in order to fix the choice of the preimages between various definitions.
+/-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where
   /-- an object in the source category -/
@@ -250,6 +250,8 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   /-- stability by precomposition -/
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
+
+pp_extended_field_notation Sieve.arrows
 
 namespace Sieve
 

@@ -203,10 +203,12 @@ end MulOpposite
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup α) : UniformGroup S :=
+instance uniformGroup (S : Subgroup α) : UniformGroup S :=
   ⟨uniformContinuous_comap'
       (uniformContinuous_div.comp <|
         uniformContinuous_subtype_val.prod_map uniformContinuous_subtype_val)⟩
+#align subgroup.uniform_group Subgroup.uniformGroup
+#align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 
 end Subgroup
 
@@ -800,7 +802,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
-      (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) := by
+      (comap e Nx ×ˢ comap e Nx) (𝓝 (0, y₁)) := by
     have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
       (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
@@ -822,10 +824,10 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
     simpa using hφ.tendsto (0, 0)
   have lim_φ_sub_sub :
     Tendsto (fun p : (β × β) × δ × δ => (fun p : β × δ => φ p.1 p.2) (p.1.2 - p.1.1, p.2.2 - p.2.1))
-      ((comap ee <| 𝓝 (x₀, x₀)) ×ᶠ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) := by
+      ((comap ee <| 𝓝 (x₀, x₀)) ×ˢ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) := by
     have lim_sub_sub :
       Tendsto (fun p : (β × β) × δ × δ => (p.1.2 - p.1.1, p.2.2 - p.2.1))
-        (comap ee (𝓝 (x₀, x₀)) ×ᶠ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ᶠ 𝓝 0) := by
+        (comap ee (𝓝 (x₀, x₀)) ×ˢ comap ff (𝓝 (y₀, y₀))) (𝓝 0 ×ˢ 𝓝 0) := by
       have := Filter.prod_mono (tendsto_sub_comap_self de x₀) (tendsto_sub_comap_self df y₀)
       rwa [prod_map_map_eq] at this
     rw [← nhds_prod_eq] at lim_sub_sub
@@ -880,7 +882,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
   · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
       (fun p : β × δ => φ p.1 p.2) p.1)
         (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
-        (𝓝 (x₀, y₀) ×ᶠ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
+        (𝓝 (x₀, y₀) ×ˢ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
     intro W' W'_nhd
@@ -1008,7 +1010,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
 #align quotient_add_group.complete_space' QuotientAddGroup.completeSpace'
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
-is itself complete. In constrast to `QuotientGroup.completeSpace'`, in this version `G` is
+is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is
 already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -1018,7 +1020,7 @@ In the most common use cases, this coincides (definitionally) with the uniform s
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In constrast to `QuotientAddGroup.completeSpace'`, in this version
+subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 

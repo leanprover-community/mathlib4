@@ -72,7 +72,7 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 #align category_theory.eq_to_hom_comp_iff CategoryTheory.eqToHom_comp_iff
 
-/- Porting note: simpNF complains about thsi not reducing but it is clearly used
+/- Porting note: simpNF complains about this not reducing but it is clearly used
 in `congrArg_mrp_hom_left`. It has been no-linted. -/
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp, nolint simpNF]
@@ -94,7 +94,7 @@ theorem congrArg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
   simp
 #align category_theory.congr_arg_mpr_hom_left CategoryTheory.congrArg_mpr_hom_left
 
-/- Porting note: simpNF complains about thsi not reducing but it is clearly used
+/- Porting note: simpNF complains about this not reducing but it is clearly used
 in `congrArg_mrp_hom_right`. It has been no-linted. -/
 /-- Reducible form of `congrArg_mpr_hom_right` -/
 @[simp, nolint simpNF]

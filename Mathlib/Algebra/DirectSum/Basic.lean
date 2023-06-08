@@ -10,7 +10,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Direct sum
@@ -57,7 +56,7 @@ instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i
 -- scoped[DirectSum]
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
-notation3"⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
+notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 -- Porting note: The below recreates some of the lean3 notation, not fully yet
 -- section
@@ -182,7 +181,7 @@ theorem addHom_ext {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ�
 then they are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
   addHom_ext fun i => FunLike.congr_fun <| H i
@@ -265,7 +264,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Unique ι] :
-    (⨁ _x : ι, M) ≃+ M :=
+    (⨁ _ : ι, M) ≃+ M :=
   {
     DirectSum.toAddMonoid fun _ =>
       AddMonoidHom.id
@@ -329,10 +328,9 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
   @Dfinsupp.sigmaCurry_apply _ _ δ _ _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
--- Porting note: marked noncomputable
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
+def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
     where
   toFun := Dfinsupp.sigmaUncurry

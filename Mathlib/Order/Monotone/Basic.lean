@@ -12,9 +12,6 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Coe
 
 /-!
 # Monotonicity

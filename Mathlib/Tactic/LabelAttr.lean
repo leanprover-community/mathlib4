@@ -11,13 +11,13 @@ import Lean
 Allow creating attributes using `register_label_attr`,
 and retrieving the array of `Name`s of declarations which have been tagged with such an attribute.
 
-These differ slightly from the built-in "tag attributes" which can be initalized with the syntax:
+These differ slightly from the built-in "tag attributes" which can be initialized with the syntax:
 ```
 initialize someName : TagAttribute ← registerTagAttribute `tagName "description"
 ```
 in that a "tag attribute" can only be put on a declaration at the moment it is declared,
 and can not be modified by scoping commands.
-The "label atributes" constructed here adding (or locally removing) the attribute
+The "label attributes" constructed here adding (or locally removing) the attribute
 either at the moment of declaration, or later.
 
 -/
@@ -76,7 +76,7 @@ Initialize a new "label" attribute.
 Declarations tagged with the attribute can be retrieved using `Mathlib.Tactic.LabelAttr.labelled`.
 -/
 macro (name := _root_.Lean.Parser.Command.registerLabelAttr) doc:(docComment)?
-  "register_label_attr" id:ident : command => do
+  "register_label_attr " id:ident : command => do
   let str := id.getId.toString
   let idParser := mkIdentFrom id (`Parser.Attr ++ id.getId)
   let descr := quote (removeLeadingSpaces
@@ -91,6 +91,3 @@ def labelled (attrName : Name) : MetaM (Array Name) := do
   match (← labelExtensionMapRef.get).find? attrName with
   | none => throwError "No extension named {attrName}"
   | some ext => pure <| ext.getState (← getEnv)
-
-/-- A dummy label attribute, to ease testing. -/
-register_label_attr dummy_label_attr

@@ -123,7 +123,7 @@ theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
 section lift
 
 -- So far we have built Gᵃᵇ and proved it's an abelian group.
--- Furthremore we defined the canonical projection `of : G → Gᵃᵇ`
+-- Furthermore we defined the canonical projection `of : G → Gᵃᵇ`
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
 variable {A : Type v} [CommGroup A] (f : G →* A)
 

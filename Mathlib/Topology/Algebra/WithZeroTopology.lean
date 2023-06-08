@@ -11,7 +11,6 @@ Authors: Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.Basic
-import Mathlib.Tactic.WLOG
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -46,10 +45,10 @@ variable {α Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
 A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
 scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
-  TopologicalSpace.mkOfNhds <| update pure 0 <| ⨅ (γ) (_h : γ ≠ 0), 𝓟 (Iio γ)
+  TopologicalSpace.mkOfNhds <| update pure 0 <| ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ)
 #align with_zero_topology.topological_space WithZeroTopology.topologicalSpace
 
-theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (γ) (_h : γ ≠ 0), 𝓟 (Iio γ)) :=
+theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ)) :=
   funext <| nhds_mkOfNhds_single <| le_iInf₂ fun _ h₀ => le_principal_iff.2 <| zero_lt_iff.2 h₀
 #align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
 
@@ -57,7 +56,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (�
 ### Neighbourhoods of zero
 -/
 
-theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_h : γ ≠ 0), 𝓟 (Iio γ) := by
+theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ) := by
   rw [nhds_eq_update, update_same]
 #align with_zero_topology.nhds_zero WithZeroTopology.nhds_zero
 
@@ -190,7 +189,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     wlog hle : x ≤ y generalizing x y
     · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp, Prod.swap] using this
-    rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy), skip]
+    rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩

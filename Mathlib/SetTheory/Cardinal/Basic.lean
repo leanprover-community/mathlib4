@@ -155,7 +155,7 @@ theorem mk_out (c : Cardinal) : (#c.out) = c :=
   Quotient.out_eq _
 #align cardinal.mk_out Cardinal.mk_out
 
-/-- The representative of the cardinal of a type is equivalent ot the original type. -/
+/-- The representative of the cardinal of a type is equivalent to the original type. -/
 def outMkEquiv {α : Type v} : (#α).out ≃ α :=
   Nonempty.some <| Cardinal.eq.mp (by simp)
 #align cardinal.out_mk_equiv Cardinal.outMkEquiv
@@ -1715,6 +1715,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   rw [toNat_apply_of_lt_aleph0 (nat_lt_aleph0 n), ← natCast_inj]
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
+
+@[simp]
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+  toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/
 theorem toNat_rightInverse : Function.RightInverse ((↑) : ℕ → Cardinal) toNat :=

@@ -10,7 +10,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Tactic.NthRewrite
 import Mathlib.Order.Closure
 
 /-!
