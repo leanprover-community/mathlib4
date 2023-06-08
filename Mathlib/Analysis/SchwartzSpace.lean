@@ -939,7 +939,14 @@ theorem iteratedPderiv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
   have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
   have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
     simp only [Fin.tail_def, Fin.succ_last]
-  simp only [iteratedPderiv_succ_left, IH (Fin.tail m), hmzero, hmtail, Fin.tail_init_eq_init_tail]
+  -- Porting note: changed to `calc` proof
+  calc
+    _ = pderivClm 𝕜 (m 0) (iteratedPderiv 𝕜 _ f) := iteratedPderiv_succ_left _ _ _
+    _ = pderivClm 𝕜 (m 0) ((iteratedPderiv 𝕜 _) ((pderivClm 𝕜 _) f)) := by
+      congr 1
+      exact IH _
+    _ = _ := by
+      simp only [hmtail, iteratedPderiv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 #align schwartz_map.iterated_pderiv_succ_right SchwartzMap.iteratedPderiv_succ_right
 
 -- Todo: `iterated_pderiv 𝕜 m f x = iterated_fderiv ℝ f x m`
@@ -994,9 +1001,12 @@ def toBoundedContinuousFunctionClm : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
       change Continuous (toBoundedContinuousFunctionLm 𝕜 E F)
       refine'
         Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
-          (norm_withSeminorms 𝕜 (E →ᵇ F)) _ fun i => ⟨{0}, 1, fun f => _⟩
-      rw [Finset.sup_singleton, one_smul, Seminorm.comp_apply, coe_normSeminorm,
-        schwartzSeminormFamily_apply_zero, BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+          (norm_withSeminorms 𝕜 (E →ᵇ F)) _ fun _ => ⟨{0}, 1, fun f => _⟩
+      -- Porting note: Lean failed to find this instance
+      have : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
+      simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
+        schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
+        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
       intro x
       exact norm_le_seminorm 𝕜 _ _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionClm
