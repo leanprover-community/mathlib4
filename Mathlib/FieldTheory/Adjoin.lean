@@ -769,7 +769,8 @@ theorem bot_eq_top_of_finrank_adjoin_le_one [FiniteDimensional F E]
 theorem subsingleton_of_finrank_adjoin_le_one [FiniteDimensional F E]
     (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : Subsingleton (IntermediateField F E) :=
   subsingleton_of_bot_eq_top (bot_eq_top_of_finrank_adjoin_le_one h)
-#align intermediate_field.subsingleton_of_finrank_adjoin_le_one IntermediateField.subsingleton_of_finrank_adjoin_le_one
+#align intermediate_field.subsingleton_of_finrank_adjoin_le_one
+  IntermediateField.subsingleton_of_finrank_adjoin_le_one
 
 end AdjoinRank
 
@@ -781,8 +782,8 @@ variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E] {α : E}
 
 variable {K : Type _} [Field K] [Algebra F K]
 
-theorem minpoly_gen {α : E} (h : IsIntegral F α) : minpoly F (AdjoinSimple.gen F α) = minpoly F α :=
-  by
+theorem minpoly_gen {α : E} (h : IsIntegral F α) :
+    minpoly F (AdjoinSimple.gen F α) = minpoly F α := by
   rw [← AdjoinSimple.algebraMap_gen F α] at h
   have inj := (algebraMap F⟮α⟯ E).injective
   exact
@@ -801,7 +802,8 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 
 --Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
-noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) : AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
+noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
+    AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
     (AdjoinRoot.liftHom (minpoly F α) (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
     (by
