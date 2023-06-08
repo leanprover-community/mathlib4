@@ -136,16 +136,6 @@ section ts
 
 variable [Preorder α]
 
-#check  WithLawsonTopology.instTopologicalSpaceWithLawsonTopology
-
-#check   TopologicalSpace (WithLawsonTopology α)
-
---#check   TopologicalSpace (WithLawsonTopology α) ≤ TopologicalSpace (WithLawsonTopology α)
-
-#check  WithLawsonTopology.instTopologicalSpaceWithLawsonTopology ≤ WithScottTopology.instTopologicalSpaceWithScottTopology
-
-#check @LawsonTopology' α ≤ @ScottTopology' α
-
 lemma Lawson_le_Scott' : @LawsonTopology' α ≤ @ScottTopology' α := inf_le_right
 
 lemma Scott_Hausdorff_le_Lawson' : @ScottHausdorffTopology α _ ≤ @LawsonTopology' α _ := by
@@ -154,34 +144,18 @@ lemma Scott_Hausdorff_le_Lawson' : @ScottHausdorffTopology α _ ≤ @LawsonTopol
   . exact @Scott_Hausdorff_le_Lower' α _
   . exact @Scott_Hausdorff_le_Scott' α _
 
-#check WithScottTopology.toScott
 
-#check WithLowerTopology.ofLower
-
-#check WithScottTopology.toScott ∘ WithLowerTopology.ofLower
-
-#check Continuous
-
-#check Continuous (WithScottTopology.toScott ∘ WithLowerTopology.ofLower)
 
 lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
   IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) → ScottHausdorffTopology.IsOpen s := by
-  rw [←TopologicalSpace.le_def]
-
-
-
+  intro h
+  simp at h
+  apply Scott_Hausdorff_le_Lawson'
+  apply h
 
 end ts
 
 section csh
-
-#check WithScottTopology.instTopologicalSpaceWithScottTopology.IsOpen
-
-#check (WithScottTopology : TopologicalSpace α) ≤ (WithLawsonTopology.toTopologicalSpace)
-
-#check WithScottTopology.instTopologicalSpaceWithScottTopology ≤ WithLawsonTopology.instTopologicalSpaceWithLawsonTopology
-
-#check IsOpen[WithScottTopology.instTopologicalSpaceWithScottTopology]
 
 variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 
@@ -191,7 +165,7 @@ lemma Scott_le_Lawson : L ≤ S := by
   rw [@ScottTopology.topology_eq α _ S _, @LawsonTopology.topology_eq α _ L _,  LawsonTopology']
   apply inf_le_right
 
-lemma Lawson_le_Scott : WithLawsonTopology.instTopologicalSpaceWithLawsonTopology ≤ WithScottTopology.instTopologicalSpaceWithScottTopology := sorry
+--lemma Lawson_le_Scott : WithLawsonTopology.instTopologicalSpaceWithLawsonTopology ≤ WithScottTopology.instTopologicalSpaceWithScottTopology := sorry
 
 
 lemma Scott_Hausdorff_le_Lawson : (@ScottHausdorffTopology α _) ≤ L := by
