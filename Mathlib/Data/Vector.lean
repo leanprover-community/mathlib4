@@ -278,53 +278,55 @@ theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n) (
   rw [Vector.eq x x' h]
 
 -- Annoyingly trivial
-theorem get_cons_succ_eq {α: Type u} {n : Nat} {a : α} {x : Vector α n} (i : Fin n) : (x.cons a)[Fin.castLE (Nat.le_succ n) i] = x[i] := by
-  sorry
-
-
+-- theorem get_cons_succ_eq {α: Type u} {n : Nat} {a : α} {x : Vector α n} (i : Fin n) : (x.cons a)[Fin.castLE (Nat.le_succ n) i] = x[i] := by
+--   admit
+--
+--
 -- This proof certainly needs some golfing...
 -- `Vector` makes it much harder to prove this than `List` with the property of the lengths being equal
-theorem extensionality {α : Type u} {n : Nat} {x y : Vector α n} : (∀ i : Fin n, x[i] = y[i]) → x = y  := by
-  intro h
-  cases x
-  case mk x hx =>
-    cases y
-    case mk y hy =>
-    induction x generalizing y n
-    induction y
-    case nil.nil => rfl
-    case nil.cons =>
-      simp at hx
-      rw [← hx] at hy
-      contradiction
-    case cons head tail tail_ih =>
-      apply Vector.eq
-      simp
-      cases y
-      case a.nil =>
-        simp at hy
-        rw [← hy] at hx
-        contradiction
-      case a.cons head_y tail_y =>
-      cases n
-      case zero =>
-        simp at hx
-      case succ m =>
-      have h_heads : head = head_y := by
-        have h_zero := h (@Fin.ofNat m 0)
-        have h_head := @vec_get_zero_eq_head α m { val := head :: tail, property := hx }
-        have h_head_y := @vec_get_zero_eq_head α m { val := head_y :: tail_y, property := hy }
-        rw [h_head, h_head_y] at h_zero
-        simp [Vector.head] at h_zero
-        rw [h_zero]
-
-      rw [List.length_cons head tail, Nat.succ_inj'] at hx
-      rw [List.length_cons head_y tail_y, Nat.succ_inj'] at hy
-      have h_tails : { val:= tail, property := hx : Vector _ _} = { val := tail_y, property := hy} := by
-        apply tail_ih hx tail_y hy
-        intro i
-        have h_i := h i
-        rename_i α hx' hy'
-        sorry -- Should work with `get_cons_succ_eq` somehow
+-- theorem extensionality {α : Type u} {n : Nat} {x y : Vector α n} : (∀ i : Fin n, x[i] = y[i]) → x = y  := by
+--   intro h
+--   cases x
+--   case mk x hx =>
+--     cases y
+--     case mk y hy =>
+--     induction x generalizing y n
+--     induction y
+--     case nil.nil => rfl
+--     case nil.cons =>
+--       simp at hx
+--       rw [← hx] at hy
+--       contradiction
+--     case cons head tail tail_ih =>
+--       apply Vector.eq
+--       simp
+--       cases y
+--       case a.nil =>
+--         simp at hy
+--         rw [← hy] at hx
+--         contradiction
+--       case a.cons head_y tail_y =>
+--       cases n
+--       case zero =>
+--         simp at hx
+--       case succ m =>
+--       have h_heads : head = head_y := by
+--         have h_zero := h (@Fin.ofNat m 0)
+--         have h_head := @vec_get_zero_eq_head α m { val := head :: tail, property := hx }
+--         have h_head_y := @vec_get_zero_eq_head α m { val := head_y :: tail_y, property := hy }
+--         rw [h_head, h_head_y] at h_zero
+--         simp [Vector.head] at h_zero
+--         rw [h_zero]
+--
+--       rw [List.length_cons head tail, Nat.succ_inj'] at hx
+--       rw [List.length_cons head_y tail_y, Nat.succ_inj'] at hy
+--       have h_tails : { val:= tail, property := hx : Vector _ _} = { val := tail_y, property := hy} := by
+--         apply tail_ih hx tail_y hy
+--         intro i
+--         have h_i := h i
+--         rename_i α hx' hy'
+--         admit -- Should work with `get_cons_succ_eq` somehow
+--       simp at h_tails
+--       rw [h_heads, h_tails]
 
 end Vector

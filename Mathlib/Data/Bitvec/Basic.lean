@@ -35,12 +35,6 @@ theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate 
     simp [Bitvec.neg, Bitvec.one, Vector.mapAccumr, Vector.replicate,
       Vector.append, List.cons_append, List.mapAccumr, toList_neg_one_aux n]
 
-section bitwise
-
-theorem
-
-end bitwise
-
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat
 
@@ -248,7 +242,7 @@ theorem toNat_add {n : Nat} (x y : Bitvec n) : (x + y).toNat = (x.toNat + y.toNa
   show Bitvec.toNat (x.adc y false).tail = (x.toNat + y.toNat) % 2^n
   rw [toNat_tail, toNat_adc, add_tsub_cancel_right]
 
-theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (h : x.length = y.length),
+theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (_ : x.length = y.length),
     x.zipWith (. && .) y = List.replicate x.length false →
     (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).fst = false
   | [], [], _ => fun _ => rfl
@@ -260,7 +254,7 @@ theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (h : x.length = 
     rcases h'.1 with rfl | rfl <;>
     simp [List.mapAccumr₂, Bitvec.carry, this]
 
-theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (h : x.length = y.length),
+theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (_ : x.length = y.length),
     x.zipWith (. && .) y = List.replicate x.length false →
     (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).snd =
     x.zipWith (. || .) y
@@ -277,5 +271,62 @@ theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (h : x.length = 
 theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) : x + y = x.or y :=
   Subtype.ext (add_eq_or_of_and_eq_zero_aux₂ (x.2.trans y.2.symm)
     (by convert congr_arg Vector.toList hxy; simp))
+
+def width : Bitvec n → Nat := fun _ => n
+
+-- Shouldn't this be inferred from the instance above? (as Bitvec is @[reducible])
+instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
+  getElem := fun v i _ => v.1[i.val]
+
+instance (n : Nat) : Inhabited (Bitvec n) :=
+  ⟨List.replicate n true, by apply List.length_replicate⟩
+
+def Fun (width : Nat) := Fin width → Bool
+
+/-- convert `Bitvec n` to `Fin n → Bool` -/
+def ofFun {width : Nat} : Fun width → Bitvec width :=
+  match width with
+    | 0 => fun _ => ⟨List.nil, rfl⟩
+    | n + 1 => fun f => f (n + 1) ::ᵥ @ofFun n (fun i => f i)
+
+/-- convert `Fin n → Bool` to `Bitvec n` -/
+def toFun {width : Nat} : Bitvec width → Fun width :=
+    match width with
+        | 0 => fun _ => Fin.elim0
+        | n + 1 => fun bv i =>
+          have instGetElem : GetElem (Bitvec (n + 1)) (Fin (n + 1)) Bool (fun _ _ => True) := inferInstance
+          bv[i]
+
+/- TODO: fix these
+theorem ofFun_toFun {width : Nat} {f : Fun width} : toFun (ofFun f) = f := by
+  funext i
+  cases width
+  case zero => exact Fin.elim0 i
+  case succ n =>
+    simp [toFun, ofFun]
+    sorry
+
+theorem toFun_ofFun {width : Nat} {bv : Bitvec width} : ofFun (toFun bv) = bv := by
+  cases width
+  case zero => simp
+  case succ n =>
+    simp [toFun, ofFun]
+    sorry
+
+theorem eq_if_coeffs_eq {width : Nat} {x y : Bitvec width} : x = y ↔ ∀ i : Fin width, x[i] = y[i] := by
+  constructor
+  case mp =>
+    intro h i
+    rw [h]
+  case mpr =>
+   sorry
+    -- use Vector version
+ -/
+
+instance {width : Nat} : Coe (Fun width) (Bitvec width) := ⟨@ofFun width⟩
+instance {width : Nat} : Coe (Bitvec width) (Fun width) := ⟨@toFun width⟩
+
+def ofVector : Vector Bool n → Bitvec n := id
+
 
 end Bitvec
