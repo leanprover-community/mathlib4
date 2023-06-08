@@ -137,7 +137,7 @@ theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) 
       isClosed_iInter fun _ => isClosed_eq (map_continuous f) continuous_const
 #align continuous_map.set_of_ideal_open ContinuousMap.setOfIdeal_open
 
-/-- The open set `set_of_ideal I` realized as a term of `opens X`. -/
+/-- The open set `ContinuousMap.setOfIdeal I` realized as a term of `opens X`. -/
 @[simps]
 def opensOfIdeal [T2Space R] (I : Ideal C(X, R)) : Opens X :=
   ⟨setOfIdeal I, setOfIdeal_open I⟩
@@ -416,7 +416,7 @@ variable [LocallyCompactSpace X] [CommRing 𝕜] [TopologicalSpace 𝕜] [Topolo
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the
-`character_space 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
+`WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
 def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
     ⟨{  toFun := fun f => f x
@@ -455,7 +455,7 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
 #align weak_dual.character_space.continuous_map_eval_bijective WeakDual.CharacterSpace.continuousMapEval_bijective
 
 /-- This is the natural homeomorphism between a compact Hausdorff space `X` and the
-`character_space 𝕜 C(X, 𝕜)`. -/
+`WeakDual.characterSpace 𝕜 C(X, 𝕜)`. -/
 noncomputable def homeoEval : X ≃ₜ characterSpace 𝕜 C(X, 𝕜) :=
   @Continuous.homeoOfEquivCompactToT2 _ _ _ _ _ _
     { Equiv.ofBijective _ (continuousMapEval_bijective X 𝕜) with toFun := continuousMapEval X 𝕜 }
