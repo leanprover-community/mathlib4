@@ -106,7 +106,8 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
   have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' _root_.trans (mul_le_mul _ _ _ _) (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  refine' _root_.trans (mul_le_mul _ _ _ _)
+      (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
     refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
     exact_mod_cast Real.nat_sqrt_le_real_sqrt
