@@ -131,26 +131,27 @@ theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function
     exact ⟨y, hy⟩⟩
 #align alg_hom.normal_bijective AlgHom.normal_bijective
 
-variable {F} {E} {E' : Type _} [Field E'] [Algebra F E']
+-- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
+variable {F} {E} {E' : Type _} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
 
 theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
   normal_iff.2 fun x => by
     cases' h.out (f.symm x) with hx hhx
-    have H := map_isIntegral f.to_alg_hom hx
-    rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] at H
+    have H := map_isIntegral f.toAlgHom hx
+    simp [AlgEquiv.toAlgHom_eq_coe] at H
     use H
     apply Polynomial.splits_of_splits_of_dvd (algebraMap F E') (minpoly.ne_zero hx)
-    · rw [← AlgHom.comp_algebraMap f.to_alg_hom]
-      exact Polynomial.splits_comp_of_splits (algebraMap F E) f.to_alg_hom.to_ring_hom hhx
+    · rw [← AlgHom.comp_algebraMap f.toAlgHom]
+      exact Polynomial.splits_comp_of_splits (algebraMap F E) f.toAlgHom.toRingHom hhx
     · apply minpoly.dvd _ _
-      rw [← AddEquiv.map_eq_zero_iff f.symm.to_add_equiv]
+      rw [← AddEquiv.map_eq_zero_iff f.symm.toAddEquiv]
       exact
-        Eq.trans (Polynomial.aeval_algHom_apply f.symm.to_alg_hom x (minpoly F (f.symm x))).symm
+        Eq.trans (Polynomial.aeval_algHom_apply f.symm.toAlgHom x (minpoly F (f.symm x))).symm
           (minpoly.aeval _ _)
 #align normal.of_alg_equiv Normal.of_algEquiv
 
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
-  ⟨fun h => Normal.of_algEquiv f, fun h => Normal.of_algEquiv f.symm⟩
+  ⟨fun _ => Normal.of_algEquiv f, fun _ => Normal.of_algEquiv f.symm⟩
 #align alg_equiv.transfer_normal AlgEquiv.transfer_normal
 
 -- seems to be causing a diamond in the below proof
@@ -159,8 +160,9 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- I had the (unprovable) goal (of the form) `adjoin_root.mk f (C x) = adjoin_root.mk f X`
 -- for some `x, f`. So maybe this is indeed the correct approach and rewriting this proof is
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
-attribute [-instance] AdjoinRoot.hasSmul
+attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
 
+set_option maxHeartbeats 210000 in
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_roots
@@ -170,7 +172,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
       Normal.of_algEquiv
         (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine' normal_iff.2 fun x => _
-  have hFE : FiniteDimensional F E := is_splitting_field.finite_dimensional E p
+  have hFE : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
   have Hx : IsIntegral F x := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x
   refine' ⟨Hx, Or.inr _⟩
   rintro q q_irred ⟨r, hr⟩
@@ -178,45 +180,51 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   haveI := Fact.mk q_irred
   let pbED := AdjoinRoot.powerBasis q_irred.ne_zero
   haveI : FiniteDimensional E D := PowerBasis.finiteDimensional pbED
-  have finrankED : FiniteDimensional.finrank E D = q.nat_degree := by
+  have finrankED : FiniteDimensional.finrank E D = q.natDegree := by
     rw [PowerBasis.finrank pbED, AdjoinRoot.powerBasis_dim]
   haveI : FiniteDimensional F D := FiniteDimensional.trans F E D
   rsuffices ⟨ϕ⟩ : Nonempty (D →ₐ[F] E)
-  · rw [← WithBot.coe_one, degree_eq_iff_nat_degree_eq q_irred.ne_zero, ← finrankED]
-    have nat_lemma : ∀ a b c : ℕ, a * b = c → c ≤ a → 0 < c → b = 1 := by intro a b c h1 h2 h3;
+  --Porting note: the `change` was `rw [← WithBot.coe_one]`
+  · change degree q = ↑(1 : ℕ)
+    rw [degree_eq_iff_natDegree_eq q_irred.ne_zero, ← finrankED]
+    have nat_lemma : ∀ a b c : ℕ, a * b = c → c ≤ a → 0 < c → b = 1 := by
+      intro a b c h1 h2 h3
       nlinarith
     exact
       nat_lemma _ _ _ (FiniteDimensional.finrank_mul_finrank F E D)
         (LinearMap.finrank_le_finrank_of_injective
-          (show Function.Injective ϕ.to_linear_map from ϕ.to_ring_hom.injective))
+          (show Function.Injective ϕ.toLinearMap from ϕ.toRingHom.injective))
         FiniteDimensional.finrank_pos
   let C := AdjoinRoot (minpoly F x)
   haveI Hx_irred := Fact.mk (minpoly.irreducible Hx)
+-- Porting note: `heval` added since now Lean wants the proof explictely in several places.
+  have heval : eval₂ (algebraMap F D) (AdjoinRoot.root q) (minpoly F x) = 0 := by
+    rw [algebraMap_eq F E D, ← eval₂_map, hr, AdjoinRoot.algebraMap_eq, eval₂_mul,
+      AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
   letI : Algebra C D :=
-    RingHom.toAlgebra
-      (AdjoinRoot.lift (algebraMap F D) (AdjoinRoot.root q)
-        (by
-          rw [algebra_map_eq F E D, ← eval₂_map, hr, AdjoinRoot.algebraMap_eq, eval₂_mul,
-            AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]))
+    RingHom.toAlgebra (AdjoinRoot.lift (algebraMap F D) (AdjoinRoot.root q) heval)
   letI : Algebra C E := RingHom.toAlgebra (AdjoinRoot.lift (algebraMap F E) x (minpoly.aeval F x))
-  haveI : IsScalarTower F C D := of_algebra_map_eq fun x => (AdjoinRoot.lift_of _).symm
-  haveI : IsScalarTower F C E := of_algebra_map_eq fun x => (AdjoinRoot.lift_of _).symm
+  haveI : IsScalarTower F C D := of_algebraMap_eq fun y => (AdjoinRoot.lift_of heval).symm
+  haveI : IsScalarTower F C E := by
+    refine' of_algebraMap_eq fun y => (AdjoinRoot.lift_of _).symm
+-- Porting note: the following proof was just `_`.
+    rw [← aeval_def, minpoly.aeval]
   suffices Nonempty (D →ₐ[C] E) by exact Nonempty.map (AlgHom.restrictScalars F) this
   let S : Set D := ((p.map (algebraMap F E)).roots.map (algebraMap E D)).toFinset
   suffices ⊤ ≤ IntermediateField.adjoin C S by
     refine' IntermediateField.algHom_mk_adjoin_splits' (top_le_iff.mp this) fun y hy => _
-    rcases multiset.mem_map.mp (multiset.mem_to_finset.mp hy) with ⟨z, hz1, hz2⟩
+    rcases Multiset.mem_map.mp (Multiset.mem_toFinset.mp hy) with ⟨z, hz1, hz2⟩
     have Hz : IsIntegral F z := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) z
     use
       show IsIntegral C y from
         isIntegral_of_noetherian (IsNoetherian.iff_fg.2 (FiniteDimensional.right F C D)) y
     apply splits_of_splits_of_dvd (algebraMap C E) (map_ne_zero (minpoly.ne_zero Hz))
-    · rw [splits_map_iff, ← algebra_map_eq F C E]
+    · rw [splits_map_iff, ← algebraMap_eq F C E]
       exact
         splits_of_splits_of_dvd _ hp hFEp.splits
           (minpoly.dvd F z (Eq.trans (eval₂_eq_eval_map _) ((mem_roots (map_ne_zero hp)).mp hz1)))
     · apply minpoly.dvd
-      rw [← hz2, aeval_def, eval₂_map, ← algebra_map_eq F C D, algebra_map_eq F E D, ← hom_eval₂, ←
+      rw [← hz2, aeval_def, eval₂_map, ← algebraMap_eq F C D, algebraMap_eq F E D, ← hom_eval₂, ←
         aeval_def, minpoly.aeval F z, RingHom.map_zero]
   rw [← IntermediateField.toSubalgebra_le_toSubalgebra, IntermediateField.top_toSubalgebra]
   apply ge_trans (IntermediateField.algebra_adjoin_le_adjoin C S)
@@ -226,7 +234,10 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [AdjoinRoot.adjoinRoot_eq_top, Subalgebra.restrictScalars_top, ←
       @Subalgebra.restrictScalars_top F C] at this
     exact top_le_iff.mpr (Subalgebra.restrictScalars_injective F this)
-  dsimp only [S]
+/- Porting note: the `change` was `dsimp only [S]`. This is the step that requires increasing
+`maxHeartbeats`. Using `set S ... with hS` doesn't work. -/
+  change Subalgebra.restrictScalars F (Algebra.adjoin C
+    (((p.map (algebraMap F E)).roots.map (algebraMap E D)).toFinset : Set D)) = _
   rw [← Finset.image_toFinset, Finset.coe_image]
   apply
     Eq.trans
