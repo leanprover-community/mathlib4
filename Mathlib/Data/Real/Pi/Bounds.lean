@@ -23,6 +23,8 @@ See also `data.real.pi.leibniz` and `data.real.pi.wallis` for infinite formulas 
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
+-- Porting note: needed to add a lot of type ascriptions for lean to interpret numbers as reals.
+
 open scoped Real
 
 namespace Real
@@ -38,13 +40,15 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < (2 : ℝ) ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
-  have : π < (sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + 1 / (2 ^ n) ^ 3 / 4) * 2 ^ (n + 2) := by
+  have : π <
+      (sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
+      (2 : ℝ) ^ (n + 2) := by
     rw [← div_lt_iff, ← sin_pi_over_two_pow_succ]
     refine' lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube _ _)) _
     · apply div_pos pi_pos; apply pow_pos; norm_num
     · rw [div_le_iff']
       · refine' le_trans pi_le_four _
-        simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, mul_one]
+        simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
         apply pow_le_pow; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
     apply add_le_add_left; rw [div_le_div_right]
@@ -55,8 +59,8 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     rw [← le_div_iff]
     refine' le_trans ((div_le_div_right _).mpr pi_le_four) _; apply pow_pos; norm_num
     rw [pow_succ, pow_succ, ← mul_assoc, ← div_div]
-    convert le_rfl
-    all_goals repeat' apply pow_pos; norm_num
+    -- Porting note: removed `convert le_rfl`
+    all_goals (repeat' apply pow_pos); norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
   · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
   rw [pow_succ, ← pow_mul, mul_comm n 2, pow_mul, show (2 : ℝ) ^ 2 = 4 by norm_num, pow_succ,
