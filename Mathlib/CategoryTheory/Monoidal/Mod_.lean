@@ -17,82 +17,81 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory
-
-open CategoryTheory.MonoidalCategory
+open CategoryTheory MonoidalCategory
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 variable {C}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
-  pt : C
-  act : A.pt ⊗ X ⟶ X
-  one_act' : (A.one ⊗ 𝟙 X) ≫ act = (λ_ X).Hom := by obviously
-  assoc' : (A.mul ⊗ 𝟙 X) ≫ act = (α_ A.pt A.pt X).Hom ≫ (𝟙 A.pt ⊗ act) ≫ act := by obviously
+  X : C
+  act : A.X ⊗ X ⟶ X
+  one_act : (A.one ⊗ 𝟙 X) ≫ act = (λ_ X).hom := by aesop_cat
+  assoc : (A.mul ⊗ 𝟙 X) ≫ act = (α_ A.X A.X X).hom ≫ (𝟙 A.X ⊗ act) ≫ act := by aesop_cat
+set_option linter.uppercaseLean3 false in
 #align Mod_ Mod_
 
-restate_axiom Mod_.one_act'
-
-restate_axiom Mod_.assoc'
-
-attribute [simp, reassoc] Mod_.one_act Mod_.assoc
+attribute [reassoc (attr := simp)] Mod_.one_act Mod_.assoc
 
 namespace Mod_
 
 variable {A : Mon_ C} (M : Mod_ A)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem assoc_flip :
-    (𝟙 A.pt ⊗ M.act) ≫ M.act = (α_ A.pt A.pt M.pt).inv ≫ (A.mul ⊗ 𝟙 M.pt) ≫ M.act := by simp
+    (𝟙 A.X ⊗ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ⊗ 𝟙 M.X) ≫ M.act := by simp
+set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
-  Hom : M.pt ⟶ N.pt
-  act_hom' : M.act ≫ hom = (𝟙 A.pt ⊗ hom) ≫ N.act := by obviously
+  hom : M.X ⟶ N.X
+  act_hom : M.act ≫ hom = (𝟙 A.X ⊗ hom) ≫ N.act := by aesop_cat
+set_option linter.uppercaseLean3 false in
 #align Mod_.hom Mod_.Hom
 
-restate_axiom hom.act_hom'
-
-attribute [simp, reassoc] hom.act_hom
+attribute [reassoc (attr := simp)] Hom.act_hom
 
 /-- The identity morphism on a module object. -/
 @[simps]
-def id (M : Mod_ A) : Hom M M where Hom := 𝟙 M.pt
+def id (M : Mod_ A) : Hom M M where hom := 𝟙 M.X
+set_option linter.uppercaseLean3 false in
 #align Mod_.id Mod_.id
 
 instance homInhabited (M : Mod_ A) : Inhabited (Hom M M) :=
   ⟨id M⟩
+set_option linter.uppercaseLean3 false in
 #align Mod_.hom_inhabited Mod_.homInhabited
 
 /-- Composition of module object morphisms. -/
 @[simps]
-def comp {M N O : Mod_ A} (f : Hom M N) (g : Hom N O) : Hom M O where Hom := f.Hom ≫ g.Hom
+def comp {M N O : Mod_ A} (f : Hom M N) (g : Hom N O) : Hom M O where hom := f.hom ≫ g.hom
+set_option linter.uppercaseLean3 false in
 #align Mod_.comp Mod_.comp
 
 instance : Category (Mod_ A) where
   Hom M N := Hom M N
   id := id
-  comp M N O f g := comp f g
+  comp f g := comp f g
+
+-- porting note: added because `Hom.ext` is not triggered automatically
+@[ext]
+lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
+  Hom.ext _ _ h
 
 @[simp]
-theorem id_hom' (M : Mod_ A) : (𝟙 M : Hom M M).Hom = 𝟙 M.pt :=
+theorem id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
   rfl
+set_option linter.uppercaseLean3 false in
 #align Mod_.id_hom' Mod_.id_hom'
 
 @[simp]
 theorem comp_hom' {M N K : Mod_ A} (f : M ⟶ N) (g : N ⟶ K) :
-    (f ≫ g : Hom M K).Hom = f.Hom ≫ g.Hom :=
+    (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Mod_.comp_hom' Mod_.comp_hom'
 
 variable (A)
@@ -100,8 +99,9 @@ variable (A)
 /-- A monoid object as a module over itself. -/
 @[simps]
 def regular : Mod_ A where
-  pt := A.pt
+  X := A.X
   act := A.mul
+set_option linter.uppercaseLean3 false in
 #align Mod_.regular Mod_.regular
 
 instance : Inhabited (Mod_ A) :=
@@ -109,45 +109,45 @@ instance : Inhabited (Mod_ A) :=
 
 /-- The forgetful functor from module objects to the ambient category. -/
 def forget : Mod_ A ⥤ C where
-  obj A := A.pt
-  map A B f := f.Hom
+  obj A := A.X
+  map f := f.hom
+set_option linter.uppercaseLean3 false in
 #align Mod_.forget Mod_.forget
 
 open CategoryTheory.MonoidalCategory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
 @[simps]
 def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
   obj M :=
-    { pt := M.pt
-      act := (f.Hom ⊗ 𝟙 M.pt) ≫ M.act
-      one_act' := by
+    { X := M.X
+      act := (f.hom ⊗ 𝟙 M.X) ≫ M.act
+      one_act := by
         slice_lhs 1 2 => rw [← comp_tensor_id]
         rw [f.one_hom, one_act]
-      assoc' := by
+      assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
         rw [id_tensor_comp]
         slice_rhs 4 5 => rw [Mod_.assoc_flip]
         slice_rhs 3 4 => rw [associator_inv_naturality]
         slice_rhs 2 3 => rw [← tensor_id, associator_inv_naturality]
-        slice_rhs 1 3 => rw [iso.hom_inv_id_assoc]
+        slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
         slice_rhs 1 2 => rw [← comp_tensor_id, tensor_id_comp_id_tensor]
         slice_rhs 1 2 => rw [← comp_tensor_id, ← f.mul_hom]
-        rw [comp_tensor_id, category.assoc] }
-  map M N g :=
-    { Hom := g.Hom
-      act_hom' := by
+        rw [comp_tensor_id, Category.assoc] }
+  map g :=
+    { hom := g.hom
+      act_hom := by
         dsimp
         slice_rhs 1 2 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
         slice_rhs 2 3 => rw [← g.act_hom]
-        rw [category.assoc] }
+        rw [Category.assoc] }
+set_option linter.uppercaseLean3 false in
 #align Mod_.comap Mod_.comap
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
 end Mod_
-
