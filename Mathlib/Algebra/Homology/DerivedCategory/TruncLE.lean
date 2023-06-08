@@ -259,7 +259,7 @@ lemma isIso_homologyMap_truncLEι (n i : ℤ) (hi : i ≤ n) :
       . dsimp
         rw [K.truncLEd_eq_zero _ _ _ (by rfl), comp_zero]
       . dsimp
-        have := (K.truncLE i).isIso_liftCycles_of_zero i (i+1) (by simp) (by simp)
+        have := (K.truncLE i).isIso_liftCycles i (i+1) (by simp) (by simp)
         simp only [← cancel_epi ((K.truncLE i).liftCycles (𝟙 ((K.truncLE i).X i)) (i+1)
           (by simp) (by simp)), ← cancel_mono ((K.truncLE i).iCycles i),
           truncLE_X, liftCycles_comp_cyclesMap_assoc, truncLEι_f, id_comp,
@@ -376,7 +376,7 @@ lemma isIso_truncLEι_iff (n : ℤ) : IsIso (K.truncLEι n) ↔ K.IsStrictlyLE n
     . obtain (hi'|rfl) := (not_lt.1 hi).lt_or_eq
       . exact ⟨0, (K.isZero_truncLEX n i hi').eq_of_src _ _,
           (K.isZero_of_isStrictlyLE n i hi').eq_of_src _ _⟩
-      . have := K.isIso_iCycles_of_zero n (n+1) (by simp)
+      . have := K.isIso_iCycles n (n+1) (by simp)
           (((K.isZero_of_isStrictlyLE n (n+1) (by simp))).eq_of_tgt _ _)
         rw [K.truncLEιf_eq_of_eq n n rfl]
         infer_instance

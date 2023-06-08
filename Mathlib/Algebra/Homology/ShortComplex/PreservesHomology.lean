@@ -55,7 +55,7 @@ variable (X Y)
 
 noncomputable instance preserves_kernel_zero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
-    have := KernelFork.IsLimit.isIso_ι_of_zero c hc rfl
+    have := KernelFork.IsLimit.isIso_ι c hc rfl
     let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     refine' IsLimit.postcomposeHomEquiv e _ _
@@ -64,7 +64,7 @@ noncomputable instance preserves_kernel_zero :
 
 noncomputable instance preserves_cokernel_zero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) F := ⟨fun {c} hc => by
-    have := CokernelCofork.IsColimit.isIso_π_of_zero c hc rfl
+    have := CokernelCofork.IsColimit.isIso_π c hc rfl
     let e : parallelPair (0 : X ⟶ Y) 0 ⋙ F ≅ parallelPair (F.map 0) 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp) (by simp)
     refine' IsColimit.precomposeInvEquiv e _ _

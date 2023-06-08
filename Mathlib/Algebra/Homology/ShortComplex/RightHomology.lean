@@ -985,8 +985,8 @@ noncomputable def cyclesCoIsCokernel :
     IsColimit (CokernelCofork.ofπ S.pCyclesCo S.f_pCyclesCo) :=
   S.rightHomologyData.hp
 
-lemma isIso_pCyclesCo_of_zero (hf : S.f = 0) : IsIso (S.pCyclesCo) :=
-  CokernelCofork.IsColimit.isIso_π_of_zero _ S.cyclesCoIsCokernel hf
+lemma isIso_pCyclesCo (hf : S.f = 0) : IsIso (S.pCyclesCo) :=
+  CokernelCofork.IsColimit.isIso_π _ S.cyclesCoIsCokernel hf
 
 @[simps]
 noncomputable def cyclesCoIsoCokernel [HasCokernel S.f] : S.cyclesCo ≅ cokernel S.f where

@@ -263,7 +263,7 @@ lemma isIso_homologyMap_truncGEπ (n i : ℤ) (hi : n ≤ i) :
       . simp only [← cancel_epi (K.pCyclesCo n), cyclesCoMap_comp_descCyclesCo,
           truncGEπ_f, p_descCyclesCo, K.truncGEπf_eq_of_eq, assoc, Iso.inv_hom_id]
       . dsimp
-        have := (K.truncGE n).isIso_descCyclesCo_of_zero (n-1) n (by simp) (by simp)
+        have := (K.truncGE n).isIso_descCyclesCo (n-1) n (by simp) (by simp)
         simp only [← cancel_mono ((K.truncGE n).descCyclesCo (𝟙 ((K.truncGE n).X n)) (n-1)
           (by simp) (by simp)), assoc, cyclesCoMap_comp_descCyclesCo, truncGEπ_f,
           comp_id, id_comp, ← cancel_epi ((K.truncGE n).pCyclesCo n)]
@@ -379,7 +379,7 @@ lemma isIso_truncGEπ_iff (n : ℤ) : IsIso (K.truncGEπ n) ↔ K.IsStrictlyGE n
     . obtain (hi'|rfl) := (not_lt.1 hi).lt_or_eq
       . exact ⟨0, (K.isZero_of_isStrictlyGE n i hi').eq_of_src _ _,
           (K.isZero_truncGEX n i hi').eq_of_src _ _⟩
-      . have := K.isIso_pCyclesCo_of_zero (i-1) i (by simp)
+      . have := K.isIso_pCyclesCo (i-1) i (by simp)
           ((K.isZero_of_isStrictlyGE i (i-1) (by simp)).eq_of_src _ _)
         rw [K.truncGEπf_eq_of_eq i i rfl]
         infer_instance

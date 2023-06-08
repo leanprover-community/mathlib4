@@ -36,7 +36,7 @@ namespace Limits
 
 variable {C : Type _} [Category C] [HasZeroMorphisms C]
 
-lemma KernelFork.IsLimit.isIso_ι_of_zero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
+lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     (hc : IsLimit c) (hf : f = 0) : IsIso c.ι := by
   let e : c.pt ≅ X := IsLimit.conePointUniqueUpToIso hc
     (KernelFork.IsLimit.ofId (f : X ⟶ Y) hf)
@@ -46,7 +46,7 @@ lemma KernelFork.IsLimit.isIso_ι_of_zero {X Y : C} {f : X ⟶ Y} (c : KernelFor
     infer_instance
   exact IsIso.of_isIso_comp_left e.inv c.ι
 
-lemma CokernelCofork.IsColimit.isIso_π_of_zero {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
+lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
     (hc : IsColimit c) (hf : f = 0) : IsIso c.π := by
   let e : c.pt ≅ Y := IsColimit.coconePointUniqueUpToIso hc
     (CokernelCofork.IsColimit.ofId (f : X ⟶ Y) hf)
@@ -988,8 +988,8 @@ lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
 noncomputable def cyclesIsKernel : IsLimit (KernelFork.ofι S.iCycles S.iCycles_g) :=
   S.leftHomologyData.hi
 
-lemma isIso_iCycles_of_zero (hg : S.g = 0) : IsIso (S.iCycles) :=
-  KernelFork.IsLimit.isIso_ι_of_zero _ S.cyclesIsKernel hg
+lemma isIso_iCycles (hg : S.g = 0) : IsIso (S.iCycles) :=
+  KernelFork.IsLimit.isIso_ι _ S.cyclesIsKernel hg
 
 @[simps]
 noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g where

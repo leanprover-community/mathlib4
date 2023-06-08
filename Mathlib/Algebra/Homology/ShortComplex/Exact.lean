@@ -231,7 +231,7 @@ lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
   . intro h
     have : S.HasHomology := HasHomology.mk' h.condition.choose
     simp only [exact_iff_isZero_homology] at h
-    have := S.isIso_pCyclesCo_of_zero hf
+    have := S.isIso_pCyclesCo hf
     have := mono_of_isZero_kernel' _ S.homologyIsKernel h
     rw [← S.p_fromCyclesCo]
     apply mono_comp
@@ -247,7 +247,7 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
   . intro h
     haveI : S.HasHomology := HasHomology.mk' h.condition.choose
     simp only [exact_iff_isZero_homology] at h
-    haveI := S.isIso_iCycles_of_zero hg
+    haveI := S.isIso_iCycles hg
     haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
     rw [← S.toCycles_i]
     apply epi_comp

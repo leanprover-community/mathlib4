@@ -290,24 +290,24 @@ lemma isZero_homology_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   rw [isZero_homology_iff]
   exact ShortComplex.exact_iff_of_iso ((natIsoSc' C c i j k hi hk).app K)
 
-lemma isIso_iCycles_of_zero (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+lemma isIso_iCycles (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
     IsIso (K.iCycles i) := by
   subst hj
-  exact ShortComplex.isIso_iCycles_of_zero _ h
+  exact ShortComplex.isIso_iCycles _ h
 
-lemma isIso_pCyclesCo_of_zero (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+lemma isIso_pCyclesCo (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
     IsIso (K.pCyclesCo j) := by
   subst hi
-  exact ShortComplex.isIso_pCyclesCo_of_zero _ h
+  exact ShortComplex.isIso_pCyclesCo _ h
 
-lemma isIso_liftCycles_of_zero (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+lemma isIso_liftCycles (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
     IsIso (K.liftCycles (𝟙 (K.X i)) j hj (by rw [h, comp_zero])) := by
-  have := K.isIso_iCycles_of_zero i j hj h
+  have := K.isIso_iCycles i j hj h
   exact IsIso.of_isIso_fac_right (K.liftCycles_i _ _ _ _)
 
-lemma isIso_descCyclesCo_of_zero (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+lemma isIso_descCyclesCo (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
     IsIso (K.descCyclesCo (𝟙 (K.X j)) i hi (by rw [h, zero_comp])) := by
-  have := K.isIso_pCyclesCo_of_zero i j hi h
+  have := K.isIso_pCyclesCo i j hi h
   exact IsIso.of_isIso_fac_left (K.p_descCyclesCo _ _ _ _)
 
 variable {K L}
