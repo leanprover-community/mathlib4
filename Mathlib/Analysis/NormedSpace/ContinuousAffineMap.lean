@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.ContinuousAffineMap
-import Mathbin.Analysis.NormedSpace.AffineIsometry
-import Mathbin.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 /-!
 # Continuous affine maps between normed spaces.
@@ -114,15 +114,12 @@ theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
 #align continuous_affine_map.const_cont_linear ContinuousAffineMap.const_contLinear
 
 theorem contLinear_eq_zero_iff_exists_const (f : P →A[R] Q) :
-    f.contLinear = 0 ↔ ∃ q, f = const R P q :=
-  by
-  have h₁ : f.cont_linear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 :=
-    by
+    f.contLinear = 0 ↔ ∃ q, f = const R P q := by
+  have h₁ : f.cont_linear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
     refine' ⟨fun h => _, fun h => _⟩ <;> ext
     · rw [← coe_cont_linear_eq_linear, h]; rfl
     · rw [← coe_linear_eq_coe_cont_linear, h]; rfl
-  have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q :=
-    by
+  have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q := by
     intro q
     refine' ⟨fun h => _, fun h => _⟩ <;> ext
     · rw [h]; rfl
@@ -161,8 +158,7 @@ theorem smul_contLinear (t : R) (f : P →A[R] W) : (t • f).contLinear = t •
   rfl
 #align continuous_affine_map.smul_cont_linear ContinuousAffineMap.smul_contLinear
 
-theorem decomp (f : V →A[R] W) : (f : V → W) = f.contLinear + Function.const V (f 0) :=
-  by
+theorem decomp (f : V →A[R] W) : (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
   rw [coe_mk_const_linear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add]
 #align continuous_affine_map.decomp ContinuousAffineMap.decomp
@@ -203,14 +199,12 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp
       neg' := fun f => by simp
-      add_le' := fun f g =>
-        by
+      add_le' := fun f g => by
         simp only [Pi.add_apply, add_cont_linear, coe_add, max_le_iff]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
-      eq_zero_of_map_eq_zero' := fun f h₀ =>
-        by
+      eq_zero_of_map_eq_zero' := fun f h₀ => by
         rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂ 
         · rw [norm_le_zero_iff, cont_linear_eq_zero_iff_exists_const] at h₂ 
           obtain ⟨q, rfl⟩ := h₂
@@ -228,8 +222,7 @@ instance : NormedSpace 𝕜 (V →A[𝕜] W)
     simp only [norm_def, smul_cont_linear, coe_smul, Pi.smul_apply, norm_smul, ←
       mul_max_of_nonneg _ _ (norm_nonneg t)]
 
-theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
-  by
+theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]
   constructor
   ·
@@ -257,8 +250,7 @@ variable (𝕜 V W)
 /-- The space of affine maps between two normed spaces is linearly isometric to the product of the
 codomain with the space of linear maps, by taking the value of the affine map at `(0 : V)` and the
 linear part. -/
-def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W)
-    where
+def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W) where
   toFun f := ⟨f 0, f.contLinear⟩
   invFun p := p.2.toContinuousAffineMap + const 𝕜 V p.1
   left_inv f := by ext; rw [f.decomp]; simp
