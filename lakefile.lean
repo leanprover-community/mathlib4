@@ -39,5 +39,12 @@ lean_lib Cache where
 lean_exe cache where
   root := `Cache.Main
 
+lean_lib Embedding where
+  roots := #[`Embedding]
+
+lean_exe embed where
+  supportInterpreter := true
+  root := `Embedding.Main
+
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
