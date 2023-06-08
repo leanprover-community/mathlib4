@@ -1525,6 +1525,7 @@ import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
+import Mathlib.Data.Rat.Star
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq

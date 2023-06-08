@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Order
-import Mathbin.Data.Rat.Lemmas
-import Mathbin.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Star.Order
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.GroupTheory.Submonoid.Membership
 
 /-! # Star order structure on ℚ
 
@@ -30,8 +30,7 @@ instance : StarRing ℚ where
 instance : TrivialStar ℚ where star_trivial _ := rfl
 
 instance : StarOrderedRing ℚ :=
-  StarOrderedRing.ofNonnegIff (fun _ _ => add_le_add_left) fun x =>
-    by
+  StarOrderedRing.ofNonnegIff (fun _ _ => add_le_add_left) fun x => by
     refine'
       ⟨fun hx => _, fun hx =>
         AddSubmonoid.closure_induction hx (by rintro - ⟨s, rfl⟩; exact mul_self_nonneg s) le_rfl
