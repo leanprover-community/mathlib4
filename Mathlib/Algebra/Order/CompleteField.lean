@@ -295,28 +295,24 @@ def inducedAddHom : α →+ β := by
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
 /-- `induced_map` as an `order_ring_hom`. -/
-@[simps]
+@[simps!]
 def inducedOrderRingHom : α →+*o β :=
-  {
-    (inducedAddHom α β).mkRingHomOfMulSelfOfTwoNeZero
-      (-- reduce to the case of x = y by
-        -- reduce to the case of 0 < x
-        suffices
-          ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x
-          by
-          rintro x
-          obtain h | rfl | h := lt_trichotomy x 0
-          · convert this (-x) (neg_pos.2 h) using 1
-            · rw [neg_mul, mul_neg, neg_neg]
-            · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-          · simp only [MulZeroClass.mul_zero, AddMonoidHom.map_zero]
-          · exact this x h
+  { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
+      suffices : ∀ x, 0 < x → inducedAddHom α β (x * x)
+          = inducedAddHom α β x * inducedAddHom α β x
+      · intro x
+        obtain h | rfl | h := lt_trichotomy x 0
+        · convert this (-x) (neg_pos.2 h) using 1
+          · rw [neg_mul, mul_neg, neg_neg]
+          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [MulZeroClass.mul_zero, AddMonoidHom.map_zero]
+        · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound
-        refine' fun x hx => csSup_eq_of_forall_le_of_forall_lt_exists_gt (cut_map_nonempty β _) _ _
-        exact le_induced_map_mul_self_of_mem_cut_map hx
-        exact exists_mem_cut_map_mul_self_of_lt_induced_map_mul_self hx)
-      two_ne_zero (inducedMap_one _ _) with
+      refine fun x hx => csSup_eq_of_forall_le_of_forall_lt_exists_gt (cutMap_nonempty β _) ?_ ?_
+      · exact le_inducedMap_mul_self_of_mem_cutMap hx
+      · exact exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self hx)
+      (two_ne_zero) (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 #align linear_ordered_field.induced_order_ring_hom LinearOrderedField.inducedOrderRingHom
 
@@ -326,20 +322,21 @@ def inducedOrderRingIso : β ≃+*o γ :=
     invFun := inducedMap γ β
     left_inv := inducedMap_inv_self _ _
     right_inv := inducedMap_inv_self _ _
-    map_le_map_iff' := fun x y => by
-      refine' ⟨fun h => _, fun h => induced_map_mono _ _ h⟩
-      simpa [induced_order_ring_hom, AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero,
-        induced_add_hom] using induced_map_mono γ β h }
+    map_le_map_iff' := by
+      dsimp
+      refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
+      convert inducedMap_mono γ β h <;>
+      · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
+        dsimp
+        rw [inducedMap_inv_self β γ _] }
 #align linear_ordered_field.induced_order_ring_iso LinearOrderedField.inducedOrderRingIso
 
 @[simp]
-theorem coe_inducedOrderRingIso : ⇑(inducedOrderRingIso β γ) = inducedMap β γ :=
-  rfl
+theorem coe_inducedOrderRingIso : ⇑(inducedOrderRingIso β γ) = inducedMap β γ := rfl
 #align linear_ordered_field.coe_induced_order_ring_iso LinearOrderedField.coe_inducedOrderRingIso
 
 @[simp]
-theorem inducedOrderRingIso_symm : (inducedOrderRingIso β γ).symm = inducedOrderRingIso γ β :=
-  rfl
+theorem inducedOrderRingIso_symm : (inducedOrderRingIso β γ).symm = inducedOrderRingIso γ β := rfl
 #align linear_ordered_field.induced_order_ring_iso_symm LinearOrderedField.inducedOrderRingIso_symm
 
 @[simp]
@@ -368,16 +365,15 @@ section Real
 variable {R S : Type _} [OrderedRing R] [LinearOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
-  (monotone_iff_map_nonneg f).2 fun r h => by obtain ⟨s, rfl⟩ := hR r h; rw [map_pow];
-    apply sq_nonneg
+  (monotone_iff_map_nonneg f).2 fun r h => by
+    obtain ⟨s, rfl⟩ := hR r h; rw [map_pow]; apply sq_nonneg
 #align ring_hom_monotone ringHom_monotone
 
 /-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
 instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
-  uniq f :=
-    congr_arg OrderRingHom.toRingHom
-      (Subsingleton.elim ⟨f, ringHom_monotone (fun r hr => ⟨Real.sqrt r, sq_sqrt hr⟩) f⟩ default)
+  uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
+      ⟨f, ringHom_monotone (fun r hr => ⟨Real.sqrt r, sq_sqrt hr⟩) f⟩ default)
 #align real.ring_hom.unique Real.RingHom.unique
 
 end Real
