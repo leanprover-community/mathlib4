@@ -32,9 +32,9 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 
 ## Main results
 
-* `unique.order_ring_hom` : Uniqueness of `OrderRingHom`s from an archimedean linear ordered field
-  to a conditionally complete linear ordered field.
-* `unique.order_ring_iso` : Uniqueness of `OrderRingIso`s between two
+* `LinearOrderedField.uniqueOrderRingHom` : Uniqueness of `OrderRingHom`s from an archimedean
+  linear ordered field to a conditionally complete linear ordered field.
+* `LinearOrderedField.uniqueOrderRingIso` : Uniqueness of `OrderRingIso`s between two
   conditionally complete linearly ordered fields.
 
 ## References
@@ -58,7 +58,7 @@ open scoped Classical Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
--- @[protect_proj] -- Porting note: does not exists anymore
+-- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type _) extends
     LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
@@ -348,12 +348,12 @@ open OrderRingIso
 
 /-- There is a unique ordered ring homomorphism from an archimedean linear ordered field to a
 conditionally complete linear ordered field. -/
-instance : Unique (α →+*o β) :=
+instance uniqueOrderRingHom : Unique (α →+*o β) :=
   uniqueOfSubsingleton <| inducedOrderRingHom α β
 
 /-- There is a unique ordered ring isomorphism between two conditionally complete linear ordered
 fields. -/
-instance : Unique (β ≃+*o γ) :=
+instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
   uniqueOfSubsingleton <| inducedOrderRingIso β γ
 
 end InducedMap
