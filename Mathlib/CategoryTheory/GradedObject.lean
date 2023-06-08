@@ -197,18 +197,13 @@ variable [HasCoproducts.{0} C]
 
 section
 
---attribute [local tidy] tactic.discrete_cases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The total object of a graded object is the coproduct of the graded components.
 -/
 noncomputable def total : GradedObject β C ⥤ C where
   obj X := ∐ fun i : β => X i
   map f := Limits.Sigma.map fun i => f i
-  map_id := fun X => by
-    dsimp
-    ext
-    simp only [ι_colimMap, Discrete.natTrans_app, Category.comp_id]
-    apply Category.id_comp
 #align category_theory.graded_object.total CategoryTheory.GradedObject.total
 
 end
