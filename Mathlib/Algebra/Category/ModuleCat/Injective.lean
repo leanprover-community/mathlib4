@@ -38,6 +38,8 @@ instance ModuleHom₁ : Module R (A →+ M) where
   add_smul r s f := by ext x; simp [add_smul]
   zero_smul := by simp
 
+--this should be a more general statement: if M an R-module
+--and A an abelian group, then (M →+ A) is an Rᵒᵖ-module
 def smul' (r : R) (f : R →+ A) : R →+ A where
   toFun := λ s => f (s*r)
   map_zero' := by simp
@@ -63,12 +65,12 @@ end ModuleHom
 namespace ModuleCat
 
 -- universe stuff is very confusing, someone please help
-variable (R : Type _) [Ring R] (M : ModuleCat.{_} R)
+variable (R : Type _) [Ring R] (M : ModuleCat.{_} R) (A : Ab.{_})
 
 /-
 Want to show R-mod has enough injectives. Let M be an R-Module
-Let I(M) be a product of I₀ := Hom_Ab(M, ℚ ⧸ ℤ), indexed by Hom_R(M, I₀).
-Then I is injective
+Let I(M) be a product of I₀ := Hom_Ab(R, ℚ ⧸ ℤ), indexed by Hom_R(M, I₀).
+Then I is an injective R module
 There is a map e_M : M → I(M) which is injective
 -/
 
@@ -103,7 +105,7 @@ instance injectiveQmodZ : Injective QmodZ := injectiveQmodZ'
 instance ModuleHom₃ {A : Ab} : Module R $ (AddCommGroupCat.of R) ⟶ A := ModuleHom₂
 
 #check forget₂ (ModuleCat R) Ab
-def raise_obj (R : Type _) [Ring R] (A : Ab) : ModuleCat R := ⟨(AddCommGroupCat.of R) ⟶ A⟩
+@[reducible] def raise_obj (R : Type _) [Ring R] (A : Ab) : ModuleCat R := ⟨(AddCommGroupCat.of R) ⟶ A⟩
 def raise_map (R : Type _) [Ring R] {A B : Type _} [AddCommGroup A] [AddCommGroup B]
   (f : A →+ B) : (R →+ A) →+[R] (R →+ B) where
     toFun g := AddMonoidHom.comp f g
@@ -114,13 +116,67 @@ def raise_map (R : Type _) [Ring R] {A B : Type _} [AddCommGroup A] [AddCommGrou
 def raise_map' {X Y : Ab} (f : X ⟶ Y) : (raise_obj R X) ⟶ (raise_obj R Y) where
   toFun g := AddMonoidHom.comp f g
   map_smul' m g := by aesop
-  map_add' g h := sorry
+  map_add' g h := AddMonoidHom.comp_add f g h
 
 def rightAdj : Ab ⥤ ModuleCat R where
   obj := raise_obj R
   map := raise_map' R
 
-def core : Adjunction.CoreHomEquiv (forget₂ (ModuleCat R) Ab) (rightAdj R) := sorry
+/- The isomorphism from Hom_Ab(M, A) to Hom_R(M, Hom_Ab(R, A))
+  takes an f : M →+ A to the map (m → (r → r•(f a)))
+  and takes g : M → (R → A) to (m → g(m)(1))
+-/
+
+def adj_to (R M A : Type _) [Ring R] [AddCommGroup M] [AddCommGroup A] [Module R M]
+  (f : M →+ A) : (M →+[R] (R →+ A)) where
+    toFun m := {
+      toFun := λ r => f (r • m)
+      map_zero' := by simp
+      map_add' := by simp [add_smul, map_add]
+    }
+    map_smul' := sorry
+    map_zero' := sorry
+    map_add' := sorry
+
+def adj_to' (R M A : Type _) [Ring R] [AddCommGroup M] [AddCommGroup A] [Module R M]
+  (f : M →+ A) : ((ModuleCat.of R M) ⟶ (ModuleCat.of R (R →+ A))) where
+    toFun m := {
+      toFun := λ r => f (r • m)
+      map_zero' := sorry
+      map_add' := sorry
+    }
+    map_smul' := sorry
+    map_add' := sorry
+
+def adj_to'' (f : (forget₂ (ModuleCat R) Ab).obj M ⟶ A) : ((ModuleCat.of R M) ⟶ (ModuleCat.of R (R →+ A))) where
+    toFun m := {
+      toFun := λ r => f (r • m)
+      map_zero' := sorry
+      map_add' := sorry
+    }
+    map_smul' := sorry
+    map_add' := sorry
+
+def adj_inv {R M A : Type _} [Ring R] [AddCommGroup M] [AddCommGroup A] [Module R M]
+  (g : M →+[R] (R →+ A)) : M →+ A where
+    toFun m := g m 1
+    map_zero' := by simp
+    map_add' x y := by simp [map_add, AddMonoidHom.add_apply]
+
+-- def adj_inv' (g : M ⟶ raise_obj R A) : (forget₂ (ModuleCat R) Ab).obj M ⟶ A where
+--     toFun m := g m 1
+--     map_zero' := by simp
+--     map_add' x y := by simp [map_add, AddMonoidHom.add_apply]
+
+def core : Adjunction.CoreHomEquiv (forget₂ (ModuleCat R) Ab) (rightAdj R) where
+  homEquiv N A := {
+    toFun := λ f => adj_to' R N A f
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry
+  }
+  homEquiv_naturality_left_symm := sorry
+  homEquiv_naturality_right := sorry
 
 lemma adj : (forget₂ (ModuleCat R) Ab) ⊣ (rightAdj R) := Adjunction.mkOfHomEquiv (core R)
 
@@ -141,11 +197,28 @@ example : Injective (∏ (c R M)) := inferInstance
 
 
 --definition of the map M → I(M)
-def f_ps (α : M ⟶ (I₀' R)) : M ⟶ I₀' R := sorry
-def f_ps' (α : M ⟶ (I₀' R)) : M ⟶ (c R M f) := sorry
+--the component at the map α : M → (R → ℚ/ℤ)
+--is defined by m ↦ (r → )
 
-def f : M ⟶ ∏ (c R M) := sorry
-instance f_mono : Mono (f R M) := sorry
+def f_ps (α : M ⟶ (I₀' R)) : M ⟶ I₀' R := α
+def f_ps' (α : M ⟶ (I₀' R)) : M ⟶ (c R M α) := f_ps R M α
+
+noncomputable def f : M ⟶ ∏ (c R M) := Pi.lift (λ α => α)
+
+/-
+  If m ≠ 0, then ⟨m⟩ ⊆ M is a submodule,
+  can get a map α' : ⟨m⟩ → (R → ℚ/ℤ) which lifts
+  to a map α : M → (R → ℚ/ℤ).
+  Then (f m)_α is nonzero
+-/
+instance f_mono : Mono (f R M) := by
+  have H : Mono $ (f R M) ≫ ModuleCat.piIsoPi _
+  rw [ModuleCat.mono_iff_injective, injective_iff_map_eq_zero]
+  intro m hm
+
+
+#check ModuleCat.piIsoPi
+
 
 #check Pi.lift
 
