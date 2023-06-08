@@ -217,7 +217,7 @@ noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
 
 variable {F E}
 
--- Porting note: this was a `simp` lemma.
+-- Porting note: this was tagged `simp`.
 theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x :=
   by simp
 #align intermediate_field.bot_equiv_def IntermediateField.botEquiv_def
@@ -563,17 +563,17 @@ theorem isSplittingField_iSup {ι : Type _} {t : ι → IntermediateField F E} {
 
 open Set CompleteLattice
 
-/- Porting note: this was a `simp` lemma, but the LHS can be simplified, see `insert_le_iff` below
-for the corresponding declaration. -/
-theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ α ∈ K :=
-  adjoin_le_iff.trans singleton_subset_iff
-#align intermediate_field.adjoin_simple_le_iff IntermediateField.adjoin_simple_le_iff
-
-/- Porting note: added because `adjoin_simple_le_iff` cannot be a `simp` lemma.-/
+/- Porting note: added because `adjoin_simple_le_iff` below cannot be tagged `simp`.-/
 @[simp]
-theorem insert_le_iff {K : IntermediateField F E} :
-    IntermediateField.Insert.insert ∅ α ⊆ ↑K ↔ α ∈ K := by
-  simp only [← adjoin_le_iff, ← le_eq_subset, adjoin_simple_le_iff]
+theorem insert_le_iff {K : IntermediateField F E} : Insert.insert ∅ α ⊆ ↑K ↔ α ∈ K := by
+  simp only [← adjoin_le_iff, ← le_eq_subset]
+  exact adjoin_le_iff.trans singleton_subset_iff
+
+/- Porting note: this was tagged `simp`, but the LHS can be simplified, see `insert_le_iff` above
+for the corresponding declaration. -/
+theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ α ∈ K := by
+  simp
+#align intermediate_field.adjoin_simple_le_iff IntermediateField.adjoin_simple_le_iff
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
 theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
@@ -677,9 +677,9 @@ theorem adjoin_eq_bot_iff : adjoin F S = ⊥ ↔ S ⊆ (⊥ : IntermediateField 
   rw [eq_bot_iff, adjoin_le_iff]; rfl
 #align intermediate_field.adjoin_eq_bot_iff IntermediateField.adjoin_eq_bot_iff
 
-@[simp]
+/- Porting note: this was tagged `simp`. -/
 theorem adjoin_simple_eq_bot_iff : F⟮α⟯ = ⊥ ↔ α ∈ (⊥ : IntermediateField F E) := by
-  rw [adjoin_eq_bot_iff]; exact Set.singleton_subset_iff
+  simp
 #align intermediate_field.adjoin_simple_eq_bot_iff IntermediateField.adjoin_simple_eq_bot_iff
 
 @[simp]
@@ -1309,4 +1309,3 @@ theorem equivAdjoinSimple_symm_gen (pb : PowerBasis K L) :
 end PowerBasis
 
 end PowerBasis
-#lint
