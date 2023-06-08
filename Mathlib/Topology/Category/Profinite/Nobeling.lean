@@ -278,6 +278,13 @@ lemma GoodProducts.linearIndependentEmpty :
     LinearIndependent ℤ (eval (∅ : Set (WithTop I → Bool))) := by
   exact linearIndependent_empty_type
 
+lemma GoodProducts.spanEmpty :
+    ⊤ ≤ Submodule.span ℤ (Set.range (eval (∅ : Set (WithTop I → Bool)))) := by
+  rw [top_le_iff]
+  rw [Submodule.eq_bot_of_subsingleton ⊤]
+  rw [Submodule.eq_bot_of_subsingleton (Submodule.span ℤ (Set.range (eval ∅)))]
+
+
 noncomputable
 def el (o : Ordinal) : WithTop I := if h : o < Ordinal.type ((·<·) : WithTop I → WithTop I → Prop)
   then Ordinal.enum _ o h else ⊤
@@ -430,6 +437,18 @@ instance (α : Type _) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCo
 lemma GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (WithTop I → Bool))) :=
   linearIndependent_unique (eval ({fun _ ↦ false} : Set (WithTop I → Bool))) evalEnilNeZero
+
+lemma GoodProducts.spanSingleton :
+    ⊤ ≤ Submodule.span ℤ (Set.range (eval ({fun _ ↦ false} : Set (WithTop I → Bool)))) := by
+  have hpe : Products.eval ({fun _ ↦ false} : Set (WithTop I → Bool)) '' {enil} ⊆
+    (Set.range (eval ({fun _ ↦ false} : Set (WithTop I → Bool))))
+  · dsimp [eval]
+    simp only [Set.image_singleton, Set.singleton_subset_iff, Set.mem_range,
+      Subtype.exists, exists_prop]
+    use enil
+    exact ⟨nilIsGood, rfl⟩
+  refine' le_trans _ (Submodule.span_mono hpe)
+  rw [nilSpanTop]
 
 noncomputable
 def ProjOrd (o : Ordinal) : (WithTop I → Bool) → (WithTop I → Bool) :=
@@ -942,7 +961,7 @@ lemma Products.limitOrdinal [Nonempty C] {o : Ordinal} (ho : o.IsLimit) (l : Pro
           (ResOnSubsets C (le_of_lt (ho.2 (ord I a) this))) :
           LocallyConstant {i // i ∈ Res C o₁} ℤ → LocallyConstant {i // i ∈ Res C o} ℤ) c
         refine' ⟨_,_⟩
-        · refine' (subset_trans Finsupp.mapDomain_support _)
+        · refine' (subset_trans Finsupp.mapDomain_support _) -- need "Classical" for decidability
           intro p hp
           simp only [Finset.image_val, Multiset.mem_dedup, Multiset.mem_map, Finset.mem_val] at hp
           obtain ⟨t,ht⟩ := hp
@@ -1118,22 +1137,43 @@ lemma ModProducts.smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : small
     congr
     exact congr_fun (resOnSubsets_eq C h).symm x
 
-lemma DirectedS {o : Ordinal} (ho : o.IsLimit) : Directed (· ⊆ ·) (fun e ↦ ModProducts.smaller C
+lemma DirectedS (o : Ordinal) : Directed (· ⊆ ·) (fun e ↦ ModProducts.smaller C
     e.val : {o' // o' < o} → Set (LocallyConstant { i // i ∈ C } ℤ)) := by
   rintro ⟨o₁,h₁⟩ ⟨o₂,h₂⟩
   dsimp
-  dsimp [Ordinal.IsLimit] at ho
   have h : o₁ ≤ o₂ ∨ o₂ ≤ o₁ :=
     (inferInstance : IsTotal Ordinal ((·≤·) : Ordinal → Ordinal → Prop)).total o₁ o₂
   cases h
-  · use ⟨(Order.succ o₂), ho.2 o₂ h₂⟩
-    have ho₁ : o₁ ≤ Order.succ o₂ := @le_trans _ _ _ o₂ _ (by assumption) (Order.le_succ _)
-    have ho₂ : o₂ ≤ Order.succ o₂ := Order.le_succ _
-    exact ⟨ModProducts.smaller_mono C ho₁, ModProducts.smaller_mono C ho₂⟩
-  · use ⟨(Order.succ o₁), ho.2 o₁ h₁⟩
-    have ho₁ : o₁ ≤ Order.succ o₁ := Order.le_succ _
-    have ho₂ : o₂ ≤ Order.succ o₁ := @le_trans _ _ _ o₁ _ (by assumption) (Order.le_succ _)
-    exact ⟨ModProducts.smaller_mono C ho₁, ModProducts.smaller_mono C ho₂⟩
+  · use ⟨o₂,h₂⟩ -- ⟨(Order.succ o₂), ho.2 o₂ h₂⟩
+    exact ⟨ModProducts.smaller_mono C (by assumption), ModProducts.smaller_mono C (le_refl o₂)⟩
+  · use ⟨o₁,h₁⟩ -- ⟨(Order.succ o₁), ho.2 o₁ h₁⟩
+    exact ⟨ModProducts.smaller_mono C (le_refl o₁), ModProducts.smaller_mono C (by assumption)⟩
+
+lemma DirectedSubmodules (o : Ordinal) : Directed (· ≤ ·) (fun e ↦
+    Submodule.span ℤ (ModProducts.smaller C e.val) :
+    {o' // o' < o} → Submodule ℤ (LocallyConstant { i // i ∈ C } ℤ)) := by
+  let f : {o' // o' < o} → Set (LocallyConstant { i // i ∈ C } ℤ) :=
+    fun e ↦ ModProducts.smaller C e.val
+  let g : Set (LocallyConstant {i // i ∈ C} ℤ) → Submodule ℤ (LocallyConstant {i // i ∈ C} ℤ) :=
+    fun s ↦ Submodule.span ℤ s
+  suffices : Directed (· ≤ ·) (g ∘ f)
+  · exact this
+  have : Directed (· ⊆ ·) f := DirectedS C o
+  refine' Directed.mono_comp _ _ this
+  intro _ _ h
+  exact Submodule.span_mono h
+
+instance nonempty_downset {o : Ordinal} (ho : Ordinal.IsLimit o) : Nonempty {o' // o' < o} := by
+  use 0
+  simp only [Ordinal.pos_iff_ne_zero]
+  exact ho.1
+
+lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+    (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
+    ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ),
+    (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
+    LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f := by
+  sorry
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
   rw [PIffP I i]
@@ -1162,13 +1202,56 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
     dsimp [P'] at *
     intro C hC hsC
     rw [ModProducts.linear_independent_iff C ho hsC]
-    refine' linearIndependent_iUnion_of_directed (DirectedS C ho) _
+    refine' linearIndependent_iUnion_of_directed (DirectedS C o) _
     rintro ⟨o', ho'⟩
     specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
     rw [ModProducts.smaller_linear_independent_iff] at h
     exact h
 
-lemma GoodProducts.spanAux (i : WithTop I) : Q i := sorry
+lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
+  rw [QIffQ I i]
+  apply Ordinal.limitRecOn
+  · dsimp [Q']
+    intro C _ hsC
+    dsimp [Support] at hsC
+    have : C ⊆ {(fun a ↦ false)}
+    · intro c hc
+      simp
+      ext x
+      simp at hsC
+      specialize hsC x c hc
+      rw [Bool.eq_false_iff]
+      intro ht
+      apply Ordinal.not_lt_zero (ord I x)
+      exact hsC ht
+    rw [Set.subset_singleton_iff_eq] at this
+    rcases this
+    · subst C
+      exact spanEmpty
+    · subst C
+      exact spanSingleton
+  · sorry
+  · intro o ho h
+    dsimp [Q'] at *
+    intro C hC hsC
+    have hr : ∀ (s : Set (WithTop I → Bool)), Set.range (eval s) = ModProducts s
+    · intro
+      rfl
+    rw [hr C, ModProducts.union C ho hsC, Submodule.span_iUnion]
+    intro f _
+    haveI : Nonempty {o' // o' < o} := nonempty_downset ho
+    simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
+    dsimp [ModProducts.smaller]
+    simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
+    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapJointlySurjective C ho hsC f
+    use o'
+    use ho'
+    use g
+    refine' ⟨_,hg⟩
+    specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
+    rw [hr (Res C o'), top_le_iff] at h
+    rw [h]
+    apply Submodule.mem_top
 
 variable {C₁ : Set (I → Bool)}
 
