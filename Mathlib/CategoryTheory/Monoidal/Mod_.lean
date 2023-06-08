@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # The category of module objects over a monoid object.
@@ -120,16 +120,14 @@ open CategoryTheory.MonoidalCategory
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A
-    where
+def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
   obj M :=
     { pt := M.pt
       act := (f.Hom ⊗ 𝟙 M.pt) ≫ M.act
       one_act' := by
         slice_lhs 1 2 => rw [← comp_tensor_id]
         rw [f.one_hom, one_act]
-      assoc' :=
-        by
+      assoc' := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
         rw [id_tensor_comp]
