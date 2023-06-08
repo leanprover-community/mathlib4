@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Coherence
+import Mathlib.CategoryTheory.Monoidal.Coherence
 
 /-!
 # Monoidal opposites
@@ -74,8 +74,7 @@ theorem unmop_mop (X : C) : unmop (mop X) = X :=
   rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
-instance monoidalOppositeCategory [I : Category.{v₁} C] : Category Cᴹᵒᵖ
-    where
+instance monoidalOppositeCategory [I : Category.{v₁} C] : Category Cᴹᵒᵖ where
   Hom X Y := unmop X ⟶ unmop Y
   id X := 𝟙 (unmop X)
   comp X Y Z f g := f ≫ g
@@ -173,8 +172,7 @@ open Opposite MonoidalCategory
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ
-    where
+instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   tensorHom X₁ Y₁ X₂ Y₂ f g := (f.unop ⊗ g.unop).op
   tensorUnit := op (𝟙_ C)
@@ -200,8 +198,7 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ
-    where
+instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   tensorHom X₁ Y₁ X₂ Y₂ f g := (g.unmop ⊗ f.unmop).mop
   tensorUnit := mop (𝟙_ C)
