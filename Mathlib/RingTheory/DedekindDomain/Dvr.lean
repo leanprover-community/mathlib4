@@ -8,9 +8,9 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.LocalizationLocalization
-import Mathbin.RingTheory.Localization.Submodule
-import Mathbin.RingTheory.DiscreteValuationRing.Tfae
+import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.DiscreteValuationRing.Tfae
 
 /-!
 # Dedekind domains
@@ -74,8 +74,7 @@ once we have a suitable definition.
 -/
 theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing R] [IsDomain R]
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
-    (h : Ring.DimensionLEOne R) : Ring.DimensionLEOne Rₘ :=
-  by
+    (h : Ring.DimensionLEOne R) : Ring.DimensionLEOne Rₘ := by
   intro p hp0 hpp
   refine' ideal.is_maximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => _⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.is_prime⟩ := hpP
@@ -92,10 +91,8 @@ theorem Ring.DimensionLEOne.localization {R : Type _} (Rₘ : Type _) [CommRing 
 /-- The localization of a Dedekind domain is a Dedekind domain. -/
 theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (hM : M ≤ A⁰)
     (Aₘ : Type _) [CommRing Aₘ] [IsDomain Aₘ] [Algebra A Aₘ] [IsLocalization M Aₘ] :
-    IsDedekindDomain Aₘ :=
-  by
-  have : ∀ y : M, IsUnit (algebraMap A (FractionRing A) y) :=
-    by
+    IsDedekindDomain Aₘ := by
+  have : ∀ y : M, IsUnit (algebraMap A (FractionRing A) y) := by
     rintro ⟨y, hy⟩
     exact IsUnit.mk0 _ (mt is_fraction_ring.to_map_eq_zero_iff.mp (nonZeroDivisors.ne_zero (hM hy)))
   letI : Algebra Aₘ (FractionRing A) := RingHom.toAlgebra (IsLocalization.lift this)
@@ -122,8 +119,7 @@ theorem IsLocalization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal 
 #align is_localization.at_prime.is_dedekind_domain IsLocalization.AtPrime.isDedekindDomain
 
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type _)
-    [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬IsField Aₘ :=
-  by
+    [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬IsField Aₘ := by
   intro h
   letI := h.to_field
   obtain ⟨x, x_mem, x_ne⟩ := P.ne_bot_iff.mp hP
