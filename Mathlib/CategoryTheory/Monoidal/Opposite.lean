@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Monoidal.Coherence
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 /-!
 # Monoidal opposites
@@ -26,32 +26,33 @@ namespace CategoryTheory
 open CategoryTheory.MonoidalCategory
 
 /-- A type synonym for the monoidal opposite. Use the notation `Cᴹᵒᵖ`. -/
-@[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def MonoidalOpposite (C : Type u₁) :=
   C
 #align category_theory.monoidal_opposite CategoryTheory.MonoidalOpposite
 
 namespace MonoidalOpposite
 
--- mathport name: «expr ᴹᵒᵖ»
 notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
 
 /-- Think of an object of `C` as an object of `Cᴹᵒᵖ`. -/
-@[pp_nodot]
+-- @[pp_nodot] -- Porting note: removed
 def mop (X : C) : Cᴹᵒᵖ :=
   X
 #align category_theory.monoidal_opposite.mop CategoryTheory.MonoidalOpposite.mop
 
 /-- Think of an object of `Cᴹᵒᵖ` as an object of `C`. -/
-@[pp_nodot]
+-- @[pp_nodot] -- Porting note: removed
 def unmop (X : Cᴹᵒᵖ) : C :=
   X
 #align category_theory.monoidal_opposite.unmop CategoryTheory.MonoidalOpposite.unmop
 
-theorem op_injective : Function.Injective (mop : C → Cᴹᵒᵖ) := fun _ _ => id
+theorem op_injective : Function.Injective (mop : C → Cᴹᵒᵖ) :=
+  fun _ _ => id
 #align category_theory.monoidal_opposite.op_injective CategoryTheory.MonoidalOpposite.op_injective
 
-theorem unop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) := fun _ _ => id
+theorem unop_injective : Function.Injective (unmop : Cᴹᵒᵖ → C) :=
+  fun _ _ => id
 #align category_theory.monoidal_opposite.unop_injective CategoryTheory.MonoidalOpposite.unop_injective
 
 @[simp]
@@ -77,7 +78,13 @@ theorem unmop_mop (X : C) : unmop (mop X) = X :=
 instance monoidalOppositeCategory [I : Category.{v₁} C] : Category Cᴹᵒᵖ where
   Hom X Y := unmop X ⟶ unmop Y
   id X := 𝟙 (unmop X)
-  comp X Y Z f g := f ≫ g
+  comp f g :=
+    letI : CategoryStruct Cᴹᵒᵖ := I.toCategoryStruct -- Porting note: Added this instance
+    f ≫ g
+  -- Porting note: Added a new proof for `id_comp`, `comp_id`, `assoc`
+  id_comp f := Category.id_comp (self := I) f
+  comp_id f := Category.comp_id (self := I) f
+  assoc f g h := Category.assoc (self := I) f g h
 #align category_theory.monoidal_opposite.monoidal_opposite_category CategoryTheory.MonoidalOpposite.monoidalOppositeCategory
 
 end MonoidalOpposite
@@ -107,8 +114,8 @@ theorem mop_inj {X Y : C} : Function.Injective (Quiver.Hom.mop : (X ⟶ Y) → (
 #align category_theory.mop_inj CategoryTheory.mop_inj
 
 theorem unmop_inj {X Y : Cᴹᵒᵖ} :
-    Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop X ⟶ unmop Y)) := fun _ _ H =>
-  congr_arg Quiver.Hom.mop H
+    Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop X ⟶ unmop Y)) :=
+  fun _ _ H => congr_arg Quiver.Hom.mop H
 #align category_theory.unmop_inj CategoryTheory.unmop_inj
 
 @[simp]
@@ -158,10 +165,10 @@ variable {X Y : C}
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
 @[simps]
 def mop (f : X ≅ Y) : mop X ≅ mop Y where
-  Hom := f.Hom.mop
+  hom := f.hom.mop
   inv := f.inv.mop
-  hom_inv_id' := unmop_inj f.hom_inv_id
-  inv_hom_id' := unmop_inj f.inv_hom_id
+  hom_inv_id := unmop_inj (by simp) -- Porting note: Changed `f.inv_hom_id` to `by simp`
+  inv_hom_id := unmop_inj (by simp) -- Porting note: Changed `f.inv_hom_id` to `by simp`
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso
@@ -170,24 +177,20 @@ variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
-  tensorHom X₁ Y₁ X₂ Y₂ f g := (f.unop ⊗ g.unop).op
-  tensorUnit := op (𝟙_ C)
+  tensorHom f g := (f.unop ⊗ g.unop).op
+  tensorUnit' := op (𝟙_ C)
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
-  associator_naturality' := by intros; apply Quiver.Hom.unop_inj; simp
-  leftUnitor_naturality' := by intros; apply Quiver.Hom.unop_inj; simp
-  rightUnitor_naturality' := by intros; apply Quiver.Hom.unop_inj; simp
-  triangle' := by intros; apply Quiver.Hom.unop_inj; coherence
-  pentagon' := by intros; apply Quiver.Hom.unop_inj; coherence
+  associator_naturality f g h := Quiver.Hom.unop_inj (by simp)
+  leftUnitor_naturality f := Quiver.Hom.unop_inj (by simp)
+  rightUnitor_naturality f := Quiver.Hom.unop_inj (by simp)
+  triangle X Y := Quiver.Hom.unop_inj (by dsimp; coherence)
+  pentagon W X Y Z := Quiver.Hom.unop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_op CategoryTheory.monoidalCategoryOp
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem op_tensorObj (X Y : Cᵒᵖ) : X ⊗ Y = op (unop X ⊗ unop Y) :=
   rfl
 #align category_theory.op_tensor_obj CategoryTheory.op_tensorObj
@@ -196,24 +199,20 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
   rfl
 #align category_theory.op_tensor_unit CategoryTheory.op_tensorUnit
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
-  tensorHom X₁ Y₁ X₂ Y₂ f g := (g.unmop ⊗ f.unmop).mop
-  tensorUnit := mop (𝟙_ C)
+  tensorHom f g := (g.unmop ⊗ f.unmop).mop
+  tensorUnit' := mop (𝟙_ C)
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop
-  associator_naturality' := by intros; apply unmop_inj; simp
-  leftUnitor_naturality' := by intros; apply unmop_inj; simp
-  rightUnitor_naturality' := by intros; apply unmop_inj; simp
-  triangle' := by intros; apply unmop_inj; coherence
-  pentagon' := by intros; apply unmop_inj; coherence
+  associator_naturality f g h := unmop_inj (by simp)
+  leftUnitor_naturality f := unmop_inj (by simp)
+  rightUnitor_naturality f := unmop_inj (by simp)
+  triangle X Y := unmop_inj (by simp) -- Porting note: Changed `by coherence` to `by simp`
+  pentagon W X Y Z := unmop_inj (by dsimp; coherence)
 #align category_theory.monoidal_category_mop CategoryTheory.monoidalCategoryMop
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mop_tensorObj (X Y : Cᴹᵒᵖ) : X ⊗ Y = mop (unmop Y ⊗ unmop X) :=
   rfl
 #align category_theory.mop_tensor_obj CategoryTheory.mop_tensorObj
@@ -223,4 +222,3 @@ theorem mop_tensorUnit : 𝟙_ Cᴹᵒᵖ = mop (𝟙_ C) :=
 #align category_theory.mop_tensor_unit CategoryTheory.mop_tensorUnit
 
 end CategoryTheory
-
