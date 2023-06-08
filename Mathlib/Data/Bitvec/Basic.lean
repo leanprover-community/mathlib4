@@ -274,12 +274,44 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) 
 
 def width : Bitvec n → Nat := fun _ => n
 
--- Shouldn't this be inferred from the instance above? (as Bitvec is @[reducible])
+-- these are copy-pasted from the Vector definition
+/-- nth element of a bitvec, indexed by a `Fin` type. -/
+def get : ∀ _ : Bitvec n, Fin n → Bool
+  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
+
+-- TODO: do we also want this explicitly? or take it from the `GetElem` instance?
+/-- nth element of a bitvec, indexed by a `Nat`.
+Returns `none` if bitvec is not long enough-/
+def get? : ∀ _ : Bitvec n, Nat → Option Bool
+  | v, i => if h : i < n then some (v.get ⟨i,h⟩) else none
+
 instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
-  getElem := fun v i _ => v.1[i.val]
+  getElem := fun x i _ => get x i
+
+instance {n : Nat} : GetElem (Bitvec n) Nat Bool (fun _ i => i < n) where
+  getElem := fun x i h => get x ⟨i,h⟩
 
 instance (n : Nat) : Inhabited (Bitvec n) :=
   ⟨List.replicate n true, by apply List.length_replicate⟩
+
+/-- Two `v w : Bitvec n` are equal iff they are equal at every single index. -/
+@[ext]
+theorem ext : ∀ {v w : Bitvec n} (_ : ∀ m : Fin n, Bitvec.get v m = Bitvec.get w m), v = w
+  | ⟨v, hv⟩, ⟨w, hw⟩, h =>
+    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
+
+@[ext]
+theorem ext_nat : ∀ {v w : Bitvec n} (_ : ∀ m : Nat, Bitvec.get? v m = Bitvec.get? w m), v = w := by
+  intros v w h
+  apply ext
+  intro ⟨m, hm⟩
+  have h' := h m
+  simp [get?, Option.isSome_iff_exists, hm] at h'
+  apply h'
+
+/-- The list obtained from a vector. -/
+def toList (v : Bitvec n) : List Bool :=
+  v.1
 
 def Fun (width : Nat) := Fin width → Bool
 
