@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.sqrt
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
+! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Tactic.Positivity
@@ -467,11 +468,10 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
 instance : StarOrderedRing ℝ :=
-  { Real.orderedAddCommGroup with
-    nonneg_iff := fun r => by
-      refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
-      rintro ⟨s, rfl⟩
-      exact mul_self_nonneg s }
+  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
+    refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
+    rintro ⟨s, rfl⟩
+    exact mul_self_nonneg s
 
 end Real
 
