@@ -146,10 +146,15 @@ theorem ι_comp_lift : lift R f ∘ ι R = f :=
   funext <| LieHom.ext_iff.mp <| (lift R).symm_apply_apply f
 #align universal_enveloping_algebra.ι_comp_lift UniversalEnvelopingAlgebra.ι_comp_lift
 
-@[simp]
+-- Porting note: moved `@[simp]` to the next theorem (LHS simplifies)
 theorem lift_ι_apply (x : L) : lift R f (ι R x) = f x := by
   rw [← Function.comp_apply (f := lift R f) (g := ι R) (x := x), ι_comp_lift]
 #align universal_enveloping_algebra.lift_ι_apply UniversalEnvelopingAlgebra.lift_ι_apply
+
+@[simp]
+theorem lift_ι_apply' (x : L) :
+    lift R f ((UniversalEnvelopingAlgebra.mkAlgHom R L) (ιₜ x)) = f x := by
+  simpa using lift_ι_apply R f x
 
 theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
   refine' Iff.trans _ (lift R).symm_apply_eq
