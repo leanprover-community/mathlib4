@@ -35,7 +35,7 @@ functions `(ℝ × ℝ) → E`.
 We use the following local notation to make the statement more readable. Note that the documentation
 website shows the actual terms, not those abbreviated using local notations.
 
-Porting note (Yury Kudryashov): I disables some of these notations because I failed to make them
+Porting note (Yury Kudryashov): I disabled some of these notations because I failed to make them
 work with Lean 4.
 
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
@@ -74,7 +74,7 @@ variable {n : ℕ}
 -- local notation "ℝⁿ" => Fin n → ℝ
 
 -- set_option quotPrecheck false in
--- local notation:200 "ℝᵐ" => Fin (n + 1) → ℝ
+-- local notation:200 "ℝⁿ⁺¹" => Fin (n + 1) → ℝ
 
 -- set_option quotPrecheck false in
 -- local notation:200 "Eⁿ⁺¹" => Fin (n + 1) → E
