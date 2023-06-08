@@ -502,24 +502,16 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 #align witt_vector.one_poly WittVector.onePoly
 
 @[simp]
-theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) : bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
-  stop
+theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
+    bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
+  ext  -- porting note: `ext` was not in the mathport output.
   rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   ·
-    simp only [Nat.sub_zero, onePoly, map_pow, map_natCast, ge_iff_le, map_mul, bind₁_X_right,
-      ite_pow, one_pow, ne_eq, tsub_pos_iff_lt, mul_ite, mul_one, Finset.sum_ite, Finset.mem_range,
-      Finset.range_filter_eq, add_pos_iff, or_true, ite_true, Finset.sum_singleton, pow_zero,
-      add_right_eq_self]
-    apply Finset.sum_eq_zero
-    intros
-    simpa only [ge_iff_le, ne_eq, tsub_pos_iff_lt, mul_eq_zero, gt_iff_lt, zero_pow_eq_zero] using
-      Or.inr Fin.size_positive'
---    simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
---      eq_self_iff_true]
-  · intro i hi hi0
+    simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
+      eq_self_iff_true]
+  · intro i _hi hi0
     simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
-    simp
   · rw [Finset.mem_range]
     -- porting note: was `decide`
     simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
@@ -533,7 +525,8 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
       · -- porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
       · -- porting note: was `simp only [...]` but with slightly different `[...]`.
-        simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false, map_zero]
+        simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
+          map_zero]
   ⟩⟩
 #align witt_vector.one_is_poly WittVector.oneIsPoly
 
@@ -556,7 +549,8 @@ theorem mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
-theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) : map g (f x) = f (map g x) := by
+theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) :
+    map g (f x) = f (map g x) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
   -- see `is_poly₂.map` for a slightly more general proof strategy
