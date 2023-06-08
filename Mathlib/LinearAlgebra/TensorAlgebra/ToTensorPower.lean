@@ -38,24 +38,24 @@ theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
 
 @[simp]
 theorem toTensorAlgebra_gOne :
-    (@GradedMonoid.GOne.one _ (fun n => (⨂[R]^n) M) _ _).toTensorAlgebra = 1 :=
+    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => (⨂[R]^n) M) _ _) = 1 :=
   TensorPower.toTensorAlgebra_tprod _
 #align tensor_power.to_tensor_algebra_ghas_one TensorPower.toTensorAlgebra_gOne
 
 @[simp]
 theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
-    (@GradedMonoid.GMul.mul _ (fun n => (⨂[R]^n) M) _ _ _ _ a b).toTensorAlgebra =
-      a.toTensorAlgebra * b.toTensorAlgebra := by
+    TensorPower.toTensorAlgebra (@GradedMonoid.GMul.mul _ (fun n => (⨂[R]^n) M) _ _ _ _ a b) =
+      TensorPower.toTensorAlgebra a * TensorPower.toTensorAlgebra b := by
   -- change `a` and `b` to `tprod R a` and `tprod R b`
   rw [TensorPower.gMul_eq_coe_linearMap, ← LinearMap.compr₂_apply, ← @LinearMap.mul_apply' R, ←
     LinearMap.compl₂_apply, ← LinearMap.comp_apply]
   refine' LinearMap.congr_fun (LinearMap.congr_fun _ a) b
-  clear a b
+  clear! a b
   ext (a b)
   simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', LinearMap.compl₂_apply,
     LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
     TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
-    ghas_mul_eq_coe_linear_map]
+    gMul_eq_coe_linearMap]
   refine' Eq.trans _ List.prod_append
   congr
   rw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
@@ -64,7 +64,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
 
 @[simp]
 theorem toTensorAlgebra_galgebra_toFun (r : R) :
-    (@DirectSum.GAlgebra.toFun _ R (fun n => (⨂[R]^n) M) _ _ _ _ _ _ _ r).toTensorAlgebra =
+    TensorPower.toTensorAlgebra (DirectSum.GAlgebra.toFun (R := R) (A := fun n => (⨂[R]^n) M) r) =
       algebraMap _ _ r := by
   rw [TensorPower.galgebra_toFun_def, TensorPower.algebraMap₀_eq_smul_one, LinearMap.map_smul,
     TensorPower.toTensorAlgebra_gOne, Algebra.algebraMap_eq_smul_one]
@@ -107,7 +107,8 @@ theorem ofDirectSum_comp_toDirectSum :
 #align tensor_algebra.of_direct_sum_comp_to_direct_sum TensorAlgebra.ofDirectSum_comp_toDirectSum
 
 @[simp]
-theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) : ofDirectSum x.toDirectSum = x :=
+theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
+    ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 #align tensor_algebra.of_direct_sum_to_direct_sum TensorAlgebra.ofDirectSum_toDirectSum
 
@@ -129,7 +130,7 @@ all the vectors. -/
 theorem TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
     ((List.finRange n).map fun a =>
           (GradedMonoid.mk _ (PiTensorProduct.tprod R fun i : Fin 1 => x a) :
-            GradedMonoid fun n => (⨂[R]^n) M)).Prod =
+            GradedMonoid fun n => (⨂[R]^n) M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
   refine' Fin.consInduction _ _ x <;> clear x
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
@@ -161,11 +162,12 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
 theorem toDirectSum_comp_ofDirectSum :
     toDirectSum.comp ofDirectSum = AlgHom.id R (⨁ n, (⨂[R]^n) M) := by
   ext
-  simp [DirectSum.lof_eq_of, -tprod_apply, to_direct_sum_tensor_power_tprod]
+  simp [DirectSum.lof_eq_of, -tprod_apply, toDirectSum_tensorPower_tprod]
 #align tensor_algebra.to_direct_sum_comp_of_direct_sum TensorAlgebra.toDirectSum_comp_ofDirectSum
 
 @[simp]
-theorem toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) : (ofDirectSum x).toDirectSum = x :=
+theorem toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) :
+    TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
   AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
 #align tensor_algebra.to_direct_sum_of_direct_sum TensorAlgebra.toDirectSum_ofDirectSum
 
@@ -177,4 +179,3 @@ def equivDirectSum : TensorAlgebra R M ≃ₐ[R] ⨁ n, (⨂[R]^n) M :=
 #align tensor_algebra.equiv_direct_sum TensorAlgebra.equivDirectSum
 
 end TensorAlgebra
-
