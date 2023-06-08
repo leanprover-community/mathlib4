@@ -151,13 +151,11 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       exact add_halves 1
     have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
       simp_rw [mul_assoc]
-      exact mul_le_mul_of_nonneg_left (mul_self_le_mul_self zero_le_δ eq) zero_le_four
-    have eq₂ : ‖a‖ * ‖a‖ ≤ (δ + div) * (δ + div) :=
-      mul_self_le_mul_self (norm_nonneg _)
-        (le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _))
-    have eq₂' : ‖b‖ * ‖b‖ ≤ (δ + div) * (δ + div) :=
-      mul_self_le_mul_self (norm_nonneg _)
-        (le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _))
+      gcongr
+    have eq₂ : ‖a‖ ≤ δ + div :=
+        le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _)
+    have eq₂' : ‖b‖ ≤ δ + div :=
+        le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _)
     rw [dist_eq_norm]
     apply nonneg_le_nonneg_of_sq_le_sq
     · exact sqrt_nonneg _
@@ -165,15 +163,11 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     calc
       ‖wp - wq‖ * ‖wp - wq‖ =
           2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
-        rw [← this]
-        simp
-      _ ≤ 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * δ * δ := (sub_le_sub_left eq₁ _)
-      _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ :=
-        (sub_le_sub_right (mul_le_mul_of_nonneg_left (add_le_add eq₂ eq₂') (by norm_num)) _)
+        simp [← this]
+      _ ≤ 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * δ * δ := by gcongr
+      _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
       _ = 8 * δ * div + 4 * div * div := by ring
-    exact
-      add_nonneg (mul_nonneg (mul_nonneg (by norm_num) zero_le_δ) (le_of_lt Nat.one_div_pos_of_nat))
-        (mul_nonneg (mul_nonneg (by norm_num) Nat.one_div_pos_of_nat.le) Nat.one_div_pos_of_nat.le)
+    positivity
     -- third goal : `Tendsto (fun (n : ℕ) => sqrt (b n)) atTop (𝓝 0)`
     apply Tendsto.comp (f := b) (g := sqrt)
     · have : Tendsto sqrt (nhds 0) (nhds (sqrt 0)) := continuous_sqrt.continuousAt
