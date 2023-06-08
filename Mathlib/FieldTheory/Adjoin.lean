@@ -18,7 +18,7 @@ import Mathlib.RingTheory.TensorProduct
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 ## Main results
 
@@ -248,7 +248,7 @@ instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F 
 
 /-- The top intermediate_field is isomorphic to the field.
 
-This is the intermediate field version of `subalgebra.top_equiv`. -/
+This is the intermediate field version of `Subalgebra.topEquiv`. -/
 @[simps!]
 def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
   (Subalgebra.equivOfEq _ _ top_toSubalgebra).trans Subalgebra.topEquiv
@@ -802,7 +802,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 #align intermediate_field.aeval_gen_minpoly IntermediateField.aeval_gen_minpoly
 
 --Porting note: original proof used `Exists.cases_on`.
-/-- algebra isomorphism between `adjoin_root` and `F⟮α⟯` -/
+/-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) : AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
     (AdjoinRoot.liftHom (minpoly F α) (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
@@ -903,8 +903,8 @@ section Induction
 
 variable {F : Type _} [Field F] {E : Type _} [Field E] [Algebra F E]
 
-/-- An intermediate field `S` is finitely generated if there exists `t : finset E` such that
-`intermediate_field.adjoin F t = S`. -/
+/-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
+`IntermediateField.adjoin F t = S`. -/
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
 #align intermediate_field.fg IntermediateField.FG
