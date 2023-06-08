@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathbin.MeasureTheory.Function.Jacobian
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
 # Polar coordinates
@@ -33,8 +33,7 @@ open scoped Real Topology
 /-- The polar coordinates local homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
-def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ)
-    where
+def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (Real.sqrt (q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
@@ -87,8 +86,7 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ)
   continuous_invFun :=
     ((continuous_fst.mul (continuous_cos.comp continuous_snd)).prod_mk
         (continuous_fst.mul (continuous_sin.comp continuous_snd))).ContinuousOn
-  continuous_toFun :=
-    by
+  continuous_toFun := by
     apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.ContinuousOn.Prod
     have A :
       maps_to complex.equiv_real_prod.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
@@ -103,8 +101,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
           !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap
-      p :=
-  by
+      p := by
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
   convert
       HasFDerivAt.prod
@@ -114,16 +111,13 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     simp only [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
-theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ :=
-  by
-  have A : polar_coord.sourceᶜ ⊆ (LinearMap.snd ℝ ℝ ℝ).ker :=
-    by
+theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
+  have A : polar_coord.sourceᶜ ⊆ (LinearMap.snd ℝ ℝ ℝ).ker := by
     intro x hx
     simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_set_of_eq, not_lt,
       Classical.not_not] at hx 
     exact hx.2
-  have B : volume ((LinearMap.snd ℝ ℝ ℝ).ker : Set (ℝ × ℝ)) = 0 :=
-    by
+  have B : volume ((LinearMap.snd ℝ ℝ ℝ).ker : Set (ℝ × ℝ)) = 0 := by
     apply measure.add_haar_submodule
     rw [Ne.def, LinearMap.ker_eq_top]
     intro h
@@ -135,8 +129,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ :=
 
 theorem integral_comp_polarCoord_symm {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] (f : ℝ × ℝ → E) :
-    (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p :=
-  by
+    (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>
     (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
         !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap with
@@ -151,15 +144,13 @@ theorem integral_comp_polarCoord_symm {E : Type _} [NormedAddCommGroup E] [Norme
     ring
   symm
   calc
-    (∫ p, f p) = ∫ p in polar_coord.source, f p :=
-      by
+    (∫ p, f p) = ∫ p in polar_coord.source, f p := by
       rw [← integral_univ]
       apply set_integral_congr_set_ae
       exact polar_coord_source_ae_eq_univ.symm
     _ = ∫ p in polar_coord.target, abs (B p).det • f (polar_coord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
-    _ = ∫ p in polar_coord.target, p.1 • f (polar_coord.symm p) :=
-      by
+    _ = ∫ p in polar_coord.target, p.1 • f (polar_coord.symm p) := by
       apply set_integral_congr polar_coord.open_target.measurable_set fun x hx => _
       rw [B_det, abs_of_pos]
       exact hx.1
