@@ -31,7 +31,6 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
   -- We sort the list so that the large files in `MathlibExtras` are requested first.
   hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
     |>.foldlM (init := "") fun acc ⟨fp, hash⟩ => do
-    IO.println fp
     let fileName := hash.asTarGz
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
