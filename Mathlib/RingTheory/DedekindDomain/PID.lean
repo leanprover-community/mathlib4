@@ -50,14 +50,14 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
   by_cases hP0 : P = ⊥
   · subst hP0
     simpa using hxP2
-  have hspan0 : span ({x} : Set R) ≠ ⊥ := mt ideal.span_singleton_eq_bot.mp hx0
+  have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
   refine'
     associated_iff_eq.mp
-      ((associated_iff_normalized_factors_eq_normalized_factors hP0 hspan0).mpr
-        (le_antisymm ((dvd_iff_normalized_factors_le_normalized_factors hP0 hspan0).mp _) _))
+      ((associated_iff_normalizedFactors_eq_normalizedFactors hP0 hspan0).mpr
+        (le_antisymm ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 hspan0).mp _) _))
   · rwa [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
-  simp only [normalized_factors_irreducible (Ideal.prime_of_isPrime hP0 hP).Irreducible,
+  simp only [normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible,
     normalize_eq, Multiset.le_iff_count, Multiset.count_singleton]
   intro Q
   split_ifs with hQ
@@ -65,16 +65,16 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
-  by_cases hQp : is_prime Q
+  by_cases hQp : IsPrime Q
   · skip
     refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
       simp only [Ideal.span_singleton_le_iff_mem, pow_one, pow_zero, one_eq_top, Submodule.mem_top]
     exact hxQ _ hQp hQ
   ·
     exact
-      (multiset.count_eq_zero.mpr fun hQi =>
+      (Multiset.count_eq_zero.mpr fun hQi =>
           hQp
-            (is_prime_of_prime
+            (isPrime_of_prime
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
 #align ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne
 
@@ -214,10 +214,10 @@ of `S` at `p`, then all primes in `Sₚ` are factors of the image of `p` in `S�
 theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (Ideal Sₚ)]
     {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
     P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
-  have non_zero_div : Algebra.algebraMapSubmonoid S p.prime_compl ≤ S⁰ :=
+  have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
-      p.prime_compl_le_non_zero_divisors
-  letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.prime_compl S
+      p.primeCompl_le_nonZeroDivisors
+  letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   haveI : IsScalarTower R (Localization.AtPrime p) Sₚ :=
     IsScalarTower.of_algebraMap_eq fun x => by
       erw [IsLocalization.map_eq, IsScalarTower.algebraMap_apply R S]
@@ -229,11 +229,11 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
     obtain ⟨x, x_mem, x_ne⟩ := hp0
     exact
       ⟨algebraMap _ _ x, (IsLocalization.AtPrime.to_map_mem_maximal_iff _ _ _).mpr x_mem,
-        IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors _ p.prime_compl_le_non_zero_divisors
+        IsLocalization.to_map_ne_zero_of_mem_nonZeroDivisors _ p.primeCompl_le_nonZeroDivisors
           (mem_nonZeroDivisors_of_ne_zero x_ne)⟩
   rw [← Multiset.singleton_le, ← normalize_eq P, ←
-    normalized_factors_irreducible (Ideal.prime_of_isPrime hP0 hP).Irreducible, ←
-    dvd_iff_normalized_factors_le_normalized_factors hP0, dvd_iff_le,
+    normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible, ←
+    dvd_iff_normalizedFactors_le_normalizedFactors hP0, dvd_iff_le,
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
@@ -242,13 +242,13 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
       isIntegral_of_noetherian (isNoetherian_of_fg_of_noetherian' Module.Finite.out)
     exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
-  · exact (LocalRing.maximalIdeal.isMaximal _).IsPrime
+  · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne.def, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
       (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
-#align is_localization.over_prime.mem_normalized_factors_of_is_prime IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime
+#align is_localization.over_prime.mem_normalizedFactors_of_is_prime IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/
@@ -260,7 +260,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime : IsPrinci
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
         (Finset.filter (fun P => P.IsPrime)
-          ({⊥} ∪ (normalized_factors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
+          ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
         fun P => _)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
