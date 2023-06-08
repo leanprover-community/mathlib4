@@ -246,7 +246,7 @@ instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F 
         IsScalarTower.algebraMap_apply F (⊥ : IntermediateField F E) E])
 #align intermediate_field.is_scalar_tower_over_bot IntermediateField.isScalarTower_over_bot
 
-/-- The top intermediate_field is isomorphic to the field.
+/-- The top `IntermediateField` is isomorphic to the field.
 
 This is the intermediate field version of `Subalgebra.topEquiv`. -/
 @[simps!]
