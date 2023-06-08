@@ -164,11 +164,8 @@ lemma Scott_Hausdorff_le_Lawson' : @ScottHausdorffTopology α _ ≤ @LawsonTopol
 
 
 lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
-  IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) → ScottHausdorffTopology.IsOpen s := by
-  intro h
-  simp at h
-  apply Scott_Hausdorff_le_Lawson'
-  apply h
+  IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
+  Scott_Hausdorff_le_Lawson' _
 
 end ts
 
