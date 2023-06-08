@@ -252,24 +252,27 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal -/
 instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine' ⟨is_algebraic_supr fun i => (h i).1, fun x => _⟩
+  refine' ⟨isAlgebraic_iSup fun i => (h i).1, fun x => _⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
   have hF : Normal F E := by
+    haveI : IsSplittingField F E (∏ i in s, minpoly F i.snd) := by
+      refine' isSplittingField_iSup _ fun i _ => adjoin_rootSet_isSplittingField _
+      · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
+      · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).splits i.2)
     apply Normal.of_isSplittingField (∏ i in s, minpoly F i.2)
-    refine' is_splitting_field_supr _ fun i hi => adjoin_root_set_is_splitting_field _
-    · exact finset.prod_ne_zero_iff.mpr fun i hi => minpoly.ne_zero ((h i.1).IsIntegral i.2)
-    · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).Splits i.2)
   have hE : E ≤ ⨆ i, t i := by
-    refine' iSup_le fun i => iSup_le fun hi => le_iSup_of_le i.1 _
-    rw [adjoin_le_iff, ← image_root_set ((h i.1).Splits i.2) (t i.1).val]
+    refine' iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 _
+    rw [adjoin_le_iff, ← image_rootSet ((h i.1).splits i.2) (t i.1).val]
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
   exact Polynomial.splits_comp_of_splits _ (inclusion hE).toRingHom this
 #align intermediate_field.normal_supr IntermediateField.normal_iSup
 
-variable {F K} {L : Type _} [Field L] [Algebra F L] [Algebra K L] [IsScalarTower F K L]
+-- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
+variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
+  [Algebra F K] [IsScalarTower F K L]
 
 @[simp]
 theorem restrictScalars_normal {E : IntermediateField K L} :
@@ -279,8 +282,10 @@ theorem restrictScalars_normal {E : IntermediateField K L} :
 
 end IntermediateField
 
-variable {F} {K} {K₁ K₂ K₃ : Type _} [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁] [Algebra F K₂]
-  [Algebra F K₃] (ϕ : K₁ →ₐ[F] K₂) (χ : K₁ ≃ₐ[F] K₂) (ψ : K₂ →ₐ[F] K₃) (ω : K₂ ≃ₐ[F] K₃)
+-- Porting note `[Field F]` added by hand.
+variable {F} {K} {K₁ K₂ K₃ : Type _} [Field F] [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁]
+  [Algebra F K₂] [Algebra F K₃] (ϕ : K₁ →ₐ[F] K₂) (χ : K₁ ≃ₐ[F] K₂) (ψ : K₂ →ₐ[F] K₃)
+  (ω : K₂ ≃ₐ[F] K₃)
 
 section Restrict
 
@@ -292,16 +297,16 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
     (toAlgHom F E K₁).range →ₐ[F] (toAlgHom F E K₂).range where
   toFun x :=
     ⟨ϕ x, by
-      suffices (to_alg_hom F E K₁).range.map ϕ ≤ _ by exact this ⟨x, Subtype.mem x, rfl⟩
+      suffices (toAlgHom F E K₁).range.map ϕ ≤ _ by exact this ⟨x, Subtype.mem x, rfl⟩
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
       refine'
-        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.is_integral z)) (minpoly.irreducible _)
-          (minpoly.dvd E _ (by simp [aeval_alg_hom_apply]))
+        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible _)
+          (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact isIntegral_of_isScalarTower this
-      exact map_isIntegral ϕ (map_isIntegral (to_alg_hom F E K₁) (h.is_integral z))⟩
+      exact map_isIntegral ϕ (map_isIntegral (toAlgHom F E K₁) (h.isIntegral z))⟩
   map_zero' := Subtype.ext ϕ.map_zero
   map_one' := Subtype.ext ϕ.map_one
   map_add' x y := Subtype.ext (ϕ.map_add x y)
@@ -332,19 +337,22 @@ theorem AlgHom.restrictNormal_commutes [Normal F E] (x : E) :
 theorem AlgHom.restrictNormal_comp [Normal F E] :
     (ψ.restrictNormal E).comp (ϕ.restrictNormal E) = (ψ.comp ϕ).restrictNormal E :=
   AlgHom.ext fun _ =>
-    (algebraMap E K₃).Injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
+    (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 #align alg_hom.restrict_normal_comp AlgHom.restrictNormal_comp
 
-theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E] (f : E →ₐ[F] K) :
-    f.fieldRange = E := by
-  haveI : IsScalarTower F E E := by infer_instance
-  let g := f.restrict_normal' E
-  rw [← show E.val.comp ↑g = f from fun_like.ext_iff.mpr (f.restrict_normal_commutes E), ←
-    AlgHom.map_fieldRange, g.field_range_eq_top, ← E.val.field_range_eq_map, E.field_range_val]
+-- Porting note `[Algebra F K]` added by hand.
+theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [Normal F E]
+    (f : E →ₐ[F] K) : f.fieldRange = E := by
+-- Porting note: this was `IsScalarTower F E E := by infer_instance`.
+  letI : Algebra E E := Algebra.id E
+  let g := f.restrictNormal' E
+  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E), ←
+    IntermediateField.AlgHom.map_fieldRange, IntermediateField.AlgEquiv.fieldRange_eq_top g,
+      ← IntermediateField.AlgHom.fieldRange_eq_map, IntermediateField.fieldRange_val]
 #align alg_hom.field_range_of_normal AlgHom.fieldRange_of_normal
 
 /-- Restrict algebra isomorphism to a normal subfield -/
-def AlgEquiv.restrictNormal [h : Normal F E] : E ≃ₐ[F] E :=
+def AlgEquiv.restrictNormal [Normal F E] : E ≃ₐ[F] E :=
   AlgHom.restrictNormal' χ.toAlgHom E
 #align alg_equiv.restrict_normal AlgEquiv.restrictNormal
 
@@ -357,7 +365,7 @@ theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
 theorem AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
   AlgEquiv.ext fun _ =>
-    (algebraMap E K₃).Injective
+    (algebraMap E K₃).injective
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 #align alg_equiv.restrict_normal_trans AlgEquiv.restrictNormal_trans
 
@@ -366,7 +374,7 @@ def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃�
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 #align alg_equiv.restrict_normal_hom AlgEquiv.restrictNormalHom
 
-variable (F K₁ E)
+variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `normal.alg_hom_equiv_aut` is an
  equivalence. -/
@@ -389,8 +397,8 @@ end Restrict
 
 section lift
 
-variable {F} {K₁ K₂} (E : Type _) [Field E] [Algebra F E] [Algebra K₁ E] [Algebra K₂ E]
-  [IsScalarTower F K₁ E] [IsScalarTower F K₂ E]
+variable (E : Type _) [Field E] [Algebra F E] [Algebra K₁ E] [Algebra K₂ E] [IsScalarTower F K₁ E]
+  [IsScalarTower F K₂ E]
 
 /-- If `E/Kᵢ/F` are towers of fields with `E/F` normal then we can lift
   an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.lift_normal E : E →ₐ[F] E`. -/
@@ -417,7 +425,7 @@ theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
 theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :
     (ϕ.liftNormal E).restrictNormal K₁ = ϕ :=
   AlgHom.ext fun x =>
-    (algebraMap K₁ E).Injective
+    (algebraMap K₁ E).injective
       (Eq.trans (AlgHom.restrictNormal_commutes _ K₁ x) (ϕ.liftNormal_commutes E x))
 #align alg_hom.restrict_lift_normal AlgHom.restrict_liftNormal
 
@@ -437,7 +445,7 @@ theorem AlgEquiv.liftNormal_commutes [Normal F E] (x : K₁) :
 theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] [Normal F E] :
     (χ.liftNormal E).restrictNormal K₁ = χ :=
   AlgEquiv.ext fun x =>
-    (algebraMap K₁ E).Injective
+    (algebraMap K₁ E).injective
       (Eq.trans (AlgEquiv.restrictNormal_commutes _ K₁ x) (χ.liftNormal_commutes E x))
 #align alg_equiv.restrict_lift_normal AlgEquiv.restrict_liftNormal
 
