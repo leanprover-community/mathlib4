@@ -21,20 +21,20 @@ preserving these properties to the reals. This is `rat.induced_order_ring_iso`. 
 isomorphism is unique.
 
 We introduce definitions of conditionally complete linear ordered fields, and show all such are
-archimedean. We also construct the natural map from a `linear_ordered_field` to such a field.
+archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
 
 ## Main definitions
 
-* `conditionally_complete_linear_ordered_field`: A field satisfying the standard axiomatization of
+* `ConditionallyCompleteLinearOrderedField`: A field satisfying the standard axiomatization of
   the real numbers, being a Dedekind complete and linear ordered field.
-* `linear_ordered_field.induced_map`: A (unique) map from any archimedean linear ordered field to a
+* `LinearOrderedField.inducedMap`: A (unique) map from any archimedean linear ordered field to a
   conditionally complete linear ordered field. Various bundlings are available.
 
 ## Main results
 
-* `unique.order_ring_hom` : Uniqueness of `order_ring_hom`s from an archimedean linear ordered field
+* `unique.order_ring_hom` : Uniqueness of `OrderRingHom`s from an archimedean linear ordered field
   to a conditionally complete linear ordered field.
-* `unique.order_ring_iso` : Uniqueness of `order_ring_iso`s between two
+* `unique.order_ring_iso` : Uniqueness of `OrderRingIso`s between two
   conditionally complete linearly ordered fields.
 
 ## References
@@ -88,7 +88,7 @@ namespace LinearOrderedField
 ### Rational cut map
 
 The idea is that a conditionally complete linear ordered field is fully characterized by its copy of
-the rationals. Hence we define `rat.cut_map β : α → set β` which sends `a : α` to the "rationals in
+the rationals. Hence we define `rat.cut_map β : α → Set β` which sends `a : α` to the "rationals in
 `β`" that are less than `a`.
 -/
 
@@ -168,7 +168,7 @@ end CutMap
 /-!
 ### Induced map
 
-`rat.cut_map` spits out a `set β`. To get something in `β`, we now take the supremum.
+`rat.cut_map` spits out a `Set β`. To get something in `β`, we now take the supremum.
 -/
 
 
@@ -294,7 +294,7 @@ def inducedAddHom : α →+ β := by
   refine ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
-/-- `induced_map` as an `order_ring_hom`. -/
+/-- `induced_map` as an `OrderRingHom`. -/
 @[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
