@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.IsPoly
+import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 ## Multiplication by `n` in the ring of Witt vectors
@@ -79,8 +79,7 @@ theorem mulNIsPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
 
 @[simp]
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
-    bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k :=
-  by
+    bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k := by
   induction' n with n ih
   · simp only [witt_mul_n, Nat.cast_zero, MulZeroClass.zero_mul, bind₁_zero_witt_polynomial]
   · rw [witt_mul_n, ← bind₁_bind₁, witt_add, wittStructureInt_prop]
