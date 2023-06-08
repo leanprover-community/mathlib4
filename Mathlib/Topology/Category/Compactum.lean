@@ -74,7 +74,7 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- porting note: "Compactum" is already uppser case
+-- porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
