@@ -427,10 +427,8 @@ theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalge
 theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹ ∈ Algebra.adjoin F S) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   le_antisymm
-    (show
-      adjoin F S ≤
-        {
-          Algebra.adjoin F
+    (show adjoin F S ≤
+        { Algebra.adjoin F
             S with
           neg_mem' := fun _ => (Algebra.adjoin F S).neg_mem
           inv_mem' := inv_mem }
@@ -1286,3 +1284,4 @@ theorem equivAdjoinSimple_symm_gen (pb : PowerBasis K L) :
 end PowerBasis
 
 end PowerBasis
+#lint
