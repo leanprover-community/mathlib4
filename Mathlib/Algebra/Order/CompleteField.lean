@@ -377,5 +377,3 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
 #align real.ring_hom.unique Real.RingHom.unique
 
 end Real
-
-#lint
