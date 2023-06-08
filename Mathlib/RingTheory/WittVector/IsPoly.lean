@@ -542,13 +542,17 @@ end ZeroOne
 /-- Addition of Witt vectors is a polynomial function. -/
 @[is_poly]
 theorem addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
-  sorry -- ⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩
+  --  porting note: the proof was
+  --  `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
+  ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 #align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 @[is_poly]
 theorem mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
-  sorry -- ⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩
+  --  porting note: the proof was
+  -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
+  ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
