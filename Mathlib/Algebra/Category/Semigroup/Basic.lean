@@ -8,10 +8,10 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.PemptyInstances
+import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Elementwise
 
 /-!
@@ -32,13 +32,14 @@ This closely follows `algebra.category.Mon.basic`.
 * free/forgetful adjunctions
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u v
 
 open CategoryTheory
 
 /-- The category of magmas and magma morphisms. -/
-@[to_additive AddMagma]
+@[to_additive]
 def Magma : Type (u + 1) :=
   Bundled Mul
 #align Magma Magma
@@ -51,17 +52,22 @@ namespace Magma
 
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
-  ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp, @MulHom.coe_inj⟩
+  ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
+    --Porting note : was `@MulHom.coe_inj` which is deprecated
+    by intros; apply @FunLike.coe_injective, by aesop_cat, by aesop_cat⟩
 #align Magma.bundled_hom Magma.bundledHom
 #align AddMagma.bundled_hom AddMagma.bundledHom
 
-deriving instance LargeCategory, ConcreteCategory for Magma
+-- Porting note: deriving failed for `ConcreteCategory`,
+-- "default handlers have not been implemented yet"
+deriving instance LargeCategory for Magma
+instance concreteCategory : ConcreteCategory Magma := BundledHom.concreteCategory MulHom
 
-attribute [to_additive] Magma.largeCategory Magma.concreteCategory
+attribute [to_additive] instMagmaLargeCategory Magma.concreteCategory
 
 @[to_additive]
 instance : CoeSort Magma (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 /-- Construct a bundled `Magma` from the underlying type and typeclass. -/
 @[to_additive]
@@ -73,17 +79,17 @@ def of (M : Type u) [Mul M] : Magma :=
 /-- Construct a bundled `AddMagma` from the underlying type and typeclass. -/
 add_decl_doc AddMagma.of
 
-/-- Typecheck a `mul_hom` as a morphism in `Magma`. -/
+/-- Typecheck a `MulHom` as a morphism in `Magma`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   f
 #align Magma.of_hom Magma.ofHom
 #align AddMagma.of_hom AddMagma.ofHom
 
-/-- Typecheck a `add_hom` as a morphism in `AddMagma`. -/
+/-- Typecheck a `AddHom` as a morphism in `AddMagma`. -/
 add_decl_doc AddMagma.ofHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Magma.of_hom_apply Magma.ofHom_apply
@@ -97,7 +103,7 @@ instance : Inhabited Magma :=
 instance (M : Magma) : Mul M :=
   M.str
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [Mul R] : (Magma.of R : Type u) = R :=
   rfl
 #align Magma.coe_of Magma.coe_of
@@ -106,7 +112,7 @@ theorem coe_of (R : Type u) [Mul R] : (Magma.of R : Type u) = R :=
 end Magma
 
 /-- The category of semigroups and semigroup morphisms. -/
-@[to_additive AddSemigroupCat]
+@[to_additive]
 def SemigroupCat : Type (u + 1) :=
   Bundled Semigroup
 #align Semigroup SemigroupCat
@@ -127,7 +133,7 @@ attribute [to_additive] SemigroupCat.largeCategory SemigroupCat.concreteCategory
 
 @[to_additive]
 instance : CoeSort SemigroupCat (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 /-- Construct a bundled `Semigroup` from the underlying type and typeclass. -/
 @[to_additive]
@@ -149,7 +155,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 /-- Typecheck a `add_hom` as a morphism in `AddSemigroup`. -/
 add_decl_doc AddSemigroupCat.ofHom
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
@@ -164,13 +170,13 @@ instance : Inhabited SemigroupCat :=
 instance (M : SemigroupCat) : Semigroup M :=
   M.str
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
   rfl
 #align Semigroup.coe_of SemigroupCat.coe_of
 #align AddSemigroup.coe_of AddSemigroupCat.coe_of
 
-@[to_additive has_forget_to_AddMagma]
+@[to_additive]
 instance hasForgetToMagma : HasForget₂ SemigroupCat Magma :=
   BundledHom.forget₂ _ _
 #align Semigroup.has_forget_to_Magma SemigroupCat.hasForgetToMagma
@@ -185,11 +191,10 @@ section
 variable [Mul X] [Mul Y]
 
 /-- Build an isomorphism in the category `Magma` from a `mul_equiv` between `has_mul`s. -/
-@[to_additive AddEquiv.toAddMagmaIso
-      "Build an isomorphism in the category `AddMagma` from\nan `add_equiv` between `has_add`s.",
-  simps]
+@[to_additive (attr := simps)
+      "Build an isomorphism in the category `AddMagma` from\nan `add_equiv` between `has_add`s."]
 def MulEquiv.toMagmaIso (e : X ≃* Y) : Magma.of X ≅ Magma.of Y where
-  Hom := e.toMulHom
+  hom := e.toMulHom
   inv := e.symm.toMulHom
 #align mul_equiv.to_Magma_iso MulEquiv.toMagmaIso
 #align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaIso
@@ -201,9 +206,8 @@ section
 variable [Semigroup X] [Semigroup Y]
 
 /-- Build an isomorphism in the category `Semigroup` from a `mul_equiv` between `semigroup`s. -/
-@[to_additive AddEquiv.toAddSemigroupIso
-      "Build an isomorphism in the category\n`AddSemigroup` from an `add_equiv` between `add_semigroup`s.",
-  simps]
+@[to_additive (attr := simps)
+      "Build an isomorphism in the category\n`AddSemigroup` from an `add_equiv` between `add_semigroup`s."]
 def MulEquiv.toSemigroupIso (e : X ≃* Y) : SemigroupCat.of X ≅ SemigroupCat.of Y where
   Hom := e.toMulHom
   inv := e.symm.toMulHom
@@ -215,10 +219,10 @@ end
 namespace CategoryTheory.Iso
 
 /-- Build a `mul_equiv` from an isomorphism in the category `Magma`. -/
-@[to_additive AddMagma_iso_to_add_equiv
+@[to_additive
       "Build an `add_equiv` from an isomorphism in the category\n`AddMagma`."]
 def magmaIsoToMulEquiv {X Y : Magma} (i : X ≅ Y) : X ≃* Y where
-  toFun := i.Hom
+  toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv y := by simp
@@ -227,7 +231,8 @@ def magmaIsoToMulEquiv {X Y : Magma} (i : X ≅ Y) : X ≃* Y where
 #align category_theory.iso.AddMagma_iso_to_add_equiv CategoryTheory.Iso.addMagmaIsoToAddEquiv
 
 /-- Build a `mul_equiv` from an isomorphism in the category `Semigroup`. -/
-@[to_additive "Build an `add_equiv` from an isomorphism in the category\n`AddSemigroup`."]
+@[to_additive
+  "Build an `add_equiv` from an isomorphism in the category\n`AddSemigroup`."]
 def semigroupIsoToMulEquiv {X Y : SemigroupCat} (i : X ≅ Y) : X ≃* Y where
   toFun := i.Hom
   invFun := i.inv
@@ -241,21 +246,21 @@ end CategoryTheory.Iso
 
 /-- multiplicative equivalences between `has_mul`s are the same as (isomorphic to) isomorphisms
 in `Magma` -/
-@[to_additive addEquivIsoAddMagmaIso
+@[to_additive
       "additive equivalences between `has_add`s are the same\nas (isomorphic to) isomorphisms in `AddMagma`"]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ Magma.of X ≅ Magma.of Y where
-  Hom e := e.toMagmaIso
+  hom e := e.toMagmaIso
   inv i := i.magmaIsoToMulEquiv
 #align mul_equiv_iso_Magma_iso mulEquivIsoMagmaIso
 #align add_equiv_iso_AddMagma_iso addEquivIsoAddMagmaIso
 
 /-- multiplicative equivalences between `semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
-@[to_additive addEquivIsoAddSemigroupIso
+@[to_additive
       "additive equivalences between `add_semigroup`s are\nthe same as (isomorphic to) isomorphisms in `AddSemigroup`"]
 def mulEquivIsoSemigroupIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     X ≃* Y ≅ SemigroupCat.of X ≅ SemigroupCat.of Y where
-  Hom e := e.toSemigroupIso
+  hom e := e.toSemigroupIso
   inv i := i.semigroupIsoToMulEquiv
 #align mul_equiv_iso_Semigroup_iso mulEquivIsoSemigroupIso
 #align add_equiv_iso_AddSemigroup_iso addEquivIsoAddSemigroupIso
@@ -288,4 +293,3 @@ reflect isomorphisms.
 
 
 example : ReflectsIsomorphisms (forget₂ SemigroupCat Magma) := by infer_instance
-
