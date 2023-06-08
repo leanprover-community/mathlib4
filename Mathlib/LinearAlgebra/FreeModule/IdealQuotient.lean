@@ -24,7 +24,7 @@ import Mathlib.LinearAlgebra.QuotientPi
 -/
 
 
-open BigOperators DirectSum
+open scoped BigOperators DirectSum
 
 variable {ι R S : Type _} [CommRing R] [CommRing S] [Algebra R S]
 
