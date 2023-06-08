@@ -976,7 +976,8 @@ end AddCommMonoid
 
 section NoZeroDivisors
 
-variable (R M) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable (R M)
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
 
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
