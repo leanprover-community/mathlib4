@@ -488,7 +488,6 @@ theorem integral_eq_zero_of_hasDerivWithinAt' {f f' : ℂ → E} {c : ℂ} {R : 
 `Metric.sphere c R`, then `∮ z in C(c, R), f' z = 0`. -/
 theorem integral_eq_zero_of_hasDerivWithinAt {f f' : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R)
     (h : ∀ z ∈ sphere c R, HasDerivWithinAt f (f' z) (sphere c R) z) : (∮ z in C(c, R), f' z) = 0 :=
-  have := (_root_.abs_of_nonneg hR).symm
   integral_eq_zero_of_hasDerivWithinAt' <| (_root_.abs_of_nonneg hR).symm ▸ h
 #align circle_integral.integral_eq_zero_of_has_deriv_within_at circleIntegral.integral_eq_zero_of_hasDerivWithinAt
 
@@ -499,6 +498,8 @@ theorem integral_sub_zpow_of_undef {n : ℤ} {c w : ℂ} {R : ℝ} (hn : n < 0)
   rcases eq_or_ne R 0 with (rfl | h0); · apply integral_radius_zero
   apply integral_undef
   simp [circleIntegrable_sub_zpow_iff, *]
+  push_neg
+  exact ⟨hn, by rwa [mem_sphere_iff_norm, norm_eq_abs] at hw⟩
 #align circle_integral.integral_sub_zpow_of_undef circleIntegral.integral_sub_zpow_of_undef
 
 /-- If `n ≠ -1` is an integer number, then the integral of `(z - w) ^ n` over the circle equals
@@ -518,7 +519,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
       simp [mul_assoc, mul_div_cancel_left _ hn']
     exacts [sub_ne_zero.2, neg_le_iff_add_nonneg.1]
   refine' integral_eq_zero_of_hasDerivWithinAt' fun z hz => (hd z _).hasDerivWithinAt
-  exact (ne_or_eq z w).imp_right fun h => H <| h ▸ hz
+  exact (ne_or_eq z w).imp_right fun (h : z = w) => H <| h ▸ hz
 #align circle_integral.integral_sub_zpow_of_ne circleIntegral.integral_sub_zpow_of_ne
 
 end circleIntegral
@@ -554,14 +555,13 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
         (intervalIntegral.norm_integral_le_integral_norm Real.two_pi_pos.le)
         (by simp [Real.pi_pos.le]))
     _ = (2 * π)⁻¹ *
-          ((|R|)⁻¹ ^ n * (|R| * ((|R|)⁻¹ * ∫ x : ℝ in (0)..2 * π, ‖f (circleMap c R x)‖))) := by
+        ((|R|)⁻¹ ^ n * (|R| * ((|R|)⁻¹ * ∫ x : ℝ in (0)..2 * π, ‖f (circleMap c R x)‖))) := by
       simp [norm_smul, mul_left_comm (|R|)]
     _ ≤ ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) * (|R|)⁻¹ ^ n := by
       rcases eq_or_ne R 0 with (rfl | hR)
-      · cases n <;> simp [-mul_inv_rev, Real.two_pi_pos]
-        ring_nf
-        rw [mul_inv_cancel (Real.pi_pos.ne.symm), one_mul]
-        exact norm_nonneg
+      · cases n <;> simp [-mul_inv_rev]
+        rw [← mul_assoc, inv_mul_cancel (Real.two_pi_pos.ne.symm), one_mul]
+        apply norm_nonneg
       · rw [mul_inv_cancel_left₀, mul_assoc, mul_comm ((|R|)⁻¹ ^ n)]
         rwa [Ne.def, _root_.abs_eq_zero]
 #align norm_cauchy_power_series_le norm_cauchyPowerSeries_le
@@ -598,9 +598,9 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
   · simp only [deriv_circleMap]
     apply_rules [AEStronglyMeasurable.smul, hf.def.1] <;> apply Measurable.aestronglyMeasurable
     -- Porting note: these were `measurability`
-    · simp
-    · simp
-    · simp
+    · exact (measurable_circleMap 0 R).mul_const I
+    · exact (((measurable_circleMap c R).sub measurable_const).const_div w).pow measurable_const
+    · exact ((measurable_circleMap c R).sub measurable_const).inv
   · simp [norm_smul, abs_of_pos hR, mul_left_comm R, mul_inv_cancel_left₀ hR.ne', mul_comm ‖_‖]
   · exact eventually_of_forall fun _ _ => (summable_geometric_of_lt_1 hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_1 hwR.1 hwR.2] using
@@ -643,7 +643,7 @@ theorem has_fpower_series_on_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ�
       (cauchyPowerSeries f c R) c R :=
   { r_le := le_radius_cauchyPowerSeries _ _ _
     r_pos := ENNReal.coe_pos.2 hR
-    hasSum := fun y hy => by
+    hasSum := fun hy => by
       refine' hasSum_cauchyPowerSeries_integral hf _
       rw [← norm_eq_abs, ← coe_nnnorm, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe]
       exact mem_emetric_ball_zero_iff.1 hy }
@@ -666,6 +666,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
   refine' this ▸ hasSum_single _ fun n hn => _
   simp only [div_eq_mul_inv, mul_pow, integral_const_mul, mul_assoc]
   rw [(integral_congr hR.le fun z hz => _).trans (H n hn), MulZeroClass.mul_zero]
+  intro z _
   rw [← pow_succ', ← zpow_ofNat, inv_zpow, ← zpow_neg, Int.ofNat_succ, neg_add,
     sub_eq_add_neg _ (1 : ℤ)]
 #align circle_integral.integral_sub_inv_of_mem_ball circleIntegral.integral_sub_inv_of_mem_ball
