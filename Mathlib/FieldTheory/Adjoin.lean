@@ -1187,6 +1187,7 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
+set_option synthInstance.maxHeartbeats 30000
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
@@ -1204,10 +1205,10 @@ instance finiteDimensional_iSup_of_finite {ι : Type _} {t : ι → Intermediate
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
+  all_goals dsimp only
   · exact Set.finite_univ
-  all_goals dsimp only [P]
   · rw [iSup_emptyset]
-    exact (bot_equiv K L).symm.toLinearEquiv.FiniteDimensional
+    exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
   · intro _ s _ _ hs
     rw [iSup_insert]
     exact IntermediateField.finiteDimensional_sup _ _
@@ -1229,7 +1230,7 @@ theorem isAlgebraic_iSup {ι : Type _} {f : ι → IntermediateField K L}
     Algebra.IsAlgebraic K (⨆ i, f i : IntermediateField K L) := by
   rintro ⟨x, hx⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
-  rw [is_algebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk x hx, ← is_algebraic_iff]
+  rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk x hx, ← is_algebraic_iff]
   haveI : ∀ i : Σ i, f i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ =>
     adjoin.finite_dimensional (is_integral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
   apply Algebra.isAlgebraic_of_finite
