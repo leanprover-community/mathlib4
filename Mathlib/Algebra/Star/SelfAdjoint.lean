@@ -318,8 +318,20 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : One (selfAdjoint R) :=
-  ⟨⟨1, isSelfAdjoint_one R⟩⟩
+instance instAddMonoidWithOne : AddMonoidWithOne (selfAdjoint R) where
+  toAddMonoid := inferInstance
+  one := ⟨1, isSelfAdjoint_one R⟩
+  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
+  natCast_zero := by ext; simp only [Nat.cast_zero, ZeroMemClass.coe_zero]
+  natCast_succ := fun n => by
+    ext
+    simp only [Nat.cast_add, Nat.cast_one, AddSubmonoid.coe_add, AddSubgroup.coe_toAddSubmonoid,
+      add_right_inj]
+    rfl
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : selfAdjoint R) : R) = n :=
+  rfl
 
 @[simp, norm_cast]
 theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
@@ -329,11 +341,23 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
-instance : NatCast (selfAdjoint R) where
-  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
+instance instAddGroupWithOne : AddGroupWithOne (selfAdjoint R) :=
+  { instAddMonoidWithOne (R := R),
+    (selfAdjoint R).toAddGroup with
+    intCast := fun n ↦ ⟨n, isSelfAdjoint_intCast _⟩
+    intCast_ofNat := fun n ↦ by
+      ext
+      simp only [Int.cast_ofNat]
+      rfl
+    intCast_negSucc := fun n ↦ by
+      ext
+      simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, AddSubmonoid.coe_add,
+        AddSubgroup.coe_toAddSubmonoid, AddSubgroupClass.coe_neg, val_one, add_right_inj, neg_inj]
+      rfl }
 
-instance : IntCast (selfAdjoint R) where
-  intCast n := ⟨n, isSelfAdjoint_intCast _⟩
+@[simp, norm_cast]
+theorem coe_intCast (n : ℤ) : ((n : selfAdjoint R) : R) = n :=
+  rfl
 
 instance : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
