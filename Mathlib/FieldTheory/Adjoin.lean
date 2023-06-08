@@ -1137,9 +1137,12 @@ theorem algHom_mk_adjoin_splits
     Nonempty (adjoin F S →ₐ[F] K) := by
   obtain ⟨x : Lifts F E K, hx⟩ := zorn_partialOrder Lifts.exists_upper_bound
   refine'
-    ⟨AlgHom.mk (fun s => x.2 ⟨s, adjoin_le_iff.mpr (fun s hs => _) s.Mem⟩) x.2.map_one
-        (fun s t => x.2.map_mul ⟨s, _⟩ ⟨t, _⟩) x.2.map_zero (fun s t => x.2.map_add ⟨s, _⟩ ⟨t, _⟩)
-        x.2.commutes⟩
+    ⟨{ toFun := (fun s => x.2 ⟨s, adjoin_le_iff.mpr (fun s hs => _) s.mem⟩)
+       map_one' := x.2.map_one
+       map_mul' := (fun s t => x.2.map_mul ⟨s, _⟩ ⟨t, _⟩)
+       map_zero' := x.2.map_zero
+       map_add' := (fun s t => x.2.map_add ⟨s, _⟩ ⟨t, _⟩)
+       commutes' := x.2.commutes }⟩
   rcases x.exists_lift_of_splits (hK s hs).1 (hK s hs).2 with ⟨y, h1, h2⟩
   rwa [hx y h1] at h2
 #align intermediate_field.alg_hom_mk_adjoin_splits IntermediateField.algHom_mk_adjoin_splits
@@ -1147,9 +1150,9 @@ theorem algHom_mk_adjoin_splits
 theorem algHom_mk_adjoin_splits' (hS : adjoin F S = ⊤)
     (hK : ∀ x ∈ S, IsIntegral F (x : E) ∧ (minpoly F x).Splits (algebraMap F K)) :
     Nonempty (E →ₐ[F] K) := by
-  cases' alg_hom_mk_adjoin_splits hK with ϕ
+  cases' algHom_mk_adjoin_splits hK with ϕ
   rw [hS] at ϕ
-  exact ⟨ϕ.comp top_equiv.symm.to_alg_hom⟩
+  exact ⟨ϕ.comp topEquiv.symm.toAlgHom⟩
 #align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.algHom_mk_adjoin_splits'
 
 end AlgHomMkAdjoinSplits
@@ -1171,26 +1174,27 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       (show _ ≤ (S1 ⊔ S2).toIntermediateField _ from
         sup_le (show S1 ≤ _ from le_sup_left) (show S2 ≤ _ from le_sup_right))
       (le_sup_toSubalgebra E1 E2)
-  suffices IsField ↥(S1 ⊔ S2) by
+  suffices IsField (S1 ⊔ S2 : Subalgebra K L) by
     intro x hx
-    by_cases hx' : (⟨x, hx⟩ : S1 ⊔ S2) = 0
-    · rw [← Subtype.coe_mk x hx, hx', Subalgebra.coe_zero, inv_zero]
+    by_cases hx' : (⟨x, hx⟩ : (S1 ⊔ S2 : Subalgebra K L)) = 0
+    · rw [← Subtype.coe_mk x, hx', Subalgebra.coe_zero, inv_zero]
       exact (S1 ⊔ S2).zero_mem
     · obtain ⟨y, h⟩ := this.mul_inv_cancel hx'
-      exact (congr_arg (· ∈ S1 ⊔ S2) <| eq_inv_of_mul_eq_one_right <| subtype.ext_iff.mp h).mp y.2
+      exact (congr_arg (· ∈ S1 ⊔ S2) <| eq_inv_of_mul_eq_one_right <| Subtype.ext_iff.mp h).mp y.2
   exact
     isField_of_isIntegral_of_isField'
-      (is_integral_sup.mpr ⟨Algebra.isIntegral_of_finite K E1, Algebra.isIntegral_of_finite K E2⟩)
+      (isIntegral_sup.mpr ⟨Algebra.isIntegral_of_finite K E1, Algebra.isIntegral_of_finite K E2⟩)
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
 instance finiteDimensional_sup [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K E2] :
-    FiniteDimensional K ↥(E1 ⊔ E2) := by
+    FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
   suffices g.range = (E1 ⊔ E2).toSubalgebra by
-    have h : FiniteDimensional K g.range.to_submodule := g.to_linear_map.finite_dimensional_range
+    have h : FiniteDimensional K (Subalgebra.toSubmodule g.range) :=
+      g.toLinearMap.finiteDimensional_range
     rwa [this] at h
-  rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_to_subalgebra]
+  rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra]
 #align intermediate_field.finite_dimensional_sup IntermediateField.finiteDimensional_sup
 
 instance finiteDimensional_iSup_of_finite {ι : Type _} {t : ι → IntermediateField K L}
