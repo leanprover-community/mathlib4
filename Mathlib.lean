@@ -2020,6 +2020,7 @@ import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.Floor
+import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
