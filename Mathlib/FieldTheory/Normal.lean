@@ -408,17 +408,21 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
     Nonempty.some <|
       @IntermediateField.algHom_mk_adjoin_splits' _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
-        (IntermediateField.adjoin_univ _ _) fun x hx =>
+        (IntermediateField.adjoin_univ _ _) fun x _ =>
         ⟨isIntegral_of_isScalarTower (h.out x).1,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
-            (by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact (h.out x).2)
+            -- Porting note: had to override typeclass inference below using `(_)`
+            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)];
+                exact (h.out x).2)
             (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩
 #align alg_hom.lift_normal AlgHom.liftNormal
 
 @[simp]
 theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
-    ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) := by
-  apply @AlgHom.commutes K₁ E E _ _ _ _
+    ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
+  -- Porting note: This seems to have been some sort of typeclass override trickery using `by apply`
+  -- Now we explicitly specify which typeclass to override, using `(_)` instead of `_`
+  @AlgHom.commutes K₁ E E _ _ _ _ (_) _ _
 #align alg_hom.lift_normal_commutes AlgHom.liftNormal_commutes
 
 @[simp]
