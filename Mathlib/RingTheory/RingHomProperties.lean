@@ -37,16 +37,14 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Prop)
 
---include P
-
 section RespectsIso
 
 /-- A property `respects_iso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
-      ∀ (f : R →+* S) (e : S ≃+* T) (hf : P f), P (e.toRingHom.comp f)) ∧
+      ∀ (f : R →+* S) (e : S ≃+* T) (_ : P f), P (e.toRingHom.comp f)) ∧
     ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
-      ∀ (f : S →+* T) (e : R ≃+* S) (hf : P f), P (f.comp e.toRingHom)
+      ∀ (f : S →+* T) (e : R ≃+* S) (_ : P f), P (f.comp e.toRingHom)
 #align ring_hom.respects_iso RingHom.RespectsIso
 
 variable {P}
@@ -61,7 +59,7 @@ theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (f ≫ g) ↔ P f :=
   ⟨fun H => by
-    convert hP.1 (f ≫ g) (as_iso g).symm.commRingCatIsoToRingEquiv H
+    convert hP.1 (f ≫ g) (asIso g).symm.commRingCatIsoToRingEquiv H
     change f = f ≫ g ≫ inv g
     simp, hP.1 f (asIso g).commRingCatIsoToRingEquiv⟩
 #align ring_hom.respects_iso.cancel_right_is_iso RingHom.RespectsIso.cancel_right_isIso
@@ -74,17 +72,17 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
     (IsLocalization.algEquiv (Submonoid.powers r) _ _).toRingEquiv
   let e₂ : Localization.Away (f r) ≃+* S' :=
     (IsLocalization.algEquiv (Submonoid.powers (f r)) _ _).toRingEquiv
-  refine' (hP.cancel_left_is_iso e₁.to_CommRing_iso.hom (CommRingCat.ofHom _)).symm.trans _
-  refine' (hP.cancel_right_is_iso (CommRingCat.ofHom _) e₂.to_CommRing_iso.hom).symm.trans _
+  refine' (hP.cancel_left_isIso e₁.toCommRingCatIso.hom (CommRingCat.ofHom _)).symm.trans _
+  refine' (hP.cancel_right_isIso (CommRingCat.ofHom _) e₂.toCommRingCatIso.hom).symm.trans _
   rw [← eq_iff_iff]
   congr 1
-  dsimp [CommRingCat.ofHom, CommRingCat.of, bundled.of]
+  dsimp [CommRingCat.ofHom, CommRingCat.of, Bundled.of]
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
   ext1
   revert e₁ e₂
   dsimp [RingEquiv.toRingHom, IsLocalization.Away.map]
   simp only [CategoryTheory.comp_apply, RingEquiv.refl_apply, IsLocalization.algEquiv_apply,
-    IsLocalization.ringEquivOfRingEquiv_apply, RingHom.coe_mk, [anonymous],
+    IsLocalization.ringEquivOfRingEquiv_apply, RingHom.coe_mk, RingEquiv.congr_fun,
     IsLocalization.ringEquivOfRingEquiv_eq, IsLocalization.map_eq]
 #align ring_hom.respects_iso.is_localization_away_iff RingHom.RespectsIso.is_localization_away_iff
 
@@ -102,7 +100,7 @@ def StableUnderComposition : Prop :=
 variable {P}
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
-    (hP' : ∀ {R S : Type _} [CommRing R] [CommRing S] (e : R ≃+* S), P e.to_ring_hom) :
+    (hP' : ∀ {R S : Type _} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
     RingHom.RespectsIso @P := by
   constructor
   · introv H
@@ -133,17 +131,17 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
       ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
         ∀ [Algebra R S] [Algebra R T],
           P (algebraMap R T) →
-            P (algebra.tensor_product.include_left.to_ring_hom : S →+* TensorProduct R S T)) :
+            P (Algebra.TensorProduct.includeLeft.toRingHom : S →+* TensorProduct R S T)) :
     StableUnderBaseChange @P := by
   introv R h H
   skip
-  let e := h.symm.1.Equiv
+  let e := h.symm.1.equiv
   let f' :=
     Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
       (IsScalarTower.toAlgHom R S S')
   have : ∀ x, e x = f' x := by
     intro x
-    change e.to_linear_map.restrict_scalars R x = f'.to_linear_map x
+    change e.toLinearMap.restrictScalars R x = f'.toLinearMap x
     congr 1
     apply TensorProduct.ext'
     intro x y
@@ -160,8 +158,6 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
     rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
 #align ring_hom.stable_under_base_change.mk RingHom.StableUnderBaseChange.mk
 
-omit P
-
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
@@ -169,12 +165,12 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
     P (pushout.inl : S ⟶ pushout f g) := by
   rw [←
     show _ = pushout.inl from
-      colimit.iso_colimit_cocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
-        walking_span.left,
-    hP'.cancel_right_is_iso]
-  letI := f.to_algebra
-  letI := g.to_algebra
-  dsimp only [CommRingCat.pushoutCocone_inl, pushout_cocone.ι_app_left]
+      colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
+        WalkingSpan.left,
+    hP'.cancel_right_isIso]
+  letI := f.toAlgebra
+  letI := g.toAlgebra
+  dsimp only [CommRingCat.pushoutCocone_inl, PushoutCocone.ι_app_left]
   apply hP R T S (TensorProduct R S T)
   exact H
 #align ring_hom.stable_under_base_change.pushout_inl RingHom.StableUnderBaseChange.pushout_inl
