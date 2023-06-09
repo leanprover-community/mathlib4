@@ -8,9 +8,9 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Normal
-import Mathbin.FieldTheory.PerfectClosure
-import Mathbin.RingTheory.Localization.Integral
+import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Algebraically Closed Field
@@ -82,8 +82,7 @@ theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, Is
   exists_root_of_splits _ (IsAlgClosed.splits p) hp
 #align is_alg_closed.exists_root IsAlgClosed.exists_root
 
-theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x :=
-  by
+theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   rcases exists_root (X ^ n - C x) _ with ⟨z, hz⟩; swap
   · rw [degree_X_pow_sub_C hn x]
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
@@ -92,8 +91,7 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
   exact sub_eq_zero.1 hz
 #align is_alg_closed.exists_pow_nat_eq IsAlgClosed.exists_pow_nat_eq
 
-theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z :=
-  by
+theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
   rcases exists_pow_nat_eq x zero_lt_two with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
 #align is_alg_closed.exists_eq_mul_self IsAlgClosed.exists_eq_mul_self
@@ -136,8 +134,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
     IsAlgClosed k :=
   ⟨fun p =>
     Or.inr fun q hq hqp =>
-      have : Irreducible (q * C (leadingCoeff q)⁻¹) :=
-        by
+      have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
         rw [← coe_norm_unit_of_ne_zero hq.ne_zero]
         exact (associated_normalize _).Irreducible hq
       let ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.NeZero) this
@@ -151,8 +148,7 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
 
 theorem algebraMap_surjective_of_isIntegral {k K : Type _} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] (hf : Algebra.IsIntegral k K) :
-    Function.Surjective (algebraMap k K) :=
-  by
+    Function.Surjective (algebraMap k K) := by
   refine' fun x => ⟨-(minpoly k x).coeff 0, _⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (hf x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible (hf x))
@@ -241,8 +237,7 @@ theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.
   cases h; assumption
 #align lift.subfield_with_hom.compat lift.SubfieldWithHom.compat
 
-instance : Preorder (SubfieldWithHom K L M hL)
-    where
+instance : Preorder (SubfieldWithHom K L M hL) where
   le := (· ≤ ·)
   le_refl E := ⟨le_rfl, by simp⟩
   le_trans E₁ E₂ E₃ h₁₂ h₂₃ :=
@@ -273,8 +268,7 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M hL
                   inclusion_self, AlgHom.id_apply x])
             _ rfl }
     ⟨ub, fun N hN =>
-      ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M hL).carrier) ⟨N, hN⟩ : _),
-        by
+      ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M hL).carrier) ⟨N, hN⟩ : _), by
         intro x
         simp [ub]
         rfl⟩⟩
@@ -298,8 +292,7 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom M hL)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
-theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom M hL).carrier = ⊤ :=
-  by
+theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom M hL).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
   let p := minpoly K x
@@ -323,8 +316,7 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom M hL).carrier = 
   let O' : subfield_with_hom K L M hL :=
     { carrier := O.restrict_scalars K
       emb := larger_emb.restrict_scalars K }
-  have hO' : maximal_subfield_with_hom M hL ≤ O' :=
-    by
+  have hO' : maximal_subfield_with_hom M hL ≤ O' := by
     refine' ⟨hNO, _⟩
     intro z
     show O'.emb (algebraMap N O z) = algebraMap N M z
@@ -364,8 +356,7 @@ include hS
 
 private theorem fraction_ring.is_algebraic :
     letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).IsDomain _
-    Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
-  by
+    Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
   intro inst x
   exact
     (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
@@ -373,8 +364,7 @@ private theorem fraction_ring.is_algebraic :
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
-noncomputable irreducible_def lift : S →ₐ[R] M :=
-  by
+noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).IsDomain _
   have hfRfS : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     fraction_ring.is_algebraic hS
@@ -390,8 +380,7 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
-instance (priority := 500) {K : Type _} [Field K] [IsAlgClosed K] : Infinite K :=
-  by
+instance (priority := 500) {K : Type _} [Field K] [IsAlgClosed K] : Infinite K := by
   apply Infinite.of_not_fintype
   intro hfin
   set n := Fintype.card K with hn
@@ -422,8 +411,7 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 noncomputable def equiv : L ≃ₐ[R] M :=
   let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
   AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom,
-      by
+    ⟨RingHom.injective f.toRingHom, by
       letI : Algebra L M := RingHom.toAlgebra f
       letI : IsScalarTower R L M :=
         IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
@@ -451,8 +439,7 @@ theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
-    (hRL : Algebra.IsAlgebraic R L) : L ≃ₐ[R] M :=
-  by
+    (hRL : Algebra.IsAlgebraic R L) : L ≃ₐ[R] M := by
   letI : NoZeroSMulDivisors R L :=
     NoZeroSMulDivisors.of_algebraMap_injective
       (by
@@ -480,14 +467,12 @@ variable {R S}
 
 /-- Used in the definition of `equiv_of_equiv` -/
 noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
-    { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } :=
-  by
+    { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.to_ring_hom
   letI : Algebra S R := RingHom.toAlgebra hSR.to_ring_hom
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R M).IsDomain _
   letI : IsDomain S := (NoZeroSMulDivisors.algebraMap_injective S L).IsDomain _
-  have : Algebra.IsAlgebraic R S := fun x =>
-    by
+  have : Algebra.IsAlgebraic R S := fun x => by
     rw [← RingEquiv.symm_apply_apply hSR x]
     exact isAlgebraic_algebraMap _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
@@ -547,8 +532,7 @@ end IsAlgClosure
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
     [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A => ψ x) = (minpoly F x).rootSet A :=
-  by
+    (Set.range fun ψ : K →ₐ[F] A => ψ x) = (minpoly F x).rootSet A := by
   have := Algebra.isAlgebraic_iff_isIntegral.1 hK
   ext a; rw [mem_root_set_of_ne (minpoly.ne_zero (this x))] <;> [skip; infer_instance]
   refine' ⟨_, fun ha => _⟩
