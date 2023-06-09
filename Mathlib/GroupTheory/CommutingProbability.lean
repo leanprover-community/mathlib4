@@ -228,9 +228,6 @@ instance : Infinite (DihedralGroup 0) :=
 
 end DihedralGroup
 
-theorem key0 (n : ℕ) (h2 : ¬ 2 ∣ n) : n % 4 = 1 ∨ n % 4 = 3 :=
-Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
-
 theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
     commProb (ReciprocalGroup (reciprocalFactors n)) = 1 / n := by
   rw [commProb_ReciprocalGroup]
@@ -248,18 +245,18 @@ theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
         field_simp [h0]
         norm_num
       . have := aux2 h0 h1
+        have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
         rw [dif_neg h0, dif_neg h1, if_neg h2, List.map_cons, List.prod_cons,
             ←commProb_ReciprocalGroup, commProb_ReciprocalGroup_reciprocalFactors (n / 4 + 1),
             commProb_DihedralGroup_Odd (n % 4 * n)]
         . rw [div_mul_div_comm, mul_one, div_eq_div_iff] <;> norm_cast
-          . have : (n % 4) ^ 2 + 3 = n % 4 * 4 := by
-              rcases key0 n h2 with h | h <;> rw [h] <;> norm_num
+          . have : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
             calc ((n % 4) * n + 3) * n = (n % 4 * (4 * (n / 4)) + n % 4 * 4) * n :=
                 by rw [←this, sq, ←add_assoc, ←mul_add, Nat.div_add_mod]
               _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
-          . have : n % 4 ≠ 0 := by rcases key0 n h2 with h | h <;> rw [h] <;> norm_num
+          . have : n % 4 ≠ 0 := by rcases key with h | h <;> rw [h] <;> norm_num
             positivity
-        . have : ¬ 2 ∣ n % 4 := by rcases key0 n h2 with h | h <;> rw [h] <;> norm_num
+        . have : ¬ 2 ∣ n % 4 := by rcases key with h | h <;> rw [h] <;> norm_num
           exact Nat.prime_two.not_dvd_mul this h2
 
 end CommutingProbability
