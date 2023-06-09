@@ -275,7 +275,7 @@ theorem inv_coe_int_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : �
 
 theorem inv_coe_nat_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
   rw [← Int.ofNat_inj, ← Int.cast_ofNat a, inv_coe_int_den_of_pos]
-  rwa [Nat.cast_pos]
+  rwa [Nat.cast_pos (α := ℤ)]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_coe_nat_den_of_pos
 
 @[simp]

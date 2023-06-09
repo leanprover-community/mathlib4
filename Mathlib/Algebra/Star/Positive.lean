@@ -3,6 +3,7 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.GroupTheory.Submonoid.Operations
@@ -44,25 +45,43 @@ variable {R : Type u}
 
 namespace StarOrderedRing
 
-def positive (R : Type u) [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] :
-    AddSubmonoid R :=
-  AddSubmonoid.closure (Set.range fun s : R => star s * s)
+/-- The type of positive elements in a `StarOrderedRing`. We opt for the terminology `Positive`
+as opposed to `Nonnegative` for consistency with the literature.
+
+Note that the type class assumptions for `Positive` are actually significantly weaker (just
+`OrderedAddCommMonoid`) so that it can be used in as many contexts as possible, but the primary
+intended use case is when `R` is a `StarOrderedRing`.
+
+In addition, note that we make a new type instead of simply using the subtype itself so that we can
+add instances which would otherwise conflict if `R` had enough structure. -/
+def positive (R : Type u) [OrderedAddCommMonoid R] : AddSubmonoid R where
+  carrier := {x : R | 0 ≤ x}
+  add_mem' := add_nonneg
+  zero_mem' := le_rfl
+
+theorem positive_def [OrderedAddCommMonoid R] {x : R} :
+    x ∈ positive R ↔ 0 ≤ x :=
+  Iff.rfl
 
 section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
 
-theorem positive_def {x : R} :
-    x ∈ positive R ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) :=
-  Iff.rfl
+theorem positive_iff {x : R} :
+    x ∈ positive R ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
+  rw [positive_def, nonneg_iff]
 
-theorem positive_iff {x : R} : x ∈ positive R ↔ 0 ≤ x := by rw [positive_def, nonneg_iff]
+theorem positive_coe_set : (positive R : Set R) = {x | 0 ≤ x} := rfl
 
-theorem positive_coe_set : (positive R : Set R) = {x | 0 ≤ x} :=
-  Set.ext fun _x => positive_iff
+theorem isSelfAdjoint_of_nonneg [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
+    {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x := by
+  rw [nonneg_iff] at hx
+  refine AddSubmonoid.closure_induction hx ?_ (isSelfAdjoint_zero R) fun _ _ => IsSelfAdjoint.add
+  rintro - ⟨s, rfl⟩
+  exact IsSelfAdjoint.star_mul_self s
 
-theorem le_iff_exists_positive {x y : R} : x ≤ y ↔ ∃ p : positive R, x + p = y := by
-  rw [le_iff]
+theorem le_iff_exists_positive {x y : R} : x ≤ y ↔ ∃ p : positive R, y = x + p := by
+  rw [le_iff']
   constructor
   · rintro ⟨p, hp, rfl⟩
     exact ⟨⟨p, hp⟩, rfl⟩
@@ -75,19 +94,15 @@ theorem positive.coe_le_coe {x y : positive R} : (x : R) ≤ y ↔ x ≤ y :=
 instance positive.instCanonicallyOrderedAddMonoid : CanonicallyOrderedAddMonoid (positive R) :=
   { inferInstanceAs (OrderedAddCommMonoid (positive R)) with
     bot := 0
-    bot_le := fun x => positive_iff.mp x.prop
+    bot_le := Subtype.prop
     exists_add_of_le := @fun x y (h : (x : R) ≤ y) => by
       convert le_iff_exists_positive.mp h using 1
       funext p
-      rw [@eq_comm _ y]
       exact_mod_cast rfl
     le_self_add := fun x y => show (x : R) ≤ x + y from le_iff_exists_positive.mpr ⟨y, rfl⟩ }
 
-theorem positive.isSelfAdjoint (x : positive R) : IsSelfAdjoint (x : R) := by
-  refine' AddSubmonoid.closure_induction x.prop _ (isSelfAdjoint_zero R)
-    fun _ _ => IsSelfAdjoint.add
-  rintro _ ⟨s, rfl⟩
-  exact IsSelfAdjoint.star_mul_self s
+theorem positive.isSelfAdjoint (x : positive R) : IsSelfAdjoint (x : R) :=
+  isSelfAdjoint_of_nonneg x.prop
 
 end NonUnitalSemiring
 
@@ -120,7 +135,7 @@ variable [Semiring R] [PartialOrder R] [StarOrderedRing R]
 variable (R)
 
 protected theorem one_mem : (1 : R) ∈ positive R := by
-  simpa only [positive_iff, star_one, mul_one] using star_mul_self_nonneg (1 : R)
+  simpa only [positive_def, star_one, mul_one] using star_mul_self_nonneg (1 : R)
 
 theorem natCast_mem (n : ℕ) : (n : R) ∈ positive R :=
   @Nat.recOn (fun n => (n : R) ∈ positive R) n
@@ -137,6 +152,12 @@ lemma val_one : (1 : positive R) = (1 : R) :=
 
 variable {R}
 
+instance [Nontrivial R] : NeZero (1 : positive R) where
+  out := by rw [Ne.def, Subtype.ext_iff]; exact one_ne_zero' R
+
+instance [Nontrivial R] : Nontrivial (positive R) where
+  exists_pair_ne := ⟨1, 0, NeZero.ne 1⟩
+
 instance instNatCast : NatCast (positive R) where
   natCast := let rec aux
       | 0 => 0
@@ -150,11 +171,10 @@ theorem coe_natCast : ∀ n : ℕ, ((n : positive R) : R) = n
   | 1 => show (1 : R) = _ from Nat.cast_one.symm
   | _ + 2 => rfl
 
-instance instAddMonoidWithOne : AddMonoidWithOne (positive R) :=
-  { inferInstanceAs (AddMonoid (positive R)),
-    inferInstanceAs (NatCast (positive R)) with
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (positive R) :=
+  { inferInstanceAs (AddCommMonoid (positive R)) with
+    toNatCast := instNatCast
     one := 1
-    natCast := fun n ↦ n
     natCast_zero := rfl
     natCast_succ := fun n ↦ by ext; simp }
 

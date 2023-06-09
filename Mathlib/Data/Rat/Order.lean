@@ -123,7 +123,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
         · rw [sub_neg]
           apply lt_of_lt_of_le
           · apply mul_neg_of_neg_of_pos h.1
-            rwa [Nat.cast_pos, pos_iff_ne_zero]
+            rwa [Nat.cast_pos (α := ℤ), pos_iff_ne_zero]
           · apply mul_nonneg h.2 (Nat.cast_nonneg _)
         · simp only [Nat.cast_pos]
           apply Nat.gcd_pos_of_pos_right

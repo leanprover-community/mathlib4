@@ -87,8 +87,12 @@ theorem _root_.Commute.ofNat_right [NonAssocSemiring α] (x : α) (n : ℕ) [n.A
   n.commute_cast x
 
 section OrderedSemiring
+/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
+we use a generic collection of instances so that it applies in other settings (e.g., in a
+`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
-variable [OrderedSemiring α]
+variable [AddCommMonoidWithOne α] [PartialOrder α]
+variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -103,7 +107,7 @@ theorem cast_nonneg (n : ℕ) : 0 ≤ (n : α) :=
 
 section Nontrivial
 
-variable [Nontrivial α]
+variable [NeZero (1 : α)]
 
 theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
   zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg

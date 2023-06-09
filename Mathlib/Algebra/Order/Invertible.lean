@@ -45,4 +45,4 @@ theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟ a ≤ 1 :=
 
 theorem pos_invOf_of_invertible_cast [Nontrivial α] (n : ℕ)
     [Invertible (n : α)] : 0 < ⅟(n : α) :=
-  invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) n
+  invOf_pos.2 <| (Nat.cast_pos (α := α)).2 <| pos_of_invertible_cast (α := α) n

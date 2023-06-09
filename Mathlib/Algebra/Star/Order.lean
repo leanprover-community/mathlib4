@@ -147,6 +147,11 @@ theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x
   simp only [le_iff, zero_add, exists_eq_right']
 #align star_ordered_ring.nonneg_iff StarOrderedRing.nonneg_iff
 
+theorem le_iff' [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x y : R} :
+    x ≤ y ↔ ∃ p, 0 ≤ p ∧ y = x + p := by
+  rw [le_iff]
+  simp_rw [nonneg_iff]
+
 end StarOrderedRing
 
 section NonUnitalSemiring
@@ -191,3 +196,18 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 end NonUnitalSemiring
+
+namespace StarOrderedRing
+
+instance instZeroLEOneClass [Semiring R] [PartialOrder R] [StarOrderedRing R] :
+    ZeroLEOneClass R where
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
+-- TODO: Move me
+instance _root_.AddMonoidWithOne.instCharZero {R : Type u} [AddMonoidWithOne R]
+  [NeZero (1 : R)] [PartialOrder R] [CovariantClass R R (· + ·) (· < ·)] [ZeroLEOneClass R] :
+    CharZero R where
+  cast_injective := StrictMono.injective <| strictMono_nat_of_lt_succ fun n => by
+    simpa only [Nat.cast_add, Nat.cast_one] using lt_add_of_pos_right _ one_pos
+
+end StarOrderedRing
