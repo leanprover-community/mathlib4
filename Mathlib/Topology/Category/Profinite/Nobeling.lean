@@ -1251,7 +1251,7 @@ lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
     specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
     rw [hr (Res C o'), top_le_iff] at h
     rw [h]
-    apply Submodule.mem_top
+    exact Submodule.mem_top
 
 variable {C₁ : Set (I → Bool)}
 
