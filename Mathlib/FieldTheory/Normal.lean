@@ -520,7 +520,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
         ⟨x, (g.liftNormal_commutes L (AdjoinSimple.gen F x)).trans _⟩
     rw [Algebra.id.map_eq_id, RingHom.id_apply]
     -- Porting note: in mathlib3 this next `apply` closed the goal.
-    -- Now it can't find a proof by unification, so we have to do it ourselves?
+    -- Now it can't find a proof by unification, so we have to do it ourselves.
     apply PowerBasis.lift_gen
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
     suffices : minpoly F (AdjoinSimple.gen F x) = minpoly F x
