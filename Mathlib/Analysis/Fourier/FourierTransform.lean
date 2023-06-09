@@ -52,14 +52,12 @@ Fourier transform of an integrable function is continuous (under mild assumption
 
 noncomputable section
 
--- mathport name: expr𝕊
 local notation "𝕊" => circle
 
 open MeasureTheory Filter
 
 open scoped Topology
 
--- mathport name: «expr [ ]»
 -- To avoid messing around with multiplicative vs. additive characters, we make a notation.
 scoped[FourierTransform] notation e "[" x "]" => (e (Multiplicative.ofAdd x) : ℂ)
 
@@ -138,7 +136,7 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
     Integrable f μ ↔ Integrable (fun v : V => e[-L v w] • f v) μ := by
   -- first prove one-way implication
   have aux :
-    ∀ {g : V → E} (hg : Integrable g μ) (x : W), Integrable (fun v : V => e[-L v x] • g v) μ := by
+    ∀ {g : V → E} (_ : Integrable g μ) (x : W), Integrable (fun v : V => e[-L v x] • g v) μ := by
     intro g hg x
     have c : Continuous fun v => e[-L v x] := by
       refine' (continuous_induced_rng.mp he).comp (continuous_ofAdd.comp (Continuous.neg _))
@@ -237,9 +235,9 @@ namespace Real
 
 /-- The standard additive character of `ℝ`, given by `λ x, exp (2 * π * x * I)`. -/
 def fourierChar : Multiplicative ℝ →* 𝕊 where
-  toFun z := expMapCircle (2 * π * z.toAdd)
-  map_one' := by rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
-  map_mul' x y := by rw [toAdd_mul, mul_add, expMapCircle_add]
+  toFun z := expMapCircle (2 * π * Multiplicative.toAdd z)
+  map_one' := by simp only; rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
+  map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
 theorem fourierChar_apply (x : ℝ) : Real.fourierChar[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
@@ -272,13 +270,12 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_def
 
--- mathport name: fourier_integral
 scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
 theorem fourierIntegral_eq_integral_exp_smul {E : Type _} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedSpace ℂ E] (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
-  simp_rw [fourier_integral_def, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
+  simp_rw [fourierIntegral_def, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_eq_integral_exp_smul
 
 end Real
