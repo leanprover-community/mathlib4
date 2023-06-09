@@ -34,7 +34,8 @@ local infixl:65 "++ₜ" => Vector.append
 
 -- mul_left_comm
 theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
-    Bitvec.toNat (xs++ₜb ::ᵥ Vector.nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ Vector.nil) := by
+    Bitvec.toNat (xs++ₜb ::ᵥ Vector.nil) =
+      Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ Vector.nil) := by
   cases' xs with xs P
   simp [bitsToNat_toList]; clear P
   unfold bitsToNat
