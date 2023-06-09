@@ -189,11 +189,11 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
   . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
     rfl
 
+-- todo: compute conjugacy classes of dihedral group by counting commuting pairs
 lemma card_conjClasses_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 :=
 sorry
 
--- todo: compute conjugacy classes of dihedral group by counting commuting pairs
 lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
@@ -223,9 +223,8 @@ def fintypeHelper {n : ℕ} : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-instance : Infinite (DihedralGroup 0) := by
-  rw [←DihedralGroup.fintypeHelper.infinite_iff]
-  infer_instance
+instance : Infinite (DihedralGroup 0) :=
+  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
 
 end DihedralGroup
 
@@ -255,21 +254,13 @@ theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
         rw [dif_neg h0, dif_neg h1, if_neg h2, List.map_cons, List.prod_cons,
             ←commProb_ReciprocalGroup, commProb_ReciprocalGroup_reciprocalFactors (n / 4 + 1),
             commProb_DihedralGroup_Odd (n % 4 * n)]
-        rw [div_mul_div_comm, mul_one, div_eq_div_iff]
-        . norm_cast
-          have key : (n % 4) ^ 2 + 3 = n % 4 * 4 := key1 n h2
-          calc ((n % 4) * n + 3) * n = ((n % 4) * (4 * (n / 4) + n % 4) + 3) * n := by rw [Nat.div_add_mod]
-            _ = ((n % 4) ^ 2 + 3 + (n % 4) * 4 * (n / 4)) * n := by ring
-            _ = (n % 4 * 4 + (n % 4) * 4 * (n / 4)) * n := by rw [key]
-            _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
-        . norm_cast
-          have h4 : n % 4 ≠ 0 := by
-            contrapose! h2
-            rw [←Nat.dvd_iff_mod_eq_zero] at h2
-            exact dvd_trans (by norm_num) h2
-          positivity
-        . norm_cast
-        . apply Nat.prime_two.not_dvd_mul _ h2
-          rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
+        . rw [div_mul_div_comm, mul_one, div_eq_div_iff] <;> norm_cast
+          . calc ((n % 4) * n + 3) * n = (n % 4 * (4 * (n / 4)) + n % 4 * 4) * n :=
+                by rw [←key1 n h2, sq, ←add_assoc, ←mul_add, Nat.div_add_mod]
+              _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
+          . have : n % 4 ≠ 0 := by rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
+            positivity
+        . have : ¬ 2 ∣ n % 4 := by rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
+          exact Nat.prime_two.not_dvd_mul this h2
 
 end CommutingProbability
