@@ -8,11 +8,11 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Integrals
-import Mathbin.MeasureTheory.Group.Integration
-import Mathbin.MeasureTheory.Integral.ExpDecay
-import Mathbin.MeasureTheory.Integral.IntegralEqImproper
-import Mathbin.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Integral.ExpDecay
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Evaluation of specific improper integrals
@@ -32,8 +32,7 @@ open Real Set Filter MeasureTheory intervalIntegral
 
 open scoped Topology
 
-theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) :=
-  by
+theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   refine'
     integrable_on_Iic_of_interval_integral_norm_bounded (exp c) c
       (fun y => interval_integrable_exp.1) tendsto_id
@@ -42,8 +41,7 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) :=
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
 
-theorem integral_exp_Iic (c : ℝ) : (∫ x : ℝ in Iic c, exp x) = exp c :=
-  by
+theorem integral_exp_Iic (c : ℝ) : (∫ x : ℝ in Iic c, exp x) = exp c := by
   refine'
     tendsto_nhds_unique
       (interval_integral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
@@ -65,15 +63,12 @@ theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
 
 /-- If `0 < c`, then `(λ t : ℝ, t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
-    IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) :=
-  by
-  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x :=
-    by
+    IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
+  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
     convert (has_deriv_at_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
-  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) :=
-    by
+  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) := by
     apply tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
   exact
@@ -81,15 +76,12 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
-    (∫ t : ℝ in Ioi c, t ^ a) = -c ^ (a + 1) / (a + 1) :=
-  by
-  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x :=
-    by
+    (∫ t : ℝ in Ioi c, t ^ a) = -c ^ (a + 1) / (a + 1) := by
+  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
     convert (has_deriv_at_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
-  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) :=
-    by
+  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) := by
     apply tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
   convert integral_Ioi_of_has_deriv_at_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht
@@ -97,8 +89,7 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
 #align integral_Ioi_rpow_of_lt integral_Ioi_rpow_of_lt
 
 theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
-    IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) :=
-  by
+    IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
   rw [integrable_on, ← integrable_norm_iff, ← integrable_on]
   refine' (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => _) measurableSet_Ioi
   · dsimp only
@@ -109,15 +100,13 @@ theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
 
 theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
-    (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) :=
-  by
+    (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) := by
   refine'
     tendsto_nhds_unique
       (interval_integral_tendsto_integral_Ioi c (integrableOn_Ioi_cpow_of_lt ha hc) tendsto_id) _
   suffices
     tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) at_top
-      (𝓝 <| -c ^ (a + 1) / (a + 1))
-    by
+      (𝓝 <| -c ^ (a + 1) / (a + 1)) by
     refine' this.congr' ((eventually_gt_at_top 0).mp (eventually_of_forall fun x hx => _))
     rw [integral_cpow, id.def]
     refine' Or.inr ⟨_, not_mem_uIcc_of_lt hc hx⟩
