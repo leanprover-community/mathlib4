@@ -60,11 +60,11 @@ namespace ProbabilityTheory
 `κ : α → measure β`. The measurable space structure on `measure β` is given by
 `measure_theory.measure.measurable_space`. A map `κ : α → measure β` is measurable iff
 `∀ s : set β, measurable_set s → measurable (λ a, κ a s)`. -/
-def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] : AddSubmonoid (α → Measure β)
-    where
+def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] :
+    AddSubmonoid (α → Measure β) where
   carrier := Measurable
   zero_mem' := measurable_zero
-  add_mem' f g hf hg := Measurable.add hf hg
+  add_mem' hf hg := Measurable.add hf hg
 #align probability_theory.kernel ProbabilityTheory.kernel
 
 instance {α β : Type _} [MeasurableSpace α] [MeasurableSpace β] :
@@ -72,8 +72,6 @@ instance {α β : Type _} [MeasurableSpace α] [MeasurableSpace β] :
   ⟨fun κ => κ.val⟩
 
 variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-
-include mα mβ
 
 namespace Kernel
 
