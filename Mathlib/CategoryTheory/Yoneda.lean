@@ -94,7 +94,7 @@ instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
 -- Goal is `X ≅ Y`
 apply yoneda.ext,
 -- Goals are now functions `(Z ⟶ X) → (Z ⟶ Y)`, `(Z ⟶ Y) → (Z ⟶ X)`, and the fact that these
-functions are inverses and natural in `Z`.
+-- functions are inverses and natural in `Z`.
 ```
 -/
 def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y)) (q : ∀ {Z : C}, (Z ⟶ Y) → (Z ⟶ X))
