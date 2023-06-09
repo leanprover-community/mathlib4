@@ -61,8 +61,12 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [Π a, Group (i a)] :
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
+instance [Infinite M] : Infinite { p : M × M // p.1 * p.2 = p.2 * p.1 } :=
+  Infinite.of_injective (fun m => ⟨⟨m, m⟩, rfl⟩) (fun _ _ => by simp only [Subtype.mk.injEq, Prod.mk.injEq,
+    and_self, imp_self])
+
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
-  div_eq_zero_iff.2 (Or.inr (sq_eq_zero_iff.2 (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite)))
+  div_eq_zero_iff.2 (Or.inl (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite))
 
 variable [Finite M]
 
@@ -91,10 +95,6 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
 variable (G : Type _) [Group G]
-
-instance [Infinite G] : Infinite { p : G × G // p.1 * p.2 = p.2 * p.1 } :=
-  Infinite.of_injective (fun g => ⟨⟨g, g⟩, rfl⟩) (fun _ _ => by simp only [Subtype.mk.injEq, Prod.mk.injEq,
-    and_self, imp_self])
 
 theorem card_comm_eq_card_conjClasses_mul_card :
     Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
