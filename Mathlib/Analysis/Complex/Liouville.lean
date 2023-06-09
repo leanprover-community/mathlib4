@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.CauchyIntegral
-import Mathbin.Analysis.Calculus.FderivAnalytic
-import Mathbin.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Calculus.FderivAnalytic
+import Mathlib.Analysis.NormedSpace.Completion
 
 /-!
 # Liouville's theorem
@@ -49,8 +49,7 @@ TODO: add a version for `w ∈ metric.ball c R`.
 TODO: add a version for higher derivatives. -/
 theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) :
-    deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z :=
-  by
+    deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
   lift R to ℝ≥0 using hR.le
   refine' (hf.has_fpower_series_on_ball hR).HasFPowerSeriesAt.deriv.trans _
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
@@ -94,8 +93,7 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
     (z w : ℂ) : f z = f w := by
   suffices : ∀ c, deriv f c = 0; exact is_const_of_deriv_eq_zero hf this z w
   clear z w; intro c
-  obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C :=
-    by
+  obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
     rcases bounded_iff_forall_norm_le.1 hb with ⟨C, hC⟩
     exact
       ⟨max C 1, lt_max_iff.2 (Or.inr zero_lt_one), fun z =>
@@ -115,8 +113,7 @@ open Complex
 
 /-- **Liouville's theorem**: a complex differentiable bounded function `f : E → F` is a constant. -/
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : Bounded (range f))
-    (z w : E) : f z = f w :=
-  by
+    (z w : E) : f z = f w := by
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
   suffices g 0 = g 1 by simpa [g]
   apply liouville_theorem_aux
