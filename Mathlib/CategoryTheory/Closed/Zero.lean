@@ -9,7 +9,7 @@ Authors: Bhavik Mehta
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
@@ -53,12 +53,12 @@ open scoped ZeroObject
 
 /-- If a cartesian closed category has a zero object, each homset has exactly one element. -/
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
-  haveI : has_initial C := has_zero_object.has_initial
-  apply unique_homset_of_initial_iso_terminal _ X Y
+  haveI : HasInitial C := HasZeroObject.hasInitial
+  apply uniqueHomsetOfInitialIsoTerminal _ X Y
   refine' ⟨default, (default : ⊤_ C ⟶ 0) ≫ default, _, _⟩ <;> simp
 #align category_theory.unique_homset_of_zero CategoryTheory.uniqueHomsetOfZero
 
-attribute [local instance] unique_homset_of_zero
+attribute [local instance] uniqueHomsetOfZero
 
 /-- A cartesian closed category with a zero object is equivalent to the category with one object and
 one morphism.
@@ -67,11 +67,10 @@ def equivPunit [HasZeroObject C] : C ≌ Discrete PUnit :=
   Equivalence.mk (Functor.star C) (Functor.fromPUnit 0)
     (NatIso.ofComponents
       (fun X =>
-        { Hom := default
+        { hom := default
           inv := default })
-      fun X Y f => by decide)
+      fun f => Subsingleton.elim _ _)
     (Functor.pUnitExt _ _)
 #align category_theory.equiv_punit CategoryTheory.equivPunit
 
 end CategoryTheory
-
