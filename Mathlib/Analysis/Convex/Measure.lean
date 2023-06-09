@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Topology
-import Mathbin.Analysis.NormedSpace.AddTorsorBases
-import Mathbin.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.NormedSpace.AddTorsorBases
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Convex sets are null-measurable
@@ -33,8 +33,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
 namespace Convex
 
 /-- Haar measure of the frontier of a convex set is zero. -/
-theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 :=
-  by
+theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- If `s` is included in a hyperplane, then `frontier s ⊆ closure s` is included in the same
     hyperplane, hence it has measure zero. -/
   cases' ne_or_eq (affineSpan ℝ s) ⊤ with hspan hspan
@@ -49,8 +48,7 @@ theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 :=
     -/
   suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → bounded t → μ (frontier t) = 0
   · set B : ℕ → Set E := fun n => ball x (n + 1)
-    have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 :=
-      by
+    have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
       refine'
         measure_Union_null fun n =>
           H _ (hs.inter (convex_ball _ _)) _ (bounded_ball.mono (inter_subset_right _ _))
@@ -75,8 +73,7 @@ theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 :=
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
     where `d = finrank ℝ E`. -/
   set d : ℕ := FiniteDimensional.finrank ℝ E
-  have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) :=
-    by
+  have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := by
     intro r hr
     refine'
       (measure_mono <| hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq _
