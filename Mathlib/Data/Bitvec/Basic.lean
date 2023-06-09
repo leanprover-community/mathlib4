@@ -280,11 +280,15 @@ def get : Bitvec n → Fin n → Bool :=
 /-- nth element of a bitvec, indexed by a `Nat`.
     Returns `none` if bitvec is not long enough -/
 def get? : Bitvec n → Nat → Option Bool :=
-  Vector.get?
+  fun v i => if h : i < n then some (v.get ⟨i,h⟩) else none
 
 @[simp]
 theorem get_succ : get (b ::ᵥ v) (Fin.succ i) = get v i := by
-  simp[get]
+  rfl
+
+@[simp]
+theorem get_zero : get (b ::ᵥ v) 0 = b := by
+  rfl
 
 instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
   getElem := fun x i _ => get x i
@@ -301,7 +305,9 @@ theorem ext : ∀ {v w : Bitvec n} (_ : ∀ m : Fin n, Bitvec.get v m = Bitvec.g
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
     Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 
-@[ext]
+-- I tried to use the `ext` tactic, but it inconveniently picked this theorem,
+-- instead of the above one, so I removed the `@[ext]` attribute
+-- @[ext]
 theorem ext_nat : ∀ {v w : Bitvec n} (_ : ∀ m : Nat, Bitvec.get? v m = Bitvec.get? w m), v = w := by
   intros v w h
   apply ext
@@ -320,7 +326,7 @@ def Fun (width : Nat) := Fin width → Bool
 def ofFun {width : Nat} : Fun width → Bitvec width :=
   fun f => match width with
     | 0 => ⟨List.nil, rfl⟩
-    | n + 1 => f (n + 1) ::ᵥ @ofFun n (fun i => f i)
+    | n + 1 => f (n + 1) ::ᵥ @ofFun n (fun i => f <| Fin.succ i)
 
 
 @[ext]
@@ -328,49 +334,46 @@ theorem Fun.ext {f f' : Fun n} : (∀ i, f i = f' i) → f = f' :=
   funext
 
 @[simp]
-theorem get_ofFun : get (ofFun f) i = f i := by
-  simp[get]
-  induction i using Fin.induction'
-  case h0 => simp[List.get]
-  case hs i ih =>
-    simp[List.get]
-    sorry
-
-theorem ofFun_get {width : Nat} {f : Fun width} : get (ofFun f) = f := by
+theorem get_ofFun {width : Nat} {f : Fun width} : get (ofFun f) = f := by
   funext i
-  cases width
+  induction width
   case zero =>
     exact Fin.elim0 i
-  case succ n =>
-    simp [get, ofFun]
-    induction i using Fin.induction
-    case h0 =>
-      rfl
-    case hs i ih =>
-      simp [GetElem.getElem]
-      congr
-      simp[Fin.castSucc, Fin.castAdd, Fin.succ, Fin.castLE, Fin.castLT]
+  case succ n ih =>
+    simp only [ofFun]
+    cases i using Fin.induction
+    <;> simp[ih]
 
-/- TODO: fix these
-theorem toFun_ofFun {width : Nat} {bv : Bitvec width} : ofFun (toFun bv) = bv := by
-  cases width
-  case zero => simp
-  case succ n =>
-    simp [toFun, ofFun]
-    sorry
+@[simp]
+theorem ofFun_get {width : Nat} {v : Bitvec width} : ofFun (get v) = v := by
+  ext i
+  induction width
+  case x.zero =>
+    exact Fin.elim0 i
+  case x.succ n ih =>
+    simp [ofFun]
+    cases i using Fin.induction
+    <;> simp[ih]
 
-theorem eq_if_coeffs_eq {width : Nat} {x y : Bitvec width} : x = y ↔ ∀ i : Fin width, x[i] = y[i] := by
+
+instance : Equiv (Bitvec n) (Fun n) where
+  toFun := get
+  invFun := ofFun
+  left_inv := by simp[Function.LeftInverse, ofFun_get]
+  right_inv := by simp[Function.RightInverse, Function.LeftInverse, get_ofFun]
+
+
+theorem eq_if_coeffs_eq {width : Nat} {x y : Bitvec width} : x = y ↔ ∀ i : Fin width, get x i = get y i := by
   constructor
   case mp =>
     intro h i
     rw [h]
   case mpr =>
-   sorry
-    -- use Vector version
- -/
+    exact ext
+
 
 instance {width : Nat} : Coe (Fun width) (Bitvec width) := ⟨@ofFun width⟩
-instance {width : Nat} : Coe (Bitvec width) (Fun width) := ⟨@toFun width⟩
+instance {width : Nat} : Coe (Bitvec width) (Fun width) := ⟨@get width⟩
 
 def ofVector : Vector Bool n → Bitvec n := id
 
