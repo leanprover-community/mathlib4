@@ -85,10 +85,8 @@ end AddCommGroupCat
 @[simps!]
 def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
   CategoryTheory.Equivalence.mk GroupCat.toAddGroupCat AddGroupCat.toGroupCat
-    (NatIso.ofComponents (fun X => MulEquiv.toGroupCatIso (MulEquiv.multiplicativeAdditive X))
-      fun _ => rfl)
-    (NatIso.ofComponents (fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
-      fun _ => rfl)
+    (NatIso.ofComponents fun X => MulEquiv.toGroupCatIso (MulEquiv.multiplicativeAdditive X))
+    (NatIso.ofComponents fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align Group_AddGroup_equivalence groupAddGroupEquivalence
 
 /-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
@@ -96,9 +94,6 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
 @[simps!]
 def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
   CategoryTheory.Equivalence.mk CommGroupCat.toAddCommGroupCat AddCommGroupCat.toCommGroupCat
-    (NatIso.ofComponents (fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))
-      fun _ => rfl)
-    (NatIso.ofComponents
-      (fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X)) fun _ => rfl)
+    (NatIso.ofComponents fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))
+    (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
-

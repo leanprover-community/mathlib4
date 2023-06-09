@@ -130,7 +130,6 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
     (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext ; simp))
   unitIso :=
     (comapEq C (by ext ; simp)).trans (Pi.comapComp _ _ _).symm
-  functor_unitIso_comp X := by aesop_cat
 #align category_theory.graded_object.comap_equiv CategoryTheory.GradedObject.comapEquiv
 
 -- See note [dsimp, simp].

@@ -271,8 +271,8 @@ def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G
     where
   functor := extendCocone
   inverse := Cocones.whiskering F
-  unitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
 #align category_theory.functor.final.cocones_equiv CategoryTheory.Functor.Final.coconesEquiv
 
 variable {G}
@@ -397,7 +397,7 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
     fconstructor
     swap; fconstructor
     left; fconstructor
-    exact StructuredArrow.homMk f (by aesop_cat)
+    exact StructuredArrow.homMk f
   case refl => fconstructor
   case symm x y _ ih =>
     apply zigzag_symmetric
@@ -545,8 +545,8 @@ def conesEquiv : Cone (F ⋙ G) ≌ Cone G
     where
   functor := extendCone
   inverse := Cones.whiskering F
-  unitIso := NatIso.ofComponents (fun c => Cones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun c => Cones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
 #align category_theory.functor.initial.cones_equiv CategoryTheory.Functor.Initial.conesEquiv
 
 variable {G}
