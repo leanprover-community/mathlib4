@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.FderivAnalytic
-import Mathbin.Analysis.Asymptotics.SpecificAsymptotics
-import Mathbin.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Calculus.FderivAnalytic
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Removable singularity theorem
@@ -35,8 +35,7 @@ namespace Complex
 /-- **Removable singularity** theorem, weak version. If `f : ℂ → E` is differentiable in a punctured
 neighborhood of a point and is continuous at this point, then it is analytic at this point. -/
 theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ → E} {c : ℂ}
-    (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z) (hc : ContinuousAt f c) : AnalyticAt ℂ f c :=
-  by
+    (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z) (hc : ContinuousAt f c) : AnalyticAt ℂ f c := by
   rcases(nhdsWithin_hasBasis nhds_basis_closed_ball _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
   replace hc : ContinuousOn f (closed_ball c R)
@@ -78,11 +77,9 @@ equal to `lim (𝓝[≠] c) f` at `c` is complex differentiable on `s`. -/
 theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c)
     (hd : DifferentiableOn ℂ f (s \ {c}))
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
-    DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) s :=
-  by
+    DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) s := by
   set F : ℂ → E := fun z => (z - c) • f z with hF
-  suffices DifferentiableOn ℂ F (s \ {c}) ∧ ContinuousAt F c
-    by
+  suffices DifferentiableOn ℂ F (s \ {c}) ∧ ContinuousAt F c by
     rw [differentiable_on_compl_singleton_and_continuous_at_iff hc, ← differentiable_on_dslope hc,
         dslope_sub_smul] at this  <;>
       try infer_instance
@@ -128,8 +125,7 @@ punctured neighborhood of `c` and $f(z) - f(c)=o((z-c)^{-1})$, then `f` has a li
 theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO {f : ℂ → E} {c : ℂ}
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z)
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
-    Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) :=
-  by
+    Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) := by
   rw [eventually_nhdsWithin_iff] at hd 
   have : DifferentiableOn ℂ f ({z | z ≠ c → DifferentiableAt ℂ f z} \ {c}) := fun z hz =>
     (hz.1 hz.2).DifferentiableWithinAt
@@ -150,8 +146,7 @@ theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_bounded_under {f
 theorem two_pi_i_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : Set ℂ}
     (hU : IsOpen U) {c w₀ : ℂ} {R : ℝ} {f : ℂ → E} (hc : closedBall c R ⊆ U)
     (hf : DifferentiableOn ℂ f U) (hw₀ : w₀ ∈ ball c R) :
-    ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = deriv f w₀ :=
-  by
+    ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • f z) = deriv f w₀ := by
   -- We apply the removable singularity theorem and the Cauchy formula to `dslope f w₀`
   have hR : 0 < R := not_le.mp (ball_eq_empty.not.mp (nonempty_of_mem hw₀).ne_empty)
   have hf' : DifferentiableOn ℂ (dslope f w₀) U :=
@@ -160,12 +155,10 @@ theorem two_pi_i_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
   rw [← dslope_same, ← h0]
   congr 1
   trans ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • (f z - f w₀)
-  · have h1 : ContinuousOn (fun z : ℂ => ((z - w₀) ^ 2)⁻¹) (sphere c R) :=
-      by
+  · have h1 : ContinuousOn (fun z : ℂ => ((z - w₀) ^ 2)⁻¹) (sphere c R) := by
       refine' ((continuous_id'.sub continuous_const).pow 2).ContinuousOn.inv₀ fun w hw h => _
       exact sphere_disjoint_ball.ne_of_mem hw hw₀ (sub_eq_zero.mp (sq_eq_zero_iff.mp h))
-    have h2 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f z) c R :=
-      by
+    have h2 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f z) c R := by
       refine' ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le _
       exact h1.smul (hf.continuous_on.mono (sphere_subset_closed_ball.trans hc))
     have h3 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f w₀) c R :=
