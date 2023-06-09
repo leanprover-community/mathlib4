@@ -201,7 +201,15 @@ by
   intro s hs
   apply LawsonOpen_implies_ScottOpen''' _ hs
 
-
+lemma LawsonOpen_iff_ScottOpen' [Preorder α] (s : Set α) (h : IsUpperSet s) :
+  IsOpen (WithScottTopology.ofScott ⁻¹' s) ↔ IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) := by
+  constructor
+  . apply LawsonOpen_implies_ScottOpen'''
+  . intro hs
+    rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open']
+    constructor
+    . exact h
+    . apply LawsonOpen_implies_ScottHausdorffOpen''' _ hs
 
 variable  (L : TopologicalSpace α) (l : TopologicalSpace α) (S : TopologicalSpace α)
 
