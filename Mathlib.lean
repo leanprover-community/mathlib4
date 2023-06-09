@@ -2439,6 +2439,7 @@ import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Defs
+import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
