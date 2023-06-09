@@ -8,7 +8,7 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Normal
+import Mathlib.FieldTheory.Normal
 
 /-!
 # Splitting fields
@@ -59,8 +59,7 @@ theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
 
 attribute [local instance] fact_irreducible_factor
 
-theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f :=
-  by
+theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
   rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
@@ -162,8 +161,7 @@ instance isScalarTower (n : ℕ) :
         ∀ [IsScalarTower R₁ K K] [IsScalarTower R₂ K K] [IsScalarTower R₁ R₂ K] {f : K[X]},
           IsScalarTower R₁ R₂ (splitting_field_aux n f) :=
   Nat.recOn n
-    (fun R₁ R₂ K _ _ hs₂ hs₁ _ _ h f =>
-      by
+    (fun R₁ R₂ K _ _ hs₂ hs₁ _ _ h f => by
       rcases hs₁ with @⟨@⟨⟨hs₁⟩, _⟩, _⟩
       rcases hs₂ with @⟨@⟨⟨hs₂⟩, _⟩, _⟩
       exact h)
@@ -239,8 +237,7 @@ private theorem nsmul_succ (n : ℕ) :
         (k + 1) • x = splitting_field_aux.add n x (k • x) :=
   Nat.recOn n (fun K fK f n x => succ_nsmul x n) fun n ih K fK f => ih
 
-instance field (n : ℕ) {K : Type u} [Field K] {f : K[X]} : Field (SplittingFieldAux n f) :=
-  by
+instance field (n : ℕ) {K : Type u} [Field K] {f : K[X]} : Field (SplittingFieldAux n f) := by
   refine'
     { zero := splitting_field_aux.zero n
       one := splitting_field_aux.one n
@@ -362,8 +359,7 @@ instance inhabited {n : ℕ} {f : K[X]} : Inhabited (SplittingFieldAux n f) :=
 
 /-- The injection from the base field as a ring homomorphism. -/
 @[simps]
-protected def mkHom (n : ℕ) {K : Type u} [Field K] {f : K[X]} : K →+* SplittingFieldAux n f
-    where
+protected def mkHom (n : ℕ) {K : Type u} [Field K] {f : K[X]} : K →+* SplittingFieldAux n f where
   toFun := SplittingFieldAux.mk n
   map_one' := by
     induction' n with k hk generalizing K
@@ -473,8 +469,7 @@ theorem exists_lift (n : ℕ) :
         (splits_of_splits_of_dvd j hfn0 hj (factor_dvd_of_nat_degree_ne_zero hndf))
         (mt is_unit_iff_degree_eq_zero.2 f.irreducible_factor.1)
     have hmf0 : map (AdjoinRoot.of f.factor) f ≠ 0 := map_ne_zero hfn0
-    have hsf : splits (AdjoinRoot.lift j r hr) f.remove_factor :=
-      by
+    have hsf : splits (AdjoinRoot.lift j r hr) f.remove_factor := by
       rw [← X_sub_C_mul_remove_factor _ hndf] at hmf0 ; refine' (splits_of_splits_mul _ hmf0 _).2
       rwa [X_sub_C_mul_remove_factor _ hndf, ← splits_id_iff_splits, map_map,
         AdjoinRoot.lift_comp_of, splits_id_iff_splits]
@@ -490,8 +485,7 @@ theorem adjoin_roots (n : ℕ) :
               Set (splitting_field_aux n f)) =
           ⊤ :=
   Nat.recOn n (fun K _ f hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
-    fun n ih K _ f hfn =>
-    by
+    fun n ih K _ f hfn => by
     have hndf : f.nat_degree ≠ 0 := by intro h; rw [h] at hfn ; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf ; exact hndf rfl
     have hmf0 : map (algebraMap K (splitting_field_aux n.succ f)) f ≠ 0 := map_ne_zero hfn0
@@ -599,8 +593,7 @@ instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
 /-- Any splitting field is isomorphic to `splitting_field f`. -/
-def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
-  by
+def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
   refine'
     AlgEquiv.ofBijective (lift L f <| splits (splitting_field f) f)
       ⟨RingHom.injective (lift L f <| splits (splitting_field f) f).toRingHom, _⟩
