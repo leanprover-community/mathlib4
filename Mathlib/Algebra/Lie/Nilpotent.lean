@@ -23,8 +23,8 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 ## Main definitions
 
-  * `lie_module.lower_central_series`
-  * `lie_module.is_nilpotent`
+  * `LieModule.lowerCentralSeries`
+  * `LieModule.IsNilpotent`
 
 ## Tags
 
@@ -56,7 +56,7 @@ expression of the fact that the terms of the Lie submodule's lower central serie
 submodules of the enclosing Lie module.
 
 See also `lie_module.lower_central_series_eq_lcs_comap` and
-`lie_module.lower_central_series_map_eq_lcs` below, as well as `lie_submodule.ucs`. -/
+`lie_module.lower_central_series_map_eq_lcs` below, as well as `LieSubmodule.ucs`. -/
 def lcs : LieSubmodule R L M → LieSubmodule R L M :=
   (fun N => ⁅(⊤ : LieIdeal R L), N⁆)^[k]
 #align lie_submodule.lcs LieSubmodule.lcs
@@ -187,7 +187,7 @@ class IsNilpotent : Prop where
   nilpotent : ∃ k, lowerCentralSeries R L M k = ⊥
 #align lie_module.is_nilpotent LieModule.IsNilpotent
 
-/-- See also `lie_module.is_nilpotent_iff_exists_ucs_eq_top`. -/
+/-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
   ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
 #align lie_module.is_nilpotent_iff LieModule.isNilpotent_iff
@@ -236,7 +236,7 @@ theorem iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L M] :
 is nilpotent then `M` is nilpotent.
 
 This is essentially the Lie module equivalent of the fact that a central
-extension of nilpotent Lie algebras is nilpotent. See `lie_algebra.nilpotent_of_nilpotent_quotient`
+extension of nilpotent Lie algebras is nilpotent. See `LieAlgebra.nilpotent_of_nilpotent_quotient`
 below for the corresponding result for Lie algebras. -/
 theorem nilpotentOfNilpotentQuotient {N : LieSubmodule R L M} (h₁ : N ≤ maxTrivSubmodule R L M)
     (h₂ : IsNilpotent R L (M ⧸ N)) : IsNilpotent R L M := by
@@ -354,7 +354,7 @@ variable {N₁ N₂ : LieSubmodule R L M}
 
 /-- The upper (aka ascending) central series.
 
-See also `lie_submodule.lcs`. -/
+See also `LieSubmodule.lcs`. -/
 def ucs (k : ℕ) : LieSubmodule R L M → LieSubmodule R L M :=
   normalizer^[k]
 #align lie_submodule.ucs LieSubmodule.ucs
@@ -648,7 +648,7 @@ theorem LieHom.isNilpotent_range [IsNilpotent R L] (f : L →ₗ⁅R⁆ L') : Is
 #align lie_hom.is_nilpotent_range LieHom.isNilpotent_range
 
 /-- Note that this result is not quite a special case of
-`lie_module.is_nilpotent_range_to_endomorphism_iff` which concerns nilpotency of the
+`LieModule.isNilpotent_range_toEndomorphism_iff` which concerns nilpotency of the
 `(ad R L).range`-module `L`, whereas this result concerns nilpotency of the `(ad R L).range`-module
 `(ad R L).range`. -/
 @[simp]
@@ -679,10 +679,10 @@ variable (k : ℕ)
 
 /-- Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
 lower central series of `M` as an `I`-module. The advantage of using this definition instead of
-`lie_module.lower_central_series R I M` is that its terms are Lie submodules of `M` as an
+`LieModule.lowerCentralSeries R I M` is that its terms are Lie submodules of `M` as an
 `L`-module, rather than just as an `I`-module.
 
-See also `lie_ideal.coe_lcs_eq`. -/
+See also `LieIdeal.coe_lcs_eq`. -/
 def lcs : LieSubmodule R L M :=
   ((fun N => ⁅I, N⁆)^[k]) ⊤
 #align lie_ideal.lcs LieIdeal.lcs
