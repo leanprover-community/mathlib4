@@ -8,8 +8,8 @@ Authors: Vincent Beffara
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.RemovableSingularity
-import Mathbin.Analysis.Calculus.Series
+import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.Calculus.Series
 
 /-!
 # Locally uniform limits of holomorphic functions
@@ -51,12 +51,10 @@ theorem cderiv_eq_deriv (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 
 
 theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M) : ‖cderiv r f z‖ ≤ M / r :=
   by
-  have hM : 0 ≤ M :=
-    by
+  have hM : 0 ≤ M := by
     obtain ⟨w, hw⟩ : (sphere z r).Nonempty := normed_space.sphere_nonempty.mpr hr.le
     exact (norm_nonneg _).trans (hf w hw)
-  have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 :=
-    by
+  have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 := by
     intro w hw
     simp only [mem_sphere_iff_norm, norm_eq_abs] at hw 
     simp only [norm_smul, inv_mul_eq_div, hw, norm_eq_abs, map_inv₀, Complex.abs_pow]
@@ -69,10 +67,8 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
 #align complex.norm_cderiv_le Complex.norm_cderiv_le
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
-    (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z :=
-  by
-  have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) :=
-    by
+    (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
+  have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
     refine' ((continuous_id'.sub continuous_const).pow 2).ContinuousOn.inv₀ fun w hw h => hr.ne _
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw 
   simp_rw [cderiv, ← smul_sub]
@@ -83,10 +79,8 @@ theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
 #align complex.cderiv_sub Complex.cderiv_sub
 
 theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
-    (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r :=
-  by
-  obtain ⟨L, hL1, hL2⟩ : ∃ L < M, ∀ w ∈ sphere z r, ‖f w‖ ≤ L :=
-    by
+    (hf : ContinuousOn f (sphere z r)) : ‖cderiv r f z‖ < M / r := by
+  obtain ⟨L, hL1, hL2⟩ : ∃ L < M, ∀ w ∈ sphere z r, ‖f w‖ ≤ L := by
     have e1 : (sphere z r).Nonempty := normed_space.sphere_nonempty.mpr hr.le
     have e2 : ContinuousOn (fun w => ‖f w‖) (sphere z r) := continuous_norm.comp_continuous_on hf
     obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_forall_ge e1 e2
@@ -102,8 +96,7 @@ theorem norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g 
 
 theorem TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthickening δ K)) (hδ : 0 < δ)
     (hFn : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K)) :
-    TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K :=
-  by
+    TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   by_cases φ = ⊥
   · simp only [h, TendstoUniformlyOn, eventually_bot, imp_true_iff]
   haveI : φ.ne_bot := ne_bot_iff.2 h
@@ -141,8 +134,7 @@ theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUnifo
 
 theorem exists_cthickening_tendstoUniformlyOn (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
-    ∃ δ > 0, cthickening δ K ⊆ U ∧ TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K :=
-  by
+    ∃ δ > 0, cthickening δ K ⊆ U ∧ TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
   obtain ⟨δ, hδ, hKδ⟩ := hK.exists_cthickening_subset_open hU hKU
   exact ⟨δ, hδ, hKδ, tendsto_uniformly_on_deriv_of_cthickening_subset hf hF hδ hK hU hKδ⟩
 #align complex.exists_cthickening_tendsto_uniformly_on Complex.exists_cthickening_tendstoUniformlyOn
@@ -152,8 +144,7 @@ holomorphic (the derivatives converge locally uniformly to that of the limit, wh
 as `tendsto_locally_uniformly_on.deriv`). -/
 theorem TendstoLocallyUniformlyOn.differentiableOn [φ.ne_bot]
     (hf : TendstoLocallyUniformlyOn F f φ U) (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U)
-    (hU : IsOpen U) : DifferentiableOn ℂ f U :=
-  by
+    (hU : IsOpen U) : DifferentiableOn ℂ f U := by
   rintro x hx
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
   obtain ⟨δ, hδ, -, h1⟩ := exists_cthickening_tendsto_uniformly_on hf hF hK hU hKU
@@ -172,8 +163,7 @@ theorem TendstoLocallyUniformlyOn.differentiableOn [φ.ne_bot]
 
 theorem TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F f φ U)
     (hF : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) U) (hU : IsOpen U) :
-    TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U :=
-  by
+    TendstoLocallyUniformlyOn (deriv ∘ F) (deriv f) φ U := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hU]
   by_cases φ = ⊥
   · simp only [h, TendstoUniformlyOn, eventually_bot, imp_true_iff]
@@ -206,8 +196,7 @@ sum. -/
 theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     (hf : ∀ i : ι, DifferentiableOn ℂ (F i) U) (hU : IsOpen U)
     (hF_le : ∀ (i : ι) (w : ℂ), w ∈ U → ‖F i w‖ ≤ u i) (hz : z ∈ U) :
-    HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) :=
-  by
+    HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).TendstoLocallyUniformlyOn
   convert
