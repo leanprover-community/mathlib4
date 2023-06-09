@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Closed.Cartesian
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Cartesian closed functors
@@ -71,8 +71,7 @@ Frobenius morphism is an isomorphism.
 -/
 instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
     [PreservesLimitsOfShape (Discrete WalkingPair) L] [Full F] [Faithful F] :
-    IsIso (frobeniusMorphism F h A) :=
-  by
+    IsIso (frobeniusMorphism F h A) := by
   apply nat_iso.is_iso_of_is_iso_app _
   intro B
   dsimp [frobenius_morphism]
@@ -92,8 +91,7 @@ def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
 
 theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
-      inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) :=
-  by
+      inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert transfer_nat_trans_counit _ _ (prod_comparison_nat_iso F A).inv B
   ext
   simp
@@ -101,8 +99,7 @@ theorem expComparison_ev (A B : C) :
 
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
-      (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) :=
-  by
+      (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_transfer_nat_trans _ _ (prod_comparison_nat_iso F A).inv B
   ext
   dsimp
@@ -118,8 +115,7 @@ theorem uncurry_expComparison (A B : C) :
 /-- The exponential comparison map is natural in `A`. -/
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
-      whiskerRight (pre f) _ ≫ expComparison F A' :=
-  by
+      whiskerRight (pre f) _ ≫ expComparison F A' := by
   ext B
   dsimp
   apply uncurry_injective
@@ -141,8 +137,7 @@ attribute [instance] cartesian_closed_functor.comparison_iso
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     transferNatTransSelf (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
-      expComparison F A :=
-  by
+      expComparison F A := by
   rw [← Equiv.eq_symm_apply]
   ext B : 2
   dsimp [frobenius_morphism, transfer_nat_trans_self, transfer_nat_trans, adjunction.comp]
@@ -162,8 +157,7 @@ If the exponential comparison transformation (at `A`) is an isomorphism, then th
 at `A` is an isomorphism.
 -/
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
-    [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) :=
-  by
+    [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobenius_morphism_mate F h] at i 
   exact @transfer_nat_trans_self_of_iso _ _ _ _ _ i
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
