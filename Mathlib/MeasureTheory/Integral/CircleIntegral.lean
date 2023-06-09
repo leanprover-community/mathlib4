@@ -40,9 +40,9 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 ## Main statements
 
-* `has_fpower_series_on_cauchy_integral`: for any circle integrable function `f`, the power series
+* `hasFPowerSeriesOn_cauchy_integral`: for any circle integrable function `f`, the power series
   `cauchyPowerSeries f c R`, `R > 0`, converges to the Cauchy integral
-  `(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc `metric.ball c R`;
+  `(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc `Metric.ball c R`;
 
 * `circleIntegral.integral_sub_zpow_of_undef`, `circleIntegral.integral_sub_zpow_of_ne`, and
   `circleIntegral.integral_sub_inv_of_mem_ball`: formulas for `∮ z in C(c, R), (z - w) ^ n`,
@@ -637,7 +637,7 @@ theorem sum_cauchyPowerSeries_eq_integral {f : ℂ → E} {c : ℂ} {R : ℝ} {w
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R`, `R > 0`,
 converges to the Cauchy integral `(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z` on the open
 disc `Metric.ball c R`. -/
-theorem has_fpower_series_on_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0}
+theorem hasFPowerSeriesOn_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0}
     (hf : CircleIntegrable f c R) (hR : 0 < R) :
     HasFPowerSeriesOnBall (fun w => (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z)
       (cauchyPowerSeries f c R) c R :=
@@ -647,7 +647,7 @@ theorem has_fpower_series_on_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ�
       refine' hasSum_cauchyPowerSeries_integral hf _
       rw [← norm_eq_abs, ← coe_nnnorm, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe]
       exact mem_emetric_ball_zero_iff.1 hy }
-#align has_fpower_series_on_cauchy_integral has_fpower_series_on_cauchy_integral
+#align has_fpower_series_on_cauchy_integral hasFPowerSeriesOn_cauchy_integral
 
 namespace circleIntegral
 
