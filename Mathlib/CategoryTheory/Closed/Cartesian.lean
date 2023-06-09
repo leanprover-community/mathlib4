@@ -123,7 +123,6 @@ def delabPrefunctorObjExp : Delab := do
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
--- mathport name: «expr ^^ »
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 notation:30 B " ^^ " A:30 => (exp A).obj B
