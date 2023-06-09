@@ -18,15 +18,15 @@ import Mathlib.FieldTheory.Tower
 # Fixed field under a group action.
 
 This is the basis of the Fundamental Theorem of Galois Theory.
-Given a (finite) group `G` that acts on a field `F`, we define `fixed_points G F`,
+Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
 the subfield consisting of elements of `F` fixed_points by every element of `G`.
 
 This subfield is then normal and separable, and in addition (TODO) if `G` acts faithfully on `F`
-then `finrank (fixed_points G F) F = Fintype.card G`.
+then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `fixed_points G F`, the subfield consisting of elements of `F` fixed_points by every element of
+- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every element of
 `G`, where `G` is a group that acts on `F`.
 
 -/
@@ -90,7 +90,7 @@ namespace FixedPoints
 
 variable (M)
 
--- we use `Subfield.copy` so that the underlying set is `fixed_points M F`
+-- we use `Subfield.copy` so that the underlying set is `fixedPoints M F`
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
@@ -176,7 +176,7 @@ section Fintype
 
 variable [Fintype G] (x : F)
 
-/-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `fixed_points G F`. -/
+/-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
   (prodXSubSmul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
     let ⟨n, _, hn⟩ := Polynomial.mem_frange_iff.1 hc
