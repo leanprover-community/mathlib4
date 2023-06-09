@@ -198,7 +198,8 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
 
 variable [CompactSpace X] [T2Space X]
 
-@[simp]
+-- porting note: added nolint, because of time out
+@[simp, nolint simpNF]
 theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by
   /- Since `idealOfSet 𝕜 (setOfIdeal I)` is closed and contains `I`, it contains `I.closure`.
@@ -344,7 +345,8 @@ variable (X)
 
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
 `λ s, ContinuousMap.idealOfSet ↑s`. -/
-@[simps]
+-- porting note: added nolint, because of time out
+@[simps, nolint simpNF]
 def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
     where
   choice I _ := opensOfIdeal I.closure
