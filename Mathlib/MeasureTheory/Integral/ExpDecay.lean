@@ -8,8 +8,8 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Integral.IntervalIntegral
-import Mathbin.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals with exponential decay at ∞
@@ -30,10 +30,8 @@ open scoped Topology
 
 /-- `exp (-b * x)` is integrable on `(a, ∞)`. -/
 theorem exp_neg_integrableOn_Ioi (a : ℝ) {b : ℝ} (h : 0 < b) :
-    IntegrableOn (fun x : ℝ => exp (-b * x)) (Ioi a) :=
-  by
-  have : tendsto (fun x => -exp (-b * x) / b) at_top (𝓝 (-0 / b)) :=
-    by
+    IntegrableOn (fun x : ℝ => exp (-b * x)) (Ioi a) := by
+  have : tendsto (fun x => -exp (-b * x) / b) at_top (𝓝 (-0 / b)) := by
     refine' tendsto.div_const (tendsto.neg _) _
     exact tendsto_exp_at_bot.comp (tendsto_id.neg_const_mul_at_top (Right.neg_neg_iff.2 h))
   refine' integrable_on_Ioi_deriv_of_nonneg' (fun x hx => _) (fun x hx => (exp_pos _).le) this
@@ -50,13 +48,11 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
   cases' h3 with r bdr
   let v := max a r
   -- show integrable on `(a, v]` from continuity
-  have int_left : integrable_on f (Ioc a v) :=
-    by
+  have int_left : integrable_on f (Ioc a v) := by
     rw [← intervalIntegrable_iff_integrable_Ioc_of_le (le_max_left a r)]
     have u : Icc a v ⊆ Ici a := Icc_subset_Ici_self
     exact (h1.mono u).intervalIntegrable_of_Icc (le_max_left a r)
-  suffices integrable_on f (Ioi v)
-    by
+  suffices integrable_on f (Ioi v) by
     have t : integrable_on f (Ioc a v ∪ Ioi v) := integrable_on_union.mpr ⟨int_left, this⟩
     simpa only [Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
   -- now show integrable on `(v, ∞)` from asymptotic
