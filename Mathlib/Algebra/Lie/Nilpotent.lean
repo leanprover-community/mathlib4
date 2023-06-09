@@ -463,9 +463,14 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
   · suffices
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
-      simp only [← LieSubmodule.mem_coeSubmodule] at this 
-      simp [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
-        Submodule.map_span, -Submodule.span_image, this]
+      simp only [← LieSubmodule.mem_coeSubmodule] at this
+      -- Porting note: was
+      -- simp [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
+      --   Submodule.map_span, -Submodule.span_image, this,
+      --   -LieSubmodule.mem_coeSubmodule]
+      simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
+        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_coeSubmodule, this,
+        ← ih, Submodule.mem_map, exists_exists_and_eq_and]
     ext m₂
     constructor
     · rintro ⟨m, ⟨x, n, hn, rfl⟩, rfl⟩
