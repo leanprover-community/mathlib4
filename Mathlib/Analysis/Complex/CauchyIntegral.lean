@@ -33,56 +33,56 @@ differentiability at all but countably many points of the set mentioned below.
   `f : ℂ → E` is continuous on a closed rectangle and *real* differentiable on its interior, then
   its integral over the boundary of this rectangle is equal to the integral of
   `I • f' (x + y * I) 1 - f' (x + y * I) I` over the rectangle, where `f' z w : E` is the derivative
-  of `f` at `z` in the direction `w` and `I = complex.I` is the imaginary unit.
+  of `f` at `z` in the direction `w` and `I = Complex.I` is the imaginary unit.
 
-* `complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
+* `Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
 
-* `complex.circle_integral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable`: If a
+* `Complex.circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable`: If a
   function `f : ℂ → E` is continuous on a closed annulus `{z | r ≤ |z - c| ≤ R}` and is complex
   differentiable on its interior `{z | r < |z - c| < R}`, then the integrals of `(z - c)⁻¹ • f z`
   over the outer boundary and over the inner boundary are equal.
 
-* `complex.circle_integral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto`,
-  `complex.circle_integral_sub_center_inv_smul_of_differentiable_on_off_countable`:
+* `Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto`,
+  `Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable`:
   If a function `f : ℂ → E` is continuous on a punctured closed disc `{z | |z - c| ≤ R ∧ z ≠ c}`, is
   complex differentiable on the corresponding punctured open disc, and tends to `y` as `z → c`,
   `z ≠ c`, then the integral of `(z - c)⁻¹ • f z` over the circle `|z - c| = R` is equal to
   `2πiy`. In particular, if `f` is continuous on the whole closed disc and is complex differentiable
   on the corresponding open disc, then this integral is equal to `2πif(c)`.
 
-* `complex.circle_integral_sub_inv_smul_of_differentiable_on_off_countable`,
-  `complex.two_pi_I_inv_smul_circle_integral_sub_inv_smul_of_differentiable_on_off_countable`
+* `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`,
+  `Complex.two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`
   **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
   complex differentiable on the corresponding open disc, then for any `w` in the corresponding open
   disc the integral of `(z - w)⁻¹ • f z` over the boundary of the disc is equal to `2πif(w)`.
   Two versions of the lemma put the multiplier `2πi` at the different sides of the equality.
 
-* `complex.has_fpower_series_on_ball_of_differentiable_off_countable`: If `f : ℂ → E` is continuous
+* `Complex.hasFPowerSeriesOnBall_of_differentiable_off_countable`: If `f : ℂ → E` is continuous
   on a closed disc of positive radius and is complex differentiable on the corresponding open disc,
   then it is analytic on the corresponding open disc, and the coefficients of the power series are
   given by Cauchy integral formulas.
 
-* `differentiable_on.has_fpower_series_on_ball`: If `f : ℂ → E` is complex differentiable on a
+* `DifferentiableOn.hasFPowerSeriesOnBall`: If `f : ℂ → E` is complex differentiable on a
   closed disc of positive radius, then it is analytic on the corresponding open disc, and the
   coefficients of the power series are given by Cauchy integral formulas.
 
-* `differentiable_on.analytic_at`, `differentiable.analytic_at`: If `f : ℂ → E` is differentiable
+* `DifferentiableOn.analyticAt`, `Differentiable.analyticAt`: If `f : ℂ → E` is differentiable
   on a neighborhood of a point, then it is analytic at this point. In particular, if `f : ℂ → E`
   is differentiable on the whole `ℂ`, then it is analytic at every point `z : ℂ`.
 
 * `differentiable.has_power_series_on_ball`: If `f : ℂ → E` is differentiable everywhere then the
-  `cauchy_power_series f z R` is a formal power series representing `f` at `z` with infinite
+  `cauchyPowerSeries f z R` is a formal power series representing `f` at `z` with infinite
   radius of convergence (this holds for any choice of `0 < R`).
 
 ## Implementation details
 
 The proof of the Cauchy integral formula in this file is based on a very general version of the
-divergence theorem, see `measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable`
-(a version for functions defined on `fin (n + 1) → ℝ`),
-`measure_theory.integral_divergence_prod_Icc_of_has_fderiv_within_at_off_countable_of_le`, and
-`measure_theory.integral2_divergence_prod_of_has_fderiv_within_at_off_countable` (versions for
+divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`
+(a version for functions defined on `Fin (n + 1) → ℝ`),
+`MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`, and
+`MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` (versions for
 functions defined on `ℝ × ℝ`).
 
 Usually, the divergence theorem is formulated for a $C^1$ smooth function. The theorems formulated
@@ -128,18 +128,18 @@ $$
   \oint_{|z-c|=R} \frac{f(z)\,dz}{z-w}=\oint_{|z-c|=R} \frac{f(w)\,dz}{z-w}=
   \left(\oint_{|z-c|=R} \frac{dz}{z-w}\right)f(w).
 $$
-The latter integral was computed in `circle_integral.integral_sub_inv_of_mem_ball` and is equal to
-`2 * π * complex.I`.
+The latter integral was computed in `circleIntegral.integral_sub_inv_of_mem_ball` and is equal to
+`2 * π * Complex.I`.
 
 There is one more step in the actual proof. Since we allow `f` to be non-differentiable on a
 countable set `s`, we cannot immediately claim that `g` is continuous at `w` if `w ∈ s`. So, we use
 the proof outlined in the previous paragraph for `w ∉ s` (see
-`complex.circle_integral_sub_inv_smul_of_differentiable_on_off_countable_aux`), then use continuity
+`Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux`), then use continuity
 of both sides of the formula and density of `sᶜ` to prove the formula for all points of the open
-ball, see `complex.circle_integral_sub_inv_smul_of_differentiable_on_off_countable`.
+ball, see `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`.
 
 Finally, we use the properties of the Cauchy integrals established elsewhere (see
-`has_fpower_series_on_cauchy_integral`) and Cauchy integral formula to prove that the original
+`hasFPowerSeriesOn_cauchy_integral`) and Cauchy integral formula to prove that the original
 function is analytic on the open ball.
 
 ## Tags
@@ -308,7 +308,7 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   obtain ⟨a, rfl⟩ : ∃ a, Real.exp a = r; exact ⟨Real.log r, Real.exp_log h0⟩
   obtain ⟨b, rfl⟩ : ∃ b, Real.exp b = R; exact ⟨Real.log R, Real.exp_log (h0.trans_le hle)⟩
   rw [Real.exp_le_exp] at hle
-  -- Unfold definition of `circle_integral` and cancel some terms.
+  -- Unfold definition of `circleIntegral` and cancel some terms.
   suffices
     (∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp b) θ)) =
       ∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp a) θ) by
@@ -428,7 +428,7 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
 #align complex.circle_integral_eq_zero_of_differentiable_on_off_countable Complex.circleIntegral_eq_zero_of_differentiable_on_off_countable
 
 /-- An auxiliary lemma for
-`complex.circle_integral_sub_inv_smul_of_differentiable_on_off_countable`. This lemma assumes
+`Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`. This lemma assumes
 `w ∉ s` while the main lemma drops this assumption. -/
 theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : ℝ} {c w : ℂ}
     {f : ℂ → E} {s : Set ℂ} (hs : s.Countable) (hw : w ∈ ball c R \ s)
@@ -584,7 +584,7 @@ theorem _root_.DiffContOnCl.hasFPowerSeriesOnBall {R : ℝ≥0} {c : ℂ} {f : �
 /-- If `f : ℂ → E` is complex differentiable on a closed disc of positive radius, then it is
 analytic on the corresponding open disc, and the coefficients of the power series are given by
 Cauchy integral formulas. See also
-`complex.has_fpower_series_on_ball_of_differentiable_off_countable` for a version of this lemma with
+`Complex.hasFPowerSeriesOnBall_of_differentiable_off_countable` for a version of this lemma with
 weaker assumptions. -/
 protected theorem _root_.DifferentiableOn.hasFPowerSeriesOnBall {R : ℝ≥0} {c : ℂ} {f : ℂ → E}
     (hd : DifferentiableOn ℂ f (closedBall c R)) (hR : 0 < R) :
@@ -611,7 +611,7 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
   hf.differentiableOn.analyticAt univ_mem
 #align differentiable.analytic_at Differentiable.analyticAt
 
-/-- When `f : ℂ → E` is differentiable, the `cauchy_power_series f z R` represents `f` as a power
+/-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with  `0 < R`. -/
 protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h : Differentiable ℂ f)
     (z : ℂ) {R : ℝ≥0} (hR : 0 < R) : HasFPowerSeriesOnBall f (cauchyPowerSeries f z R) z ∞ :=
