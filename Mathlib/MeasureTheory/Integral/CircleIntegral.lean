@@ -360,7 +360,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp only [circleIntegral, deriv_circleMap]; simp
+  simp [circleIntegral, const]
 #align circle_integral.integral_radius_zero circleIntegral.integral_radius_zero
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
@@ -444,9 +444,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
 @[simp]
 theorem integral_smul {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂ → E) (c : ℂ) (R : ℝ) : (∮ z in C(c, R), a • f z) = a • ∮ z in C(c, R), f z := by
-  simp only [circleIntegral]
-  conv_lhs => arg 1; intro θ; rw [← smul_comm a]
-  rw [intervalIntegral.integral_smul]
+  simp only [circleIntegral, ← smul_comm a (_ : ℂ) (_ : E), intervalIntegral.integral_smul]
 #align circle_integral.integral_smul circleIntegral.integral_smul
 
 @[simp]
