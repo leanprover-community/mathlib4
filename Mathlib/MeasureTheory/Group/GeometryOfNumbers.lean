@@ -8,9 +8,9 @@ Authors: Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Measure
-import Mathbin.MeasureTheory.Group.FundamentalDomain
-import Mathbin.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.Convex.Measure
+import Mathlib.MeasureTheory.Group.FundamentalDomain
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Geometry of numbers
@@ -53,8 +53,7 @@ and `(y + s)` are not disjoint. -/
 theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L] [AddAction L E]
     [MeasurableSpace L] [MeasurableVAdd L E] [VAddInvariantMeasure L E μ]
     (fund : IsAddFundamentalDomain L F μ) (hS : NullMeasurableSet s μ) (h : μ F < μ s) :
-    ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) :=
-  by
+    ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) := by
   contrapose! h
   exact
     ((fund.measure_eq_tsum _).trans
@@ -72,8 +71,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
     {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
     (h : μ F * 2 ^ finrank ℝ E < μ s) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) :
-    ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s :=
-  by
+    ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rwa [add_haar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
       mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
