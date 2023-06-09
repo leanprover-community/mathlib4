@@ -16,35 +16,35 @@ import Mathlib.MeasureTheory.Constructions.Prod.Basic
 
 A kernel from a measurable space `α` to another measurable space `β` is a measurable map
 `α → measure β`, where the measurable space instance on `measure β` is the one defined in
-`measure_theory.measure.measurable_space`. That is, a kernel `κ` verifies that for all measurable
+`MeasureTheory.Measure.instMeasurableSpace`. That is, a kernel `κ` verifies that for all measurable
 sets `s` of `β`, `a ↦ κ a s` is measurable.
 
 ## Main definitions
 
 Classes of kernels:
-* `probability_theory.kernel α β`: kernels from `α` to `β`, defined as the `add_submonoid` of the
+* `ProbabilityTheory.kernel α β`: kernels from `α` to `β`, defined as the `AddSubmonoid` of the
   measurable functions in `α → measure β`.
-* `probability_theory.is_markov_kernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
+* `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
-* `probability_theory.is_finite_kernel κ`: a kernel from `α` to `β` is said to be finite if there
+* `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
   exists `C : ℝ≥0∞` such that `C < ∞` and for all `a : α`, `κ a univ ≤ C`. This implies in
   particular that all measures in the image of `κ` are finite, but is stronger since it requires an
   uniform bound. This stronger condition is necessary to ensure that the composition of two finite
   kernels is finite.
-* `probability_theory.is_s_finite_kernel κ`: a kernel is called s-finite if it is a countable
+* `ProbabilityTheory.IsSFiniteKernel κ`: a kernel is called s-finite if it is a countable
   sum of finite kernels.
 
 Particular kernels:
-* `probability_theory.kernel.deterministic (f : α → β) (hf : measurable f)`:
+* `ProbabilityTheory.kernel.deterministic (f : α → β) (hf : Measurable f)`:
   kernel `a ↦ measure.dirac (f a)`.
-* `probability_theory.kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
-* `probability_theory.kernel.restrict κ (hs : measurable_set s)`: kernel for which the image of
+* `ProbabilityTheory.kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
+* `ProbabilityTheory.kernel.restrict κ (hs : MeasurableSet s)`: kernel for which the image of
   `a : α` is `(κ a).restrict s`.
   Integral: `∫⁻ b, f b ∂(kernel.restrict κ hs a) = ∫⁻ b in s, f b ∂(κ a)`
 
 ## Main statements
 
-* `probability_theory.kernel.ext_fun`: if `∫⁻ b, f b ∂(κ a) = ∫⁻ b, f b ∂(η a)` for all measurable
+* `ProbabilityTheory.kernel.ext_fun`: if `∫⁻ b, f b ∂(κ a) = ∫⁻ b, f b ∂(η a)` for all measurable
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
 
 -/
@@ -58,8 +58,8 @@ namespace ProbabilityTheory
 
 /-- A kernel from a measurable space `α` to another measurable space `β` is a measurable function
 `κ : α → measure β`. The measurable space structure on `measure β` is given by
-`measure_theory.measure.measurable_space`. A map `κ : α → measure β` is measurable iff
-`∀ s : set β, measurable_set s → measurable (λ a, κ a s)`. -/
+`MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → measure β` is measurable iff
+`∀ s : Set β, MeasurableSet s → Measurable (λ a, κ a s)`. -/
 noncomputable def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] :
     AddSubmonoid (α → Measure β) where
   carrier := Measurable
@@ -124,7 +124,7 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
 #align probability_theory.is_finite_kernel ProbabilityTheory.IsFiniteKernel
 
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`is_finite_kernel.bound_lt_top κ`) and for all
-`a : α` and `s : set β`, `κ a s ≤ C` (`measure_le_bound κ a s`).
+`a : α` and `s : Set β`, `κ a s ≤ C` (`measure_le_bound κ a s`).
 
 Porting note: TODO: does it make sense to make `IsFiniteKernel.bound` the least possible bound?
 Should it be an `NNReal` number? -/
@@ -545,7 +545,7 @@ section ComapRight
 variable {γ : Type _} {mγ : MeasurableSpace γ} {f : γ → β}
 
 /-- Kernel with value `(κ a).comap f`, for a measurable embedding `f`. That is, for a measurable set
-`t : set β`, `comap_right κ hf a t = κ a (f '' t)`. -/
+`t : Set β`, `comap_right κ hf a t = κ a (f '' t)`. -/
 noncomputable def comapRight (κ : kernel α β) (hf : MeasurableEmbedding f) : kernel α γ where
   val a := (κ a).comap f
   property := by
