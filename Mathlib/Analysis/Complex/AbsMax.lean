@@ -29,20 +29,20 @@ conclusion (either equality of norms or of the values of the function).
 Consider a function `f : E → F` that is complex differentiable on a set `s`, is continuous on its
 closure, and `‖f x‖` has a maximum on `s` at `c`. We prove the following theorems.
 
-- `complex.norm_eq_on_closed_ball_of_is_max_on`: if `s = metric.ball c r`, then `‖f x‖ = ‖f c‖` for
+- `Complex.norm_eqOn_closedBall_of_isMaxOn`: if `s = Metric.ball c r`, then `‖f x‖ = ‖f c‖` for
   any `x` from the corresponding closed ball;
 
-- `complex.norm_eq_norm_of_is_max_on_of_ball_subset`: if `metric.ball c (dist w c) ⊆ s`, then
+- `Complex.norm_eq_norm_of_isMaxOn_of_ball_subset`: if `Metric.ball c (dist w c) ⊆ s`, then
   `‖f w‖ = ‖f c‖`;
 
-- `complex.norm_eq_on_of_is_preconnected_of_is_max_on`: if `U` is an open (pre)connected set, `f` is
+- `Complex.norm_eqOn_of_isPreconnected_of_isMaxOn`: if `U` is an open (pre)connected set, `f` is
   complex differentiable on `U`, and `‖f x‖` has a maximum on `U` at `c ∈ U`, then `‖f x‖ = ‖f c‖`
   for all `x ∈ U`;
 
-- `complex.norm_eq_on_closure_of_is_preconnected_of_is_max_on`: if `s` is open and (pre)connected
+- `Complex.norm_eqOn_closure_of_isPreconnected_of_isMaxOn`: if `s` is open and (pre)connected
   and `c ∈ s`, then `‖f x‖ = ‖f c‖` for all `x ∈ closure s`;
 
-- `complex.norm_eventually_eq_of_is_local_max`: if `f` is complex differentiable in a neighborhood
+- `Complex.norm_eventually_eq_of_isLocalMax`: if `f` is complex differentiable in a neighborhood
   of `c` and `‖f x‖` has a local maximum at `c`, then `‖f x‖` is locally a constant in a
   neighborhood of `c`.
 
@@ -50,10 +50,10 @@ closure, and `‖f x‖` has a maximum on `s` at `c`. We prove the following the
 
 If the codomain `F` is a strictly convex space, then in the lemmas from the previous section we can
 prove `f w = f c` instead of `‖f w‖ = ‖f c‖`, see
-`complex.eq_on_of_is_preconnected_of_is_max_on_norm`,
-`complex.eq_on_closure_of_is_preconnected_of_is_max_on_norm`,
-`complex.eq_of_is_max_on_of_ball_subset`, `complex.eq_on_closed_ball_of_is_max_on_norm`, and
-`complex.eventually_eq_of_is_local_max_norm`.
+`Complex.eqOn_of_isPreconnected_of_isMaxOn_norm`,
+`Complex.eqOn_closure_of_isPreconnected_of_isMaxOn_norm`,
+`Complex.eq_of_isMaxOn_of_ball_subset`, `Complex.eqOn_closedBall_of_isMaxOn_norm`, and
+`Complex.eventually_eq_of_isLocalMax_norm`.
 
 ### Values on the frontier
 
@@ -62,18 +62,18 @@ its values on the frontier of the set. All these lemmas assume that `E` is a non
 this section `f g : E → F` are functions that are complex differentiable on a bounded set `s` and
 are continuous on its closure. We prove the following theorems.
 
-- `complex.exists_mem_frontier_is_max_on_norm`: If `E` is a finite dimensional space and `s` is a
+- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite dimensional space and `s` is a
   nonempty bounded set, then there exists a point `z ∈ frontier s` such that `λ z, ‖f z‖` takes it
   maximum value on `closure s` at `z`.
 
-- `complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
+- `Complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
   `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a finite
   dimensional space.
 
-- `complex.eq_on_closure_of_eq_on_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
+- `Complex.eqOn_closure_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `closure s`;
 
-- `complex.eq_on_of_eq_on_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
+- `Complex.eqOn_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `s`.
 
 ## Tags
@@ -143,7 +143,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
 #align complex.norm_max_aux₁ Complex.norm_max_aux₁
 
 /-!
-Now we drop the assumption `complete_space F` by embedding `F` into its completion.
+Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.
 -/
 
 theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
@@ -157,8 +157,8 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
 #align complex.norm_max_aux₂ Complex.norm_max_aux₂
 
 /-!
-Then we replace the assumption `is_max_on (norm ∘ f) (closed_ball z r) z` with a seemingly weaker
-assumption `is_max_on (norm ∘ f) (ball z r) z`.
+Then we replace the assumption `IsMaxOn (norm ∘ f) (closed_ball z r) z` with a seemingly weaker
+assumption `IsMaxOn (norm ∘ f) (ball z r) z`.
 -/
 
 theorem norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
@@ -284,7 +284,7 @@ variable [StrictConvexSpace ℝ F]
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
-TODO: change assumption from `is_max_on` to `is_local_max`. -/
+TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
 theorem eqOn_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DifferentiableOn ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const E (f c)) U := fun x hx =>
@@ -321,7 +321,7 @@ theorem eq_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E} (hd : D
 /-- **Maximum modulus principle** on a closed ball. Suppose that a function `f : E → F` from a
 normed complex space to a strictly convex normed complex space has the following properties:
 
-- it is continuous on a closed ball `metric.closed_ball z r`,
+- it is continuous on a closed ball `Metric.closedBall z r`,
 - it is complex differentiable on the corresponding open ball;
 - the norm `‖f w‖` takes its maximum value on the open ball at its center.
 
@@ -395,7 +395,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
   cases' hz with hz hz; · exact hC z hz
   /- In case of a finite dimensional domain, one can just apply
-    `complex.exists_mem_frontier_is_max_on_norm`. To make it work in any Banach space, we restrict
+    `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/
   rcases exists_ne z with ⟨w, hne⟩
   set e := (lineMap z w : ℂ → E)
