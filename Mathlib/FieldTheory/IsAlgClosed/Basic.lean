@@ -290,8 +290,20 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
--- Porting note: there's a nasty timeout in isDefEq checking for `larger_emb`
-set_option maxHeartbeats 1600000 in
+-- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
+/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
+a root of `x`'s minimal polynomial in `T`. -/
+noncomputable def _root_.Algebra.adjoin.liftSingleton (R : Type _) [Field R] {S T : Type _}
+  [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+  (x : S) (y : T) (h : aeval y (minpoly R x) = 0) :
+  Algebra.adjoin R {x} →ₐ[R] T :=
+AlgHom.comp
+  (AdjoinRoot.liftHom _ y h)
+  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
+
+-- porting note: this was much faster in lean 3
+set_option maxHeartbeats 800000
+set_option synthInstance.maxHeartbeats 400000
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
@@ -303,21 +315,23 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
     (minpoly.degree_pos
       (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ _ hL x))).ne'
   let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
-  let φ := AdjoinRoot.liftHom (minpoly N x) y hy
-  let ψ := (@AlgEquiv.toAlgHom _ _ _ _ _ _ (_) (_)
-      (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly N x))
-  let larger_emb := @AlgHom.comp _ _ _ _ _ _ _ _ (_) (_) (_) φ ψ
+  letI : Algebra N O := Subalgebra.algebra O
+  -- Porting note: there are some tricky unfolds going on here:
+  -- (O.restrictScalars K : Type*) is identified with (O : Type*) in a few places
+  let larger_emb : O →ₐ[N] M := Algebra.adjoin.liftSingleton N x y hy
+  let larger_emb' : O →ₐ[K] M := AlgHom.restrictScalars K (S := N) (A := O) (B := M) larger_emb
   have hNO : N ≤ O.restrictScalars K := by
     intro z hz
     show algebraMap N L ⟨z, hz⟩ ∈ O
     exact O.algebraMap_mem _
   let O' : SubfieldWithHom K L M :=
-    ⟨O.restrictScalars K, larger_emb.restrictScalars K⟩
+    ⟨O.restrictScalars K, larger_emb'⟩
   have hO' : maximalSubfieldWithHom K L M ≤ O' := by
     refine' ⟨hNO, _⟩
     intro z
     show O'.emb (@algebraMap N O _ _ (Subalgebra.algebra O) z) = algebraMap N M z
     simp only [restrictScalars_apply, AlgHom.commutes]
+  refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
   exact Algebra.subset_adjoin (Set.mem_singleton x)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
