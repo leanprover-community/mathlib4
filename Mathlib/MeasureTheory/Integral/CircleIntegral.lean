@@ -491,11 +491,10 @@ theorem integral_eq_zero_of_hasDerivWithinAt {f f' : ℂ → E} {c : ℂ} {R : �
 center `c` and radius `(|R|)`, so the integral `∮ z in C(c, R), (z - w) ^ n` is equal to zero. -/
 theorem integral_sub_zpow_of_undef {n : ℤ} {c w : ℂ} {R : ℝ} (hn : n < 0)
     (hw : w ∈ sphere c (|R|)) : (∮ z in C(c, R), (z - w) ^ n) = 0 := by
-  rcases eq_or_ne R 0 with (rfl | h0); · apply integral_radius_zero
-  apply integral_undef
-  simp [circleIntegrable_sub_zpow_iff, *]
-  push_neg
-  exact ⟨hn, by rwa [mem_sphere_iff_norm, norm_eq_abs] at hw⟩
+  rcases eq_or_ne R 0 with (rfl | h0)
+  · apply integral_radius_zero
+  · apply integral_undef
+    simpa [circleIntegrable_sub_zpow_iff, *, not_or]
 #align circle_integral.integral_sub_zpow_of_undef circleIntegral.integral_sub_zpow_of_undef
 
 /-- If `n ≠ -1` is an integer number, then the integral of `(z - w) ^ n` over the circle equals
