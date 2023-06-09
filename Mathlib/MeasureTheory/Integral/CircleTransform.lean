@@ -8,8 +8,8 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Complex.Basic
-import Mathbin.MeasureTheory.Integral.CircleIntegral
+import Mathlib.Data.Complex.Basic
+import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Circle integral transform
@@ -49,8 +49,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
 #align complex.circle_transform_deriv Complex.circleTransformDeriv
 
 theorem circleTransformDeriv_periodic (f : ℂ → E) :
-    Periodic (circleTransformDeriv R z w f) (2 * π) :=
-  by
+    Periodic (circleTransformDeriv R z w f) (2 * π) := by
   have := periodic_circleMap
   simp_rw [periodic] at *
   intro x
@@ -72,16 +71,14 @@ theorem circleTransformDeriv_eq (f : ℂ → E) :
 
 theorem integral_circleTransform [CompleteSpace E] (f : ℂ → E) :
     (∫ θ : ℝ in 0 ..2 * π, circleTransform R z w f θ) =
-      (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z :=
-  by
+      (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circle_transform, circleIntegral, deriv_circleMap, circleMap]
   simp
 #align complex.integral_circle_transform Complex.integral_circleTransform
 
 theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f <| sphere z R) (hw : w ∈ ball z R) :
-    Continuous (circleTransform R z w f) :=
-  by
+    Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
   simp_rw [deriv_circleMap]
   apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
@@ -92,8 +89,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
 
 theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w : ℂ}
     (hf : ContinuousOn f (sphere z R)) (hw : w ∈ ball z R) :
-    Continuous (circleTransformDeriv R z w f) :=
-  by
+    Continuous (circleTransformDeriv R z w f) := by
   rw [circle_transform_deriv_eq]
   exact (continuous_circleMap_inv hw).smul (continuous_circle_transform hR hf hw)
 #align complex.continuous_circle_transform_deriv Complex.continuous_circleTransformDeriv
@@ -162,15 +158,13 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
     (hf : ContinuousOn f (sphere z R)) :
     ∃ B ε : ℝ,
       0 < ε ∧
-        ball x ε ⊆ ball z R ∧ ∀ (t : ℝ), ∀ y ∈ ball x ε, ‖circleTransformDeriv R z y f t‖ ≤ B :=
-  by
+        ball x ε ⊆ ball z R ∧ ∀ (t : ℝ), ∀ y ∈ ball x ε, ‖circleTransformDeriv R z y f t‖ ≤ B := by
   obtain ⟨r, hr, hrx⟩ := exists_lt_mem_ball_of_mem_ball hx
   obtain ⟨ε', hε', H⟩ := exists_ball_subset_ball hrx
   obtain ⟨⟨⟨a, b⟩, ⟨ha, hb⟩⟩, hab⟩ :=
     abs_circle_transform_bounding_function_le hr (pos_of_mem_ball hrx).le z
   let V : ℝ → ℂ → ℂ := fun θ w => circle_transform_deriv R z w (fun x => 1) θ
-  have funccomp : ContinuousOn (fun r => abs (f r)) (sphere z R) :=
-    by
+  have funccomp : ContinuousOn (fun r => abs (f r)) (sphere z R) := by
     have cabs : ContinuousOn abs ⊤ := by apply continuous_abs.continuous_on
     apply cabs.comp hf; rw [maps_to]; tauto
   have sbou :=
