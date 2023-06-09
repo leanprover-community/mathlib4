@@ -176,8 +176,7 @@ isomorphic to the identity functor. -/
 @[simps!]
 def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
     (𝟭 V).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun K => Hom.isoOfComponents (fun i => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
 #align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
 
 variable {V}

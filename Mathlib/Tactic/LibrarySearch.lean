@@ -210,7 +210,8 @@ unless the goal was completely solved.)
 this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (required : List Expr)
-    (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+    (solveByElimDepth := 6) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (Option (Array (MetavarContext × List MVarId))) := do
   let librarySearchEmoji := fun
     | .error _ => bombEmoji
     | .ok (some _) => crossEmoji
@@ -223,7 +224,7 @@ def librarySearch (goal : MVarId) (required : List Expr)
   (do
     let results ← librarySearchCore goal required solveByElimDepth
       -- Don't use too many heartbeats.
-      |>.whileAtLeastHeartbeatsPercent 10
+      |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
       -- Stop if we find something that closes the goal
       |>.takeUpToFirst (·.2.isEmpty)
       |>.asArray

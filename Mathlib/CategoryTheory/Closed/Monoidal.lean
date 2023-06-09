@@ -64,8 +64,8 @@ def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) wh
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
-def unitClosed : Closed (𝟙_ C)
-    where isAdj :=
+def unitClosed : Closed (𝟙_ C) where
+  isAdj :=
     { right := 𝟭 C
       adj :=
         Adjunction.mkOfHomEquiv

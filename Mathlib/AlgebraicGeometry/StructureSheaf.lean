@@ -255,7 +255,7 @@ with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
-  NatIso.ofComponents (fun U => Iso.refl _) (fun i => by aesop)
+  NatIso.ofComponents fun U => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_comp_forget AlgebraicGeometry.structurePresheafCompForget
 
