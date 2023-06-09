@@ -15,9 +15,9 @@ import Mathlib.MeasureTheory.Constructions.Prod.Basic
 # Markov Kernels
 
 A kernel from a measurable space `α` to another measurable space `β` is a measurable map
-`α → measure β`, where the measurable space instance on `measure β` is the one defined in
-`MeasureTheory.Measure.instMeasurableSpace`. That is, a kernel `κ` verifies that for all measurable
-sets `s` of `β`, `a ↦ κ a s` is measurable.
+`α → MeasureTheory.Measure β`, where the measurable space instance on `measure β` is the one defined
+in `MeasureTheory.Measure.instMeasurableSpace`. That is, a kernel `κ` verifies that for all
+measurable sets `s` of `β`, `a ↦ κ a s` is measurable.
 
 ## Main definitions
 
@@ -57,9 +57,9 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 namespace ProbabilityTheory
 
 /-- A kernel from a measurable space `α` to another measurable space `β` is a measurable function
-`κ : α → measure β`. The measurable space structure on `measure β` is given by
-`MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → measure β` is measurable iff
-`∀ s : Set β, MeasurableSet s → Measurable (λ a, κ a s)`. -/
+`κ : α → measure β`. The measurable space structure on `MeasureTheory.Measure β` is given by
+`MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → MeasureTheory.Measure β` is measurable
+iff `∀ s : Set β, MeasurableSet s → Measurable (λ a, κ a s)`. -/
 noncomputable def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] :
     AddSubmonoid (α → Measure β) where
   carrier := Measurable
@@ -123,11 +123,11 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
   exists_univ_le : ∃ C : ℝ≥0∞, C < ∞ ∧ ∀ a, κ a Set.univ ≤ C
 #align probability_theory.is_finite_kernel ProbabilityTheory.IsFiniteKernel
 
-/-- A constant `C : ℝ≥0∞` such that `C < ∞` (`is_finite_kernel.bound_lt_top κ`) and for all
-`a : α` and `s : Set β`, `κ a s ≤ C` (`measure_le_bound κ a s`).
+/-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
+for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.kernel.measure_le_bound κ a s`).
 
-Porting note: TODO: does it make sense to make `IsFiniteKernel.bound` the least possible bound?
-Should it be an `NNReal` number? -/
+Porting note: TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
+possible bound? Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
   h.exists_univ_le.choose
 #align probability_theory.is_finite_kernel.bound ProbabilityTheory.IsFiniteKernel.bound
@@ -278,8 +278,8 @@ instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ
       rw [this, tsum_ite_eq]⟩⟩
 #align probability_theory.kernel.is_finite_kernel.is_s_finite_kernel ProbabilityTheory.kernel.IsFiniteKernel.isSFiniteKernel
 
-/-- A sequence of finite kernels such that `κ = kernel.sum (seq κ)`. See `is_finite_kernel_seq`
-and `kernel_sum_seq`. -/
+/-- A sequence of finite kernels such that `κ = ProbabilityTheory.kernel.sum (seq κ)`. See
+`ProbabilityTheory.kernel.isFiniteKernel_seq` and `ProbabilityTheory.kernel.kernel_sum_seq`. -/
 noncomputable def seq (κ : kernel α β) [h : IsSFiniteKernel κ] : ℕ → kernel α β :=
   h.tsum_finite.choose
 #align probability_theory.kernel.seq ProbabilityTheory.kernel.seq
@@ -469,8 +469,8 @@ theorem set_integral_const {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ 
 
 end Const
 
-/-- In a countable space with measurable singletons, every function `α → measure β` defines a
-kernel. -/
+/-- In a countable space with measurable singletons, every function `α → MeasureTheory.Measure β`
+defines a kernel. -/
 def ofFunOfCountable [MeasurableSpace α] {_ : MeasurableSpace β} [Countable α]
     [MeasurableSingletonClass α] (f : α → Measure β) : kernel α β where
   val := f
@@ -545,7 +545,7 @@ section ComapRight
 variable {γ : Type _} {mγ : MeasurableSpace γ} {f : γ → β}
 
 /-- Kernel with value `(κ a).comap f`, for a measurable embedding `f`. That is, for a measurable set
-`t : Set β`, `comap_right κ hf a t = κ a (f '' t)`. -/
+`t : Set β`, `ProbabilityTheory.kernel.comapRight κ hf a t = κ a (f '' t)`. -/
 noncomputable def comapRight (κ : kernel α β) (hf : MeasurableEmbedding f) : kernel α γ where
   val a := (κ a).comap f
   property := by
@@ -607,8 +607,8 @@ section Piecewise
 
 variable {η : kernel α β} {s : Set α} {hs : MeasurableSet s} [DecidablePred (· ∈ s)]
 
-/-- `piecewise hs κ η` is the kernel equal to `κ` on the measurable set `s` and to `η` on its
-complement. -/
+/-- `ProbabilityTheory.kernel.piecewise hs κ η` is the kernel equal to `κ` on the measurable set `s`
+and to `η` on its complement. -/
 def piecewise (hs : MeasurableSet s) (κ η : kernel α β) : kernel α β where
   val a := if a ∈ s then κ a else η a
   property := Measurable.piecewise hs (kernel.measurable _) (kernel.measurable _)
