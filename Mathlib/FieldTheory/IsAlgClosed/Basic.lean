@@ -97,8 +97,8 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
   exact ⟨z, sq z⟩
 #align is_alg_closed.exists_eq_mul_self IsAlgClosed.exists_eq_mul_self
 
-theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) :=
-  by
+theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
+  p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
   cases' le_or_lt (degree p) 0 with hd hd
   · exact eq_C_of_degree_le_zero hd
@@ -245,7 +245,7 @@ instance : Preorder (SubfieldWithHom K L M) where
 
 open Lattice
 
-set_option pp.notation false in
+-- set_option pp.notation false in
 theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
     (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
   by_cases hcn : c.Nonempty
