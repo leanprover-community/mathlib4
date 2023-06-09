@@ -854,9 +854,18 @@ noncomputable def kernelSequenceE : ShortComplex (Arrow₃ ι ⥤ C) :=
     (whiskerLeft Arrow₃.δ₀ (X.opcyclesToHδ₁ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₂ (X.δ n₁ n₂ hn₂))
     (by simp [opcyclesι])
 
+instance : Mono (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).f := by
+  dsimp [kernelSequenceE]
+  infer_instance
 
-
-
+lemma kernelSequenceE_exact : (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).Exact := by
+  let S := ShortComplex.mk _ _ (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homologyι_comp_fromOpcycles
+  refine' ShortComplex.exact_of_iso (Iso.symm _) (S.exact_of_f_is_kernel
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homologyIsKernel)
+  refine' ShortComplex.isoMk (Iso.refl _)
+    (X.δ₀PullbackOpcyclesIsoShortComplexEOpcycles n₀ n₁ n₂ hn₁ hn₂) (Iso.refl _) _ _
+  . simp [opcyclesι]
+  . simp
 
 @[simps!]
 noncomputable def δ₀PullbackCokernelSequenceE : ShortComplex (Arrow₄ ι ⥤ C) :=
@@ -929,6 +938,38 @@ lemma cyclesπ_dToSrcΦ_app (D : Arrow₄ ι) :
   rw [← cancel_mono ((X.Φ n₁ n₂ hn₂).hom.app (Arrow₄.δ₄.obj D)), assoc, dToSrcΦ_Φ_app,
     ← cancel_mono ((X.fromTgtΦ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D)), assoc, assoc,
     toSrcΦ_Φ_hom_fromTgtΦ_app, dToTgtΦ_fac_app]
+
+@[simps!]
+noncomputable def δ₄PullbackKernelSequenceE : ShortComplex (Arrow₄ ι ⥤ C) :=
+  (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).map (((whiskeringLeft _ _ C).obj (Arrow₄.δ₄)))
+
+instance : Mono (X.δ₄PullbackKernelSequenceE n₀ n₁ n₂ hn₁ hn₂).f := by
+  dsimp [δ₄PullbackKernelSequenceE]
+  infer_instance
+
+lemma δ₄PullbackKernelSequenceE_exact :
+    (X.δ₄PullbackKernelSequenceE n₀ n₁ n₂ hn₁ hn₂).Exact :=
+  (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).map (((whiskeringLeft _ _ C).obj (Arrow₄.δ₄)))
+
+@[simps!]
+noncomputable def δ₀PullbackCokernelSequenceSrcΦ : ShortComplex (Arrow₄ ι ⥤ C) :=
+  (X.cokernelSequenceSrcΦ n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₄.δ₀)))
+
+lemma δ₀PullbackCokernelSequenceSrcΦ_exact :
+    (X.δ₀PullbackCokernelSequenceSrcΦ n₀ n₁ hn₁).Exact :=
+  (X.cokernelSequenceSrcΦ_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₄.δ₀)))
+
+instance : Epi (X.δ₀PullbackCokernelSequenceSrcΦ n₀ n₁ hn₁).g := by
+  dsimp [δ₀PullbackCokernelSequenceSrcΦ]
+  infer_instance
+
+noncomputable def dFromSrcΦ :
+    Arrow₄.δ₀ ⋙ X.srcΦ n₀ n₁ hn₁ ⟶ Arrow₄.δ₄ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ := by
+  refine' (X.δ₀PullbackCokernelSequenceSrcΦ_exact n₀ n₁ hn₁).desc
+    ((X.δ₄PullbackKernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).lift
+    (whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁)) _) _
+  . sorry
+  . sorry
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
