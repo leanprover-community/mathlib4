@@ -22,7 +22,7 @@ We set up the Fourier transform for complex-valued functions on finite-dimension
 In namespace `vector_fourier`, we define the Fourier integral in the following context:
 * `𝕜` is a commutative ring.
 * `V` and `W` are `𝕜`-modules.
-* `e` is a unitary additive character of `𝕜`, i.e. a homomorphism `(multiplicative 𝕜) →* circle`.
+* `e` is a unitary additive character of `𝕜`, i.e. a homomorphism `(Multiplicative 𝕜) →* circle`.
 * `μ` is a measure on `V`.
 * `L` is a `𝕜`-bilinear form `V × W → 𝕜`.
 * `E` is a complete normed `ℂ`-vector space.
@@ -32,7 +32,7 @@ functions `W → E` that sends `f` to
 
 `λ w, ∫ v in V, e [-L v w] • f v ∂μ`,
 
-where `e [x]` is notational sugar for `(e (multiplicative.of_add x) : ℂ)` (available in locale
+where `e [x]` is notational sugar for `(e (Multiplicative.ofAdd x) : ℂ)` (available in locale
 `fourier_transform`). This includes the cases `W` is the dual of `V` and `L` is the canonical
 pairing, or `W = V` and `L` is a bilinear form (e.g. an inner product).
 
@@ -40,8 +40,8 @@ In namespace `fourier`, we consider the more familiar special case when `V = W =
 multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped with a measure).
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
-`e` is `real.fourier_char`, i.e. the character `λ x, exp ((2 * π * x) * I)`. The Fourier integral
-in this case is defined as `real.fourier_integral`.
+`e` is `Real.fourierChar`, i.e. the character `λ x, exp ((2 * π * x) * I)`. The Fourier integral
+in this case is defined as `Real.fourierIntegral`.
 
 ## Main results
 
