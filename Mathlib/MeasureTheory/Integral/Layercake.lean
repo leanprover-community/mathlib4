@@ -77,7 +77,7 @@ variable {α : Type _} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions.
 
-See `measure_theory.lintegral_comp_eq_lintegral_meas_le_mul` and
+See `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul` and
 `measure_theory.lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
 cake formula. -/
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) [SigmaFinite μ]
