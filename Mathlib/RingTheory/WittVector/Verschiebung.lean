@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Basic
-import Mathbin.RingTheory.WittVector.IsPoly
+import Mathlib.RingTheory.WittVector.Basic
+import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 ## The Verschiebung operator
@@ -70,8 +70,7 @@ theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) : ghostComponent 0 (ver
 
 @[ghost_simps]
 theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
-    ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x :=
-  by
+    ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghost_component_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebung_fun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.Pos _),
     MulZeroClass.mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
@@ -95,8 +94,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 #align witt_vector.verschiebung_poly_zero WittVector.verschiebungPoly_zero
 
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
-    aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n :=
-  by
+    aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
   cases n
   · simp only [verschiebung_poly, verschiebung_fun_coeff_zero, if_pos rfl, AlgHom.map_zero]
   ·
@@ -109,8 +107,7 @@ variable (p)
 /-- `witt_vector.verschiebung` has polynomial structure given by `witt_vector.verschiebung_poly`.
 -/
 @[is_poly]
-theorem verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr :=
-  by
+theorem verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebung_poly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 #align witt_vector.verschiebung_fun_is_poly WittVector.verschiebungFun_isPoly
@@ -125,8 +122,7 @@ include hp
 
 This is a additive monoid hom with underlying function `verschiebung_fun`.
 -/
-noncomputable def verschiebung : 𝕎 R →+ 𝕎 R
-    where
+noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebung_fun_coeff] <;>
@@ -184,8 +180,7 @@ theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
 @[simp]
 theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
-      if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) :=
-  by
+      if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) := by
   apply MvPolynomial.funext
   intro x
   split_ifs with hn
