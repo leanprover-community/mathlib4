@@ -64,8 +64,6 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [Π a, Group (i a)] :
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
   div_eq_zero_iff.2 (Or.inr (sq_eq_zero_iff.2 (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite)))
 
-section Finite
-
 variable [Finite M]
 
 theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
@@ -91,8 +89,6 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
   · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 #align comm_prob_eq_one_iff commProb_eq_one_iff
-
-end Finite
 
 variable (G : Type _) [Group G]
 
