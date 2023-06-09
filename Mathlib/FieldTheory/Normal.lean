@@ -519,31 +519,45 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
         ((g.liftNormal L).comp (IsScalarTower.toAlgHom F K L))
         ⟨x, (g.liftNormal_commutes L (AdjoinSimple.gen F x)).trans _⟩
     rw [Algebra.id.map_eq_id, RingHom.id_apply]
+    -- Porting note: in mathlib3 this next `apply` closed the goal.
+    -- Now it can't find a proof by unification, so we have to do it ourselves?
     apply PowerBasis.lift_gen
+    change aeval y _ = 0
+    -- I'm not certain how the rest of the proof goes. Perhaps something like:
+    -- convert minpoly.aeval F y
+    -- simp only [adjoin.powerBasis_gen]
+    -- rw [minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
+    --   (h.isIntegral (algebraMap K L x)))]
+    -- sorry
+
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   let ϕ := algebraMap K L
-  rw [← IntermediateField.restrictScalars_normal, restrictScalars_eq_supr_adjoin]
-  apply IntermediateField.normal_iSup F L _
+  rw [← IntermediateField.restrictScalars_normal, restrictScalars_eq_iSup_adjoin]
+  -- Porting note: use the `(_)` trick to obtain an instance by unification.
+  apply @IntermediateField.normal_iSup F L _ _ _ _ _ (_)
   intro x
-  apply Normal.of_isSplittingField (minpoly F x)
+  -- Porting note: use the `(_)` trick to obtain an instance by unification.
+  apply @Normal.of_isSplittingField _ _ _ _ _ (minpoly F x) (_)
   exact
-    adjoin_rootSet_is_splitting_field
+    adjoin_rootSet_isSplittingField
       ((minpoly.eq_of_algebraMap_eq ϕ.injective
             ((isIntegral_algebraMap_iff ϕ.injective).mp (h.isIntegral (ϕ x))) rfl).symm ▸
         h.splits _)
 #align normal_closure.normal normalClosure.normal
 
-instance is_finiteDimensional [FiniteDimensional F K] : FiniteDimensional F (normalClosure F K L) :=
-  by
+instance is_finiteDimensional [FiniteDimensional F K] :
+    FiniteDimensional F (normalClosure F K L) := by
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f =>
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
 #align normal_closure.is_finite_dimensional normalClosure.is_finiteDimensional
 
 instance isScalarTower : IsScalarTower F (normalClosure F K L) L :=
-  IsScalarTower.subalgebra' F L L _
+  -- Porting note: the last argument here `(⨆ (f : K →ₐ[F] L), f.fieldRange).toSubalgebra`
+  -- was just written as `_` in mathlib3.
+  IsScalarTower.subalgebra' F L L (⨆ (f : K →ₐ[F] L), f.fieldRange).toSubalgebra
 #align normal_closure.is_scalar_tower normalClosure.isScalarTower
 
 end normalClosure
