@@ -8,10 +8,10 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Fin2
-import Mathbin.Data.Pfun
-import Mathbin.Data.Vector3
-import Mathbin.NumberTheory.PellMatiyasevic
+import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.PFun
+import Mathlib.Data.Vector3
+import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -259,8 +259,7 @@ instance : CommRing (Poly α) := by
     simp [sub_eq_add_neg, mul_add, mul_left_comm, mul_comm, add_comm, add_assoc]
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
-    (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f :=
-  by
+    (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
   cases' f with f pf
   induction' pf with i n f g pf pg ihf ihg f g pf pg ihf ihg
   apply H1; apply H2; apply H3 _ _ ihf ihg; apply H4 _ _ ihf ihg
@@ -344,8 +343,7 @@ theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, S v ↔ p
 
 theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
     (p : Poly (Sum α β)) (v : α → ℕ) :
-    (∃ t, p (v ⊗ t) = 0) ↔ ∃ t, p.map (inl ⊗ inr ∘ f) (v ⊗ t) = 0 :=
-  by
+    (∃ t, p (v ⊗ t) = 0) ↔ ∃ t, p.map (inl ⊗ inr ∘ f) (v ⊗ t) = 0 := by
   dsimp; refine' ⟨fun t => _, fun t => _⟩ <;> cases' t with t ht
   · have : (v ⊗ (0 ::ₒ t) ∘ g) ∘ (inl ⊗ inr ∘ f) = v ⊗ t :=
       funext fun s => by cases' s with a b <;> dsimp [(· ∘ ·)] <;> try rw [inv] <;> rfl
@@ -375,8 +373,7 @@ variable {β}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem DiophList.all₂ (l : List (Set <| α → ℕ)) (d : l.All₂ Dioph) :
-    Dioph {v | l.All₂ fun S : Set (α → ℕ) => v ∈ S} :=
-  by
+    Dioph {v | l.All₂ fun S : Set (α → ℕ) => v ∈ S} := by
   suffices
     ∃ (β : _) (pl : List (Poly (Sum α β))),
       ∀ v,
@@ -399,8 +396,7 @@ theorem DiophList.all₂ (l : List (Set <| α → ℕ)) (d : l.All₂ Dioph) :
               ⟨m ⊗ n, by
                 rw [show (v ⊗ m ⊗ n) ∘ (inl ⊗ inr ∘ inl) = v ⊗ m from
                       funext fun s => by cases' s with a b <;> rfl] <;>
-                  exact hm,
-                by
+                  exact hm, by
                 refine' List.All₂.imp (fun q hq => _) hn; dsimp [(· ∘ ·)]
                 rw [show
                       (fun x : Sum α γ => (v ⊗ m ⊗ n) ((inl ⊗ fun x : γ => inr (inr x)) x)) = v ⊗ n
@@ -426,8 +422,7 @@ theorem inter (d : Dioph S) (d' : Dioph S') : Dioph (S ∩ S') :=
 
 theorem union : ∀ (d : Dioph S) (d' : Dioph S'), Dioph (S ∪ S')
   | ⟨β, p, pe⟩, ⟨γ, q, qe⟩ =>
-    ⟨Sum β γ, p.map (inl ⊗ inr ∘ inl) * q.map (inl ⊗ inr ∘ inr), fun v =>
-      by
+    ⟨Sum β γ, p.map (inl ⊗ inr ∘ inl) * q.map (inl ⊗ inr ∘ inr), fun v => by
       refine'
         Iff.trans (or_congr ((pe v).trans _) ((qe v).trans _))
           (exists_or_distrib.symm.trans
@@ -705,8 +700,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
             ⟨fun o => by
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
-              · rw [x0, tsub_eq_zero_iff_le.mpr yz],
-              by
+              · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
               rintro rfl
               cases' le_total y z with yz zy
               · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
