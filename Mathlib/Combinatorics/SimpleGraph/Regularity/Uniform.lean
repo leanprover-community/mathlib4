@@ -65,8 +65,7 @@ variable {G ε}
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
-  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;>
-    exact mul_le_mul_of_nonneg_left h (Nat.cast_nonneg _)
+  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;> gcongr
 #align simple_graph.is_uniform.mono SimpleGraph.IsUniform.mono
 
 theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
@@ -250,8 +249,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
 variable {P G}
 
 theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
-  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <|
-    mul_le_mul_of_nonneg_left h <| Nat.cast_nonneg _
+  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 #align finpartition.is_uniform.mono Finpartition.IsUniform.mono
 
 theorem isUniformOfEmpty (hP : P.parts = ∅) : P.IsUniform G ε := by

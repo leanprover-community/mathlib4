@@ -596,8 +596,8 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
-This tactic tries to prove (in)equalities about `PosNum`s by transfering them to the `Nat` world and
-then trying to call `simp`.
+This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
+and then trying to call `simp`.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```

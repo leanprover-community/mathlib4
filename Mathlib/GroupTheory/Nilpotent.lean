@@ -187,7 +187,7 @@ def IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop :=
 #align is_ascending_central_series IsAscendingCentralSeries
 
 /-- A sequence of subgroups of `G` is a descending central series if `H 0` is `G` and
-  `⁅H n, G⁆ ⊆ H (n + 1)` for all `n`. Note that we do not requre that `H n = {1}` for some `n`. -/
+  `⁅H n, G⁆ ⊆ H (n + 1)` for all `n`. Note that we do not require that `H n = {1}` for some `n`. -/
 def IsDescendingCentralSeries (H : ℕ → Subgroup G) :=
   H 0 = ⊤ ∧ ∀ (x : G) (n : ℕ), x ∈ H n → ∀ g, x * g * x⁻¹ * g⁻¹ ∈ H (n + 1)
 #align is_descending_central_series IsDescendingCentralSeries

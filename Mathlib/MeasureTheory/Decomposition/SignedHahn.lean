@@ -75,7 +75,7 @@ of negative measure, hence proving our claim.
 In the case that the sequence does not terminate, it is easy to see that
 $i \setminus \bigcup_{k = 0}^\infty A_k$ is the required negative set.
 
-To implement this in Lean, we define several auxilary definitions.
+To implement this in Lean, we define several auxiliary definitions.
 
 - given the sets `i` and the natural number `n`, `ExistsOneDivLT s i n` is the property that
   there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`.
@@ -194,7 +194,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
     exact lt_trans Nat.one_div_pos_of_nat h
   | succ n =>
     rw [restrictNonposSeq_succ]
-    have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_H : k ≤ n), restrictNonposSeq s i k] 0 := by
+    have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
       refine' mt (restrict_le_zero_subset _ _ (by simp [Nat.lt_succ_iff]; rfl)) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
@@ -231,7 +231,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   push_neg  at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
-  have hmeas : MeasurableSet (⋃ (l : ℕ) (_H : l < k), restrictNonposSeq s i l) :=
+  have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   refine' ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset _ _, hk₂, _⟩
   rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
@@ -242,7 +242,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       exact
         MeasurableSet.iUnion fun _ =>
           MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
-    suffices 0 ≤ ∑' l : ℕ, s (⋃ _H : l < k, restrictNonposSeq s i l) by
+    suffices 0 ≤ ∑' l : ℕ, s (⋃ _ : l < k, restrictNonposSeq s i l) by
       rw [sub_neg]
       exact lt_of_lt_of_le hi₂ this
     refine' tsum_nonneg _

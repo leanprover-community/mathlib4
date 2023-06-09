@@ -88,6 +88,9 @@ theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Se
   rfl
 #align submodule.coe_set_mk Submodule.coe_set_mk
 
+@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+  rfl
+
 -- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
 theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :

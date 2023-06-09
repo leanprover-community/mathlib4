@@ -187,7 +187,7 @@ derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a pred
 structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
   (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).uncurry0 = f x
-  fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
+  protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
   cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (p · m) s
 #align has_ftaylor_series_up_to_on HasFTaylorSeriesUpToOn
@@ -1334,6 +1334,11 @@ theorem ContDiffAt.contDiffWithinAt (h : ContDiffAt 𝕜 n f x) : ContDiffWithin
 theorem ContDiffWithinAt.contDiffAt (h : ContDiffWithinAt 𝕜 n f s x) (hx : s ∈ 𝓝 x) :
     ContDiffAt 𝕜 n f x := by rwa [ContDiffAt, ← contDiffWithinAt_inter hx, univ_inter]
 #align cont_diff_within_at.cont_diff_at ContDiffWithinAt.contDiffAt
+
+-- porting note: new lemma
+theorem ContDiffOn.contDiffAt (h : ContDiffOn 𝕜 n f s) (hx : s ∈ 𝓝 x) :
+    ContDiffAt 𝕜 n f x :=
+  (h _ (mem_of_mem_nhds hx)).contDiffAt hx
 
 theorem ContDiffAt.congr_of_eventuallyEq (h : ContDiffAt 𝕜 n f x) (hg : f₁ =ᶠ[𝓝 x] f) :
     ContDiffAt 𝕜 n f₁ x :=

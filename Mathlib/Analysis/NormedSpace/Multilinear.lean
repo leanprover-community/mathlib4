@@ -168,8 +168,9 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
           simp [his]
         · simp [h]
       rw [B, A, ← f.map_sub]
-      apply le_trans (H _) (mul_le_mul_of_nonneg_left _ hC)
-      refine' prod_le_prod (fun j _ => norm_nonneg _) fun j _ => _
+      apply le_trans (H _)
+      gcongr with j
+      · exact fun j _ => norm_nonneg _
       by_cases h : j = i
       · rw [h]
         simp
@@ -221,8 +222,7 @@ theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m�
   calc
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
       f.norm_image_sub_le_of_bound' hC H m₁ m₂
-    _ ≤ C * ∑ i, ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) :=
-      (mul_le_mul_of_nonneg_left (sum_le_sum fun i _ => A i) hC)
+    _ ≤ C * ∑ i, ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by gcongr; apply A
     _ = C * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ := by
       rw [sum_const, card_univ, nsmul_eq_mul]
       ring
@@ -242,15 +242,12 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
     continuousAt_of_locally_lipschitz zero_lt_one
       (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => _
   rw [dist_eq_norm, dist_eq_norm]
-  have : 0 ≤ max ‖m'‖ ‖m‖ := by simp
   have : max ‖m'‖ ‖m‖ ≤ ‖m‖ + 1 := by
     simp [zero_le_one, norm_le_of_mem_closedBall (le_of_lt h')]
   calc
     ‖f m' - f m‖ ≤ D * Fintype.card ι * max ‖m'‖ ‖m‖ ^ (Fintype.card ι - 1) * ‖m' - m‖ :=
       f.norm_image_sub_le_of_bound D_pos H m' m
-    _ ≤ D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1) * ‖m' - m‖ := by
-      apply_rules [mul_le_mul_of_nonneg_right, mul_le_mul_of_nonneg_left, mul_nonneg, norm_nonneg,
-        Nat.cast_nonneg, pow_le_pow_of_le_left]
+    _ ≤ D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1) * ‖m' - m‖ := by gcongr
 #align multilinear_map.continuous_of_bound MultilinearMap.continuous_of_bound
 
 /-- Constructing a continuous multilinear map from a multilinear map satisfying a boundedness
@@ -1658,7 +1655,6 @@ theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G[×0]→L[𝕜] G') :
 
 variable (𝕜 G)
 
-@[simp]
 theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
     (ContinuousMultilinearMap.curry0 𝕜 G x).uncurry0 = x :=
   rfl

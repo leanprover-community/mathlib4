@@ -589,6 +589,11 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
 
+-- Porting note: added during port.
+lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
+  rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
+  simp
+
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     Z.card ≤ p.natDegree :=
   (Multiset.card_le_of_le (Finset.val_le_iff_val_subset.2 h)).trans (Polynomial.card_roots' p)
@@ -914,7 +919,7 @@ theorem rootSet_finite (p : T[X]) (S : Type _) [CommRing S] [IsDomain S] [Algebr
 is finite. -/
 theorem bUnion_roots_finite {R S : Type _} [Semiring R] [CommRing S] [IsDomain S] (m : R →+* S)
     (d : ℕ) {U : Set R} (h : U.Finite) :
-    (⋃ (f : R[X]) (_hf : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
+    (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset.toSet : Set S)).Finite :=
   Set.Finite.biUnion
     (by
