@@ -1095,10 +1095,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
-noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [i : CommRing K] [IsDomain K]
+noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
-  { divisionRingOfFiniteDimensional F K with
-    toCommRing := i }
+  { divisionRingOfFiniteDimensional F K, ‹CommRing K› with }
 #align field_of_finite_dimensional fieldOfFiniteDimensional
 
 end
