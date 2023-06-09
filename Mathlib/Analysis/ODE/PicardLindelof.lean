@@ -63,7 +63,7 @@ structure IsPicardLindelof {E : Type _} [NormedAddCommGroup E] (v : ℝ → E �
 
 /-- This structure holds arguments of the Picard-Lipschitz (Cauchy-Lipschitz) theorem. It is part of
 the internal API for convenience, so as not to constantly invoke choice. Unless you want to use one
-of the auxiliary lemmas, use `exists_forall_deriv_within_Icc_eq_of_lipschitz_of_continuous` instead
+of the auxiliary lemmas, use `IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq` instead
 of using this structure.
 
 The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypotheses of the
@@ -107,12 +107,11 @@ protected theorem lipschitzOnWith {t} (ht : t ∈ Icc v.tMin v.tMax) :
   v.isPicardLindelof.lipschitz t ht
 #align picard_lindelof.lipschitz_on_with PicardLindelof.lipschitzOnWith
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem continuousOn :
     ContinuousOn (uncurry v) (Icc v.tMin v.tMax ×ˢ closedBall v.x₀ v.R) :=
   have : ContinuousOn (uncurry (flip v)) (closedBall v.x₀ v.R ×ˢ Icc v.tMin v.tMax) :=
-    continuousOn_prod_of_continuousOn_lipschitz_on _ v.L v.isPicardLindelof.cont v.isPicardLindelof.lipschitz
+    continuousOn_prod_of_continuousOn_lipschitz_on _ v.L v.isPicardLindelof.cont
+      v.isPicardLindelof.lipschitz
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 #align picard_lindelof.continuous_on PicardLindelof.continuousOn
 
@@ -218,7 +217,7 @@ protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.
     _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 #align picard_lindelof.fun_space.mem_closed_ball PicardLindelof.FunSpace.mem_closedBall
 
-/-- Given a curve $γ \colon [t_{\min}, t_{\max}] → E$, `v_comp` is the function
+/-- Given a curve $γ \colon [t_{\min}, t_{\max}] → E$, `PicardLindelof.vComp` is the function
 $F(t)=v(π t, γ(π t))$, where `π` is the projection $ℝ → [t_{\min}, t_{\max}]$. The integral of this
 function is the image of `γ` under the contracting map we are going to define below. -/
 def vComp (t : ℝ) : E :=
@@ -409,7 +408,7 @@ theorem exists_isPicardLindelof_const_of_contDiffOn_nhds {s : Set E} (hv : ContD
   -- radius of closed ball in which v is bounded
   obtain ⟨r, hr : 0 < r, hball⟩ := Metric.mem_nhds_iff.mp (inter_sets (𝓝 x₀) hs hs')
   have hr' := (half_pos hr).le
-  -- uses proper_space E for `isCompact_closedBall`
+  -- uses [ProperSpace E] for `isCompact_closedBall`
   obtain ⟨C, hC⟩ := (isCompact_closedBall x₀ (r / 2)).bddAbove_image <| hv.continuousOn.norm.mono
     (subset_inter_iff.mp ((closedBall_subset_ball (half_lt_self hr)).trans hball)).left
   have hC' : 0 ≤ C := by
