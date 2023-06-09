@@ -60,8 +60,8 @@ theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
 #align witt_vector.verschiebung_fun_coeff_succ WittVector.verschiebungFun_coeff_succ
 
 @[ghost_simps]
-theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) : ghostComponent 0 (verschiebungFun x) = 0 :=
-  by
+theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
+  ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 #align witt_vector.ghost_component_zero_verschiebung_fun WittVector.ghostComponent_zero_verschiebungFun
@@ -153,7 +153,8 @@ theorem verschiebung_coeff_zero (x : 𝕎 R) : (verschiebung x).coeff 0 = 0 :=
 #align witt_vector.verschiebung_coeff_zero WittVector.verschiebung_coeff_zero
 
 -- simp_nf complains if this is simp
-theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff (n + 1) = x.coeff n :=
+theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
+    (verschiebung x).coeff (n + 1) = x.coeff n :=
   rfl
 #align witt_vector.verschiebung_coeff_add_one WittVector.verschiebung_coeff_add_one
 
