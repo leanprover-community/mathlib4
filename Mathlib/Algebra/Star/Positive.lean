@@ -45,15 +45,11 @@ variable {R : Type u}
 
 namespace StarOrderedRing
 
-/-- The type of positive elements in a `StarOrderedRing`. We opt for the terminology `Positive`
-as opposed to `Nonnegative` for consistency with the literature.
+/-- The positive elements of a star ordered ring, as an additive submonoid.
 
-Note that the type class assumptions for `Positive` are actually significantly weaker (just
-`OrderedAddCommMonoid`) so that it can be used in as many contexts as possible, but the primary
-intended use case is when `R` is a `StarOrderedRing`.
-
-In addition, note that we make a new type instead of simply using the subtype itself so that we can
-add instances which would otherwise conflict if `R` had enough structure. -/
+Note that the type class assumptions for `StarOrderedRing.positive` are actually significantly
+weaker (just `OrderedAddCommMonoid`) so that it can be used in as many contexts as possible, but
+the primary intended use case is when `R` is a `StarOrderedRing`.  -/
 def positive (R : Type u) [OrderedAddCommMonoid R] : AddSubmonoid R where
   carrier := {x : R | 0 ≤ x}
   add_mem' := add_nonneg
@@ -112,9 +108,9 @@ section NonUnitalRing
 
 variable [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R]
 
--- annoyingly, this requires an `AddCommGroup` because `selfAdjoint` does
+/-- The identity map from `positive R` to `selfAdjoint R`, as an `AddMonoidHom`. -/
 protected def selfAdjoint : positive R →+ selfAdjoint R where
-  toFun x := ⟨x, positive.isSelfAdjoint x⟩
+  toFun := Subtype.map id (fun _ => isSelfAdjoint_of_nonneg)
   map_zero' := rfl
   map_add' _ _ := rfl
 
