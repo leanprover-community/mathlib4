@@ -124,8 +124,8 @@ lemma exact_iff_i_p_zero [S.HasHomology] (h₁ : S.LeftHomologyData)
     S.Exact ↔ h₁.i ≫ h₂.p = 0 :=
   (HomologyData.ofIsIsoLeftRightHomologyComparison' h₁ h₂).exact_iff_i_p_zero
 
-lemma exact_iff_iCycles_pCyclesCo_zero [S.HasHomology] :
-    S.Exact ↔ S.iCycles ≫ S.pCyclesCo = 0 :=
+lemma exact_iff_iCycles_pOpcycles_zero [S.HasHomology] :
+    S.Exact ↔ S.iCycles ≫ S.pOpcycles = 0 :=
   S.exact_iff_i_p_zero _ _
 
 lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
@@ -211,8 +211,8 @@ lemma Exact.comp_eq_zero (h : S.Exact) {X Y : C} {a : X ⟶ S.X₂} (ha : a ≫ 
   {b : S.X₂ ⟶ Y} (hb : S.f ≫ b = 0) : a ≫ b = 0 := by
     have := h.hasHomology
     have eq := h
-    rw [exact_iff_iCycles_pCyclesCo_zero] at eq
-    rw [← S.liftCycles_i a ha, ← S.p_descCyclesCo b hb, assoc, reassoc_of% eq,
+    rw [exact_iff_iCycles_pOpcycles_zero] at eq
+    rw [← S.liftCycles_i a ha, ← S.p_descOpcycles b hb, assoc, reassoc_of% eq,
       zero_comp, comp_zero]
 
 lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
@@ -231,9 +231,9 @@ lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
   . intro h
     have : S.HasHomology := HasHomology.mk' h.condition.choose
     simp only [exact_iff_isZero_homology] at h
-    have := S.isIso_pCyclesCo hf
+    have := S.isIso_pOpcycles hf
     have := mono_of_isZero_kernel' _ S.homologyIsKernel h
-    rw [← S.p_fromCyclesCo]
+    rw [← S.p_fromOpcycles]
     apply mono_comp
   . intro
     rw [(HomologyData.ofIsLimitKernelFork S hf _
@@ -274,7 +274,7 @@ lemma Exact.mono_g' (hS : S.Exact) (h : RightHomologyData S) : Mono h.g' :=
 lemma Exact.epi_toCycles (hS : S.Exact) [S.HasLeftHomology] : Epi S.toCycles :=
   hS.epi_f' _
 
-lemma Exact.mono_fromCyclesCo (hS : S.Exact) [S.HasRightHomology] : Mono S.fromCyclesCo :=
+lemma Exact.mono_fromOpcycles (hS : S.Exact) [S.HasRightHomology] : Mono S.fromOpcycles :=
   hS.mono_g' _
 
 lemma LeftHomologyData.exact_iff_epi_f' [S.HasHomology] (h : LeftHomologyData S) :
@@ -334,13 +334,13 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wι := zero_comp
   hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
-    have := hS.mono_fromCyclesCo
+    have := hS.mono_fromOpcycles
     have fac : hcc.desc (CokernelCofork.ofπ _ S.zero) =
-      (IsColimit.coconePointUniqueUpToIso hcc S.cyclesCoIsCokernel ).hom ≫ S.fromCyclesCo := by
+      (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel ).hom ≫ S.fromOpcycles := by
       apply Cofork.IsColimit.hom_ext hcc
-      simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, ← p_fromCyclesCo, ← assoc]
+      simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, ← p_fromOpcycles, ← assoc]
       congr 1
-      exact (IsColimit.comp_coconePointUniqueUpToIso_hom hcc S.cyclesCoIsCokernel
+      exact (IsColimit.comp_coconePointUniqueUpToIso_hom hcc S.opcyclesIsCokernel
         WalkingParallelPair.one).symm
     dsimp
     rw [id_comp, fac]
@@ -351,7 +351,7 @@ variable (S)
 lemma exact_iff_epi_toCycles [S.HasHomology] : S.Exact ↔ Epi S.toCycles :=
   S.leftHomologyData.exact_iff_epi_f'
 
-lemma exact_iff_mono_fromCyclesCo [S.HasHomology] : S.Exact ↔ Mono S.fromCyclesCo :=
+lemma exact_iff_mono_fromOpcycles [S.HasHomology] : S.Exact ↔ Mono S.fromOpcycles :=
   S.rightHomologyData.exact_iff_mono_g'
 
 lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
@@ -372,11 +372,11 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
 
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
-  rw [exact_iff_mono_fromCyclesCo]
-  have eq₁ : cokernel.desc S.f S.g S.zero = S.cyclesCoIsoCokernel.inv ≫ S.fromCyclesCo := by
-    simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc, cyclesCoIsoCokernel_inv,
-      cokernel.π_desc_assoc, p_fromCyclesCo]
-  have eq₂ : S.fromCyclesCo = S.cyclesCoIsoCokernel.hom ≫ cokernel.desc S.f S.g S.zero := by
+  rw [exact_iff_mono_fromOpcycles]
+  have eq₁ : cokernel.desc S.f S.g S.zero = S.opcyclesIsoCokernel.inv ≫ S.fromOpcycles := by
+    simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc, opcyclesIsoCokernel_inv,
+      cokernel.π_desc_assoc, p_fromOpcycles]
+  have eq₂ : S.fromOpcycles = S.opcyclesIsoCokernel.hom ≫ cokernel.desc S.f S.g S.zero := by
     rw [eq₁, Iso.hom_inv_id_assoc]
   constructor
   . intro
@@ -408,12 +408,12 @@ lemma exact_of_f_is_kernel (hS : IsLimit (KernelFork.ofι S.f S.zero))
 
 lemma exact_of_g_is_cokernel (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
     [S.HasHomology] : S.Exact := by
-  rw [exact_iff_mono_fromCyclesCo]
-  have : IsSplitMono S.fromCyclesCo :=
-    ⟨⟨{ retraction := hS.desc (CokernelCofork.ofπ S.pCyclesCo S.f_pCyclesCo)
+  rw [exact_iff_mono_fromOpcycles]
+  have : IsSplitMono S.fromOpcycles :=
+    ⟨⟨{ retraction := hS.desc (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles)
         id := by
-          rw [← cancel_epi S.pCyclesCo]
-          simp only [assoc, p_fromCyclesCo_assoc, comp_id]
+          rw [← cancel_epi S.pOpcycles]
+          simp only [assoc, p_fromOpcycles_assoc, comp_id]
           exact Cofork.IsColimit.π_desc hS }⟩⟩
   infer_instance
 
@@ -638,8 +638,8 @@ lemma isIso_g' (h : S.RightHomologyData) [Epi S.g] :
     have := epi_of_epi_fac h.p_g'
     exact isIso_of_mono_of_epi h.g'
 
-lemma isIso_fromCyclesCo [Epi S.g] [S.HasRightHomology] :
-    IsIso S.fromCyclesCo := by
+lemma isIso_fromOpcycles [Epi S.g] [S.HasRightHomology] :
+    IsIso S.fromOpcycles := by
     exact hS.isIso_g' _
 
 noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
@@ -650,9 +650,9 @@ noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) :=
 
 noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.hasHomology
-  have := hS.isIso_fromCyclesCo
-  exact IsColimit.ofIsoColimit S.cyclesCoIsCokernel
-    ((Cofork.ext (asIso S.fromCyclesCo) (by simp)))
+  have := hS.isIso_fromOpcycles
+  exact IsColimit.ofIsoColimit S.opcyclesIsCokernel
+    ((Cofork.ext (asIso S.fromOpcycles) (by simp)))
 
 noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)

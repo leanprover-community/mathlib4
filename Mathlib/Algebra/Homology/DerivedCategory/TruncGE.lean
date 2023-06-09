@@ -13,7 +13,7 @@ variable (K L M : CochainComplex C ℤ) (φ : K ⟶ L) (ψ : L ⟶ M)
 
 noncomputable def truncGEX (n i : ℤ) : C :=
   if i < n then 0
-  else if i = n then K.cyclesCo i
+  else if i = n then K.opcycles i
     else K.X i
 
 lemma isZero_truncGEX (n i : ℤ) (hi : i < n) : IsZero (K.truncGEX n i) := by
@@ -27,8 +27,8 @@ noncomputable def truncGEXIsoX (n i : ℤ) (hi : n < i) :
   rw [if_neg, if_neg]
   all_goals linarith)
 
-noncomputable def truncGEXIsoCyclesCo (n i : ℤ) (hi : i = n) :
-    K.truncGEX n i ≅ K.cyclesCo i := eqToIso (by
+noncomputable def truncGEXIsoOpcycles (n i : ℤ) (hi : i = n) :
+    K.truncGEX n i ≅ K.opcycles i := eqToIso (by
   dsimp [truncGEX]
   rw [if_neg, if_pos hi]
   linarith)
@@ -41,8 +41,8 @@ noncomputable def truncGEXmap (n i : ℤ) : K.truncGEX n i ⟶ L.truncGEX n i :=
   . by_cases hi' : n < i
     . exact (K.truncGEXIsoX n i hi').hom ≫ φ.f i ≫ (L.truncGEXIsoX n i hi').inv
     . have hi'' : i = n := le_antisymm (by simpa using hi') (by simpa using hi)
-      exact (K.truncGEXIsoCyclesCo n i hi'').hom ≫ cyclesCoMap φ i≫
-        (L.truncGEXIsoCyclesCo n i hi'').inv
+      exact (K.truncGEXIsoOpcycles n i hi'').hom ≫ opcyclesMap φ i≫
+        (L.truncGEXIsoOpcycles n i hi'').inv
 
 lemma truncGEXmap_eq_zero (n i : ℤ) (hi : i < n) :
     truncGEXmap φ n i = 0 := by
@@ -55,10 +55,10 @@ lemma truncGEXmap_eq_f (n i : ℤ) (hi : n < i) :
   dsimp [truncGEXmap]
   rw [dif_neg (show ¬ i < n by linarith), dif_pos hi]
 
-lemma truncGEXmap_eq_cyclesCoMap (n i : ℤ) (hi : i = n) :
+lemma truncGEXmap_eq_opcyclesMap (n i : ℤ) (hi : i = n) :
     truncGEXmap φ n i =
-      (K.truncGEXIsoCyclesCo n i hi).hom ≫ cyclesCoMap φ i ≫
-        (L.truncGEXIsoCyclesCo n i hi).inv := by
+      (K.truncGEXIsoOpcycles n i hi).hom ≫ opcyclesMap φ i ≫
+        (L.truncGEXIsoOpcycles n i hi).inv := by
   dsimp [truncGEXmap]
   rw [dif_neg (show ¬ (i < n) by linarith), dif_neg (show ¬ (n < i) by linarith)]
 
@@ -68,7 +68,7 @@ noncomputable def truncGEπf (n i : ℤ) : K.X i ⟶ K.truncGEX n i := by
   by_cases hi : i < n
   . exact 0
   . by_cases hn : i = n
-    . exact K.pCyclesCo i ≫ (K.truncGEXIsoCyclesCo n i hn).inv
+    . exact K.pOpcycles i ≫ (K.truncGEXIsoOpcycles n i hn).inv
     . exact (K.truncGEXIsoX n i (by cases (not_lt.1 hi).lt_or_eq <;> tauto)).inv
 
 instance (n i : ℤ) : Epi (K.truncGEπf n i) := by
@@ -86,7 +86,7 @@ lemma truncGEπf_eq_zero (n i : ℤ) (hi : i < n) :
   rw [dif_pos hi]
 
 lemma truncGEπf_eq_of_eq (n i : ℤ) (hi : i = n) :
-    K.truncGEπf n i = K.pCyclesCo i ≫ (truncGEXIsoCyclesCo K n i hi).inv := by
+    K.truncGEπf n i = K.pOpcycles i ≫ (truncGEXIsoOpcycles K n i hi).inv := by
   dsimp [truncGEπf]
   rw [dif_neg, dif_pos hi]
   all_goals linarith
@@ -107,8 +107,8 @@ lemma truncGEπ_map_f (n i : ℤ) : K.truncGEπf n i ≫ truncGEXmap φ n i =
   . obtain (hi'|hi') := (not_lt.1 hi).lt_or_eq
     . simp only [truncGEπf_eq_truncGEXIso_inv _ _ _ hi',
         K.truncGEXmap_eq_f _ _ _ hi', Iso.inv_hom_id_assoc]
-    . simp only [truncGEπf_eq_of_eq _ _ _ hi'.symm, truncGEXmap_eq_cyclesCoMap _ _ _ hi'.symm,
-        assoc, Iso.inv_hom_id_assoc, p_cyclesCoMap_assoc]
+    . simp only [truncGEπf_eq_of_eq _ _ _ hi'.symm, truncGEXmap_eq_opcyclesMap _ _ _ hi'.symm,
+        assoc, Iso.inv_hom_id_assoc, p_opcyclesMap_assoc]
 
 variable (K)
 
@@ -117,7 +117,7 @@ noncomputable def truncGEd (n i j : ℤ) : K.truncGEX n i ⟶ K.truncGEX n j := 
   . by_cases hi₀ : i < n
     . exact 0
     . by_cases hi : i = n
-      . exact (K.truncGEXIsoCyclesCo n i hi).hom ≫ K.descCyclesCo (K.d i j ≫
+      . exact (K.truncGEXIsoOpcycles n i hi).hom ≫ K.descOpcycles (K.d i j ≫
           (K.truncGEXIsoX n j (by linarith)).inv) (i-1) (by simp) (by simp)
       . refine' (K.truncGEXIsoX n i _).hom ≫ K.d i j ≫ (K.truncGEXIsoX n j _).inv
         . cases (not_lt.1 hi₀).lt_or_eq <;> tauto
@@ -150,9 +150,9 @@ lemma truncGEd_eq_d (n i j : ℤ) (hij : i + 1 = j) (hj : n < i) :
   rw [dif_pos hij, dif_neg, dif_neg]
   all_goals linarith
 
-lemma trunceGEd_eq_comp_descCyclesCo (n i j : ℤ) (hij : i + 1 = j) (hi : i = n) :
-    K.truncGEd n i j = (K.truncGEXIsoCyclesCo n i hi).hom ≫
-      K.descCyclesCo (K.d i j ≫
+lemma trunceGEd_eq_comp_descOpcycles (n i j : ℤ) (hij : i + 1 = j) (hi : i = n) :
+    K.truncGEd n i j = (K.truncGEXIsoOpcycles n i hi).hom ≫
+      K.descOpcycles (K.d i j ≫
         (K.truncGEXIsoX n j (by linarith)).inv) (i-1) (by simp) (by simp) := by
   dsimp [truncGEd]
   rw [dif_pos hij, dif_neg (show ¬i < n by linarith), dif_pos hi]
@@ -175,9 +175,9 @@ lemma truncGEd_comm (n i j : ℤ) :
       . rw [K.truncGEπf_eq_truncGEXIso_inv _ _ hi, K.truncGEπf_eq_truncGEXIso_inv _ _ hj,
           K.truncGEd_eq_d _ _ _ hij hi, Iso.inv_hom_id_assoc]
       . have hi' : i = n := by linarith
-        rw [K.trunceGEd_eq_comp_descCyclesCo _ _ _ hij hi', K.truncGEπf_eq_of_eq _ _ hi',
+        rw [K.trunceGEd_eq_comp_descOpcycles _ _ _ hij hi', K.truncGEπf_eq_of_eq _ _ hi',
           K.truncGEπf_eq_truncGEXIso_inv _ _ hj, assoc, Iso.inv_hom_id_assoc,
-          p_descCyclesCo]
+          p_descOpcycles]
   . rw [K.shape _ _ hij, K.truncGE_shape _ _ _ hij, zero_comp, comp_zero]
 
 @[reassoc (attr := simp)]
@@ -255,22 +255,22 @@ lemma isIso_homologyMap_truncGEπ (n i : ℤ) (hi : n ≤ i) :
       rw [K.truncGEπf_eq_truncGEXIso_inv _ _ (by linarith)]
       infer_instance
     apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono
-  . apply isIso_homologyMap_of_isIso_cyclesCoMap_of_mono _ n (n+1) (by simp)
-    . refine' ⟨⟨(K.truncGE n).descCyclesCo (K.truncGEXIsoCyclesCo n n rfl).hom (n-1) (by simp) _,
+  . apply isIso_homologyMap_of_isIso_opcyclesMap_of_mono _ n (n+1) (by simp)
+    . refine' ⟨⟨(K.truncGE n).descOpcycles (K.truncGEXIsoOpcycles n n rfl).hom (n-1) (by simp) _,
         _, _⟩⟩
       . dsimp
         rw [K.truncGEd_eq_zero _ _ _ (by rfl), zero_comp]
-      . simp only [← cancel_epi (K.pCyclesCo n), cyclesCoMap_comp_descCyclesCo,
-          truncGEπ_f, p_descCyclesCo, K.truncGEπf_eq_of_eq, assoc, Iso.inv_hom_id]
+      . simp only [← cancel_epi (K.pOpcycles n), opcyclesMap_comp_descOpcycles,
+          truncGEπ_f, p_descOpcycles, K.truncGEπf_eq_of_eq, assoc, Iso.inv_hom_id]
       . dsimp
-        have := (K.truncGE n).isIso_descCyclesCo (n-1) n (by simp) (by simp)
-        simp only [← cancel_mono ((K.truncGE n).descCyclesCo (𝟙 ((K.truncGE n).X n)) (n-1)
-          (by simp) (by simp)), assoc, cyclesCoMap_comp_descCyclesCo, truncGEπ_f,
-          comp_id, id_comp, ← cancel_epi ((K.truncGE n).pCyclesCo n)]
+        have := (K.truncGE n).isIso_descOpcycles (n-1) n (by simp) (by simp)
+        simp only [← cancel_mono ((K.truncGE n).descOpcycles (𝟙 ((K.truncGE n).X n)) (n-1)
+          (by simp) (by simp)), assoc, opcyclesMap_comp_descOpcycles, truncGEπ_f,
+          comp_id, id_comp, ← cancel_epi ((K.truncGE n).pOpcycles n)]
         dsimp
-        simp only [← cancel_epi ((K.truncGEXIsoCyclesCo n n rfl).inv),
-          p_descCyclesCo_assoc, p_descCyclesCo, Iso.inv_hom_id_assoc,
-          ← cancel_epi (K.pCyclesCo n), comp_id, truncGEπf_eq_of_eq]
+        simp only [← cancel_epi ((K.truncGEXIsoOpcycles n n rfl).inv),
+          p_descOpcycles_assoc, p_descOpcycles, Iso.inv_hom_id_assoc,
+          ← cancel_epi (K.pOpcycles n), comp_id, truncGEπf_eq_of_eq]
     . dsimp
       rw [K.truncGEπf_eq_truncGEXIso_inv _ _ (by linarith)]
       infer_instance
@@ -379,7 +379,7 @@ lemma isIso_truncGEπ_iff (n : ℤ) : IsIso (K.truncGEπ n) ↔ K.IsStrictlyGE n
     . obtain (hi'|rfl) := (not_lt.1 hi).lt_or_eq
       . exact ⟨0, (K.isZero_of_isStrictlyGE n i hi').eq_of_src _ _,
           (K.isZero_truncGEX n i hi').eq_of_src _ _⟩
-      . have := K.isIso_pCyclesCo (i-1) i (by simp)
+      . have := K.isIso_pOpcycles (i-1) i (by simp)
           ((K.isZero_of_isStrictlyGE i (i-1) (by simp)).eq_of_src _ _)
         rw [K.truncGEπf_eq_of_eq i i rfl]
         infer_instance

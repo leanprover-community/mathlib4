@@ -136,16 +136,16 @@ lemma cokerToKer_fac [HasCokernel S.f] [HasKernel S.h] :
     cokernel.π S.f ≫ S.cokerToKer ≫ kernel.ι S.h = S.g :=
   S.cokerToKer'_fac _ _ (cokernelIsCokernel S.f) (kernelIsKernel S.h)
 
-noncomputable def cyclesCoToCycles
+noncomputable def opcyclesToCycles
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
-    S.shortComplex₁.cyclesCo ⟶ S.shortComplex₂.cycles :=
-  S.cokerToKer' _ _ (S.shortComplex₁.cyclesCoIsCokernel) (S.shortComplex₂.cyclesIsKernel)
+    S.shortComplex₁.opcycles ⟶ S.shortComplex₂.cycles :=
+  S.cokerToKer' _ _ (S.shortComplex₁.opcyclesIsCokernel) (S.shortComplex₂.cyclesIsKernel)
 
 @[reassoc (attr := simp)]
-lemma cyclesCoToCycles_fac
+lemma opcyclesToCycles_fac
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
-    S.shortComplex₁.pCyclesCo ≫ S.cyclesCoToCycles ≫ S.shortComplex₂.iCycles = S.g :=
-  S.cokerToKer'_fac _ _ (S.shortComplex₁.cyclesCoIsCokernel) (S.shortComplex₂.cyclesIsKernel)
+    S.shortComplex₁.pOpcycles ≫ S.opcyclesToCycles ≫ S.shortComplex₂.iCycles = S.g :=
+  S.cokerToKer'_fac _ _ (S.shortComplex₁.opcyclesIsCokernel) (S.shortComplex₂.cyclesIsKernel)
 
 end
 
@@ -243,9 +243,9 @@ lemma Exact.isIso_cokerToKer [HasCokernel S.f] [HasKernel S.h] :
     IsIso S.cokerToKer :=
   hS.isIso_cokerToKer' _ _ _ _
 
-lemma Exact.isIso_cyclesCoToCycles
+lemma Exact.isIso_opcyclesToCycles
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
-    IsIso S.cyclesCoToCycles :=
+    IsIso S.opcyclesToCycles :=
   hS.isIso_cokerToKer' _ _ _ _
 
 @[simps! hom]
@@ -260,11 +260,11 @@ noncomputable def Exact.cokerIsoKer [HasCokernel S.f] [HasKernel S.h] :
   asIso S.cokerToKer
 
 @[simps! hom]
-lemma Exact.cyclesCoIsoCycles
+lemma Exact.opcyclesIsoCycles
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
-    S.shortComplex₁.cyclesCo ≅ S.shortComplex₂.cycles :=
-  have := hS.isIso_cyclesCoToCycles
-  asIso S.cyclesCoToCycles
+    S.shortComplex₁.opcycles ≅ S.shortComplex₂.cycles :=
+  have := hS.isIso_opcyclesToCycles
+  asIso S.opcyclesToCycles
 
 end Preadditive
 

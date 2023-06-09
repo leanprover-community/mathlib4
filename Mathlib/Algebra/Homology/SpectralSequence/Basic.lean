@@ -209,7 +209,7 @@ noncomputable def edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [
     [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
     E.page r pq ⟶
       E.page r' pq :=
-      (E.shortComplex r pq).pCyclesCo ≫ (ShortComplex.asIsoHomologyι _
+      (E.shortComplex r pq).pOpcycles ≫ (ShortComplex.asIsoHomologyι _
         (by apply E.d_eq_zero_of_hasEdgeEpiAt)).inv ≫ (E.iso r r' hr pq).hom
 
 pp_extended_field_notation edgeEpiStep
@@ -225,7 +225,7 @@ lemma d_comp_edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.Has
     E.d r pq' pq hpq' ≫ E.edgeEpiStep pq r r' hr = 0 := by
   obtain rfl : pq' = pq - degrees r := by rw [← hpq', add_sub_cancel]
   dsimp [edgeEpiStep]
-  erw [(E.shortComplex r pq).f_pCyclesCo_assoc, zero_comp]
+  erw [(E.shortComplex r pq).f_pOpcycles_assoc, zero_comp]
 
 @[simps]
 noncomputable def edgeEpiStepShortComplex (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
@@ -239,7 +239,7 @@ lemma edgeEpiStepShortComplex_exact (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 =
     (E.edgeEpiStepShortComplex pq r r' hr pq' hpq').Exact := by
   obtain rfl : pq' = pq - degrees r := by aesop
   apply ShortComplex.exact_of_g_is_cokernel
-  refine' IsColimit.ofIsoColimit ((E.shortComplex r pq).cyclesCoIsCokernel) _
+  refine' IsColimit.ofIsoColimit ((E.shortComplex r pq).opcyclesIsCokernel) _
   exact Cofork.ext (((E.shortComplex r pq).asIsoHomologyι (by simp)).symm ≪≫
     E.iso r r' hr pq) rfl
 

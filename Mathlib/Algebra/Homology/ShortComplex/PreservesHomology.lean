@@ -355,7 +355,7 @@ def preservesRightHomologyOf_of_rightHomologyData_isPreservedBy (h : S.RightHomo
   { f := ShortComplex.RightHomologyData.IsPreservedBy.hf h F
     g' := by
       let e : parallelPair h.g' 0 ≅ parallelPair h'.g' 0 :=
-        parallelPair.ext (ShortComplex.cyclesCoMapIso' (Iso.refl S) h h') (Iso.refl _)
+        parallelPair.ext (ShortComplex.opcyclesMapIso' (Iso.refl S) h h') (Iso.refl _)
           (by simp) (by simp)
       have := ShortComplex.RightHomologyData.IsPreservedBy.hg' h F
       exact preservesLimitOfIsoDiagram F e }⟩
@@ -396,10 +396,10 @@ namespace RightHomologyData
 
 variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
 
-lemma map_cyclesCoMap' : F.map (ShortComplex.cyclesCoMap' φ hr₁ hr₂) =
-    ShortComplex.cyclesCoMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
+lemma map_opcyclesMap' : F.map (ShortComplex.opcyclesMap' φ hr₁ hr₂) =
+    ShortComplex.opcyclesMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
   have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
-  rw [γ.cyclesCoMap'_eq, (γ.map F).cyclesCoMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
+  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
 
 lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
     ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
@@ -424,9 +424,9 @@ noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomolog
     (S.map F).leftHomology ≅ F.obj S.leftHomology :=
   (S.leftHomologyData.map F).leftHomologyIso
 
-noncomputable def mapCyclesCoIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
-    (S.map F).cyclesCo ≅ F.obj S.cyclesCo :=
-  (S.rightHomologyData.map F).cyclesCoIso
+noncomputable def mapOpcyclesIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+    (S.map F).opcycles ≅ F.obj S.opcycles :=
+  (S.rightHomologyData.map F).opcyclesIso
 
 noncomputable def mapRightHomologyIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).rightHomology ≅ F.obj S.rightHomology :=
@@ -460,12 +460,12 @@ lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasHomology]
   simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
-lemma RightHomologyData.mapCyclesCoIso_eq [S.HasHomology]
+lemma RightHomologyData.mapOpcyclesIso_eq [S.HasHomology]
     [F.PreservesRightHomologyOf S] :
-    S.mapCyclesCoIso F = (hr.map F).cyclesCoIso ≪≫ F.mapIso hr.cyclesCoIso.symm := by
+    S.mapOpcyclesIso F = (hr.map F).opcyclesIso ≪≫ F.mapIso hr.opcyclesIso.symm := by
   ext
-  dsimp [mapCyclesCoIso, cyclesCoIso]
-  simp only [map_cyclesCoMap', ← cyclesCoMap'_comp, Functor.map_id, comp_id,
+  dsimp [mapOpcyclesIso, opcyclesIso]
+  simp only [map_opcyclesMap', ← opcyclesMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapRightHomologyIso_eq [S.HasHomology]
@@ -531,20 +531,20 @@ lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomo
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
 @[reassoc]
-lemma mapCyclesCoIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
-    cyclesCoMap (F.mapShortComplex.map φ) ≫ (S₂.mapCyclesCoIso F).hom =
-      (S₁.mapCyclesCoIso F).hom ≫ F.map (cyclesCoMap φ) := by
-  dsimp only [cyclesCoMap, mapCyclesCoIso, RightHomologyData.cyclesCoIso, cyclesCoMapIso', Iso.refl]
-  simp only [RightHomologyData.map_cyclesCoMap', Functor.mapShortComplex_obj, ← cyclesCoMap'_comp,
+    opcyclesMap (F.mapShortComplex.map φ) ≫ (S₂.mapOpcyclesIso F).hom =
+      (S₁.mapOpcyclesIso F).hom ≫ F.map (opcyclesMap φ) := by
+  dsimp only [opcyclesMap, mapOpcyclesIso, RightHomologyData.opcyclesIso, opcyclesMapIso', Iso.refl]
+  simp only [RightHomologyData.map_opcyclesMap', Functor.mapShortComplex_obj, ← opcyclesMap'_comp,
     comp_id, id_comp]
 
 @[reassoc]
-lemma mapCyclesCoIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+lemma mapOpcyclesIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
-    F.map (cyclesCoMap φ) ≫ (S₂.mapCyclesCoIso F).inv =
-      (S₁.mapCyclesCoIso F).inv ≫ cyclesCoMap (F.mapShortComplex.map φ) := by
-  rw [← cancel_epi (S₁.mapCyclesCoIso F).hom, ← mapCyclesCoIso_hom_naturality_assoc,
+    F.map (opcyclesMap φ) ≫ (S₂.mapOpcyclesIso F).inv =
+      (S₁.mapOpcyclesIso F).inv ≫ opcyclesMap (F.mapShortComplex.map φ) := by
+  rw [← cancel_epi (S₁.mapOpcyclesIso F).hom, ← mapOpcyclesIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
 @[reassoc]
@@ -646,11 +646,11 @@ noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
   NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
     (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
 
-noncomputable def cyclesCoFunctorIso [F.PreservesHomology] :
-    F.mapShortComplex ⋙ ShortComplex.cyclesCoFunctor D ≅
-      ShortComplex.cyclesCoFunctor C ⋙ F :=
-  NatIso.ofComponents (fun S => S.mapCyclesCoIso F)
-    (fun f => ShortComplex.mapCyclesCoIso_hom_naturality f F)
+noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
+      ShortComplex.opcyclesFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapOpcyclesIso F)
+    (fun f => ShortComplex.mapOpcyclesIso_hom_naturality f F)
 
 noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅

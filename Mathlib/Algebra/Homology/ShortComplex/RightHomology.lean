@@ -444,22 +444,22 @@ end
 variable (S)
 
 noncomputable def rightHomology [HasRightHomology S] : C := S.rightHomologyData.H
-noncomputable def cyclesCo [HasRightHomology S] : C := S.rightHomologyData.Q
-noncomputable def rightHomologyι [HasRightHomology S] : S.rightHomology ⟶ S.cyclesCo :=
+noncomputable def opcycles [HasRightHomology S] : C := S.rightHomologyData.Q
+noncomputable def rightHomologyι [HasRightHomology S] : S.rightHomology ⟶ S.opcycles :=
   S.rightHomologyData.ι
-noncomputable def pCyclesCo [HasRightHomology S] : S.X₂ ⟶ S.cyclesCo := S.rightHomologyData.p
-noncomputable def fromCyclesCo [HasRightHomology S] : S.cyclesCo ⟶ S.X₃ := S.rightHomologyData.g'
+noncomputable def pOpcycles [HasRightHomology S] : S.X₂ ⟶ S.opcycles := S.rightHomologyData.p
+noncomputable def fromOpcycles [HasRightHomology S] : S.opcycles ⟶ S.X₃ := S.rightHomologyData.g'
 
 @[reassoc (attr := simp)]
-lemma f_pCyclesCo [HasRightHomology S] : S.f ≫ S.pCyclesCo = 0 :=
+lemma f_pOpcycles [HasRightHomology S] : S.f ≫ S.pOpcycles = 0 :=
   S.rightHomologyData.wp
 
 @[reassoc (attr := simp)]
-lemma p_fromCyclesCo [HasRightHomology S] : S.pCyclesCo ≫ S.fromCyclesCo = S.g :=
+lemma p_fromOpcycles [HasRightHomology S] : S.pOpcycles ≫ S.fromOpcycles = S.g :=
   S.rightHomologyData.p_g'
 
-instance [HasRightHomology S] : Epi S.pCyclesCo := by
-  dsimp only [pCyclesCo]
+instance [HasRightHomology S] : Epi S.pOpcycles := by
+  dsimp only [pOpcycles]
   infer_instance
 
 instance [HasRightHomology S] : Mono S.rightHomologyι := by
@@ -470,8 +470,8 @@ lemma rightHomology_ext_iff [HasRightHomology S] (f₁ f₂ : A ⟶ S.rightHomol
     f₁ = f₂ ↔ f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι := by
   rw [cancel_mono]
 
-lemma cyclesCo_ext_iff [HasRightHomology S] (f₁ f₂ : S.cyclesCo ⟶ A) :
-    f₁ = f₂ ↔ S.pCyclesCo ≫ f₁ = S.pCyclesCo ≫ f₂ := by
+lemma opcycles_ext_iff [HasRightHomology S] (f₁ f₂ : S.opcycles ⟶ A) :
+    f₁ = f₂ ↔ S.pOpcycles ≫ f₁ = S.pOpcycles ≫ f₂ := by
   rw [cancel_epi]
 
 variable {S}
@@ -479,48 +479,48 @@ variable {S}
 def rightHomologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
   h₁.H ⟶ h₂.H := (rightHomologyMapData φ _ _).φH
 
-def cyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+def opcyclesMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
   h₁.Q ⟶ h₂.Q := (rightHomologyMapData φ _ _).φQ
 
 @[reassoc (attr := simp)]
-lemma p_cyclesCoMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-    h₁.p ≫ cyclesCoMap' φ h₁ h₂ = φ.τ₂ ≫ h₂.p :=
+lemma p_opcyclesMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    h₁.p ≫ opcyclesMap' φ h₁ h₂ = φ.τ₂ ≫ h₂.p :=
   RightHomologyMapData.commp _
 
 @[reassoc (attr := simp)]
-lemma cyclesCoMap'_g' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-    cyclesCoMap' φ h₁ h₂ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
-  simp only [← cancel_epi h₁.p, assoc, φ.comm₂₃, p_cyclesCoMap'_assoc,
+lemma opcyclesMap'_g' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    opcyclesMap' φ h₁ h₂ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
+  simp only [← cancel_epi h₁.p, assoc, φ.comm₂₃, p_opcyclesMap'_assoc,
     RightHomologyData.p_g'_assoc, RightHomologyData.p_g']
 
 @[reassoc (attr := simp)]
 lemma rightHomologyι_naturality' (φ : S₁ ⟶ S₂)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-    rightHomologyMap' φ h₁ h₂ ≫ h₂.ι = h₁.ι ≫ cyclesCoMap' φ h₁ h₂ :=
+    rightHomologyMap' φ h₁ h₂ ≫ h₂.ι = h₁.ι ≫ opcyclesMap' φ h₁ h₂ :=
   RightHomologyMapData.commι _
 
 noncomputable def rightHomologyMap [HasRightHomology S₁] [HasRightHomology S₂]
     (φ : S₁ ⟶ S₂) : S₁.rightHomology ⟶ S₂.rightHomology :=
   rightHomologyMap' φ _ _
 
-noncomputable def cyclesCoMap [HasRightHomology S₁] [HasRightHomology S₂]
-    (φ : S₁ ⟶ S₂) : S₁.cyclesCo ⟶ S₂.cyclesCo :=
-  cyclesCoMap' φ _ _
+noncomputable def opcyclesMap [HasRightHomology S₁] [HasRightHomology S₂]
+    (φ : S₁ ⟶ S₂) : S₁.opcycles ⟶ S₂.opcycles :=
+  opcyclesMap' φ _ _
 
 @[reassoc (attr := simp)]
-lemma p_cyclesCoMap (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    S₁.pCyclesCo ≫ cyclesCoMap φ = φ.τ₂ ≫ S₂.pCyclesCo :=
-  p_cyclesCoMap' _ _ _
+lemma p_opcyclesMap (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    S₁.pOpcycles ≫ opcyclesMap φ = φ.τ₂ ≫ S₂.pOpcycles :=
+  p_opcyclesMap' _ _ _
 
 @[reassoc (attr := simp)]
-lemma fromCyclesCo_naturality (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    cyclesCoMap φ ≫ S₂.fromCyclesCo = S₁.fromCyclesCo ≫ φ.τ₃ :=
-  cyclesCoMap'_g' _ _ _
+lemma fromOpcycles_naturality (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    opcyclesMap φ ≫ S₂.fromOpcycles = S₁.fromOpcycles ≫ φ.τ₃ :=
+  opcyclesMap'_g' _ _ _
 
 @[reassoc (attr := simp)]
 lemma rightHomologyι_naturality [HasRightHomology S₁] [HasRightHomology S₂]
     (φ : S₁ ⟶ S₂) :
-    rightHomologyMap φ ≫ S₂.rightHomologyι = S₁.rightHomologyι ≫ cyclesCoMap φ :=
+    rightHomologyMap φ ≫ S₂.rightHomologyι = S₁.rightHomologyι ≫ opcyclesMap φ :=
   rightHomologyι_naturality' _ _ _
 
 namespace RightHomologyMapData
@@ -531,7 +531,7 @@ variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.Right
 lemma rightHomologyMap'_eq : rightHomologyMap' φ h₁ h₂ = γ.φH :=
   RightHomologyMapData.congr_φH (Subsingleton.elim _ _)
 
-lemma cyclesCoMap'_eq : cyclesCoMap' φ h₁ h₂ = γ.φQ :=
+lemma opcyclesMap'_eq : opcyclesMap' φ h₁ h₂ = γ.φQ :=
   RightHomologyMapData.congr_φQ (Subsingleton.elim _ _)
 
 end RightHomologyMapData
@@ -542,9 +542,9 @@ lemma rightHomologyMap'_id (h : S.RightHomologyData) :
   (RightHomologyMapData.id h).rightHomologyMap'_eq
 
 @[simp]
-lemma cyclesCoMap'_id (h : S.RightHomologyData) :
-    cyclesCoMap' (𝟙 S) h h = 𝟙 _ :=
-  (RightHomologyMapData.id h).cyclesCoMap'_eq
+lemma opcyclesMap'_id (h : S.RightHomologyData) :
+    opcyclesMap' (𝟙 S) h h = 𝟙 _ :=
+  (RightHomologyMapData.id h).opcyclesMap'_eq
 
 variable (S)
 
@@ -554,9 +554,9 @@ lemma rightHomologyMap_id [HasRightHomology S] :
   rightHomologyMap'_id _
 
 @[simp]
-lemma cyclesCoMap_id [HasRightHomology S] :
-    cyclesCoMap (𝟙 S) = 𝟙 _ :=
-  cyclesCoMap'_id _
+lemma opcyclesMap_id [HasRightHomology S] :
+    opcyclesMap (𝟙 S) = 𝟙 _ :=
+  opcyclesMap'_id _
 
 @[simp]
 lemma rightHomologyMap'_zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
@@ -564,9 +564,9 @@ lemma rightHomologyMap'_zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightH
   (RightHomologyMapData.zero h₁ h₂).rightHomologyMap'_eq
 
 @[simp]
-lemma cyclesCoMap'_zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-    cyclesCoMap' 0 h₁ h₂ = 0 :=
-  (RightHomologyMapData.zero h₁ h₂).cyclesCoMap'_eq
+lemma opcyclesMap'_zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    opcyclesMap' 0 h₁ h₂ = 0 :=
+  (RightHomologyMapData.zero h₁ h₂).opcyclesMap'_eq
 
 variable (S₁ S₂)
 
@@ -576,9 +576,9 @@ lemma rightHomologyMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
   rightHomologyMap'_zero _ _
 
 @[simp]
-lemma cyclesCoMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
-  cyclesCoMap (0 : S₁ ⟶ S₂) = 0 :=
-cyclesCoMap'_zero _ _
+lemma opcyclesMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
+  opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
+opcyclesMap'_zero _ _
 
 variable {S₁ S₂}
 
@@ -593,12 +593,12 @@ lemma rightHomologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     RightHomologyMapData.comp_φH]
 
 @[reassoc]
-lemma cyclesCoMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
+lemma opcyclesMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) (h₃ : S₃.RightHomologyData) :
-    cyclesCoMap' (φ₁ ≫ φ₂) h₁ h₃ = cyclesCoMap' φ₁ h₁ h₂ ≫ cyclesCoMap' φ₂ h₂ h₃ := by
+    opcyclesMap' (φ₁ ≫ φ₂) h₁ h₃ = opcyclesMap' φ₁ h₁ h₂ ≫ opcyclesMap' φ₂ h₂ h₃ := by
   let γ₁ := rightHomologyMapData φ₁ h₁ h₂
   let γ₂ := rightHomologyMapData φ₂ h₂ h₃
-  rw [γ₁.cyclesCoMap'_eq, γ₂.cyclesCoMap'_eq, (γ₁.comp γ₂).cyclesCoMap'_eq,
+  rw [γ₁.opcyclesMap'_eq, γ₂.opcyclesMap'_eq, (γ₁.comp γ₂).opcyclesMap'_eq,
     RightHomologyMapData.comp_φQ]
 
 @[simp]
@@ -608,12 +608,12 @@ lemma rightHomologyMap_comp [HasRightHomology S₁] [HasRightHomology S₂] [Has
 rightHomologyMap'_comp _ _ _ _ _
 
 @[simp]
-lemma cyclesCoMap_comp [HasRightHomology S₁] [HasRightHomology S₂] [HasRightHomology S₃]
+lemma opcyclesMap_comp [HasRightHomology S₁] [HasRightHomology S₂] [HasRightHomology S₃]
     (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
-    cyclesCoMap (φ₁ ≫ φ₂) = cyclesCoMap φ₁ ≫ cyclesCoMap φ₂ :=
-  cyclesCoMap'_comp _ _ _ _ _
+    opcyclesMap (φ₁ ≫ φ₂) = opcyclesMap φ₁ ≫ opcyclesMap φ₂ :=
+  opcyclesMap'_comp _ _ _ _ _
 
-attribute [simp] rightHomologyMap_comp cyclesCoMap_comp
+attribute [simp] rightHomologyMap_comp opcyclesMap_comp
 
 @[simps]
 def rightHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
@@ -629,17 +629,17 @@ instance isIso_rightHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
   (inferInstance : IsIso (rightHomologyMapIso' (asIso φ) h₁ h₂).hom)
 
 @[simps]
-def cyclesCoMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
+def opcyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.RightHomologyData)
   (h₂ : S₂.RightHomologyData) : h₁.Q ≅ h₂.Q where
-  hom := cyclesCoMap' e.hom h₁ h₂
-  inv := cyclesCoMap' e.inv h₂ h₁
-  hom_inv_id := by rw [← cyclesCoMap'_comp, e.hom_inv_id, cyclesCoMap'_id]
-  inv_hom_id := by rw [← cyclesCoMap'_comp, e.inv_hom_id, cyclesCoMap'_id]
+  hom := opcyclesMap' e.hom h₁ h₂
+  inv := opcyclesMap' e.inv h₂ h₁
+  hom_inv_id := by rw [← opcyclesMap'_comp, e.hom_inv_id, opcyclesMap'_id]
+  inv_hom_id := by rw [← opcyclesMap'_comp, e.inv_hom_id, opcyclesMap'_id]
 
-instance isIso_cyclesCoMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+instance isIso_opcyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-    IsIso (cyclesCoMap' φ h₁ h₂) :=
-  (inferInstance : IsIso (cyclesCoMapIso' (asIso φ) h₁ h₂).hom)
+    IsIso (opcyclesMap' φ h₁ h₂) :=
+  (inferInstance : IsIso (opcyclesMapIso' (asIso φ) h₁ h₂).hom)
 
 @[simps]
 noncomputable def rightHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
@@ -655,35 +655,35 @@ instance isIso_rightHomologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.Has
   (inferInstance : IsIso (rightHomologyMapIso (asIso φ)).hom)
 
 @[simps]
-noncomputable def cyclesCoMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
-    [S₂.HasRightHomology] : S₁.cyclesCo ≅ S₂.cyclesCo where
-  hom := cyclesCoMap e.hom
-  inv := cyclesCoMap e.inv
-  hom_inv_id := by rw [← cyclesCoMap_comp, e.hom_inv_id, cyclesCoMap_id]
-  inv_hom_id := by rw [← cyclesCoMap_comp, e.inv_hom_id, cyclesCoMap_id]
+noncomputable def opcyclesMapIso (e : S₁ ≅ S₂) [S₁.HasRightHomology]
+    [S₂.HasRightHomology] : S₁.opcycles ≅ S₂.opcycles where
+  hom := opcyclesMap e.hom
+  inv := opcyclesMap e.inv
+  hom_inv_id := by rw [← opcyclesMap_comp, e.hom_inv_id, opcyclesMap_id]
+  inv_hom_id := by rw [← opcyclesMap_comp, e.inv_hom_id, opcyclesMap_id]
 
-instance isIso_cyclesCoMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasRightHomology]
-    [S₂.HasRightHomology] : IsIso (cyclesCoMap φ) :=
-  (inferInstance : IsIso (cyclesCoMapIso (asIso φ)).hom)
+instance isIso_opcyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasRightHomology]
+    [S₂.HasRightHomology] : IsIso (opcyclesMap φ) :=
+  (inferInstance : IsIso (opcyclesMapIso (asIso φ)).hom)
 
 variable {S}
 
 noncomputable def RightHomologyData.rightHomologyIso (h : S.RightHomologyData) [S.HasRightHomology] :
   S.rightHomology ≅ h.H := rightHomologyMapIso' (Iso.refl _) _ _
 
-noncomputable def RightHomologyData.cyclesCoIso (h : S.RightHomologyData) [S.HasRightHomology] :
-  S.cyclesCo ≅ h.Q := cyclesCoMapIso' (Iso.refl _) _ _
+noncomputable def RightHomologyData.opcyclesIso (h : S.RightHomologyData) [S.HasRightHomology] :
+  S.opcycles ≅ h.Q := opcyclesMapIso' (Iso.refl _) _ _
 
 @[reassoc (attr := simp)]
-lemma RightHomologyData.p_compCyclesCoIso_inv (h : S.RightHomologyData) [S.HasRightHomology] :
-    h.p ≫ h.cyclesCoIso.inv = S.pCyclesCo := by
-  dsimp [pCyclesCo, RightHomologyData.cyclesCoIso]
-  simp only [p_cyclesCoMap', id_τ₂, id_comp]
+lemma RightHomologyData.p_compOpcyclesIso_inv (h : S.RightHomologyData) [S.HasRightHomology] :
+    h.p ≫ h.opcyclesIso.inv = S.pOpcycles := by
+  dsimp [pOpcycles, RightHomologyData.opcyclesIso]
+  simp only [p_opcyclesMap', id_τ₂, id_comp]
 
 @[reassoc (attr := simp)]
-lemma RightHomologyData.pCyclesCo_compCyclesCoIso_hom (h : S.RightHomologyData)
-    [S.HasRightHomology] : S.pCyclesCo ≫ h.cyclesCoIso.hom = h.p := by
-  simp only [← h.p_compCyclesCoIso_inv, assoc, Iso.inv_hom_id, comp_id]
+lemma RightHomologyData.pOpcycles_compOpcyclesIso_hom (h : S.RightHomologyData)
+    [S.HasRightHomology] : S.pOpcycles ≫ h.opcyclesIso.hom = h.p := by
+  simp only [← h.p_compOpcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
 
 namespace RightHomologyMapData
 
@@ -697,19 +697,19 @@ lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     ← rightHomologyMap'_comp, id_comp, comp_id]
   rfl
 
-lemma cyclesCoMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    cyclesCoMap φ = h₁.cyclesCoIso.hom ≫ γ.φQ ≫ h₂.cyclesCoIso.inv := by
-  dsimp [RightHomologyData.cyclesCoIso, cyclesMapIso']
-  rw [← γ.cyclesCoMap'_eq, ← cyclesCoMap'_comp, ← cyclesCoMap'_comp, id_comp, comp_id]
+lemma opcyclesMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    opcyclesMap φ = h₁.opcyclesIso.hom ≫ γ.φQ ≫ h₂.opcyclesIso.inv := by
+  dsimp [RightHomologyData.opcyclesIso, cyclesMapIso']
+  rw [← γ.opcyclesMap'_eq, ← opcyclesMap'_comp, ← opcyclesMap'_comp, id_comp, comp_id]
   rfl
 
 lemma rightHomologyMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
     rightHomologyMap φ ≫ h₂.rightHomologyIso.hom = h₁.rightHomologyIso.hom ≫ γ.φH := by
   simp only [γ.rightHomologyMap_eq, assoc, Iso.inv_hom_id, comp_id]
 
-lemma cyclesCoMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
-    cyclesCoMap φ ≫ h₂.cyclesCoIso.hom = h₁.cyclesCoIso.hom ≫ γ.φQ := by
-  simp only [γ.cyclesCoMap_eq, assoc, Iso.inv_hom_id, comp_id]
+lemma opcyclesMap_comm [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    opcyclesMap φ ≫ h₂.opcyclesIso.hom = h₁.opcyclesIso.hom ≫ γ.φQ := by
+  simp only [γ.opcyclesMap_eq, assoc, Iso.inv_hom_id, comp_id]
 
 end RightHomologyMapData
 
@@ -725,27 +725,27 @@ noncomputable def rightHomologyFunctor :
   map := rightHomologyMap
 
 @[simps]
-noncomputable def cyclesCoFunctor :
+noncomputable def opcyclesFunctor :
     ShortComplex C ⥤ C where
-  obj S := S.cyclesCo
-  map := cyclesCoMap
+  obj S := S.opcycles
+  map := opcyclesMap
 
 @[simps]
 noncomputable def rightHomologyιNatTrans :
-    rightHomologyFunctor C ⟶ cyclesCoFunctor C where
+    rightHomologyFunctor C ⟶ opcyclesFunctor C where
   app S := rightHomologyι S
   naturality := fun _ _ φ => rightHomologyι_naturality φ
 
 @[simps]
-noncomputable def pCyclesCoNatTrans :
-    ShortComplex.π₂ ⟶ cyclesCoFunctor C where
-  app S := S.pCyclesCo
+noncomputable def pOpcyclesNatTrans :
+    ShortComplex.π₂ ⟶ opcyclesFunctor C where
+  app S := S.pOpcycles
 
 @[simps]
-noncomputable def fromCyclesCoNatTrans :
-    cyclesCoFunctor C ⟶ π₃ where
-  app S := S.fromCyclesCo
-  naturality := fun _ _  φ => fromCyclesCo_naturality φ
+noncomputable def fromOpcyclesNatTrans :
+    opcyclesFunctor C ⟶ π₃ where
+  app S := S.fromOpcycles
+  naturality := fun _ _  φ => fromOpcycles_naturality φ
 
 end
 
@@ -799,12 +799,12 @@ noncomputable def leftHomologyOpIso [S.HasRightHomology] :
     S.op.leftHomology ≅ Opposite.op S.rightHomology :=
   S.rightHomologyData.op.leftHomologyIso
 
-noncomputable def cyclesCoOpIso [S.HasLeftHomology] :
-    S.op.cyclesCo ≅ Opposite.op S.cycles :=
-  S.leftHomologyData.op.cyclesCoIso
+noncomputable def opcyclesOpIso [S.HasLeftHomology] :
+    S.op.opcycles ≅ Opposite.op S.cycles :=
+  S.leftHomologyData.op.opcyclesIso
 
 noncomputable def cyclesOpIso [S.HasRightHomology] :
-    S.op.cycles ≅ Opposite.op S.cyclesCo :=
+    S.op.cycles ≅ Opposite.op S.opcycles :=
   S.rightHomologyData.op.cyclesIso
 
 @[simp]
@@ -967,87 +967,87 @@ variable {S C}
 variable (h : RightHomologyData S)
   {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [HasRightHomology S]
 
-noncomputable def descCyclesCo : S.cyclesCo ⟶ A :=
+noncomputable def descOpcycles : S.opcycles ⟶ A :=
   S.rightHomologyData.descQ k hk
 
 @[reassoc (attr := simp)]
-lemma p_descCyclesCo : S.pCyclesCo ≫ S.descCyclesCo k hk = k :=
+lemma p_descOpcycles : S.pOpcycles ≫ S.descOpcycles k hk = k :=
   RightHomologyData.p_descQ _ k hk
 
 @[reassoc]
-lemma descCyclesCo_comp {A' : C} (α : A ⟶ A') :
-    S.descCyclesCo k hk ≫ α = S.descCyclesCo (k ≫ α) (by rw [reassoc_of% hk, zero_comp]) := by
-  simp only [← cancel_epi S.pCyclesCo, p_descCyclesCo_assoc, p_descCyclesCo]
+lemma descOpcycles_comp {A' : C} (α : A ⟶ A') :
+    S.descOpcycles k hk ≫ α = S.descOpcycles (k ≫ α) (by rw [reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_epi S.pOpcycles, p_descOpcycles_assoc, p_descOpcycles]
 
 variable (S)
 
-noncomputable def cyclesCoIsCokernel :
-    IsColimit (CokernelCofork.ofπ S.pCyclesCo S.f_pCyclesCo) :=
+noncomputable def opcyclesIsCokernel :
+    IsColimit (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles) :=
   S.rightHomologyData.hp
 
-lemma isIso_pCyclesCo (hf : S.f = 0) : IsIso (S.pCyclesCo) :=
-  CokernelCofork.IsColimit.isIso_π _ S.cyclesCoIsCokernel hf
+lemma isIso_pOpcycles (hf : S.f = 0) : IsIso (S.pOpcycles) :=
+  CokernelCofork.IsColimit.isIso_π _ S.opcyclesIsCokernel hf
 
 @[simps]
-noncomputable def cyclesCoIsoCokernel [HasCokernel S.f] : S.cyclesCo ≅ cokernel S.f where
-  hom := S.descCyclesCo (cokernel.π S.f) (by simp)
-  inv := cokernel.desc S.f S.pCyclesCo (by simp)
-  hom_inv_id := by simp only [← cancel_epi S.pCyclesCo, p_descCyclesCo_assoc,
+noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokernel S.f where
+  hom := S.descOpcycles (cokernel.π S.f) (by simp)
+  inv := cokernel.desc S.f S.pOpcycles (by simp)
+  hom_inv_id := by simp only [← cancel_epi S.pOpcycles, p_descOpcycles_assoc,
     cokernel.π_desc, comp_id]
   inv_hom_id := by simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc_assoc,
-    p_descCyclesCo, comp_id]
+    p_descOpcycles, comp_id]
 
 variable {S}
 
 @[simp]
 noncomputable def descRightHomology : S.rightHomology ⟶ A :=
-  S.rightHomologyι ≫ S.descCyclesCo k hk
+  S.rightHomologyι ≫ S.descOpcycles k hk
 
 @[reassoc]
-lemma rightHomologyι_descCyclesCo_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
-    S.rightHomologyι ≫ S.descCyclesCo k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
+lemma rightHomologyι_descOpcycles_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+    S.rightHomologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
   RightHomologyData.ι_descQ_eq_zero_of_boundary _ k x hx
 
 variable (S)
 
 @[reassoc (attr := simp)]
-lemma rightHomologyι_comp_fromCyclesCo :
-    S.rightHomologyι ≫ S.fromCyclesCo = 0 :=
-  S.rightHomologyι_descCyclesCo_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
+lemma rightHomologyι_comp_fromOpcycles :
+    S.rightHomologyι ≫ S.fromOpcycles = 0 :=
+  S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
 
 noncomputable def rightHomologyIsKernel :
-    IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromCyclesCo) :=
+    IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromOpcycles) :=
   S.rightHomologyData.hι
 
 variable {S}
 
 @[reassoc (attr := simp)]
-lemma cyclesCoMap_comp_descCyclesCo (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
-    cyclesCoMap φ ≫ S.descCyclesCo k hk =
-      S₁.descCyclesCo (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
-  simp only [← cancel_epi (S₁.pCyclesCo), p_cyclesCoMap_assoc, p_descCyclesCo]
+lemma opcyclesMap_comp_descOpcycles (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
+    opcyclesMap φ ≫ S.descOpcycles k hk =
+      S₁.descOpcycles (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
+  simp only [← cancel_epi (S₁.pOpcycles), p_opcyclesMap_assoc, p_descOpcycles]
 
 @[reassoc (attr := simp)]
 lemma RightHomologyData.rightHomologyIso_inv_comp_rightHomologyι :
-    h.rightHomologyIso.inv ≫ S.rightHomologyι = h.ι ≫ h.cyclesCoIso.inv := by
-  dsimp only [rightHomologyι, rightHomologyIso, cyclesCoIso, rightHomologyMapIso']
-  simp only [Iso.refl_inv, rightHomologyι_naturality', cyclesCoMapIso'_inv]
+    h.rightHomologyIso.inv ≫ S.rightHomologyι = h.ι ≫ h.opcyclesIso.inv := by
+  dsimp only [rightHomologyι, rightHomologyIso, opcyclesIso, rightHomologyMapIso']
+  simp only [Iso.refl_inv, rightHomologyι_naturality', opcyclesMapIso'_inv]
 
 @[reassoc (attr := simp)]
 lemma RightHomologyData.rightHomologyIso_hom_comp_ι :
-    h.rightHomologyIso.hom ≫ h.ι = S.rightHomologyι ≫ h.cyclesCoIso.hom := by
-  simp only [← cancel_epi h.rightHomologyIso.inv, ← cancel_mono h.cyclesCoIso.inv, assoc,
+    h.rightHomologyIso.hom ≫ h.ι = S.rightHomologyι ≫ h.opcyclesIso.hom := by
+  simp only [← cancel_epi h.rightHomologyIso.inv, ← cancel_mono h.opcyclesIso.inv, assoc,
     Iso.inv_hom_id_assoc, Iso.hom_inv_id, comp_id, rightHomologyIso_inv_comp_rightHomologyι]
 
 @[reassoc (attr := simp)]
-lemma RightHomologyData.cyclesCoIso_inv_comp_descCyclesCo :
-    h.cyclesCoIso.inv ≫ S.descCyclesCo k hk = h.descQ k hk := by
-  simp only [← cancel_epi h.p, p_compCyclesCoIso_inv_assoc, p_descCyclesCo, p_descQ]
+lemma RightHomologyData.opcyclesIso_inv_comp_descOpcycles :
+    h.opcyclesIso.inv ≫ S.descOpcycles k hk = h.descQ k hk := by
+  simp only [← cancel_epi h.p, p_compOpcyclesIso_inv_assoc, p_descOpcycles, p_descQ]
 
 @[simp]
-lemma RightHomologyData.cyclesCoIso_hom_comp_descQ :
-    h.cyclesCoIso.hom ≫ h.descQ k hk = S.descCyclesCo k hk := by
-  rw [← h.cyclesCoIso_inv_comp_descCyclesCo, Iso.hom_inv_id_assoc]
+lemma RightHomologyData.opcyclesIso_hom_comp_descQ :
+    h.opcyclesIso.hom ≫ h.descQ k hk = S.descOpcycles k hk := by
+  rw [← h.opcyclesIso_inv_comp_descOpcycles, Iso.hom_inv_id_assoc]
 
 end
 
@@ -1095,7 +1095,7 @@ lemma isIso_rightHomologyι (hg : S.g = 0) [S.HasRightHomology] :
 
 @[simps! hom]
 noncomputable def asIsoRightHomologyι (hg : S.g = 0) [S.HasRightHomology] :
-    S.rightHomology ≅ S.cyclesCo := by
+    S.rightHomology ≅ S.opcycles := by
   have := S.isIso_rightHomologyι hg
   exact asIso S.rightHomologyι
 

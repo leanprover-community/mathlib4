@@ -207,10 +207,10 @@ lemma rightHomologyMap'_neg :
   simp only [γ.rightHomologyMap'_eq, γ.neg.rightHomologyMap'_eq, RightHomologyMapData.neg_φH]
 
 @[simp]
-lemma cyclesCoMap'_neg :
-    cyclesCoMap' (-φ) h₁ h₂ = -cyclesCoMap' φ h₁ h₂ := by
+lemma opcyclesMap'_neg :
+    opcyclesMap' (-φ) h₁ h₂ = -opcyclesMap' φ h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
-  simp only [γ.cyclesCoMap'_eq, γ.neg.cyclesCoMap'_eq, RightHomologyMapData.neg_φQ]
+  simp only [γ.opcyclesMap'_eq, γ.neg.opcyclesMap'_eq, RightHomologyMapData.neg_φQ]
 
 @[simp]
 lemma rightHomologyMap'_add :
@@ -222,13 +222,13 @@ lemma rightHomologyMap'_add :
     (γ.add γ').rightHomologyMap'_eq, RightHomologyMapData.add_φH]
 
 @[simp]
-lemma cyclesCoMap'_add :
-    cyclesCoMap' (φ + φ') h₁ h₂ = cyclesCoMap' φ h₁ h₂ +
-      cyclesCoMap' φ' h₁ h₂ := by
+lemma opcyclesMap'_add :
+    opcyclesMap' (φ + φ') h₁ h₂ = opcyclesMap' φ h₁ h₂ +
+      opcyclesMap' φ' h₁ h₂ := by
   have γ : RightHomologyMapData φ h₁ h₂ := default
   have γ' : RightHomologyMapData φ' h₁ h₂ := default
-  simp only [γ.cyclesCoMap'_eq, γ'.cyclesCoMap'_eq,
-    (γ.add γ').cyclesCoMap'_eq, RightHomologyMapData.add_φQ]
+  simp only [γ.opcyclesMap'_eq, γ'.opcyclesMap'_eq,
+    (γ.add γ').opcyclesMap'_eq, RightHomologyMapData.add_φQ]
 
 @[simp]
 lemma rightHomologyMap'_sub :
@@ -237,10 +237,10 @@ lemma rightHomologyMap'_sub :
   simp only [sub_eq_add_neg, rightHomologyMap'_add, rightHomologyMap'_neg]
 
 @[simp]
-lemma cyclesCoMap'_sub :
-    cyclesCoMap' (φ - φ') h₁ h₂ = cyclesCoMap' φ h₁ h₂ -
-      cyclesCoMap' φ' h₁ h₂ := by
-  simp only [sub_eq_add_neg, cyclesCoMap'_add, cyclesCoMap'_neg]
+lemma opcyclesMap'_sub :
+    opcyclesMap' (φ - φ') h₁ h₂ = opcyclesMap' φ h₁ h₂ -
+      opcyclesMap' φ' h₁ h₂ := by
+  simp only [sub_eq_add_neg, opcyclesMap'_add, opcyclesMap'_neg]
 
 variable (φ φ')
 
@@ -253,32 +253,32 @@ lemma rightHomologyMap_neg : rightHomologyMap (-φ)  = -rightHomologyMap φ :=
   rightHomologyMap'_neg _ _
 
 @[simp]
-lemma cyclesCoMap_neg : cyclesCoMap (-φ) = -cyclesCoMap φ :=
-  cyclesCoMap'_neg _ _
+lemma opcyclesMap_neg : opcyclesMap (-φ) = -opcyclesMap φ :=
+  opcyclesMap'_neg _ _
 
 @[simp]
 lemma rightHomologyMap_add : rightHomologyMap (φ + φ')  = rightHomologyMap φ + rightHomologyMap φ' :=
   rightHomologyMap'_add _ _
 
 @[simp]
-lemma cyclesCoMap_add : cyclesCoMap (φ + φ') = cyclesCoMap φ + cyclesCoMap φ' :=
-  cyclesCoMap'_add _ _
+lemma opcyclesMap_add : opcyclesMap (φ + φ') = opcyclesMap φ + opcyclesMap φ' :=
+  opcyclesMap'_add _ _
 
 @[simp]
 lemma rightHomologyMap_sub : rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
   rightHomologyMap'_sub  _ _
 
 @[simp]
-lemma cyclesCoMap_sub : cyclesCoMap (φ - φ') = cyclesCoMap φ - cyclesCoMap φ' :=
-  cyclesCoMap'_sub _ _
+lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ' :=
+  opcyclesMap'_sub _ _
 
 end
 
 instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
   (rightHomologyFunctor C).Additive where
 
-instance cyclesCoFunctor_additive [HasKernels C] [HasCokernels C] :
-  (cyclesCoFunctor C).Additive where
+instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
+  (opcyclesFunctor C).Additive where
 
 end RightHomology
 
