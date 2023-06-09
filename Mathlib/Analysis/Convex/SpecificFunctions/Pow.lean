@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
@@ -46,6 +45,35 @@ lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
 
+lemma strictConvexOn_inv : StrictConvexOn ℝ≥0 (Set.Ioi 0) fun x : ℝ≥0 => x⁻¹ := by
+  refine ⟨convex_Ioi 0, fun x hx y hy hxy a b ha hb hab => ?_⟩
+  have hx' : 0 < x := hx
+  have hy' : 0 < y := hy
+  have hpos : 0 < a * x + b * y := by positivity
+  have hxinv : x⁻¹ * x = 1 := inv_mul_cancel (by positivity)
+  have hyinv : y⁻¹ * y = 1 := inv_mul_cancel (by positivity)
+  have h_main : 1 < (a * x⁻¹ + b * y⁻¹) * (a * x + b * y) := by
+    calc
+      (a * x⁻¹ + b * y⁻¹) * (a * x + b * y)
+        = a^2 * x⁻¹ * x + b^2 * y⁻¹ * y + a * b * (x⁻¹ * y + y⁻¹ * x)
+                  := by ring
+      _ = a^2 + b^2 + a * b * (x⁻¹ * y + y⁻¹ * x)
+                  := by simp only [ne_eq, mul_assoc (a ^ 2), hxinv, mul_one, mul_assoc (b ^ 2), hyinv]
+      _ = a^2 + b^2 + a * b * ((x^2 + y^2) / (x * y))
+                  := by sorry
+      _ > a^2 + b^2 + a * b * 2
+                  := by sorry
+      _ = (a + b)^2
+                  := by sorry
+      _ = 1
+                  := by sorry
+  simp [inv_pos_lt_iff_one_lt_mul hpos, h_main]
+
+lemma strictConvexOn_rpow_of_neg {p : ℝ} (hp₀ : p < 0) :
+    StrictConvexOn ℝ≥0 (Set.Ioi 0) fun x : ℝ≥0 => x ^ p := by
+  -- use two_mul_le_add_sq
+  sorry
+
 end NNReal
 
 namespace Real
@@ -84,5 +112,9 @@ lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) Real.sqrt := by
     ext x; exact Real.sqrt_eq_rpow x
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
+
+lemma strictConvexOn_rpow_of_neg {p : ℝ} (hp₀ : p < 0) :
+    StrictConvexOn ℝ (Set.Ioi 0) fun x : ℝ => x ^ p := by
+  sorry
 
 end Real
