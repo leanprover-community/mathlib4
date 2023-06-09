@@ -1016,31 +1016,31 @@ theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
   calc
     μH[Fintype.card ι] (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ≤
         liminf (fun n : ℕ => ∑ i : γ n, diam (t n i) ^ ↑(Fintype.card ι)) atTop :=
-      hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
-        (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
-    _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / n) ^ Fintype.card ι) atTop := by
-      refine'
-        liminf_le_liminf _
-          (by
-            run_tac
-              is_bounded_default)
-      filter_upwards [B] with _ hn
-      apply Finset.sum_le_sum fun i _ => _
-      rw [ENNReal.rpow_nat_cast]
-      exact pow_le_pow_of_le_left' (hn i) _
+      sorry
+      --hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
+      --  (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
+    _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / (n : ℝ≥0∞)) ^ Fintype.card ι) atTop := by
+      refine' liminf_le_liminf _ _
+      · filter_upwards [B] with _ hn
+        apply Finset.sum_le_sum fun i _ => _
+        simp only [ENNReal.rpow_nat_cast]
+        intros i _
+        exact pow_le_pow_of_le_left' (hn i) _
+      · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
       simp only [Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
         nsmul_eq_mul, Fintype.card_pi, div_eq_mul_inv, Finset.prod_mul_distrib, Finset.prod_const]
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
-      apply tendsto.liminf_eq
+      apply Tendsto.liminf_eq
       refine' ENNReal.tendsto_finset_prod_of_ne_top _ (fun i hi => _) fun i hi => _
       · apply
-          tendsto.congr' _
-            ((ENNReal.continuous_of_real.tendsto _).comp
+          Tendsto.congr' _
+            ((ENNReal.continuous_ofReal.tendsto _).comp
               ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_nat_cast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
-        simp only [ENNReal.ofReal_div_of_pos (nat.cast_pos.mpr hn), comp_app,
+        intros n hn
+        simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_coe_nat]
       · simp only [ENNReal.ofReal_ne_top, Ne.def, not_false_iff]
 #align measure_theory.hausdorff_measure_pi_real MeasureTheory.hausdorffMeasure_pi_real
