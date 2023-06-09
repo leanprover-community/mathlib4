@@ -1695,19 +1695,6 @@ def induction {C : Fin (n + 1) → Sort _} (h0 : C 0)
     exact IH (lt_of_succ_lt hi)
 #align fin.induction Fin.induction
 
-/-- Define `C i` by induction on `i : Fin n` via induction on the underlying `Nat` value.
-    This function is a bit more flexible than `induction` above, because it deals with `i : Fin n`
-    rather than just `i : Fin (n+1)`
--/
-@[elab_as_elim]
-def induction' {C : ∀ n, Fin n → Sort _} (h0 : ∀ {n}, C (n+1) 0)
-    (hs : ∀ {n} (i : Fin n), C (n+1) (castSucc i) → C _ i.succ) {m : Nat} :
-    ∀ i : Fin m, C m i := by
-  intro ⟨i, h⟩
-  cases m
-  case zero => contradiction
-  case succ m =>
-    exact induction (n:=m) (C := C (m+1)) h0 hs _
 
 --Porting note: This proof became a lot more complicated
 @[simp]
