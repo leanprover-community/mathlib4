@@ -224,17 +224,8 @@ instance : Infinite (DihedralGroup 0) := by
 
 end DihedralGroup
 
-theorem key0 (n : ℕ) (h2 : ¬ 2 ∣ n) : n % 4 = 1 ∨ n % 4 = 3 := by
-  have : n % 4 < 4 := Nat.mod_lt n four_pos
-  interval_cases h : n % 4
-  . replace h := congrArg (· % 2) h
-    simp_rw [Nat.mod_mod_of_dvd, Nat.zero_mod, ←Nat.dvd_iff_mod_eq_zero] at h
-    contradiction
-  . exact Or.inl rfl
-  . replace h := congrArg (· % 2) h
-    simp_rw [Nat.mod_mod_of_dvd, Nat.mod_self, ←Nat.dvd_iff_mod_eq_zero] at h
-    contradiction
-  . exact Or.inr rfl
+theorem key0 (n : ℕ) (h2 : ¬ 2 ∣ n) : n % 4 = 1 ∨ n % 4 = 3 :=
+Nat.odd_mod_four_iff.mp (Nat.two_dvd_ne_zero.mp h2)
 
 theorem key1 (n : ℕ) (h2 : ¬ 2 ∣ n) : (n % 4) ^ 2 + 3 = n % 4 * 4 := by
   rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
@@ -267,7 +258,6 @@ theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
             _ = (n % 4 * 4 + (n % 4) * 4 * (n / 4)) * n := by rw [key]
             _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
         . norm_cast
-          have h3 : n / 4 + 1 ≠ 0 := Nat.succ_ne_zero (n / 4)
           have h4 : n % 4 ≠ 0 := by
             contrapose! h2
             rw [←Nat.dvd_iff_mod_eq_zero] at h2
