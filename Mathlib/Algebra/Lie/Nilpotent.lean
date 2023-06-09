@@ -553,9 +553,10 @@ whether we regard `L ⧸ I` as an `L` module or an `L ⧸ I` module.
 
 TODO: This result obviously generalises but the generalisation requires the missing definition of
 morphisms between Lie modules over different Lie algebras. -/
+-- Porting note: aded `LieSubmodule.toSubmodule` in the statement
 theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
-    (lowerCentralSeries R L (L ⧸ I) k : Submodule R (L ⧸ I)) =
-      lowerCentralSeries R (L ⧸ I) (L ⧸ I) k := by
+    LieSubmodule.toSubmodule (lowerCentralSeries R L (L ⧸ I) k) =
+      LieSubmodule.toSubmodule (lowerCentralSeries R (L ⧸ I) (L ⧸ I) k) := by
   induction' k with k ih
   · simp only [Nat.zero_eq, LieModule.lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
       LieIdeal.top_coe_lieSubalgebra, LieSubalgebra.top_coe_submodule]
