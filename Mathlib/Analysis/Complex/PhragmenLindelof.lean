@@ -379,7 +379,8 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
   have H : MapsTo exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) := fun z hz ↦ by
     rw [mem_reProdIm, exp_re, exp_im, mem_Ioi, mem_Ioi]
     have : 0 < Real.cos z.im := Real.cos_pos_of_mem_Ioo ⟨by linarith [hz.1, hz.2], hz.2⟩
-    have : 0 < Real.sin z.im := Real.sin_pos_of_mem_Ioo ⟨hz.1, hz.2.trans (half_lt_self Real.pi_pos)⟩
+    have : 0 < Real.sin z.im :=
+      Real.sin_pos_of_mem_Ioo ⟨hz.1, hz.2.trans (half_lt_self Real.pi_pos)⟩
     constructor <;> positivity
   refine' horizontal_strip (hd.comp differentiable_exp.diffContOnCl H) _ _ _ hζ.1 hζ.2
   -- porting note: failed to clear hζ ζ
