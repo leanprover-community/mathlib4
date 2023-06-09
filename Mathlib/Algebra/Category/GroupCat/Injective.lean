@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.category.Group.injective
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
--/
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Injective
@@ -109,6 +99,7 @@ theorem injective_as_module_of_injective_as_Ab [Injective (⟨A,inferInstance⟩
       apply this }
 #align AddCommGroup.injective_as_module_of_injective_as_Ab AddCommGroupCat.injective_as_module_of_injective_as_Ab
 
+set_option trace.Elab.step.result true in
 instance injective_of_divisible [DivisibleBy A ℤ] :
     CategoryTheory.Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
   @injective_of_injective_as_module A _ <|
@@ -131,7 +122,8 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
             simp only [hn, map_zero]
             symm
             convert map_zero g
-        · set gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩ with gm_eq
+        .
+          set gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩ with gm_eq
           refine'
             ⟨{  toFun := _
                 map_add' := _
@@ -156,4 +148,3 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
 end AddCommGroupCat
-

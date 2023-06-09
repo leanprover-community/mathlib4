@@ -39,7 +39,7 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-| `(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
+| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
   withMainContext do
     let (ty, vale) ← match ty with
     | some ty =>
@@ -51,13 +51,12 @@ elab_rules : tactic
     let fvar ← liftMetaTacticAux fun goal ↦ do
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
-    withMainContext do
-      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
+    Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have $h : ($a : $(← delab ty)) = ($val : $(← delab ty)) := rfl))
+      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $(← delab ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have $h : ($val : $(← delab ty)) = ($a : $(← delab ty)) := rfl))
+      evalTactic (← `(tactic| have%$tk $h : ($val : $(← delab ty)) = $a := rfl))
     | _, _ => pure ()
