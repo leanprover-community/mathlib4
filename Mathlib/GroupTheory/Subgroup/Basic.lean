@@ -2303,7 +2303,7 @@ theorem le_centralizer_iff : H ≤ K.centralizer ↔ K ≤ H.centralizer :=
 
 @[to_additive]
 theorem center_le_centralizer (s) : center G ≤ centralizer s :=
-  Set.center_subset_centralizer s
+  Set.center_subset_centralizer (s : Set G)
 #align subgroup.center_le_centralizer Subgroup.center_le_centralizer
 
 @[to_additive]
