@@ -6,7 +6,7 @@ Authors: Ian Benway.
 import Lean
 
 namespace Mathlib.Tactic
-open Lean Elab Elab.Tactic Meta
+open Lean Elab Elab.Tactic Meta PrettyPrinter Delaborator
 
 syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
 
@@ -51,13 +51,13 @@ elab_rules : tactic
     let fvar ← liftMetaTacticAux fun goal ↦ do
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
-    Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
+    withMainContext do
+      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
-    let tt ← Term.exprToSyntax ty
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $tt) := rfl))
+      evalTactic (← `(tactic| have $h : ($a : $(← delab ty)) = ($val : $(← delab ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have%$tk $h : ($val : $tt) = $a := rfl))
+      evalTactic (← `(tactic| have $h : ($val : $(← delab ty)) = ($a : $(← delab ty)) := rfl))
     | _, _ => pure ()
