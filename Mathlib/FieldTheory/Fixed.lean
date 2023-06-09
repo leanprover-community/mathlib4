@@ -265,7 +265,7 @@ section Fintype
 
 variable [Fintype G] (x : F)
 
-theorem minpoly_eq_minpoly : minpoly G F x = minpoly (FixedPoints.subfield G F) x :=
+theorem minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfield G F) x :=
   minpoly.eq_of_irreducible_of_monic (minpoly.irreducible G F x) (minpoly.eval₂ G F x)
     (minpoly.monic G F x)
 #align fixed_points.minpoly_eq_minpoly FixedPoints.minpoly_eq_minpoly
@@ -275,7 +275,7 @@ theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
       Cardinal.natCast_le] using
       cardinal_lift_le_rank_of_linearIndependent'
-        (linear_independent_smul_of_linear_independent G F hs)
+        (linearIndependent_smul_of_linearIndependent G F hs)
 #align fixed_points.rank_le_card FixedPoints.rank_le_card
 
 end Fintype
@@ -285,11 +285,11 @@ section Finite
 variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F :=
-  ⟨fun x => (isIntegral G F x).IsAlgebraic _, fun x =>
+  ⟨fun x => (isIntegral G F x).isAlgebraic _, fun x =>
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
-      rw [← minpoly_eq_minpoly, minpoly, coe_algebra_map, ← Subfield.toSubring_subtype_eq_subtype,
-        Polynomial.map_toSubring _ (Subfield G F).toSubring, prodXSubSmul]
+      rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
+        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSmul]
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
 #align fixed_points.normal FixedPoints.normal
 
@@ -297,14 +297,14 @@ instance separable : IsSeparable (FixedPoints.subfield G F) F :=
   ⟨isIntegral G F, fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
-    erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).Subtype,
-      minpoly, Polynomial.map_toSubring _ (Subfield G F).toSubring]
-    exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_of_quotient_stabilizer G x)⟩
+    erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
+      minpoly, Polynomial.map_toSubring _ (subfield G F).toSubring]
+    exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 #align fixed_points.separable FixedPoints.separable
 
-instance : FiniteDimensional (subfield G F) F := by cases nonempty_fintype G;
-  exact
-    IsNoetherian.iff_fg.1
+instance : FiniteDimensional (subfield G F) F := by
+  cases nonempty_fintype G
+  exact IsNoetherian.iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt <| Cardinal.nat_lt_aleph0 _)
 
 end Finite
@@ -320,8 +320,8 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     [Ring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
-    ((linearIndependent_monoidHom A B).comp (coe : (A →ₐ[R] B) → A →* B) fun f g hfg =>
-        AlgHom.ext <| MonoidHom.ext_iff.1 hfg :
+    ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
+        AlgHom.ext <| fun _ => FunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
@@ -351,7 +351,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
     calc
       Fintype.card G ≤ Fintype.card (F →ₐ[FixedPoints.subfield G F] F) :=
         Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
-      _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (fixedPoints G F) F)
+      _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (subfield G F) F)
       _ = finrank (FixedPoints.subfield G F) F := finrank_linear_map' _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
