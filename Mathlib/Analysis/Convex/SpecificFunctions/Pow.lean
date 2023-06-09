@@ -30,7 +30,15 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ≥0 univ fun x : ℝ≥0 => x ^ p := by
-  sorry
+  by_cases hp : p = 0
+  case pos => exact ⟨convex_univ, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
+  case neg =>
+    push_neg at hp
+    by_cases hp' : p = 1
+    case pos => exact ⟨convex_univ, by simp [hp']⟩
+    case neg =>
+      push_neg at hp'
+      exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
   have : NNReal.sqrt = fun (x:ℝ≥0) => x ^ (1 / (2:ℝ)) := by
@@ -53,15 +61,23 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   let b' : ℝ≥0 := ⟨b, by positivity⟩
   have hx' : (fun z => z ^ p) x = (fun z => z ^ p) x' := rfl
   have hy' : (fun z => z ^ p) y = (fun z => z ^ p) y' := rfl
-  have hxy' : x' ≠ y' := sorry
-  have hab' : a' + b' = 1 := sorry
+  have hxy' : x' ≠ y' := Subtype.ne_of_val_ne hxy
+  have hab' : a' + b' = 1 := by ext; simp [hab]
   rw [hx', hy']
   exact (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
     hxy' (by exact_mod_cast ha) (by exact_mod_cast hb) hab'
 
-lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : 1 ≤ p) :
+lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ (Set.Ici 0) fun x : ℝ => x ^ p := by
-  sorry
+  by_cases hp : p = 0
+  case pos => exact ⟨convex_Ici 0, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
+  case neg =>
+    push_neg at hp
+    by_cases hp' : p = 1
+    case pos => exact ⟨convex_Ici 0, by simp [hp']⟩
+    case neg =>
+      push_neg at hp'
+      exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) Real.sqrt := by
   have : Real.sqrt = fun (x:ℝ) => x ^ (1 / (2:ℝ)) := by
