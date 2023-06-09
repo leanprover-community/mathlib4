@@ -14,6 +14,8 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.ModCases
 import Mathlib.Util.PiNotation
 
 /-!
@@ -62,6 +64,9 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [Π a, Group (i a)] :
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
+
+theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
+  div_eq_zero_iff.2 (Or.inr (sq_eq_zero_iff.2 (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite)))
 
 variable [Finite M]
 
@@ -157,7 +162,7 @@ lemma aux2 {n : ℕ} (h0 : n ≠ 0) (h1 : n ≠ 1) : n / 4 + 1 < n := by
       add_le_add_left (mul_le_mul_right' ((Nat.two_le_iff n).mpr ⟨h0, h1⟩) 3) (n * 1)
     _ = n * 4 := by rw [←mul_add]
 
-namespace CommutingProbability1
+namespace CommutingProbability
 
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if h0 : n = 0 then [0]
@@ -169,101 +174,92 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     have := aux2 h0 h1
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
-def ReciprocalGroup (n : ℕ) : Type :=
-  Π i : Fin (reciprocalFactors n).length, DihedralGroup ((reciprocalFactors n)[i])
+def ReciprocalGroup (l : List ℕ) : Type :=
+  Π i : Fin l.length, DihedralGroup (l[i])
 
-instance (n : ℕ) : Group (ReciprocalGroup n) := by
-  simp_rw [ReciprocalGroup]
-  infer_instance
+instance (l : List ℕ) : Group (ReciprocalGroup l) := Pi.group
 
-lemma reciprocalFactorsZero : reciprocalFactors 0 = [0] := rfl
-
-lemma reciprocalFactorsOne : reciprocalFactors 1 = [] := rfl
-
-lemma reciprocalFactorsEven (h0 : n ≠ 0) (h2 : 2 ∣ n) :
-    reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
-  conv_lhs => unfold reciprocalFactors
-  rw [dif_neg, dif_neg, if_pos h2]
-  sorry
-
-lemma reciprocalFactorsOdd (h0 : n ≠ 0) (h1 : n ≠ 1) (h2 : ¬ 2 ∣ n) :
-    reciprocalFactors n = n % 4 * 4 :: reciprocalFactors (n / 4 + 1) := by
-  sorry
-
-theorem commProb_ReciprocalGroup (n : ℕ) : commProb (ReciprocalGroup n) = 1 / n := by
+lemma commProb_ReciprocalGroup (l : List ℕ) :
+    commProb (ReciprocalGroup l) = (l.map (fun k => commProb (DihedralGroup k))).prod := by
   unfold ReciprocalGroup
   rw [commProb_pi]
-  have key : reciprocalFactors n = reciprocalFactors n := rfl
-  conv_rhs at key => unfold reciprocalFactors
+  induction' l with n l h
+  . rfl
+  . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
+    rfl
 
+lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n)  :
+  commProb (DihedralGroup n) = (n + 3) / (4 * n) := sorry
 
-  refine' n.strong_induction_on _
-  intro k h
-  rcases eq_or_ne k 0 with rfl | h0
-  . simp_rw [reciprocalFactorsZero, Nat.cast_zero, div_zero, List.length_singleton,
-      Fin.prod_univ_one]
-    change commProb (DihedralGroup 0) = 0
-    sorry
-  rcases eq_or_ne k 1 with rfl | h1
-  . simp_rw [reciprocalFactorsOne, Nat.cast_one, div_one]
-  by_cases h2 : 2 ∣ k
-  . simp_rw [reciprocalFactorsEven h0 h2]
-    sorry
-  . sorry
+namespace DihedralGroup
 
-end CommutingProbability1
+def fintypeHelper {n : ℕ} : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
+  invFun i := match i with
+    | DihedralGroup.r j => Sum.inl j
+    | DihedralGroup.sr j => Sum.inr j
+  toFun i := match i with
+    | Sum.inl j => DihedralGroup.r j
+    | Sum.inr j => DihedralGroup.sr j
+  left_inv := by rintro (x | x) <;> rfl
+  right_inv := by rintro (x | x) <;> rfl
 
-namespace CommutingProbability
+instance : Infinite (DihedralGroup 0) := by
+  rw [←DihedralGroup.fintypeHelper.infinite_iff]
+  infer_instance
 
-def ReciprocalGroup (n : ℕ) : Type :=
-  if h0 : n = 0 then DihedralGroup 0
-  else if h1 : n = 1 then DihedralGroup 1
-  else if h2 : 2 ∣ n then
-    have := aux1 h0
-    DihedralGroup 3 × ReciprocalGroup (n / 2)
-  else
-    have := aux2 h0 h1
-    DihedralGroup (n % 4 * n) × ReciprocalGroup (n / 4 + 1)
+end DihedralGroup
 
-instance foo (n : ℕ) : Group (ReciprocalGroup n) := by
-  unfold ReciprocalGroup
+theorem key0 (n : ℕ) (h2 : ¬ 2 ∣ n) : n % 4 = 1 ∨ n % 4 = 3 := by
+  have : n % 4 < 4 := Nat.mod_lt n four_pos
+  interval_cases h : n % 4
+  . replace h := congrArg (· % 2) h
+    simp_rw [Nat.mod_mod_of_dvd, Nat.zero_mod, ←Nat.dvd_iff_mod_eq_zero] at h
+    contradiction
+  . exact Or.inl rfl
+  . replace h := congrArg (· % 2) h
+    simp_rw [Nat.mod_mod_of_dvd, Nat.mod_self, ←Nat.dvd_iff_mod_eq_zero] at h
+    contradiction
+  . exact Or.inr rfl
+
+theorem key1 (n : ℕ) (h2 : ¬ 2 ∣ n) : (n % 4) ^ 2 + 3 = n % 4 * 4 := by
+  rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
+
+theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
+    commProb (ReciprocalGroup (reciprocalFactors n)) = 1 / n := by
+  rw [commProb_ReciprocalGroup]
+  unfold reciprocalFactors
   by_cases h0 : n = 0
-  . rw [dif_pos h0]
-    infer_instance
-  . rw [dif_neg h0]
-    by_cases h1 : n = 1
-    . rw [dif_pos h1]
-      infer_instance
-    . rw [dif_neg h1]
-      by_cases h2 : 2 ∣ n
-      . rw [dif_pos h2]
-        have := aux1 h0
-        have := foo (n / 2)
-        infer_instance
-      . rw [dif_neg h2]
-        have := aux2 h0 h1
-        have := foo (n / 4 + 1)
-        infer_instance
-
-theorem commProb_ReciprocalGroup (n : ℕ) : commProb (ReciprocalGroup n) = 1 / n := by
-  unfold ReciprocalGroup
-
-theorem commProb_ReciprocalGroup (n : ℕ) : commProb (ReciprocalGroup n) = 1 / n := by
-  simp_rw [ReciprocalGroup, commProb_pi]
-  refine' n.strong_induction_on _
-  intro k h
-  rcases eq_or_ne k 0 with rfl | h0
-  . simp_rw [reciprocalFactorsZero, Nat.cast_zero, div_zero, List.length_singleton,
-      Fin.prod_univ_one]
-    change commProb (DihedralGroup 0) = 0
-    sorry
-  rcases eq_or_ne k 1 with rfl | h1
-  . simp_rw [reciprocalFactorsOne, Nat.cast_one, div_one]
-  by_cases h2 : 2 ∣ k
-  . simp_rw [reciprocalFactorsEven h0 h2]
-    sorry
-  . sorry
-
-#eval reciprocalFactors 15
+  . rw [dif_pos h0, List.map_singleton, List.prod_singleton, h0, Nat.cast_zero, div_zero]
+    apply commProb_eq_zero_of_infinite
+  . by_cases h1 : n = 1
+    . rw [dif_neg h0, dif_pos h1, List.map_nil, List.prod_nil, h1, Nat.cast_one, div_one]
+    . by_cases h2 : 2 ∣  n
+      . have := aux1 h0
+        rw [dif_neg h0, dif_neg h1, if_pos h2, List.map_cons, List.prod_cons,
+            ←commProb_ReciprocalGroup, commProb_ReciprocalGroup_reciprocalFactors (n / 2),
+            commProb_DihedralGroup_Odd 3 (by norm_num)]
+        field_simp [h0]
+        norm_num
+      . have := aux2 h0 h1
+        rw [dif_neg h0, dif_neg h1, if_neg h2, List.map_cons, List.prod_cons,
+            ←commProb_ReciprocalGroup, commProb_ReciprocalGroup_reciprocalFactors (n / 4 + 1),
+            commProb_DihedralGroup_Odd (n % 4 * n)]
+        rw [div_mul_div_comm, mul_one, div_eq_div_iff]
+        . norm_cast
+          have key : (n % 4) ^ 2 + 3 = n % 4 * 4 := key1 n h2
+          calc ((n % 4) * n + 3) * n = ((n % 4) * (4 * (n / 4) + n % 4) + 3) * n := by rw [Nat.div_add_mod]
+            _ = ((n % 4) ^ 2 + 3 + (n % 4) * 4 * (n / 4)) * n := by ring
+            _ = (n % 4 * 4 + (n % 4) * 4 * (n / 4)) * n := by rw [key]
+            _ = 1 * (4 * (n % 4 * n) * (n / 4 + 1)) := by ring
+        . norm_cast
+          have h3 : n / 4 + 1 ≠ 0 := Nat.succ_ne_zero (n / 4)
+          have h4 : n % 4 ≠ 0 := by
+            contrapose! h2
+            rw [←Nat.dvd_iff_mod_eq_zero] at h2
+            exact dvd_trans (by norm_num) h2
+          positivity
+        . norm_cast
+        . apply Nat.prime_two.not_dvd_mul _ h2
+          rcases (key0 n h2) with h | h <;> rw [h] <;> norm_num
 
 end CommutingProbability
