@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Closed.Cartesian
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.Conj
-import Mathbin.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # A cartesian closed category with zero object is trivial
@@ -52,8 +52,7 @@ def uniqueHomsetOfInitialIsoTerminal [HasInitial C] (i : ⊥_ C ≅ ⊤_ C) (X Y
 open scoped ZeroObject
 
 /-- If a cartesian closed category has a zero object, each homset has exactly one element. -/
-def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) :=
-  by
+def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : has_initial C := has_zero_object.has_initial
   apply unique_homset_of_initial_iso_terminal _ X Y
   refine' ⟨default, (default : ⊤_ C ⟶ 0) ≫ default, _, _⟩ <;> simp
