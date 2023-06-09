@@ -1082,7 +1082,6 @@ theorem hausdorffMeasure_prod_real : (μH[2] : Measure (ℝ × ℝ)) = volume :=
 section Geometric
 
 variable {𝕜 E P : Type _}
-
 theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
@@ -1095,13 +1094,24 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   -- break lineMap into pieces
   suffices
       μH[1] ((· • ·) ‖v‖ '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
-    simpa only [Set.image_image, smul_comm (norm _), inv_smul_smul₀ hn,
-      LinearMap.toSpanSingleton_apply] using this
+    -- porting note: proof was shorter, could need some golf
+    simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
+    convert this
+    · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
+      ext e
+      simp
+      refine' ⟨fun ⟨x, h⟩ => ⟨x, _⟩, fun ⟨x, h⟩ => ⟨x, _⟩⟩
+      · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
+        exact h
+      · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn] at h
+        exact h
+    · exact hausdorffMeasure_real.symm
   have iso_smul : Isometry (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
     refine' AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans _
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hn, mul_one, LinearMap.id_apply]
-  rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm, NNReal.rpow_one,
-    iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
+  rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm,
+      NNReal.rpow_eq_pow, NNReal.rpow_one,
+      iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
 #align measure_theory.hausdorff_measure_smul_right_image MeasureTheory.hausdorffMeasure_smul_right_image
 
 section NormedFieldAffine
