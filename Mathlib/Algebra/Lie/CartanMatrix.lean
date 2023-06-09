@@ -8,9 +8,9 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Free
-import Mathbin.Algebra.Lie.Quotient
-import Mathbin.Data.Matrix.Notation
+import Mathlib.Algebra.Lie.Free
+import Mathlib.Algebra.Lie.Quotient
+import Mathlib.Data.Matrix.Notation
 
 /-!
 # Lie algebras from Cartan matrices
@@ -161,13 +161,11 @@ def adF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ad (F i) ^ (-A i j).toNat <| ⁅F i, F j⁆
 #align cartan_matrix.relations.ad_F CartanMatrix.Relations.adF
 
-private theorem ad_E_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 :=
-  by
+private theorem ad_E_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
   simp [ad_E, h, h']
 
-private theorem ad_F_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 :=
-  by
+private theorem ad_F_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
   simp [ad_F, h, h']
 
