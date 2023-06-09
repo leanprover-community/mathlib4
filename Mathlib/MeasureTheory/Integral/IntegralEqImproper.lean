@@ -31,33 +31,37 @@ we prove various ways of studying the proper integral by studying the improper o
 
 ## Definitions
 
-The main definition of this file is `MeasureTheory.AECover`. It is a rather technical
-definition whose sole purpose is generalizing and factoring proofs. Given an index type `ι`, a
-countably generated filter `l` over `ι`, and an `ι`-indexed family `φ` of subsets of a measurable
-space `α` equipped with a measure `μ`, one should think of a hypothesis `hφ : ae_cover μ l φ` as
-a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit
-of `∫ x in φ i, f x ∂μ` as `i` tends to `l`.
+The main definition of this file is `MeasureTheory.AECover`. It is a rather technical definition
+whose sole purpose is generalizing and factoring proofs. Given an index type `ι`, a countably
+generated filter `l` over `ι`, and an `ι`-indexed family `φ` of subsets of a measurable space `α`
+equipped with a measure `μ`, one should think of a hypothesis `hφ : MeasureTheory.AECover μ l φ` as
+a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x
+in φ i, f x ∂μ` as `i` tends to `l`.
 
-When using this definition with a measure restricted to a set `s`, which happens fairly often,
-one should not try too hard to use a `ae_cover` of subsets of `s`, as it often makes proofs
+When using this definition with a measure restricted to a set `s`, which happens fairly often, one
+should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
 more complicated than necessary. See for example the proof of
-`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)`
-as an `ae_cover` w.r.t. `μ.restrict (Iic b)`, instead of using `(λ x, Ioc x b)`.
+`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)` as an
+`MeasureTheory.AECover` w.r.t. `μ.restrict (Iic b)`, instead of using `(λ x, Ioc x b)`.
 
 ## Main statements
 
-- `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
-  where `l` is a countably generated filter, and if `f` is a measurable `ENNReal`-valued function,
-  then `∫⁻ x in φ n, f x ∂μ` tends to `∫⁻ x, f x ∂μ` as `n` tends to `l`
-- `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` : if `φ` is a `ae_cover μ l`,
-  where `l` is a countably generated filter, if `f` is measurable and integrable on each `φ n`,
-  and if `∫ x in φ n, ‖f x‖ ∂μ` tends to some `I : ℝ` as n tends to `l`, then `f` is integrable
-- `MeasureTheory.AECover.integral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
-  where `l` is a countably generated filter, and if `f` is measurable and integrable (globally),
-  then `∫ x in φ n, f x ∂μ` tends to `∫ x, f x ∂μ` as `n` tends to `+∞`.
+- `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated` : if `φ` is a
+  `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, and if `f` is a measurable
+  `ENNReal`-valued function, then `∫⁻ x in φ n, f x ∂μ` tends to `∫⁻ x, f x ∂μ` as `n` tends to `l`
+
+- `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` : if `φ` is a
+  `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, if `f` is measurable and
+  integrable on each `φ n`, and if `∫ x in φ n, ‖f x‖ ∂μ` tends to some `I : ℝ` as n tends to `l`,
+  then `f` is integrable
+
+- `MeasureTheory.AECover.integral_tendsto_of_countably_generated` : if `φ` is a
+  `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, and if `f` is measurable
+  and integrable (globally), then `∫ x in φ n, f x ∂μ` tends to `∫ x, f x ∂μ` as `n` tends to `+∞`.
 
 We then specialize these lemmas to various use cases involving intervals, which are frequent
 in analysis. In particular,
+
 - `MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto` is a version of FTC-2 on the interval
   `(a, +∞)`, giving the formula `∫ x in (a, +∞), g' x = l - g a` if `g'` is integrable and
   `g` tends to `l` at `+∞`.
@@ -67,7 +71,6 @@ in analysis. In particular,
 - `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
 -/
-
 
 open MeasureTheory Filter Set TopologicalSpace
 
@@ -79,11 +82,10 @@ section AECover
 
 variable {α ι : Type _} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
-/-- A sequence `φ` of subsets of `α` is a `ae_cover` w.r.t. a measure `μ` and a filter `l`
-    if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-    each `φ n` is measurable.
-    This definition is a technical way to avoid duplicating a lot of proofs.
-    It should be thought of as a sufficient condition for being able to interpret
+/-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
+    `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
+    each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
+    proofs.  It should be thought of as a sufficient condition for being able to interpret
     `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
 
     See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
