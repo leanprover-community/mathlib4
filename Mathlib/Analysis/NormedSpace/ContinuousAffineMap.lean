@@ -197,8 +197,9 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
       neg' := fun f => by
         simp [(ContinuousAffineMap.neg_apply)]
       add_le' := fun f g => by
-        simp only [Pi.add_apply, add_contLinear, coe_add, max_le_iff]
-        -- Porting note: added
+        simp only [coe_add, max_le_iff]
+        -- Porting note: previously `Pi.add_apply, add_contLinear, ` in the previous `simp only`
+        -- suffices, but now they don't fire.
         rw [ContinuousAffineMap.add_apply, add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
@@ -207,24 +208,27 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
         rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂
         · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
           obtain ⟨q, rfl⟩ := h₂
-          simp only [Function.const_apply, coe_const, norm_eq_zero] at h₁
-          -- Porting note: added
+          simp only [norm_eq_zero] at h₁
+          -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
+          -- `simp only`, but now they don't fire.
           rw [coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
         · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
-          simp only [Function.const_apply, coe_const, norm_le_zero_iff] at h₂
-          -- Porting note: added
+          simp only [norm_le_zero_iff] at h₂
+          -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
+          -- `simp only`, but now they don't fire.
           rw [coe_const, Function.const_apply] at h₂
           rw [h₂]
           rfl }
 
 instance : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
-    simp only [norm_def, (smul_contLinear), coe_smul, Pi.smul_apply, norm_smul, ←
-      mul_max_of_nonneg _ _ (norm_nonneg t)]
-    -- Porting note: added
+    simp only [norm_def, (smul_contLinear), norm_smul]
+    -- Porting note: previously all these rewrites were in the `simp only`,
+    -- but now they don't fire.
+    -- (in fact, `norm_smul` fires, but only once rather than twice!)
     rw [coe_smul, Pi.smul_apply, norm_smul, ← mul_max_of_nonneg _ _ (norm_nonneg t)]
 
 theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
@@ -258,9 +262,8 @@ def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V �
   left_inv f := by
     ext
     rw [f.decomp]
-    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, coe_contLinear, Pi.add_apply,
-      Function.const_apply]
-    -- Porting note: added
+    -- Porting note: previously `simp` closed the goal, but now we need to rewrite:
+    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply]
     rw [ContinuousAffineMap.coe_const, Function.const_apply]
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
