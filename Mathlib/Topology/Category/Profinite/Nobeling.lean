@@ -1,9 +1,7 @@
-import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.LinearCombination
 import Mathlib.Topology.Category.Profinite.InjectiveMap
 
 namespace LocallyConstant
