@@ -19,7 +19,7 @@ We set up the Fourier transform for complex-valued functions on finite-dimension
 
 ## Design choices
 
-In namespace `vector_fourier`, we define the Fourier integral in the following context:
+In namespace `VectorFourier`, we define the Fourier integral in the following context:
 * `𝕜` is a commutative ring.
 * `V` and `W` are `𝕜`-modules.
 * `e` is a unitary additive character of `𝕜`, i.e. a homomorphism `(Multiplicative 𝕜) →* circle`.
@@ -27,7 +27,7 @@ In namespace `vector_fourier`, we define the Fourier integral in the following c
 * `L` is a `𝕜`-bilinear form `V × W → 𝕜`.
 * `E` is a complete normed `ℂ`-vector space.
 
-With these definitions, we define `fourier_integral` to be the map from functions `V → E` to
+With these definitions, we define `fourierIntegral` to be the map from functions `V → E` to
 functions `W → E` that sends `f` to
 
 `λ w, ∫ v in V, e [-L v w] • f v ∂μ`,
@@ -45,7 +45,7 @@ in this case is defined as `Real.fourierIntegral`.
 
 ## Main results
 
-At present the only nontrivial lemma we prove is `continuous_fourier_integral`, stating that the
+At present the only nontrivial lemma we prove is `fourierIntegral_continuous`, stating that the
 Fourier transform of an integrable function is continuous (under mild assumptions).
 -/
 
