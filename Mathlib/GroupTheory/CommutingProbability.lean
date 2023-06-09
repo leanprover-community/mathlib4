@@ -191,7 +191,7 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
   . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
     rfl
 
-lemma card_conjClases_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
+lemma card_conjClasses_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 :=
 sorry
 
@@ -200,11 +200,18 @@ lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
   have : NeZero n := ⟨hn'⟩
-  rw [commProb_def']
-  rw [Nat.card_eq_fintype_card]
-  rw [Nat.card_eq_fintype_card, DihedralGroup.card]
+  rw [commProb_def', card_conjClasses_dihedralGroup_odd n hn,
+      Nat.card_eq_fintype_card, DihedralGroup.card]
+  have : ((n + 3) / 2 : ℕ) = ((n + 3 : ℕ) : ℚ) / (2 : ℕ) := by
+    rw [Nat.cast_div]
+    rw [Nat.two_dvd_ne_zero] at hn
+    rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hn]
+    norm_num
+    norm_num
+  rw [this]
   field_simp [hn']
-  sorry
+  left
+  ring
 
 namespace DihedralGroup
 
