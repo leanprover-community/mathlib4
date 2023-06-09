@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Presheaf
-import Mathbin.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathbin.CategoryTheory.Limits.Shapes.Types
-import Mathbin.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
 # Cartesian closure of Type
@@ -34,8 +34,7 @@ variable {C : Type v₂} [Category.{v₁} C]
 
 section CartesianClosed
 
-instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X)
-    where
+instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) where
   right :=
     { obj := fun Y => X ⟶ Y
       map := fun Y₁ Y₂ f g => g ≫ f }
