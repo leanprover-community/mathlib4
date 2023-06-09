@@ -1083,6 +1083,36 @@ end SMul
 
 end OrderedAddCommMonoid
 
+section OrderIso
+
+variable [OrderedAddCommMonoid α] [SMul 𝕜 α]
+
+theorem strictConvexOn_orderIso_symm (f : α ≃o α) (hf : StrictConcaveOn 𝕜 univ f) :
+    StrictConvexOn 𝕜 univ f.symm := by
+  rw [StrictConvexOn]
+  refine ⟨hf.1, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  rw [hx'', hy'']
+  simp only [OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) hxy' ha hb hab
+
+theorem strictConcaveOn_orderIso_symm (f : α ≃o α) (hf : StrictConvexOn 𝕜 univ f) :
+    StrictConcaveOn 𝕜 univ f.symm := by
+  rw [StrictConcaveOn]
+  refine ⟨hf.1, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  rw [hx'', hy'']
+  simp only [OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) hxy' ha hb hab
+
+end OrderIso
+
 end LinearOrderedField
 
 section
