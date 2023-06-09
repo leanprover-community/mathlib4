@@ -366,7 +366,7 @@ variable {S}
 
 /-- `(1 : FractionalIdeal S P)` is defined as the R-submodule `f(R) ≤ P`.
 
-However, this is not definitionally equal to `1 : submodule R P`,
+However, this is not definitionally equal to `1 : Submodule R P`,
 which is proved in the actual `simp` lemma `coe_one`. -/
 theorem coe_one_eq_coeSubmodule_top : ↑(1 : FractionalIdeal S P) = coeSubmodule P (⊤ : Ideal R) :=
   rfl
@@ -380,7 +380,7 @@ theorem coe_one : (↑(1 : FractionalIdeal S P) : Submodule R P) = 1 := by
 section Lattice
 
 /-!
-### `lattice` section
+### `Lattice` section
 
 Defines the order on fractional ideals as inclusion of their underlying sets,
 and ports the lattice structure on submodules to fractional ideals.
@@ -610,13 +610,13 @@ theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
 #align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
 
-instance : CommSemiring (FractionalIdeal S P) :=
+instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
 
 variable (S P)
 
-/-- `FractionalIdeal.submodule.has_coe` as a bundled `ring_hom`. -/
+/-- `FractionalIdeal.submodule.has_coe` as a bundled `RingHom`. -/
 @[simps]
 def coeSubmoduleHom : FractionalIdeal S P →+* Submodule R P where
   toFun := coeToSubmodule
@@ -687,7 +687,7 @@ theorem one_le {I : FractionalIdeal S P} : 1 ≤ I ↔ (1 : P) ∈ I := by
 
 variable (S P)
 
-/-- `coeIdealHom (S : submonoid R) P` is `coe : ideal R → FractionalIdeal S P` as a ring hom -/
+/-- `coeIdealHom (S : Submonoid R) P` is `(↑) : Ideal R → FractionalIdeal S P` as a ring hom -/
 @[simps]
 def coeIdealHom : Ideal R →+* FractionalIdeal S P where
   toFun := coeIdeal
@@ -1610,7 +1610,7 @@ theorem isFractional_adjoin_integral :
   isFractional_of_fg (FG_adjoin_singleton_of_integral x hx)
 #align fractional_ideal.is_fractional_adjoin_integral FractionalIdeal.isFractional_adjoin_integral
 
-/-- `FractionalIdeal.adjoinIntegral (S : submonoid R) x hx` is `R[x]` as a fractional ideal,
+/-- `FractionalIdeal.adjoinIntegral (S : Submonoid R) x hx` is `R[x]` as a fractional ideal,
 where `hx` is a proof that `x : P` is integral over `R`. -/
 -- Porting note: `@[simps]` generated a `Subtype.val` coercion instead of a
 -- `FractionalIdeal.coeToSubmodule` coercion

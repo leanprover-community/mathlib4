@@ -633,9 +633,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
           mul_assoc _ e, inv_mul_cancel r0, mul_inv_cancel e0, one_mul, mul_one]
       -- porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
-      _ ≤ ‖r - e‖ / ‖r‖ / ε :=
-        div_le_div_of_le_left (div_nonneg (norm_nonneg _) (norm_nonneg _)) ε0 he.le
-
+      _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
   refine' (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
   simp
@@ -677,7 +675,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
-normed; in particular, the `padic`s exhibit this fact. -/
+normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y

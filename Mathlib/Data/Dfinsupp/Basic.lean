@@ -73,7 +73,7 @@ variable {β}
 
 -- mathport name: «exprΠ₀ , »
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `Dfinsupp β`. -/
-notation3"Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
+notation3 "Π₀ "(...)", "r:(scoped f => Dfinsupp f) => r
 
 -- mathport name: «expr →ₚ »
 @[inherit_doc]
@@ -282,7 +282,7 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 #align dfinsupp.eval_add_monoid_hom Dfinsupp.evalAddMonoidHom
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 @[simp]
@@ -340,7 +340,7 @@ instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
@@ -609,7 +609,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
   FunLike.coe_injective.unique
 #align dfinsupp.unique_of_is_empty Dfinsupp.uniqueOfIsEmpty
 
-/-- Given `Fintype ι`, `equivFunOnFintype` is the `equiv` between `Π₀ i, β i` and `Π i, β i`.
+/-- Given `Fintype ι`, `equivFunOnFintype` is the `Equiv` between `Π₀ i, β i` and `Π i, β i`.
   (All dependent functions on a finite type are finitely supported.) -/
 @[simps apply]
 def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
@@ -1524,7 +1524,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`.-/
-noncomputable def sigmaUncurry [∀ i j, Zero (δ i j)]
+def sigmaUncurry [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
     (f : Π₀ (i) (j), δ i j) :
     Π₀ i : Σi, _, δ i.1 i.2 where
@@ -1962,7 +1962,7 @@ bounded `iSup` can be produced from taking a finite number of non-zero elements 
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    (⨆ (i) (_h : p i), S i) = -- Porting note: Removing `h` results in a timeout
+    (⨆ (i) (_ : p i), S i) = -- Porting note: Removing `h` results in a timeout
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' iSup₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩
@@ -1992,7 +1992,7 @@ theorem _root_.AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S 
 
 theorem _root_.AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
-    (x ∈ ⨆ (i) (_h : p i), S i) ↔ -- Porting note: Removing `h` gives an error.
+    (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i, Dfinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
 #align add_submonoid.mem_bsupr_iff_exists_dfinsupp AddSubmonoid.mem_bsupr_iff_exists_dfinsupp
@@ -2014,20 +2014,9 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     where
   toFun := sumAddHom
   invFun F i := F.comp (singleAddHom β i)
-  left_inv x := by
-    ext
-    simp
-  right_inv ψ := by
-    classical
-    ext x
-    apply Dfinsupp.induction x
-    · simp
-    intros i b f _ _ IH
-    simp [IH]
-  map_add' F G := by
-    classical
-    ext
-    simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
+  left_inv x := by ext; simp
+  right_inv ψ := by ext; simp
+  map_add' F G := by ext; simp
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
 #align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply

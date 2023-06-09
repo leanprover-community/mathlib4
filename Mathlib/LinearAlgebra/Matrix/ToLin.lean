@@ -248,8 +248,7 @@ variable [Fintype n]
 @[simp]
 theorem Matrix.mulVecLin_one [DecidableEq n] :
     Matrix.mulVecLin (1 : Matrix n n R) = LinearMap.id := by
-  ext
-  simp [LinearMap.one_apply, stdBasis_apply]
+  ext; simp [Matrix.one_apply, Pi.single_apply]
 #align matrix.mul_vec_lin_one Matrix.mulVecLin_one
 
 @[simp]

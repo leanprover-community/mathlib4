@@ -54,7 +54,7 @@ structure AList (β : α → Type v) : Type max u v where
   nodupKeys : entries.NodupKeys
 #align alist AList
 
-/-- Given `l : List (sigma β)`, create a term of type `alist β` by removing
+/-- Given `l : List (Sigma β)`, create a term of type `AList β` by removing
 entries with duplicate keys. -/
 def List.toAList [DecidableEq α] {β : α → Type v} (l : List (Sigma β)) : AList β where
   entries := _
@@ -350,7 +350,7 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
   simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
 
-/-- Recursion on an `alist`, using `insert`. Use as `induction l using alist.insert_rec`. -/
+/-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
 @[elab_as_elim]
 def insertRec {C : AList β → Sort _} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :

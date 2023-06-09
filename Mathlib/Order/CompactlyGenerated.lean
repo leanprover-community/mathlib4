@@ -411,7 +411,7 @@ protected theorem Directed.disjoint_iSup_left (h : Directed (· ≤ ·) f) :
 
 /-- This property is equivalent to `α` being upper continuous. -/
 theorem inf_sSup_eq_iSup_inf_sup_finset :
-    a ⊓ sSup s = ⨆ (t : Finset α) (_H : ↑t ⊆ s), a ⊓ t.sup id :=
+    a ⊓ sSup s = ⨆ (t : Finset α) (_ : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
       rw [le_iff_compact_le_imp]
@@ -551,7 +551,7 @@ Most explicitly, every element is the complement of a supremum of indepedendent 
 -/
 
 /-- In an atomic lattice, every element `b` has a complement of the form `Sup s`, where each element
-of `s` is an atom. See also `complemented_lattice_of_Sup_atoms_eq_top`. -/
+of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
 theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧
     IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by

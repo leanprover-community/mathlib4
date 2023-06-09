@@ -28,7 +28,7 @@ In the following, `{α : Type _} [Fintype α] [DecidableEq α]`.
 * `Equiv.Perm.isoCycle'`: the same equivalence as `Equiv.Perm.isoCycle`
   but with evaluation via choosing over fintypes
 * The notation `c[1, 2, 3]` to emulate notation of cyclic permutations `(1 2 3)`
-* A `has_repr` instance for any `Perm α`, by representing the `Finset` of
+* A `Repr` instance for any `Perm α`, by representing the `Finset` of
   `Cycle α` that correspond to the cycle factors.
 
 ## Main results
@@ -44,7 +44,7 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-Running `#eval` on even a simple noncyclic permutation `c[(1 : fin 7), 2, 3] * c[0, 5]`
+Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
 to show it takes a long time. TODO: is this because computing the cycle factors is slow?
 
 -/
@@ -162,14 +162,13 @@ theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h
 
 theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     IsCycle (formPerm s h) := by
-  induction s using Quot.inductionOn; simp
-  --apply List.isCycle_formPerm
+  induction s using Quot.inductionOn
   exact List.isCycle_formPerm h (length_nontrivial hn)
 #align cycle.is_cycle_form_perm Cycle.isCycle_formPerm
 
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
-  induction' s using Quot.inductionOn with s; simp
+  induction' s using Quot.inductionOn with s
   refine' support_formPerm_of_nodup s h _
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
@@ -330,9 +329,8 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
   by_cases hx : x ∈ f.support
   · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
     · simp only [coe_one, id.def, pow_zero, Nat.zero_eq] at hy
-      simp [hy]
-      exists 0
-      simp only [rotate_zero]
+      -- Porting note: added `IsRotated.refl`
+      simp [hy, IsRotated.refl]
     use k.succ
     rw [← toList_pow_apply_eq_rotate, hy]
   · rw [toList_eq_nil_iff.mpr hx, isRotated_nil_iff', eq_comm, toList_eq_nil_iff]
@@ -351,6 +349,7 @@ theorem toList_formPerm_nil (x : α) : toList (formPerm ([] : List α)) x = [] :
 theorem toList_formPerm_singleton (x y : α) : toList (formPerm [x]) y = [] := by simp
 #align equiv.perm.to_list_form_perm_singleton Equiv.Perm.toList_formPerm_singleton
 
+set_option linter.deprecated false in
 theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) :
     toList (formPerm l) (l.nthLe 0 (zero_lt_two.trans_le hl)) = l := by
   have hc : l.formPerm.IsCycle := List.isCycle_formPerm hn hl
@@ -361,7 +360,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
   · refine' ext_get (by simp) fun k hk hk' => _
     simp [formPerm_pow_apply_nthLe _ hn, Nat.mod_eq_of_lt hk']
-    rfl -- Porting note: not needed in Lean 3
+    rw [nthLe_eq]
   · simpa [hs] using get_mem _ _ _
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
 
@@ -521,8 +520,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
-notation3"c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
-  Cycle.formPerm (↑l) (Cycle.nodup_coe_iff.mpr _)
+notation3 "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+  Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff _)
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
   ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)

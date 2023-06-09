@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Group.Prod
 
 /-!
-# The product of two `add_monoid_with_one`s.
+# The product of two `AddMonoidWithOne`s.
 -/
 
 

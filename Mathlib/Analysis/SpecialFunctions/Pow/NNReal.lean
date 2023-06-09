@@ -546,8 +546,8 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
     (strictMono_rpow_of_pos h0).monotone
 #align ennreal.monotone_rpow_of_nonneg ENNReal.monotone_rpow_of_nonneg
 
-/-- Bundles `λ x : ℝ≥0∞, x ^ y` into an order isomorphism when `y : ℝ` is positive,
-where the inverse is `λ x : ℝ≥0∞, x ^ (1 / y)`. -/
+/-- Bundles `fun x : ℝ≥0∞ => x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0∞ => x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
@@ -608,9 +608,9 @@ theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0∞} {y z : ℝ} (hx : 1 ≤ x) 
     x ^ y ≤ x ^ z := by
   cases x
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
-          rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-        simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
-      linarith
+    rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
+    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
+    linarith
   · simp only [one_le_coe_iff, some_eq_coe] at hx
     simp [coe_rpow_of_ne_zero (ne_of_gt (lt_of_lt_of_le zero_lt_one hx)),
       NNReal.rpow_le_rpow_of_exponent_le hx hyz]
@@ -627,11 +627,10 @@ theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1)
     x ^ y ≤ x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx1 coe_lt_top)
   by_cases h : x = 0
-  ·
-    rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
-          rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-        simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
-      linarith
+  · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
+    rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
+    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
+    linarith
   · rw [coe_le_one_iff] at hx1
     simp [coe_rpow_of_ne_zero h,
       NNReal.rpow_le_rpow_of_exponent_ge (bot_lt_iff_ne_bot.mpr h) hx1 hyz]
@@ -799,12 +798,12 @@ end ENNReal
 --   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
 -- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
--- /-- Evaluate `nnreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_nnrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` nnrpow_pos `` nnrpow_neg `` NNReal.rpow_zero q(ℝ≥0) q(ℝ) q((1 : ℝ≥0))
 -- #align norm_num.prove_nnrpow norm_num.prove_nnrpow
 
--- /-- Evaluate `ennreal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `ENNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_ennrpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` ennrpow_pos `` ennrpow_neg `` ENNReal.rpow_zero q(ℝ≥0∞) q(ℝ) q((1 : ℝ≥0∞))
 -- #align norm_num.prove_ennrpow norm_num.prove_ennrpow

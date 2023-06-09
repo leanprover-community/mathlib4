@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Nonnegative real numbers
@@ -45,7 +46,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   `↑(Real.toNNReal x) = 0` otherwise.
 
 We also define an instance `CanLift ℝ ℝ≥0`. This instance can be used by the `lift` tactic to
-replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurences
+replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurrences
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
@@ -381,6 +382,9 @@ protected theorem coe_pos {r : ℝ≥0} : (0 : ℝ) < r ↔ 0 < r :=
 protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 #align nnreal.coe_mono NNReal.coe_mono
 
+@[gcongr]
+theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x:ℝ) ≤ y := NNReal.coe_mono h
+
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)
 #align real.to_nnreal_mono Real.toNNReal_mono
@@ -395,10 +399,16 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_nat_cast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_coe_nat
 
+-- Porting note: place this in the `Real` namespace
 @[simp]
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
+
+@[simp]
+theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+  Real.toNNReal (OfNat.ofNat n) = OfNat.ofNat n :=
+  toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
@@ -935,7 +945,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ≥0)) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero

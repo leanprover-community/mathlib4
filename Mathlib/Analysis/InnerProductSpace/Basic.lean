@@ -790,14 +790,16 @@ theorem orthonormal_subtype_iff_ite {s : Set E} :
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
     ⟪v i, Finsupp.total ι E 𝕜 v l⟫ = l i := by
-  classical simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
+  classical!
+  simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
 #align orthonormal.inner_right_finsupp Orthonormal.inner_right_finsupp
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪v i, ∑ i in s, l i • v i⟫ = l i := by
-  classical simp [inner_sum, inner_smul_right, orthonormal_iff_ite.mp hv, hi]
+  classical!
+  simp [inner_sum, inner_smul_right, orthonormal_iff_ite.mp hv, hi]
 #align orthonormal.inner_right_sum Orthonormal.inner_right_sum
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
@@ -817,8 +819,9 @@ theorem Orthonormal.inner_left_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) 
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_left_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι → 𝕜) {s : Finset ι}
     {i : ι} (hi : i ∈ s) : ⟪∑ i in s, l i • v i, v i⟫ = conj (l i) := by
-  classical simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
-      Finset.sum_ite_eq', if_true]
+  classical!
+  simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
+    Finset.sum_ite_eq', if_true]
 #align orthonormal.inner_left_sum Orthonormal.inner_left_sum
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
@@ -857,7 +860,8 @@ sum of the weights.
 -/
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i in s, ∑ j in s, a i j • ⟪v j, v i⟫) = ∑ k in s, a k k := by
-  classical simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
+  classical!
+  simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
 #align orthonormal.inner_left_right_finset Orthonormal.inner_left_right_finset
 
 /-- An orthonormal set is linearly independent. -/
@@ -874,11 +878,11 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
 orthonormal family. -/
 theorem Orthonormal.comp {ι' : Type _} {v : ι → E} (hv : Orthonormal 𝕜 v) (f : ι' → ι)
     (hf : Function.Injective f) : Orthonormal 𝕜 (v ∘ f) := by
-  classical
-    rw [orthonormal_iff_ite] at hv⊢
-    intro i j
-    convert hv (f i) (f j) using 1
-    simp [hf.eq_iff]
+  classical!
+  rw [orthonormal_iff_ite] at hv ⊢
+  intro i j
+  convert hv (f i) (f j) using 1
+  simp [hf.eq_iff]
 #align orthonormal.comp Orthonormal.comp
 
 /-- An injective family `v : ι → E` is orthonormal if and only if `Subtype.val : (range v) → E` is
@@ -911,12 +915,13 @@ theorem Orthonormal.inner_finsupp_eq_zero {v : ι → E} (hv : Orthonormal 𝕜 
 the corresponding vector in the original family or its negation. -/
 theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Orthonormal 𝕜 v)
     (hw : ∀ i, w i = v i ∨ w i = -v i) : Orthonormal 𝕜 w := by
-  classical
-    rw [orthonormal_iff_ite] at *
-    intro i j
-    cases' hw i with hi hi <;> cases' hw j with hj hj <;> split_ifs with h <;>
-      simpa only [hi, hj, h, inner_neg_right, inner_neg_left, neg_neg, eq_self_iff_true,
-        neg_eq_zero] using hv i j
+  classical!
+  rw [orthonormal_iff_ite] at *
+  intro i j
+  cases' hw i with hi hi <;> cases' hw j with hj hj <;>
+    replace hv := hv i j <;> split_ifs at hv ⊢ with h <;>
+    simpa only [hi, hj, h, inner_neg_right, inner_neg_left, neg_neg, eq_self_iff_true,
+      neg_eq_zero] using hv
 #align orthonormal.orthonormal_of_forall_eq_or_eq_neg Orthonormal.orthonormal_of_forall_eq_or_eq_neg
 
 /- The material that follows, culminating in the existence of a maximal orthonormal subset, is
@@ -925,7 +930,8 @@ adapted from the corresponding development of the theory of linearly independent
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
-  classical simp [orthonormal_subtype_iff_ite]
+  classical!
+  simp [orthonormal_subtype_iff_ite]
 #align orthonormal_empty orthonormal_empty
 
 variable {𝕜 E}
@@ -933,13 +939,13 @@ variable {𝕜 E}
 theorem orthonormal_iUnion_of_directed {η : Type _} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
     (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
-  classical
-    rw [orthonormal_subtype_iff_ite]
-    rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
-    obtain ⟨k, hik, hjk⟩ := hs i j
-    have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
-    rw [orthonormal_subtype_iff_ite] at h_orth
-    exact h_orth x (hik hxi) y (hjk hyj)
+  classical!
+  rw [orthonormal_subtype_iff_ite]
+  rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
+  obtain ⟨k, hik, hjk⟩ := hs i j
+  have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
+  rw [orthonormal_subtype_iff_ite] at h_orth
+  exact h_orth x (hik hxi) y (hjk hyj)
 #align orthonormal_Union_of_directed orthonormal_iUnion_of_directed
 
 theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· ⊆ ·) s)
@@ -1017,7 +1023,8 @@ theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
   rw [pow_two, real_inner_self_eq_norm_mul_norm]
 #align real_inner_self_eq_norm_sq real_inner_self_eq_norm_sq
 
-variable (𝕜)
+-- Porting note: this was present in mathlib3 but seemingly didn't do anything.
+-- variable (𝕜)
 
 /-- Expand the square -/
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
@@ -1043,7 +1050,7 @@ alias norm_add_sq_real ← norm_add_pow_two_real
 theorem norm_add_mul_self (x y : E) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + 2 * re ⟪x, y⟫ + ‖y‖ * ‖y‖ := by
   repeat' rw [← sq (M := ℝ)]
-  exact norm_add_sq _ _ _
+  exact norm_add_sq _ _
 #align norm_add_mul_self norm_add_mul_self
 
 /-- Expand the square -/
@@ -1074,7 +1081,7 @@ alias norm_sub_sq_real ← norm_sub_pow_two_real
 theorem norm_sub_mul_self (x y : E) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ - 2 * re ⟪x, y⟫ + ‖y‖ * ‖y‖ := by
   repeat' rw [← sq (M := ℝ)]
-  exact norm_sub_sq _ _ _
+  exact norm_sub_sq _ _
 #align norm_sub_mul_self norm_sub_mul_self
 
 /-- Expand the square -/
@@ -1092,22 +1099,24 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 #align norm_inner_le_norm norm_inner_le_norm
 
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
-  norm_inner_le_norm 𝕜 x y
+  norm_inner_le_norm x y
 #align nnnorm_inner_le_nnnorm nnnorm_inner_le_nnnorm
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
-  le_trans (re_le_norm (inner x y)) (norm_inner_le_norm 𝕜 x y)
+  le_trans (re_le_norm (inner x y)) (norm_inner_le_norm x y)
 #align re_inner_le_norm re_inner_le_norm
 
 /-- Cauchy–Schwarz inequality with norm -/
 theorem abs_real_inner_le_norm (x y : F) : |⟪x, y⟫_ℝ| ≤ ‖x‖ * ‖y‖ :=
-  (Real.norm_eq_abs _).ge.trans (norm_inner_le_norm ℝ x y)
+  (Real.norm_eq_abs _).ge.trans (norm_inner_le_norm x y)
 #align abs_real_inner_le_norm abs_real_inner_le_norm
 
 /-- Cauchy–Schwarz inequality with norm -/
 theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
   le_trans (le_abs_self _) (abs_real_inner_le_norm _ _)
 #align real_inner_le_norm real_inner_le_norm
+
+variable (𝕜)
 
 theorem parallelogram_law_with_norm (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
@@ -1779,7 +1788,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine'
-    le_antisymm ((innerSL 𝕜 x).op_norm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _ _) _
+    le_antisymm ((innerSL 𝕜 x).op_norm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) _
   rcases eq_or_ne x 0 with (rfl | h)
   · simp
   · refine' (mul_le_mul_right (norm_pos_iff.2 h)).mp _
@@ -1858,7 +1867,7 @@ theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] :
     bound :=
       ⟨1, zero_lt_one, fun x y => by
         rw [one_mul]
-        exact norm_inner_le_norm _ x y⟩ }
+        exact norm_inner_le_norm x y⟩ }
 #align is_bounded_bilinear_map_inner isBoundedBilinearMap_inner
 
 end Norm
@@ -2018,28 +2027,28 @@ theorem OrthogonalFamily.inner_right_dfinsupp (l : ⨁ i, G i) (i : ι) (v : G i
 
 theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : ι) (v : G i) :
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ⟪v, l i⟫ := by
-  classical calc
-      ⟪V i v, ∑ j : ι, V j (l j)⟫ = ∑ j : ι, ⟪V i v, V j (l j)⟫ := by rw [inner_sum]
-      _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
-        (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
-      _ = ⟪v, l i⟫ := by
-        simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
-
+  classical!
+  calc
+    ⟪V i v, ∑ j : ι, V j (l j)⟫ = ∑ j : ι, ⟪V i v, V j (l j)⟫ := by rw [inner_sum]
+    _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
+      (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
+    _ = ⟪v, l i⟫ := by
+      simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
 #align orthogonal_family.inner_right_fintype OrthogonalFamily.inner_right_fintype
 
 theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i in s, V i (l₁ i), ∑ j in s, V j (l₂ j)⟫ = ∑ i in s, ⟪l₁ i, l₂ i⟫ := by
-  classical calc
-      ⟪∑ i in s, V i (l₁ i), ∑ j in s, V j (l₂ j)⟫ = ∑ j in s, ∑ i in s, ⟪V i (l₁ i), V j (l₂ j)⟫ :=
-        by simp only [_root_.sum_inner, _root_.inner_sum]
-      _ = ∑ j in s, ∑ i in s, ite (i = j) ⟪V i (l₁ i), V j (l₂ j)⟫ 0 := by
-        congr with i
-        congr with j
-        apply hV.eq_ite
-      _ = ∑ i in s, ⟪l₁ i, l₂ i⟫ := by
-        simp only [Finset.sum_ite_of_true, Finset.sum_ite_eq', LinearIsometry.inner_map_map,
-          imp_self, imp_true_iff]
-
+  classical!
+  calc
+    ⟪∑ i in s, V i (l₁ i), ∑ j in s, V j (l₂ j)⟫ = ∑ j in s, ∑ i in s, ⟪V i (l₁ i), V j (l₂ j)⟫ :=
+      by simp only [_root_.sum_inner, _root_.inner_sum]
+    _ = ∑ j in s, ∑ i in s, ite (i = j) ⟪V i (l₁ i), V j (l₂ j)⟫ 0 := by
+      congr with i
+      congr with j
+      apply hV.eq_ite
+    _ = ∑ i in s, ⟪l₁ i, l₂ i⟫ := by
+      simp only [Finset.sum_ite_of_true, Finset.sum_ite_eq', LinearIsometry.inner_map_map,
+        imp_self, imp_true_iff]
 #align orthogonal_family.inner_sum OrthogonalFamily.inner_sum
 
 theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
@@ -2148,20 +2157,19 @@ pairwise intersections of elements of the family are 0. -/
 theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     CompleteLattice.Independent V := by
-  classical
-    apply CompleteLattice.independent_of_dfinsupp_lsum_injective
-    refine LinearMap.ker_eq_bot.mp ?_
-    rw [Submodule.eq_bot_iff]
-    intro v hv
-    rw [LinearMap.mem_ker] at hv
-    ext i
-    suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
-    calc
-      ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-        simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
-          (hV.inner_right_dfinsupp v i (v i)).symm
-      _ = 0 := by simp only [hv, inner_zero_right]
-
+  classical!
+  apply CompleteLattice.independent_of_dfinsupp_lsum_injective
+  refine LinearMap.ker_eq_bot.mp ?_
+  rw [Submodule.eq_bot_iff]
+  intro v hv
+  rw [LinearMap.mem_ker] at hv
+  ext i
+  suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
+  calc
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+      simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
+        (hV.inner_right_dfinsupp v i (v i)).symm
+    _ = 0 := by simp only [hv, inner_zero_right]
 #align orthogonal_family.independent OrthogonalFamily.independent
 
 theorem DirectSum.IsInternal.collectedBasis_orthonormal {V : ι → Submodule 𝕜 E}

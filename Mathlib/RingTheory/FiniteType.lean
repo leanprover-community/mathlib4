@@ -353,7 +353,7 @@ theorem support_gen_of_gen {S : Set (AddMonoidAlgebra R M)} (hS : Algebra.adjoin
   rw [← hS, adjoin_le_iff]
   intro f hf
   have hincl :
-    of' R M '' f.support ⊆ ⋃ (g : AddMonoidAlgebra R M) (_H : g ∈ S), of' R M '' g.support := by
+    of' R M '' f.support ⊆ ⋃ (g : AddMonoidAlgebra R M) (_ : g ∈ S), of' R M '' g.support := by
     intro s hs
     exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)

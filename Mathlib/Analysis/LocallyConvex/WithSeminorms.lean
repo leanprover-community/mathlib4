@@ -74,7 +74,7 @@ namespace SeminormFamily
 
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
 def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
-  ⋃ (s : Finset ι) (r) (_hr : 0 < r), singleton <| ball (s.sup p) (0 : E) r
+  ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton <| ball (s.sup p) (0 : E) r
 #align seminorm_family.basis_sets SeminormFamily.basisSets
 
 variable (p : SeminormFamily 𝕜 E ι)
@@ -380,7 +380,7 @@ variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
 
-Variant with `finset.sup`. -/
+Variant with `Finset.sup`. -/
 theorem WithSeminorms.tendsto_nhds' (hp : WithSeminorms p) (u : F → E) {f : Filter F} (y₀ : E) :
     Filter.Tendsto u f (𝓝 y₀) ↔ ∀ (s : Finset ι) (ε), 0 < ε → ∀ᶠ x in f, s.sup p (u x - y₀) < ε :=
   by simp [hp.hasBasis_ball.tendsto_right_iff]

@@ -313,9 +313,13 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
 
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
-| `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-| tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
+  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
+  -- which we assume is always false for this function
+  discard <| TermElabM.run do
+    match tk with
+    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
