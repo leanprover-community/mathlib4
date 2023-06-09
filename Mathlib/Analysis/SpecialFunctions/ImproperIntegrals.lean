@@ -34,9 +34,9 @@ open scoped Topology
 
 theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   refine'
-    integrable_on_Iic_of_interval_integral_norm_bounded (exp c) c
-      (fun y => interval_integrable_exp.1) tendsto_id
-      (eventually_of_mem (Iic_mem_at_bot 0) fun y hy => _)
+    integrableOn_Iic_of_intervalIntegral_norm_bounded (exp c) c
+      (fun y => intervalIntegrable_exp.1) tendsto_id
+      (eventually_of_mem (Iic_mem_atBot 0) fun y _ => _)
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
@@ -44,9 +44,9 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
 theorem integral_exp_Iic (c : ℝ) : (∫ x : ℝ in Iic c, exp x) = exp c := by
   refine'
     tendsto_nhds_unique
-      (interval_integral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
+      (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
   simp_rw [integral_exp, show 𝓝 (exp c) = 𝓝 (exp c - 0) by rw [sub_zero]]
-  exact tendsto_exp_at_bot.const_sub _
+  exact tendsto_exp_atBot.const_sub _
 #align integral_exp_Iic integral_exp_Iic
 
 theorem integral_exp_Iic_zero : (∫ x : ℝ in Iic 0, exp x) = 1 :=
@@ -122,4 +122,3 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
   simp_rw [neg_neg, Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx, Complex.add_re,
     Complex.one_re]
 #align integral_Ioi_cpow_of_lt integral_Ioi_cpow_of_lt
-
