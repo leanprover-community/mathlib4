@@ -8,11 +8,11 @@ Authors: Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Rigid.Basic
-import Mathbin.CategoryTheory.Monoidal.Subcategory
-import Mathbin.LinearAlgebra.Coevaluation
-import Mathbin.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathbin.Algebra.Category.Module.Monoidal.Closed
+import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+import Mathlib.CategoryTheory.Monoidal.Subcategory
+import Mathlib.LinearAlgebra.Coevaluation
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.Algebra.Category.Module.Monoidal.Closed
 
 /-!
 # The category of finitely generated modules over a ring
@@ -91,8 +91,7 @@ def isoToLinearEquiv {V W : FgModule R} (i : V ≅ W) : V.obj ≃ₗ[R] W.obj :=
 @[simps]
 def LinearEquiv.toFgModuleIso {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     [AddCommGroup W] [Module R W] [Module.Finite R W] (e : V ≃ₗ[R] W) :
-    FgModule.of R V ≅ FgModule.of R W
-    where
+    FgModule.of R V ≅ FgModule.of R W where
   Hom := e.toLinearMap
   inv := e.symm.toLinearMap
   hom_inv_id' := by ext; exact e.left_inv x
@@ -108,8 +107,7 @@ variable (R : Type u) [CommRing R]
 instance : Linear R (FgModule R) := by dsimp_result => dsimp [FgModule]; infer_instance
 
 instance monoidalPredicate_module_finite :
-    MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V
-    where
+    MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V where
   prop_id' := Module.Finite.self R
   prop_tensor' X Y hX hY := Module.Finite.tensorProduct R X Y
 #align fgModule.monoidal_predicate_module_finite FgModule.monoidalPredicate_module_finite
@@ -212,8 +210,7 @@ private theorem evaluation_coevaluation :
       (λ_ V).Hom ≫ (ρ_ V).inv :=
   by apply contractLeft_assoc_coevaluation' K V.obj
 
-instance exactPairing : ExactPairing V (fgModuleDual K V)
-    where
+instance exactPairing : ExactPairing V (fgModuleDual K V) where
   coevaluation := fgModuleCoevaluation K V
   evaluation := fgModuleEvaluation K V
   coevaluation_evaluation' := coevaluation_evaluation K V
