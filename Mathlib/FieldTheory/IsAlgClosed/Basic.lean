@@ -245,83 +245,102 @@ instance : Preorder (SubfieldWithHom K L M) where
 
 open Lattice
 
+set_option pp.notation false in
 theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
-    (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub :=
-  if hcn : c.Nonempty then
-    let ub : SubfieldWithHom K L M :=
-      haveI : Nonempty c := Set.Nonempty.to_subtype hcn
-      { carrier := ⨆ i : c, (i : subfield_with_hom K L M hL).carrier
-        emb :=
-          Subalgebra.iSupLift (fun i : c => (i : subfield_with_hom K L M hL).carrier)
-            (fun i j =>
-              let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directed_on i j
-              ⟨k, hik.fst, hjk.fst⟩)
-            (fun i => (i : subfield_with_hom K L M hL).emb)
-            (by
-              intro i j h
-              ext x
-              cases' hc.total i.prop j.prop with hij hji
-              · simp [← hij.snd x]
-              ·
-                erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
-                  inclusion_self, AlgHom.id_apply x])
-            _ rfl }
-    ⟨ub, fun N hN =>
-      ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
-        intro x
-        simp [ub]
-        rfl⟩⟩
-  else by rw [Set.not_nonempty_iff_eq_empty] at hcn ; simp [hcn]
+    (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
+  by_cases hcn : c.Nonempty
+  case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
+  have : Nonempty c := Set.Nonempty.to_subtype hcn
+  refine ⟨?ub, ?_⟩
+  · refine ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier, ?_⟩
+    refine Subalgebra.iSupLift (A := L) (B := M) (fun i : c ↦ (i : SubfieldWithHom K L M).carrier)
+      ?_ (fun i ↦ (i : SubfieldWithHom K L M).emb) ?_ _ ?_
+    · intro i j
+      obtain ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
+      exact ⟨k, hik.fst, hjk.fst⟩
+    · intro i j h
+      ext x
+      cases' hc.total i.prop j.prop with hij hji
+      · simp [← hij.snd x]
+      · erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
+          inclusion_self, AlgHom.id_apply x]
+    -- · rfl
+  intro N hN
+  refine ⟨?_, fun _ ↦ rfl⟩
+  -- let ub : SubfieldWithHom K L M := by
+    -- exact
+    --   { carrier := ⨆ i : c, (i : subfield_with_hom K L M hL).carrier
+    --     emb :=
+    --       Subalgebra.iSupLift (fun i : c => (i : subfield_with_hom K L M hL).carrier)
+    --         (fun i j =>
+    --           let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directed_on i j
+    --           ⟨k, hik.fst, hjk.fst⟩)
+    --         (fun i => (i : subfield_with_hom K L M hL).emb)
+    --         (by
+    --           intro i j h
+    --           ext x
+    --           cases' hc.total i.prop j.prop with hij hji
+    --           · simp [← hij.snd x]
+    --           ·
+    --             erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
+    --               inclusion_self, AlgHom.id_apply x])
+    --         _ rfl }
+  -- sorry
+  -- if hcn : c.Nonempty then
+  --   ⟨ub, fun N hN =>
+  --     ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
+  --       intro x
+  --       simp [ub]
+  --       rfl⟩⟩
+  -- else by rw [Set.not_nonempty_iff_eq_empty] at hcn ; simp [hcn]
 #align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
 
-variable (hL M)
+variable (K L M)
 
 theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E ≤ N → N ≤ E :=
-  exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded fun _ _ _ => le_trans
+  exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
 #align lift.subfield_with_hom.exists_maximal_subfield_with_hom lift.SubfieldWithHom.exists_maximal_subfieldWithHom
 
 /-- The maximal `subfield_with_hom`. We later prove that this is equal to `⊤`. -/
 noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
-  Classical.choose (exists_maximal_subfieldWithHom M)
+  Classical.choose (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom lift.SubfieldWithHom.maximalSubfieldWithHom
 
 theorem maximalSubfieldWithHom_is_maximal :
     ∀ N : SubfieldWithHom K L M,
-      maximalSubfieldWithHom M ≤ N → N ≤ maximalSubfieldWithHom M :=
-  Classical.choose_spec (exists_maximal_subfieldWithHom M)
+      maximalSubfieldWithHom K L M ≤ N → N ≤ maximalSubfieldWithHom K L M :=
+  Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
-theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom M).carrier = ⊤ := by
+theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
   let p := minpoly K x
-  let N : Subalgebra K L := (maximal_subfield_with_hom M hL).carrier
+  let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
   letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
-  letI : Algebra N M := (maximal_subfield_with_hom M hL).emb.toRingHom.toAlgebra
-  cases'
-    IsAlgClosed.exists_aeval_eq_zero M (minpoly N x)
-      (ne_of_gt
-        (minpoly.degree_pos
-          (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ _ hL x)))) with
-    y hy
+  letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
+  obtain ⟨y, hy⟩ := IsAlgClosed.exists_aeval_eq_zero M (minpoly N x) <|
+    (minpoly.degree_pos
+      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ _ hL x))).ne'
   let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
-  let larger_emb :=
-    (AdjoinRoot.liftHom (minpoly N x) y hy).comp
-      (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly N x).toAlgHom
-  have hNO : N ≤ O.restrict_scalars K := by
+  let φ := AdjoinRoot.liftHom (minpoly N x) y hy
+  let ψ := (@AlgEquiv.toAlgHom _ _ _ _ _ _ (_) (_)
+      (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly N x))
+  let larger_emb := @AlgHom.comp _ _ _ _ _ _ _ _ (_) (_) (_) φ ψ
+  have hNO : N ≤ O.restrictScalars K := by
     intro z hz
     show algebraMap N L ⟨z, hz⟩ ∈ O
-    exact O.algebra_map_mem _
-  let O' : subfield_with_hom K L M hL :=
-    { carrier := O.restrict_scalars K
-      emb := larger_emb.restrict_scalars K }
-  have hO' : maximal_subfield_with_hom M hL ≤ O' := by
-    refine' ⟨hNO, _⟩
-    intro z
-    show O'.emb (algebraMap N O z) = algebraMap N M z
-    simp only [O', restrict_scalars_apply, AlgHom.commutes]
-  refine' (maximal_subfield_with_hom_is_maximal M hL O' hO').fst _
-  exact Algebra.subset_adjoin (Set.mem_singleton x)
+    exact O.algebraMap_mem _
+  -- let O' : subfield_with_hom K L M hL :=
+  --   { carrier := O.restrict_scalars K
+  --     emb := larger_emb.restrict_scalars K }
+  -- have hO' : maximal_subfield_with_hom M hL ≤ O' := by
+  --   refine' ⟨hNO, _⟩
+  --   intro z
+  --   show O'.emb (algebraMap N O z) = algebraMap N M z
+  --   simp only [O', restrict_scalars_apply, AlgHom.commutes]
+  -- refine' (maximal_subfield_with_hom_is_maximal M hL O' hO').fst _
+  -- exact Algebra.subset_adjoin (Set.mem_singleton x)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
 end SubfieldWithHom
@@ -337,8 +356,8 @@ variable (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
-  (lift.SubfieldWithHom.maximalSubfieldWithHom M).emb.comp <|
-    Eq.recOn (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top M).symm Algebra.toTop
+  (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
+    Eq.recOn (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top K L M).symm Algebra.toTop
 
 variable {R : Type u} [CommRing R]
 
@@ -350,32 +369,33 @@ variable {M}
 private theorem FractionRing.isAlgebraic :
     letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
+  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
   intro
   exact
     (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
-      ((IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 hS x)
+      ((IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 hS _)
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
-  have hfRfS : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
+  have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     FractionRing.isAlgebraic hS
-  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M hfRfS
-  exact (f.restrict_scalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
+  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M
+  exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
 #align is_alg_closed.lift IsAlgClosed.lift
 
 noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [CharP k p]
     [IsAlgClosed k] : PerfectRing k p :=
-  PerfectRing.ofSurjective k p fun x => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
+  PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type _} [Field K] [IsAlgClosed K] : Infinite K := by
   apply Infinite.of_not_fintype
   intro hfin
-  set n := Fintype.card K with hn
-  set f := (X : K[X]) ^ (n + 1) - 1 with hf
+  set n := Fintype.card K
+  set f := (X : K[X]) ^ (n + 1) - 1
   have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
@@ -392,7 +412,10 @@ variable (K : Type _) (J : Type _) (R : Type u) (S : Type _) [Field K] [Field J]
   [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M] [CommRing S] [Algebra S L]
   [NoZeroSMulDivisors S L] [IsAlgClosure S L]
 
-attribute [local instance] IsAlgClosure.alg_closed
+-- Porting note: errors with
+-- > cannot find synthesization order for instance alg_closed with type
+-- > all remaining arguments have metavariables
+-- attribute [local instance] IsAlgClosure.alg_closed
 
 section
 
@@ -403,9 +426,11 @@ noncomputable def equiv : L ≃ₐ[R] M :=
   let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
   AlgEquiv.ofBijective f
     ⟨RingHom.injective f.toRingHom, by
+      clear! S -- Porting note: otherwise the decl will depend on `S`
       letI : Algebra L M := RingHom.toAlgebra f
-      letI : IsScalarTower R L M :=
-        IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
+      letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
+        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
+      letI : IsAlgClosed L := IsAlgClosure.alg_closed R
       show Function.Surjective (algebraMap L M)
       exact
         IsAlgClosed.algebraMap_surjective_of_isAlgebraic
@@ -431,15 +456,12 @@ theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
   an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
     (hRL : Algebra.IsAlgebraic R L) : L ≃ₐ[R] M := by
-  letI : NoZeroSMulDivisors R L :=
-    NoZeroSMulDivisors.of_algebraMap_injective
-      (by
-        rw [IsScalarTower.algebraMap_eq R S L]
-        exact
-          Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective _ _)
-            (NoZeroSMulDivisors.algebraMap_injective _ _))
+  letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
+    rw [IsScalarTower.algebraMap_eq R S L]
+    exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
+            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
   letI : IsAlgClosure R L :=
-    { alg_closed := by infer_instance
+    { alg_closed := IsAlgClosure.alg_closed S
       algebraic := hRL }
   exact IsAlgClosure.equiv _ _ _
 #align is_alg_closure.equiv_of_algebraic' IsAlgClosure.equivOfAlgebraic'
