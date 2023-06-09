@@ -108,7 +108,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
     have aux₁ :
       (fun x => (Ioc 0 (f x)).indicator (fun t : ℝ => ENNReal.ofReal (g t)) s) = fun x =>
         ENNReal.ofReal (g s) * (Ioi (0 : ℝ)).indicator (fun _ => 1) s *
-          (Ici s).indicator (fun t : ℝ => (1 : ℝ≥0∞)) (f x) := by
+          (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f x) := by
       funext a
       by_cases s ∈ Ioc (0 : ℝ) (f a)
       ·
@@ -131,7 +131,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
       -- by_cases s ∈ Ioi (0 : ℝ) <;> · simp [h]
       by_cases h : (0 : ℝ) < s <;> · simp [indicator_apply, h]
     simp_rw [show
-        (fun a => (Ici s).indicator (fun t : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
+        (fun a => (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
           {a : α | s ≤ f a}.indicator (fun _ => 1) a
         by funext a; by_cases s ≤ f a <;> simp [h]]
     rw [lintegral_indicator]
@@ -217,13 +217,13 @@ instead. -/
 theorem lintegral_eq_lintegral_meas_le (μ : Measure α) [SigmaFinite μ] (f_nn : 0 ≤ f)
     (f_mble : Measurable f) :
     (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} := by
-  set cst := fun t : ℝ => (1 : ℝ) with def_cst
+  set cst := fun t : ℝ => (1 : ℝ)
   have cst_intble : ∀ t > 0, IntervalIntegrable cst volume 0 t := fun _ _ =>
     intervalIntegrable_const
   have key :=
     lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble cst_intble
       (eventually_of_forall fun _ => zero_le_one)
-  simp_rw [def_cst, ENNReal.ofReal_one, mul_one] at key
+  simp_rw [ENNReal.ofReal_one, mul_one] at key
   rw [← key]
   congr with ω
   simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]
