@@ -1655,7 +1655,6 @@ theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G[×0]→L[𝕜] G') :
 
 variable (𝕜 G)
 
-@[simp]
 theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
     (ContinuousMultilinearMap.curry0 𝕜 G x).uncurry0 = x :=
   rfl
