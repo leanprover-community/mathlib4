@@ -1673,6 +1673,7 @@ import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
