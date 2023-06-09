@@ -282,7 +282,7 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 #align dfinsupp.eval_add_monoid_hom Dfinsupp.evalAddMonoidHom
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 @[simp]
@@ -340,7 +340,7 @@ instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 

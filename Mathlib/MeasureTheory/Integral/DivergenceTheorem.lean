@@ -71,15 +71,10 @@ section
 
 variable {n : ℕ}
 
--- local notation "ℝⁿ" => Fin n → ℝ
+local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 
--- set_option quotPrecheck false in
--- local notation:200 "ℝⁿ⁺¹" => Fin (n + 1) → ℝ
+local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 
--- set_option quotPrecheck false in
--- local notation:200 "Eⁿ⁺¹" => Fin (n + 1) → E
-
--- -- mathport name: «expre »
 local notation "e " i => Pi.single i 1
 
 section
@@ -115,8 +110,8 @@ in several aspects.
 `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` reformulated for the
 Bochner integral. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (Fin (n + 1)))
-    (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
-    (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] (Fin (n + 1) → E)) (s : Set (Fin (n + 1) → ℝ))
+    (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
+    (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Box.Icc I)) :
@@ -147,9 +142,9 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
-    (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
-    (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] (Fin (n + 1) → E))
-    (s : Set (Fin (n + 1) → ℝ)) (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
+    (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
+    (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
+    (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
     (Hd : ∀ x ∈ Box.Ioo I \ s, HasFDerivAt f (f' x) x)
     (Hi : IntegrableOn (∑ i, f' · (e i) i) (Box.Icc I)) :
     (∫ x in Box.Icc I, ∑ i, f' x (e i) i) =
@@ -255,8 +250,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
 variable (a b : Fin (n + 1) → ℝ)
 
 local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove i)
--- local notation "frontFace " i:2000 => Fin.insertNth i (b i)
--- local notation "backFace " i:2000 => Fin.insertNth i (a i)
+local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
+local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
@@ -274,14 +269,14 @@ of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i
 `backFace i = Fin.insertNth i (a i)` and `frontFace i = Fin.insertNth i (b i)` are embeddings
 `ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
-    (f : (Fin (n + 1) → ℝ) → (Fin (n + 1) → E))
-    (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] (Fin (n + 1) → E))
-    (s : Set (Fin (n + 1) → ℝ)) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
+    (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
+    (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
+    (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ (Set.pi univ fun i => Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' x (e i) i) =
-      ∑ i : Fin (n + 1), ((∫ x in face i, f (i.insertNth (b i) x) i) -
-        ∫ x in face i, f (i.insertNth (a i) x) i) := by
+      ∑ i : Fin (n + 1), ((∫ x in face i, f (frontFace i x) i) -
+        ∫ x in face i, f (backFace i x) i) := by
   rcases em (∃ i, a i = b i) with (⟨i, hi⟩ | hne)
   · -- First we sort out the trivial case `∃ i, a i = b i`.
     rw [volume_pi, ← set_integral_congr_set_ae Measure.univ_pi_Ioc_ae_eq_Icc]
@@ -292,7 +287,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     rcases eq_or_ne i j with (rfl | hne)
     · simp [hi]
     · rcases Fin.exists_succAbove_eq hne with ⟨i, rfl⟩
-      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐ[volume] (∅ : Set (Fin n → ℝ))
+      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐ[volume] (∅ : Set ℝⁿ)
       · rw [ae_eq_empty, Real.volume_Icc_pi, prod_eq_zero (Finset.mem_univ i)]
         simp [hi]
       rw [set_integral_congr_set_ae this, set_integral_congr_set_ae this, integral_empty,
@@ -307,14 +302,14 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
 `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'` for a version formulated
 in terms of a vector-valued function `f : ℝⁿ⁺¹ → Eⁿ⁺¹`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
-    (f : Fin (n + 1) → (Fin (n + 1) → ℝ) → E)
-    (f' : Fin (n + 1) → (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] E) (s : Set (Fin (n + 1) → ℝ))
+    (f : Fin (n + 1) → ℝⁿ⁺¹ → E)
+    (f' : Fin (n + 1) → ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] E) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
     (Hd : ∀ x ∈ (pi Set.univ fun i => Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' i x (e i)) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' i x (e i)) =
-      ∑ i : Fin (n + 1), ((∫ x in face i, f i (i.insertNth (b i) x)) -
-        ∫ x in face i, f i (i.insertNth (a i) x)) :=
+      ∑ i : Fin (n + 1), ((∫ x in face i, f i (frontFace i x)) -
+        ∫ x in face i, f i (backFace i x)) :=
   integral_divergence_of_hasFDerivWithinAt_off_countable a b hle (fun x i => f i x)
     (fun x => ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)
     (fun x hx => hasFDerivAt_pi.2 (Hd x hx)) Hi
@@ -326,7 +321,7 @@ end
 not have the form `Fin n → ℝ`. -/
 theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Type _}
     [NormedAddCommGroup F] [NormedSpace ℝ F] [PartialOrder F] [MeasureSpace F] [BorelSpace F]
-    (eL : F ≃L[ℝ] (Fin (n + 1) → ℝ)) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
+    (eL : F ≃L[ℝ] ℝⁿ⁺¹) (he_ord : ∀ x y, eL x ≤ eL y ↔ x ≤ y)
     (he_vol : MeasurePreserving eL volume volume) (f : Fin (n + 1) → F → E)
     (f' : Fin (n + 1) → F → F →L[ℝ] E) (s : Set F) (hs : s.Countable) (a b : F) (hle : a ≤ b)
     (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
@@ -354,7 +349,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
               f i (eL.symm <| i.insertNth (eL a i) x)) := by
       refine integral_divergence_of_hasFDerivWithinAt_off_countable' (eL a) (eL b)
         ((he_ord _ _).2 hle) (fun i x => f i (eL.symm x))
-        (fun i x => f' i (eL.symm x) ∘L (eL.symm : (Fin (n + 1) → ℝ) →L[ℝ] F)) (eL.symm ⁻¹' s)
+        (fun i x => f' i (eL.symm x) ∘L (eL.symm : ℝⁿ⁺¹ →L[ℝ] F)) (eL.symm ⁻¹' s)
         (hs.preimage eL.symm.injective) ?_ ?_ ?_
       · exact fun i => (Hc i).comp eL.symm.continuousOn hIcc'.subset
       · refine' fun x hx i => (Hd (eL.symm x) ⟨_, hx.2⟩ i).comp x eL.symm.hasFDerivAt
@@ -373,10 +368,8 @@ open scoped Interval
 open ContinuousLinearMap (smulRight)
 
 
-local notation "ℝ¹" => Fin 1 → ℝ
-local notation "ℝ²" => Fin 2 → ℝ
-local notation "E¹" => Fin 1 → E
-local notation "E²" => Fin 2 → E
+local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
+local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)
 
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.
@@ -535,4 +528,3 @@ theorem integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (f g : ℝ 
 #align measure_theory.integral2_divergence_prod_of_has_fderiv_within_at_off_countable MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable
 
 end MeasureTheory
-

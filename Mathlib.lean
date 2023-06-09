@@ -255,9 +255,11 @@ import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.DirectSum
+import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Semisimple
@@ -266,6 +268,7 @@ import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.TensorProduct
+import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
@@ -304,6 +307,7 @@ import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Algebra.Order.CompleteField
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Basic
@@ -692,11 +696,13 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 import Mathlib.Analysis.SpecialFunctions.Polynomials
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
@@ -784,6 +790,7 @@ import Mathlib.CategoryTheory.Category.QuivCat
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.CofilteredSystem
@@ -979,14 +986,18 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
+import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Opposite
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+import Mathlib.CategoryTheory.Monoidal.Skeleton
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
@@ -1014,6 +1025,7 @@ import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
+import Mathlib.CategoryTheory.Preadditive.Mat
 import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Preadditive.Projective
@@ -1600,6 +1612,7 @@ import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
+import Mathlib.Data.Rat.Star
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
@@ -1613,6 +1626,7 @@ import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Real.Pi.Leibniz
+import Mathlib.Data.Real.Pi.Wallis
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
 import Mathlib.Data.Real.Sqrt
@@ -1705,6 +1719,7 @@ import Mathlib.Data.Vector
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Zip
+import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
@@ -1730,6 +1745,7 @@ import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.ChevalleyWarning
 import Mathlib.FieldTheory.Finite.Basic
@@ -1948,6 +1964,7 @@ import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.Finsupp
@@ -2028,6 +2045,7 @@ import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.SymplecticGroup
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorPower
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
@@ -2131,6 +2149,7 @@ import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntegrableOn
@@ -2163,6 +2182,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.MeasureTheory.Measure.MutuallySingular
@@ -2361,6 +2381,7 @@ import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
+import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Monad
@@ -2386,8 +2407,10 @@ import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.Derivation.Lie
 import Mathlib.RingTheory.Derivation.ToSquareZero
@@ -2499,7 +2522,11 @@ import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Defs
+import Mathlib.RingTheory.WittVector.IsPoly
+import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
+import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
 import Mathlib.SetTheory.Cardinal.Basic
