@@ -51,7 +51,7 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
     (hf : DiffContOnCl ℂ f (ball c R)) :
     deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
   lift R to ℝ≥0 using hR.le
-  refine' (hf.has_fpower_series_on_ball hR).HasFPowerSeriesAt.deriv.trans _
+  refine' (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans _
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
 #align complex.deriv_eq_smul_circle_integral Complex.deriv_eq_smul_circleIntegral
 
@@ -64,7 +64,7 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
       (div_le_div_right (mul_pos hR hR)).2 (hC z hz)
   calc
     ‖deriv f c‖ = ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z‖ :=
-      congr_arg norm (deriv_eq_smul_circle_integral hR hf)
+      congr_arg norm (deriv_eq_smul_circleIntegral hR hf)
     _ ≤ R * (C / (R * R)) :=
       (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
     _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
@@ -78,10 +78,11 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
   by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have : HasDerivAt (e ∘ f) (e (deriv f c)) c :=
-    e.has_fderiv_at.comp_has_deriv_at c
-      (hd.differentiable_at is_open_ball <| mem_ball_self hR).HasDerivAt
+    e.hasFDerivAt.comp_hasDerivAt c
+      (hd.differentiable_at is_open_ball <| mem_ball_self hR).hasDerivAt
   calc
-    ‖deriv f c‖ = ‖deriv (e ∘ f) c‖ := by rw [this.deriv];
+    ‖deriv f c‖ = ‖deriv (e ∘ f) c‖ := by
+      rw [this.deriv]
       exact (UniformSpace.Completion.norm_coe _).symm
     _ ≤ C / R :=
       norm_deriv_le_aux hR (e.differentiable.comp_diff_cont_on_cl hd) fun z hz =>
@@ -101,7 +102,7 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
   refine' norm_le_zero_iff.1 (le_of_forall_le_of_dense fun ε ε₀ => _)
   calc
     ‖deriv f c‖ ≤ C / (C / ε) :=
-      norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diff_cont_on_cl fun z _ => hC z
+      norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diffContOnCl fun z _ => hC z
     _ = ε := div_div_cancel' C₀.lt.ne'
 #align complex.liouville_theorem_aux Complex.liouville_theorem_aux
 
@@ -115,23 +116,22 @@ open Complex
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : Bounded (range f))
     (z w : E) : f z = f w := by
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
-  suffices g 0 = g 1 by simpa [g]
+  suffices g 0 = g 1 by simpa
   apply liouville_theorem_aux
-  exacts [hf.comp ((differentiable_id.smul_const (w - z)).AddConst z),
+  exacts [hf.comp ((differentiable_id.smul_const (w - z)).add_const z),
     hb.mono (range_comp_subset_range _ _)]
 #align differentiable.apply_eq_apply_of_bounded Differentiable.apply_eq_apply_of_bounded
 
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_const_forall_eq_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : Bounded (range f)) : ∃ c, ∀ z, f z = c :=
-  ⟨f 0, fun z => hf.apply_eq_apply_of_bounded hb _ _⟩
+  ⟨f 0, fun _ => hf.apply_eq_apply_of_bounded hb _ _⟩
 #align differentiable.exists_const_forall_eq_of_bounded Differentiable.exists_const_forall_eq_of_bounded
 
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : Bounded (range f)) :
     ∃ c, f = const E c :=
-  (hf.exists_const_forall_eq_of_bounded hb).imp fun c => funext
+  (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 #align differentiable.exists_eq_const_of_bounded Differentiable.exists_eq_const_of_bounded
 
 end Differentiable
-
