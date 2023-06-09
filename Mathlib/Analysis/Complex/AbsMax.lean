@@ -63,7 +63,7 @@ this section `f g : E → F` are functions that are complex differentiable on a 
 are continuous on its closure. We prove the following theorems.
 
 - `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite dimensional space and `s` is a
-  nonempty bounded set, then there exists a point `z ∈ frontier s` such that `λ z, ‖f z‖` takes it
+  nonempty bounded set, then there exists a point `z ∈ frontier s` such that `(‖f ·‖)` takes it
   maximum value on `closure s` at `z`.
 
 - `Complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
@@ -106,7 +106,6 @@ one.
 The lemmas with names `*_auxₙ` are considered to be private and should not be used outside of this
 file.
 -/
-
 
 theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
@@ -157,8 +156,8 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
 #align complex.norm_max_aux₂ Complex.norm_max_aux₂
 
 /-!
-Then we replace the assumption `IsMaxOn (norm ∘ f) (closed_ball z r) z` with a seemingly weaker
-assumption `IsMaxOn (norm ∘ f) (ball z r) z`.
+Then we replace the assumption `IsMaxOn (norm ∘ f) (Metric.closedBall z r) z` with a seemingly
+weaker assumption `IsMaxOn (norm ∘ f) (Metric.ball z r) z`.
 -/
 
 theorem norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
@@ -273,7 +272,7 @@ If the codomain `F` is a strictly convex space, then we can claim equalities lik
 instead of `‖f w‖ = ‖f z‖`.
 
 Instead of repeating the proof starting with lemmas about integrals, we apply a corresponding lemma
-above twice: for `f` and for `λ x, f x + f c`.  Then we have `‖f w‖ = ‖f z‖` and
+above twice: for `f` and for `(f · + f c)`.  Then we have `‖f w‖ = ‖f z‖` and
 `‖f w + f z‖ = ‖f z + f z‖`, thus `‖f w + f z‖ = ‖f w‖ + ‖f z‖`. This is only possible if
 `f w = f z`, see `eq_of_norm_eq_of_norm_add_eq`.
 -/
@@ -370,7 +369,7 @@ variable [Nontrivial E]
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a nonempty bounded
 set `U` and is continuous on its closure, then there exists a point `z ∈ frontier U` such that
-`λ z, ‖f z‖` takes it maximum value on `closure U` at `z`. -/
+`(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
 theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
     (hb : Bounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
