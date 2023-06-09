@@ -83,6 +83,7 @@ exceptional semisimple Lie algebras.
 lie algebra, semi-simple, cartan matrix
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u v w
 
@@ -185,16 +186,26 @@ end Relations
 
 end CartanMatrix
 
-/- ./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler lie_algebra[lie_algebra] R -/
 /-- The Lie algebra corresponding to a Cartan matrix.
 
 Note that it is defined for any matrix of integers. Its value for non-Cartan matrices should be
 regarded as junk. -/
 def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A
-deriving Inhabited, LieRing,
-  «./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler lie_algebra[lie_algebra] R»
 #align matrix.to_lie_algebra Matrix.ToLieAlgebra
+
+-- Porting note: the following were derived automatically in mathlib3.
+instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
+  inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
+#align matrix.to_lie_algebra.lie_ring Matrix.ToLieAlgebra.instLieRing
+
+instance Matrix.ToLieAlgebra.instInhabited : Inhabited (Matrix.ToLieAlgebra R A) :=
+  inferInstanceAs (Inhabited (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
+#align matrix.to_lie_algebra.inhabited Matrix.ToLieAlgebra.instInhabited
+
+instance Matrix.ToLieAlgebra.instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) :=
+  inferInstanceAs (LieAlgebra R (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
+#align matrix.to_lie_algebra.lie_algebra Matrix.ToLieAlgebra.instLieAlgebra
 
 namespace CartanMatrix
 
@@ -207,14 +218,14 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o
 ```
 -/
-def e₆ : Matrix (Fin 6) (Fin 6) ℤ :=
+def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
   !![2, 0, -1, 0, 0, 0;
     0, 2, 0, -1, 0, 0;
     -1, 0, 2, -1, 0, 0;
     0, -1, -1, 2, -1, 0;
     0, 0, 0, -1, 2, -1;
     0, 0, 0, 0, -1, 2]
-#align cartan_matrix.E₆ CartanMatrix.e₆
+#align cartan_matrix.E₆ CartanMatrix.E₆
 
 /-- The Cartan matrix of type e₇. See [bourbaki1968] plate VI, page 281.
 
@@ -225,7 +236,7 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o --- o
 ```
 -/
-def e₇ : Matrix (Fin 7) (Fin 7) ℤ :=
+def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
   !![2, 0, -1, 0, 0, 0, 0;
     0, 2, 0, -1, 0, 0, 0;
     -1, 0, 2, -1, 0, 0, 0;
@@ -233,7 +244,7 @@ def e₇ : Matrix (Fin 7) (Fin 7) ℤ :=
     0, 0, 0, -1, 2, -1, 0;
     0, 0, 0, 0, -1, 2, -1;
     0, 0, 0, 0, 0, -1, 2]
-#align cartan_matrix.E₇ CartanMatrix.e₇
+#align cartan_matrix.E₇ CartanMatrix.E₇
 
 /-- The Cartan matrix of type e₈. See [bourbaki1968] plate VII, page 285.
 
@@ -244,7 +255,7 @@ The corresponding Dynkin diagram is:
 o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def e₈ : Matrix (Fin 8) (Fin 8) ℤ :=
+def E₈ : Matrix (Fin 8) (Fin 8) ℤ :=
   !![2, 0, -1, 0, 0, 0, 0, 0;
     0, 2, 0, -1, 0, 0, 0, 0;
     -1, 0, 2, -1, 0, 0, 0, 0;
@@ -253,7 +264,7 @@ def e₈ : Matrix (Fin 8) (Fin 8) ℤ :=
     0, 0, 0, 0, -1, 2, -1, 0;
     0, 0, 0, 0, 0, -1, 2, -1;
     0, 0, 0, 0, 0, 0, -1, 2]
-#align cartan_matrix.E₈ CartanMatrix.e₈
+#align cartan_matrix.E₈ CartanMatrix.E₈
 
 /-- The Cartan matrix of type f₄. See [bourbaki1968] plate VIII, page 288.
 
@@ -262,9 +273,9 @@ The corresponding Dynkin diagram is:
 o --- o =>= o --- o
 ```
 -/
-def f₄ : Matrix (Fin 4) (Fin 4) ℤ :=
+def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
   !![2, -1, 0, 0; -1, 2, -2, 0; 0, -1, 2, -1; 0, 0, -1, 2]
-#align cartan_matrix.F₄ CartanMatrix.f₄
+#align cartan_matrix.F₄ CartanMatrix.F₄
 
 /-- The Cartan matrix of type g₂. See [bourbaki1968] plate IX, page 290.
 
@@ -274,9 +285,9 @@ o ≡>≡ o
 ```
 Actually we are using the transpose of Bourbaki's matrix. This is to make this matrix consistent
 with `cartan_matrix.F₄`, in the sense that all non-zero values below the diagonal are -1. -/
-def g₂ : Matrix (Fin 2) (Fin 2) ℤ :=
+def G₂ : Matrix (Fin 2) (Fin 2) ℤ :=
   !![2, -3; -1, 2]
-#align cartan_matrix.G₂ CartanMatrix.g₂
+#align cartan_matrix.G₂ CartanMatrix.G₂
 
 end CartanMatrix
 
@@ -284,27 +295,27 @@ namespace LieAlgebra
 
 /-- The exceptional split Lie algebra of type e₆. -/
 abbrev E₆ :=
-  CartanMatrix.e₆.ToLieAlgebra R
+  CartanMatrix.E₆.ToLieAlgebra R
 #align lie_algebra.e₆ LieAlgebra.E₆
 
 /-- The exceptional split Lie algebra of type e₇. -/
 abbrev E₇ :=
-  CartanMatrix.e₇.ToLieAlgebra R
+  CartanMatrix.E₇.ToLieAlgebra R
 #align lie_algebra.e₇ LieAlgebra.E₇
 
 /-- The exceptional split Lie algebra of type e₈. -/
 abbrev E₈ :=
-  CartanMatrix.e₈.ToLieAlgebra R
+  CartanMatrix.E₈.ToLieAlgebra R
 #align lie_algebra.e₈ LieAlgebra.E₈
 
 /-- The exceptional split Lie algebra of type f₄. -/
 abbrev F₄ :=
-  CartanMatrix.f₄.ToLieAlgebra R
+  CartanMatrix.F₄.ToLieAlgebra R
 #align lie_algebra.f₄ LieAlgebra.F₄
 
 /-- The exceptional split Lie algebra of type g₂. -/
 abbrev G₂ :=
-  CartanMatrix.g₂.ToLieAlgebra R
+  CartanMatrix.G₂.ToLieAlgebra R
 #align lie_algebra.g₂ LieAlgebra.G₂
 
 end LieAlgebra
