@@ -127,7 +127,7 @@ theorem DifferentiableWithinAt.fderivWithin_prod (hf₁ : DifferentiableWithinAt
     fderivWithin 𝕜 (fun x : E => (f₁ x, f₂ x)) s x =
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
   (hf₁.hasFDerivWithinAt.prod hf₂.hasFDerivWithinAt).fderivWithin hxs
-#align differentiable_at.fderiv_within_prod DifferentiableAt.fderivWithin_prod
+#align differentiable_within_at.fderiv_within_prod DifferentiableWithinAt.fderivWithin_prod
 
 end Prod
 
