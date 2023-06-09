@@ -115,15 +115,8 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [(choose_mul_succ_eq k m).symm, mul_comm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
-theorem derivative_bernoulli (k : ℕ) : Polynomial.derivative (bernoulli k) =
-    k * bernoulli (k - 1) := by
-  cases' k with k
-  · rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
-  · exact_mod_cast derivative_bernoulli_add_one k
-#align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
-
 @[simp]
-theorem sum_bernoulli (n : ℕ) :
+nonrec theorem sum_bernoulli (n : ℕ) :
     (∑ k in range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
@@ -131,15 +124,15 @@ theorem sum_bernoulli (n : ℕ) :
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
-    skip
-    conv =>
+    . skip
+    . conv =>
       apply_congr
-      skip
-      rw [← Nat.cast_mul,
-        choose_mul ((le_tsub_iff_left <| mem_range_le H).1 <| mem_range_le H_1) (le.intro rfl),
-        Nat.cast_mul, add_comm x x_1, add_tsub_cancel_right, mul_assoc, mul_comm, ← smul_eq_mul, ←
-        smul_monomial]
-    rw [← sum_smul]
+      . skip
+      . rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
+            mem_range_le (by assumption)) (le.intro rfl),
+          Nat.cast_mul, add_tsub_cancel_left, mul_assoc, mul_comm, ← smul_eq_mul, ←
+          smul_monomial]
+  simp_rw [← sum_smul]
   rw [sum_range_succ_comm]
   simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
@@ -151,7 +144,7 @@ theorem sum_bernoulli (n : ℕ) :
     rw [eq_comm]
     exact _root_.ne_of_lt (Nat.lt_of_lt_of_le one_lt_two (le_tsub_of_add_le_left (succ_le_succ H)))
   intro x hx
-  simp only [sum_bernoulli (n - x)]
+  rw [sum_bernoulli]
   have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
     simp only [ite_eq_right_iff, one_ne_zero]
     intro h₁
@@ -203,18 +196,18 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
   conv_lhs =>
     congr
-    skip
-    apply_congr
-    skip
-    rw [eval_smul, hd x_1 (mem_range.1 H)]
+    . skip
+    . apply_congr
+      . skip
+      . rw [eval_smul, hd _ (mem_range.1 (by assumption))]
   rw [eval_sub, eval_finset_sum]
   simp_rw [eval_smul, smul_add]
   rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, _root_.add_sub_sub_cancel]
   conv_rhs =>
     congr
-    skip
-    congr
-    rw [succ_eq_add_one, ← choose_succ_self_right d]
+    . skip
+    . congr
+      rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]
 #align polynomial.bernoulli_eval_one_add Polynomial.bernoulli_eval_one_add
