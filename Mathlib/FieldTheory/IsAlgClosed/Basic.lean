@@ -402,11 +402,6 @@ end IsAlgClosed
 
 namespace IsAlgClosure
 
-variable (K : Type _) (J : Type _) (R : Type u) (S : Type _) [Field K] [Field J] [CommRing R]
-  (L : Type v) (M : Type w) [Field L] [Field M] [Algebra R M] [NoZeroSMulDivisors R M]
-  [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M] [CommRing S] [Algebra S L]
-  [NoZeroSMulDivisors S L] [IsAlgClosure S L]
-
 -- Porting note: errors with
 -- > cannot find synthesization order for instance alg_closed with type
 -- > all remaining arguments have metavariables
@@ -414,6 +409,8 @@ variable (K : Type _) (J : Type _) (R : Type u) (S : Type _) [Field K] [Field J]
 
 section
 
+variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
+variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
@@ -423,7 +420,6 @@ noncomputable def equiv : L ≃ₐ[R] M :=
   let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
   AlgEquiv.ofBijective f
     ⟨RingHom.injective f.toRingHom, by
-      clear! S -- Porting note: otherwise the decl will depend on `S`
       letI : Algebra L M := RingHom.toAlgebra f
       letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
         simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
@@ -437,10 +433,14 @@ noncomputable def equiv : L ≃ₐ[R] M :=
 
 end
 
+variable (K : Type _) (J : Type _) (R : Type u) (S : Type _) (L : Type v) (M : Type w)
+  [Field K] [Field J] [CommRing R] [CommRing S] [Field L] [Field M]
+  [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
+  [Algebra S L] [NoZeroSMulDivisors S L] [IsAlgClosure S L]
+
 section EquivOfAlgebraic
 
 variable [Algebra R S] [Algebra R L] [IsScalarTower R S L]
-
 variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarTower K J L]
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
