@@ -245,54 +245,32 @@ instance : Preorder (SubfieldWithHom K L M) where
 
 open Lattice
 
--- set_option pp.notation false in
 theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
     (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
   by_cases hcn : c.Nonempty
   case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
-  have : Nonempty c := Set.Nonempty.to_subtype hcn
-  refine ⟨?ub, ?_⟩
-  · refine ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier, ?_⟩
-    refine Subalgebra.iSupLift (A := L) (B := M) (fun i : c ↦ (i : SubfieldWithHom K L M).carrier)
-      ?_ (fun i ↦ (i : SubfieldWithHom K L M).emb) ?_ _ ?_
-    · intro i j
-      obtain ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
-      exact ⟨k, hik.fst, hjk.fst⟩
-    · intro i j h
-      ext x
-      cases' hc.total i.prop j.prop with hij hji
-      · simp [← hij.snd x]
-      · erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
-          inclusion_self, AlgHom.id_apply x]
-    -- · rfl
-  intro N hN
-  refine ⟨?_, fun _ ↦ rfl⟩
-  -- let ub : SubfieldWithHom K L M := by
-    -- exact
-    --   { carrier := ⨆ i : c, (i : subfield_with_hom K L M hL).carrier
-    --     emb :=
-    --       Subalgebra.iSupLift (fun i : c => (i : subfield_with_hom K L M hL).carrier)
-    --         (fun i j =>
-    --           let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directed_on i j
-    --           ⟨k, hik.fst, hjk.fst⟩)
-    --         (fun i => (i : subfield_with_hom K L M hL).emb)
-    --         (by
-    --           intro i j h
-    --           ext x
-    --           cases' hc.total i.prop j.prop with hij hji
-    --           · simp [← hij.snd x]
-    --           ·
-    --             erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
-    --               inclusion_self, AlgHom.id_apply x])
-    --         _ rfl }
-  -- sorry
-  -- if hcn : c.Nonempty then
-  --   ⟨ub, fun N hN =>
-  --     ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
-  --       intro x
-  --       simp [ub]
-  --       rfl⟩⟩
-  -- else by rw [Set.not_nonempty_iff_eq_empty] at hcn ; simp [hcn]
+  case pos =>
+    have this : Nonempty c := Set.Nonempty.to_subtype hcn
+    let ub : SubfieldWithHom K L M :=
+      ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
+        @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ (Set.Nonempty.to_subtype hcn)
+            (fun i : c => (i : SubfieldWithHom K L M).carrier)
+            (fun i j =>
+              let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
+              ⟨k, hik.fst, hjk.fst⟩)
+            (fun i => (i : SubfieldWithHom K L M).emb)
+            (by
+              intro i j h
+              ext x
+              cases' hc.total i.prop j.prop with hij hji
+              · simp [← hij.snd x]
+              · erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
+                  inclusion_self, AlgHom.id_apply x])
+            _ rfl⟩
+    exact ⟨ub, fun N hN =>
+         ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
+           intro x
+           simp⟩⟩
 #align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
 
 variable (K L M)
