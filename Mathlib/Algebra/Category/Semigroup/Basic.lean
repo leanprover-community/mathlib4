@@ -89,6 +89,12 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
 /-- Typecheck a `AddHom` as a morphism in `AddMagma`. -/
 add_decl_doc AddMagma.ofHom
 
+-- Porting note: added these two instances as it wasn't able to find them.
+instance {X : Type u} [h : Mul X] : Mul (of X) := h
+instance {X Y : Type u} [Mul X] [Mul Y] :
+    CoeFun (Magma.of X ⟶ Magma.of Y) (fun _ => X → Y) :=
+  ⟨MulHom.toFun⟩
+
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
