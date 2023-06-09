@@ -9,7 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FderivAnalytic
+import Mathlib.Analysis.Calculus.FDerivAnalytic
 import Mathlib.Analysis.NormedSpace.Completion
 
 /-!
