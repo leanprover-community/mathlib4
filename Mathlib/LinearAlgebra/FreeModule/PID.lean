@@ -623,10 +623,6 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 
-instance (F : Type u) [CommRing F] [Algebra F R] (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥) (i) :
-    Module F (R ⧸ Ideal.span ({I.smithCoeffs b hI i} : Set R)) :=
-  Quotient.module' _
-
 end Ideal
 
 end SmithNormal
