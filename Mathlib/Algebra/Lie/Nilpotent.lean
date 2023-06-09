@@ -55,8 +55,8 @@ of a Lie submodule, regarded as a Lie module in its own right, since it provides
 expression of the fact that the terms of the Lie submodule's lower central series are also Lie
 submodules of the enclosing Lie module.
 
-See also `lie_module.lower_central_series_eq_lcs_comap` and
-`lie_module.lower_central_series_map_eq_lcs` below, as well as `LieSubmodule.ucs`. -/
+See also `LieSubmodule.lowerCentralSeries_eq_lcs_comap` and
+`LieSubmodule.lowerCentralSeries_map_eq_lcs` below, as well as `LieSubmodule.ucs`. -/
 def lcs : LieSubmodule R L M → LieSubmodule R L M :=
   (fun N => ⁅(⊤ : LieIdeal R L), N⁆)^[k]
 #align lie_submodule.lcs LieSubmodule.lcs
@@ -375,7 +375,8 @@ theorem ucs_add (k l : ℕ) : N.ucs (k + l) = (N.ucs l).ucs k :=
 
 @[mono]
 theorem ucs_mono (k : ℕ) (h : N₁ ≤ N₂) : N₁.ucs k ≤ N₂.ucs k := by
-  induction' k with k ih; · simpa
+  induction' k with k ih
+  · simpa
   simp only [ucs_succ]
   -- Porting note: `mono` makes no progress
   apply monotone_normalizer ih
@@ -400,9 +401,8 @@ theorem ucs_le_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) :
 #align lie_submodule.ucs_le_of_normalizer_eq_self LieSubmodule.ucs_le_of_normalizer_eq_self
 
 theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l ≤ N₂.ucs k := by
-  revert l
-  induction' k with k ih; · simp
-  intro l
+  induction' k with k ih generalizing l
+  · simp
   rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 #align lie_submodule.lcs_add_le_iff LieSubmodule.lcs_add_le_iff
 
@@ -459,7 +459,7 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
   · -- Porting note: was `simp [LinearMap.range_eq_top, hg]`
     simp only [Nat.zero_eq, lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
       Submodule.map_top, LinearMap.range_eq_top]
-    apply hg
+    exact hg
   · suffices
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
@@ -536,7 +536,7 @@ theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent R L] :
   LieModule.nilpotent_endo_of_nilpotent_module R L L
 #align lie_algebra.nilpotent_ad_of_nilpotent_algebra LieAlgebra.nilpotent_ad_of_nilpotent_algebra
 
-/-- See also `lie_algebra.zero_root_space_eq_top_of_nilpotent`. -/
+/-- See also `LieAlgebra.zero_rootSpace_eq_top_of_nilpotent`. -/
 theorem LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L] :
     (⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0) = ⊤ :=
   LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L L
