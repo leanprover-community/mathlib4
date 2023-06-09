@@ -465,6 +465,7 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
   ⟨e, e.continuous_toFun⟩
 #align homeomorph.to_continuous_map Homeomorph.toContinuousMap
+#align homeomorph.to_continuous_map_apply Homeomorph.toContinuousMap_apply
 
 /-- `Homeomorph.toContinuousMap` as a coercion. -/
 instance : Coe (α ≃ₜ β) C(α, β) :=
