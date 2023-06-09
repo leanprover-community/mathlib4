@@ -571,7 +571,8 @@ theorem integrableOn_Ioi_of_intervalIntegral_norm_bounded (I a : ℝ)
     exact hfi i
   refine' hφ.integrable_of_integral_norm_bounded I hfi (h.mp _)
   filter_upwards [hb.eventually (eventually_ge_atTop a)] with i hbi
-  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i), inter_comm]
+  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
+    inter_comm]
   exact id
 #align measure_theory.integrable_on_Ioi_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioi_of_intervalIntegral_norm_bounded
 
@@ -645,7 +646,8 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
   have hφ : AECover (μ.restrict <| Ioi a) l φ := aecover_Iic hb
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
   filter_upwards [hb.eventually (eventually_ge_atTop <| a)] with i hbi
-  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i), inter_comm]
+  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
+    inter_comm]
   rfl
 #align measure_theory.interval_integral_tendsto_integral_Ioi MeasureTheory.intervalIntegral_tendsto_integral_Ioi
 
@@ -686,7 +688,8 @@ on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     (∫ x in Ioi a, f' x) = m - f a := by
-  refine integral_Ioi_of_hasDerivAt_of_tendsto (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le) f'int hf
+  refine integral_Ioi_of_hasDerivAt_of_tendsto (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le)
+    f'int hf
   exact (hderiv x hx).continuousAt.continuousWithinAt
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto' MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto'
 
