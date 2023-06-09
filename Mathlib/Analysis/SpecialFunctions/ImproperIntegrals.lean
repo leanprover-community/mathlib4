@@ -64,61 +64,63 @@ theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
 /-- If `0 < c`, then `(λ t : ℝ, t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
-  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
+  have hd : ∀ (x : ℝ) (_ : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    convert (has_deriv_at_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _
+    -- Porting note: helped `convert` with explicit arguments
+    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
-  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) := by
-    apply tendsto.div_const
+  have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
+    apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
   exact
-    integrable_on_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg_of_nonneg (hc.trans ht).le a) ht
+    integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg_of_nonneg (hc.trans ht).le a) ht
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     (∫ t : ℝ in Ioi c, t ^ a) = -c ^ (a + 1) / (a + 1) := by
-  have hd : ∀ (x : ℝ) (hx : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
+  have hd : ∀ (x : ℝ) (_ : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    convert (has_deriv_at_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _
+    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
-  have ht : tendsto (fun t => t ^ (a + 1) / (a + 1)) at_top (𝓝 (0 / (a + 1))) := by
-    apply tendsto.div_const
+  have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
+    apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-  convert integral_Ioi_of_has_deriv_at_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
   simp only [neg_div, zero_div, zero_sub]
 #align integral_Ioi_rpow_of_lt integral_Ioi_rpow_of_lt
 
 theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
-  rw [integrable_on, ← integrable_norm_iff, ← integrable_on]
+  rw [IntegrableOn, ← integrable_norm_iff, ← IntegrableOn]
   refine' (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => _) measurableSet_Ioi
   · dsimp only
     rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
   · refine' ContinuousOn.aestronglyMeasurable (fun t ht => _) measurableSet_Ioi
     exact
-      (Complex.continuousAt_of_real_cpow_const _ _ (Or.inr (hc.trans ht).ne')).ContinuousWithinAt
+      (Complex.continuousAt_of_real_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
 
 theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) := by
   refine'
     tendsto_nhds_unique
-      (interval_integral_tendsto_integral_Ioi c (integrableOn_Ioi_cpow_of_lt ha hc) tendsto_id) _
+      (intervalIntegral_tendsto_integral_Ioi c (integrableOn_Ioi_cpow_of_lt ha hc) tendsto_id) _
   suffices
-    tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) at_top
+    Tendsto (fun x : ℝ => ((x : ℂ) ^ (a + 1) - (c : ℂ) ^ (a + 1)) / (a + 1)) atTop
       (𝓝 <| -c ^ (a + 1) / (a + 1)) by
-    refine' this.congr' ((eventually_gt_at_top 0).mp (eventually_of_forall fun x hx => _))
+    refine' this.congr' ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => _))
+    dsimp only
     rw [integral_cpow, id.def]
     refine' Or.inr ⟨_, not_mem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re
     rw [Complex.neg_re, Complex.one_re]
     exact ha.ne
   simp_rw [← zero_sub, sub_div]
-  refine' (tendsto.div_const _ _).sub_const _
+  refine' (Tendsto.div_const _ _).sub_const _
   rw [tendsto_zero_iff_norm_tendsto_zero]
   refine'
     (tendsto_rpow_neg_atTop (by linarith : 0 < -(a.re + 1))).congr'
-      ((eventually_gt_at_top 0).mp (eventually_of_forall fun x hx => _))
+      ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => _))
   simp_rw [neg_neg, Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx, Complex.add_re,
     Complex.one_re]
 #align integral_Ioi_cpow_of_lt integral_Ioi_cpow_of_lt
