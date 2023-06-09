@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.ContinuousAffineMap
-import Mathbin.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
+import Mathlib.Analysis.Calculus.ContDiff
 
 /-!
 # Smooth affine maps
@@ -32,8 +32,7 @@ variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
 
 /-- A continuous affine map between normed vector spaces is smooth. -/
-theorem contDiff {n : ℕ∞} (f : V →A[𝕜] W) : ContDiff 𝕜 n f :=
-  by
+theorem contDiff {n : ℕ∞} (f : V →A[𝕜] W) : ContDiff 𝕜 n f := by
   rw [f.decomp]
   apply f.cont_linear.cont_diff.add
   simp only
