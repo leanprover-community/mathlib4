@@ -31,7 +31,7 @@ we prove various ways of studying the proper integral by studying the improper o
 
 ## Definitions
 
-The main definition of this file is `measure_theory.ae_cover`. It is a rather technical
+The main definition of this file is `MeasureTheory.AECover`. It is a rather technical
 definition whose sole purpose is generalizing and factoring proofs. Given an index type `ι`, a
 countably generated filter `l` over `ι`, and an `ι`-indexed family `φ` of subsets of a measurable
 space `α` equipped with a measure `μ`, one should think of a hypothesis `hφ : ae_cover μ l φ` as
@@ -41,30 +41,30 @@ of `∫ x in φ i, f x ∂μ` as `i` tends to `l`.
 When using this definition with a measure restricted to a set `s`, which happens fairly often,
 one should not try too hard to use a `ae_cover` of subsets of `s`, as it often makes proofs
 more complicated than necessary. See for example the proof of
-`measure_theory.integrable_on_Iic_of_interval_integral_norm_tendsto` where we use `(λ x, Ioi x)`
+`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)`
 as an `ae_cover` w.r.t. `μ.restrict (Iic b)`, instead of using `(λ x, Ioc x b)`.
 
 ## Main statements
 
-- `measure_theory.ae_cover.lintegral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
-  where `l` is a countably generated filter, and if `f` is a measurable `ennreal`-valued function,
+- `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
+  where `l` is a countably generated filter, and if `f` is a measurable `ENNReal`-valued function,
   then `∫⁻ x in φ n, f x ∂μ` tends to `∫⁻ x, f x ∂μ` as `n` tends to `l`
-- `measure_theory.ae_cover.integrable_of_integral_norm_tendsto` : if `φ` is a `ae_cover μ l`,
+- `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` : if `φ` is a `ae_cover μ l`,
   where `l` is a countably generated filter, if `f` is measurable and integrable on each `φ n`,
   and if `∫ x in φ n, ‖f x‖ ∂μ` tends to some `I : ℝ` as n tends to `l`, then `f` is integrable
-- `measure_theory.ae_cover.integral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
+- `MeasureTheory.AECover.integral_tendsto_of_countably_generated` : if `φ` is a `ae_cover μ l`,
   where `l` is a countably generated filter, and if `f` is measurable and integrable (globally),
   then `∫ x in φ n, f x ∂μ` tends to `∫ x, f x ∂μ` as `n` tends to `+∞`.
 
 We then specialize these lemmas to various use cases involving intervals, which are frequent
 in analysis. In particular,
-- `measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto` is a version of FTC-2 on the interval
+- `MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto` is a version of FTC-2 on the interval
   `(a, +∞)`, giving the formula `∫ x in (a, +∞), g' x = l - g a` if `g'` is integrable and
   `g` tends to `l` at `+∞`.
-- `measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg` gives the same result assuming that
+- `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
   `g'` is nonnegative instead of integrable. Its automatic integrability in this context is proved
-  in `measure_theory.integrable_on_Ioi_deriv_of_nonneg`.
-- `measure_theory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
+  in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
+- `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
 -/
 
@@ -86,9 +86,9 @@ variable {α ι : Type _} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
     It should be thought of as a sufficient condition for being able to interpret
     `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
 
-    See for example `measure_theory.ae_cover.lintegral_tendsto_of_countably_generated`,
-    `measure_theory.ae_cover.integrable_of_integral_norm_tendsto` and
-    `measure_theory.ae_cover.integral_tendsto_of_countably_generated`. -/
+    See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
+    `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
+    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 structure AECover (φ : ι → Set α) : Prop where
   ae_eventually_mem : ∀ᵐ x ∂μ, ∀ᶠ i in l, x ∈ φ i
   protected measurableSet : ∀ i, MeasurableSet <| φ i
@@ -492,7 +492,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
 #align measure_theory.ae_cover.integral_tendsto_of_countably_generated MeasureTheory.AECover.integral_tendsto_of_countably_generated
 
 /-- Slight reformulation of
-    `measure_theory.ae_cover.integral_tendsto_of_countably_generated`. -/
+    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 theorem AECover.integral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (I : E) (hfi : Integrable f μ)
     (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : (∫ x, f x ∂μ) = I :=
