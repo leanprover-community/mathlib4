@@ -29,39 +29,47 @@ than the dimension.
 
 noncomputable section
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 open scoped BigOperators NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
 variable {E : Type _} [NormedAddCommGroup E]
 
-theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt (1 + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
-  refine' le_of_pow_le_pow 2 (by positivity) two_pos _
-  simp [sq_sqrt (zero_lt_one_add_norm_sq x).le, add_pow_two]
+theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
+  rw [sqrt_le_left (by positivity)]
+  simp [add_sq]
 #align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
-theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) : 1 + ‖x‖ ≤ Real.sqrt 2 * sqrt (1 + ‖x‖ ^ 2) := by
-  suffices (sqrt 2 * sqrt (1 + ‖x‖ ^ 2)) ^ 2 - (1 + ‖x‖) ^ 2 = (1 - ‖x‖) ^ 2 by
-    refine' le_of_pow_le_pow 2 (by positivity) (by norm_num) _
-    rw [← sub_nonneg, this]
-    positivity
-  rw [mul_pow, sq_sqrt (zero_lt_one_add_norm_sq x).le, add_pow_two, sub_pow_two]
-  norm_num
-  ring
+theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
+    (1 : ℝ) + ‖x‖ ≤ Real.sqrt 2 * sqrt ((1 : ℝ) + ‖x‖ ^ 2) := by
+  rw [← sqrt_mul zero_le_two]
+  have := sq_nonneg (‖x‖ - 1)
+  apply le_sqrt_of_sq_le
+  linarith
 #align one_add_norm_le_sqrt_two_mul_sqrt one_add_norm_le_sqrt_two_mul_sqrt
 
 theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
-    (1 + ‖x‖ ^ 2) ^ (-r / 2) ≤ 2 ^ (r / 2) * (1 + ‖x‖) ^ (-r) := by
-  have h1 : 0 ≤ (2 : ℝ) := by positivity
-  have h3 : 0 < sqrt 2 := by positivity
-  have h4 : 0 < 1 + ‖x‖ := by positivity
-  have h5 : 0 < sqrt (1 + ‖x‖ ^ 2) := by positivity
-  have h6 : 0 < sqrt 2 * sqrt (1 + ‖x‖ ^ 2) := mul_pos h3 h5
-  rw [rpow_div_two_eq_sqrt _ h1, rpow_div_two_eq_sqrt _ (zero_lt_one_add_norm_sq x).le, ←
-    inv_mul_le_iff (rpow_pos_of_pos h3 _), rpow_neg h4.le, rpow_neg (sqrt_nonneg _), ← mul_inv, ←
-    mul_rpow h3.le h5.le, inv_le_inv (rpow_pos_of_pos h6 _) (rpow_pos_of_pos h4 _),
-    rpow_le_rpow_iff h4.le h6.le hr]
-  exact one_add_norm_le_sqrt_two_mul_sqrt _
+    ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) ≤ (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) :=
+  calc
+    ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)
+      = (2 : ℝ) ^ (r / 2) * ((Real.sqrt 2 * Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
+      rw []
+    _ ≤ (2 : ℝ) ^ (r / 2) * ((1 + ‖x‖) ^ r)⁻¹ := by
+      gcongr
+      apply rpow_le_rpow
+    
+ -- by
+ --  have h1 : 0 ≤ (2 : ℝ) := by positivity
+ --  have h3 : 0 < sqrt 2 := by positivity
+ --  have h4 : 0 < 1 + ‖x‖ := by positivity
+ --  have h5 : 0 < sqrt (1 + ‖x‖ ^ 2) := by positivity
+ --  have h6 : 0 < sqrt 2 * sqrt (1 + ‖x‖ ^ 2) := mul_pos h3 h5
+ --  rw [rpow_div_two_eq_sqrt _ h1, rpow_div_two_eq_sqrt _ (zero_lt_one_add_norm_sq x).le, ←
+ --    inv_mul_le_iff (rpow_pos_of_pos h3 _), rpow_neg h4.le, rpow_neg (sqrt_nonneg _), ← mul_inv, ←
+ --    mul_rpow h3.le h5.le, inv_le_inv (rpow_pos_of_pos h6 _) (rpow_pos_of_pos h4 _),
+ --    rpow_le_rpow_iff h4.le h6.le hr]
+ --  exact one_add_norm_le_sqrt_two_mul_sqrt _
 #align rpow_neg_one_add_norm_sq_le rpow_neg_one_add_norm_sq_le
 
 theorem le_rpow_one_add_norm_iff_norm_le {r t : ℝ} (hr : 0 < r) (ht : 0 < t) (x : E) :
