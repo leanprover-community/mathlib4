@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 
 ! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
+! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -839,6 +839,52 @@ theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (
 #align subring.center.coe_div Subring.center.coe_div
 
 end DivisionRing
+
+section Centralizer
+
+/-- The centralizer of a set inside a ring as a `subring`. -/
+def centralizer (s : Set R) : Subring R :=
+  { Subsemiring.centralizer s with neg_mem' := Set.neg_mem_centralizer }
+#align subring.centralizer Subring.centralizer
+
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set R) : (centralizer s : Set R) = s.centralizer :=
+  rfl
+#align subring.coe_centralizer Subring.coe_centralizer
+
+theorem centralizer_toSubmonoid (s : Set R) :
+    (centralizer s).toSubmonoid = Submonoid.centralizer s :=
+  rfl
+#align subring.centralizer_to_submonoid Subring.centralizer_toSubmonoid
+
+theorem centralizer_toSubsemiring (s : Set R) :
+    (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
+  rfl
+#align subring.centralizer_to_subsemiring Subring.centralizer_toSubsemiring
+
+theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
+  Iff.rfl
+#align subring.mem_centralizer_iff Subring.mem_centralizer_iff
+
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+#align subring.center_le_centralizer Subring.center_le_centralizer
+
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
+  Set.centralizer_subset h
+#align subring.centralizer_le Subring.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {s : Set R} : centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subring.centralizer_eq_top_iff_subset Subring.centralizer_eq_top_iff_subset
+
+@[simp]
+theorem centralizer_univ : centralizer Set.univ = center R :=
+  SetLike.ext' (Set.centralizer_univ R)
+#align subring.centralizer_univ Subring.centralizer_univ
+
+end Centralizer
 
 /-! ## subring closure of a subset -/
 

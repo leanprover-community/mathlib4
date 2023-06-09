@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module ring_theory.subsemiring.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
+! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -772,9 +772,19 @@ theorem mem_centralizer_iff {R} [Semiring R] {s : Set R} {z : R} :
   Iff.rfl
 #align subsemiring.mem_centralizer_iff Subsemiring.mem_centralizer_iff
 
+theorem center_le_centralizer {R} [Semiring R] (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+#align subsemiring.center_le_centralizer Subsemiring.center_le_centralizer
+
 theorem centralizer_le {R} [Semiring R] (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 #align subsemiring.centralizer_le Subsemiring.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {R} [Semiring R] {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subsemiring.centralizer_eq_top_iff_subset Subsemiring.centralizer_eq_top_iff_subset
 
 @[simp]
 theorem centralizer_univ {R} [Semiring R] : centralizer Set.univ = center R :=
