@@ -18,7 +18,7 @@ This file contains results about smoothness of affine maps.
 
 ## Main definitions:
 
- * `continuous_affine_map.cont_diff`: a continuous affine map is smooth
+ * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth
 
 -/
 
@@ -34,10 +34,9 @@ variable [NormedAddCommGroup W] [NormedSpace 𝕜 W]
 /-- A continuous affine map between normed vector spaces is smooth. -/
 theorem contDiff {n : ℕ∞} (f : V →A[𝕜] W) : ContDiff 𝕜 n f := by
   rw [f.decomp]
-  apply f.cont_linear.cont_diff.add
+  apply f.contLinear.contDiff.add
   simp only
   exact contDiff_const
 #align continuous_affine_map.cont_diff ContinuousAffineMap.contDiff
 
 end ContinuousAffineMap
-
