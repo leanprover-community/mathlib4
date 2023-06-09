@@ -104,7 +104,6 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
   ihom.coev A
 #align category_theory.exp.coev CategoryTheory.exp.coev
 
--- mathport name: «expr ⟹ »
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 notation:20 A " ⟹ " B:19 => (exp A).obj B
