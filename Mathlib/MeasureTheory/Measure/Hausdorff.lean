@@ -20,81 +20,81 @@ import Mathlib.Topology.MetricSpace.MetricSeparated
 
 In this file we define the `d`-dimensional Hausdorff measure on an (extended) metric space `X` and
 the Hausdorff dimension of a set in an (extended) metric space. Let `μ d δ` be the maximal outer
-measure such that `μ d δ s ≤ (emetric.diam s) ^ d` for every set of diameter less than `δ`. Then
+measure such that `μ d δ s ≤ (EMetric.diam s) ^ d` for every set of diameter less than `δ`. Then
 the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. By Caratheodory theorem
-`measure_theory.outer_measure.is_metric.borel_le_caratheodory`, this is a Borel measure on `X`.
+`MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, this is a Borel measure on `X`.
 
 The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
 ```
-μH[d] s = ⨆ (r : ℝ≥0∞) (hr : 0 < r), ⨅ (t : ℕ → set X) (hts : s ⊆ ⋃ n, t n)
-    (ht : ∀ n, emetric.diam (t n) ≤ r), ∑' n, emetric.diam (t n) ^ d
+μH[d] s = ⨆ (r : ℝ≥0∞) (hr : 0 < r), ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n)
+    (ht : ∀ n, EMetric.diam (t n) ≤ r), ∑' n, EMetric.diam (t n) ^ d
 ```
 
 For every set `s` for any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
-`measure_theory.measure.hausdorff_measure_zero_or_top`. In
-`topology.metric_space.hausdorff_dimension` we use this fact to define the Hausdorff dimension
+`MeasureTheory.Measure.hausdorffMeasure_zero_or_top`. In
+`Mathlib.Topology.MetricSpace.HausdorffDimension` we use this fact to define the Hausdorff dimension
 `dimH` of a set in an (extended) metric space.
 
 We also define two generalizations of the Hausdorff measure. In one generalization (see
-`measure_theory.measure.mk_metric`) we take any function `m (diam s)` instead of `(diam s) ^ d`. In
-an even more general definition (see `measure_theory.measure.mk_metric'`) we use any function
-of `m : set X → ℝ≥0∞`. Some authors start with a partial function `m` defined only on some sets
-`s : set X` (e.g., only on balls or only on measurable sets). This is equivalent to our definition
-applied to `measure_theory.extend m`.
+`MeasureTheory.Measure.mkMetric`) we take any function `m (diam s)` instead of `(diam s) ^ d`. In
+an even more general definition (see `MeasureTheory.Measure.mkMetric'`) we use any function
+of `m : Set X → ℝ≥0∞`. Some authors start with a partial function `m` defined only on some sets
+`s : Set X` (e.g., only on balls or only on measurable sets). This is equivalent to our definition
+applied to `MeasureTheory.extend m`.
 
-We also define a predicate `measure_theory.outer_measure.is_metric` which says that an outer measure
+We also define a predicate `MeasureTheory.OuterMeasure.IsMetric` which says that an outer measure
 is additive on metric separated pairs of sets: `μ (s ∪ t) = μ s + μ t` provided that
 `⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for the Caratheodory theorem
-`measure_theory.outer_measure.is_metric.borel_le_caratheodory`, so we prove this theorem for any
-metric outer measure, then prove that outer measures constructed using `mk_metric'` are metric outer
+`MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, so we prove this theorem for any
+metric outer measure, then prove that outer measures constructed using `mkMetric'` are metric outer
 measures.
 
 ## Main definitions
 
-* `measure_theory.outer_measure.is_metric`: an outer measure `μ` is called *metric* if
+* `MeasureTheory.OuterMeasure.IsMetric`: an outer measure `μ` is called *metric* if
   `μ (s ∪ t) = μ s + μ t` for any two metric separated sets `s` and `t`. A metric outer measure in a
   Borel extended metric space is guaranteed to satisfy the Caratheodory condition, see
-  `measure_theory.outer_measure.is_metric.borel_le_caratheodory`.
-* `measure_theory.outer_measure.mk_metric'` and its particular case
-  `measure_theory.outer_measure.mk_metric`: a construction of an outer measure that is guaranteed to
+  `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`.
+* `MeasureTheory.OuterMeasure.mkMetric'` and its particular case
+  `MeasureTheory.OuterMeasure.mkMetric`: a construction of an outer measure that is guaranteed to
   be metric. Both constructions are generalizations of the Hausdorff measure. The same measures
-  interpreted as Borel measures are called `measure_theory.measure.mk_metric'` and
-  `measure_theory.measure.mk_metric`.
-* `measure_theory.measure.hausdorff_measure` a.k.a. `μH[d]`: the `d`-dimensional Hausdorff measure.
+  interpreted as Borel measures are called `MeasureTheory.Measure.mkMetric'` and
+  `MeasureTheory.Measure.mkMetric`.
+* `MeasureTheory.Measure.hausdorffMeasure` a.k.a. `μH[d]`: the `d`-dimensional Hausdorff measure.
   There are many definitions of the Hausdorff measure that differ from each other by a
   multiplicative constant. We put
-  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, emetric.diam (t n) ≤ r),
-    ∑' n, ⨆ (ht : ¬set.subsingleton (t n)), (emetric.diam (t n)) ^ d`,
-  see `measure_theory.measure.hausdorff_measure_apply'`. In the most interesting case `0 < d` one
-  can omit the `⨆ (ht : ¬set.subsingleton (t n))` part.
+  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, EMetric.diam (t n) ≤ r),
+    ∑' n, ⨆ (ht : ¬Set.Subsingleton (t n)), (EMetric.diam (t n)) ^ d`,
+  see `MeasureTheory.Measure.hausdorffMeasure_apply`. In the most interesting case `0 < d` one
+  can omit the `⨆ (ht : ¬Set.Subsingleton (t n))` part.
 
 ## Main statements
 
 ### Basic properties
 
-* `measure_theory.outer_measure.is_metric.borel_le_caratheodory`: if `μ` is a metric outer measure
+* `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`: if `μ` is a metric outer measure
   on an extended metric space `X` (that is, it is additive on pairs of metric separated sets), then
   every Borel set is Caratheodory measurable (hence, `μ` defines an actual
-  `measure_theory.measure`). See also `measure_theory.measure.mk_metric`.
-* `measure_theory.measure.hausdorff_measure_mono`: `μH[d] s` is an antitone function
+  `MeasureTheory.Measure`). See also `MeasureTheory.Measure.mkMetric`.
+* `MeasureTheory.Measure.hausdorffMeasure_mono`: `μH[d] s` is an antitone function
   of `d`.
-* `measure_theory.measure.hausdorff_measure_zero_or_top`: if `d₁ < d₂`, then for any `s`, either
+* `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`: if `d₁ < d₂`, then for any `s`, either
   `μH[d₂] s = 0` or `μH[d₁] s = ∞`. Together with the previous lemma, this means that `μH[d] s` is
   equal to infinity on some ray `(-∞, D)` and is equal to zero on `(D, +∞)`, where `D` is a possibly
   infinite number called the *Hausdorff dimension* of `s`; `μH[D] s` can be zero, infinity, or
   anything in between.
-* `measure_theory.measure.no_atoms_hausdorff`: Hausdorff measure has no atoms.
+* `MeasureTheory.Measure.noAtoms_hausdorff`: Hausdorff measure has no atoms.
 
 ### Hausdorff measure in `ℝⁿ`
 
-* `measure_theory.hausdorff_measure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
+* `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
 ## Notations
 
-We use the following notation localized in `measure_theory`.
+We use the following notation localized in `MeasureTheory`.
 
-- `μH[d]` : `measure_theory.measure.hausdorff_measure d`
+- `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
 
 ## Implementation notes
 
@@ -157,6 +157,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
       hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 #align measure_theory.outer_measure.is_metric.finset_Union_of_pairwise_separated MeasureTheory.OuterMeasure.IsMetric.finset_iUnion_of_pairwise_separated
 
+set_option maxHeartbeats 300000 in
 /-- Caratheodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
 Caratheodory measurable: for any (not necessarily measurable) set `s` we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
@@ -196,7 +197,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     _ ≤ μ s := iSup_le hSs
   /- It suffices to show that `∑' k, μ (S (k + 1) \ S k) ≠ ∞`. Indeed, if we have this,
     then for all `N` we have `μ (⋃ n, S n) ≤ μ (S N) + ∑' k, m (S (N + k + 1) \ S (N + k))`
-    and the second term tends to zero, see `outer_measure.Union_nat_of_monotone_of_tsum_ne_top`
+    and the second term tends to zero, see `OuterMeasure.iUnion_nat_of_monotone_of_tsum_ne_top`
     for details. -/
   have : ∀ n, S n ⊆ S (n + 1) := fun n x hx =>
     ⟨hx.1, le_trans (ENNReal.inv_le_inv.2 <| Nat.cast_le.2 n.le_succ) hx.2⟩
@@ -241,29 +242,28 @@ end IsMetric
 /-!
 ### Constructors of metric outer measures
 
-In this section we provide constructors `measure_theory.outer_measure.mk_metric'` and
-`measure_theory.outer_measure.mk_metric` and prove that these outer measures are metric outer
+In this section we provide constructors `MeasureTheory.OuterMeasure.mkMetric'` and
+`MeasureTheory.OuterMeasure.mkMetric` and prove that these outer measures are metric outer
 measures. We also prove basic lemmas about `map`/`comap` of these measures.
 -/
 
 
-/-- Auxiliary definition for `outer_measure.mk_metric'`: given a function on sets
-`m : set X → ℝ≥0∞`, returns the maximal outer measure `μ` such that `μ s ≤ m s`
+/-- Auxiliary definition for `OuterMeasure.mkMetric'`: given a function on sets
+`m : Set X → ℝ≥0∞`, returns the maximal outer measure `μ` such that `μ s ≤ m s`
 for any set `s` of diameter at most `r`.-/
 def mkMetric'.pre (m : Set X → ℝ≥0∞) (r : ℝ≥0∞) : OuterMeasure X :=
   boundedBy <| extend fun s (_ : diam s ≤ r) => m s
 #align measure_theory.outer_measure.mk_metric'.pre MeasureTheory.OuterMeasure.mkMetric'.pre
 
-/-- Given a function `m : set X → ℝ≥0∞`, `mk_metric' m` is the supremum of `mk_metric'.pre m r`
-over `r > 0`. Equivalently, it is the limit of `mk_metric'.pre m r` as `r` tends to zero from
+/-- Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `mkMetric'.pre m r`
+over `r > 0`. Equivalently, it is the limit of `mkMetric'.pre m r` as `r` tends to zero from
 the right. -/
 def mkMetric' (m : Set X → ℝ≥0∞) : OuterMeasure X :=
   ⨆ r > 0, mkMetric'.pre m r
 #align measure_theory.outer_measure.mk_metric' MeasureTheory.OuterMeasure.mkMetric'
 
 /-- Given a function `m : ℝ≥0∞ → ℝ≥0∞` and `r > 0`, let `μ r` be the maximal outer measure such that
-`μ s ≤ m (emetric.diam s)` whenever `emetric.diam s < r`. Then
-`mk_metric m = ⨆ r > 0, μ r`. -/
+`μ s ≤ m (EMetric.diam s)` whenever `EMetric.diam s < r`. Then `mkMetric m = ⨆ r > 0, μ r`. -/
 def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : OuterMeasure X :=
   mkMetric' fun s => m (diam s)
 #align measure_theory.outer_measure.mk_metric MeasureTheory.OuterMeasure.mkMetric
@@ -310,7 +310,7 @@ theorem eq_iSup_nat (m : Set X → ℝ≥0∞) : mkMetric' m = ⨆ n : ℕ, mkMe
       (tendsto_atTop_iSup fun k l hkl => mkMetric'.mono_pre_nat m hkl s)
 #align measure_theory.outer_measure.mk_metric'.eq_supr_nat MeasureTheory.OuterMeasure.mkMetric'.eq_iSup_nat
 
-/-- `measure_theory.outer_measure.mk_metric'.pre m r` is a trimmed measure provided that
+/-- `MeasureTheory.OuterMeasure.mkMetric'.pre m r` is a trimmed measure provided that
 `m (closure s) = m s` for any set `s`. -/
 theorem trim_pre [MeasurableSpace X] [OpensMeasurableSpace X] (m : Set X → ℝ≥0∞)
     (hcl : ∀ s, m (closure s) = m s) (r : ℝ≥0∞) : (pre m r).trim = pre m r := by
@@ -325,7 +325,7 @@ theorem trim_pre [MeasurableSpace X] [OpensMeasurableSpace X] (m : Set X → ℝ
 
 end mkMetric'
 
-/-- An outer measure constructed using `outer_measure.mk_metric'` is a metric outer measure. -/
+/-- An outer measure constructed using `OuterMeasure.mkMetric'` is a metric outer measure. -/
 theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric := by
   rintro s t ⟨r, r0, hr⟩
   refine'
@@ -341,7 +341,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
 #align measure_theory.outer_measure.mk_metric'_is_metric MeasureTheory.OuterMeasure.mkMetric'_isMetric
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
-(we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mk_metric m₁ hm₁ ≤ c • mk_metric m₂ hm₂`. -/
+(we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
     (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : OuterMeasure X) ≤ c • mkMetric m₂ := by
   classical
@@ -369,7 +369,7 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Ou
 #align measure_theory.outer_measure.mk_metric_top MeasureTheory.OuterMeasure.mkMetric_top
 
 /-- If `m₁ d ≤ m₂ d` for `d < ε` for some `ε > 0` (we use `≤ᶠ[𝓝[≥] 0]` to state this), then
-`mk_metric m₁ hm₁ ≤ mk_metric m₂ hm₂`-/
+`mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : OuterMeasure X) ≤ mkMetric m₂ := by
   convert mkMetric_mono_smul ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
@@ -436,9 +436,9 @@ end OuterMeasure
 /-!
 ### Metric measures
 
-In this section we use `measure_theory.outer_measure.to_measure` and theorems about
-`measure_theory.outer_measure.mk_metric'`/`measure_theory.outer_measure.mk_metric` to define
-`measure_theory.measure.mk_metric'`/`measure_theory.measure.mk_metric`. We also restate some lemmas
+In this section we use `MeasureTheory.OuterMeasure.toMeasure` and theorems about
+`MeasureTheory.OuterMeasure.mkMetric'`/`MeasureTheory.OuterMeasure.mkMetric` to define
+`MeasureTheory.Measure.mkMetric'`/`MeasureTheory.Measure.mkMetric`. We also restate some lemmas
 about metric outer measures for metric measures.
 -/
 
@@ -447,16 +447,16 @@ namespace Measure
 
 variable [MeasurableSpace X] [BorelSpace X]
 
-/-- Given a function `m : set X → ℝ≥0∞`, `mk_metric' m` is the supremum of `μ r`
+/-- Given a function `m : Set X → ℝ≥0∞`, `mkMetric' m` is the supremum of `μ r`
 over `r > 0`, where `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s`
 for all `s`. While each `μ r` is an *outer* measure, the supremum is a measure. -/
 def mkMetric' (m : Set X → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric' m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 #align measure_theory.measure.mk_metric' MeasureTheory.Measure.mkMetric'
 
-/-- Given a function `m : ℝ≥0∞ → ℝ≥0∞`, `mk_metric m` is the supremum of `μ r` over `r > 0`, where
+/-- Given a function `m : ℝ≥0∞ → ℝ≥0∞`, `mkMetric m` is the supremum of `μ r` over `r > 0`, where
 `μ r` is the maximal outer measure `μ` such that `μ s ≤ m s` for all sets `s` that contain at least
-two points. While each `mk_metric'.pre` is an *outer* measure, the supremum is a measure. -/
+two points. While each `mkMetric'.pre` is an *outer* measure, the supremum is a measure. -/
 def mkMetric (m : ℝ≥0∞ → ℝ≥0∞) : Measure X :=
   (OuterMeasure.mkMetric m).toMeasure (OuterMeasure.mkMetric'_isMetric _).le_caratheodory
 #align measure_theory.measure.mk_metric MeasureTheory.Measure.mkMetric
@@ -485,7 +485,7 @@ namespace Measure
 variable [MeasurableSpace X] [BorelSpace X]
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
-(we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mk_metric m₁ hm₁ ≤ c • mk_metric m₂ hm₂`. -/
+(we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
     (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := by
   intro s _
@@ -500,13 +500,13 @@ theorem mkMetric_top : (mkMetric (fun _ => ∞ : ℝ≥0∞ → ℝ≥0∞) : Me
 #align measure_theory.measure.mk_metric_top MeasureTheory.Measure.mkMetric_top
 
 /-- If `m₁ d ≤ m₂ d` for `d < ε` for some `ε > 0` (we use `≤ᶠ[𝓝[≥] 0]` to state this), then
-`mk_metric m₁ hm₁ ≤ mk_metric m₂ hm₂`-/
+`mkMetric m₁ hm₁ ≤ mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} (hle : m₁ ≤ᶠ[𝓝[≥] 0] m₂) :
     (mkMetric m₁ : Measure X) ≤ mkMetric m₂ := by
   convert mkMetric_mono_smul ENNReal.one_ne_top one_ne_zero _ <;> simp [*]
 #align measure_theory.measure.mk_metric_mono MeasureTheory.Measure.mkMetric_mono
 
-/-- A formula for `measure_theory.measure.mk_metric`. -/
+/-- A formula for `MeasureTheory.Measure.mkMetric`. -/
 theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     mkMetric m s =
       ⨆ (r : ℝ≥0∞) (_ : 0 < r),
@@ -541,7 +541,7 @@ theorem le_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) (μ : Measure X) (ε : ℝ�
 #align measure_theory.measure.le_mk_metric MeasureTheory.Measure.le_mkMetric
 
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
-`measure_theory.measure.mk_metric`) of a set, one may use coverings with maximum diameter tending to
+`MeasureTheory.Measure.mkMetric`) of a set, one may use coverings with maximum diameter tending to
 `0`, indexed by any sequence of countable types. -/
 theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Countable (ι n)] (s : Set X)
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
@@ -567,7 +567,7 @@ theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Count
 #align measure_theory.measure.mk_metric_le_liminf_tsum MeasureTheory.Measure.mkMetric_le_liminf_tsum
 
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
-`measure_theory.measure.mk_metric`) of a set, one may use coverings with maximum diameter tending to
+`MeasureTheory.Measure.mkMetric`) of a set, one may use coverings with maximum diameter tending to
 `0`, indexed by any sequence of finite types. -/
 theorem mkMetric_le_liminf_sum {β : Type _} {ι : β → Type _} [hι : ∀ n, Fintype (ι n)] (s : Set X)
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
@@ -798,7 +798,7 @@ namespace LipschitzWith
 variable {K : ℝ≥0} {f : X → Y}
 
 /-- If `f` is a `K`-Lipschitz map, then it increases the Hausdorff `d`-measures of sets at most
-by the factor of `K ^ d`.-/
+by the factor of `K ^ d`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzWith K f) {d : ℝ} (hd : 0 ≤ d) (s : Set X) :
     μH[d] (f '' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s :=
   (h.lipschitzOnWith s).hausdorffMeasure_image_le hd
@@ -1128,8 +1128,8 @@ theorem hausdorffMeasure_homothety_preimage {d : ℝ} (hd : 0 ≤ d) (x : P) {c 
     Units.val_mk0, nnnorm_inv]
 #align measure_theory.hausdorff_measure_homothety_preimage MeasureTheory.hausdorffMeasure_homothety_preimage
 
-/-! TODO: prove `measure.map (affine_map.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d]`, which needs a
-more general version of `affine_map.homothety_continuous` -/
+/-! TODO: prove `Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d]`, which needs a
+more general version of `AffineMap.homothety_continuous`. -/
 
 
 end NormedFieldAffine
@@ -1142,7 +1142,7 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.
 
-This is an auxiliary result used to prove `hausdorff_measure_affine_segment`. -/
+This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
 theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
     μH[1] (AffineMap.lineMap x y '' s) = nndist x y • μH[1] s := by
   suffices μH[1] (IsometryEquiv.vaddConst x '' ((· • (y -ᵥ x)) '' s)) = nndist x y • μH[1] s by
