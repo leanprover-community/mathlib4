@@ -351,7 +351,8 @@ variable (K L M)
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
   (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
-    Eq.recOn (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top K L M).symm Algebra.toTop
+    (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M) (hL := hL)).symm
+      ▸ Algebra.toTop
 
 variable {R : Type u} [CommRing R]
 
@@ -375,7 +376,7 @@ noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
   have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     FractionRing.isAlgebraic hS
-  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M
+  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M this
   exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
 #align is_alg_closed.lift IsAlgClosed.lift
 
