@@ -37,30 +37,32 @@ section CartesianClosed
 instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) where
   right :=
     { obj := fun Y => X ⟶ Y
-      map := fun Y₁ Y₂ f g => g ≫ f }
+      map := fun f g => g ≫ f }
   adj :=
     Adjunction.mkOfUnitCounit
-      { Unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
+      { unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
         counit := { app := fun Z xf => xf.2 xf.1 } }
 
 instance : HasFiniteProducts (Type v₁) :=
   hasFiniteProducts_of_hasProducts.{v₁} _
 
-instance : CartesianClosed (Type v₁)
-    where closed' X :=
-    { isAdj := Adjunction.leftAdjointOfNatIso (Types.binaryProductIsoProd.app X) }
+instance : CartesianClosed (Type v₁) :=
+  CartesianClosed.mk _
+    (fun X => Adjunction.leftAdjointOfNatIso (Types.binaryProductIsoProd.app X))
 
-instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₁) :=
-  hasFiniteProducts_of_hasProducts.{u₁} _
+-- porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
+-- confused with universes. It makes no harm to relax the universe assumptions here.
+instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
+  hasFiniteProducts_of_hasProducts _
 
-instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁)
-    where closed' F :=
-    {
-      isAdj := by
-        letI := functor_category.prod_preserves_colimits F
-        apply is_left_adjoint_of_preserves_colimits (prod.functor.obj F) }
+instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
+  CartesianClosed.mk _
+    (fun F =>
+      letI := FunctorCategory.prodPreservesColimits F
+      isLeftAdjointOfPreservesColimits (prod.functor.obj F))
 
 end CartesianClosed
 
-end CategoryTheory
+end
 
+end CategoryTheory
