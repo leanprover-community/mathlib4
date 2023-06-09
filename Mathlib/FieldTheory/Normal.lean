@@ -17,12 +17,12 @@ import Mathlib.RingTheory.PowerBasis
 # Normal field extensions
 
 In this file we define normal field extensions and prove that for a finite extension, being normal
-is the same as being a splitting field (`normal.of_is_splitting_field` and
-`normal.exists_is_splitting_field`).
+is the same as being a splitting field (`Normal.of_isSplittingField` and
+`Normal.exists_isSplittingField`).
 
 ## Main Definitions
 
-- `normal F K` where `K` is a field extension of `F`.
+- `Normal F K` where `K` is a field extension of `F`.
 -/
 
 
@@ -155,9 +155,9 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 #align alg_equiv.transfer_normal AlgEquiv.transfer_normal
 
 -- seems to be causing a diamond in the below proof
--- however, this may be a fluke and the proof below uses non-canonical `algebra` instances:
+-- however, this may be a fluke and the proof below uses non-canonical `Algebra` instances:
 -- when I replaced all the instances inside the proof with the "canonical" instances we have,
--- I had the (unprovable) goal (of the form) `adjoin_root.mk f (C x) = adjoin_root.mk f X`
+-- I had the (unprovable) goal (of the form) `AdjoinRoot.mk f (C x) = AdjoinRoot.mk f X`
 -- for some `x, f`. So maybe this is indeed the correct approach and rewriting this proof is
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
 attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
@@ -376,7 +376,7 @@ def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃�
 
 variable (F K₁)
 
-/-- If `K₁/E/F` is a tower of fields with `E/F` normal then `normal.alg_hom_equiv_aut` is an
+/-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
  equivalence. -/
 @[simps]
 def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
@@ -434,7 +434,7 @@ theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [N
 #align alg_hom.restrict_lift_normal AlgHom.restrict_liftNormal
 
 /-- If `E/Kᵢ/F` are towers of fields with `E/F` normal then we can lift
-  an algebra isomorphism `ϕ : K₁ ≃ₐ[F] K₂` to `ϕ.lift_normal E : E ≃ₐ[F] E`. -/
+  an algebra isomorphism `ϕ : K₁ ≃ₐ[F] K₂` to `ϕ.liftNormal E : E ≃ₐ[F] E`. -/
 noncomputable def AlgEquiv.liftNormal [Normal F E] : E ≃ₐ[F] E :=
   AlgEquiv.ofBijective (χ.toAlgHom.liftNormal E) (AlgHom.normal_bijective F E E _)
 #align alg_equiv.lift_normal AlgEquiv.liftNormal
