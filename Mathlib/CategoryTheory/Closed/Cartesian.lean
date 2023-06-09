@@ -397,33 +397,32 @@ variable [HasFiniteProducts D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClosed D
-    where closed X :=
-    {
-      isAdj := by
-        haveI q : Exponentiable (e.inverse.obj X) := inferInstance
-        have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
-        apply NatIso.ofComponents _ _
-        · intro Y
-          apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-          apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-        · intro Y Z g
-          dsimp
-          simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-          -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
-        · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfNatIso this.symm
-          have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfComp e.inverse _
-          have :
-            (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
-              prod.functor.obj X := by
-            apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
-            change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
-            apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          skip
-          apply Adjunction.leftAdjointOfNatIso this }
+def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClosed D where
+  closed X :=
+    { isAdj := by
+      haveI q : Exponentiable (e.inverse.obj X) := inferInstance
+      have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
+      have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
+      apply NatIso.ofComponents _ _
+      · intro Y
+        apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+        apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+      · intro Y Z g
+        dsimp
+        simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+        -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
+      · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfNatIso this.symm
+        have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfComp e.inverse _
+        have :
+          (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
+            prod.functor.obj X := by
+          apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
+          change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
+          apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
+        skip
+        apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor
