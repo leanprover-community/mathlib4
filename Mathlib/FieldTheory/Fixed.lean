@@ -8,11 +8,11 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Invariant
-import Mathbin.Algebra.Polynomial.GroupRingAction
-import Mathbin.FieldTheory.Normal
-import Mathbin.FieldTheory.Separable
-import Mathbin.FieldTheory.Tower
+import Mathlib.Algebra.GroupRingAction.Invariant
+import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.Tower
 
 /-!
 # Fixed field under a group action.
@@ -127,8 +127,7 @@ theorem coe_algebraMap :
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
-      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i :=
-  by
+      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
   haveI : IsEmpty ((∅ : Finset F) : Set F) := ⟨Subtype.prop⟩
   refine' Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => _
   rw [coe_insert] at hs ⊢
@@ -136,8 +135,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
   rw [Finsupp.mem_span_image_iff_total] at ha ; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla 
-  suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F
-    by
+  suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • to_fun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, to_fun_apply, one_smul] at hla 
     refine' hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => _)
@@ -191,8 +189,7 @@ theorem monic : (minpoly G F x).Monic := by simp only [minpoly, Polynomial.monic
 
 theorem eval₂ :
     Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
-      0 :=
-  by
+      0 := by
   rw [← prodXSubSmul.eval G F x, Polynomial.eval₂_eq_eval_map]
   simp only [minpoly, Polynomial.map_toSubring]
 #align fixed_points.minpoly.eval₂ FixedPoints.minpoly.eval₂
@@ -209,8 +206,7 @@ theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) :
 
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
-    minpoly G F x ∣ f :=
-  by
+    minpoly G F x ∣ f := by
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly,
     Polynomial.map_toSubring _ (Subfield G F).toSubring, prodXSubSmul]
   refine'
@@ -227,8 +223,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
 
 -- Why is this so slow?
 theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Monic) (hg : g.Monic)
-    (hfg : f * g = minpoly G F x) : f = 1 ∨ g = 1 :=
-  by
+    (hfg : f * g = minpoly G F x) : f = 1 ∨ g = 1 := by
   have hf2 : f ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_right _ _
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
@@ -283,8 +278,7 @@ variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F :=
   ⟨fun x => (isIntegral G F x).IsAlgebraic _, fun x =>
-    (Polynomial.splits_id_iff_splits _).1 <|
-      by
+    (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebra_map, ← Subfield.toSubring_subtype_eq_subtype,
         Polynomial.map_toSubring _ (Subfield G F).toSubring, prodXSubSmul]
@@ -307,8 +301,7 @@ instance : FiniteDimensional (subfield G F) F := by cases nonempty_fintype G;
 
 end Finite
 
-theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G :=
-  by
+theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
   rw [← Cardinal.natCast_le, finrank_eq_rank]
   apply rank_le_card
 #align fixed_points.finrank_le_card FixedPoints.finrank_le_card
@@ -357,8 +350,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
 /-- `mul_semiring_action.to_alg_hom` is bijective. -/
 theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite G]
     [MulSemiringAction G F] [FaithfulSMul G F] :
-    Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) :=
-  by
+    Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) := by
   cases nonempty_fintype G
   rw [Fintype.bijective_iff_injective_and_card]
   constructor
