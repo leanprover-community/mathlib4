@@ -87,8 +87,8 @@ inductive IsPoly : ((α → ℕ) → ℤ) → Prop
   | mul : ∀ {f g : (α → ℕ) → ℤ}, IsPoly f → IsPoly g → IsPoly fun x => f x * g x
 #align is_poly IsPoly
 
-theorem IsPoly.neg {f : (α → ℕ) → ℤ} : IsPoly f → IsPoly (-f) := by rw [← zero_sub];
-  exact (IsPoly.const 0).sub
+theorem IsPoly.neg {f : (α → ℕ) → ℤ} : IsPoly f → IsPoly (-f) := by
+  rw [← zero_sub]; exact (IsPoly.const 0).sub
 #align is_poly.neg IsPoly.neg
 
 theorem IsPoly.add {f g : (α → ℕ) → ℤ} (hf : IsPoly f) (hg : IsPoly g) : IsPoly (f + g) := by
@@ -96,8 +96,7 @@ theorem IsPoly.add {f g : (α → ℕ) → ℤ} (hf : IsPoly f) (hg : IsPoly g) 
 #align is_poly.add IsPoly.add
 
 /-- The type of multivariate integer polynomials -/
-def Poly (α : Type u) :=
-  { f : (α → ℕ) → ℤ // IsPoly f }
+def Poly (α : Type u) := { f : (α → ℕ) → ℤ // IsPoly f }
 #align poly Poly
 
 namespace Poly
@@ -108,155 +107,147 @@ instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 #align poly.fun_like Poly.funLike
 
+-- Porting note: TODO -- make sure this is necessary
 /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
-instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ :=
-  FunLike.hasCoeToFun
+instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
 
 /-- The underlying function of a `poly` is a polynomial -/
-protected theorem isPoly (f : Poly α) : IsPoly f :=
-  f.2
+protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 #align poly.is_poly Poly.isPoly
 
 /-- Extensionality for `poly α` -/
 @[ext]
-theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
 #align poly.ext Poly.ext
 
 /-- The `i`th projection function, `x_i`. -/
-def proj (i) : Poly α :=
-  ⟨_, IsPoly.proj i⟩
+def proj (i : α) : Poly α := ⟨_, IsPoly.proj i⟩
 #align poly.proj Poly.proj
 
 @[simp]
-theorem proj_apply (i : α) (x) : proj i x = x i :=
-  rfl
+theorem proj_apply (i : α) (x) : proj i x = x i := rfl
 #align poly.proj_apply Poly.proj_apply
 
 /-- The constant function with value `n : ℤ`. -/
-def const (n) : Poly α :=
-  ⟨_, IsPoly.const n⟩
+def const (n : ℤ) : Poly α := ⟨_, IsPoly.const n⟩
 #align poly.const Poly.const
 
 @[simp]
-theorem const_apply (n) (x : α → ℕ) : const n x = n :=
-  rfl
+theorem const_apply (n) (x : α → ℕ) : const n x = n := rfl
 #align poly.const_apply Poly.const_apply
 
-instance : Zero (Poly α) :=
-  ⟨const 0⟩
+instance : Zero (Poly α) := ⟨const 0⟩
 
-instance : One (Poly α) :=
-  ⟨const 1⟩
+instance : One (Poly α) := ⟨const 1⟩
 
-instance : Neg (Poly α) :=
-  ⟨fun f => ⟨-f, f.2.neg⟩⟩
+instance : Neg (Poly α) := ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
-instance : Add (Poly α) :=
-  ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+instance : Add (Poly α) := ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-instance : Sub (Poly α) :=
-  ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+instance : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
-instance : Mul (Poly α) :=
-  ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
+instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : Poly α) = const 0 :=
-  rfl
+theorem coe_zero : ⇑(0 : Poly α) = const 0 := rfl
 #align poly.coe_zero Poly.coe_zero
 
 @[simp]
-theorem coe_one : ⇑(1 : Poly α) = const 1 :=
-  rfl
+theorem coe_one : ⇑(1 : Poly α) = const 1 := rfl
 #align poly.coe_one Poly.coe_one
 
 @[simp]
-theorem coe_neg (f : Poly α) : ⇑(-f) = -f :=
-  rfl
+theorem coe_neg (f : Poly α) : ⇑(-f) = -f := rfl
 #align poly.coe_neg Poly.coe_neg
 
 @[simp]
-theorem coe_add (f g : Poly α) : ⇑(f + g) = f + g :=
-  rfl
+theorem coe_add (f g : Poly α) : ⇑(f + g) = f + g := rfl
 #align poly.coe_add Poly.coe_add
 
 @[simp]
-theorem coe_sub (f g : Poly α) : ⇑(f - g) = f - g :=
-  rfl
+theorem coe_sub (f g : Poly α) : ⇑(f - g) = f - g := rfl
 #align poly.coe_sub Poly.coe_sub
 
 @[simp]
-theorem coe_mul (f g : Poly α) : ⇑(f * g) = f * g :=
-  rfl
+theorem coe_mul (f g : Poly α) : ⇑(f * g) = f * g := rfl
 #align poly.coe_mul Poly.coe_mul
 
 @[simp]
-theorem zero_apply (x) : (0 : Poly α) x = 0 :=
-  rfl
+theorem zero_apply (x) : (0 : Poly α) x = 0 := rfl
 #align poly.zero_apply Poly.zero_apply
 
 @[simp]
-theorem one_apply (x) : (1 : Poly α) x = 1 :=
-  rfl
+theorem one_apply (x) : (1 : Poly α) x = 1 := rfl
 #align poly.one_apply Poly.one_apply
 
 @[simp]
-theorem neg_apply (f : Poly α) (x) : (-f) x = -f x :=
-  rfl
+theorem neg_apply (f : Poly α) (x) : (-f) x = -f x := rfl
 #align poly.neg_apply Poly.neg_apply
 
 @[simp]
-theorem add_apply (f g : Poly α) (x : α → ℕ) : (f + g) x = f x + g x :=
-  rfl
+theorem add_apply (f g : Poly α) (x : α → ℕ) : (f + g) x = f x + g x := rfl
 #align poly.add_apply Poly.add_apply
 
 @[simp]
-theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x :=
-  rfl
+theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rfl
 #align poly.sub_apply Poly.sub_apply
 
 @[simp]
-theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x :=
-  rfl
+theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
 #align poly.mul_apply Poly.mul_apply
 
-instance (α : Type _) : Inhabited (Poly α) :=
-  ⟨0⟩
+instance (α : Type _) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) := by
-  refine_struct
-            { add := ((· + ·) : Poly α → Poly α → Poly α)
-              neg := (Neg.neg : Poly α → Poly α)
-              sub := Sub.sub
-              zero := 0
-              zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
-              nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ } <;>
-          intros <;>
-        try rfl <;>
-      refine' ext fun _ => _ <;>
-    simp [sub_eq_add_neg, add_comm, add_assoc]
+  refine' { add := ((· + ·) : Poly α → Poly α → Poly α)
+            neg := (Neg.neg : Poly α → Poly α)
+            sub := Sub.sub
+            zero := 0
+            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
+            nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+            .. }
+  all_goals
+    intros
+    first
+      | rfl
+      | ext; simp_rw [add_apply]
+        first
+          | rw [← add_assoc]
+          | rw [zero_apply, zero_add]
+          | rw [zero_apply, add_zero]
+          | rw [neg_apply, add_left_neg, zero_apply]
+          | rw [add_comm]
 
 instance : AddGroupWithOne (Poly α) :=
-  { Poly.addCommGroup with
-    one := 1
-    natCast := fun n => Poly.const n
-    intCast := Poly.const }
+  { (inferInstance : AddCommGroup (Poly α)) with
+      one := 1
+      natCast := fun n => Poly.const n
+      intCast := Poly.const }
 
 instance : CommRing (Poly α) := by
-  refine_struct
-            { Poly.addGroupWithOne,
-              Poly.addCommGroup with
+  refine' { (inferInstance : AddCommGroup (Poly α)),
+            (inferInstance : AddGroupWithOne (Poly α)) with
               add := ((· + ·) : Poly α → Poly α → Poly α)
               zero := 0
               mul := (· * ·)
               one := 1
-              npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩ } <;>
-          intros <;>
-        try rfl <;>
-      refine' ext fun _ => _ <;>
-    simp [sub_eq_add_neg, mul_add, mul_left_comm, mul_comm, add_comm, add_assoc]
+              npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
+              .. }
+  all_goals
+    intros
+    first
+      | rfl
+      | ext; simp only [add_apply, mul_apply]
+        first
+          | rw [mul_add]
+          | rw [add_mul]
+          | rw [zero_apply, zero_mul]
+          | rw [zero_apply, mul_zero]
+          | rw [← mul_assoc]
+          | rw [one_apply, one_mul]
+          | rw [one_apply, mul_one]
+          | rw [mul_comm]
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
@@ -384,7 +375,7 @@ theorem DiophList.all₂ (l : List (Set <| α → ℕ)) (d : l.All₂ Dioph) :
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
   exact ⟨ULift Empty, [], fun v => by simp <;> exact ⟨fun ⟨t⟩ => Empty.rec _ t, trivial⟩⟩
-  simp at d 
+  simp at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
@@ -408,7 +399,7 @@ theorem DiophList.all₂ (l : List (Set <| α → ℕ)) (d : l.All₂ Dioph) :
                       funext fun s => by cases' s with a b <;> rfl] at
                     hl ⟩,
                 ⟨t ∘ inr, by
-                  refine' List.All₂.imp (fun q hq => _) hr; dsimp [(· ∘ ·)] at hq 
+                  refine' List.All₂.imp (fun q hq => _) hr; dsimp [(· ∘ ·)] at hq
                   rwa [show
                       (fun x : Sum α γ => (v ⊗ t) ((inl ⊗ fun x : γ => inr (inr x)) x)) =
                         v ⊗ t ∘ inr
@@ -876,4 +867,3 @@ theorem pow_dioph : DiophFn fun v => f v ^ g v :=
 end
 
 end Dioph
-
