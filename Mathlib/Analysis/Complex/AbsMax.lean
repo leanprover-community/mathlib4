@@ -91,7 +91,6 @@ universe u v w
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type v} [NormedAddCommGroup F]
   [NormedSpace ℂ F]
 
--- mathport name: «expr ̂»
 local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
