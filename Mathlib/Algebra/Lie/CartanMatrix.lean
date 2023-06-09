@@ -99,9 +99,9 @@ variable (B)
 /-- The generators of the free Lie algebra from which we construct the Lie algebra of a Cartan
 matrix as a quotient. -/
 inductive Generators
-  | H : B → generators
-  | E : B → generators
-  | F : B → generators
+  | H : B → Generators
+  | E : B → Generators
+  | F : B → Generators
 #align cartan_matrix.generators CartanMatrix.Generators
 
 instance [Inhabited B] : Inhabited (Generators B) :=
@@ -126,24 +126,24 @@ local notation "F" => FreeLieAlgebra.of R ∘ Generators.F
 local notation "ad" => LieAlgebra.ad R (FreeLieAlgebra R (Generators B))
 
 /-- The terms correpsonding to the `⁅H, H⁆`-relations. -/
-def hH : B × B → FreeLieAlgebra R (Generators B) :=
+def HH : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, H j⁆
-#align cartan_matrix.relations.HH CartanMatrix.Relations.hH
+#align cartan_matrix.relations.HH CartanMatrix.Relations.HH
 
 /-- The terms correpsonding to the `⁅E, F⁆`-relations. -/
-def eF : B × B → FreeLieAlgebra R (Generators B) :=
+def EF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => if i = j then ⁅E i, F i⁆ - H i else ⁅E i, F j⁆
-#align cartan_matrix.relations.EF CartanMatrix.Relations.eF
+#align cartan_matrix.relations.EF CartanMatrix.Relations.EF
 
 /-- The terms correpsonding to the `⁅H, E⁆`-relations. -/
-def hE : B × B → FreeLieAlgebra R (Generators B) :=
+def HE : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, E j⁆ - A i j • E j
-#align cartan_matrix.relations.HE CartanMatrix.Relations.hE
+#align cartan_matrix.relations.HE CartanMatrix.Relations.HE
 
 /-- The terms correpsonding to the `⁅H, F⁆`-relations. -/
-def hF : B × B → FreeLieAlgebra R (Generators B) :=
+def HF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, F j⁆ + A i j • F j
-#align cartan_matrix.relations.HF CartanMatrix.Relations.hF
+#align cartan_matrix.relations.HF CartanMatrix.Relations.HF
 
 /-- The terms correpsonding to the `ad E`-relations.
 
@@ -163,15 +163,15 @@ def adF : B × B → FreeLieAlgebra R (Generators B) :=
 
 private theorem ad_E_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
-  simp [ad_E, h, h']
+  simp [adE, h, h']
 
 private theorem ad_F_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
-  simp [ad_F, h, h']
+  simp [adF, h, h']
 
 /-- The union of all the relations as a subset of the free Lie algebra. -/
 def toSet : Set (FreeLieAlgebra R (Generators B)) :=
-  (Set.range <| hH R) ∪ (Set.range <| eF R) ∪ (Set.range <| hE R A) ∪ (Set.range <| hF R A) ∪
+  (Set.range <| HH R) ∪ (Set.range <| EF R) ∪ (Set.range <| HE R A) ∪ (Set.range <| HF R A) ∪
       (Set.range <| adE R A) ∪
     (Set.range <| adF R A)
 #align cartan_matrix.relations.to_set CartanMatrix.Relations.toSet
@@ -308,4 +308,3 @@ abbrev G₂ :=
 #align lie_algebra.g₂ LieAlgebra.G₂
 
 end LieAlgebra
-
