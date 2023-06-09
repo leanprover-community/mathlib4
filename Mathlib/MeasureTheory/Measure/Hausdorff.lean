@@ -949,7 +949,6 @@ instance {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant 
 -/
 
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic filter.is_bounded_default -/
 /-- In the space `ι → ℝ`, the Hausdorff measure coincides exactly with the Lebesgue measure. -/
 @[simp]
 theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
@@ -957,8 +956,8 @@ theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
   classical
   -- it suffices to check that the two measures coincide on products of rational intervals
   refine'
-    (pi_eq_generateFrom (fun i => Real.borel_eq_generateFrom_Ioo_rat.symm)
-        (fun i => Real.isPiSystem_Ioo_rat) (fun i => Real.finiteSpanningSetsInIooRat _) _).symm
+    (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
+        (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) _).symm
   simp only [mem_iUnion, mem_singleton_iff]
   -- fix such a product `s` of rational intervals, of the form `Π (a i, b i)`.
   intro s hs
@@ -1015,10 +1014,9 @@ theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
           add_le_add le_rfl ((div_le_div_right npos).2 (Nat.lt_floor_add_one _).le)
   calc
     μH[Fintype.card ι] (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ≤
-        liminf (fun n : ℕ => ∑ i : γ n, diam (t n i) ^ ↑(Fintype.card ι)) atTop :=
-      sorry
-      --hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
-      --  (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
+        liminf (fun n : ℕ => ∑ i : γ n, diam (t n i) ^ ((Fintype.card ι) : ℝ)) atTop :=
+      hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
+        (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
     _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / (n : ℝ≥0∞)) ^ Fintype.card ι) atTop := by
       refine' liminf_le_liminf _ _
       · filter_upwards [B] with _ hn
@@ -1033,7 +1031,7 @@ theorem hausdorffMeasure_pi_real {ι : Type _} [Fintype ι] :
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
       apply Tendsto.liminf_eq
-      refine' ENNReal.tendsto_finset_prod_of_ne_top _ (fun i hi => _) fun i hi => _
+      refine' ENNReal.tendsto_finset_prod_of_ne_top _ (fun i _ => _) fun i _ => _
       · apply
           Tendsto.congr' _
             ((ENNReal.continuous_ofReal.tendsto _).comp
