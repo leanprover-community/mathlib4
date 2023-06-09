@@ -227,7 +227,7 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
   (limitUncurryIsoLimitCompLim _).symm ≪≫
     HasLimit.isoOfNatIso (uncurryObjFlip _) ≪≫
       HasLimit.isoOfEquivalence (Prod.braiding _ _)
-          (NatIso.ofComponents (fun _ => by rfl) (by simp)) ≪≫
+          (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
 #align category_theory.limits.limit_flip_comp_lim_iso_limit_comp_lim CategoryTheory.Limits.limitFlipCompLimIsoLimitCompLim
 

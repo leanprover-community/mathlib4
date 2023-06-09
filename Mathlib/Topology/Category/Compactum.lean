@@ -499,10 +499,7 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  (NatIso.ofComponents fun X => eqToIso rfl) <| by
-    intro X Y f
-    dsimp
-    simp
+  NatIso.ofComponents fun X => eqToIso rfl
 #align Compactum_to_CompHaus_comp_forget compactumToCompHausCompForget
 
 /-

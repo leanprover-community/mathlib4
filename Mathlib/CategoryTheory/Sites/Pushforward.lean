@@ -68,10 +68,8 @@ def Sites.pullbackPushforwardAdjunction {G : C ⥤ D} (hG₁ : CompatiblePreserv
     (hG₂ : CoverPreserving J K G) : Sites.pushforward A J K G ⊣ Sites.pullback A hG₁ hG₂ :=
   ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (sheafToPresheaf J A) (𝟭 _)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
-      (Category.comp_id _).trans (Category.id_comp _).symm)
-    (NatIso.ofComponents (fun _ => Iso.refl _) fun _ =>
-      (Category.comp_id _).trans (Category.id_comp _).symm)
+    (NatIso.ofComponents fun _ => Iso.refl _)
+    (NatIso.ofComponents fun _ => Iso.refl _)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Sites.pullbackPushforwardAdjunction
 
 end CategoryTheory
