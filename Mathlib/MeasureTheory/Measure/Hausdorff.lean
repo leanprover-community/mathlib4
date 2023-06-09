@@ -882,8 +882,12 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  rw [OuterMeasure.isometry_comap_mkMetric _ hf (hd.imp_left _)]
-  exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
+  -- porting note: this proof was slighlty nicer before the port
+  simp only [mkMetric_toOuterMeasure]
+  have : 0 ≤ d → Monotone fun r ↦ @HPow.hPow ℝ≥0∞ ℝ ℝ≥0∞ instHPow r d := by
+    exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
+  have := OuterMeasure.isometry_comap_mkMetric (fun (r : ℝ≥0∞) => r ^ d) hf (hd.imp_left this)
+  congr
 #align isometry.hausdorff_measure_image Isometry.hausdorffMeasure_image
 
 theorem hausdorffMeasure_preimage (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set Y) :
