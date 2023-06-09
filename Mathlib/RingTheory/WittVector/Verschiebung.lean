@@ -34,11 +34,11 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 noncomputable section
 
-/-- `verschiebung_fun x` shifts the coefficients of `x` up by one,
+/-- `verschiebungFun x` shifts the coefficients of `x` up by one,
 by inserting 0 as the 0th coefficient.
-`x.coeff i` then becomes `(verchiebung_fun x).coeff (i + 1)`.
+`x.coeff i` then becomes `(verchiebungFun x).coeff (i + 1)`.
 
-`verschiebung_fun` is the underlying function of the additive monoid hom `witt_vector.verschiebung`.
+`verschiebungFun` is the underlying function of the additive monoid hom `WittVector.verschiebung`.
 -/
 def verschiebungFun (x : 𝕎 R) : 𝕎 R :=
   @mk' p _ fun n => if n = 0 then 0 else x.coeff (n - 1)
@@ -100,7 +100,7 @@ theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
 
 variable (p)
 
-/-- `witt_vector.verschiebung` has polynomial structure given by `witt_vector.verschiebung_poly`.
+/-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
 @[is_poly]
 theorem verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
@@ -124,7 +124,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   map_add' := by ghost_calc _ _; rintro ⟨⟩ <;> ghost_simp
 #align witt_vector.verschiebung WittVector.verschiebung
 
-/-- `witt_vector.verschiebung` is a polynomial function. -/
+/-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]
 theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :=
   verschiebungFun_isPoly p
