@@ -26,6 +26,8 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 -/
 
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory
 
 open scoped Topology Filter NNReal Real
@@ -79,13 +81,13 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have : HasDerivAt (e ∘ f) (e (deriv f c)) c :=
     e.hasFDerivAt.comp_hasDerivAt c
-      (hd.differentiable_at is_open_ball <| mem_ball_self hR).hasDerivAt
+      (hd.differentiableAt isOpen_ball <| mem_ball_self hR).hasDerivAt
   calc
     ‖deriv f c‖ = ‖deriv (e ∘ f) c‖ := by
       rw [this.deriv]
       exact (UniformSpace.Completion.norm_coe _).symm
     _ ≤ C / R :=
-      norm_deriv_le_aux hR (e.differentiable.comp_diff_cont_on_cl hd) fun z hz =>
+      norm_deriv_le_aux hR (e.differentiable.comp_diffContOnCl hd) fun z hz =>
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
 #align complex.norm_deriv_le_of_forall_mem_sphere_norm_le Complex.norm_deriv_le_of_forall_mem_sphere_norm_le
 
