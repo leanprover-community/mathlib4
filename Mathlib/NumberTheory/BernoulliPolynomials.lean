@@ -34,7 +34,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 - `sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
   coefficients up to `n` is `(n + 1) * X^n`.
-- `polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
+- `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.
 
 ## TODO
@@ -152,7 +152,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   rw [g, zero_smul]
 #align polynomial.sum_bernoulli Polynomial.sum_bernoulli
 
-/-- Another version of `polynomial.sum_bernoulli`. -/
+/-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
     (n.succ : ℚ) • bernoulli n =
       monomial n (n.succ : ℚ) - ∑ k in Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
@@ -160,7 +160,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
     Nat.cast_succ]
 #align polynomial.bernoulli_eq_sub_sum Polynomial.bernoulli_eq_sub_sum
 
-/-- Another version of `bernoulli.sum_range_pow`. -/
+/-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
     _root_.bernoulli p.succ := by
@@ -179,7 +179,7 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     apply succ_ne_zero _
 #align polynomial.sum_range_pow_eq_bernoulli_sub Polynomial.sum_range_pow_eq_bernoulli_sub
 
-/-- Rearrangement of `polynomial.sum_range_pow_eq_bernoulli_sub`. -/
+/-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
     _root_.bernoulli p.succ + (p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p := by
   apply eq_add_of_sub_eq'
@@ -243,7 +243,7 @@ theorem bernoulli_generating_function (t : A) :
   rw [cast_mul, mul_assoc,
     mul_one_div_cancel (show (n ! : ℚ) ≠ 0 from cast_ne_zero.2 (factorial_ne_zero n)), mul_one,
     mul_comm (t ^ n), ← aeval_monomial, cast_add, cast_one]
-  -- But this is the RHS of `sum_bernoulli_poly`
+  -- But this is the RHS of `Polynomial.sum_bernoulli`
   rw [← sum_bernoulli, Finset.mul_sum, AlgHom.map_sum]
   -- and now we have to prove a sum is a sum, but all the terms are equal.
   apply Finset.sum_congr rfl
