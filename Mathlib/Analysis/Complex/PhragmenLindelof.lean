@@ -19,27 +19,27 @@ modulus principle for an unbounded domain.
 
 ## Main statements
 
-* `phragmen_lindelof.horizontal_strip`: the Phragmen-Lindelöf principle in a horizontal strip
+* `PhragmenLindelof.horizontal_strip`: the Phragmen-Lindelöf principle in a horizontal strip
   `{z : ℂ | a < complex.im z < b}`;
 
-* `phragmen_lindelof.eq_zero_on_horizontal_strip`, `phragmen_lindelof.eq_on_horizontal_strip`:
+* `PhragmenLindelof.eq_zero_on_horizontal_strip`, `PhragmenLindelof.eqOn_horizontal_strip`:
   extensionality lemmas based on the Phragmen-Lindelöf principle in a horizontal strip;
 
-* `phragmen_lindelof.vertical_strip`: the Phragmen-Lindelöf principle in a vertical strip
+* `PhragmenLindelof.vertical_strip`: the Phragmen-Lindelöf principle in a vertical strip
   `{z : ℂ | a < complex.re z < b}`;
 
-* `phragmen_lindelof.eq_zero_on_vertical_strip`, `phragmen_lindelof.eq_on_vertical_strip`:
+* `PhragmenLindelof.eq_zero_on_vertical_strip`, `PhragmenLindelof.eqOn_vertical_strip`:
   extensionality lemmas based on the Phragmen-Lindelöf principle in a vertical strip;
 
-* `phragmen_lindelof.quadrant_I`, `phragmen_lindelof.quadrant_II`, `phragmen_lindelof.quadrant_III`,
-  `phragmen_lindelof.quadrant_IV`: the Phragmen-Lindelöf principle in the coordinate quadrants;
+* `PhragmenLindelof.quadrant_I`, `PhragmenLindelof.quadrant_II`, `PhragmenLindelof.quadrant_III`,
+  `PhragmenLindelof.quadrant_IV`: the Phragmen-Lindelöf principle in the coordinate quadrants;
 
-* `phragmen_lindelof.right_half_plane_of_tendsto_zero_on_real`,
-  `phragmen_lindelof.right_half_plane_of_bounded_on_real`: two versions of the Phragmen-Lindelöf
+* `PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real`,
+  `PhragmenLindelof.right_half_plane_of_bounded_on_real`: two versions of the Phragmen-Lindelöf
   principle in the right half-plane;
 
-* `phragmen_lindelof.eq_zero_on_right_half_plane_of_superexponential_decay`,
-  `phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay`: extensionality lemmas based
+* `PhragmenLindelof.eq_zero_on_right_half_plane_of_superexponential_decay`,
+  `PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay`: extensionality lemmas based
   on the Phragmen-Lindelöf principle in the right half-plane.
 
 In the case of the right half-plane, we prove a version of the Phragmen-Lindelöf principle that is
@@ -374,7 +374,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     rw [log_im]
     exact ⟨arg_nonneg_iff.2 hz_im, arg_le_pi_div_two_iff.2 (Or.inl hz_re)⟩
   -- porting note: failed to clear `clear hz_re hz_im hzne`
-  -- We are going to apply `phragmen_lindelof.horizontal_strip` to `f ∘ complex.exp` and `ζ`.
+  -- We are going to apply `PhragmenLindelof.horizontal_strip` to `f ∘ Complex.exp` and `ζ`.
   change ‖(f ∘ exp) ζ‖ ≤ C
   have H : MapsTo exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) := fun z hz ↦ by
     rw [mem_reProdIm, exp_re, exp_im, mem_Ioi, mem_Ioi]
@@ -408,11 +408,11 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       refine' (eventually_ge_atTop 0).mono fun x hx z hz _ => _
       rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
       exact mul_le_mul_of_nonneg_right (le_max_left _ _) (Real.exp_pos _).le
-  · -- If `ζ.im = 0`, then `complex.exp ζ` is a positive real number
+  · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ
     rw [comp_apply, ← ofReal_exp]
     exact hre _ (Real.exp_pos _).le
-  · -- If `ζ.im = π / 2`, then `complex.exp ζ` is a purely imaginary number with positive `im`
+  · -- If `ζ.im = π / 2`, then `Complex.exp ζ` is a purely imaginary number with positive `im`
     intro ζ hζ
     rw [← re_add_im ζ, hζ, comp_apply, exp_add_mul_I, ← ofReal_cos, ← ofReal_sin,
       Real.cos_pi_div_two, Real.sin_pi_div_two, ofReal_zero, ofReal_one, one_mul, zero_add, ←
@@ -690,7 +690,7 @@ set_option linter.uppercaseLean3 false in
 * `f x → 0` as `x : ℝ` tends to infinity.
 
 Then `‖f z‖` is bounded from above by the same constant on the closed right half-plane.
-See also `phragmen_lindelof.right_half_plane_of_bounded_on_real` for a stronger version. -/
+See also `PhragmenLindelof.right_half_plane_of_bounded_on_real` for a stronger version. -/
 theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp :
       ∃ c < (2 : ℝ),
@@ -764,7 +764,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
 * `‖f x‖` is bounded from above by a constant for large real values of `x`.
 
 Then `‖f z‖` is bounded from above by `C` on the closed right half-plane.
-See also `phragmen_lindelof.right_half_plane_of_tendsto_zero_on_real` for a weaker version. -/
+See also `PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real` for a weaker version. -/
 theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
