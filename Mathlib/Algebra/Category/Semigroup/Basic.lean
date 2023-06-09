@@ -231,7 +231,8 @@ variable [Semigroup X] [Semigroup Y]
 
 /-- Build an isomorphism in the category `Semigroup` from a `mul_equiv` between `semigroup`s. -/
 @[to_additive (attr := simps)
-      "Build an isomorphism in the category\n`AddSemigroup` from an `add_equiv` between `add_semigroup`s."]
+  "Build an isomorphism in the category
+  `AddSemigroup` from an `add_equiv` between `add_semigroup`s."]
 def MulEquiv.toSemigroupCatIso (e : X ≃* Y) : SemigroupCat.of X ≅ SemigroupCat.of Y where
   hom := e.toMulHom
   inv := e.symm.toMulHom
@@ -279,7 +280,8 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `has_mul`s are the same as (isomorphic to) isomorphisms
 in `Magma` -/
 @[to_additive
-      "additive equivalences between `has_add`s are the same\nas (isomorphic to) isomorphisms in `AddMagma`"]
+    "additive equivalences between `has_add`s are the same
+    as (isomorphic to) isomorphisms in `AddMagma`"]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ Magma.of X ≅ Magma.of Y where
   hom e := e.toMagmaIso
   inv i := i.magmaIsoToMulEquiv
@@ -297,7 +299,8 @@ def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ Magma.of X
 /-- multiplicative equivalences between `semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
 @[to_additive
-      "additive equivalences between `add_semigroup`s are\nthe same as (isomorphic to) isomorphisms in `AddSemigroup`"]
+  "additive equivalences between `add_semigroup`s are
+  the same as (isomorphic to) isomorphisms in `AddSemigroup`"]
 def mulEquivIsoSemigroupCatIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     X ≃* Y ≅ SemigroupCat.of X ≅ SemigroupCat.of Y where
   hom e := e.toSemigroupCatIso
