@@ -8,9 +8,9 @@ Authors: Luke Mantle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Derivative
-import Mathbin.Data.Nat.Parity
-import Mathbin.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Hermite polynomials
@@ -59,8 +59,7 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - (hermite n).d
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - p.derivative)^[n]) 1 :=
-  by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - p.derivative)^[n]) 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -72,8 +71,7 @@ theorem hermite_zero : hermite 0 = C 1 :=
 #align polynomial.hermite_zero Polynomial.hermite_zero
 
 @[simp]
-theorem hermite_one : hermite 1 = X :=
-  by
+theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
   simp only [map_one, mul_one, derivative_one, sub_zero]
 #align polynomial.hermite_one Polynomial.hermite_one
@@ -94,8 +92,7 @@ theorem coeff_hermite_succ_succ (n k : ℕ) :
   norm_cast
 #align polynomial.coeff_hermite_succ_succ Polynomial.coeff_hermite_succ_succ
 
-theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 :=
-  by
+theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
   clear hnk
   induction' n with n ih generalizing k
@@ -106,8 +103,7 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
 #align polynomial.coeff_hermite_of_lt Polynomial.coeff_hermite_of_lt
 
 @[simp]
-theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 :=
-  by
+theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction' n with n ih
   · apply coeff_C
   · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, MulZeroClass.mul_zero, sub_zero]
@@ -115,8 +111,7 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 :=
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
 @[simp]
-theorem degree_hermite (n : ℕ) : (hermite n).degree = n :=
-  by
+theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
   simp_rw [degree_le_iff_coeff_zero, WithBot.coe_lt_coe]
   · intro m
@@ -138,8 +133,7 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 #align polynomial.hermite_monic Polynomial.hermite_monic
 
-theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 :=
-  by
+theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
   induction' n with n ih generalizing k
   · rw [zero_add] at hnk 
     exact coeff_hermite_of_lt hnk.pos
@@ -168,15 +162,13 @@ theorem coeff_hermite_explicit :
       Nat.doubleFactorial_add_one, Nat.choose_zero_right, Nat.choose_one_right, pow_succ]
     push_cast
     ring
-  | n + 1, k + 1 =>
-    by
+  | n + 1, k + 1 => by
     let hermite_explicit : ℕ → ℕ → ℤ := fun n k =>
       (-1) ^ n * (2 * n - 1)‼ * Nat.choose (2 * n + k) k
     have hermite_explicit_recur :
       ∀ n k : ℕ,
         hermite_explicit (n + 1) (k + 1) =
-          hermite_explicit (n + 1) k - (k + 2) * hermite_explicit n (k + 2) :=
-      by
+          hermite_explicit (n + 1) k - (k + 2) * hermite_explicit n (k + 2) := by
       intro n k
       simp only [hermite_explicit]
       -- Factor out (-1)'s.
@@ -204,8 +196,7 @@ theorem coeff_hermite_explicit :
 #align polynomial.coeff_hermite_explicit Polynomial.coeff_hermite_explicit
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
-    coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k :=
-  by
+    coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
   cases' le_or_lt k n with h_le h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk 
     obtain ⟨m, hm⟩ := hnk
@@ -216,8 +207,7 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
 
 theorem coeff_hermite (n k : ℕ) :
     coeff (hermite n) k =
-      if Even (n + k) then (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 :=
-  by
+      if Even (n + k) then (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   exact coeff_hermite_of_even_add h
   exact coeff_hermite_of_odd_add (nat.odd_iff_not_even.mpr h)
