@@ -93,13 +93,13 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
 
 section Tactic
 
-open Lean Meta Elab Tactic ToExpr Parser
+open Lean Elab Tactic
 
 /-- `numDen stx` takes a syntax expression `stx` and
 * if it is of the form `a / b`, then it returns `some (a, b);
 * otherwise it returns `none`.
 -/
-def numDen : Syntax → Option (Syntax.Term × Syntax.Term)
+private def numDen : Syntax → Option (Syntax.Term × Syntax.Term)
   | `($a / $b) => some (a, b)
   | _          => none
 
@@ -146,26 +146,27 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   exact_mod_cast h
 #align real.sqrt_two_add_series_step_down Real.sqrtTwoAddSeries_step_down
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
+section Tactic
+
+open Lean Elab Tactic
+
 /-- Create a proof of `π < a` for a fixed rational number `a`, given a witness, which is a
 sequence of rational numbers `sqrt 2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
 `sqrt (2 + r i) ≥ r(i+1)`, where `r 0 = 0` and `sqrt (2 - r n) ≥ (a - 1/4^n) / 2^(n+1)`. -/
-unsafe def pi_upper_bound (l : List ℚ) : tactic Unit := do
-  let n := l.length
-  andthen (() <$ tactic.apply q(@pi_upper_bound_start $(reflect n))) [pure (), sorry]
-  l fun r => do
-      let a := r
-      let b := r
-      andthen (() <$ tactic.apply q(@sqrtTwoAddSeries_step_down $(reflect a) $(reflect b)))
-          [pure (), sorry, sorry, sorry]
-  sorry
-  sorry
-#align real.pi_upper_bound real.pi_upper_bound
+elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
+  let rat_sep := l.elemsAndSeps
+  let sep := rat_sep.getD 1 .missing
+  let ratStx := rat_sep.filter (· != sep)
+  let lgth := ratStx.size
+  let n := ← (toExpr lgth).toSyntax
+  let els := (ratStx.map numDen).reduceOption
+  evalTactic (← `(tactic| apply pi_upper_bound_start $n))
+  let _ := ← els.mapM fun (x, y) => do
+      evalTactic (← `(tactic| apply sqrtTwoAddSeries_step_down $x $y))
+  evalTactic (← `(tactic| simp [sqrtTwoAddSeries]))
+  allGoals (evalTactic (← `(tactic| norm_num1)))
+
+end Tactic
 
 theorem pi_gt_three : 3 < π := by
   pi_lower_bound [23/16]
@@ -175,10 +176,8 @@ theorem pi_gt_314 : 3.14 < π := by
   pi_lower_bound [99 / 70, 874 / 473, 1940 / 989, 1447 / 727]
 #align real.pi_gt_314 Real.pi_gt_314
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic real.pi_upper_bound -/
 theorem pi_lt_315 : π < 3.15 := by
-  run_tac
-    pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
+  pi_upper_bound [140 / 99, 279 / 151, 51 / 26, 412 / 207]
 #align real.pi_lt_315 Real.pi_lt_315
 
 theorem pi_gt_31415 : 3.1415 < π := by
@@ -186,24 +185,19 @@ theorem pi_gt_31415 : 3.1415 < π := by
         [11482 / 8119, 5401 / 2923, 2348 / 1197, 11367 / 5711, 25705 / 12868, 23235 / 11621]
 #align real.pi_gt_31415 Real.pi_gt_31415
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic real.pi_upper_bound -/
 theorem pi_lt_31416 : π < 3.1416 := by
-  run_tac
     pi_upper_bound
         [4756 / 3363, 101211 / 54775, 505534 / 257719, 83289 / 41846, 411278 / 205887,
           438142 / 219137, 451504 / 225769, 265603 / 132804, 849938 / 424971]
 #align real.pi_lt_31416 Real.pi_lt_31416
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic real.pi_lower_bound -/
 theorem pi_gt_3141592 : 3.141592 < π := by
     pi_lower_bound
         [11482 / 8119, 7792 / 4217, 54055 / 27557, 949247 / 476920, 3310126 / 1657059,
           2635492 / 1318143, 1580265 / 790192, 1221775 / 610899, 3612247 / 1806132, 849943 / 424972]
 #align real.pi_gt_3141592 Real.pi_gt_3141592
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic real.pi_upper_bound -/
 theorem pi_lt_3141593 : π < 3.141593 := by
-  run_tac
     pi_upper_bound
         [27720 / 19601, 56935 / 30813, 49359 / 25163, 258754 / 130003, 113599 / 56868,
           1101994 / 551163, 8671537 / 4336095, 3877807 / 1938940, 52483813 / 26242030,
