@@ -156,14 +156,13 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
 lemma aux1 {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
 
-lemma aux2 {n : ℕ} (h0 : n ≠ 0) (h1 : n ≠ 1) : n / 4 + 1 < n := by
-  rw [←lt_tsub_iff_right, Nat.div_lt_iff_lt_mul four_pos, tsub_mul, one_mul,
-      lt_tsub_iff_right]
-  calc
-    n + 4 < n * 1 + 2 * 3 := by rw [mul_one, add_lt_add_iff_left]; norm_num
-    _ ≤ n * 1 + n * 3 :=
-      add_le_add_left (mul_le_mul_right' ((Nat.two_le_iff n).mpr ⟨h0, h1⟩) 3) (n * 1)
-    _ = n * 4 := by rw [←mul_add]
+lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
+| 0 => by decide
+| 1 => by decide
+| 2 => by decide
+| 3 => by decide
+| n + 4 => by intros; rw [n.add_div_right four_pos, Nat.succ_lt_succ_iff, Nat.succ_lt_succ_iff,
+  Nat.lt_succ_iff]; exact (n.div_le_self 4).trans n.le_succ
 
 namespace CommutingProbability
 
