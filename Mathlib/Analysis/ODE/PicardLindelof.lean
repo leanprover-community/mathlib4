@@ -16,17 +16,17 @@ import Mathlib.Topology.MetricSpace.Contracting
 
 In this file we prove that an ordinary differential equation $\dot x=v(t, x)$ such that $v$ is
 Lipschitz continuous in $x$ and continuous in $t$ has a local solution, see
-`exists_forall_deriv_within_Icc_eq_of_is_picard_lindelof`.
+`IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq`.
 
 As a corollary, we prove that a time-independent locally continuously differentiable ODE has a
 local solution.
 
 ## Implementation notes
 
-In order to split the proof into small lemmas, we introduce a structure `picard_lindelof` that holds
-all assumptions of the main theorem. This structure and lemmas in the `picard_lindelof` namespace
+In order to split the proof into small lemmas, we introduce a structure `PicardLindelof` that holds
+all assumptions of the main theorem. This structure and lemmas in the `PicardLindelof` namespace
 should be treated as private implementation details. This is not to be confused with the `Prop`-
-valued structure `is_picard_lindelof`, which holds the long hypotheses of the Picard-Lindelöf
+valued structure `IsPicardLindelof`, which holds the long hypotheses of the Picard-Lindelöf
 theorem for actual use as part of the public API.
 
 We only prove existence of a solution in this file. For uniqueness see `ODE_solution_unique` and
@@ -49,7 +49,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- `Prop` structure holding the hypotheses of the Picard-Lindelöf theorem.
 
-The similarly named `picard_lindelof` structure is part of the internal API for convenience, so as
+The similarly named `PicardLindelof` structure is part of the internal API for convenience, so as
 not to constantly invoke choice, but is not intended for public use. -/
 structure IsPicardLindelof {E : Type _} [NormedAddCommGroup E] (v : ℝ → E → E) (tMin t₀ tMax : ℝ)
     (x₀ : E) (L : ℝ≥0) (R C : ℝ) : Prop where
@@ -66,7 +66,7 @@ the internal API for convenience, so as not to constantly invoke choice. Unless 
 of the auxiliary lemmas, use `exists_forall_deriv_within_Icc_eq_of_lipschitz_of_continuous` instead
 of using this structure.
 
-The similarly named `is_picard_lindelof` is a bundled `Prop` holding the long hypotheses of the
+The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypotheses of the
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
 structure PicardLindelof (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] where
@@ -186,7 +186,7 @@ protected theorem continuous : Continuous f :=
   f.lipschitz.continuous
 #align picard_lindelof.fun_space.continuous PicardLindelof.FunSpace.continuous
 
-/-- Each curve in `picard_lindelof.fun_space` is continuous. -/
+/-- Each curve in `PicardLindelof.FunSpace` is continuous. -/
 def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
   ⟨fun f => ⟨f, f.continuous⟩, fun f g h => by cases f; cases g; simpa using h⟩
 #align picard_lindelof.fun_space.to_continuous_map PicardLindelof.FunSpace.toContinuousMap
@@ -265,7 +265,7 @@ theorem intervalIntegrable_vComp (t₁ t₂ : ℝ) : IntervalIntegrable f.vComp 
 
 variable [CompleteSpace E]
 
-/-- The Picard-Lindelöf operator. This is a contracting map on `picard_lindelof.fun_space v` such
+/-- The Picard-Lindelöf operator. This is a contracting map on `PicardLindelof.FunSpace v` such
 that the fixed point of this map is the solution of the corresponding ODE.
 
 More precisely, some iteration of this map is a contracting map. -/
@@ -364,7 +364,7 @@ theorem exists_fixed : ∃ f : v.FunSpace, f.next = f :=
 end
 
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem. Use
-`exists_forall_deriv_within_Icc_eq_of_is_picard_lindelof` instead for the public API. -/
+`IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq` instead for the public API. -/
 theorem exists_solution :
     ∃ f : ℝ → E, f v.t₀ = v.x₀ ∧ ∀ t ∈ Icc v.tMin v.tMax,
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
