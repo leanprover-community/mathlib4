@@ -6,7 +6,7 @@ Authors: Ian Benway.
 import Lean
 
 namespace Mathlib.Tactic
-open Lean Elab Elab.Tactic Meta
+open Lean Elab Elab.Tactic Meta PrettyPrinter Delaborator
 
 syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
 
@@ -41,7 +41,7 @@ h2 : x = y
 elab_rules : tactic
 | `(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
   withMainContext do
-    let (ty, val) ← match ty with
+    let (ty, vale) ← match ty with
     | some ty =>
       let ty ← Term.elabType ty
       pure (ty, ← elabTermEnsuringType val ty)
@@ -49,15 +49,15 @@ elab_rules : tactic
       let val ← elabTerm val none
       pure (← inferType val, val)
     let fvar ← liftMetaTacticAux fun goal ↦ do
-      let (fvar, goal) ← (← goal.define a.getId ty val).intro1P
+      let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
     withMainContext do
       Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
-  if rw.isNone then
-    evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
-  match h, rev with
-  | some h, some none =>
-    evalTactic (← `(tactic| have $h : $a = $val := rfl))
-  | some h, some (some _) =>
-    evalTactic (← `(tactic| have $h : $val = $a := rfl))
-  | _, _ => pure ()
+    if rw.isNone then
+      evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
+    match h, rev with
+    | some h, some none =>
+      evalTactic (← `(tactic| have $h : ($a : $(← delab ty)) = ($val : $(← delab ty)) := rfl))
+    | some h, some (some _) =>
+      evalTactic (← `(tactic| have $h : ($val : $(← delab ty)) = ($a : $(← delab ty)) := rfl))
+    | _, _ => pure ()
