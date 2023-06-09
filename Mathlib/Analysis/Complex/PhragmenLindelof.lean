@@ -219,12 +219,10 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   exact (hgd.diffContOnCl.smul hfd).mono (inter_subset_right _ _)
   convert norm_le_of_forall_mem_frontier_norm_le ((bounded_Ioo _ _).reProdIm (bounded_Ioo _ _)) hd
     (fun w hw => _) _
-  · have hwc := frontier_subset_closure hw
-    rw [frontier_reProdIm, closure_Ioo (neg_lt_self hR₀).ne, frontier_Ioo hab, closure_Ioo hab.ne,
+  · rw [frontier_reProdIm, closure_Ioo (neg_lt_self hR₀).ne, frontier_Ioo hab, closure_Ioo hab.ne,
       frontier_Ioo (neg_lt_self hR₀)] at hw
     by_cases him : w.im = a - b ∨ w.im = a + b
-    · rw [closure_reProdIm, closure_Ioo (neg_lt_self hR₀).ne] at hwc
-      rw [norm_smul, ← one_mul C]
+    · rw [norm_smul, ← one_mul C]
       exact mul_le_mul (hg₁ _ him) (him.by_cases (hle_a _) (hle_b _)) (norm_nonneg _) zero_le_one
     · replace hw : w ∈ {-R, R} ×ℂ Icc (a - b) (a + b); exact hw.resolve_left fun h => him h.2
       have hw' := eq_endpoints_or_mem_Ioo_of_mem_Icc hw.2; rw [← or_assoc] at hw'
@@ -643,9 +641,8 @@ set_option linter.uppercaseLean3 false in
 
 Then `f` is equal to zero on the closed fourth quadrant. -/
 theorem eq_zero_on_quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
-    (hB :
-      ∃ c < (2 : ℝ),
-        ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
+    (hB : ∃ c < (2 : ℝ), ∃ B,
+      f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, 0 ≤ x → f x = 0) (him : ∀ x : ℝ, x ≤ 0 → f (x * I) = 0) :
     EqOn f 0 {z | 0 ≤ z.re ∧ z.im ≤ 0} := fun _z hz =>
   norm_le_zero_iff.1 <|
@@ -663,13 +660,11 @@ set_option linter.uppercaseLean3 false in
 
 Then `f` is equal to `g` on the closed fourth quadrant. -/
 theorem eqOn_quadrant_IV (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
-    (hBf :
-      ∃ c < (2 : ℝ),
-        ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
+    (hBf : ∃ c < (2 : ℝ), ∃ B,
+      f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hdg : DiffContOnCl ℂ g (Ioi 0 ×ℂ Iio 0))
-    (hBg :
-      ∃ c < (2 : ℝ),
-        ∃ B, g =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
+    (hBg : ∃ c < (2 : ℝ), ∃ B,
+      g =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, 0 ≤ x → f x = g x) (him : ∀ x : ℝ, x ≤ 0 → f (x * I) = g (x * I)) :
     EqOn f g {z | 0 ≤ z.re ∧ z.im ≤ 0} := fun _z hz =>
   sub_eq_zero.1 <| eq_zero_on_quadrant_IV (hdf.sub hdg) (isBigO_sub_exp_rpow hBf hBg)
@@ -693,9 +688,8 @@ set_option linter.uppercaseLean3 false in
 Then `‖f z‖` is bounded from above by the same constant on the closed right half-plane.
 See also `PhragmenLindelof.right_half_plane_of_bounded_on_real` for a stronger version. -/
 theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.re})
-    (hexp :
-      ∃ c < (2 : ℝ),
-        ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
+    (hexp : ∃ c < (2 : ℝ), ∃ B,
+      f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hre : Tendsto (fun x : ℝ => f x) atTop (𝓝 0)) (him : ∀ x : ℝ, ‖f (x * I)‖ ≤ C)
     (hz : 0 ≤ z.re) : ‖f z‖ ≤ C := by
   /- We are going to apply the Phragmen-Lindelöf principle in the first and fourth quadrants.
@@ -871,9 +865,8 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
     (hfd : DiffContOnCl ℂ f {z | 0 < z.re}) (hgd : DiffContOnCl ℂ g {z | 0 < z.re})
     (hfexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
-    (hgexp :
-      ∃ c < (2 : ℝ),
-        ∃ B, g =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
+    (hgexp : ∃ c < (2 : ℝ), ∃ B,
+      g =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hre : SuperpolynomialDecay atTop expR fun x => ‖f x - g x‖)
     (hfim : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) (hgim : ∃ C, ∀ x : ℝ, ‖g (x * I)‖ ≤ C) :
     EqOn f g {z : ℂ | 0 ≤ z.re} := by
@@ -881,11 +874,8 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
     simpa only [EqOn, Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using this
   refine' eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) _ hre _
   · set l : Filter ℂ := comap Complex.abs atTop ⊓ 𝓟 {z : ℂ | 0 < z.re}
-    suffices
-      ∀ {c₁ c₂ B₁ B₂ : ℝ},
-        c₁ ≤ c₂ →
-          B₁ ≤ B₂ → 0 ≤ B₂ → (fun z => expR (B₁ * abs z ^ c₁)) =O[l] fun z => expR (B₂ * abs z ^ c₂)
-      by
+    suffices ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → B₁ ≤ B₂ → 0 ≤ B₂ →
+        (fun z => expR (B₁ * abs z ^ c₁)) =O[l] fun z => expR (B₂ * abs z ^ c₂) by
       rcases hfexp with ⟨cf, hcf, Bf, hOf⟩; rcases hgexp with ⟨cg, hcg, Bg, hOg⟩
       refine' ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), _⟩
       refine' .sub (hOf.trans <| this _ _ _) (hOg.trans <| this _ _ _) <;> simp
