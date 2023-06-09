@@ -177,7 +177,7 @@ instance algebra'' {n : ℕ} {f : K[X]} : Algebra K (SplittingFieldAux n f.remov
 
 instance scalar_tower' {n : ℕ} {f : K[X]} :
     IsScalarTower K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor) :=
-  sorry
+  IsScalarTower.of_algebraMap_eq fun _ => rfl
 #align polynomial.splitting_field_aux.scalar_tower' Polynomial.SplittingFieldAux.scalar_tower'
 
 #noalign polynomial.splitting_field_aux.scalar_tower
