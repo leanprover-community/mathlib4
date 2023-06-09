@@ -8,10 +8,10 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.CauchyIntegral
-import Mathbin.Analysis.NormedSpace.Completion
-import Mathbin.Analysis.NormedSpace.Extr
-import Mathbin.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.NormedSpace.Extr
+import Mathlib.Topology.Algebra.Order.ExtrClosure
 
 /-!
 # Maximum modulus principle
@@ -110,8 +110,7 @@ file.
 
 theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
-    (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ :=
-  by
+    (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   -- Consider a circle of radius `r = dist w z`.
   set r : ℝ := dist w z
   have hw : w ∈ closed_ball z r := mem_closed_ball.2 le_rfl
@@ -120,8 +119,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
   rintro hw_lt : ‖f w‖ < ‖f z‖
   have hr : 0 < r := dist_pos.2 (ne_of_apply_ne (norm ∘ f) hw_lt.ne)
   -- Due to Cauchy integral formula, it suffices to prove the following inequality.
-  suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * ‖f z‖
-    by
+  suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * ‖f z‖ by
     refine' this.ne _
     have A : (∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ) = (2 * π * I : ℂ) • f z :=
       hd.circle_integral_sub_inv_smul (mem_ball_self hr)
@@ -151,8 +149,7 @@ Now we drop the assumption `complete_space F` by embedding `F` into its completi
 
 
 theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ball z (dist w z)))
-    (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ :=
-  by
+    (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
   replace hz : IsMaxOn (norm ∘ e ∘ f) (closed_ball z (dist w z)) z
@@ -167,8 +164,7 @@ assumption `is_max_on (norm ∘ f) (ball z r) z`.
 
 
 theorem norm_max_aux₃ {f : ℂ → F} {z w : ℂ} {r : ℝ} (hr : dist w z = r)
-    (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) : ‖f w‖ = ‖f z‖ :=
-  by
+    (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) : ‖f w‖ = ‖f z‖ := by
   subst r
   rcases eq_or_ne w z with (rfl | hne); · rfl
   rw [← dist_ne_zero] at hne 
@@ -193,8 +189,7 @@ is complex differentiable on the corresponding open ball, and the norm `‖f w�
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball.  -/
 theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
-    EqOn (norm ∘ f) (const E ‖f z‖) (closedBall z r) :=
-  by
+    EqOn (norm ∘ f) (const E ‖f z‖) (closedBall z r) := by
   intro w hw
   rw [mem_closed_ball, dist_comm] at hw 
   rcases eq_or_ne z w with (rfl | hne); · rfl
@@ -202,8 +197,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
   have hde : Differentiable ℂ e := (differentiable_id.smul_const (w - z)).AddConst z
   suffices ‖(f ∘ e) (1 : ℂ)‖ = ‖(f ∘ e) (0 : ℂ)‖ by simpa [e]
   have hr : dist (1 : ℂ) 0 = 1 := by simp
-  have hball : maps_to e (ball 0 1) (ball z r) :=
-    by
+  have hball : maps_to e (ball 0 1) (ball z r) := by
     refine'
       ((lipschitzWith_lineMap z w).mapsTo_ball (mt nndist_eq_zero.1 hne) 0 1).mono subset.rfl _
     simpa only [line_map_apply_zero, mul_one, coe_nndist] using ball_subset_ball hw
@@ -226,8 +220,7 @@ and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally
 of `c`. -/
 theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
     (hd : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMax (norm ∘ f) c) :
-    ∀ᶠ y in 𝓝 c, ‖f y‖ = ‖f c‖ :=
-  by
+    ∀ᶠ y in 𝓝 c, ‖f y‖ = ‖f c‖ := by
   rcases nhds_basis_closed_ball.eventually_iff.1 (hd.and hc) with ⟨r, hr₀, hr⟩
   exact
     nhds_basis_closed_ball.eventually_iff.2
@@ -239,8 +232,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
 #align complex.norm_eventually_eq_of_is_local_max Complex.norm_eventually_eq_of_isLocalMax
 
 theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
-    (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} :=
-  by
+    (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine' isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).And _
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w; exact hd.eventually_differentiable_at hz.1
   exact
@@ -253,8 +245,7 @@ complex normed space. Let `f : E → F` be a function that is complex differenti
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = ‖f c‖` for all `x ∈ U`. -/
 theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DifferentiableOn ℂ f U) (hcU : c ∈ U)
-    (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) U :=
-  by
+    (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) U := by
   set V := U ∩ {z | IsMaxOn (norm ∘ f) U z}
   have hV : ∀ x ∈ V, ‖f x‖ = ‖f c‖ := fun x hx => le_antisymm (hm hx.1) (hx.2 hcU)
   suffices : U ⊆ V; exact fun x hx => hV x (this hx)
@@ -356,8 +347,7 @@ and the norm `‖f z‖` has a local maximum at `c`, then `f` is locally constan
 of `c`. -/
 theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
     (hd : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMax (norm ∘ f) c) :
-    ∀ᶠ y in 𝓝 c, f y = f c :=
-  by
+    ∀ᶠ y in 𝓝 c, f y = f c := by
   rcases nhds_basis_closed_ball.eventually_iff.1 (hd.and hc) with ⟨r, hr₀, hr⟩
   exact
     nhds_basis_closed_ball.eventually_iff.2
@@ -370,8 +360,7 @@ theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
 
 theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
     (hf : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMin (norm ∘ f) c) :
-    (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 :=
-  by
+    (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 := by
   refine' or_iff_not_imp_right.mpr fun h => _
   have h1 : ∀ᶠ z in 𝓝 c, f z ≠ 0 := hf.self_of_nhds.continuous_at.eventually_ne h
   have h2 : IsLocalMax (norm ∘ f)⁻¹ c := hc.inv (h1.mono fun z => norm_pos_iff.mpr)
@@ -397,8 +386,7 @@ set `U` and is continuous on its closure, then there exists a point `z ∈ front
 `λ z, ‖f z‖` takes it maximum value on `closure U` at `z`. -/
 theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
     (hb : Bounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
-    ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z :=
-  by
+    ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.is_compact_closure
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w
   exact hc.exists_forall_ge hne.closure hd.continuous_on.norm
@@ -416,8 +404,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
 theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : Bounded U)
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
-    (hz : z ∈ closure U) : ‖f z‖ ≤ C :=
-  by
+    (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz 
   cases hz; · exact hC z hz
   /- In case of a finite dimensional domain, one can just apply
@@ -441,8 +428,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
 `U`, then they are equal on `closure U`. -/
 theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
-    EqOn f g (closure U) :=
-  by
+    EqOn f g (closure U) := by
   suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
   refine' fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => _) hz
   simp [hfg hw]
