@@ -250,7 +250,6 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
   by_cases hcn : c.Nonempty
   case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
   case pos =>
-    have : Nonempty c := Set.Nonempty.to_subtype hcn
     let ub : SubfieldWithHom K L M :=
       ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
         @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ (Set.Nonempty.to_subtype hcn)
@@ -482,9 +481,6 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   letI : Algebra S R := RingHom.toAlgebra hSR.toRingHom
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R M).isDomain _
   letI : IsDomain S := (NoZeroSMulDivisors.algebraMap_injective S L).isDomain _
-  have : Algebra.IsAlgebraic R S := fun x => by
-    rw [← RingEquiv.symm_apply_apply hSR x]
-    exact isAlgebraic_algebraMap _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
   haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
   haveI : IsScalarTower S R L :=
