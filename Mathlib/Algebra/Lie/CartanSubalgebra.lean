@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Lie.Nilpotent
-import Mathbin.Algebra.Lie.Normalizer
+import Mathlib.Algebra.Lie.Nilpotent
+import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Cartan subalgebras
@@ -65,15 +65,13 @@ theorem normalizer_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCa
 
 @[simp]
 theorem ucs_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSubalgebra] (k : ℕ) :
-    H.toLieSubmodule.ucs k = H.toLieSubmodule :=
-  by
+    H.toLieSubmodule.ucs k = H.toLieSubmodule := by
   induction' k with k ih
   · simp
   · simp [ih]
 #align lie_subalgebra.ucs_eq_self_of_is_cartan_subalgebra LieSubalgebra.ucs_eq_self_of_isCartanSubalgebra
 
-theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubmodule.IsUcsLimit :=
-  by
+theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubmodule.IsUcsLimit := by
   constructor
   · intro h
     have h₁ : _root_.lie_algebra.is_nilpotent R H := by infer_instance
@@ -103,8 +101,7 @@ end LieSubalgebra
 
 @[simp]
 theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRing L]
-    [LieAlgebra R L] (I : LieIdeal R L) : (I : LieSubalgebra R L).normalizer = ⊤ :=
-  by
+    [LieAlgebra R L] (I : LieIdeal R L) : (I : LieSubalgebra R L).normalizer = ⊤ := by
   ext x
   simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true_iff] using
     fun y hy => I.lie_mem hy
@@ -114,8 +111,7 @@ open LieIdeal
 
 /-- A nilpotent Lie algebra is its own Cartan subalgebra. -/
 instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent R L] :
-    LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L)
-    where
+    LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L) where
   nilpotent := inferInstance
   self_normalizing := by rw [← top_coe_lie_subalgebra, normalizer_eq_top, top_coe_lie_subalgebra]
 #align lie_algebra.top_is_cartan_subalgebra_of_nilpotent LieAlgebra.top_isCartanSubalgebra_of_nilpotent
