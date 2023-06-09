@@ -527,12 +527,9 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     . rw [this, aeval_def, eval₂_eq_eval_map]
       rw [mem_roots'] at hy
       exact hy.2
-    apply minpoly.eq_of_algebraMap_eq
-    . apply RingHom.injective
-    . rw [AdjoinSimple.isIntegral_gen F x]
-      rw [←isIntegral_algebraMap_iff (algebraMap K L).injective]
-      apply h.isIntegral
-    . exact AdjoinSimple.algebraMap_gen F x
+    apply minpoly_gen
+    rw [←isIntegral_algebraMap_iff (algebraMap K L).injective]
+    apply h.isIntegral
 
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
