@@ -8,7 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.NormNum
 
