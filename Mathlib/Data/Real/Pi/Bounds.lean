@@ -110,8 +110,7 @@ elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
   let rat_sep := l.elemsAndSeps
   let sep := rat_sep.getD 1 .missing
   let ratStx := rat_sep.filter (· != sep)
-  let lgth := ratStx.size
-  let n := ← (toExpr lgth).toSyntax
+  let n := ← (toExpr ratStx.size).toSyntax
   let els := (ratStx.map numDen).reduceOption
   evalTactic (← `(tactic| apply pi_lower_bound_start $n))
   let _ := ← els.mapM fun (x, y) => do
@@ -157,8 +156,7 @@ elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
   let rat_sep := l.elemsAndSeps
   let sep := rat_sep.getD 1 .missing
   let ratStx := rat_sep.filter (· != sep)
-  let lgth := ratStx.size
-  let n := ← (toExpr lgth).toSyntax
+  let n := ← (toExpr ratStx.size).toSyntax
   let els := (ratStx.map numDen).reduceOption
   evalTactic (← `(tactic| apply pi_upper_bound_start $n))
   let _ := ← els.mapM fun (x, y) => do
