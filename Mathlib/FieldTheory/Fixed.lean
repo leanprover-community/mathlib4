@@ -22,7 +22,7 @@ Given a (finite) group `G` that acts on a field `F`, we define `fixed_points G F
 the subfield consisting of elements of `F` fixed_points by every element of `G`.
 
 This subfield is then normal and separable, and in addition (TODO) if `G` acts faithfully on `F`
-then `finrank (fixed_points G F) F = fintype.card G`.
+then `finrank (fixed_points G F) F = Fintype.card G`.
 
 ## Main Definitions
 
@@ -61,7 +61,7 @@ section InvariantSubfields
 
 variable (M) {F}
 
-/-- A typeclass for subrings invariant under a `mul_semiring_action`. -/
+/-- A typeclass for subrings invariant under a `MulSemiringAction`. -/
 class IsInvariantSubfield (S : Subfield F) : Prop where
   smul_mem : ∀ (m : M) {x : F}, x ∈ S → m • x ∈ S
 #align is_invariant_subfield IsInvariantSubfield
@@ -90,7 +90,7 @@ namespace FixedPoints
 
 variable (M)
 
--- we use `subfield.copy` so that the underlying set is `fixed_points M F`
+-- we use `Subfield.copy` so that the underlying set is `fixed_points M F`
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
@@ -355,7 +355,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
       _ = finrank (FixedPoints.subfield G F) F := finrank_linear_map' _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 
-/-- `mul_semiring_action.to_alg_hom` is bijective. -/
+/-- `MulSemiringAction.toAlgHom` is bijective. -/
 theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite G]
     [MulSemiringAction G F] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) := by
