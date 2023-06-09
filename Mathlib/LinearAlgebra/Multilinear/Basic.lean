@@ -69,7 +69,7 @@ are:
 3. Quantifying over all possible `DecidableEq ι` instances in the statement of `map_add'` and
    `map_smul'`.
 
-Option 1 works fine, but puts unecessary constraints on the user (the zero map certainly does not
+Option 1 works fine, but puts unnecessary constraints on the user (the zero map certainly does not
 need decidability). Option 2 looks great at first, but in the common case when `ι = Fin n` it
 introduces non-defeq decidability instance diamonds within the context of proving `map_add'` and
 `map_smul'`, of the form `Fin.decidableEq n = Classical.decEq (Fin n)`. Option 3 of course does
@@ -1188,7 +1188,7 @@ section Currying
 
 We associate to a multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curryLeft` (which is a linear map on `E 0` taking values
-in multilinear maps in `n` variables) and `f.curryRight` (wich is a multilinear map in `n`
+in multilinear maps in `n` variables) and `f.curryRight` (which is a multilinear map in `n`
 variables taking values in linear maps on `E 0`). In both constructions, the variable that is
 singled out is `0`, to take advantage of the operations `cons` and `tail` on `Fin n`.
 The inverse operations are called `uncurryLeft` and `uncurryRight`.

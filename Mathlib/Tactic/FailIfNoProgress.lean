@@ -32,7 +32,7 @@ open Lean Meta Elab Tactic
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the main goal
 or the local context at reducible transparency. -/
-syntax (name := failIfNoProgress ) "fail_if_no_progress " tacticSeq : tactic
+syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 
 /-- `lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
 `(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `true` if they contain expressions of

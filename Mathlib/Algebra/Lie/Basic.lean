@@ -722,9 +722,9 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
       by cases x; cases y; simp at h; simp [h]  }
 
 @[simp, norm_cast]
-theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
+theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
-#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_to_linearMap
+#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_toLinearMap
 
 @[simp]
 theorem map_smul (f : M →ₗ⁅R,L⁆ N) (c : R) (x : M) : f (c • x) = c • f x :=

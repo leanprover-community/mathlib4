@@ -914,7 +914,7 @@ theorem rootSet_finite (p : T[X]) (S : Type _) [CommRing S] [IsDomain S] [Algebr
 is finite. -/
 theorem bUnion_roots_finite {R S : Type _} [Semiring R] [CommRing S] [IsDomain S] (m : R →+* S)
     (d : ℕ) {U : Set R} (h : U.Finite) :
-    (⋃ (f : R[X]) (_hf : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
+    (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset.toSet : Set S)).Finite :=
   Set.Finite.biUnion
     (by

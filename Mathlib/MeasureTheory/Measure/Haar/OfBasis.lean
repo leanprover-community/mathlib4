@@ -238,10 +238,9 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 #align basis.add_haar Basis.addHaar
 
--- Porting note: `is_add_haar_measure` is now called `AddHaarMeasure` in Mathlib4
-instance AddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : AddHaarMeasure b.addHaar := by
-  rw [Basis.addHaar]; exact Measure.addHaarMeasure_addHaarMeasure _
-#align is_add_haar_measure_basis_add_haar AddHaarMeasure_basis_addHaar
+instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
+  rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
+#align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
@@ -257,6 +256,10 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
+
+instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
+  IsAddHaarMeasure_basis_addHaar _
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/

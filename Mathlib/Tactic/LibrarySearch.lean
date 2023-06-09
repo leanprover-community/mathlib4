@@ -124,7 +124,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
-Try applying the given lemma (with symmetry modifer) to the goal,
+Try applying the given lemma (with symmetry modifier) to the goal,
 then try to close subsequent goals using `solveByElim`.
 If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
 otherwise the full list of subgoals.
@@ -210,7 +210,8 @@ unless the goal was completely solved.)
 this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (required : List Expr)
-    (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+    (solveByElimDepth := 6) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (Option (Array (MetavarContext × List MVarId))) := do
   let librarySearchEmoji := fun
     | .error _ => bombEmoji
     | .ok (some _) => crossEmoji
@@ -223,7 +224,7 @@ def librarySearch (goal : MVarId) (required : List Expr)
   (do
     let results ← librarySearchCore goal required solveByElimDepth
       -- Don't use too many heartbeats.
-      |>.whileAtLeastHeartbeatsPercent 10
+      |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
       -- Stop if we find something that closes the goal
       |>.takeUpToFirst (·.2.isEmpty)
       |>.asArray
@@ -260,7 +261,7 @@ syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?) => do
+elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required],*]?) => do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
@@ -299,7 +300,8 @@ If `hp` is omitted, then the placeholder `this` is used.
 
 The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
 This may be particularly useful to speed up proofs. -/
-syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
+syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
+  (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
@@ -321,9 +323,9 @@ elab_rules : tactic |
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
-@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
 @[inherit_doc observe]
-macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)
