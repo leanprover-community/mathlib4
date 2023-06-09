@@ -7,14 +7,34 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+/-!
+# Convexity properties of `rpow`
+
+We prove basic convexity properties of the `rpow` function. The proofs are elementary and do not
+require calculus, and as such this file has only moderate dependencies.
+
+## Main declarations
+
+* `NNReal.strictConcaveOn_rpow`, `Real.strictConcaveOn_rpow`: strict concavity of
+  `fun x ↦ x ^ p` for p ∈ (0,1)
+* `NNReal.concaveOn_rpow`, `Real.concaveOn_rpow`: concavity of `fun x ↦ x ^ p` for p ∈ [0,1]
+
+Note that convexity for `p > 1` can be found in `Analysis.Convex.SpecificFunctions.Basic`, which
+requires slightly less imports.
+
+## TODO
+
+* Prove convexity for negative powers.
+-/
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Set
 
 namespace NNReal
 
 lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
-    StrictConcaveOn ℝ≥0 univ fun x : ℝ≥0 => x ^ p := by
+    StrictConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
   have hp₀' : 0 < 1 / p := by positivity
   have hp₁' : 1 < 1 / p := by rw [one_lt_div hp₀]; exact hp₁
   let f := NNReal.orderIsoRpow (1 / p) hp₀'
@@ -28,7 +48,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   exact (strictConcaveOn_orderIso_symm f h₁).2 (Set.mem_univ x) (Set.mem_univ y) hxy ha hb hab
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
-    ConcaveOn ℝ≥0 univ fun x : ℝ≥0 => x ^ p := by
+    ConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
   by_cases hp : p = 0
   case pos => exact ⟨convex_univ, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
   case neg =>
@@ -40,7 +60,7 @@ lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
       exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
-  have : NNReal.sqrt = fun (x:ℝ≥0) => x ^ (1 / (2:ℝ)) := by
+  have : NNReal.sqrt = fun (x:ℝ≥0) ↦ x ^ (1 / (2:ℝ)) := by
     ext x; exact_mod_cast NNReal.sqrt_eq_rpow x
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
@@ -52,7 +72,7 @@ namespace Real
 open NNReal
 
 lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
-    StrictConcaveOn ℝ (Set.Ici 0) fun x : ℝ => x ^ p := by
+    StrictConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by
   refine ⟨convex_Ici _, fun x hx y hy hxy a b ha hb hab => ?_⟩
   let x' : ℝ≥0 := ⟨x, hx⟩
   let y' : ℝ≥0 := ⟨y, hy⟩
@@ -67,7 +87,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
     hxy' (by exact_mod_cast ha) (by exact_mod_cast hb) hab'
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
-    ConcaveOn ℝ (Set.Ici 0) fun x : ℝ => x ^ p := by
+    ConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by
   by_cases hp : p = 0
   case pos => exact ⟨convex_Ici 0, fun _ _ _ _ _ _ _ _ hab => by simp [hp, hab]⟩
   case neg =>
@@ -79,7 +99,7 @@ lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
       exact (strictConcaveOn_rpow (by positivity) (lt_of_le_of_ne hp₁ hp')).concaveOn
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ (Set.Ici 0) Real.sqrt := by
-  have : Real.sqrt = fun (x:ℝ) => x ^ (1 / (2:ℝ)) := by
+  have : Real.sqrt = fun (x:ℝ) ↦ x ^ (1 / (2:ℝ)) := by
     ext x; exact Real.sqrt_eq_rpow x
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
