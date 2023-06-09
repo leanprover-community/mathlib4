@@ -50,18 +50,16 @@ namespace Polynomial
 /-- the probabilists' Hermite polynomials. -/
 noncomputable def hermite : ℕ → Polynomial ℤ
   | 0 => 1
-  | n + 1 => X * hermite n - Polynomial.derivative (hermite n)
+  | n + 1 => X * hermite n - derivative (hermite n)
 #align polynomial.hermite Polynomial.hermite
 
 /-- The recursion `hermite (n+1) = (x - d/dx) (hermite n)` -/
 @[simp]
-theorem hermite_succ (n : ℕ) :
-    hermite (n + 1) = X * hermite n - Polynomial.derivative (hermite n) := by
+theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (hermite n) := by
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) :
-    hermite n = ((fun p => X * p - Polynomial.derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - derivative p)^[n]) 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -88,7 +86,7 @@ theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (
   simp [coeff_derivative]
 #align polynomial.coeff_hermite_succ_zero Polynomial.coeff_hermite_succ_zero
 
-theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) = 
+theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) =
     coeff (hermite n) k - (k + 2) * coeff (hermite n) (k + 2) := by
   rw [hermite_succ, coeff_sub, coeff_X_mul, coeff_derivative, mul_comm]
   norm_cast
