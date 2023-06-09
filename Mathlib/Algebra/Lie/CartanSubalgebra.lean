@@ -19,9 +19,9 @@ The standard example is the set of diagonal matrices in the Lie algebra of matri
 
 ## Main definitions
 
-  * `lie_submodule.is_ucs_limit`
-  * `lie_subalgebra.is_cartan_subalgebra`
-  * `lie_subalgebra.is_cartan_subalgebra_iff_is_ucs_limit`
+  * `LieSubmodule.IsUcsLimit`
+  * `LieSubalgebra.IsCartanSubalgebra`
+  * `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`
 
 ## Tags
 
@@ -35,11 +35,11 @@ variable {R : Type u} {L : Type v}
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
 
-/-- Given a Lie module `M` of a Lie algebra `L`, `lie_submodule.is_ucs_limit` is the proposition
+/-- Given a Lie module `M` of a Lie algebra `L`, `LieSubmodule.IsUcsLimit` is the proposition
 that a Lie submodule `N ⊆ M` is the limiting value for the upper central series.
 
 This is a characteristic property of Cartan subalgebras with the roles of `L`, `M`, `N` played by
-`H`, `L`, `H`, respectively. See `lie_subalgebra.is_cartan_subalgebra_iff_is_ucs_limit`. -/
+`H`, `L`, `H`, respectively. See `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`. -/
 def LieSubmodule.IsUcsLimit {M : Type _} [AddCommGroup M] [Module R M] [LieRingModule L M]
     [LieModule R L M] (N : LieSubmodule R L M) : Prop :=
   ∃ k, ∀ l, k ≤ l → (⊥ : LieSubmodule R L M).ucs l = N
