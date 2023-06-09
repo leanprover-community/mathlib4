@@ -522,13 +522,17 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     -- Porting note: in mathlib3 this next `apply` closed the goal.
     -- Now it can't find a proof by unification, so we have to do it ourselves?
     apply PowerBasis.lift_gen
-    change aeval y _ = 0
-    -- I'm not certain how the rest of the proof goes. Perhaps something like:
-    -- convert minpoly.aeval F y
-    -- simp only [adjoin.powerBasis_gen]
-    -- rw [minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
-    --   (h.isIntegral (algebraMap K L x)))]
-    -- sorry
+    change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
+    suffices : minpoly F (AdjoinSimple.gen F x) = minpoly F x
+    . rw [this, aeval_def, eval₂_eq_eval_map]
+      rw [mem_roots'] at hy
+      exact hy.2
+    apply minpoly.eq_of_algebraMap_eq
+    . apply RingHom.injective
+    . rw [AdjoinSimple.isIntegral_gen F x]
+      rw [←isIntegral_algebraMap_iff (algebraMap K L).injective]
+      apply h.isIntegral
+    . exact AdjoinSimple.algebraMap_gen F x
 
 #align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
