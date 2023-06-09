@@ -98,7 +98,8 @@ variable (G : Type _) [Group G]
 
 theorem card_comm_eq_card_conjClasses_mul_card :
     Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
-  rcases fintypeOrInfinite G
+  rcases fintypeOrInfinite G; swap
+  . rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
   simp only [Nat.card_eq_fintype_card]
   -- Porting note: Changed `calc` proof into a `rw` proof.
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G ↦ g * h = h * g), card_sigma,
@@ -109,7 +110,6 @@ theorem card_comm_eq_card_conjClasses_mul_card :
     (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
       MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
     @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
-  rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
@@ -161,7 +161,95 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 | 1 => by decide
 | 2 => by decide
 | 3 => by decide
-| n + 4 => by intros; rw [n.add_div_right four_pos]; linarith [n.div_le_self 4]
+| n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+
+namespace DihedralGroup
+
+def fintypeHelper {n : ℕ} : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
+  invFun i := match i with
+    | DihedralGroup.r j => Sum.inl j
+    | DihedralGroup.sr j => Sum.inr j
+  toFun i := match i with
+    | Sum.inl j => DihedralGroup.r j
+    | Sum.inr j => DihedralGroup.sr j
+  left_inv := by rintro (x | x) <;> rfl
+  right_inv := by rintro (x | x) <;> rfl
+
+instance : Infinite (DihedralGroup 0) :=
+  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+
+def mydef {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
+  toFun c := match h : c.1 with
+    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
+    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
+  invFun c := match c with
+    | Sum.inl a => ⟨Sum.inl a, a.2⟩
+    | Sum.inr b => ⟨Sum.inr b, b.2⟩
+  left_inv := by rintro ⟨a | b, h⟩ <;> rfl
+  right_inv := by rintro (a | b) <;> rfl
+
+lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
+
+def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
+    (ZMod n × ZMod n ⊕ ZMod n) ⊕ (ZMod n ⊕ ZMod n) where
+  toFun p := match h1 : p.1.1, h2 : p.1.2 with
+    | r i, r j => Sum.inl (Sum.inl ⟨i, j⟩)
+    | sr i, r j => Sum.inr (Sum.inl i)
+    | r i, sr j => Sum.inl (Sum.inr j)
+    | sr i, sr j => Sum.inr (Sum.inr (i + j))
+  invFun p := match p with
+    | Sum.inl (Sum.inl ⟨i, j⟩) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
+    | Sum.inr (Sum.inl i) => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+    | Sum.inl (Sum.inr j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
+    | Sum.inr (Sum.inr k) => ⟨⟨sr ((ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn))⁻¹ * k),
+        sr ((ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn))⁻¹ * k) ⟩, rfl⟩
+  left_inv := by
+    have : Fact (n % 2 = 1) := ⟨Nat.two_dvd_ne_zero.mp hn⟩
+    rintro ⟨⟨i | i, j | j⟩, h⟩
+    . rfl
+    . replace h := sr.inj h
+      rw [sub_eq_add_neg, add_right_inj] at h
+      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h.symm
+      simp only [h]
+    . replace h := sr.inj h
+      rw [sub_eq_add_neg, add_right_inj] at h
+      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h
+      simp only [h]
+    . replace h := r.inj h
+      rw [←neg_sub] at h
+      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h.symm
+      rw [sub_eq_zero] at h
+      simp [h, ←two_mul]
+      rw [←mul_assoc, ←@Nat.cast_two (ZMod n),
+          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), ←Units.val_mul,
+          inv_mul_self, Units.val_one, one_mul]
+  right_inv := by
+    rintro ((a | b) | (c | d))
+    . rfl
+    . rfl
+    . rfl
+    . simp [←two_mul]
+      rw [←mul_assoc, ←@Nat.cast_two (ZMod n),
+          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), ←Units.val_mul,
+          mul_inv_self, Units.val_one, one_mul]
+
+-- todo: compute conjugacy classes of dihedral group by counting commuting pairs
+lemma card_conjClasses_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
+    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
+  have hn' : NeZero n := ⟨fun h => hn (h ▸ Nat.dvd_zero 2)⟩
+  let G := DihedralGroup n
+  suffices : Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = (n + 3) * n
+  . rw [card_comm_eq_card_conjClasses_mul_card, @Nat.card_eq_fintype_card G,
+      DihedralGroup.card, ←mul_assoc, mul_left_inj' hn'.1] at this
+    exact (Nat.div_eq_of_eq_mul_left two_pos this.symm).symm
+  rw [Nat.card_congr (myEquiv hn), Nat.card_sum, Nat.card_sum, Nat.card_sum, Nat.card_prod,
+      Nat.card_zmod]
+  ring
+
+end DihedralGroup
 
 namespace CommutingProbability
 
@@ -189,16 +277,11 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
   . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
     rfl
 
--- todo: compute conjugacy classes of dihedral group by counting commuting pairs
-lemma card_conjClasses_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
-    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 :=
-sorry
-
 lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
   have : NeZero n := ⟨hn'⟩
-  rw [commProb_def', card_conjClasses_dihedralGroup_odd n hn,
+  rw [commProb_def', DihedralGroup.card_conjClasses_dihedralGroup_odd n hn,
       Nat.card_eq_fintype_card, DihedralGroup.card]
   have : ((n + 3) / 2 : ℕ) = ((n + 3 : ℕ) : ℚ) / (2 : ℕ) := by
     rw [Nat.cast_div]
@@ -210,23 +293,6 @@ lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
   field_simp [hn']
   left
   ring
-
-namespace DihedralGroup
-
-def fintypeHelper {n : ℕ} : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
-  invFun i := match i with
-    | DihedralGroup.r j => Sum.inl j
-    | DihedralGroup.sr j => Sum.inr j
-  toFun i := match i with
-    | Sum.inl j => DihedralGroup.r j
-    | Sum.inr j => DihedralGroup.sr j
-  left_inv := by rintro (x | x) <;> rfl
-  right_inv := by rintro (x | x) <;> rfl
-
-instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
-
-end DihedralGroup
 
 theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
     commProb (ReciprocalGroup (reciprocalFactors n)) = 1 / n := by
