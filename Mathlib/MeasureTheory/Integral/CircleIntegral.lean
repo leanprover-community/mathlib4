@@ -601,11 +601,11 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     · exact (measurable_circleMap 0 R).mul_const I
     · exact (((measurable_circleMap c R).sub measurable_const).const_div w).pow measurable_const
     · exact ((measurable_circleMap c R).sub measurable_const).inv
-  · simp [norm_smul, abs_of_pos hR, mul_left_comm R, mul_inv_cancel_left₀ hR.ne', mul_comm ‖_‖]
+  · simp [norm_smul, abs_of_pos hR, mul_left_comm R, inv_mul_cancel_left₀ hR.ne', mul_comm ‖_‖]
   · exact eventually_of_forall fun _ _ => (summable_geometric_of_lt_1 hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_1 hwR.1 hwR.2] using
       hf.norm.mul_continuousOn continuousOn_const
-  · refine' eventually_of_forall fun θ hθ => HasSum.const_smul _ _
+  · refine' eventually_of_forall fun θ _ => HasSum.const_smul _ _
     simp only [smul_smul]
     refine' HasSum.smul_const _ _
     have : ‖w / (circleMap c R θ - c)‖ < 1 := by simpa [abs_of_pos hR] using hwR.2
