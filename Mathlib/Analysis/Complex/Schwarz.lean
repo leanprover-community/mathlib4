@@ -16,16 +16,16 @@ import Mathlib.Analysis.Complex.RemovableSingularity
 
 In this file we prove several versions of the Schwarz lemma.
 
-* `complex.norm_deriv_le_div_of_maps_to_ball`, `complex.abs_deriv_le_div_of_maps_to_ball`: if
+* `Complex.norm_deriv_le_div_of_mapsTo_ball`, `Complex.abs_deriv_le_div_of_mapsTo_ball`: if
   `f : ℂ → E` sends an open disk with center `c` and a positive radius `R₁` to an open ball with
   center `f c` and radius `R₂`, then the absolute value of the derivative of `f` at `c` is at most
   the ratio `R₂ / R₁`;
 
-* `complex.dist_le_div_mul_dist_of_maps_to_ball`: if `f : ℂ → E` sends an open disk with center `c`
+* `Complex.dist_le_div_mul_dist_of_mapsTo_ball`: if `f : ℂ → E` sends an open disk with center `c`
   and radius `R₁` to an open disk with center `f c` and radius `R₂`, then for any `z` in the former
   disk we have `dist (f z) (f c) ≤ (R₂ / R₁) * dist z c`;
 
-* `complex.abs_deriv_le_one_of_maps_to_ball`: if `f : ℂ → ℂ` sends an open disk of positive radius
+* `Complex.abs_deriv_le_one_of_mapsTo_ball`: if `f : ℂ → ℂ` sends an open disk of positive radius
   to itself and the center of this disk to itself, then the absolute value of the derivative of `f`
   at the center of this disk is at most `1`;
 
@@ -63,7 +63,7 @@ section Space
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
-/-- An auxiliary lemma for `complex.norm_dslope_le_div_of_maps_to_ball`. -/
+/-- An auxiliary lemma for `Complex.norm_dslope_le_div_of_mapsTo_ball`. -/
 theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁))
     (h_maps : MapsTo f (ball c R₁) (ball (f c) R₂)) (hz : z ∈ ball c R₁) :
     ‖dslope f c z‖ ≤ R₂ / R₁ := by
