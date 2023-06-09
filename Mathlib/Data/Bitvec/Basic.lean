@@ -274,35 +274,54 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) 
 
 def width : Bitvec n → Nat := fun _ => n
 
-def get (v : Bitvec n) (i : Fin n) : Bool :=
-  v.1[i.val]
+def get : Bitvec n → Fin n → Bool :=
+  Vector.get
+
+/-- nth element of a bitvec, indexed by a `Nat`.
+    Returns `none` if bitvec is not long enough -/
+def get? : Bitvec n → Nat → Option Bool :=
+  Vector.get?
 
 @[simp]
 theorem get_succ : get (b ::ᵥ v) (Fin.succ i) = get v i := by
   simp[get]
 
--- Shouldn't this be inferred from the instance above? (as Bitvec is @[reducible])
 instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
-  getElem := fun v i _ => get v i
+  getElem := fun x i _ => get x i
+
+instance {n : Nat} : GetElem (Bitvec n) Nat Bool (fun _ i => i < n) where
+  getElem := fun x i h => get x ⟨i,h⟩
 
 instance (n : Nat) : Inhabited (Bitvec n) :=
   ⟨List.replicate n true, by apply List.length_replicate⟩
 
+/-- Two `v w : Bitvec n` are equal iff they are equal at every single index. -/
+@[ext]
+theorem ext : ∀ {v w : Bitvec n} (_ : ∀ m : Fin n, Bitvec.get v m = Bitvec.get w m), v = w
+  | ⟨v, hv⟩, ⟨w, hw⟩, h =>
+    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
+
+@[ext]
+theorem ext_nat : ∀ {v w : Bitvec n} (_ : ∀ m : Nat, Bitvec.get? v m = Bitvec.get? w m), v = w := by
+  intros v w h
+  apply ext
+  intro ⟨m, hm⟩
+  have h' := h m
+  simp [get?, Option.isSome_iff_exists, hm] at h'
+  apply h'
+
+/-- The list obtained from a vector. -/
+def toList (v : Bitvec n) : List Bool :=
+  v.1
+
 def Fun (width : Nat) := Fin width → Bool
 
-/-- convert `Bitvec n` to `Fin n → Bool` -/
+/-- convert `Fin n → Bool` to `Bitvec n` -/
 def ofFun {width : Nat} : Fun width → Bitvec width :=
   fun f => match width with
     | 0 => ⟨List.nil, rfl⟩
     | n + 1 => f (n + 1) ::ᵥ @ofFun n (fun i => f i)
 
-/-- convert `Fin n → Bool` to `Bitvec n` -/
-def toFun {width : Nat} : Bitvec width → Fun width :=
-  fun bv i => match width with
-    | 0 => Fin.elim0 i
-    | n + 1 =>
-        have instGetElem : GetElem (Bitvec (n + 1)) (Fin (n + 1)) Bool (fun _ _ => True) := inferInstance
-        bv[i]
 
 @[ext]
 theorem Fun.ext {f f' : Fun n} : (∀ i, f i = f' i) → f = f' :=
@@ -317,13 +336,13 @@ theorem get_ofFun : get (ofFun f) i = f i := by
     simp[List.get]
     sorry
 
-theorem ofFun_toFun {width : Nat} {f : Fun width} : toFun (ofFun f) = f := by
+theorem ofFun_get {width : Nat} {f : Fun width} : get (ofFun f) = f := by
   funext i
   cases width
   case zero =>
     exact Fin.elim0 i
   case succ n =>
-    simp [toFun, ofFun]
+    simp [get, ofFun]
     induction i using Fin.induction
     case h0 =>
       rfl
