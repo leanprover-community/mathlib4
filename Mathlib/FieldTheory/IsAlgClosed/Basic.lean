@@ -20,17 +20,17 @@ and prove some of their properties.
 
 ## Main Definitions
 
-- `is_alg_closed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
+- `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
 polynomial in `k` splits.
 
-- `is_alg_closure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
+- `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
   commutative ring. This means that the map from `R` to `K` is injective, and `K` is
   algebraically closed and algebraic over `R`
 
-- `is_alg_closed.lift` is a map from an algebraic extension `L` of `R`, into any algebraically
+- `IsAlgClosed.lift` is a map from an algebraic extension `L` of `R`, into any algebraically
   closed extension of `R`.
 
-- `is_alg_closure.equiv` is a proof that any two algebraic closures of the
+- `IsAlgClosure.equiv` is a proof that any two algebraic closures of the
   same field are isomorphic.
 
 ## Tags
@@ -50,8 +50,8 @@ variable (k : Type u) [Field k]
 
 /-- Typeclass for algebraically closed fields.
 
-To show `polynomial.splits p f` for an arbitrary ring homomorphism `f`,
-see `is_alg_closed.splits_codomain` and `is_alg_closed.splits_domain`.
+To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
+see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 class IsAlgClosed : Prop where
   Splits : ∀ p : k[X], p.Splits <| RingHom.id k
@@ -59,7 +59,7 @@ class IsAlgClosed : Prop where
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
-See also `is_alg_closed.splits_domain` for the case where `K` is algebraically closed.
+See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_codomain {k K : Type _} [Field k] [IsAlgClosed k] [Field K] {f : K →+* k}
     (p : K[X]) : p.Splits f := by convert IsAlgClosed.Splits (p.map f); simp [splits_map_iff]
@@ -67,7 +67,7 @@ theorem IsAlgClosed.splits_codomain {k K : Type _} [Field k] [IsAlgClosed k] [Fi
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
-See also `is_alg_closed.splits_codomain` for the case where `k` is algebraically closed.
+See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_domain {k K : Type _} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : p.Splits f :=
