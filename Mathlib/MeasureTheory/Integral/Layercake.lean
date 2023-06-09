@@ -78,7 +78,7 @@ formula), with a measurability assumption that would also essentially follow fro
 integrability assumptions.
 
 See `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul` and
-`measure_theory.lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
+`lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
 cake formula. -/
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) [SigmaFinite μ]
     (f_nn : 0 ≤ f) (f_mble : Measurable f) (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t)
@@ -263,7 +263,7 @@ end MeasureTheory
 
 end Layercake
 
-section LayercakeLt
+section LayercakeLT
 
 open MeasureTheory
 
@@ -369,4 +369,4 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul (μ : Measure α) [SigmaFinite �
   rw [ht]
 #align lintegral_rpow_eq_lintegral_meas_lt_mul lintegral_rpow_eq_lintegral_meas_lt_mul
 
-end LayercakeLt
+end LayercakeLT
