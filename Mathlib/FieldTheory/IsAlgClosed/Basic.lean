@@ -332,6 +332,7 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
     show O'.emb (@algebraMap N O _ _ (Subalgebra.algebra O) z) = algebraMap N M z
     simp only [restrictScalars_apply, AlgHom.commutes]
   refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
+  show x ∈ Algebra.adjoin N {(x : L)}
   exact Algebra.subset_adjoin (Set.mem_singleton x)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
