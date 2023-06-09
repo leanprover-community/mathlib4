@@ -1083,37 +1083,51 @@ end SMul
 
 end OrderedAddCommMonoid
 
+end LinearOrderedField
+
 section OrderIso
 
-variable [OrderedAddCommMonoid α] [SMul 𝕜 α]
+variable [OrderedSemiring 𝕜] [OrderedAddCommMonoid α] [SMul 𝕜 α]
 
 theorem strictConvexOn_orderIso_symm (f : α ≃o α) (hf : StrictConcaveOn 𝕜 univ f) :
     StrictConvexOn 𝕜 univ f.symm := by
-  rw [StrictConvexOn]
   refine ⟨hf.1, fun x _ y _ hxy a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
-  rw [hx'', hy'']
-  simp only [OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
   rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) hxy' ha hb hab
+
+theorem convexOn_orderIso_symm (f : α ≃o α) (hf : ConcaveOn 𝕜 univ f) :
+    ConvexOn 𝕜 univ f.symm := by
+  refine ⟨hf.1, fun x _ y _ a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) ha hb hab
 
 theorem strictConcaveOn_orderIso_symm (f : α ≃o α) (hf : StrictConvexOn 𝕜 univ f) :
     StrictConcaveOn 𝕜 univ f.symm := by
-  rw [StrictConcaveOn]
   refine ⟨hf.1, fun x _ y _ hxy a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
-  rw [hx'', hy'']
-  simp only [OrderIso.symm_apply_apply, gt_iff_lt]
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
   rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) hxy' ha hb hab
 
-end OrderIso
+theorem concaveOn_orderIso_symm (f : α ≃o α) (hf : ConvexOn 𝕜 univ f) :
+    ConcaveOn 𝕜 univ f.symm := by
+  refine ⟨hf.1, fun x _ y _ a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ Set.univ) (by simp : y' ∈ Set.univ) ha hb hab
 
-end LinearOrderedField
+end OrderIso
 
 section
 
