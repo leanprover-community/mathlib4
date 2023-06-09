@@ -210,8 +210,11 @@ theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) :
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
--- Porting note: the `this` below was not needed.
+-- Porting note: the two `have` below were not needed.
   have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
+  have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
+    (subfield G F).toSubring)) f = Polynomial.map
+    ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSmul]
   refine'
@@ -220,10 +223,10 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
       QuotientGroup.induction_on y fun g => _
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
-    ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial
-    MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom', Polynomial.eval_map,
-    Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
+    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
+    ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
+    MulSemiringActionHom.coe_polynomial, ← h, IsInvariantSubring.coe_subtypeHom',
+    Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 #align fixed_points.minpoly.of_eval₂ FixedPoints.minpoly.of_eval₂
 
 -- Why is this so slow?
@@ -233,17 +236,17 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
   rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this
-  cases this
+  cases' this with this this
   · right
     have hf3 : f = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hf (monic G F x)
         (associated_of_dvd_dvd hf2 <| @of_eval₂ G _ F _ _ _ x f this)
-    rwa [← mul_one (minpoly G F x), hf3, mul_right_inj' (monic G F x).NeZero] at hfg
+    rwa [← mul_one (minpoly G F x), hf3, mul_right_inj' (monic G F x).ne_zero] at hfg
   · left
     have hg3 : g = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hg (monic G F x)
         (associated_of_dvd_dvd hg2 <| @of_eval₂ G _ F _ _ _ x g this)
-    rwa [← one_mul (minpoly G F x), hg3, mul_left_inj' (monic G F x).NeZero] at hfg
+    rwa [← one_mul (minpoly G F x), hg3, mul_left_inj' (monic G F x).ne_zero] at hfg
 #align fixed_points.minpoly.irreducible_aux FixedPoints.minpoly.irreducible_aux
 
 theorem irreducible : Irreducible (minpoly G F x) :=
