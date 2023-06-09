@@ -32,9 +32,7 @@ noncomputable section
 
 open Classical
 
-open BigOperators
-
-open Fintype
+open BigOperators Fintype PiNotation
 
 variable (M : Type _) [Mul M]
 
@@ -55,8 +53,6 @@ theorem commProb_prod (M' : Type _) [Mul M'] : commProb (M × M') = commProb M *
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-open PiNotation
-
 theorem commProb_pi (i : α → Type _) [Fintype α] [Π a, Group (i a)] :
     commProb (Π a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
@@ -67,6 +63,8 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [Π a, Group (i a)] :
 
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
   div_eq_zero_iff.2 (Or.inr (sq_eq_zero_iff.2 (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite)))
+
+section Finite
 
 variable [Finite M]
 
@@ -94,11 +92,17 @@ theorem commProb_eq_one_iff [h : Nonempty M] :
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
-variable (G : Type _) [Group G] [Finite G]
+end Finite
+
+variable (G : Type _) [Group G]
+
+instance [Infinite G] : Infinite { p : G × G // p.1 * p.2 = p.2 * p.1 } :=
+  Infinite.of_injective (fun g => ⟨⟨g, g⟩, rfl⟩) (fun _ _ => by simp only [Subtype.mk.injEq, Prod.mk.injEq,
+    and_self, imp_self])
 
 theorem card_comm_eq_card_conjClasses_mul_card :
     Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
-  haveI := Fintype.ofFinite G
+  rcases fintypeOrInfinite G
   simp only [Nat.card_eq_fintype_card]
   -- Porting note: Changed `calc` proof into a `rw` proof.
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G ↦ g * h = h * g), card_sigma,
@@ -109,15 +113,18 @@ theorem card_comm_eq_card_conjClasses_mul_card :
     (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
       MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
     @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
+  rw [Nat.card_eq_zero_of_infinite, @Nat.card_eq_zero_of_infinite G, mul_zero]
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
 theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
-  exact mul_div_mul_right _ _ (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
+  by_cases (Nat.card G : ℚ) = 0
+  . rw [h, zero_mul, div_zero, div_zero]
+  . exact mul_div_mul_right _ _ h
 #align comm_prob_def' commProb_def'
 
 -- porting note: inserted [Group G]
-variable {G} [Group G] (H : Subgroup G)
+variable {G} [Group G] [Finite G] (H : Subgroup G)
 
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
@@ -188,8 +195,20 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
   . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
     rfl
 
-lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n)  :
-  commProb (DihedralGroup n) = (n + 3) / (4 * n) := sorry
+lemma card_conjClases_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
+    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 :=
+sorry
+
+-- todo: compute conjugacy classes of dihedral group by counting commuting pairs
+lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
+    commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
+  have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
+  have : NeZero n := ⟨hn'⟩
+  rw [commProb_def']
+  rw [Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, DihedralGroup.card]
+  field_simp [hn']
+  sorry
 
 namespace DihedralGroup
 
