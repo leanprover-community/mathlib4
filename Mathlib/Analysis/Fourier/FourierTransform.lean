@@ -95,8 +95,8 @@ theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Mea
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
-    (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) : ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ :=
-  by
+    (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) :
+    ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ := by
   refine' (norm_integral_le_integral_norm _).trans (le_of_eq _)
   simp_rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
@@ -104,8 +104,8 @@ theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊
 /-- The Fourier integral converts right-translation into scalar multiplication by a phase factor.-/
 theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
-    fourierIntegral e μ L (f ∘ fun v => v + v₀) = fun w => e[L v₀ w] • fourierIntegral e μ L f w :=
-  by
+    fourierIntegral e μ L (f ∘ fun v => v + v₀) =
+      fun w => e[L v₀ w] • fourierIntegral e μ L f w := by
   ext1 w
   dsimp only [fourierIntegral, Function.comp_apply]
   conv in L _ => rw [← add_sub_cancel v v₀]
