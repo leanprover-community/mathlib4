@@ -8,10 +8,10 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.FiniteDimension
-import Mathbin.Analysis.Calculus.AffineMap
-import Mathbin.Analysis.Convex.Combination
-import Mathbin.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Calculus.AffineMap
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
@@ -68,8 +68,7 @@ TODO Restate this result for affine spaces (instead of vector spaces) once the d
 convexity is generalised to this setting. -/
 theorem AffineBasis.interior_convexHull {ι E : Type _} [Finite ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : AffineBasis ι ℝ E) :
-    interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.Coord i x} :=
-  by
+    interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.Coord i x} := by
   cases subsingleton_or_nontrivial ι
   · -- The zero-dimensional case.
     have : range b = univ :=
@@ -98,8 +97,7 @@ open AffineMap
 an affine basis, all of whose elements belong to `u`. -/
 theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : IsOpen u)
     (hsu : s ⊆ u) (hne : s.Nonempty) (h : AffineIndependent ℝ (coe : s → P)) :
-    ∃ t : Set P, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ (coe : t → P) ∧ affineSpan ℝ t = ⊤ :=
-  by
+    ∃ t : Set P, s ⊆ t ∧ t ⊆ u ∧ AffineIndependent ℝ (coe : t → P) ∧ affineSpan ℝ t = ⊤ := by
   obtain ⟨q, hq⟩ := hne
   obtain ⟨ε, ε0, hεu⟩ := metric.nhds_basis_closed_ball.mem_iff.1 (hu.mem_nhds <| hsu hq)
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_subset_affineIndependent_affineSpan_eq_top h
@@ -128,8 +126,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
 /- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (s «expr ⊆ » u) -/
 theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsOpen u)
     (hne : u.Nonempty) :
-    ∃ (s : _) (_ : s ⊆ u), AffineIndependent ℝ (coe : s → P) ∧ affineSpan ℝ s = ⊤ :=
-  by
+    ∃ (s : _) (_ : s ⊆ u), AffineIndependent ℝ (coe : s → P) ∧ affineSpan ℝ s = ⊤ := by
   rcases hne with ⟨x, hx⟩
   rcases hu.exists_between_affine_independent_span_eq_top (singleton_subset_iff.mpr hx)
       (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with
@@ -152,20 +149,17 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 #align affine_span_eq_top_of_nonempty_interior affineSpan_eq_top_of_nonempty_interior
 
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
-    Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) :=
-  by
+    Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
   haveI := b.nonempty
   simp only [b.interior_convex_hull, mem_set_of_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 #align affine_basis.centroid_mem_interior_convex_hull AffineBasis.centroid_mem_interior_convexHull
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
-    (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ :=
-  by
+    (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ := by
   refine' ⟨affineSpan_eq_top_of_nonempty_interior, fun h => _⟩
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
-  suffices (interior (convexHull ℝ (range b))).Nonempty
-    by
+  suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, set_of_mem_eq] at this 
     refine' this.mono _
     mono*
