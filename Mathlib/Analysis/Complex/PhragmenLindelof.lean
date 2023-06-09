@@ -47,12 +47,11 @@ useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial
 real plane has only finitely many limit cycles).
 -/
 
-
 open Set Function Filter Asymptotics Metric Complex
-
 open scoped Topology Filter Real
 
 local notation "expR" => Real.exp
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 namespace PhragmenLindelof
 
@@ -821,7 +820,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     simpa only [closure_setOf_lt_re] using
       EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.
-  set g : ℕ → ℂ → E := fun n z => exp z ^ n • f z
+  set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
     simp only [norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
   intro z hz
@@ -836,19 +835,20 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   refine' right_half_plane_of_tendsto_zero_on_real ((differentiable_exp.pow n).diffContOnCl.smul hd)
     _ _ (fun y => _) hz.le
   · rcases hexp with ⟨c, hc, B, hO⟩
-    refine' ⟨max c 1, max_lt hc one_lt_two, n + max B 0, is_O.of_norm_left _⟩
+    refine' ⟨max c 1, max_lt hc one_lt_two, n + max B 0, .of_norm_left _⟩
     simp only [hg]
-    refine' ((is_O_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (is_O.of_bound 1 _)
+    refine' ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound 1 _)
     simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_of_nonneg (Real.exp_pos _).le,
       Real.exp_le_exp, add_mul, eventually_inf_principal, eventually_comap, one_mul]
-    filter_upwards [eventually_ge_atTop (1 : ℝ)] with r hr z hzr hre; subst r
+    -- porting note: todo: `0 < z.re` is not used; where do we use it?
+    filter_upwards [eventually_ge_atTop (1 : ℝ)] with r hr z hzr _; subst r
     refine' add_le_add (mul_le_mul_of_nonneg_left _ n.cast_nonneg) _
     · calc
         z.re ≤ abs z := re_le_abs _
         _ = abs z ^ (1 : ℝ) := (Real.rpow_one _).symm
         _ ≤ abs z ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hr (le_max_right _ _)
     · exact mul_le_mul (le_max_left _ _) (Real.rpow_le_rpow_of_exponent_le hr (le_max_left _ _))
-        (Real.rpow_nonneg_of_nonneg (complex.abs.nonneg _) _) (le_max_right _ _)
+        (Real.rpow_nonneg_of_nonneg (Complex.abs.nonneg _) _) (le_max_right _ _)
   · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
     exact hre n
   · rw [hg, ofReal_mul_re, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
@@ -887,14 +887,13 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
       by
       rcases hfexp with ⟨cf, hcf, Bf, hOf⟩; rcases hgexp with ⟨cg, hcg, Bg, hOg⟩
       refine' ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), _⟩
-      refine' is_O.sub (hOf.trans <| this _ _ _) (hOg.trans <| this _ _ _) <;> simp
+      refine' .sub (hOf.trans <| this _ _ _) (hOg.trans <| this _ _ _) <;> simp
     intro c₁ c₂ B₁ B₂ hc hB hB₂
     have : ∀ᶠ z : ℂ in l, 1 ≤ abs z := ((eventually_ge_atTop 1).comap _).filter_mono inf_le_left
-    refine' is_O.of_bound 1 (this.mono fun z hz => _)
+    refine' .of_bound 1 (this.mono fun z hz => _)
     simp only [Real.norm_of_nonneg (Real.exp_pos _).le, Real.exp_le_exp, one_mul]
-    exact
-      mul_le_mul hB (Real.rpow_le_rpow_of_exponent_le hz hc)
-        (Real.rpow_nonneg_of_nonneg (complex.abs.nonneg _) _) hB₂
+    have := Real.rpow_le_rpow_of_exponent_le hz hc
+    gcongr
   · rcases hfim with ⟨Cf, hCf⟩; rcases hgim with ⟨Cg, hCg⟩
     exact ⟨Cf + Cg, fun x => norm_sub_le_of_le (hCf x) (hCg x)⟩
 #align phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay
