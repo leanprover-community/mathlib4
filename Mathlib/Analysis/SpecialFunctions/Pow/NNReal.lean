@@ -279,6 +279,26 @@ theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
   rw [← NNReal.coe_rpow, Real.toNNReal_coe]
 #align real.to_nnreal_rpow_of_nonneg Real.toNNReal_rpow_of_nonneg
 
+theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 => x ^ z :=
+  fun x y hxy => by simp only [NNReal.rpow_lt_rpow hxy h, coe_lt_coe]
+
+theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 => x ^ z :=
+  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+    (strictMono_rpow_of_pos h0).monotone
+
+/-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
+@[simps! apply]
+def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
+    fun x => by
+    dsimp
+    rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
+
+theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
+    (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
+  simp only [orderIsoRpow, one_div_one_div]; rfl
+
 end NNReal
 
 namespace ENNReal
