@@ -1207,7 +1207,7 @@ def prod.functor : C ⥤ C ⥤ C where
 /-- The product functor can be decomposed. -/
 def prod.functorLeftComp (X Y : C) :
     prod.functor.obj (X ⨯ Y) ≅ prod.functor.obj Y ⋙ prod.functor.obj X :=
-  NatIso.ofComponents (prod.associator _ _) (by aesop_cat)
+  NatIso.ofComponents (prod.associator _ _)
 #align category_theory.limits.prod.functor_left_comp CategoryTheory.Limits.prod.functorLeftComp
 
 end ProdFunctor
@@ -1229,7 +1229,7 @@ def coprod.functor : C ⥤ C ⥤ C where
 /-- The coproduct functor can be decomposed. -/
 def coprod.functorLeftComp (X Y : C) :
     coprod.functor.obj (X ⨿ Y) ≅ coprod.functor.obj Y ⋙ coprod.functor.obj X :=
-  NatIso.ofComponents (coprod.associator _ _) (by aesop_cat)
+  NatIso.ofComponents (coprod.associator _ _)
 #align category_theory.limits.coprod.functor_left_comp CategoryTheory.Limits.coprod.functorLeftComp
 
 end CoprodFunctor
