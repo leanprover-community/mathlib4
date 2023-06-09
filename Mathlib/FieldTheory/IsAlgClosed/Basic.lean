@@ -307,7 +307,6 @@ set_option synthInstance.maxHeartbeats 400000
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
-  let p := minpoly K x
   let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
   letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
   letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
@@ -329,8 +328,10 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
   have hO' : maximalSubfieldWithHom K L M ≤ O' := by
     refine' ⟨hNO, _⟩
     intro z
-    show O'.emb (@algebraMap N O _ _ (Subalgebra.algebra O) z) = algebraMap N M z
-    simp only [restrictScalars_apply, AlgHom.commutes]
+    -- Porting note: have to help Lean unfold even more here
+    show Algebra.adjoin.liftSingleton N x y hy (@algebraMap N O _ _ (Subalgebra.algebra O) z) =
+        algebraMap N M z
+    exact AlgHom.commutes _ _
   refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
   show x ∈ Algebra.adjoin N {(x : L)}
   exact Algebra.subset_adjoin (Set.mem_singleton x)
