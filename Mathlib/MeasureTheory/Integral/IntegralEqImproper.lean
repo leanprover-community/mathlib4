@@ -129,17 +129,17 @@ section Preorderα
 variable [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} (ha : Tendsto a l atBot) (hb : Tendsto b l atTop)
 
-theorem aeCover_Ici : AECover μ l fun i => Ici (a i) where
+theorem aecover_Ici : AECover μ l fun i => Ici (a i) where
   ae_eventually_mem := ae_of_all μ ha.eventually_le_atBot
   measurableSet _ := measurableSet_Ici
-#align measure_theory.ae_cover_Ici MeasureTheory.aeCover_Ici
+#align measure_theory.ae_cover_Ici MeasureTheory.aecover_Ici
 
-theorem aeCover_Iic : AECover μ l fun i => Iic <| b i := aeCover_Ici (α := αᵒᵈ) hb
-#align measure_theory.ae_cover_Iic MeasureTheory.aeCover_Iic
+theorem aecover_Iic : AECover μ l fun i => Iic <| b i := aecover_Ici (α := αᵒᵈ) hb
+#align measure_theory.ae_cover_Iic MeasureTheory.aecover_Iic
 
-theorem aeCover_Icc : AECover μ l fun i => Icc (a i) (b i) :=
-  (aeCover_Ici ha).inter (aeCover_Iic hb)
-#align measure_theory.ae_cover_Icc MeasureTheory.aeCover_Icc
+theorem aecover_Icc : AECover μ l fun i => Icc (a i) (b i) :=
+  (aecover_Ici ha).inter (aecover_Iic hb)
+#align measure_theory.ae_cover_Icc MeasureTheory.aecover_Icc
 
 end Preorderα
 
@@ -148,25 +148,25 @@ section LinearOrderα
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} (ha : Tendsto a l atBot) (hb : Tendsto b l atTop)
 
-theorem aeCover_Ioi [NoMinOrder α] : AECover μ l fun i => Ioi (a i) where
+theorem aecover_Ioi [NoMinOrder α] : AECover μ l fun i => Ioi (a i) where
   ae_eventually_mem := ae_of_all μ ha.eventually_lt_atBot
   measurableSet _ := measurableSet_Ioi
-#align measure_theory.ae_cover_Ioi MeasureTheory.aeCover_Ioi
+#align measure_theory.ae_cover_Ioi MeasureTheory.aecover_Ioi
 
-theorem aeCover_Iio [NoMaxOrder α] : AECover μ l fun i => Iio (b i) := aeCover_Ioi (α := αᵒᵈ) hb
-#align measure_theory.ae_cover_Iio MeasureTheory.aeCover_Iio
+theorem aecover_Iio [NoMaxOrder α] : AECover μ l fun i => Iio (b i) := aecover_Ioi (α := αᵒᵈ) hb
+#align measure_theory.ae_cover_Iio MeasureTheory.aecover_Iio
 
-theorem aeCover_Ioo [NoMinOrder α] [NoMaxOrder α] : AECover μ l fun i => Ioo (a i) (b i) :=
-  (aeCover_Ioi ha).inter (aeCover_Iio hb)
-#align measure_theory.ae_cover_Ioo MeasureTheory.aeCover_Ioo
+theorem aecover_Ioo [NoMinOrder α] [NoMaxOrder α] : AECover μ l fun i => Ioo (a i) (b i) :=
+  (aecover_Ioi ha).inter (aecover_Iio hb)
+#align measure_theory.ae_cover_Ioo MeasureTheory.aecover_Ioo
 
-theorem aeCover_Ioc [NoMinOrder α] : AECover μ l fun i => Ioc (a i) (b i) :=
-  (aeCover_Ioi ha).inter (aeCover_Iic hb)
-#align measure_theory.ae_cover_Ioc MeasureTheory.aeCover_Ioc
+theorem aecover_Ioc [NoMinOrder α] : AECover μ l fun i => Ioc (a i) (b i) :=
+  (aecover_Ioi ha).inter (aecover_Iic hb)
+#align measure_theory.ae_cover_Ioc MeasureTheory.aecover_Ioc
 
-theorem aeCover_Ico [NoMaxOrder α] : AECover μ l fun i => Ico (a i) (b i) :=
-  (aeCover_Ici ha).inter (aeCover_Iio hb)
-#align measure_theory.ae_cover_Ico MeasureTheory.aeCover_Ico
+theorem aecover_Ico [NoMaxOrder α] : AECover μ l fun i => Ico (a i) (b i) :=
+  (aecover_Ici ha).inter (aecover_Iio hb)
+#align measure_theory.ae_cover_Ico MeasureTheory.aecover_Ico
 
 end LinearOrderα
 
@@ -176,101 +176,101 @@ variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensM
   {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
 
 -- porting note: new lemma
-theorem aeCover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
+theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
   ae_eventually_mem := (ae_restrict_mem measurableSet_Ioi).mono fun _x hx ↦ ha.eventually <|
     eventually_lt_nhds hx
   measurableSet _ := measurableSet_Ioi
 
 -- porting note: new lemma
-theorem aeCover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
-  aeCover_Ioi_of_Ioi (α := αᵒᵈ) hb
+theorem aecover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
+  aecover_Ioi_of_Ioi (α := αᵒᵈ) hb
 
 -- porting note: new lemma
-theorem aeCover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
-  (aeCover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
+theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
+  (aecover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
 
 -- porting note: new lemma
-theorem aeCover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
-  aeCover_Ioi_of_Ici (α := αᵒᵈ) hb
+theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
+  aecover_Ioi_of_Ici (α := αᵒᵈ) hb
 
-theorem aeCover_Ioo_of_Ioo : AECover (μ.restrict <| Ioo A B) l fun i => Ioo (a i) (b i) :=
-  ((aeCover_Ioi_of_Ioi ha).mono <| Measure.restrict_mono Ioo_subset_Ioi_self le_rfl).inter
-    ((aeCover_Iio_of_Iio hb).mono <| Measure.restrict_mono Ioo_subset_Iio_self le_rfl)
-#align measure_theory.ae_cover_Ioo_of_Ioo MeasureTheory.aeCover_Ioo_of_Ioo
+theorem aecover_Ioo_of_Ioo : AECover (μ.restrict <| Ioo A B) l fun i => Ioo (a i) (b i) :=
+  ((aecover_Ioi_of_Ioi ha).mono <| Measure.restrict_mono Ioo_subset_Ioi_self le_rfl).inter
+    ((aecover_Iio_of_Iio hb).mono <| Measure.restrict_mono Ioo_subset_Iio_self le_rfl)
+#align measure_theory.ae_cover_Ioo_of_Ioo MeasureTheory.aecover_Ioo_of_Ioo
 
-theorem aeCover_Ioo_of_Icc : AECover (μ.restrict <| Ioo A B) l fun i => Icc (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Icc_self) fun _ ↦ measurableSet_Icc
-#align measure_theory.ae_cover_Ioo_of_Icc MeasureTheory.aeCover_Ioo_of_Icc
+theorem aecover_Ioo_of_Icc : AECover (μ.restrict <| Ioo A B) l fun i => Icc (a i) (b i) :=
+  (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Icc_self) fun _ ↦ measurableSet_Icc
+#align measure_theory.ae_cover_Ioo_of_Icc MeasureTheory.aecover_Ioo_of_Icc
 
-theorem aeCover_Ioo_of_Ico : AECover (μ.restrict <| Ioo A B) l fun i => Ico (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ico_self) fun _ ↦ measurableSet_Ico
-#align measure_theory.ae_cover_Ioo_of_Ico MeasureTheory.aeCover_Ioo_of_Ico
+theorem aecover_Ioo_of_Ico : AECover (μ.restrict <| Ioo A B) l fun i => Ico (a i) (b i) :=
+  (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ico_self) fun _ ↦ measurableSet_Ico
+#align measure_theory.ae_cover_Ioo_of_Ico MeasureTheory.aecover_Ioo_of_Ico
 
-theorem aeCover_Ioo_of_Ioc : AECover (μ.restrict <| Ioo A B) l fun i => Ioc (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ioc_self) fun _ ↦ measurableSet_Ioc
-#align measure_theory.ae_cover_Ioo_of_Ioc MeasureTheory.aeCover_Ioo_of_Ioc
+theorem aecover_Ioo_of_Ioc : AECover (μ.restrict <| Ioo A B) l fun i => Ioc (a i) (b i) :=
+  (aecover_Ioo_of_Ioo ha hb).superset (fun _ ↦ Ioo_subset_Ioc_self) fun _ ↦ measurableSet_Ioc
+#align measure_theory.ae_cover_Ioo_of_Ioc MeasureTheory.aecover_Ioo_of_Ioc
 
 variable [NoAtoms μ]
 
-theorem aeCover_Ioc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ioc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Icc (a i) (b i) :=
-  (aeCover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
-#align measure_theory.ae_cover_Ioc_of_Icc MeasureTheory.aeCover_Ioc_of_Icc
+  (aecover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
+#align measure_theory.ae_cover_Ioc_of_Icc MeasureTheory.aecover_Ioc_of_Icc
 
-theorem aeCover_Ioc_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ioc_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Ico (a i) (b i) :=
-  (aeCover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
-#align measure_theory.ae_cover_Ioc_of_Ico MeasureTheory.aeCover_Ioc_of_Ico
+  (aecover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
+#align measure_theory.ae_cover_Ioc_of_Ico MeasureTheory.aecover_Ioc_of_Ico
 
-theorem aeCover_Ioc_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ioc_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Ioc (a i) (b i) :=
-  (aeCover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
-#align measure_theory.ae_cover_Ioc_of_Ioc MeasureTheory.aeCover_Ioc_of_Ioc
+  (aecover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
+#align measure_theory.ae_cover_Ioc_of_Ioc MeasureTheory.aecover_Ioc_of_Ioc
 
-theorem aeCover_Ioc_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ioc_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ioc A B) l fun i => Ioo (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
-#align measure_theory.ae_cover_Ioc_of_Ioo MeasureTheory.aeCover_Ioc_of_Ioo
+  (aecover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ioc).ge
+#align measure_theory.ae_cover_Ioc_of_Ioo MeasureTheory.aecover_Ioc_of_Ioo
 
-theorem aeCover_Ico_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ico_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ico A B) l fun i => Icc (a i) (b i) :=
-  (aeCover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
-#align measure_theory.ae_cover_Ico_of_Icc MeasureTheory.aeCover_Ico_of_Icc
+  (aecover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
+#align measure_theory.ae_cover_Ico_of_Icc MeasureTheory.aecover_Ico_of_Icc
 
-theorem aeCover_Ico_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ico_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ico A B) l fun i => Ico (a i) (b i) :=
-  (aeCover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
-#align measure_theory.ae_cover_Ico_of_Ico MeasureTheory.aeCover_Ico_of_Ico
+  (aecover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
+#align measure_theory.ae_cover_Ico_of_Ico MeasureTheory.aecover_Ico_of_Ico
 
-theorem aeCover_Ico_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ico_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ico A B) l fun i => Ioc (a i) (b i) :=
-  (aeCover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
-#align measure_theory.ae_cover_Ico_of_Ioc MeasureTheory.aeCover_Ico_of_Ioc
+  (aecover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
+#align measure_theory.ae_cover_Ico_of_Ioc MeasureTheory.aecover_Ico_of_Ioc
 
-theorem aeCover_Ico_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Ico_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Ico A B) l fun i => Ioo (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
-#align measure_theory.ae_cover_Ico_of_Ioo MeasureTheory.aeCover_Ico_of_Ioo
+  (aecover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Ico).ge
+#align measure_theory.ae_cover_Ico_of_Ioo MeasureTheory.aecover_Ico_of_Ioo
 
-theorem aeCover_Icc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Icc_of_Icc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Icc A B) l fun i => Icc (a i) (b i) :=
-  (aeCover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
-#align measure_theory.ae_cover_Icc_of_Icc MeasureTheory.aeCover_Icc_of_Icc
+  (aecover_Ioo_of_Icc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
+#align measure_theory.ae_cover_Icc_of_Icc MeasureTheory.aecover_Icc_of_Icc
 
-theorem aeCover_Icc_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Icc_of_Ico (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Icc A B) l fun i => Ico (a i) (b i) :=
-  (aeCover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
-#align measure_theory.ae_cover_Icc_of_Ico MeasureTheory.aeCover_Icc_of_Ico
+  (aecover_Ioo_of_Ico ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
+#align measure_theory.ae_cover_Icc_of_Ico MeasureTheory.aecover_Icc_of_Ico
 
-theorem aeCover_Icc_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Icc_of_Ioc (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Icc A B) l fun i => Ioc (a i) (b i) :=
-  (aeCover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
-#align measure_theory.ae_cover_Icc_of_Ioc MeasureTheory.aeCover_Icc_of_Ioc
+  (aecover_Ioo_of_Ioc ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
+#align measure_theory.ae_cover_Icc_of_Ioc MeasureTheory.aecover_Icc_of_Ioc
 
-theorem aeCover_Icc_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
+theorem aecover_Icc_of_Ioo (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B)) :
     AECover (μ.restrict <| Icc A B) l fun i => Ioo (a i) (b i) :=
-  (aeCover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
-#align measure_theory.ae_cover_Icc_of_Ioo MeasureTheory.aeCover_Icc_of_Ioo
+  (aecover_Ioo_of_Ioo ha hb).mono (Measure.restrict_congr_set Ioo_ae_eq_Icc).ge
+#align measure_theory.ae_cover_Icc_of_Ioo MeasureTheory.aecover_Icc_of_Ioo
 
 end FiniteIntervals
 
@@ -279,16 +279,16 @@ protected theorem AECover.restrict {φ : ι → Set α} (hφ : AECover μ l φ) 
   hφ.mono Measure.restrict_le_self
 #align measure_theory.ae_cover.restrict MeasureTheory.AECover.restrict
 
-theorem aeCover_restrict_of_ae_imp {s : Set α} {φ : ι → Set α} (hs : MeasurableSet s)
+theorem aecover_restrict_of_ae_imp {s : Set α} {φ : ι → Set α} (hs : MeasurableSet s)
     (ae_eventually_mem : ∀ᵐ x ∂μ, x ∈ s → ∀ᶠ n in l, x ∈ φ n)
     (measurable : ∀ n, MeasurableSet <| φ n) : AECover (μ.restrict s) l φ where
   ae_eventually_mem := by rwa [ae_restrict_iff' hs]
   measurableSet := measurable
-#align measure_theory.ae_cover_restrict_of_ae_imp MeasureTheory.aeCover_restrict_of_ae_imp
+#align measure_theory.ae_cover_restrict_of_ae_imp MeasureTheory.aecover_restrict_of_ae_imp
 
 theorem AECover.inter_restrict {φ : ι → Set α} (hφ : AECover μ l φ) {s : Set α}
     (hs : MeasurableSet s) : AECover (μ.restrict s) l fun i => φ i ∩ s :=
-  aeCover_restrict_of_ae_imp hs
+  aecover_restrict_of_ae_imp hs
     (hφ.ae_eventually_mem.mono fun _x hx hxs => hx.mono fun _i hi => ⟨hi, hxs⟩) fun i =>
     (hφ.measurableSet i).inter hs
 #align measure_theory.ae_cover.inter_restrict MeasureTheory.AECover.inter_restrict
@@ -332,22 +332,18 @@ section AECoverUnionInterCountable
 
 variable {α ι : Type _} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 
-theorem AECover.biUnion_Iic_aeCover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
+theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
   hφ.superset (fun _ ↦ subset_biUnion_of_mem right_mem_Iic) fun _ ↦ .biUnion (to_countable _)
     fun _ _ ↦ (hφ.2 _)
-#align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.biUnion_Iic_aeCover
+#align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.biUnion_Iic_aecover
 
-theorem AECover.bInter_Ici_aeCover [SemilatticeSup ι] [Nonempty ι] {φ : ι → Set α}
+theorem AECover.biInter_Ici_aecover [SemilatticeSup ι] [Nonempty ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
   ae_eventually_mem := hφ.ae_eventually_mem.mono <| fun x h ↦ by
-    rw [eventually_atTop] at *
-    rcases h with ⟨i, hi⟩
-    use i
-    intro j hj
-    exact mem_biInter fun k hk => hi k (le_trans hj hk)
+    simpa only [mem_iInter, mem_Ici, eventually_forall_ge_atTop]
   measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
-#align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.bInter_Ici_aeCover
+#align measure_theory.ae_cover.bInter_Ici_ae_cover MeasureTheory.AECover.biInter_Ici_aecover
 
 end AECoverUnionInterCountable
 
@@ -359,32 +355,28 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     (hmono : Monotone φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
     Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) :=
   let F n := (φ n).indicator f
-  have key₁ : ∀ n, AEMeasurable (F n) μ := fun n => hfm.indicator (hφ.Measurable n)
-  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x :=
-    ae_of_all _ fun x i j hij =>
-      indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
+  have key₁ : ∀ n, AEMeasurable (F n) μ := fun n => hfm.indicator (hφ.measurableSet n)
+  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij =>
+    indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
-    lintegral_indicator f (hφ.Measurable n)
+    lintegral_indicator f (hφ.measurableSet n)
 
 theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ atTop φ) {f : α → ℝ≥0∞}
-    (hfm : AEMeasurable f μ) : Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) :=
-  by
-  have lim₁ :=
-    lintegral_tendsto_of_monotone_of_nat hφ.bInter_Ici_ae_cover
-      (fun i j hij => bInter_subset_bInter_left (Ici_subset_Ici.mpr hij)) hfm
-  have lim₂ :=
-    lintegral_tendsto_of_monotone_of_nat hφ.bUnion_Iic_ae_cover
-      (fun i j hij => bUnion_subset_bUnion_left (Iic_subset_Iic.mpr hij)) hfm
-  have le₁ := fun n => lintegral_mono_set (bInter_subset_of_mem left_mem_Ici)
-  have le₂ := fun n => lintegral_mono_set (subset_bUnion_of_mem right_mem_Iic)
-  exact tendsto_of_tendsto_of_tendsto_of_le_of_le lim₁ lim₂ le₁ le₂
+    (hfm : AEMeasurable f μ) : Tendsto (∫⁻ x in φ ·, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) := by
+  have lim₁ := lintegral_tendsto_of_monotone_of_nat hφ.biInter_Ici_aecover
+    (fun i j hij => biInter_subset_biInter_left (Ici_subset_Ici.mpr hij)) hfm
+  have lim₂ := lintegral_tendsto_of_monotone_of_nat hφ.biUnion_Iic_aecover
+    (fun i j hij => biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hij)) hfm
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le lim₁ lim₂ (fun n ↦ ?_) fun n ↦ ?_
+  exacts [lintegral_mono_set (biInter_subset_of_mem left_mem_Ici),
+    lintegral_mono_set (subset_biUnion_of_mem right_mem_Iic)]
 #align measure_theory.ae_cover.lintegral_tendsto_of_nat MeasureTheory.AECover.lintegral_tendsto_of_nat
 
 theorem AECover.lintegral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
     Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) l (𝓝 <| ∫⁻ x, f x ∂μ) :=
-  tendsto_of_seq_tendsto fun u hu => (hφ.comp_tendsto hu).lintegral_tendsto_of_nat hfm
+  tendsto_of_seq_tendsto fun _u hu => (hφ.comp_tendsto hu).lintegral_tendsto_of_nat hfm
 #align measure_theory.ae_cover.lintegral_tendsto_of_countably_generated MeasureTheory.AECover.lintegral_tendsto_of_countably_generated
 
 theorem AECover.lintegral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
@@ -397,9 +389,8 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
     [l.IsCountablyGenerated] {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → ℝ≥0∞}
     (hfm : AEMeasurable f μ) : (⨆ i : ι, ∫⁻ x in φ i, f x ∂μ) = ∫⁻ x, f x ∂μ := by
   have := hφ.lintegral_tendsto_of_countably_generated hfm
-  refine'
-    ciSup_eq_of_forall_le_of_forall_lt_exists_gt
-      (fun i => lintegral_mono' measure.restrict_le_self le_rfl) fun w hw => _
+  refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt
+    (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => _
   rcases exists_between hw with ⟨m, hm₁, hm₂⟩
   rcases(eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
   exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
@@ -445,8 +436,8 @@ theorem AECover.integrable_of_lintegral_nnnorm_tendsto' [l.NeBot] [l.IsCountably
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
     (hbounded : ∀ᶠ i in l, (∫ x in φ i, ‖f x‖ ∂μ) ≤ I) : Integrable f μ := by
-  have hfm : ae_strongly_measurable f μ :=
-    hφ.ae_strongly_measurable fun i => (hfi i).aestronglyMeasurable
+  have hfm : AEStronglyMeasurable f μ :=
+    hφ.aestronglyMeasurable fun i => (hfi i).aestronglyMeasurable
   refine' hφ.integrable_of_lintegral_nnnorm_bounded I hfm _
   conv at hbounded in integral _ _ =>
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
@@ -470,9 +461,8 @@ theorem AECover.integrable_of_integral_norm_tendsto [l.NeBot] [l.IsCountablyGene
 theorem AECover.integrable_of_integral_bounded_of_nonneg_ae [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → ℝ} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
     (hnng : ∀ᵐ x ∂μ, 0 ≤ f x) (hbounded : ∀ᶠ i in l, (∫ x in φ i, f x ∂μ) ≤ I) : Integrable f μ :=
-  hφ.integrable_of_integral_norm_bounded I hfi <|
-    hbounded.mono fun i hi =>
-      (integral_congr_ae <| ae_restrict_of_ae <| hnng.mono fun x => Real.norm_of_nonneg).le.trans hi
+  hφ.integrable_of_integral_norm_bounded I hfi <| hbounded.mono fun _i hi =>
+    (integral_congr_ae <| ae_restrict_of_ae <| hnng.mono fun _ => Real.norm_of_nonneg).le.trans hi
 #align measure_theory.ae_cover.integrable_of_integral_bounded_of_nonneg_ae MeasureTheory.AECover.integrable_of_integral_bounded_of_nonneg_ae
 
 theorem AECover.integrable_of_integral_tendsto_of_nonneg_ae [l.NeBot] [l.IsCountablyGenerated]
@@ -494,9 +484,9 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
     Tendsto (fun i => ∫ x in φ i, f x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) :=
   suffices h : Tendsto (fun i => ∫ x : α, (φ i).indicator f x ∂μ) l (𝓝 (∫ x : α, f x ∂μ)) from by
-    convert h; ext n; rw [integral_indicator (hφ.measurable n)]
+    convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
-    (eventually_of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.Measurable i)
+    (eventually_of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
     (eventually_of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 #align measure_theory.ae_cover.integral_tendsto_of_countably_generated MeasureTheory.AECover.integral_tendsto_of_countably_generated
@@ -527,9 +517,9 @@ variable {ι E : Type _} {μ : Measure ℝ} {l : Filter ι} [Filter.NeBot l] [Is
 theorem integrable_of_intervalIntegral_norm_bounded (I : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc (a i) (b i)) μ) (ha : Tendsto a l atBot)
     (hb : Tendsto b l atTop) (h : ∀ᶠ i in l, (∫ x in a i..b i, ‖f x‖ ∂μ) ≤ I) : Integrable f μ := by
-  have hφ : ae_cover μ l _ := ae_cover_Ioc ha hb
+  have hφ : AECover μ l _ := aecover_Ioc ha hb
   refine' hφ.integrable_of_integral_norm_bounded I hfi (h.mp _)
-  filter_upwards [ha.eventually (eventually_le_at_bot 0),
+  filter_upwards [ha.eventually (eventually_le_atBot 0),
     hb.eventually (eventually_ge_atTop 0)] with i hai hbi ht
   rwa [← intervalIntegral.integral_of_le (hai.trans hbi)]
 #align measure_theory.integrable_of_interval_integral_norm_bounded MeasureTheory.integrable_of_intervalIntegral_norm_bounded
@@ -549,14 +539,14 @@ theorem integrable_of_intervalIntegral_norm_tendsto (I : ℝ)
 theorem integrableOn_Iic_of_intervalIntegral_norm_bounded (I b : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc (a i) b) μ) (ha : Tendsto a l atBot)
     (h : ∀ᶠ i in l, (∫ x in a i..b, ‖f x‖ ∂μ) ≤ I) : IntegrableOn f (Iic b) μ := by
-  have hφ : ae_cover (μ.restrict <| Iic b) l _ := ae_cover_Ioi ha
+  have hφ : AECover (μ.restrict <| Iic b) l _ := aecover_Ioi ha
   have hfi : ∀ i, IntegrableOn f (Ioi (a i)) (μ.restrict <| Iic b) := by
     intro i
-    rw [IntegrableOn, measure.restrict_restrict (hφ.measurable i)]
+    rw [IntegrableOn, Measure.restrict_restrict (hφ.measurableSet i)]
     exact hfi i
   refine' hφ.integrable_of_integral_norm_bounded I hfi (h.mp _)
-  filter_upwards [ha.eventually (eventually_le_at_bot b)] with i hai
-  rw [intervalIntegral.integral_of_le hai, measure.restrict_restrict (hφ.measurable i)]
+  filter_upwards [ha.eventually (eventually_le_atBot b)] with i hai
+  rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   exact id
 #align measure_theory.integrable_on_Iic_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_bounded
 
@@ -574,14 +564,14 @@ theorem integrableOn_Iic_of_intervalIntegral_norm_tendsto (I b : ℝ)
 theorem integrableOn_Ioi_of_intervalIntegral_norm_bounded (I a : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc a (b i)) μ) (hb : Tendsto b l atTop)
     (h : ∀ᶠ i in l, (∫ x in a..b i, ‖f x‖ ∂μ) ≤ I) : IntegrableOn f (Ioi a) μ := by
-  have hφ : ae_cover (μ.restrict <| Ioi a) l _ := ae_cover_Iic hb
+  have hφ : AECover (μ.restrict <| Ioi a) l _ := aecover_Iic hb
   have hfi : ∀ i, IntegrableOn f (Iic (b i)) (μ.restrict <| Ioi a) := by
     intro i
-    rw [IntegrableOn, measure.restrict_restrict (hφ.measurable i), inter_comm]
+    rw [IntegrableOn, Measure.restrict_restrict (hφ.measurableSet i), inter_comm]
     exact hfi i
   refine' hφ.integrable_of_integral_norm_bounded I hfi (h.mp _)
   filter_upwards [hb.eventually (eventually_ge_atTop a)] with i hbi
-  rw [intervalIntegral.integral_of_le hbi, measure.restrict_restrict (hφ.measurable i), inter_comm]
+  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i), inter_comm]
   exact id
 #align measure_theory.integrable_on_Ioi_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioi_of_intervalIntegral_norm_bounded
 
@@ -600,13 +590,12 @@ theorem integrableOn_Ioc_of_interval_integral_norm_bounded {I a₀ b₀ : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) (b i)) (ha : Tendsto a l <| 𝓝 a₀)
     (hb : Tendsto b l <| 𝓝 b₀) (h : ∀ᶠ i in l, (∫ x in Ioc (a i) (b i), ‖f x‖) ≤ I) :
     IntegrableOn f (Ioc a₀ b₀) := by
-  refine'
-    (ae_cover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
-      (fun i => (hfi i).restrict measurableSet_Ioc) (eventually.mono h _)
-  intro i hi; simp only [measure.restrict_restrict measurableSet_Ioc]
-  refine' le_trans (set_integral_mono_set (hfi i).norm _ _) hi
-  · apply ae_of_all; simp only [Pi.zero_apply, norm_nonneg, forall_const]
-  · apply ae_of_all; intro c hc; exact hc.1
+  refine (aecover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
+    (fun i => (hfi i).restrict measurableSet_Ioc) (h.mono fun i hi ↦ ?_)
+  rw [Measure.restrict_restrict measurableSet_Ioc]
+  refine' le_trans (set_integral_mono_set (hfi i).norm _ _) hi <;> apply ae_of_all
+  · simp only [Pi.zero_apply, norm_nonneg, forall_const]
+  · intro c hc; exact hc.1
 #align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioc_of_interval_integral_norm_bounded
 
 theorem integrableOn_Ioc_of_interval_integral_norm_bounded_left {I a₀ b : ℝ}
@@ -631,9 +620,9 @@ variable {ι E : Type _} {μ : Measure ℝ} {l : Filter ι} [IsCountablyGenerate
 theorem intervalIntegral_tendsto_integral (hfi : Integrable f μ) (ha : Tendsto a l atBot)
     (hb : Tendsto b l atTop) : Tendsto (fun i => ∫ x in a i..b i, f x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) := by
   let φ i := Ioc (a i) (b i)
-  have hφ : ae_cover μ l φ := ae_cover_Ioc ha hb
+  have hφ : AECover μ l φ := aecover_Ioc ha hb
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
-  filter_upwards [ha.eventually (eventually_le_at_bot 0),
+  filter_upwards [ha.eventually (eventually_le_atBot 0),
     hb.eventually (eventually_ge_atTop 0)] with i hai hbi
   exact (intervalIntegral.integral_of_le (hai.trans hbi)).symm
 #align measure_theory.interval_integral_tendsto_integral MeasureTheory.intervalIntegral_tendsto_integral
@@ -642,10 +631,10 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
     (ha : Tendsto a l atBot) :
     Tendsto (fun i => ∫ x in a i..b, f x ∂μ) l (𝓝 <| ∫ x in Iic b, f x ∂μ) := by
   let φ i := Ioi (a i)
-  have hφ : ae_cover (μ.restrict <| Iic b) l φ := ae_cover_Ioi ha
+  have hφ : AECover (μ.restrict <| Iic b) l φ := aecover_Ioi ha
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
-  filter_upwards [ha.eventually (eventually_le_at_bot <| b)] with i hai
-  rw [intervalIntegral.integral_of_le hai, measure.restrict_restrict (hφ.measurable i)]
+  filter_upwards [ha.eventually (eventually_le_atBot <| b)] with i hai
+  rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 #align measure_theory.interval_integral_tendsto_integral_Iic MeasureTheory.intervalIntegral_tendsto_integral_Iic
 
@@ -653,10 +642,10 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
     (hb : Tendsto b l atTop) :
     Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
   let φ i := Iic (b i)
-  have hφ : ae_cover (μ.restrict <| Ioi a) l φ := ae_cover_Iic hb
+  have hφ : AECover (μ.restrict <| Ioi a) l φ := aecover_Iic hb
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
   filter_upwards [hb.eventually (eventually_ge_atTop <| a)] with i hbi
-  rw [intervalIntegral.integral_of_le hbi, measure.restrict_restrict (hφ.measurable i), inter_comm]
+  rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i), inter_comm]
   rfl
 #align measure_theory.interval_integral_tendsto_integral_Ioi MeasureTheory.intervalIntegral_tendsto_integral_Ioi
 
@@ -697,8 +686,7 @@ on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     (∫ x in Ioi a, f' x) = m - f a := by
-  apply integral_Ioi_ofhasDerivAt_of_tendsto _ (fun x hx => hderiv x (le_of_lt hx)) f'int hf
-  intro x hx
+  refine integral_Ioi_of_hasDerivAt_of_tendsto (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le) f'int hf
   exact (hderiv x hx).continuousAt.continuousWithinAt
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto' MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto'
 
@@ -708,32 +696,26 @@ on `(a, +∞)` and continuity on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousOn g (Ici a))
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  apply integrableOn_Ioi_of_interval_integral_norm_tendsto (l - g a) a (fun x => _) tendsto_id;
-  swap
-  ·
-    exact
-      intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
-        (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
-  apply tendsto.congr' _ (hg.sub_const _)
+  refine integrableOn_Ioi_of_intervalIntegral_norm_tendsto (l - g a) a (fun x => ?_) tendsto_id ?_
+  · exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
+      (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
+  apply Tendsto.congr' _ (hg.sub_const _)
   filter_upwards [Ioi_mem_atTop a] with x hx
   have h'x : a ≤ id x := le_of_lt hx
   calc
     g x - g a = ∫ y in a..id x, g' y := by
       symm
-      apply
-        intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x (hcont.mono Icc_subset_Ici_self)
-          fun y hy => hderiv y hy.1
+      apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x
+        (hcont.mono Icc_subset_Ici_self) fun y hy => hderiv y hy.1
       rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x]
-      exact
-        intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
-          (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
+      exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Ici_self)
+        (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
       simp_rw [intervalIntegral.integral_of_le h'x]
       refine' set_integral_congr measurableSet_Ioc fun y hy => _
       dsimp
       rw [abs_of_nonneg]
       exact g'pos _ hy.1
-
 #align measure_theory.integrable_on_Ioi_deriv_of_nonneg MeasureTheory.integrableOn_Ioi_deriv_of_nonneg
 
 /-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
@@ -741,8 +723,7 @@ is automatically integrable on `(a, +∞)`. Version assuming differentiability
 on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  apply integrableOn_Ioi_deriv_of_nonneg _ (fun x hx => hderiv x (le_of_lt hx)) g'pos hg
-  intro x hx
+  refine integrableOn_Ioi_deriv_of_nonneg (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le) g'pos hg
   exact (hderiv x hx).continuousAt.continuousWithinAt
 #align measure_theory.integrable_on_Ioi_deriv_of_nonneg' MeasureTheory.integrableOn_Ioi_deriv_of_nonneg'
 
@@ -773,9 +754,8 @@ theorem integrableOn_Ioi_deriv_of_nonpos (hcont : ContinuousOn g (Ici a))
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   apply integrable_neg_iff.1
-  exact
-    integrableOn_Ioi_deriv_of_nonneg hcont.neg (fun x hx => (hderiv x hx).neg)
-      (fun x hx => neg_nonneg_of_nonpos (g'neg x hx)) hg.neg
+  exact integrableOn_Ioi_deriv_of_nonneg hcont.neg (fun x hx => (hderiv x hx).neg)
+    (fun x hx => neg_nonneg_of_nonpos (g'neg x hx)) hg.neg
 #align measure_theory.integrable_on_Ioi_deriv_of_nonpos MeasureTheory.integrableOn_Ioi_deriv_of_nonpos
 
 /-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
@@ -783,8 +763,7 @@ is automatically integrable on `(a, +∞)`. Version assuming differentiability
 on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  apply integrableOn_Ioi_deriv_of_nonpos _ (fun x hx => hderiv x (le_of_lt hx)) g'neg hg
-  intro x hx
+  refine integrableOn_Ioi_deriv_of_nonpos (fun x hx ↦ ?_) (fun x hx ↦ hderiv x hx.out.le) g'neg hg
   exact (hderiv x hx).continuousAt.continuousWithinAt
 #align measure_theory.integrable_on_Ioi_deriv_of_nonpos' MeasureTheory.integrableOn_Ioi_deriv_of_nonpos'
 
@@ -826,8 +805,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
     (hg_cont : ContinuousOn g <| f '' Ioi a) (hg1 : IntegrableOn g <| f '' Ici a)
     (hg2 : IntegrableOn (fun x => f' x • (g ∘ f) x) (Ici a)) :
     (∫ x in Ioi a, f' x • (g ∘ f) x) = ∫ u in Ioi (f a), g u := by
-  have eq : ∀ b : ℝ, a < b → (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
-    intro b hb
+  have eq : ∀ b : ℝ, a < b → (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := fun b hb ↦ by
     have i1 : Ioo (min a b) (max a b) ⊆ Ioi a := by rw [min_eq_left hb.le];
       exact Ioo_subset_Ioi_self
     have i2 : [a, b] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
@@ -854,7 +832,7 @@ theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : 
     (hg_cont : ContinuousOn g <| f '' Ioi a) (hg1 : IntegrableOn g <| f '' Ici a)
     (hg2 : IntegrableOn (fun x => (g ∘ f) x * f' x) (Ici a)) :
     (∫ x in Ioi a, (g ∘ f) x * f' x) = ∫ u in Ioi (f a), g u := by
-  have hg2' : integrable_on (fun x => f' x • (g ∘ f) x) (Ici a) := by simpa [mul_comm] using hg2
+  have hg2' : IntegrableOn (fun x => f' x • (g ∘ f) x) (Ici a) := by simpa [mul_comm] using hg2
   simpa [mul_comm] using integral_comp_smul_deriv_Ioi hf hft hff' hg_cont hg1 hg2'
 #align measure_theory.integral_comp_mul_deriv_Ioi MeasureTheory.integral_comp_mul_deriv_Ioi
 
@@ -863,17 +841,17 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     (∫ x in Ioi 0, (|p| * x ^ (p - 1)) • g (x ^ p)) = ∫ y in Ioi 0, g y := by
   let S := Ioi (0 : ℝ)
   have a1 : ∀ x : ℝ, x ∈ S → HasDerivWithinAt (fun t : ℝ => t ^ p) (p * x ^ (p - 1)) S x :=
-    fun x hx => (has_deriv_at_rpow_const (Or.inl (mem_Ioi.mp hx).ne')).HasDerivWithinAt
-  have a2 : inj_on (fun x : ℝ => x ^ p) S := by
-    rcases lt_or_gt_of_ne hp with ⟨⟩
+    fun x hx => (hasDerivAt_rpow_const (Or.inl (mem_Ioi.mp hx).ne')).hasDerivWithinAt
+  have a2 : InjOn (fun x : ℝ => x ^ p) S := by
+    rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
-        rpow_neg (le_of_lt hy)]
+      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
+        ← rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
-    exact StrictMonoOn.injOn fun x hx y hy hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
+    exact StrictMonoOn.injOn fun x hx y _ hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
   have a3 : (fun t : ℝ => t ^ p) '' S = S := by
-    ext1; rw [mem_image]; constructor
+    ext1 x; rw [mem_image]; constructor
     · rintro ⟨y, hy, rfl⟩; exact rpow_pos_of_pos hy p
     · intro hx; refine' ⟨x ^ (1 / p), rpow_pos_of_pos hx _, _⟩
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
@@ -893,8 +871,8 @@ theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     (∫ x in Ioi a, g (b * x)) = |b⁻¹| • ∫ x in Ioi (b * a), g x := by
   have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi
-  rw [← integral_indicator (this a), ← integral_indicator (this <| b * a)]
-  convert measure.integral_comp_mul_left _ b
+  rw [← integral_indicator (this a), ← integral_indicator (this <| b * a),
+  convert Measure.integral_comp_mul_left _ b
   ext1 x
   rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left _ hb.ne']
 #align measure_theory.integral_comp_mul_left_Ioi MeasureTheory.integral_comp_mul_left_Ioi
@@ -919,8 +897,8 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
     IntegrableOn (fun x => (|p| * x ^ (p - 1)) • f (x ^ p)) (Ioi 0) ↔ IntegrableOn f (Ioi 0) := by
   let S := Ioi (0 : ℝ)
   have a1 : ∀ x : ℝ, x ∈ S → HasDerivWithinAt (fun t : ℝ => t ^ p) (p * x ^ (p - 1)) S x :=
-    fun x hx => (has_deriv_at_rpow_const (Or.inl (mem_Ioi.mp hx).ne')).HasDerivWithinAt
-  have a2 : inj_on (fun x : ℝ => x ^ p) S := by
+    fun x hx => (hasDerivAt_rpow_const (Or.inl (mem_Ioi.mp hx).ne')).hasDerivWithinAt
+  have a2 : InjOn (fun x : ℝ => x ^ p) S := by
     rcases lt_or_gt_of_ne hp with ⟨⟩
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
