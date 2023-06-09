@@ -106,3 +106,4 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
+import Mathlib.Util.CodeAction.RunTactic
