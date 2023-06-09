@@ -418,6 +418,8 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
+  -- Porting note: added to replace local instance above
+  haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
   let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
   AlgEquiv.ofBijective f
     ⟨RingHom.injective f.toRingHom, by
