@@ -548,7 +548,7 @@ theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Count
   simp only [mkMetric_apply]
   refine' iSup₂_le fun ε hε => _
   refine' le_of_forall_le_of_dense fun c hc => _
-  rcases ((frequently_lt_of_liminf_lt (by infer_param) hc).and_eventually
+  rcases ((frequently_lt_of_liminf_lt (by isBoundedDefault) hc).and_eventually
         ((hr.eventually (gt_mem_nhds hε)).and (ht.and hst))).exists with
     ⟨n, hn, hrn, htn, hstn⟩
   set u : ℕ → Set X := fun j => ⋃ b ∈ decode₂ (ι n) j, t n b
@@ -557,9 +557,9 @@ theorem mkMetric_le_liminf_tsum {β : Type _} {ι : β → Type _} [∀ n, Count
   · rw [EMetric.diam_iUnion_mem_option]
     exact iSup₂_le fun _ _ => (htn _).trans hrn.le
   · calc
-      (∑' j : ℕ, ⨆ h : (u j).Nonempty, m (diam (u j))) = _ :=
-        tsum_iUnion_decode₂ (fun t : Set X => ⨆ h : t.Nonempty, m (diam t)) (by simp) _
-      _ ≤ ∑' i : ι n, m (diam (t n i)) := (ENNReal.tsum_le_tsum fun b => iSup_le fun htb => le_rfl)
+      (∑' j : ℕ, ⨆ _ : (u j).Nonempty, m (diam (u j))) = _ :=
+        tsum_iUnion_decode₂ (fun t : Set X => ⨆ _ : t.Nonempty, m (diam t)) (by simp) _
+      _ ≤ ∑' i : ι n, m (diam (t n i)) := (ENNReal.tsum_le_tsum fun b => iSup_le fun _ => le_rfl)
       _ ≤ c := hn.le
 #align measure_theory.measure.mk_metric_le_liminf_tsum MeasureTheory.Measure.mkMetric_le_liminf_tsum
 
