@@ -250,7 +250,7 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
   by_cases hcn : c.Nonempty
   case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
   case pos =>
-    have this : Nonempty c := Set.Nonempty.to_subtype hcn
+    have : Nonempty c := Set.Nonempty.to_subtype hcn
     let ub : SubfieldWithHom K L M :=
       ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
         @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ (Set.Nonempty.to_subtype hcn)
@@ -290,6 +290,8 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
+-- Porting note: there's a nasty timeout in isDefEq checking for `larger_emb`
+set_option maxHeartbeats 1600000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
@@ -309,16 +311,14 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
     intro z hz
     show algebraMap N L ⟨z, hz⟩ ∈ O
     exact O.algebraMap_mem _
-  -- let O' : subfield_with_hom K L M hL :=
-  --   { carrier := O.restrict_scalars K
-  --     emb := larger_emb.restrict_scalars K }
-  -- have hO' : maximal_subfield_with_hom M hL ≤ O' := by
-  --   refine' ⟨hNO, _⟩
-  --   intro z
-  --   show O'.emb (algebraMap N O z) = algebraMap N M z
-  --   simp only [O', restrict_scalars_apply, AlgHom.commutes]
-  -- refine' (maximal_subfield_with_hom_is_maximal M hL O' hO').fst _
-  -- exact Algebra.subset_adjoin (Set.mem_singleton x)
+  let O' : SubfieldWithHom K L M :=
+    ⟨O.restrictScalars K, larger_emb.restrictScalars K⟩
+  have hO' : maximalSubfieldWithHom K L M ≤ O' := by
+    refine' ⟨hNO, _⟩
+    intro z
+    show O'.emb (@algebraMap N O _ _ (Subalgebra.algebra O) z) = algebraMap N M z
+    simp only [restrictScalars_apply, AlgHom.commutes]
+  exact Algebra.subset_adjoin (Set.mem_singleton x)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
 end SubfieldWithHom
