@@ -63,7 +63,7 @@ In the above example, when the `apply_congr` tactic is called it gives the hypot
 which is then used to rewrite the `f x` to `g x`.
 -/
 def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
-  let const lhsFun _ ← (getAppFn ∘ cleanupAnnotations) <$> getLhs |
+  let const lhsFun _ ← (getAppFn ∘ cleanupAnnotations) <$> instantiateMVars (← getLhs) |
     throwError "Left-hand side must be an application of a constant."
   let congrTheoremExprs ←
     match q with
