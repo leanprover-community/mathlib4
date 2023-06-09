@@ -161,8 +161,7 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 | 1 => by decide
 | 2 => by decide
 | 3 => by decide
-| n + 4 => by intros; rw [n.add_div_right four_pos, Nat.succ_lt_succ_iff, Nat.succ_lt_succ_iff,
-  Nat.lt_succ_iff]; exact (n.div_le_self 4).trans n.le_succ
+| n + 4 => by intros; rw [n.add_div_right four_pos]; linarith [n.div_le_self 4]
 
 namespace CommutingProbability
 
