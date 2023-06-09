@@ -2763,8 +2763,7 @@ theorem bind_inf_principal {f : Filter α} {g : α → Filter β} {s : Set β} :
   Filter.ext fun s => by simp only [mem_bind, mem_inf_principal]
 #align filter.bind_inf_principal Filter.bind_inf_principal
 
-theorem sup_bind {f g : Filter α} {h : α → Filter β} : bind (f ⊔ g) h = bind f h ⊔ bind g h := by
-  simp only [bind, sup_join, map_sup, eq_self_iff_true]
+theorem sup_bind {f g : Filter α} {h : α → Filter β} : bind (f ⊔ g) h = bind f h ⊔ bind g h := rfl
 #align filter.sup_bind Filter.sup_bind
 
 theorem principal_bind {s : Set α} {f : α → Filter β} : bind (𝓟 s) f = ⨆ x ∈ s, f x :=
