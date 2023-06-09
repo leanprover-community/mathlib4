@@ -10,6 +10,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.Normal
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Splitting fields
@@ -205,7 +206,7 @@ protected theorem splits (n : ℕ) :
 
 #noalign polynomial.splitting_field_aux.exists_lift
 
-set_option maxHeartbeats 400000
+set_option maxHeartbeats 400000 in
 theorem adjoin_roots (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (hfn : f.natDegree = n),
@@ -244,16 +245,33 @@ theorem adjoin_roots (n : ℕ) :
 instance : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_roots _ _ rfl⟩
 
+def ofMvPolynomial (f : K[X]) : MvPolynomial
+    ((f.map <| algebraMap K <| SplittingFieldAux f.natDegree f).roots.toFinset :
+      Set (SplittingFieldAux f.natDegree f)) K →ₐ[K]
+    SplittingFieldAux f.natDegree f :=
+  MvPolynomial.aeval (fun i => i.1)
+
+theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) :=
+  sorry
+
+def AlgEquivQuotientMvPolynomial (f : K[X]) :=
+  Ideal.quotientKerAlgEquivOfSurjective (ofMvPolynomial_surjective f)
+
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
-def SplittingField (f : K[X]) : Type u :=
-  SplittingFieldAux f.natDegree f
+def SplittingField (f : K[X]) : Type v :=
+  MvPolynomial ((f.map <| algebraMap K <| SplittingFieldAux f.natDegree f).roots.toFinset :
+      Set (SplittingFieldAux f.natDegree f)) K ⧸
+    RingHom.ker (SplittingFieldAux.ofMvPolynomial f).toRingHom
 #align polynomial.splitting_field Polynomial.SplittingField
 
 namespace SplittingField
 
 variable (f : K[X])
+
+instance : CommRing (SplittingField f) := by
+  delta SplittingField; infer_instance
 
 instance : Field (SplittingField f) :=
   SplittingFieldAux.field _
@@ -262,7 +280,7 @@ instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
-instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) := by
   SplittingFieldAux.algebra _ _
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
