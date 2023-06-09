@@ -17,12 +17,12 @@ import Mathlib.Analysis.NormedSpace.Completion
 
 In this file we prove Liouville's theorem: if `f : E → F` is complex differentiable on the whole
 space and its range is bounded, then the function is a constant. Various versions of this theorem
-are formalized in `differentiable.apply_eq_apply_of_bounded`,
-`differentiable.exists_const_forall_eq_of_bounded`, and
-`differentiable.exists_eq_const_of_bounded`.
+are formalized in `Differentiable.apply_eq_apply_of_bounded`,
+`Differentiable.exists_const_forall_eq_of_bounded`, and
+`Differentiable.exists_eq_const_of_bounded`.
 
 The proof is based on the Cauchy integral formula for the derivative of an analytic function, see
-`complex.deriv_eq_smul_circle_integral`.
+`Complex.deriv_eq_smul_circleIntegral`.
 -/
 
 
@@ -37,7 +37,6 @@ universe u v
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type v} [NormedAddCommGroup F]
   [NormedSpace ℂ F]
 
--- mathport name: «expr ̂»
 local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
@@ -46,7 +45,7 @@ namespace Complex
 continuous on its closure, then `f' c` can be represented as an integral over the corresponding
 circle.
 
-TODO: add a version for `w ∈ metric.ball c R`.
+TODO: add a version for `w ∈ Metric.ball c R`.
 
 TODO: add a version for higher derivatives. -/
 theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
@@ -58,8 +57,8 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
 #align complex.deriv_eq_smul_circle_integral Complex.deriv_eq_smul_circleIntegral
 
 theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
-    (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) : ‖deriv f c‖ ≤ C / R :=
-  by
+    (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖deriv f c‖ ≤ C / R := by
   have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
     fun z (hz : abs (z - c) = R) => by
     simpa [-mul_inv_rev, norm_smul, hz, zpow_two, ← div_eq_inv_mul] using
@@ -76,8 +75,8 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
 closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
 norm of its derivative at the center is at most `C / R`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
-    (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) : ‖deriv f c‖ ≤ C / R :=
-  by
+    (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖deriv f c‖ ≤ C / R := by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have : HasDerivAt (e ∘ f) (e (deriv f c)) c :=
     e.hasFDerivAt.comp_hasDerivAt c
@@ -91,7 +90,7 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
 #align complex.norm_deriv_le_of_forall_mem_sphere_norm_le Complex.norm_deriv_le_of_forall_mem_sphere_norm_le
 
-/-- An auxiliary lemma for Liouville's theorem `differentiable.apply_eq_apply_of_bounded`. -/
+/-- An auxiliary lemma for Liouville's theorem `Differentiable.apply_eq_apply_of_bounded`. -/
 theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : Bounded (range f))
     (z w : ℂ) : f z = f w := by
   suffices : ∀ c, deriv f c = 0; exact is_const_of_deriv_eq_zero hf this z w
