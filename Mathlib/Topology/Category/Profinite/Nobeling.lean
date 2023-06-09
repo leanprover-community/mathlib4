@@ -4,6 +4,8 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Category.Profinite.InjectiveMap
 
+universe u
+
 namespace LocallyConstant
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {Z : Type _}
@@ -1166,12 +1168,108 @@ instance nonempty_downset {o : Ordinal} (ho : Ordinal.IsLimit o) : Nonempty {o' 
   simp only [Ordinal.pos_iff_ne_zero]
   exact ho.1
 
+section JointlySurjective
+
+open CategoryTheory
+open CategoryTheory.Limits
+
+instance (o : Ordinal) : SmallCategory {o' // o' < o} := inferInstance
+instance DownsetCofiltered {o : Ordinal} (ho : o.IsLimit) : IsCofiltered {o' // o' < o}ᵒᵖ := sorry
+instance (o : Ordinal) : CompactSpace (Res C o) := sorry
+instance CCompact (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) : CompactSpace C := by
+  rw [supportResEq C o hsC]
+  exact inferInstance
+
+lemma ResOnSubsetsId (o : Ordinal) : ResOnSubsets C (le_refl o) = id := by
+  ext ⟨f,hf⟩ i
+  dsimp [ResOnSubsets, ProjOrd]
+  split_ifs
+  · rfl
+  · obtain ⟨g, ⟨_,hg⟩⟩ := hf
+    dsimp [ProjOrd] at hg
+    rw [← congr_fun hg i]
+    split_ifs
+    rfl
+
+lemma ResOnSubsetsComp {o₁ o₂ o₃ : Ordinal} (h₁₂ : o₁ ≤ o₂) (h₂₃ : o₂ ≤ o₃) :
+    ResOnSubsets C h₁₂ ∘ ResOnSubsets C h₂₃ = ResOnSubsets C (le_trans h₁₂ h₂₃) := by
+  ext ⟨f,hf⟩ i
+  dsimp [ResOnSubsets, ProjOrd]
+  split_ifs with h₁ h₂
+  · rfl
+  · obtain ⟨g, ⟨_,hg⟩⟩ := hf
+    dsimp [ProjOrd] at hg
+    rw [← congr_fun hg i]
+    split_ifs
+    · exfalso
+      apply h₂
+      exact lt_of_lt_of_le h₁ h₁₂
+    · rfl
+  · rfl
+
+noncomputable
+def OrdToProfinite (o : Ordinal) : {o' // o' < o}ᵒᵖ ⥤ Profinite :=
+{ obj := fun e ↦ Profinite.of (Res C e.unop.val)
+  map := fun h ↦ ⟨ResOnSubsets C (leOfHom h.unop), (continuous_ResOnSubsets _ _)⟩
+  map_id := by
+    intro e
+    dsimp
+    simp_rw [ResOnSubsetsId]
+    rfl
+  map_comp := by
+    intro e₁ e₂ e₃ h₁₂ h₂₃
+    dsimp
+    congr
+    simp only [ContinuousMap.coe_mk]
+    rw [ResOnSubsetsComp] }
+
+noncomputable
+def OrdCone (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
+    Cone (OrdToProfinite C o) :=
+{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hsC) _ _
+  π :=
+  { app := fun e ↦ ⟨ResOnSubset C e.unop.val, continuous_ResOnSubset _ _⟩
+    naturality := by
+      intro e₁ e₂ h
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+      congr
+      simp only [ContinuousMap.coe_mk]
+      dsimp [OrdToProfinite]
+      rw [resOnSubsets_eq] } }
+
+lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o }) :
+    IsLimit (OrdCone C o hsC) := sorry
+
+def LocConstConePoint {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+    (f : LocallyConstant {i // i ∈ C} ℤ) :
+    LocallyConstant (OrdCone C o hsC).pt.toCompHaus.toTop ℤ := sorry
+
+lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+    (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
+    (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
+  sorry
+  -- obtain ⟨e, g, h⟩ := @Profinite.exists_locallyConstant {o' // o' < o}ᵒᵖ _ (DownsetCofiltered ho)
+  --   _ (OrdCone C o hsC) _
+  --   (OrdConeIsLimit C ho hsC) (LocConstConePoint C ho hsC f)
+  /-- **TODO**: fix universe issues. We want {o' // o' < o} : Type u and Profinite.{u+1} to be able
+      to use the theorem as is. But that's problematic because the ordinals come from I, which we
+      now need to be : Type (u+1) ?? -/
+
 lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+    (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
+    ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ), g.comap (ResOnSubset C o') = f := by
+  obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hsC f
+  exact ⟨e.val, e.prop,⟨g,h⟩⟩
+
+lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ),
     (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
-    LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f := by
-  sorry
+    LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f :=
+  comapJointlySurjective C ho hsC f
+
+
+end JointlySurjective
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
   rw [PIffP I i]
@@ -1241,7 +1339,7 @@ lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
     simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
     dsimp [ModProducts.smaller]
     simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
-    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapJointlySurjective C ho hsC f
+    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hsC f
     use o'
     use ho'
     use g
