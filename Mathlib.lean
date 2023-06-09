@@ -610,6 +610,7 @@ import Mathlib.Analysis.NormedSpace.CompactOperator
 import Mathlib.Analysis.NormedSpace.Complemented
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
+import Mathlib.Analysis.NormedSpace.ContinuousAffineMap
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.Analysis.NormedSpace.DualNumber
