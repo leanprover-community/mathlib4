@@ -8,9 +8,9 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Circle
-import Mathbin.MeasureTheory.Group.Integration
-import Mathbin.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.Analysis.Complex.Circle
+import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -84,8 +84,7 @@ def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V) (L : V 
 
 theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
-    fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f :=
-  by
+    fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
   simp only [Pi.smul_apply, fourier_integral, smul_comm _ r, integral_smul]
 #align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_smul_const
@@ -131,15 +130,12 @@ variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [Bo
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourier_integral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W => L p.1 p.2) {f : V → E} (w : W) :
-    Integrable f μ ↔ Integrable (fun v : V => e[-L v w] • f v) μ :=
-  by
+    Integrable f μ ↔ Integrable (fun v : V => e[-L v w] • f v) μ := by
   -- first prove one-way implication
   have aux :
-    ∀ {g : V → E} (hg : integrable g μ) (x : W), integrable (fun v : V => e[-L v x] • g v) μ :=
-    by
+    ∀ {g : V → E} (hg : integrable g μ) (x : W), integrable (fun v : V => e[-L v x] • g v) μ := by
     intro g hg x
-    have c : Continuous fun v => e[-L v x] :=
-      by
+    have c : Continuous fun v => e[-L v x] := by
       refine' (continuous_induced_rng.mp he).comp (continuous_of_add.comp (Continuous.neg _))
       exact hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)
     rw [← integrable_norm_iff (c.ae_strongly_measurable.smul hg.1)]
@@ -159,8 +155,7 @@ variable [CompleteSpace E]
 
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W => L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
-    fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) :=
-  by
+    fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
   ext1 w
   dsimp only [Pi.add_apply, fourier_integral]
   simp_rw [smul_add]
@@ -172,8 +167,7 @@ theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W 
 /-- The Fourier integral of an `L^1` function is a continuous function. -/
 theorem fourierIntegral_continuous [TopologicalSpace.FirstCountableTopology W] (he : Continuous e)
     (hL : Continuous fun p : V × W => L p.1 p.2) {f : V → E} (hf : Integrable f μ) :
-    Continuous (fourierIntegral e μ L f) :=
-  by
+    Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated
   · exact fun w => ((fourier_integral_convergent_iff he hL w).mp hf).1
   · refine' fun w => ae_of_all _ fun v => _
@@ -239,8 +233,7 @@ open scoped Real
 namespace Real
 
 /-- The standard additive character of `ℝ`, given by `λ x, exp (2 * π * x * I)`. -/
-def fourierChar : Multiplicative ℝ →* 𝕊
-    where
+def fourierChar : Multiplicative ℝ →* 𝕊 where
   toFun z := expMapCircle (2 * π * z.toAdd)
   map_one' := by rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
   map_mul' x y := by rw [toAdd_mul, mul_add, expMapCircle_add]
