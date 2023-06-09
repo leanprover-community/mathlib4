@@ -10,6 +10,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.SolveByElim
 
 /-!
@@ -231,9 +232,9 @@ theorem fib_le_of_continuantsAux_b :
           of_one_le_get?_part_denom (part_denom_eq_s_b s_ppred_nth_eq)
         have : (0 : K) ≤ fib (n + 1) := by exact_mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
-        -- porting note: was `mono`
-        refine' mul_le_mul one_le_gp_b _ _ _
-        all_goals tauto)
+        mono
+        norm_num
+        tauto)
 #align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_of_continuantsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
