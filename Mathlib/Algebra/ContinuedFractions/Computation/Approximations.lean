@@ -220,8 +220,6 @@ theorem fib_le_of_continuantsAux_b :
         have not_terminated_at_ppred_n : ¬TerminatedAt g (n - 2) :=
           mt (terminated_stable (n - 1).pred_le) not_terminated_at_pred_n
         -- use the IH to get the inequalities for `pconts` and `ppconts`
-        have : (fib (n + 1) : K) ≤ pconts.b :=
-          IH _ (Nat.lt.base <| n + 1) (Or.inr not_terminated_at_pred_n)
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
           IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminated_at_ppred_n)
         suffices : (fib (n + 1) : K) ≤ gp.b * pconts.b
@@ -575,3 +573,4 @@ theorem abs_sub_convergents_le' {b : K}
 end ErrorTerm
 
 end GeneralizedContinuedFraction
+#lint
