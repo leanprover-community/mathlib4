@@ -114,7 +114,11 @@ theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
 @[simp]
-theorem cast_pos {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
+theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
+
+-- without this more specific version Lean often chokes
+@[simp]
+theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 #align nat.cast_pos Nat.cast_pos
 
 end Nontrivial

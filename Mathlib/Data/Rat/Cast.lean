@@ -156,7 +156,7 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
   · simp
   rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
-    Int.sign_eq_one_of_pos ((Nat.cast_pos (α := ℤ)).mpr n.succ_pos), Int.cast_one, one_div]
+    Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
 #align rat.cast_inv_nat Rat.cast_inv_nat
 
 -- Porting note: proof got a lot easier - is this still the intended statement?
@@ -298,7 +298,7 @@ variable {K : Type _} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
-  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (by simpa only [Nat.cast_pos] using r.pos)
+  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
 @[mono]
