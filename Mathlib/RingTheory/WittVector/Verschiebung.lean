@@ -70,14 +70,12 @@ theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) : ghostComponent 0 (ver
 theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
-  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.Pos _),
+  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.pos _),
     MulZeroClass.mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
   simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
     Nat.succ_sub_succ, tsub_zero]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
-
-omit hp
 
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
 variable `X (n-1)`.
@@ -93,10 +91,10 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
-  cases n
-  · simp only [verschiebung_poly, verschiebung_fun_coeff_zero, if_pos rfl, AlgHom.map_zero]
-  ·
-    rw [verschiebung_poly, verschiebung_fun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
+  cases' n with n
+  · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
+    verschiebungFun_coeff_zero]
+  · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
       Nat.succ_eq_add_one, add_tsub_cancel_right]
 #align witt_vector.aeval_verschiebung_poly' WittVector.aeval_verschiebung_poly'
 
@@ -106,13 +104,11 @@ variable (p)
 -/
 @[is_poly]
 theorem verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
-  use verschiebung_poly
+  use verschiebungPoly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 #align witt_vector.verschiebung_fun_is_poly WittVector.verschiebungFun_isPoly
 
 variable {p}
-
-include hp
 
 /--
 `verschiebung x` shifts the coefficients of `x` up by one, by inserting 0 as the 0th coefficient.
@@ -128,15 +124,11 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   map_add' := by ghost_calc _ _; rintro ⟨⟩ <;> ghost_simp
 #align witt_vector.verschiebung WittVector.verschiebung
 
-omit hp
-
 /-- `witt_vector.verschiebung` is a polynomial function. -/
 @[is_poly]
 theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :=
   verschiebungFun_isPoly p
 #align witt_vector.verschiebung_is_poly WittVector.verschiebung_isPoly
-
-include hp
 
 /-- verschiebung is a natural transformation -/
 @[simp]
@@ -182,17 +174,19 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
   apply MvPolynomial.funext
   intro x
   split_ifs with hn
-  · simp only [hn, verschiebung_poly_zero, wittPolynomial_zero, bind₁_X_right]
+  · simp only [hn, wittPolynomial_zero, bind₁_X_right, verschiebungPoly_zero, map_zero, ite_true]
   · obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
-    rw [Nat.succ_eq_add_one, add_tsub_cancel_right, RingHom.map_mul, map_natCast, hom_bind₁]
+    rw [Nat.succ_eq_add_one, add_tsub_cancel_right]
+    simp only [add_eq_zero, and_false, ite_false, map_mul]
+    rw [map_natCast, hom_bind₁]
     calc
-      _ = ghost_component (n + 1) (verschiebung <| mk p x) := _
-      _ = _ := _
-    · apply eval₂_hom_congr (RingHom.ext_int _ _) _ rfl
-      simp only [← aeval_verschiebung_poly, coeff_mk]
-      funext k
-      exact eval₂_hom_congr (RingHom.ext_int _ _) rfl rfl
-    · rw [ghost_component_verschiebung]; rfl
+      _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
+       apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
+       simp only [← aeval_verschiebungPoly, coeff_mk]
+       funext k
+       exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
+      _ = _ := by rw [ghostComponent_verschiebung]; rfl
 #align witt_vector.bind₁_verschiebung_poly_witt_polynomial WittVector.bind₁_verschiebungPoly_wittPolynomial
+
 
 end WittVector
