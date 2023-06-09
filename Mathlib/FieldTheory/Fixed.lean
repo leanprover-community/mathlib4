@@ -50,10 +50,10 @@ variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] 
 def FixedBy.subfield : Subfield F where
   carrier := fixedBy M F m
   zero_mem' := smul_zero m
-  add_mem' x y hx hy := (smul_add m x y).trans <| congr_arg₂ _ hx hy
-  neg_mem' x hx := (smul_neg m x).trans <| congr_arg _ hx
+  add_mem' hx hy := (smul_add m _ _).trans <| congr_arg₂ _ hx hy
+  neg_mem' hx := (smul_neg m _).trans <| congr_arg _ hx
   one_mem' := smul_one m
-  mul_mem' x y hx hy := (smul_mul' m x y).trans <| congr_arg₂ _ hx hy
+  mul_mem' hx hy := (smul_mul' m _ _).trans <| congr_arg₂ _ hx hy
   inv_mem' x hx := (smul_inv'' m x).trans <| congr_arg _ hx
 #align fixed_by.subfield FixedBy.subfield
 
@@ -68,15 +68,17 @@ class IsInvariantSubfield (S : Subfield F) : Prop where
 
 variable (S : Subfield F)
 
+--instance : MulSemiringAction M S := Submonoid.mulSemiringAction S.toSubmonoid
+
 instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] : MulSemiringAction M S
     where
-  smul m x := ⟨m • x, IsInvariantSubfield.smul_mem m x.2⟩
-  one_smul s := Subtype.eq <| one_smul M s
-  mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ s
-  smul_add m s₁ s₂ := Subtype.eq <| smul_add m s₁ s₂
+  smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
+  one_smul s := Subtype.eq <| one_smul M s.1
+  mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ s.1
+  smul_add m s₁ s₂ := Subtype.eq <| smul_add m s₁.1 s₂.1
   smul_zero m := Subtype.eq <| smul_zero m
   smul_one m := Subtype.eq <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁ s₂
+  smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁.1 s₂.1
 #align is_invariant_subfield.to_mul_semiring_action IsInvariantSubfield.toMulSemiringAction
 
 instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring
@@ -92,7 +94,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext z; simp [fixed_points, FixedBy.subfield, iInf, Subfield.mem_sInf])
+    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
 #align fixed_points.subfield FixedPoints.subfield
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F)
@@ -114,7 +116,7 @@ theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
 @[simp]
 theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m • p = p :=
   Polynomial.induction_on p (fun x => by rw [Polynomial.smul_C, smul])
-    (fun p q ihp ihq => by rw [smul_add, ihp, ihq]) fun n x ih => by
+    (fun p q ihp ihq => by rw [smul_add, ihp, ihq]) fun n x _ => by
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
 #align fixed_points.smul_polynomial FixedPoints.smul_polynomial
 
@@ -128,16 +130,16 @@ theorem coe_algebraMap :
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
       LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
-  haveI : IsEmpty ((∅ : Finset F) : Set F) := ⟨Subtype.prop⟩
+  haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine' Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => _
   rw [coe_insert] at hs ⊢
-  rw [linearIndependent_insert (mt mem_coe.1 has)] at hs 
+  rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
   rw [Finsupp.mem_span_image_iff_total] at ha ; rcases ha with ⟨l, hl, hla⟩
-  rw [Finsupp.total_apply_of_mem_supported F hl] at hla 
+  rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
-    replace hla := (sum_apply _ _ fun i => l i • to_fun G F i).symm.trans (congr_fun hla 1)
-    simp_rw [Pi.smul_apply, to_fun_apply, one_smul] at hla 
+    replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
+    simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine' hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => _)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ (Submodule.subset_span <| mem_coe.2 hcs)
@@ -152,22 +154,22 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   conv_lhs =>
     rw [sum_apply]
     congr
-    skip
-    ext
-    rw [Pi.smul_apply, sub_smul, smul_eq_mul]
+    · skip
+    · ext
+      rw [Pi.smul_apply, sub_smul, smul_eq_mul]
   rw [sum_sub_distrib, Pi.zero_apply, sub_eq_zero]
   conv_lhs =>
     congr
-    skip
-    ext
-    rw [to_fun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← to_fun_apply _ x]
+    · skip
+    · ext x
+      rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   show
     (∑ x in s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x in s, (fun y => l y • MulAction.toFun G F y) x g'
-  rw [← smul_sum, ← sum_apply _ _ fun y => l y • to_fun G F y, ←
-    sum_apply _ _ fun y => l y • to_fun G F y]
+  rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
+    sum_apply _ _ fun y => l y • toFun G F y]
   dsimp only
-  rw [hla, to_fun_apply, to_fun_apply, smul_smul, mul_inv_cancel_left]
+  rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 #align fixed_points.linear_independent_smul_of_linear_independent FixedPoints.linearIndependent_smul_of_linearIndependent
 
 section Fintype
@@ -176,14 +178,15 @@ variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `fixed_points G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
-  (prodXSubSmul G F x).toSubring (FixedPoints.subfield G F).toSubring fun c hc g =>
-    let ⟨n, hc0, hn⟩ := Polynomial.mem_frange_iff.1 hc
+  (prodXSubSmul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
+    let ⟨n, _, hn⟩ := Polynomial.mem_frange_iff.1 hc
     hn.symm ▸ prodXSubSmul.coeff G F x g n
 #align fixed_points.minpoly FixedPoints.minpoly
 
 namespace minpoly
 
-theorem monic : (minpoly G F x).Monic := by simp only [minpoly, Polynomial.monic_toSubring];
+theorem monic : (minpoly G F x).Monic := by
+  simp only [minpoly, Polynomial.monic_toSubring];
   exact prodXSubSmul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 
@@ -201,22 +204,24 @@ theorem eval₂' :
 
 theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
   have := eval₂ G F x
-  (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this 
+  (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 #align fixed_points.minpoly.ne_one FixedPoints.minpoly.ne_one
 
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
-  erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly,
-    Polynomial.map_toSubring _ (Subfield G F).toSubring, prodXSubSmul]
+-- Porting note: the `this` below was not needed.
+  have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
+  erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
+    Polynomial.map_toSubring _ _, prodXSubSmul]
   refine'
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
       QuotientGroup.induction_on y fun g => _
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
-    Polynomial.eval_smul', ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, ←
-    MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
+    Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
+    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
+    ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom', Polynomial.eval_map,
     Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 #align fixed_points.minpoly.of_eval₂ FixedPoints.minpoly.of_eval₂
@@ -227,18 +232,18 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
   have hf2 : f ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_right _ _
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
-  rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this 
+  rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this
   cases this
   · right
     have hf3 : f = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hf (monic G F x)
         (associated_of_dvd_dvd hf2 <| @of_eval₂ G _ F _ _ _ x f this)
-    rwa [← mul_one (minpoly G F x), hf3, mul_right_inj' (monic G F x).NeZero] at hfg 
+    rwa [← mul_one (minpoly G F x), hf3, mul_right_inj' (monic G F x).NeZero] at hfg
   · left
     have hg3 : g = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hg (monic G F x)
         (associated_of_dvd_dvd hg2 <| @of_eval₂ G _ F _ _ _ x g this)
-    rwa [← one_mul (minpoly G F x), hg3, mul_left_inj' (monic G F x).NeZero] at hfg 
+    rwa [← one_mul (minpoly G F x), hg3, mul_left_inj' (monic G F x).NeZero] at hfg
 #align fixed_points.minpoly.irreducible_aux FixedPoints.minpoly.irreducible_aux
 
 theorem irreducible : Irreducible (minpoly G F x) :=
@@ -368,4 +373,3 @@ def toAlgHomEquiv (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G] [Mul
 #align fixed_points.to_alg_hom_equiv FixedPoints.toAlgHomEquiv
 
 end FixedPoints
-
