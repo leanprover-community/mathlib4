@@ -318,8 +318,9 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance instAddMonoidWithOne : AddMonoidWithOne (selfAdjoint R) where
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (selfAdjoint R) where
   toAddMonoid := inferInstance
+  add_comm := add_comm
   one := ⟨1, isSelfAdjoint_one R⟩
   natCast n := ⟨n, isSelfAdjoint_natCast _⟩
   natCast_zero := by ext; simp only [Nat.cast_zero, ZeroMemClass.coe_zero]
@@ -341,8 +342,8 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
-instance instAddGroupWithOne : AddGroupWithOne (selfAdjoint R) :=
-  { instAddMonoidWithOne (R := R),
+instance instAddCommGroupWithOne : AddCommGroupWithOne (selfAdjoint R) :=
+  { instAddCommMonoidWithOne (R := R),
     (selfAdjoint R).toAddGroup with
     intCast := fun n ↦ ⟨n, isSelfAdjoint_intCast _⟩
     intCast_ofNat := fun n ↦ by
