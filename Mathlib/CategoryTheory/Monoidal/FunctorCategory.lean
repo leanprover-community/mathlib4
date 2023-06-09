@@ -71,19 +71,10 @@ where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom α β := tensorHom α β
-  tensor_id F G := by ext; dsimp; rw [tensor_id]
-  tensor_comp α β γ δ := by ext; dsimp; rw [tensor_comp]
   tensorUnit' := (CategoryTheory.Functor.const C).obj (𝟙_ D)
-  leftUnitor F := NatIso.ofComponents (fun X => λ_ (F.obj X))
-    (fun f => by dsimp; rw [leftUnitor_naturality])
-  rightUnitor F := NatIso.ofComponents (fun X => ρ_ (F.obj X))
-    (fun f => by dsimp; rw [rightUnitor_naturality])
-  associator F G H := NatIso.ofComponents (fun X => α_ (F.obj X) (G.obj X) (H.obj X))
-    (fun f => by dsimp;rw [associator_naturality])
-  leftUnitor_naturality α := by ext X; dsimp; rw [leftUnitor_naturality]
-  rightUnitor_naturality α := by ext X; dsimp; rw [rightUnitor_naturality]
-  associator_naturality α β γ := by ext X; dsimp; rw [associator_naturality]
-  triangle F G := by ext X; dsimp; rw [triangle]
+  leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
+  rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
+  associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
   pentagon F G H K := by ext X; dsimp; rw [pentagon]
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
@@ -160,7 +151,7 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents (fun X => β_ _ _) (by aesop_cat)
+  braiding F G := NatIso.ofComponents fun X => β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 #align category_theory.monoidal.functor_category_braided CategoryTheory.Monoidal.functorCategoryBraided

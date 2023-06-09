@@ -49,14 +49,6 @@ class MonoidalPreadditive : Prop where
     aesop_cat
 #align category_theory.monoidal_preadditive CategoryTheory.MonoidalPreadditive
 
---restate_axiom monoidal_preadditive.tensor_zero'
---
---restate_axiom monoidal_preadditive.zero_tensor'
---
---restate_axiom monoidal_preadditive.tensor_add'
---
---restate_axiom monoidal_preadditive.add_tensor'
-
 attribute [simp] MonoidalPreadditive.tensor_zero MonoidalPreadditive.zero_tensor
 
 variable {C}

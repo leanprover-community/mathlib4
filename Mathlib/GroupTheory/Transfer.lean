@@ -133,11 +133,11 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
-      _ = _ := ((quotientEquivSigmaZmod H g).symm.prod_comp _).symm
+      _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
       _ = _ := (Finset.prod_sigma _ _ _)
       _ = _ := by
         refine' Fintype.prod_congr _ _ (fun q => _)
-        simp only [quotientEquivSigmaZmod_symm_apply, transferTransversal_apply',
+        simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod ((· • ·) g) q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
@@ -263,7 +263,7 @@ theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker
   rw [← (comap_injective this).eq_iff, comap_top, comap_map_eq, sup_comm, SetLike.ext'_iff,
     normal_mul, ← ker_eq_bot_iff, ← (map_injective (P : Subgroup G).subtype_injective).eq_iff,
     ker_restrict, subgroupOf_map_subtype, Subgroup.map_bot, coe_top] at hf
-  exact IsComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
+  exact isComplement'_of_disjoint_and_mul_eq_univ (disjoint_iff.2 hf.1) hf.2
 #align monoid_hom.ker_transfer_sylow_is_complement' MonoidHom.ker_transferSylow_isComplement'
 
 theorem not_dvd_card_ker_transferSylow : ¬p ∣ Nat.card (transferSylow P hP).ker :=

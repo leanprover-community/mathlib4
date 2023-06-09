@@ -37,9 +37,10 @@ open Real Set
 
 open scoped BigOperators NNReal
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
-  simp_rw [rpow_nat_cast]
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
   exact fun x (hx : 0 < x) y hy hxy =>
@@ -50,7 +51,6 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
-  simp_rw [rpow_nat_cast]
   apply StrictMono.strictConvexOn_univ_of_deriv (continuous_pow n)
   rw [deriv_pow']
   replace h := Nat.pos_of_ne_zero h
@@ -102,12 +102,9 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
     StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m := by
   apply strictConvexOn_of_deriv2_pos' (convex_Ioi 0)
-  · simp only [rpow_int_cast]
-    exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
+  · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
   intro x hx
-  -- Porting note: some extra `simp only`s and `norm_cast`s needed to untangle coercions
-  simp only [rpow_int_cast]
-  simp only [mem_Ioi] at hx
+  rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]
   refine' mul_pos _ (zpow_pos_of_pos hx _)
   norm_cast
@@ -145,8 +142,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     (deriv^[2]) (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   cases' le_or_lt x 0 with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx]
-    norm_num
+  · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, MulZeroClass.mul_zero, div_zero]
     refine' HasDerivWithinAt.deriv_eq_zero _ (uniqueDiffOn_Iic 0 x hx)
     refine' (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => _) hx
     rw [sqrt_eq_zero_of_nonpos hx, MulZeroClass.mul_zero, div_zero]
@@ -154,9 +150,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    have := pow_ne_zero 3 h₀
-    have h₁ : sqrt x ^ 3 ≠ 0 := by norm_cast
-    field_simp; norm_cast; ring
+    field_simp; ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
@@ -165,7 +159,6 @@ theorem strictConcaveOn_sqrt_mul_log_Ioi :
   · exact continuous_sqrt.continuousOn.mul
       (continuousOn_log.mono fun x hx => ne_of_gt (zero_lt_one.trans hx))
   · rw [deriv2_sqrt_mul_log x]
-    norm_cast
     exact div_neg_of_neg_of_pos (neg_neg_of_pos (log_pos hx))
       (mul_pos four_pos (pow_pos (sqrt_pos.mpr (zero_lt_one.trans hx)) 3))
 #align strict_concave_on_sqrt_mul_log_Ioi strictConcaveOn_sqrt_mul_log_Ioi

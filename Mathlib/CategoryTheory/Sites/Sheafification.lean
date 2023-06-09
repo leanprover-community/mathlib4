@@ -668,7 +668,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
     J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents (fun P => Iso.refl _) (by simp)
+  NatIso.ofComponents fun P => Iso.refl _
 
 variable {J D}
 

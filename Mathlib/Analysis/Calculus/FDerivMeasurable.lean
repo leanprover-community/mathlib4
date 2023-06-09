@@ -179,10 +179,7 @@ theorem mem_a_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
       (norm_sub_le _ _)
     _ ≤ ε / 2 * ‖z - x‖ + ε / 2 * ‖y - x‖ :=
       (add_le_add (hR _ (lt_trans (mem_ball.1 hz) hr.2)) (hR _ (lt_trans (mem_ball.1 hy) hr.2)))
-    _ ≤ ε / 2 * r + ε / 2 * r :=
-      (add_le_add
-        (mul_le_mul_of_nonneg_left (le_of_lt (mem_ball_iff_norm.1 hz)) (le_of_lt (half_pos hε)))
-        (mul_le_mul_of_nonneg_left (le_of_lt (mem_ball_iff_norm.1 hy)) (le_of_lt (half_pos hε))))
+    _ ≤ ε / 2 * r + ε / 2 * r := by rw [mem_ball_iff_norm] at hz hy; gcongr
     _ = ε * r := by ring
 #align fderiv_measurable_aux.mem_A_of_differentiable FDerivMeasurableAux.mem_a_of_differentiable
 
@@ -297,8 +294,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
-      _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) :=
-        (mul_lt_mul' le_rfl he (le_of_lt P) (mul_pos (by norm_num) cpos))
+      _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
       _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos] ; ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
@@ -316,8 +312,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       this makes it possible to cover all scales, and thus to obtain a good linear approximation in
       the whole ball of radius `(1/2)^(n e)`. -/
     intro ε εpos
-    have pos : 0 < 4 + 12 * ‖c‖ :=
-      add_pos_of_pos_of_nonneg (by norm_num) (mul_nonneg (by norm_num) (norm_nonneg _))
+    have pos : 0 < 4 + 12 * ‖c‖ := by positivity
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / (4 + 12 * ‖c‖) :=
       exists_pow_lt_of_lt_one (div_pos εpos pos) (by norm_num)
     rw [eventually_nhds_iff_ball]
@@ -365,10 +360,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         (norm_add_le_of_le J2
           ((le_op_norm _ _).trans (mul_le_mul_of_nonneg_right (Lf' _ _ m_ge) (norm_nonneg _))))
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
-      _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) :=
-        (mul_le_mul_of_nonneg_left he.le
-          (mul_nonneg (add_nonneg (by norm_num) (mul_nonneg (by norm_num) (norm_nonneg _)))
-            (norm_nonneg _)))
+      _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
       _ = ε * ‖y‖ := by field_simp [ne_of_gt pos]; ring
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiableAt, f'K⟩
@@ -554,11 +546,9 @@ theorem mem_a_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
       (add_le_add (hm ⟨hz.1, hz.2.trans_lt (by linarith [hr.2])⟩)
         (hm ⟨hy.1, hy.2.trans_lt (by linarith [hr.2])⟩))
     _ ≤ ε / 2 * r + ε / 2 * r := by
-      apply add_le_add
-      · apply mul_le_mul_of_nonneg_left _ (le_of_lt (half_pos hε))
-        rw [Real.norm_of_nonneg] <;> linarith [hz.1, hz.2]
-      · apply mul_le_mul_of_nonneg_left _ (le_of_lt (half_pos hε))
-        rw [Real.norm_of_nonneg] <;> linarith [hy.1, hy.2]
+      gcongr
+      · rw [Real.norm_of_nonneg] <;> linarith [hz.1, hz.2]
+      · rw [Real.norm_of_nonneg] <;> linarith [hy.1, hy.2]
     _ = ε * r := by ring
 #align right_deriv_measurable_aux.mem_A_of_differentiable RightDerivMeasurableAux.mem_a_of_differentiable
 
@@ -650,7 +640,7 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
         by congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
-      _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := add_le_add (add_le_add J1 J2) J3
+      _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
         -- Porting note: proof was `by apply_rules [add_le_add]`
       _ = 12 * (1 / 2) ^ e := by ring
 

@@ -153,7 +153,7 @@ of the cone points and check it commutes with the legs to `left` and `right`. -/
 def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.pt)
     (w₁ : s.π.app WalkingCospan.left = i.hom ≫ t.π.app WalkingCospan.left)
     (w₂ : s.π.app WalkingCospan.right = i.hom ≫ t.π.app WalkingCospan.right) : s ≅ t := by
-  apply Cones.ext i
+  apply Cones.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.π.naturality WalkingCospan.Hom.inl
     dsimp at h₁
@@ -172,7 +172,7 @@ of the cocone points and check it commutes with the legs from `left` and `right`
 def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
     (w₁ : s.ι.app WalkingCospan.left ≫ i.hom = t.ι.app WalkingCospan.left)
     (w₂ : s.ι.app WalkingCospan.right ≫ i.hom = t.ι.app WalkingCospan.right) : s ≅ t := by
-  apply Cocones.ext i
+  apply Cocones.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.ι.naturality WalkingSpan.Hom.fst
     dsimp at h₁
@@ -2708,7 +2708,7 @@ pullbacks. This is right adjoint to `over.map` (TODO) -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
 def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
-  map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp)) (by simp)
+  map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp))
   map_id Z := by
     apply Over.OverMorphism.ext; apply pullback.hom_ext
     · dsimp; simp
