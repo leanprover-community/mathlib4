@@ -1112,10 +1112,10 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
-    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μH[d] s := by
+    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = NNReal.rpow ‖c‖₊ d • μH[d] s := by
   suffices
     μH[d] (IsometryEquiv.vaddConst x '' ((· • ·) c '' ((IsometryEquiv.vaddConst x).symm '' s))) =
-      ‖c‖₊ ^ d • μH[d] s by
+      NNReal.rpow ‖c‖₊ d • μH[d] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, Set.image_smul, Measure.hausdorffMeasure_smul₀ hd hc,
