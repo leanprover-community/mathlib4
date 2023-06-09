@@ -63,6 +63,8 @@ open scoped Topology
 -- To avoid messing around with multiplicative vs. additive characters, we make a notation.
 scoped[FourierTransform] notation e "[" x "]" => (e (Multiplicative.ofAdd x) : ℂ)
 
+open FourierTransform
+
 /-! ## Fourier theory for functions on general vector spaces -/
 
 
@@ -86,7 +88,11 @@ theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Mea
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
-  simp only [Pi.smul_apply, fourier_integral, smul_comm _ r, integral_smul]
+  -- Porting note: was
+  -- simp only [Pi.smul_apply, fourierIntegral, smul_comm _ r, integral_smul]
+  simp only [Pi.smul_apply, fourierIntegral, ← integral_smul]
+  congr; funext
+  rw [smul_comm]
 #align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_smul_const
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
@@ -103,10 +109,9 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative �
     fourierIntegral e μ L (f ∘ fun v => v + v₀) = fun w => e[L v₀ w] • fourierIntegral e μ L f w :=
   by
   ext1 w
-  dsimp only [fourier_integral, Function.comp_apply]
+  dsimp only [fourierIntegral, Function.comp_apply]
   conv in L _ => rw [← add_sub_cancel v v₀]
   rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v]
-  swap; infer_instance
   dsimp only
   rw [← integral_smul]
   congr 1 with v
@@ -133,19 +138,17 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
     Integrable f μ ↔ Integrable (fun v : V => e[-L v w] • f v) μ := by
   -- first prove one-way implication
   have aux :
-    ∀ {g : V → E} (hg : integrable g μ) (x : W), integrable (fun v : V => e[-L v x] • g v) μ := by
+    ∀ {g : V → E} (hg : Integrable g μ) (x : W), Integrable (fun v : V => e[-L v x] • g v) μ := by
     intro g hg x
     have c : Continuous fun v => e[-L v x] := by
-      refine' (continuous_induced_rng.mp he).comp (continuous_of_add.comp (Continuous.neg _))
+      refine' (continuous_induced_rng.mp he).comp (continuous_ofAdd.comp (Continuous.neg _))
       exact hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)
-    rw [← integrable_norm_iff (c.ae_strongly_measurable.smul hg.1)]
-    convert hg.norm
-    ext1 v
+    rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1)]
+    convert hg.norm using 2
     rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
   -- then use it for both directions
   refine' ⟨fun hf => aux hf w, fun hf => _⟩
   convert aux hf (-w)
-  ext1 v
   rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← MonoidHom.map_mul, ← ofAdd_add,
     LinearMap.map_neg, neg_neg, ← sub_eq_add_neg, sub_self, ofAdd_zero, MonoidHom.map_one,
     Submonoid.coe_one, one_smul]
@@ -157,7 +160,7 @@ theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W 
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
   ext1 w
-  dsimp only [Pi.add_apply, fourier_integral]
+  dsimp only [Pi.add_apply, fourierIntegral]
   simp_rw [smul_add]
   rw [integral_add]
   · exact (fourier_integral_convergent_iff he hL w).mp hf
@@ -174,8 +177,8 @@ theorem fourierIntegral_continuous [TopologicalSpace.FirstCountableTopology W] (
     · exact fun v => ‖f v‖
     · rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
   · exact hf.norm
-  · rw [continuous_induced_rng] at he 
-    refine' ae_of_all _ fun v => (he.comp (continuous_of_add.comp _)).smul continuous_const
+  · rw [continuous_induced_rng] at he
+    refine' ae_of_all _ fun v => (he.comp (continuous_ofAdd.comp _)).smul continuous_const
     refine' (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
@@ -279,4 +282,3 @@ theorem fourierIntegral_eq_integral_exp_smul {E : Type _} [NormedAddCommGroup E]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_eq_integral_exp_smul
 
 end Real
-
