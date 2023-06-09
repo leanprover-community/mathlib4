@@ -221,8 +221,8 @@ namespace SubfieldWithHom
 
 variable {E₁ E₂ E₃ : SubfieldWithHom K L M}
 
-instance : LE (SubfieldWithHom K L M)
-    where le E₁ E₂ := ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x
+instance : LE (SubfieldWithHom K L M) where
+  le E₁ E₂ := ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x
 
 noncomputable instance : Inhabited (SubfieldWithHom K L M) :=
   ⟨{  carrier := ⊥
@@ -250,9 +250,10 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
   by_cases hcn : c.Nonempty
   case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
   case pos =>
+    have : Nonempty c := Set.Nonempty.to_subtype hcn
     let ub : SubfieldWithHom K L M :=
       ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
-        @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ (Set.Nonempty.to_subtype hcn)
+        @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ this
             (fun i : c => (i : SubfieldWithHom K L M).carrier)
             (fun i j =>
               let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
@@ -278,7 +279,7 @@ theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E
   exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
 #align lift.subfield_with_hom.exists_maximal_subfield_with_hom lift.SubfieldWithHom.exists_maximal_subfieldWithHom
 
-/-- The maximal `subfield_with_hom`. We later prove that this is equal to `⊤`. -/
+/-- The maximal `SubfieldWithHom`. We later prove that this is equal to `⊤`. -/
 noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
   Classical.choose (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom lift.SubfieldWithHom.maximalSubfieldWithHom
@@ -474,7 +475,7 @@ section EquivOfEquiv
 
 variable {R S}
 
-/-- Used in the definition of `equiv_of_equiv` -/
+/-- Used in the definition of `equivOfEquiv` -/
 noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
     { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.toRingHom
