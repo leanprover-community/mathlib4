@@ -139,13 +139,12 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   induction' n with n ih generalizing k
   · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
-  · cases k
+  · cases' k with k
     · rw [Nat.succ_add_eq_succ_add] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
     · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
       · rwa [Nat.succ_add_eq_succ_add] at hnk
-      · rw [Nat.succ_add, Nat.add_succ, Nat.succ_eq_one_add, Nat.succ_eq_one_add, ← add_assoc,
-        one_add_one_eq_two, add_comm] at hnk
+      · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
@@ -173,7 +172,7 @@ theorem coeff_hermite_explicit :
         hermite_explicit (n + 1) (k + 1) =
           hermite_explicit (n + 1) k - (k + 2) * hermite_explicit n (k + 2) := by
       intro n k
-      simp only [hermite_explicit]
+      simp only
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
@@ -210,10 +209,10 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
 
 theorem coeff_hermite (n k : ℕ) :
     coeff (hermite n) k =
-      if Even (n + k) then (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
+      if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   exact coeff_hermite_of_even_add h
-  exact coeff_hermite_of_odd_add (nat.odd_iff_not_even.mpr h)
+  exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
 #align polynomial.coeff_hermite Polynomial.coeff_hermite
 
 end CoeffExplicit
