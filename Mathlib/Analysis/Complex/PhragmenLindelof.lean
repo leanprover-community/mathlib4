@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.AbsMax
-import Mathbin.Analysis.Asymptotics.SuperpolynomialDecay
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 /-!
 # Phragmen-Lindelöf principle
@@ -69,8 +69,7 @@ on the difference of the functions. -/
 theorem isBigO_sub_exp_exp {a : ℝ} {f g : ℂ → E} {l : Filter ℂ} {u : ℂ → ℝ}
     (hBf : ∃ c < a, ∃ B, f =O[l] fun z => expR (B * expR (c * |u z|)))
     (hBg : ∃ c < a, ∃ B, g =O[l] fun z => expR (B * expR (c * |u z|))) :
-    ∃ c < a, ∃ B, (f - g) =O[l] fun z => expR (B * expR (c * |u z|)) :=
-  by
+    ∃ c < a, ∃ B, (f - g) =O[l] fun z => expR (B * expR (c * |u z|)) := by
   have :
     ∀ {c₁ c₂ B₁ B₂},
       c₁ ≤ c₂ →
@@ -93,16 +92,14 @@ on the difference of the functions. -/
 theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
     (hBf : ∃ c < a, ∃ B, f =O[comap Complex.abs atTop ⊓ l] fun z => expR (B * abs z ^ c))
     (hBg : ∃ c < a, ∃ B, g =O[comap Complex.abs atTop ⊓ l] fun z => expR (B * abs z ^ c)) :
-    ∃ c < a, ∃ B, (f - g) =O[comap Complex.abs atTop ⊓ l] fun z => expR (B * abs z ^ c) :=
-  by
+    ∃ c < a, ∃ B, (f - g) =O[comap Complex.abs atTop ⊓ l] fun z => expR (B * abs z ^ c) := by
   have :
     ∀ {c₁ c₂ B₁ B₂ : ℝ},
       c₁ ≤ c₂ →
         0 ≤ B₂ →
           B₁ ≤ B₂ →
             (fun z : ℂ => expR (B₁ * abs z ^ c₁)) =O[comap Complex.abs at_top ⊓ l] fun z =>
-              expR (B₂ * abs z ^ c₂) :=
-    by
+              expR (B₂ * abs z ^ c₂) := by
     have : ∀ᶠ z : ℂ in comap Complex.abs at_top ⊓ l, 1 ≤ abs z :=
       ((eventually_ge_at_top 1).comap _).filter_mono inf_le_left
     refine' fun c₁ c₂ B₁ B₂ hc hB₀ hB => is_O.of_bound 1 (this.mono fun z hz => _)
@@ -142,8 +139,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
           f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z =>
             expR (B * expR (c * |z.re|)))
     (hle_a : ∀ z : ℂ, im z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, im z = b → ‖f z‖ ≤ C) (hza : a ≤ im z)
-    (hzb : im z ≤ b) : ‖f z‖ ≤ C :=
-  by
+    (hzb : im z ≤ b) : ‖f z‖ ≤ C := by
   -- If `im z = a` or `im z = b`, then we apply `hle_a` or `hle_b`, otherwise `im z ∈ Ioo a b`.
   rw [le_iff_eq_or_lt] at hza hzb 
   cases' hza with hza hza; · exact hle_a _ hza.symm
@@ -151,8 +147,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   -- WLOG, `0 < C`.
   suffices
     ∀ C' : ℝ,
-      0 < C' → (∀ w : ℂ, im w = a → ‖f w‖ ≤ C') → (∀ w : ℂ, im w = b → ‖f w‖ ≤ C') → ‖f z‖ ≤ C'
-    by
+      0 < C' → (∀ w : ℂ, im w = a → ‖f w‖ ≤ C') → (∀ w : ℂ, im w = b → ‖f w‖ ≤ C') → ‖f z‖ ≤ C' by
     refine' le_of_forall_le_of_dense fun C' hC' => this C' _ (fun w hw => _) fun w hw => _
     · refine' ((norm_nonneg (f (a * I))).trans (hle_a _ _)).trans_lt hC'
       rw [mul_I_im, of_real_re]
@@ -175,8 +170,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   set g : ℝ → ℂ → ℂ := fun ε w => exp (ε * (exp (aff w) + exp (-aff w)))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`
     for all negative `ε`. -/
-  suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖g ε z • f z‖ ≤ C
-    by
+  suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖g ε z • f z‖ ≤ C by
     refine' le_of_tendsto (tendsto.mono_left _ nhdsWithin_le_nhds) this
     apply ((continuous_of_real.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
     simp; infer_instance
@@ -184,8 +178,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   -- An upper estimate on `‖g ε w‖` that will be used in two branches of the proof.
   obtain ⟨δ, δ₀, hδ⟩ :
     ∃ δ : ℝ,
-      δ < 0 ∧ ∀ ⦃w⦄, im w ∈ Icc (a - b) (a + b) → abs (g ε w) ≤ expR (δ * expR (d * |re w|)) :=
-    by
+      δ < 0 ∧ ∀ ⦃w⦄, im w ∈ Icc (a - b) (a + b) → abs (g ε w) ≤ expR (δ * expR (d * |re w|)) := by
     refine'
       ⟨ε * Real.cos (d * b),
         mul_neg_of_neg_of_pos ε₀
@@ -199,16 +192,14 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       MulZeroClass.zero_mul, neg_zero, sub_zero] using
       abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
   -- `abs (g ε w) ≤ 1` on the lines `w.im = a ± b` (actually, it holds everywhere in the strip)
-  have hg₁ : ∀ w, im w = a - b ∨ im w = a + b → abs (g ε w) ≤ 1 :=
-    by
+  have hg₁ : ∀ w, im w = a - b ∨ im w = a + b → abs (g ε w) ≤ 1 := by
     refine' fun w hw => (hδ <| hw.byCases _ _).trans (Real.exp_le_one_iff.2 _)
     exacts [fun h => h.symm ▸ left_mem_Icc.2 hab.le, fun h => h.symm ▸ right_mem_Icc.2 hab.le,
       mul_nonpos_of_nonpos_of_nonneg δ₀.le (Real.exp_pos _).le]
   /- Our apriori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In
     particular, its norm is less than or equal to `C` for sufficiently large `|w.re|`. -/
   obtain ⟨R, hzR, hR⟩ :
-    ∃ R : ℝ, |z.re| < R ∧ ∀ w, |re w| = R → im w ∈ Ioo (a - b) (a + b) → ‖g ε w • f w‖ ≤ C :=
-    by
+    ∃ R : ℝ, |z.re| < R ∧ ∀ w, |re w| = R → im w ∈ Ioo (a - b) (a + b) → ‖g ε w • f w‖ ≤ C := by
     refine' ((eventually_gt_at_top _).And _).exists
     rcases hO.exists_pos with ⟨A, hA₀, hA⟩
     simp only [is_O_with_iff, eventually_inf_principal, eventually_comap, mem_Ioo, ← abs_lt,
@@ -336,8 +327,7 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
           f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z =>
             expR (B * expR (c * |z.im|)))
     (hle_a : ∀ z : ℂ, re z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, re z = b → ‖f z‖ ≤ C) (hza : a ≤ re z)
-    (hzb : re z ≤ b) : ‖f z‖ ≤ C :=
-  by
+    (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖(fun z => f (z * -I)) (z * I)‖ ≤ C by simpa [mul_assoc] using this
   have H : maps_to (fun z => z * -I) (im ⁻¹' Ioo a b) (re ⁻¹' Ioo a b) := by intro z hz;
     simpa using hz
@@ -347,8 +337,7 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
   · refine' Exists₃.imp (fun c hc B hO => _) hB
     have :
       tendsto (fun z => z * -I) (comap (Abs.abs ∘ re) at_top ⊓ 𝓟 (im ⁻¹' Ioo a b))
-        (comap (Abs.abs ∘ im) at_top ⊓ 𝓟 (re ⁻¹' Ioo a b)) :=
-      by
+        (comap (Abs.abs ∘ im) at_top ⊓ 𝓟 (re ⁻¹' Ioo a b)) := by
       refine' (tendsto_comap_iff.2 _).inf H.tendsto
       simpa [(· ∘ ·)] using tendsto_comap
     simpa [(· ∘ ·)] using hO.comp_tendsto this
@@ -424,22 +413,19 @@ theorem quadrant_i (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C) (him : ∀ x : ℝ, 0 ≤ x → ‖f (x * I)‖ ≤ C) (hz_re : 0 ≤ z.re)
-    (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C :=
-  by
+    (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C := by
   -- The case `z = 0` is trivial.
   rcases eq_or_ne z 0 with (rfl | hzne);
   · exact hre 0 le_rfl
   -- Otherwise, `z = e ^ ζ` for some `ζ : ℂ`, `0 < Im ζ < π / 2`.
-  obtain ⟨ζ, hζ, rfl⟩ : ∃ ζ : ℂ, ζ.im ∈ Icc 0 (π / 2) ∧ exp ζ = z :=
-    by
+  obtain ⟨ζ, hζ, rfl⟩ : ∃ ζ : ℂ, ζ.im ∈ Icc 0 (π / 2) ∧ exp ζ = z := by
     refine' ⟨log z, _, exp_log hzne⟩
     rw [log_im]
     exact ⟨arg_nonneg_iff.2 hz_im, arg_le_pi_div_two_iff.2 (Or.inl hz_re)⟩
   clear hz_re hz_im hzne
   -- We are going to apply `phragmen_lindelof.horizontal_strip` to `f ∘ complex.exp` and `ζ`.
   change ‖(f ∘ exp) ζ‖ ≤ C
-  have H : maps_to exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) :=
-    by
+  have H : maps_to exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) := by
     intro z hz
     rw [mem_re_prod_im, exp_re, exp_im, mem_Ioi, mem_Ioi]
     refine'
@@ -462,8 +448,7 @@ theorem quadrant_i (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
         ((hO.comp_tendsto <| tendsto_exp_comap_re_at_top.inf H.tendsto).trans <| is_O.of_bound 1 _)
     · -- For the estimate as `ζ.re → -∞`, note that `f` is continuous within the first quadrant at
       -- zero, hence `f (exp ζ)` has a limit as `ζ.re → -∞`, `0 < ζ.im < π / 2`.
-      have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 :=
-        by
+      have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
         refine' (hd.continuous_on _ _).mono subset_closure
         simp [closure_re_prod_im, mem_re_prod_im]
       refine'
@@ -544,13 +529,11 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, 0 ≤ x → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
-    (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C :=
-  by
+    (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C := by
   obtain ⟨z, rfl⟩ : ∃ z', z' * I = z; exact ⟨z / I, div_mul_cancel _ I_ne_zero⟩
   simp only [mul_I_re, mul_I_im, neg_nonpos] at hz_re hz_im 
   change ‖(f ∘ (· * I)) z‖ ≤ C
-  have H : maps_to (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) :=
-    by
+  have H : maps_to (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := by
     intro w hw
     simpa only [mem_re_prod_im, mul_I_re, mul_I_im, neg_lt_zero, mem_Iio] using hw.symm
   refine'
@@ -618,13 +601,11 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, x ≤ 0 → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
-    (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C :=
-  by
+    (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C := by
   obtain ⟨z, rfl⟩ : ∃ z', -z' = z; exact ⟨-z, neg_neg z⟩
   simp only [neg_re, neg_im, neg_nonpos] at hz_re hz_im 
   change ‖(f ∘ Neg.neg) z‖ ≤ C
-  have H : maps_to Neg.neg (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Iio 0) :=
-    by
+  have H : maps_to Neg.neg (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Iio 0) := by
     intro w hw
     simpa only [mem_re_prod_im, neg_re, neg_im, neg_lt_zero, mem_Iio] using hw
   refine'
@@ -694,13 +675,11 @@ theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 (Ioi 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C) (him : ∀ x : ℝ, x ≤ 0 → ‖f (x * I)‖ ≤ C) (hz_re : 0 ≤ z.re)
-    (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C :=
-  by
+    (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C := by
   obtain ⟨z, rfl⟩ : ∃ z', -z' = z; exact ⟨-z, neg_neg z⟩
   simp only [neg_re, neg_im, neg_nonpos, neg_nonneg] at hz_re hz_im 
   change ‖(f ∘ Neg.neg) z‖ ≤ C
-  have H : maps_to Neg.neg (Iio 0 ×ℂ Ioi 0) (Ioi 0 ×ℂ Iio 0) :=
-    by
+  have H : maps_to Neg.neg (Iio 0 ×ℂ Ioi 0) (Ioi 0 ×ℂ Iio 0) := by
     intro w hw
     simpa only [mem_re_prod_im, neg_re, neg_im, neg_lt_zero, neg_pos, mem_Ioi, mem_Iio] using hw
   refine'
@@ -777,14 +756,12 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hre : Tendsto (fun x : ℝ => f x) atTop (𝓝 0)) (him : ∀ x : ℝ, ‖f (x * I)‖ ≤ C)
-    (hz : 0 ≤ z.re) : ‖f z‖ ≤ C :=
-  by
+    (hz : 0 ≤ z.re) : ‖f z‖ ≤ C := by
   /- We are going to apply the Phragmen-Lindelöf principle in the first and fourth quadrants.
     The lemmas immediately imply that for any upper estimate `C'` on `‖f x‖`, `x : ℝ`, `0 ≤ x`,
     the number `max C C'` is an upper estimate on `f` in the whole right half-plane. -/
   revert z
-  have hle : ∀ C', (∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C') → ∀ z : ℂ, 0 ≤ z.re → ‖f z‖ ≤ max C C' :=
-    by
+  have hle : ∀ C', (∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C') → ∀ z : ℂ, 0 ≤ z.re → ‖f z‖ ≤ max C C' := by
     intro C' hC' z hz
     cases le_total z.im 0
     · refine'
@@ -799,10 +776,8 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       exact hO.mono (inf_le_inf_left _ <| principal_mono.2 fun _ => And.left)
   -- Since `f` is continuous on `Ici 0` and `‖f x‖` tends to zero as `x → ∞`,
   -- the norm `‖f x‖` takes its maximum value at some `x₀ : ℝ`.
-  obtain ⟨x₀, hx₀, hmax⟩ : ∃ x : ℝ, 0 ≤ x ∧ ∀ y : ℝ, 0 ≤ y → ‖f y‖ ≤ ‖f x‖ :=
-    by
-    have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) :=
-      by
+  obtain ⟨x₀, hx₀, hmax⟩ : ∃ x : ℝ, 0 ≤ x ∧ ∀ y : ℝ, 0 ≤ y → ‖f y‖ ≤ ‖f x‖ := by
+    have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) := by
       refine' hd.continuous_on.comp continuous_of_real.continuous_on fun x hx => _
       rwa [closure_set_of_lt_re]
     by_cases h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
@@ -824,8 +799,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       simpa [max_eq_right h.le] using hle _ hmax _ hz.le
     -- Due to the maximum modulus principle applied to the closed ball of radius `x₀.re`,
     -- `‖f 0‖ = ‖f x₀‖`.
-    have : ‖f 0‖ = ‖f x₀‖ :=
-      by
+    have : ‖f 0‖ = ‖f x₀‖ := by
       apply norm_eq_norm_of_is_max_on_of_ball_subset hd hmax
       -- move to a lemma?
       intro z hz
@@ -857,13 +831,11 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
       ∃ c < (2 : ℝ),
         ∃ B, f =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hre : IsBoundedUnder (· ≤ ·) atTop fun x : ℝ => ‖f x‖) (him : ∀ x : ℝ, ‖f (x * I)‖ ≤ C)
-    (hz : 0 ≤ z.re) : ‖f z‖ ≤ C :=
-  by
+    (hz : 0 ≤ z.re) : ‖f z‖ ≤ C := by
   -- For each `ε < 0`, the function `λ z, exp (ε * z) • f z` satisfies assumptions of
   -- `right_half_plane_of_tendsto_zero_on_real`, hence `‖exp (ε * z) • f z‖ ≤ C` for all `ε < 0`.
   -- Taking the limit as `ε → 0`, we obtain the required inequality.
-  suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C
-    by
+  suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C by
     refine' le_of_tendsto (tendsto.mono_left _ nhdsWithin_le_nhds) this
     apply ((continuous_of_real.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
     simp; infer_instance
@@ -971,8 +943,7 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
         ∃ B, g =O[comap Complex.abs atTop ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hre : SuperpolynomialDecay atTop expR fun x => ‖f x - g x‖)
     (hfim : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) (hgim : ∃ C, ∀ x : ℝ, ‖g (x * I)‖ ≤ C) :
-    EqOn f g {z : ℂ | 0 ≤ z.re} :=
-  by
+    EqOn f g {z : ℂ | 0 ≤ z.re} := by
   suffices eq_on (f - g) 0 {z : ℂ | 0 ≤ z.re} by
     simpa only [eq_on, Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using this
   refine' eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) _ hre _
