@@ -100,9 +100,14 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
-@[simp]
-theorem cast_nonneg (n : ℕ) : 0 ≤ (n : α) :=
+@[simp low]
+theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
+
+-- without this more specific version Lean often chokes
+@[simp]
+theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
+  cast_nonneg' n
 #align nat.cast_nonneg Nat.cast_nonneg
 
 section Nontrivial
@@ -110,10 +115,10 @@ section Nontrivial
 variable [NeZero (1 : α)]
 
 theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
-  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg
+  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
-@[simp]
+@[simp low]
 theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
 
 -- without this more specific version Lean often chokes
