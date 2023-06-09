@@ -438,7 +438,8 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (hadd : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (hmul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
-    {x : A} {n : ℕ}
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
@@ -457,7 +458,8 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (hmul :
       ∀ i x hx, C i x hx →
         ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
-    {x : A} {n : ℕ} (hx : x ∈ M ^ n) : C n x hx := by
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
+! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1210,7 +1210,7 @@ scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 -/
 protected def starOrderedRing : StarOrderedRing ℂ :=
-{ nonneg_iff := fun r => by
+  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
     · have h₁ : 0 ≤ r.re := by
         rw [le_def] at hr
@@ -1219,13 +1219,12 @@ protected def starOrderedRing : StarOrderedRing ℂ :=
         rw [le_def] at hr
         exact hr.2.symm
       ext
-      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero, ←
-          Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
+      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero,
+          ← Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
       · simp only [h₂, add_zero, ofReal_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
           neg_zero]
     · obtain ⟨s, rfl⟩ := h
       simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
-  add_le_add_left := by intros; simp [le_def] at *; assumption }
 #align complex.star_ordered_ring Complex.starOrderedRing
 
 scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing

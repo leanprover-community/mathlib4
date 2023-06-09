@@ -115,7 +115,7 @@ sequence in a neighborhood of `x`. -/
 theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
   suffices
     TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
@@ -179,7 +179,7 @@ convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_lt r 0 with (hr | hr)
   · simp only [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
@@ -478,7 +478,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply]
   rw [← smul_sub, norm_smul, mul_comm]
-  exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+  gcongr
 #align uniform_cauchy_seq_on_filter.one_smul_right UniformCauchySeqOnFilter.one_smulRight
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
@@ -526,7 +526,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
-    exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+    gcongr
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 #align has_deriv_at_of_tendsto_uniformly_on_filter hasDerivAt_of_tendstoUniformlyOnFilter
 
