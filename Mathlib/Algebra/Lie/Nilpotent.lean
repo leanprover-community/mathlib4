@@ -553,7 +553,7 @@ whether we regard `L ⧸ I` as an `L` module or an `L ⧸ I` module.
 
 TODO: This result obviously generalises but the generalisation requires the missing definition of
 morphisms between Lie modules over different Lie algebras. -/
--- Porting note: aded `LieSubmodule.toSubmodule` in the statement
+-- Porting note: added `LieSubmodule.toSubmodule` in the statement
 theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
     LieSubmodule.toSubmodule (lowerCentralSeries R L (L ⧸ I) k) =
       LieSubmodule.toSubmodule (lowerCentralSeries R (L ⧸ I) (L ⧸ I) k) := by
@@ -574,7 +574,7 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
 
 /-- Note that the below inequality can be strict. For example the ideal of strictly-upper-triangular
 2x2 matrices inside the Lie algebra of upper-triangular 2x2 matrices with `k = 1`. -/
--- Porting note: aded `LieSubmodule.toSubmodule` in the statement
+-- Porting note: added `LieSubmodule.toSubmodule` in the statement
 theorem LieModule.coe_lowerCentralSeries_ideal_le {I : LieIdeal R L} (k : ℕ) :
     LieSubmodule.toSubmodule (lowerCentralSeries R I I k) ≤ lowerCentralSeries R L I k := by
   induction' k with k ih
@@ -701,12 +701,13 @@ theorem lcs_top : (⊤ : LieIdeal R L).lcs M k = lowerCentralSeries R L M k :=
   rfl
 #align lie_ideal.lcs_top LieIdeal.lcs_top
 
-theorem coe_lcs_eq : (I.lcs M k : Submodule R M) = lowerCentralSeries R I M k := by
+-- Porting note: added `LieSubmodule.toSubmodule` in the statement
+theorem coe_lcs_eq : LieSubmodule.toSubmodule (I.lcs M k) = lowerCentralSeries R I M k := by
   induction' k with k ih
   · simp
   · simp_rw [lowerCentralSeries_succ, lcs_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
       (I.lcs M k).mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule, LieSubmodule.mem_top,
-      exists_true_left, (I : LieSubalgebra R L).coe_bracket_of_module]
+      true_and, (I : LieSubalgebra R L).coe_bracket_of_module]
     congr
     ext m
     constructor
