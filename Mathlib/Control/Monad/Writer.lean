@@ -2,8 +2,14 @@
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, E.W.Ayers
+
+! This file was ported from Lean 3 source module control.monad.writer
+! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Writer monads
@@ -118,28 +124,28 @@ end WriterT
 This class is comparable to [Control.Lens.Magnify](https://hackage.haskell.org/package/lens-4.15.4/docs/Control-Lens-Zoom.html#t:Magnify),
 but does not use lenses (why would it), and is derived automatically for any transformer
 implementing `MonadFunctor`.
-
-Note: This class can be seen as a simplification of the more "principled" definition
-```
-class MonadReaderFunctor (ρ ρ' : outParam (Type u)) (n n' : Type u → Type u) where
-  map {α : Type u} :
-    (∀ {m : Type u → Type u} [Monad m], ReaderT ρ m α → ReaderT ρ' m α) → n α → n' α
-```
 -/
-class MonadWriterAdapter (ω ω' : outParam (Type u)) (m m' : Type u → Type v) where
-  adaptWriter {α : Type u} : (ω → ω') → m α → m' α
+class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
+  adaptWriter {α : Type u} : (ω → ω) → m α → m α
 
 export MonadWriterAdapter (adaptWriter)
 
 /-- Transitivity.
 
-This instance generates the type-class problem with a metavariable argument (which is why this
-is marked as `[nolint dangerousInstance]`).
-Currently that is not a problem, as there are almost no instances of `monad_functor` or
-`monad_writer_adapter`.
-
 see Note [lower instance priority] -/
-@[nolint dangerous_instance]
-instance (priority := 100) monadWriterAdapterTrans {n n' : Type u → Type v}
-  [MonadWriterAdapter ω ω' m m'] [MonadTransFunctor m m' n n'] : monad_writer_adapter ω ω' n n' :=
-⟨fun α f ↦ monad_map (fun α ↦ (adapt_writer f : m α → m' α))⟩
+instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
+    [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
+  adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))
+
+instance [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
+  adaptWriter := WriterT.adapt
+
+/-- reduce the equivalence between two writer monads to the equivalence between
+their underlying monad -/
+def WriterT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
+    {α₁ ω₁ : Type u₀} {α₂ ω₂ : Type u₁} (F : (m₁ (α₁ × ω₁)) ≃ (m₂ (α₂ × ω₂))) :
+    WriterT ω₁ m₁ α₁ ≃ WriterT ω₂ m₂ α₂ where
+  toFun (f : m₁ _) := WriterT.mk $ F f
+  invFun (f : m₂ _) := WriterT.mk $ F.symm f
+  left_inv (f : m₁ _) := congr_arg WriterT.mk $ F.left_inv f
+  right_inv (f : m₂ _) := congr_arg WriterT.mk $ F.right_inv f
