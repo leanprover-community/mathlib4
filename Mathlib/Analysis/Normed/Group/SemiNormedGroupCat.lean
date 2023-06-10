@@ -236,6 +236,7 @@ theorem coe_comp {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) : (f �
 instance coeToNormedAddGroupHom {M N : SemiNormedGroup₁} : Coe (M ⟶ N) (NormedAddGroupHom M N) :=
   ⟨fun f => f.1⟩
 
+-- Porting Note: This comment might no longer make sense
 -- If `coe_fn_coe_base` fires before `coe_comp`, `coe_comp'` puts us back in normal form.
 @[simp]
 theorem coe_comp' {M N K : SemiNormedGroup₁} (f : M ⟶ N) (g : N ⟶ K) :
@@ -258,7 +259,7 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
     rfl
   zero_comp X {Y Z} f := by
     ext x
-    --porting note: used to be `simp [coe_fn_coe_base']`, added the below instead
+    --porting note: used to be `simp [coe_fn_coe_base']` in mathlib3, added the below instead
     simp only [coe_comp', NormedAddGroupHom.comp_apply]
     change f ((0: X → Y) x) = (0: X → Z) x
     simp only [Pi.zero_apply, map_zero]
