@@ -160,8 +160,10 @@ theorem coeff_hermite_explicit :
   | 0, _ => by simp
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
-    rw [coeff_hermite_explicit n 1, (by ring_nf : 2 * (n + 1) - 1 = 2 * n + 1),
-      Nat.doubleFactorial_add_one, Nat.choose_zero_right, Nat.choose_one_right, pow_succ]
+    -- porting note: ring_nf did not solve the goal on line 165
+    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] :
+      2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
+      Nat.choose_one_right, pow_succ]
     push_cast
     ring
   | n + 1, k + 1 => by
@@ -180,8 +182,9 @@ theorem coeff_hermite_explicit :
       congr 2
       -- Factor out double factorials.
       norm_cast
-      rw [(by ring_nf : 2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one,
-        mul_comm (2 * n + 1)]
+      -- porting note: ring_nf did not solve the goal on line 184
+      rw [(by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
+        Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1
       -- Match up binomial coefficients using `nat.choose_succ_right_eq`.
@@ -204,8 +207,9 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   cases' le_or_lt k n with h_le h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    rw [(by linarith : n = 2 * m + k), Nat.add_sub_cancel,
-      Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
+    -- porting note: linarith failed to find a contradiction by itself
+    rw [(by linarith [by rwa [Nat.sub_eq_iff_eq_add h_le] at hm] : n = 2 * m + k),
+      Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 #align polynomial.coeff_hermite_of_even_add Polynomial.coeff_hermite_of_even_add
 
