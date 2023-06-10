@@ -1875,7 +1875,7 @@ theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, _root_.trans (ihj hlt) (H j)]
+      exacts [H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.liftFun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -2154,7 +2154,7 @@ theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)
 
 theorem exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
   cases' h.lt_or_lt with hlt hlt
-  exacts[⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
+  exacts [⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
 #align fin.exists_succ_above_eq Fin.exists_succAbove_eq
 
 @[simp]
