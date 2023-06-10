@@ -18,7 +18,7 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 ## Main definitions
 
-- `polynomial.is_unit_trinomial`
+- `Polynomial.IsUnitTrinomial`
 
 ## Main results
 
