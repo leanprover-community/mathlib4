@@ -8,8 +8,8 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Spectrum
-import Mathbin.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Spectrum mapping theorem
@@ -61,8 +61,7 @@ local notation "↑ₐ" => algebraMap R A
 
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A} (hp : p ≠ 0)
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).Prod)) :
-    ∃ k : R, k ∈ σ a ∧ eval k p = 0 :=
-  by
+    ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
   rw [← Multiset.prod_toList, AlgHom.map_list_prod] at h 
   replace h := mt List.prod_isUnit h
   simp only [not_forall, exists_prop, aeval_C, Multiset.mem_toList, List.mem_map, aeval_X,
@@ -108,8 +107,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (fun k => eval k p) '' �
 is necessary in case `σ a = ∅`, for then the left-hand side is `∅` and the right-hand side,
 assuming `[nontrivial A]`, is `{k}` where `p = polynomial.C k`. -/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
-    (hdeg : 0 < degree p) : σ (aeval a p) = (fun k => eval k p) '' σ a :=
-  by
+    (hdeg : 0 < degree p) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
   refine' Set.eq_of_subset_of_subset (fun k hk => _) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
@@ -133,8 +131,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
 /-- In this version of the spectral mapping theorem, we assume the spectrum
 is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
-    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a :=
-  by
+    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   nontriviality A
   refine' Or.elim (le_or_gt (degree p) 0) (fun h => _) (map_polynomial_aeval_of_degree_pos a p)
   · rw [eq_C_of_degree_le_zero h]
@@ -167,8 +164,7 @@ variable (𝕜)
 /-- Every element `a` in a nontrivial finite-dimensional algebra `A`
 over an algebraically closed field `𝕜` has non-empty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
-    [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty :=
-  by
+    [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
   have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p ; rw [h_eval_p]; simp
   rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu 
