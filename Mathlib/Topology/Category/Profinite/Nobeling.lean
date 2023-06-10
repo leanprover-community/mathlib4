@@ -1173,15 +1173,13 @@ section JointlySurjective
 open CategoryTheory
 open CategoryTheory.Limits
 
-instance (o : Ordinal) : SmallCategory {o' // o' < o} := inferInstance
-instance (o : Ordinal) : SmallCategory {i : WithTop I // ord I i < o} := inferInstance
 instance ICofiltered {o : Ordinal} (ho : o.IsLimit) :
     IsCofiltered {i : WithTop I // ord I i < o}ᵒᵖ := sorry
-instance DownsetCofiltered {o : Ordinal} (ho : o.IsLimit) : IsCofiltered {o' // o' < o}ᵒᵖ := sorry
-instance (o : Ordinal) : CompactSpace (Res C o) := sorry
-instance CCompact (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) : CompactSpace C := by
+instance ResCompact (o : Ordinal) (hC : IsClosed C) : CompactSpace (Res C o) := sorry
+instance CCompact (o : Ordinal) (hC : IsClosed C) (hsC : Support C ⊆ { j | ord I j < o }) :
+    CompactSpace C := by
   rw [supportResEq C o hsC]
-  exact inferInstance
+  exact ResCompact C o hC
 
 lemma ResOnSubsetsId (o : Ordinal) : ResOnSubsets C (le_refl o) = id := by
   ext ⟨f,hf⟩ i
@@ -1210,44 +1208,14 @@ lemma ResOnSubsetsComp {o₁ o₂ o₃ : Ordinal} (h₁₂ : o₁ ≤ o₂) (h�
     · rfl
   · rfl
 
-noncomputable
-def OrdToProfinite' (o : Ordinal) : {o' // o' < o}ᵒᵖ ⥤ Profinite :=
-{ obj := fun e ↦ Profinite.of (Res C e.unop.val)
-  map := fun h ↦ ⟨ResOnSubsets C (leOfHom h.unop), (continuous_ResOnSubsets _ _)⟩
-  map_id := by
-    intro e
-    dsimp
-    simp_rw [ResOnSubsetsId]
-    rfl
-  map_comp := by
-    intro e₁ e₂ e₃ h₁₂ h₂₃
-    dsimp
-    congr
-    simp only [ContinuousMap.coe_mk]
-    rw [ResOnSubsetsComp] }
+lemma ordILE {i j : WithTop I} (h : i ≤ j) : ord I i ≤ ord I j := by
+  dsimp [ord]
+  rwa [Ordinal.typein_le_typein, not_lt]
 
 noncomputable
-def OrdCone' (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
-    Cone (OrdToProfinite' C o) :=
-{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hsC) _ _
-  π :=
-  { app := fun e ↦ ⟨ResOnSubset C e.unop.val, continuous_ResOnSubset _ _⟩
-    naturality := by
-      intro e₁ e₂ h
-      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
-      congr
-      simp only [ContinuousMap.coe_mk]
-      dsimp [OrdToProfinite']
-      rw [resOnSubsets_eq] } }
-
-lemma OrdConeIsLimit' {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o }) :
-    IsLimit (OrdCone' C o hsC) := sorry
-
-lemma ordILE {i j : WithTop I} (h : i ≤ j) : ord I i ≤ ord I j := by sorry
-
-noncomputable
-def OrdToProfinite (o : Ordinal) : {i : WithTop I // ord I i < o}ᵒᵖ ⥤ Profinite.{u} :=
-{ obj := fun i ↦ Profinite.of (Res C (ord I i.unop))
+def OrdToProfinite (o : Ordinal) (hC : IsClosed C) :
+    {i : WithTop I // ord I i < o}ᵒᵖ ⥤ Profinite.{u} :=
+{ obj := fun i ↦ @Profinite.of (Res C (ord I i.unop)) _ (ResCompact _ _ hC) _ _
   map := fun h ↦ ⟨ResOnSubsets C (ordILE (leOfHom h.unop)), (continuous_ResOnSubsets _ _)⟩
   map_id := by
     intro e
@@ -1262,9 +1230,9 @@ def OrdToProfinite (o : Ordinal) : {i : WithTop I // ord I i < o}ᵒᵖ ⥤ Prof
     rw [ResOnSubsetsComp] }
 
 noncomputable
-def OrdCone (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
-    Cone (OrdToProfinite C o) :=
-{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hsC) _ _
+def OrdCone (o : Ordinal) (hC : IsClosed C) (hsC : Support C ⊆ { j | ord I j < o }) :
+    Cone (OrdToProfinite C o hC) :=
+{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hC hsC) _ _
   π :=
   { app := fun i ↦ ⟨ResOnSubset C (ord I i.unop), continuous_ResOnSubset _ _⟩
     naturality := by
@@ -1275,33 +1243,35 @@ def OrdCone (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
       dsimp [OrdToProfinite]
       rw [resOnSubsets_eq] } }
 
-lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o }) :
-    IsLimit (OrdCone C o hsC) := sorry
+lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o }) : IsLimit (OrdCone C o hC hsC) := sorry
 
-def LocConstConePoint {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
-    (f : LocallyConstant {i // i ∈ C} ℤ) :
-    LocallyConstant (OrdCone C o hsC).pt.toCompHaus.toTop ℤ := sorry
-
-lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
     (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
   obtain ⟨i, g, h⟩ := @Profinite.exists_locallyConstant {i : WithTop I // ord I i < o}ᵒᵖ _
-    (ICofiltered ho) _ (OrdCone C o hsC) _
-    (OrdConeIsLimit C ho hsC) (LocConstConePoint.{u} C ho hsC f)
+    (ICofiltered ho) _ (OrdCone C o hC hsC) _
+    (OrdConeIsLimit C ho hC hsC) f
+  use ⟨ord I i.unop.val, i.unop.prop⟩
+  use g
+  rw [h]
+  congr
 
-
-lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ), g.comap (ResOnSubset C o') = f := by
-  obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hsC f
+  obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hC hsC f
   exact ⟨e.val, e.prop,⟨g,h⟩⟩
 
-lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
+lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ),
     (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
     LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f :=
-  comapJointlySurjective C ho hsC f
+  comapJointlySurjective C ho hC hsC f
 
 
 end JointlySurjective
@@ -1374,7 +1344,7 @@ lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
     simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
     dsimp [ModProducts.smaller]
     simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
-    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hsC f
+    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hC hsC f
     use o'
     use ho'
     use g
