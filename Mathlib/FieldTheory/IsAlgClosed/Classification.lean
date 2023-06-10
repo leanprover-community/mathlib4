@@ -21,8 +21,8 @@ This file contains results related to classifying algebraically closed fields.
 
 ## Main statements
 
-* `IsAlgClosed.equivOfTranscendenceBasis` Two fields with the same characteristic and the same
-  cardinality of transcendence basis are isomorphic.
+* `IsAlgClosed.equivOfTranscendenceBasis` Two algebraically closed fields with the same
+  characteristic and the same cardinality of transcendence basis are isomorphic.
 * `IsAlgClosed.ringEquivOfCardinalEqOfCharEq` Two uncountable algebraically closed fields
   are isomorphic if they have the same characteristic and the same cardinality.
 -/
