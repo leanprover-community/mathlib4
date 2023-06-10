@@ -251,7 +251,6 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup₁.of_unique SemiNormedGroup₁.ofUnique
 
-/--Porting Note: Had to fix double coercions in `zero_comp`-/
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
   Zero X Y := { zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩ }
   comp_zero {X Y} f Z := by
@@ -259,6 +258,7 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup₁ where
     rfl
   zero_comp X {Y Z} f := by
     ext x
+    --porting note: used to be `simp [coe_fn_coe_base']`, added the below instead
     simp only [coe_comp', NormedAddGroupHom.comp_apply]
     change f ((0: X → Y) x) = (0: X → Z) x
     simp only [Pi.zero_apply, map_zero]
