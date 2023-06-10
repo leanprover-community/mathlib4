@@ -74,7 +74,7 @@ theorem IsJacobson.out {R} [CommRing R] :
  the Jacobson radical of `P` is equal to `P`. -/
 theorem isJacobson_iff_prime_eq : IsJacobson R ↔ ∀ P : Ideal R, IsPrime P → P.jacobson = P := by
   refine isJacobson_iff.trans ⟨fun h I hI => h I hI.isRadical, ?_⟩
-  refine fun h I hI => le_antisymm (fun x hx => ?_) (fun x hx => mem_sInf.mpr fun _ hJ => hJ.left hx)
+  refine fun h I hI ↦ le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ mem_sInf.mpr fun _ hJ ↦ hJ.left hx)
   rw [← hI.radical, radical_eq_sInf I, mem_sInf]
   intro P hP
   rw [Set.mem_setOf_eq] at hP
@@ -414,9 +414,7 @@ private theorem isJacobson_polynomial_of_domain (R : Type _) [CommRing R] [IsDom
     [hR : IsJacobson R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
   by_cases Pb : P = ⊥
-  ·
-    exact
-      Pb.symm ▸ jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot_of_noZeroDivisors)
+  · exact Pb.symm ▸ jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot_of_noZeroDivisors)
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
     haveI : (P.comap (C : R →+* R[X])).IsPrime := comap_isPrime C P
     obtain ⟨p, pP, p0⟩ := exists_nonzero_mem_of_ne_bot Pb hP
@@ -657,9 +655,9 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson {R : Type _} [CommRing R] [IsJ
     (P : Ideal (MvPolynomial (Fin n) R)) [P.IsMaximal] :
     ((Quotient.mk P).comp MvPolynomial.C : R →+* MvPolynomial _ R ⧸ P).IsIntegral := by
   induction' n with n IH
-  · sorry
-    -- refine RingHom.isIntegral_of_surjective _ (Function.Surjective.comp Quotient.mk_surjective _)
-    -- exact C_surjective (Fin 0)
+  · apply RingHom.isIntegral_of_surjective
+    apply Function.Surjective.comp Quotient.mk_surjective
+    exact C_surjective (Fin 0)
   · rw [← finSuccEquiv_comp_C_eq_C, ← RingHom.comp_assoc, ← RingHom.comp_assoc, ←
       quotientMap_comp_mk le_rfl, RingHom.comp_assoc Polynomial.C, ← quotientMap_comp_mk le_rfl,
       RingHom.comp_assoc, RingHom.comp_assoc, ← quotientMap_comp_mk le_rfl, ←
@@ -698,7 +696,8 @@ theorem comp_C_integral_of_surjective_of_jacobson {R : Type _} [CommRing R] [IsJ
   change Function.Surjective f' at hf'
   have : (f'.comp C).IsIntegral := by
     haveI : f'.ker.IsMaximal := ker_isMaximal_of_surjective f' hf'
-    let g : MvPolynomial _ R ⧸ (RingHom.ker f') →+* S := Ideal.Quotient.lift (RingHom.ker f') f' fun _ h => h
+    let g : MvPolynomial _ R ⧸ (RingHom.ker f') →+* S :=
+      Ideal.Quotient.lift (RingHom.ker f') f' fun _ h => h
     have hfg : g.comp (Quotient.mk (RingHom.ker f')) = f' := ringHom_ext (fun r => rfl) fun i => rfl
     rw [← hfg, RingHom.comp_assoc]
     refine'
