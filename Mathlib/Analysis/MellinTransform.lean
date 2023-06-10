@@ -137,8 +137,8 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine' set_integral_congr measurableSet_Ioi fun t ht => _
   dsimp only
-  rw [← mul_smul, ← mul_assoc, inv_mul_cancel, one_mul, ← smul_assoc, real_smul]
-  show |a| ≠ 0; · contrapose! ha; exact abs_eq_zero.mp ha
+  rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
+    real_smul]
   rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
     mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
@@ -197,7 +197,6 @@ section MellinConvergent
 
 /-! ## Convergence of Mellin transform integrals -/
 
-
 /-- Auxiliary lemma to reduce convergence statements from vector-valued functions to real
 scalar-valued functions. -/
 theorem mellin_convergent_iff_norm [NormedSpace ℂ E] {f : ℝ → E} {T : Set ℝ} (hT : T ⊆ Ioi 0)
@@ -218,14 +217,14 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
     (hfc : AEStronglyMeasurable f <| volume.restrict (Ioi 0)) {a s : ℝ}
     (hf : IsBigO atTop f fun t => t ^ (-a)) (hs : s < a) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioi c) := by
-  obtain ⟨d, hd, hd'⟩ := hf.exists_pos
+  obtain ⟨d, hd'⟩ := hf.isBigOWith
   simp_rw [IsBigOWith, eventually_atTop] at hd' 
   obtain ⟨e, he⟩ := hd'
   have he' : 0 < max e 1 := zero_lt_one.trans_le (le_max_right _ _)
   refine' ⟨max e 1, he', _, _⟩
   · refine' AEStronglyMeasurable.mul _ (hfc.mono_set (Ioi_subset_Ioi he'.le))
     refine' (ContinuousAt.continuousOn fun t ht => _).aestronglyMeasurable measurableSet_Ioi
-    exact continuous_at_rpow_const _ _ (Or.inl <| (he'.trans ht).ne')
+    exact continuousAt_rpow_const _ _ (Or.inl <| (he'.trans ht).ne')
   · have : ∀ᵐ t : ℝ ∂volume.restrict (Ioi <| max e 1), ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d :=
       by
       refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun t ht => _)
@@ -235,8 +234,9 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
       exact
         mul_le_mul_of_nonneg_left (he t ((le_max_left e 1).trans_lt ht).le)
           (rpow_pos_of_pos ht' _).le
-    refine' (has_finite_integral.mul_const _ _).mono' this
-    exact (integrableOn_Ioi_rpow_of_lt (by linarith) he').HasFiniteIntegral
+    refine' (HasFiniteIntegral.mul_const _ _).mono' this
+    exact (integrableOn_Ioi_rpow_of_lt (by linarith) he').hasFiniteIntegral
+set_option linter.uppercaseLean3 false in
 #align mellin_convergent_top_of_is_O mellin_convergent_top_of_isBigO
 
 /-- If `f` is a locally integrable real-valued function which is `O(x ^ (-b))` at `0`, then for any
@@ -251,10 +251,10 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
   refine' ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨_, _⟩⟩
   · refine' AEStronglyMeasurable.mul _ (hfc.mono_set Ioo_subset_Ioi_self)
     refine' (ContinuousAt.continuousOn fun t ht => _).aestronglyMeasurable measurableSet_Ioo
-    exact continuous_at_rpow_const _ _ (Or.inl ht.1.ne')
-  · apply has_finite_integral.mono'
-    · show has_finite_integral (fun t => d * t ^ (s - b - 1)) _
-      refine' (integrable.has_finite_integral _).const_mul _
+    exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
+  · apply HasFiniteIntegral.mono'
+    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
+      refine' (Integrable.hasFiniteIntegral _).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrable_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
@@ -269,6 +269,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
         rw [← rpow_add ht.1]
         congr 1
         abel
+set_option linter.uppercaseLean3 false in
 #align mellin_convergent_zero_of_is_O mellin_convergent_zero_of_isBigO
 
 /-- If `f` is a locally integrable real-valued function on `Ioi 0` which is `O(x ^ (-a))` at `∞`
@@ -286,9 +287,10 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
   rw [this, integrableOn_union, integrableOn_union]
   refine' ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp _⟩, hc1'⟩
   refine'
-    (hfc.continuous_on_mul _ isOpen_Ioi).integrableOn_compact_subset
-      (fun t ht => (hc2.trans_le ht.1 : 0 < t)) is_compact_Icc
-  exact ContinuousAt.continuousOn fun t ht => continuous_at_rpow_const _ _ <| Or.inl <| ne_of_gt ht
+    (hfc.continuousOn_mul _ isOpen_Ioi).integrableOn_compact_subset
+      (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
+  exact ContinuousAt.continuousOn fun t ht => continuousAt_rpow_const _ _ <| Or.inl <| ne_of_gt ht
+set_option linter.uppercaseLean3 false in
 #align mellin_convergent_of_is_O_scalar mellin_convergent_of_isBigO_scalar
 
 theorem mellinConvergent_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ} {f : ℝ → E} {s : ℂ}
@@ -298,6 +300,7 @@ theorem mellinConvergent_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ} {f : ℝ
   rw [MellinConvergent,
     mellin_convergent_iff_norm (subset_refl _) measurableSet_Ioi hfc.aestronglyMeasurable]
   exact mellin_convergent_of_isBigO_scalar hfc.norm hf_top.norm_left hs_top hf_bot.norm_left hs_bot
+set_option linter.uppercaseLean3 false in
 #align mellin_convergent_of_is_O_rpow mellinConvergent_of_isBigO_rpow
 
 end MellinConvergent
@@ -309,22 +312,24 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
     (hf : IsBigO atTop f fun t => t ^ (-a)) :
     IsBigO atTop (fun t : ℝ => log t • f t) fun t => t ^ (-b) := by
   refine'
-    ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).IsBigO.smul hf).congr'
+    ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).isBigO.smul hf).congr'
       (eventually_of_forall fun t => by rfl)
       ((eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => _))
+  simp only
   rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel']
+set_option linter.uppercaseLean3 false in
 #align is_O_rpow_top_log_smul isBigO_rpow_top_log_smul
 
 /-- If `f` is `O(x ^ (-a))` as `x → 0`, then `log • f` is `O(x ^ (-b))` for every `a < b`. -/
 theorem isBigO_rpow_zero_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E} (hab : a < b)
     (hf : IsBigO (𝓝[>] 0) f fun t => t ^ (-a)) :
     IsBigO (𝓝[>] 0) (fun t : ℝ => log t • f t) fun t => t ^ (-b) := by
-  have : is_o (𝓝[>] 0) log fun t : ℝ => t ^ (a - b) := by
+  have : log =o[𝓝[>] 0] fun t : ℝ => t ^ (a - b) := by
     refine'
       ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).neg_left.comp_tendsto
             tendsto_inv_zero_atTop).congr'
-        (eventually_nhds_within_iff.mpr <| eventually_of_forall fun t ht => _)
-        (eventually_nhds_within_iff.mpr <| eventually_of_forall fun t ht => _)
+        (eventually_nhdsWithin_iff.mpr <| eventually_of_forall fun t ht => _)
+        (eventually_nhdsWithin_iff.mpr <| eventually_of_forall fun t ht => _)
     ·
       simp_rw [Function.comp_apply, ← one_div, log_div one_ne_zero (ne_of_gt ht), Real.log_one,
         zero_sub, neg_neg]
@@ -359,15 +364,15 @@ theorem mellin_has_deriv_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {a
     refine' eventually_of_forall fun z => AEStronglyMeasurable.smul _ hfc.aestronglyMeasurable
     refine' ContinuousOn.aestronglyMeasurable _ measurableSet_Ioi
     refine' ContinuousAt.continuousOn fun t ht => _
-    exact continuous_at_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
+    exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
   have h2 : IntegrableOn (F s) (Ioi 0) :=
     mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply locally_integrableOn.aestronglyMeasurable
-    refine' hfc.continuous_on_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => _).mul _)
-    · exact continuous_at_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
-    · refine' continuous_ofReal.comp_continuous_on _
-      exact continuous_on_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
+    refine' hfc.continuousOn_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => _).mul _)
+    · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
+    · refine' continuous_ofReal.comp_continuousOn _
+      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t :=
     by
     refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun t ht z hz => _)
@@ -401,8 +406,8 @@ theorem mellin_has_deriv_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {a
       obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
       refine' mellin_convergent_of_isBigO_scalar _ _ hw1' _ hw2
       · simp_rw [mul_comm]
-        refine' hfc.norm.mul_continuous_on _ isOpen_Ioi
-        refine' Continuous.comp_continuousOn continuous_abs (continuous_on_log.mono _)
+        refine' hfc.norm.mul_continuousOn _ isOpen_Ioi
+        refine' Continuous.comp_continuousOn continuous_abs (continuousOn_log.mono _)
         exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
       · refine' (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr' _ (eventually_eq.refl _ _)
         refine' (eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => _)
@@ -445,7 +450,7 @@ its Mellin transform converges for `b < s.re`. -/
 theorem mellinConvergent_of_isBigO_rpow_exp [NormedSpace ℂ E] {a b : ℝ} (ha : 0 < a) {f : ℝ → E}
     {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0) (hf_top : IsBigO atTop f fun t => exp (-a * t))
     (hf_bot : IsBigO (𝓝[>] 0) f fun t => t ^ (-b)) (hs_bot : b < s.re) : MellinConvergent f s :=
-  mellinConvergent_of_isBigO_rpow hfc (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).IsBigO)
+  mellinConvergent_of_isBigO_rpow hfc (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).isBigO)
     (lt_add_one _) hf_bot hs_bot
 #align mellin_convergent_of_is_O_rpow_exp mellinConvergent_of_isBigO_rpow_exp
 
@@ -456,7 +461,7 @@ theorem mellin_differentiableAt_of_isBigO_rpow_exp [CompleteSpace E] [NormedSpac
     (hf_top : IsBigO atTop f fun t => exp (-a * t)) (hf_bot : IsBigO (𝓝[>] 0) f fun t => t ^ (-b))
     (hs_bot : b < s.re) : DifferentiableAt ℂ (mellin f) s :=
   mellin_differentiableAt_of_isBigO_rpow hfc
-    (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).IsBigO) (lt_add_one _) hf_bot hs_bot
+    (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).isBigO) (lt_add_one _) hf_bot hs_bot
 #align mellin_differentiable_at_of_is_O_rpow_exp mellin_differentiableAt_of_isBigO_rpow_exp
 
 end ExpDecay
