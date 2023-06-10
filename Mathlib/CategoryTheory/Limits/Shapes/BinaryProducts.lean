@@ -81,7 +81,7 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
   rfl
 #align category_theory.limits.walking_pair.swap_symm_apply_ff CategoryTheory.Limits.WalkingPair.swap_symm_apply_ff
 
-/-- An equivalence from `WalkingPair` to `bool`, sometimes useful when reindexing limits.
+/-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
 def WalkingPair.equivBool : WalkingPair ≃ Bool
     where
@@ -150,13 +150,14 @@ section
 variable {F G : Discrete WalkingPair ⥤ C} (f : F.obj ⟨left⟩ ⟶ G.obj ⟨left⟩)
   (g : F.obj ⟨right⟩ ⟶ G.obj ⟨right⟩)
 
--- attribute [local tidy] tactic.discrete_cases Porting note: no more local, no more tidy
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+  CategoryTheory.Discrete.discreteCases
 
 /-- The natural transformation between two functors out of the
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
   app j := Discrete.recOn j fun j => WalkingPair.casesOn j f g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by dsimp at u; cases u; simp
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
 #align category_theory.limits.map_pair CategoryTheory.Limits.mapPair
 
 @[simp]
@@ -174,7 +175,7 @@ components. -/
 @[simps!]
 def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right⟩ ≅ G.obj ⟨right⟩) : F ≅ G :=
   NatIso.ofComponents (fun j => Discrete.recOn j fun j => WalkingPair.casesOn j f g)
-    (fun {X} {Y} ⟨⟨u⟩⟩ => by dsimp; cases X; cases Y; cases u; simp)
+    (fun ⟨⟨u⟩⟩ => by aesop_cat)
 #align category_theory.limits.map_pair_iso CategoryTheory.Limits.mapPairIso
 
 end
@@ -292,16 +293,17 @@ variable {X Y : C}
 
 section
 
--- attribute [local tidy] tactic.discrete_cases Porting note: no local, no tidy
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+  CategoryTheory.Discrete.discreteCases
+-- Porting note: would it be okay to use this more generally?
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
 @[simps pt]
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
   π :=
-    -- Porting removed use of casesOn to preserve computability
-    { app := fun ⟨j⟩ => by cases j <;> simpa
-      naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cases u; simp }
+    { app := fun ⟨j⟩ => by cases j <;> simpa }
 #align category_theory.limits.binary_fan.mk CategoryTheory.Limits.BinaryFan.mk
 
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
@@ -309,9 +311,7 @@ def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y whe
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
   ι :=
-    -- Porting removed use of casesOn to preserve computability
-    { app := fun ⟨j⟩ => by cases j <;> simpa
-      naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cases u; simp }
+    { app := fun ⟨j⟩ => by cases j <;> simpa }
 #align category_theory.limits.binary_cofan.mk CategoryTheory.Limits.BinaryCofan.mk
 
 end
@@ -672,7 +672,7 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
 #align category_theory.limits.coprod.epi_desc_of_epi_right CategoryTheory.Limits.coprod.epi_desc_of_epi_right
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ prod.fst = f` and `l ≫ prod.snd = g`. -/
+    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
 def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
@@ -823,7 +823,7 @@ end ProdLemmas
 section CoprodLemmas
 
 -- @[reassoc (attr := simp)]
-@[simp] -- Porting note: removing reassoc tag since result is not hygenic (two h's)
+@[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   apply coprod.hom_ext; simp; simp
@@ -1105,7 +1105,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1191,7 +1191,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1207,14 +1207,14 @@ def prod.functor : C ⥤ C ⥤ C where
 /-- The product functor can be decomposed. -/
 def prod.functorLeftComp (X Y : C) :
     prod.functor.obj (X ⨯ Y) ≅ prod.functor.obj Y ⋙ prod.functor.obj X :=
-  NatIso.ofComponents (prod.associator _ _) (by aesop_cat)
+  NatIso.ofComponents (prod.associator _ _)
 #align category_theory.limits.prod.functor_left_comp CategoryTheory.Limits.prod.functorLeftComp
 
 end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propogate
+-- Porting note: added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
@@ -1229,7 +1229,7 @@ def coprod.functor : C ⥤ C ⥤ C where
 /-- The coproduct functor can be decomposed. -/
 def coprod.functorLeftComp (X Y : C) :
     coprod.functor.obj (X ⨿ Y) ≅ coprod.functor.obj Y ⋙ coprod.functor.obj X :=
-  NatIso.ofComponents (coprod.associator _ _) (by aesop_cat)
+  NatIso.ofComponents (coprod.associator _ _)
 #align category_theory.limits.coprod.functor_left_comp CategoryTheory.Limits.coprod.functorLeftComp
 
 end CoprodFunctor

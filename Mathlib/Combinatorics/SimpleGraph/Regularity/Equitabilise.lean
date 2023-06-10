@@ -121,7 +121,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       refine'
         (card_le_of_subset fun i => _).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined diferently
+      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id.def, not_or]
       exact fun hi₁ hi₂ hi₃ =>

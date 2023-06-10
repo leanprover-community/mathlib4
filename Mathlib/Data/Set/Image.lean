@@ -1102,7 +1102,7 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
   eq_univ_of_forall mem_range_self
 #align set.preimage_range Set.preimage_range
 
-/-- The range of a function from a `unique` type contains just the
+/-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
 theorem range_unique [h : Unique ι] : range f = {f default} := by
   ext x

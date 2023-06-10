@@ -11,6 +11,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.Tactic.NoncommRing
 
 /-!
 
@@ -85,9 +86,9 @@ variable {R : Type _} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
--- mathport name: «expr [ ⁻¹]»
 @[inherit_doc OreLocalization]
-notation:1075 R "[" S "⁻¹]" => OreLocalization R S
+scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
+macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $R $S)
 
 attribute [local instance] oreEqv
 
@@ -521,11 +522,11 @@ private theorem add''_char (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) (rb : R) 
   use sc * sd
   use rc * sd
   constructor <;> simp only [Submonoid.coe_mul]
-  · simp only [right_distrib, mul_assoc]
+  · noncomm_ring
     rw [← mul_assoc (a := rb), hd, ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
   · rw [mul_assoc (a := (s₁ : R)), ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
 
 attribute [local instance] OreLocalization.oreEqv
 
