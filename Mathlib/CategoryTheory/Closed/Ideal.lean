@@ -247,9 +247,10 @@ This is the converse of `exponentialIdeal_of_preserves_binary_products`.
 -/
 noncomputable def preservesBinaryProductsOfExponentialIdeal :
     PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i) where
-  preservesLimit {K} := by
-    apply Limits.preservesLimitOfIsoDiagram _ (diagramIsoPair K).symm
-    apply PreservesLimitPair.ofIsoProdComparison
+  preservesLimit {K} :=
+    letI := PreservesLimitPair.ofIsoProdComparison
+      (leftAdjoint i) (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)
+    Limits.preservesLimitOfIsoDiagram _ (diagramIsoPair K).symm
 #align category_theory.preserves_binary_products_of_exponential_ideal CategoryTheory.preservesBinaryProductsOfExponentialIdeal
 
 /--
