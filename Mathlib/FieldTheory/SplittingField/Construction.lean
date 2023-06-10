@@ -209,15 +209,15 @@ protected theorem splits (n : ℕ) :
 set_option maxHeartbeats 400000 in
 theorem adjoin_roots (n : ℕ) :
     ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (hfn : f.natDegree = n),
+      ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤ :=
   Nat.recOn (motive := fun n =>
     ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (hfn : f.natDegree = n),
+      ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K
             (↑(f.map <| algebraMap K <| SplittingFieldAux n f).roots.toFinset :
               Set (SplittingFieldAux n f)) = ⊤)
-    n (fun {K} _ f hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
+    n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn ; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf ; exact hndf rfl
