@@ -148,22 +148,21 @@ variable [ExponentialIdeal i]
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself cartesian closed.
 -/
-def cartesianClosedOfReflective : CartesianClosed D where
-  closed B :=
-    { isAdj :=
-        { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
-          adj := by
-            apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
-            · symm
-              apply NatIso.ofComponents _ _
-              · intro X
-                haveI := Adjunction.rightAdjointPreservesLimits.{0, 0} (Adjunction.ofRightAdjoint i)
-                apply asIso (prodComparison i B X)
-              · intro X Y f
-                dsimp
-                rw [prodComparison_natural]
-                simp
-            · apply (exponentialIdealReflective i _).symm } }
+def cartesianClosedOfReflective : CartesianClosed D :=
+  { monoidalOfHasFiniteProducts D with -- Porting note: Added this instance
+    closed := fun B =>
+      { isAdj :=
+          { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
+            adj := by
+              apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
+              · symm
+                refine' NatIso.ofComponents (fun X => _) (fun f => _)
+                · haveI :=
+                    Adjunction.rightAdjointPreservesLimits.{0, 0} (Adjunction.ofRightAdjoint i)
+                  apply asIso (prodComparison i B X)
+                · dsimp [asIso]
+                  rw [prodComparison_natural, Functor.map_id]
+              · apply (exponentialIdealReflective i _).symm } } }
 #align category_theory.cartesian_closed_of_reflective CategoryTheory.cartesianClosedOfReflective
 
 -- It's annoying that I need to do this.
