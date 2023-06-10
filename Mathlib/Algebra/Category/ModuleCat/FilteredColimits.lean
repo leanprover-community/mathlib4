@@ -205,7 +205,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   uniq t m h :=
     LinearMap.coe_injective <|
       (Types.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
-        ((forget (ModuleCat R)).mapCocone t) m fun j => funext fun x => LinearMap.congr_fun (h j) x
+        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone_is_colimit ModuleCat.FilteredColimits.colimitCoconeIsColimit
 
