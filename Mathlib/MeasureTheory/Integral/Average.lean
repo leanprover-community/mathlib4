@@ -67,13 +67,13 @@ noncomputable def average (f : α → E) :=
   ∫ x, f x ∂(μ univ)⁻¹ • μ
 #align measure_theory.average MeasureTheory.average
 
-notation3"⨍ "(...)", "r:(scoped f => f)" ∂"μ => average μ r
+notation3 "⨍ "(...)", "r:(scoped f => f)" ∂"μ => average μ r
 
-notation3"⨍ "(...)", "r:(scoped f => average volume f) => r
+notation3 "⨍ "(...)", "r:(scoped f => average volume f) => r
 
-notation3"⨍ "(...)" in "s", "r:(scoped f => f)" ∂"μ => average (Measure.restrict μ s) r
+notation3 "⨍ "(...)" in "s", "r:(scoped f => f)" ∂"μ => average (Measure.restrict μ s) r
 
-notation3"⨍ "(...)" in "s", "r:(scoped f => average (Measure.restrict volume s) f) => r
+notation3 "⨍ "(...)" in "s", "r:(scoped f => average (Measure.restrict volume s) f) => r
 
 @[simp]
 theorem average_zero : (⨍ _, (0 : E) ∂μ) = 0 := by rw [average, integral_zero]

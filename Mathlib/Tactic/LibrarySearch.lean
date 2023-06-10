@@ -44,7 +44,7 @@ A "modifier" for a declaration.
 * `mpr` similarly, but for the backward direction.
 -/
 inductive DeclMod
-| none | symm | mp | mpr
+  | none | symm | mp | mpr
 deriving DecidableEq, Ord
 
 instance : ToString DeclMod where

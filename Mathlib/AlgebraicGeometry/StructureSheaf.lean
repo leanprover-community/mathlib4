@@ -83,11 +83,11 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 
 -- Porting note : can't derive `CommRingCat`
 instance CommRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
-show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 -- Porting note : can't derive `LocalRing`
 instance LocalRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
@@ -530,7 +530,7 @@ formed by gluing the `open_to_localization` maps. -/
 def stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
     (structureSheaf R).presheaf.stalk x ⟶ CommRingCat.of (Localization.AtPrime x.asIdeal) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (structureSheaf R).1)
-    { pt:= _
+    { pt := _
       ι := { app := fun U =>
         openToLocalization R ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom
@@ -557,14 +557,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk

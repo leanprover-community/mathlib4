@@ -1560,7 +1560,7 @@ lemma disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :
 #align set.disjoint_of_subset_right Set.disjoint_of_subset_right
 
 lemma disjoint_of_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (h : Disjoint s₂ t₂) : Disjoint s₁ t₁ :=
-h.mono hs ht
+  h.mono hs ht
 #align set.disjoint_of_subset Set.disjoint_of_subset
 
 @[simp]
@@ -1599,7 +1599,7 @@ lemma disjoint_singleton_left : Disjoint {a} s ↔ a ∉ s := by simp [Set.disjo
 
 @[simp]
 lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
-disjoint_comm.trans disjoint_singleton_left
+  disjoint_comm.trans disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
 lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
@@ -2042,7 +2042,7 @@ theorem diff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
 
 @[simp]
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
-sdiff_eq_self_iff_disjoint.2 $ by simp [h]
+  sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
@@ -2617,20 +2617,20 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 #align set.nontrivial.not_subsingleton Set.Nontrivial.not_subsingleton
 
-protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial :=
-by simp [or_iff_not_imp_right]
+protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial := by
+  simp [or_iff_not_imp_right]
 #align set.subsingleton_or_nontrivial Set.subsingleton_or_nontrivial
 
-lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial :=
-by rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
+  rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
 #align set.eq_singleton_or_nontrivial Set.eq_singleton_or_nontrivial
 
 lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=
-⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
+  ⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
 #align set.nontrivial_iff_ne_singleton Set.nontrivial_iff_ne_singleton
 
 lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
-fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
+  fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
 #align set.nonempty.exists_eq_singleton_or_nontrivial Set.Nonempty.exists_eq_singleton_or_nontrivial
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=

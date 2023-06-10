@@ -121,7 +121,7 @@ This implements the coercion `FractionalIdeal S P → Submodule R P`.
 -/
 @[coe]
 def coeToSubmodule (I : FractionalIdeal S P) : Submodule R P :=
-I.val
+  I.val
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 

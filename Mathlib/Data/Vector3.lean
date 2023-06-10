@@ -125,7 +125,7 @@ def consElim {C : Vector3 α (succ n) → Sort u} (H : ∀ (a : α) (t : Vector3
 #align vector3.cons_elim Vector3.consElim
 
 @[simp]
-theorem consElim_cons {C H a t} : @consElim α n C H (a::t) = H a t :=
+theorem consElim_cons {C H a t} : @consElim α n C H (a :: t) = H a t :=
   rfl
 #align vector3.cons_elim_cons Vector3.consElim_cons
 

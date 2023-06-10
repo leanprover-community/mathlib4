@@ -100,7 +100,7 @@ variable [Algebra R S] {P : Type _} [CommSemiring P]
 /-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
---Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
+  --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
   /-- the `algebraMap` is surjective -/

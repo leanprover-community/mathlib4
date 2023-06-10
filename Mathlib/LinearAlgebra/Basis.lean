@@ -1437,7 +1437,7 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 The specific value of this definition should be considered an implementation detail.
 -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+  LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=

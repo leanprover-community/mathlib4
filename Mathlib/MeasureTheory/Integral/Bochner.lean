@@ -800,16 +800,16 @@ end
 
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)", "r:(scoped f => f)" ∂"μ => integral μ r
+notation3 "∫ "(...)", "r:(scoped f => f)" ∂"μ => integral μ r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)", "r:(scoped f => integral volume f) => r
+notation3 "∫ "(...)", "r:(scoped f => integral volume f) => r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)" in "s", "r:(scoped f => f)" ∂"μ => integral (Measure.restrict μ s) r
+notation3 "∫ "(...)" in "s", "r:(scoped f => f)" ∂"μ => integral (Measure.restrict μ s) r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)" in "s", "r:(scoped f => integral (Measure.restrict volume s) f) => r
+notation3 "∫ "(...)" in "s", "r:(scoped f => integral (Measure.restrict volume s) f) => r
 
 section Properties
 

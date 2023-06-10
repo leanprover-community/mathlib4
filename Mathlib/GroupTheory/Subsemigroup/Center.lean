@@ -148,7 +148,7 @@ variable (M) [Semigroup M]
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
-  mul_mem':= Set.mul_mem_center
+  mul_mem  Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
