@@ -37,18 +37,16 @@ initialize registerTraceClass `Tactic.librarySearch.lemmas
 /--
 A "modifier" for a declaration.
 * `none` indicates the original declaration,
-* `symm` indicates that (possibly after binders) the declaration is an `=`,
-  and we want to consider the symmetric version,
-* `mp` indicates that (possibly after binders) the declaration is an `iff`,
+* `mp` indicates that (possibly after binders) the declaration is an `↔`,
   and we want to consider the forward direction,
 * `mpr` similarly, but for the backward direction.
 -/
 inductive DeclMod
-  | none | symm | mp | mpr
+  | none | mp | mpr
 deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
-  toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
+  toString m := match m with | .none => "" | .mp => "mp" | .mpr => "mpr"
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -60,13 +58,9 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let keys ← DiscrTree.mkPath type
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
-    | (``Eq, #[_, lhs, rhs]) => do
-      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-      return r.push (keys_symm, (name, .symm))
     | (``Iff, #[lhs, rhs]) => do
-      let keys_mp ← DiscrTree.mkPath rhs
-      let keys_mpr ← DiscrTree.mkPath lhs
-      return r.push (keys_mp, (name, .mp)) |>.push (keys_mpr, (name, .mpr))
+      return r.push (← DiscrTree.mkPath rhs, (name, .mp))
+        |>.push (← DiscrTree.mkPath lhs, (name, .mpr))
     | _ => return r
 
 /-- Insert a lemma into the discrimination tree. -/
@@ -140,7 +134,6 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     let lem ← mkConstWithFreshMVarLevels lem
     let lem ← match mod with
     | .none => pure lem
-    | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
     let newGoals ← goal.apply lem
@@ -162,6 +155,18 @@ def librarySearchCore (goal : MVarId)
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
+
+/--
+Run `librarySearchCore` on both the goal and `symm` applied to the goal.
+-/
+def librarySearchSymm (goal : MVarId)
+    (required : List Expr) (solveByElimDepth := 6) :
+    ListM MetaM (MetavarContext × List MVarId) :=
+  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+    if let some symm ← try? goal.symm then
+      return librarySearchCore symm required solveByElimDepth
+    else
+      return .nil
 
 /-- A type synonym for our subgoal ranking algorithm. -/
 def subgoalRankType : Type := Bool × Nat × Int
@@ -222,7 +227,7 @@ def librarySearch (goal : MVarId) (required : List Expr)
     _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return none) <|>
   (do
-    let results ← librarySearchCore goal required solveByElimDepth
+    let results ← librarySearchSymm goal required solveByElimDepth
       -- Don't use too many heartbeats.
       |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
       -- Stop if we find something that closes the goal

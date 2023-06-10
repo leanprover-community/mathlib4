@@ -287,7 +287,7 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
           refine' i.cases' _ _
-          exacts[pa, h], fun h => ⟨_, fun i => _⟩⟩
+          exacts [pa, h], fun h => ⟨_, fun i => _⟩⟩
     · have h0 := h fz
       simp at h0
       exact h0

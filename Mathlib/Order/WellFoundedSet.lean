@@ -350,7 +350,7 @@ theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrdere
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq r f
   · refine' ⟨g, fun m n hle => _⟩
     obtain hlt | rfl := hle.lt_or_eq
-    exacts[h1 m n hlt, refl_of r _]
+    exacts [h1 m n hlt, refl_of r _]
   · exfalso
     obtain ⟨m, n, hlt, hle⟩ := h (f ∘ g) fun n => hf _
     exact h2 m n hlt hle

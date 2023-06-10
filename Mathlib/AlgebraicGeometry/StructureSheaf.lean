@@ -764,7 +764,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     all_goals rw [res_const]; apply const_ext; ring
     -- The remaining two goals were generated during the rewrite of `res_const`
     -- These can be solved immediately
-    exacts[PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
+    exacts [PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
   -- From the equality in the localization, we obtain for each `(i,j)` some power `(h i * h j) ^ n`
   -- which equalizes `a i * h j` and `h i * a j`
   have exists_power :

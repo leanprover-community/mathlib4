@@ -134,10 +134,10 @@ theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
 right.
 -/
 def walkingParallelPairOp : WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ where
-  obj x := op <| by cases x; exacts[one, zero]
+  obj x := op <| by cases x; exacts [one, zero]
   map f := by
     cases f <;> apply Quiver.Hom.op
-    exacts[left, right, WalkingParallelPairHom.id _]
+    exacts [left, right, WalkingParallelPairHom.id _]
   map_comp := by rintro _ _ _ (_|_|_) g <;> cases g <;> rfl
 #align category_theory.limits.walking_parallel_pair_op CategoryTheory.Limits.walkingParallelPairOp
 

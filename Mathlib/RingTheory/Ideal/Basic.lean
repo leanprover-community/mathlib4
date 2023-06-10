@@ -179,7 +179,7 @@ theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
 theorem span_singleton_mul_left_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({a * x} : Set α) = span {x} := by
   apply le_antisymm <;> rw [span_singleton_le_iff_mem, mem_span_singleton']
-  exacts[⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
+  exacts [⟨a, rfl⟩, ⟨_, h2.unit.inv_mul_cancel_left x⟩]
 #align ideal.span_singleton_mul_left_unit Ideal.span_singleton_mul_left_unit
 
 theorem span_insert (x) (s : Set α) : span (insert x s) = span ({x} : Set α) ⊔ span s :=
@@ -577,7 +577,7 @@ theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
-    exacts[I.mul_mem_right y h, I.mul_mem_left x h]⟩
+    exacts [I.mul_mem_right y h, I.mul_mem_left x h]⟩
 #align ideal.is_prime.mul_mem_iff_mem_or_mem Ideal.IsPrime.mul_mem_iff_mem_or_mem
 
 theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
