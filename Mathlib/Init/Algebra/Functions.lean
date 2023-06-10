@@ -58,7 +58,7 @@ lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   · apply le_trans; apply min_le_left; apply min_le_left
   · apply le_min; apply le_trans; apply min_le_left; apply min_le_right; apply min_le_right
   · intros d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left;
-     apply le_trans h₂; apply min_le_right
+    apply le_trans h₂; apply min_le_right
 
 lemma min_left_comm : @LeftCommutative α α min :=
   left_comm min (@min_comm α _) (@min_assoc α _)
