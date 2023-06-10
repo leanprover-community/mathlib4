@@ -131,7 +131,7 @@ variable (p q : ℤ[X])
 
 /-- A unit trinomial is a trinomial with unit coefficients. -/
 def IsUnitTrinomial :=
-  ∃ (k m n : ℕ) (_hkm : k < m) (_hmn : m < n) (u v w : Units ℤ), p = trinomial k m n (u : ℤ) v w
+  ∃ (k m n : ℕ) (_ : k < m) (_ : m < n) (u v w : Units ℤ), p = trinomial k m n (u : ℤ) v w
 #align polynomial.is_unit_trinomial Polynomial.IsUnitTrinomial
 
 variable {p q}
