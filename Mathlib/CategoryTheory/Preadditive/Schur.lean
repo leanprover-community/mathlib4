@@ -8,11 +8,11 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Ext
-import Mathbin.CategoryTheory.Simple
-import Mathbin.CategoryTheory.Linear.Basic
-import Mathbin.CategoryTheory.Endomorphism
-import Mathbin.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.Algebra.Group.Ext
+import Mathlib.CategoryTheory.Simple
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
 # Schur's lemma
@@ -95,8 +95,7 @@ the hom space between two non-isomorphic simple objects is 0-dimensional.
 theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜 C] {X Y : C}
     [Simple X] [Simple Y] (h : (X ≅ Y) → False) : finrank 𝕜 (X ⟶ Y) = 0 :=
   haveI :=
-    subsingleton_of_forall_eq (0 : X ⟶ Y) fun f =>
-      by
+    subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (is_iso_iff_nonzero f)
       simp only [Classical.not_not, Ne.def] at p 
       refine' p.mp fun _ => h (as_iso f)
@@ -123,8 +122,7 @@ If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible
 then `X ⟶ X` is 1-dimensional.
 -/
 theorem finrank_endomorphism_eq_one {X : C} (is_iso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
-    [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 :=
-  by
+    [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (is_iso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine' finrank_eq_one (𝟙 X) id_nonzero _
   · intro f
@@ -160,8 +158,7 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
     Field (End X) := by
   classical exact
     { (inferInstance : DivisionRing (End X)) with
-      mul_comm := fun f g =>
-        by
+      mul_comm := fun f g => by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
         obtain ⟨d, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 g
         simp [← mul_smul, mul_comm c d] }
@@ -176,8 +173,7 @@ See `finrank_hom_simple_simple_eq_one_iff` and `finrank_hom_simple_simple_eq_zer
 for the refinements when we know whether or not the simples are isomorphic.
 -/
 theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
-    [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 :=
-  by
+    [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
   cases' subsingleton_or_nontrivial (X ⟶ Y) with h
   · skip
     rw [finrank_zero_of_subsingleton]
@@ -192,8 +188,7 @@ theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X �
 
 theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
-    finrank 𝕜 (X ⟶ Y) = 1 ↔ Nonempty (X ≅ Y) :=
-  by
+    finrank 𝕜 (X ⟶ Y) = 1 ↔ Nonempty (X ≅ Y) := by
   fconstructor
   · intro h
     rw [finrank_eq_one_iff'] at h 
@@ -221,8 +216,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
 open scoped Classical
 
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
-    [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 :=
-  by
+    [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs
   exact (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y).2 h
   exact (finrank_hom_simple_simple_eq_zero_iff 𝕜 X Y).2 (not_nonempty_iff.mp h)
