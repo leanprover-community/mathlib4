@@ -842,7 +842,7 @@ end DivisionRing
 
 section Centralizer
 
-/-- The centralizer of a set inside a ring as a `subring`. -/
+/-- The centralizer of a set inside a ring as a `Subring`. -/
 def centralizer (s : Set R) : Subring R :=
   { Subsemiring.centralizer s with neg_mem' := Set.neg_mem_centralizer }
 #align subring.centralizer Subring.centralizer
