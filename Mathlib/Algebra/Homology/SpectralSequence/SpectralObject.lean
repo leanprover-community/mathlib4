@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.Images
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.ArrowFive
+import Mathlib.CategoryTheory.ArrowSeven
 import Mathlib.CategoryTheory.Subobject.Lattice
 
 open CategoryTheory Category Limits Preadditive
@@ -171,7 +171,8 @@ attribute [reassoc (attr := simp)] zero₁ zero₂ zero₃
 variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 variable (X : SpectralObject C ι)
 
-variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+variable (n₀ n₁ n₂ n₃ n₄ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+  (hn₄ : n₃ + 1 = n₄)
 
 lemma δ_app_eq_zero (D : Arrow₂ ι) (h : IsIso D.f) :
     (X.δ n₀ n₁ hn₁).app D = 0 := by
@@ -945,6 +946,7 @@ lemma dToSrcΦ_Φ_app (D : Arrow₄ ι) :
       (X.dToTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D := by
   simp [dToSrcΦ]
 
+@[reassoc]
 lemma cyclesπ_dToSrcΦ_app (D : Arrow₄ ι) :
     (X.cyclesπ n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₀.obj D) ≫ (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D =
       (X.toSrcΦ n₁ n₂ hn₂).app (Arrow₄.δ₄.obj D) := by
@@ -993,7 +995,7 @@ noncomputable def dFromSrcΦ :
 
 @[reassoc (attr := simp)]
 lemma dFromSrcΦ_fac :
-      whiskerLeft Arrow₄.δ₀ (X.toSrcΦ n₀ n₁ hn₁) ≫  X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂ ≫
+      whiskerLeft Arrow₄.δ₀ (X.toSrcΦ n₀ n₁ hn₁) ≫ X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂ ≫
     whiskerLeft Arrow₄.δ₄ (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂) =
       whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁) := by
   dsimp only [dToSrcΦ]
@@ -1018,7 +1020,8 @@ lemma Φ_dFromTgtΦ_app (D : Arrow₄ ι) :
       (X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D := by
   simp [dFromTgtΦ]
 
-lemma dFromTgtΦ_cyclesι_app (D : Arrow₄ ι) :
+@[reassoc]
+lemma dFromTgtΦ_opcyclesι_app (D : Arrow₄ ι) :
     (X.dFromTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D ≫ (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₄.obj D) =
       (X.fromTgtΦ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D) := by
   rw [← cancel_epi ((X.Φ n₀ n₁ hn₁).hom.app (Arrow₄.δ₀.obj D)), Φ_dFromTgtΦ_app_assoc,
@@ -1026,12 +1029,38 @@ lemma dFromTgtΦ_cyclesι_app (D : Arrow₄ ι) :
     dFromSrcΦ_fac_app, toSrcΦ_Φ_hom_fromTgtΦ_app]
 
 noncomputable def d : Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ ⟶
-    Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃:=
+    Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃ :=
   whiskerLeft Arrow₅.δ₀ (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂) ≫
     whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₄) (X.Φ n₁ n₂ hn₂).hom ≫
     whiskerLeft Arrow₅.δ₅ (X.dFromTgtΦ n₁ n₂ n₃ hn₂ hn₃)
 
 pp_extended_field_notation d
+
+/-lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ ⟶ x₁)
+    (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) (f₆ : x₅ ⟶ x₆) (f₇ : x₆ ⟶ x₇) :
+    (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₃ f₄ f₅ f₆ f₇) ≫
+      (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).app (Arrow₅.mk f₁ f₂ f₃ f₄ f₅) = 0 := by
+  dsimp [d, Arrow₅.δ₀, Arrow₄.δ₄, Arrow₅.δ₅]
+  rw [← cancel_mono ((X.opcyclesι n₂ n₃ n₄ hn₃ hn₄).app (Arrow₃.mk f₁ f₂ f₃)), zero_comp,
+    assoc, assoc, assoc, assoc, assoc,
+    ← cancel_epi ((X.cyclesπ n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₅ f₆ f₇)), comp_zero]
+  erw [X.cyclesπ_dToSrcΦ_app_assoc n₀ n₁ n₂ hn₁ hn₂ (Arrow₄.mk f₄ f₅ f₆ f₇),
+    X.Φ_dFromTgtΦ_app_assoc n₁ n₂ n₃ hn₂ hn₃ (Arrow₄.mk f₃ f₄ f₅ f₆),
+    X.dFromTgtΦ_opcyclesι_app n₂ n₃ n₄ hn₃ hn₄ (Arrow₄.mk f₁ f₂ f₃ f₄),
+    X.dToSrcΦ_Φ_app_assoc n₁ n₂ n₃ hn₂ hn₃ (Arrow₄.mk f₂ f₃ f₄ f₅)]
+  dsimp [Arrow₄.δ₄, Arrow₄.δ₀]
+  sorry
+
+lemma d_comp_d_app (D : Arrow₇ ι) :
+    (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D) ≫
+      (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).app ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D) = 0 := by
+  apply X.d_comp_d_app'
+
+lemma d_comp_d :
+    whiskerLeft (Arrow₇.δ₀ ⋙ Arrow₆.δ₀) (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃) ≫
+      whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₆) (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄) = 0 := by
+  ext D
+  apply d_comp_d_app-/
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁

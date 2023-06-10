@@ -763,6 +763,8 @@ import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.ArrowFive
 import Mathlib.CategoryTheory.ArrowFour
+import Mathlib.CategoryTheory.ArrowSeven
+import Mathlib.CategoryTheory.ArrowSix
 import Mathlib.CategoryTheory.ArrowThree
 import Mathlib.CategoryTheory.ArrowTwo
 import Mathlib.CategoryTheory.Balanced
