@@ -162,11 +162,11 @@ def adF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ad (F i) ^ (-A i j).toNat <| ⁅F i, F j⁆
 #align cartan_matrix.relations.ad_F CartanMatrix.Relations.adF
 
-private theorem ad_E_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
+private theorem adE_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
   simp [adE, h, h']
 
-private theorem ad_F_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
+private theorem adF_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
   have h' : (-2 : ℤ).toNat = 0 := by rfl
   simp [adF, h, h']
 
