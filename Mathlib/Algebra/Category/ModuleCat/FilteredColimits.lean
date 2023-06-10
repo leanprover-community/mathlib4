@@ -104,8 +104,14 @@ theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_mk_eq ModuleCat.FilteredColimits.colimit_smul_mk_eq
 
-set_option maxHeartbeats 300000 in
-instance colimitModule : Module R (M F) where
+private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
+  refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
+  erw [colimit_smul_mk_eq F 1 ⟨j, x⟩]
+  simp
+  rfl
+
+-- Porting note: writing directly the `Module` instance makes things very slow.
+instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
     erw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
@@ -114,27 +120,36 @@ instance colimitModule : Module R (M F) where
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
     erw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
       colimit_smul_mk_eq F r ⟨j, _⟩, mul_smul]
-  smul_add r x y := by sorry
-    -- apply Quot.induction_on₂ x y; clear x y; intro x y; cases' x with i x; cases' y with j y
-    -- erw [colimit_add_mk_eq _ ⟨i, x⟩ ⟨j, y⟩ (max' i j) (left_to_max i j) (right_to_max i j),
-    --   colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq, colimit_smul_mk_eq,
-    --   colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (left_to_max i j) (right_to_max i j),
-    --   LinearMap.map_smul, LinearMap.map_smul]
-    -- rfl
-  smul_zero r := by
+
+instance colimitSMulWithZero : SMulWithZero R (M F) :=
+{ colimitMulAction F with
+  smul_zero := fun r => by
     erw [colimit_zero_eq _ (IsFiltered.Nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
--- Porting note: this needs `300000` Heartbeats.
-  zero_smul x := by
+  zero_smul := fun x => by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
     erw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
+    rfl }
+
+private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
+  refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
+  erw [colimit_smul_mk_eq, _root_.add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
+      colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j), CategoryTheory.Functor.map_id, id_apply,
+      id_apply]
+  rfl
+
+instance colimitModule : Module R (M F) :=
+{ colimitMulAction F,
+  colimitSMulWithZero F with
+  smul_add := fun r x y => by
+    refine' Quot.induction_on₂ x y _; clear x y; intro x y; cases' x with i x; cases' y with j y
+    erw [colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
+      (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq,
+      colimit_smul_mk_eq, colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
+      (IsFiltered.rightToMax i j), LinearMap.map_smul, LinearMap.map_smul]
     rfl
-  add_smul r s x := by sorry
-    -- refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
-    -- erw [colimit_smul_mk_eq, add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
-    --   colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j), CategoryTheory.Functor.map_id, id_apply,
-    --   id_apply]
-    -- rfl
+  add_smul := colimitModule.add_smul F }
+
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_module ModuleCat.FilteredColimits.colimitModule
 
