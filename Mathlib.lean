@@ -1528,6 +1528,7 @@ import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
+import Mathlib.Data.Polynomial.UnitTrinomial
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
