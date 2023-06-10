@@ -346,12 +346,10 @@ instance addCommMonoid : AddCommMonoid p :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul := (· • ·)
-    -- Porting note: this used to be `ext <;> simp [add_smul, smul_add]` but `simp` tries
-    -- to prove it for the un-coerced version
-    smul_zero := fun a => Subtype.ext (smul_zero a)
-    zero_smul := fun a => Subtype.ext (zero_smul S (a : M))
-    add_smul := fun a b x => Subtype.ext (add_smul a b (x : M))
-    smul_add := fun a x y => Subtype.ext (smul_add a (x : M) (y : M)) }
+    smul_zero := fun a => by ext; simp
+    zero_smul := fun a => by ext; simp
+    add_smul := fun a b x => by ext; simp [add_smul]
+    smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
 instance module : Module R p :=
