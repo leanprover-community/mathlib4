@@ -103,8 +103,7 @@ theorem WalkingParallelPairHom.id_comp
 
 theorem WalkingParallelPairHom.comp_id
     {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y) : comp f (id Y) = f := by
-  cases f
-  rfl
+  cases f <;> rfl
 
 theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
     (f : WalkingParallelPairHom X Y) (g: WalkingParallelPairHom Y Z)
