@@ -15,10 +15,10 @@ import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
 
-We define `center C` to be pairs `⟨X, b⟩`, where `X : C` and `b` is a half-braiding on `X`.
+We define `Center C` to be pairs `⟨X, b⟩`, where `X : C` and `b` is a half-braiding on `X`.
 
-We show that `center C` is braided monoidal,
-and provide the monoidal functor `center.forget` from `center C` back to `C`.
+We show that `Center C` is braided monoidal,
+and provide the monoidal functor `Center.forget` from `Center C` back to `C`.
 
 ## Future work
 
@@ -47,13 +47,6 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A half-braiding on `X : C` is a family of isomorphisms `X ⊗ U ≅ U ⊗ X`,
 monoidally natural in `U : C`.
 
@@ -64,11 +57,9 @@ transformations (in the pseudo- sense) of the identity 2-functor on `C`, which s
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure HalfBraiding (X : C) where
   β : ∀ U, X ⊗ U ≅ U ⊗ X
-  monoidal' :
-    ∀ U U',
-      (β (U ⊗ U')).hom =
-        (α_ _ _ _).inv ≫
-          ((β U).hom ⊗ 𝟙 U') ≫ (α_ _ _ _).hom ≫ (𝟙 U ⊗ (β U').hom) ≫ (α_ _ _ _).inv := by
+  monoidal' : ∀ U U', (β (U ⊗ U')).hom =
+      (α_ _ _ _).inv ≫
+        ((β U).hom ⊗ 𝟙 U') ≫ (α_ _ _ _).hom ≫ (𝟙 U ⊗ (β U').hom) ≫ (α_ _ _ _).inv := by
     aesop_cat
   naturality' : ∀ {U U'} (f : U ⟶ U'), (𝟙 X ⊗ f) ≫ (β U').hom = (β U).hom ≫ (f ⊗ 𝟙 X) := by
     aesop_cat
@@ -97,8 +88,6 @@ namespace Center
 
 variable {C}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism in the Drinfeld center of `C`. -/
 @[ext] -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure Hom (X Y : Center C) where
@@ -130,15 +119,14 @@ theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
   cases f; cases g; congr
 #align category_theory.center.ext CategoryTheory.Center.ext
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Construct an isomorphism in the Drinfeld center from
 a morphism whose underlying morphism is an isomorphism.
 -/
 @[simps]
 def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   hom := f
-  inv :=
-    ⟨inv f.f, fun U => by simp [← cancel_epi (f.f ⊗ 𝟙 U), ← comp_tensor_id_assoc, ← id_tensor_comp]⟩
+  inv := ⟨inv f.f,
+    fun U => by simp [← cancel_epi (f.f ⊗ 𝟙 U), ← comp_tensor_id_assoc, ← id_tensor_comp]⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
 instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
@@ -146,10 +134,7 @@ instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
   ⟨X.1 ⊗ Y.1,
@@ -166,8 +151,8 @@ def tensorObj (X Y : Center C) : Center C :=
         slice_rhs 5 6 => rw [associator_naturality]
         slice_rhs 7 8 => rw [← associator_naturality]
         slice_rhs 6 7 =>
-          rw [tensor_id, tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id, ←
-            tensor_id, ← tensor_id]
+          rw [tensor_id, tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id,
+            ← tensor_id, ← tensor_id]
         -- Now insert associators as needed to make the four half-braidings look identical
         slice_rhs 10 10 => rw [associator_inv_conjugation]
         slice_rhs 7 7 => rw [associator_inv_conjugation]
@@ -183,8 +168,7 @@ def tensorObj (X Y : Center C) : Center C :=
           HalfBraiding.naturality, comp_tensor_id_assoc, associator_naturality, ← tensor_id] }⟩
 #align category_theory.center.tensor_obj CategoryTheory.Center.tensorObj
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂ where
@@ -195,12 +179,12 @@ def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶
       ← tensor_id_comp_id_tensor, Category.assoc, ← id_tensor_comp_assoc, g.comm,
       id_tensor_comp_assoc, tensor_id_comp_id_tensor_assoc, ← id_tensor_comp_tensor_id,
       Category.assoc, associator_inv_naturality_assoc, id_tensor_associator_inv_naturality_assoc,
-      tensor_id, id_tensor_comp_tensor_id_assoc, ← tensor_id_comp_id_tensor g.f, Category.assoc, ←
-      comp_tensor_id_assoc, f.comm, comp_tensor_id_assoc, id_tensor_associator_naturality,
+      tensor_id, id_tensor_comp_tensor_id_assoc, ← tensor_id_comp_id_tensor g.f, Category.assoc,
+      ← comp_tensor_id_assoc, f.comm, comp_tensor_id_assoc, id_tensor_associator_naturality,
       associator_naturality_assoc, ← id_tensor_comp, tensor_id_comp_id_tensor]
 #align category_theory.center.tensor_hom CategoryTheory.Center.tensorHom
 
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
   ⟨𝟙_ C,
@@ -211,7 +195,7 @@ def tensorUnit : Center C :=
         rw [leftUnitor_naturality_assoc, rightUnitor_inv_naturality, Category.assoc] }⟩
 #align category_theory.center.tensor_unit CategoryTheory.Center.tensorUnit
 
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   isoMk
     ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by
@@ -220,7 +204,7 @@ def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X 
       coherence⟩
 #align category_theory.center.associator CategoryTheory.Center.associator
 
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
   isoMk
     ⟨(λ_ X.1).hom, fun U => by
@@ -230,7 +214,7 @@ def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
       rw [← leftUnitor_tensor, leftUnitor_naturality, leftUnitor_tensor'_assoc]⟩
 #align category_theory.center.left_unitor CategoryTheory.Center.leftUnitor
 
-/-- Auxiliary definition for the `monoidal_category` instance on `center C`. -/
+/-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
   isoMk
     ⟨(ρ_ X.1).hom, fun U => by
@@ -255,16 +239,11 @@ instance : MonoidalCategory (Center C) where
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
   rfl
 #align category_theory.center.tensor_fst CategoryTheory.Center.tensor_fst
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensor_β (X Y : Center C) (U : C) :
     (X ⊗ Y).2.β U =
@@ -273,8 +252,6 @@ theorem tensor_β (X Y : Center C) (U : C) :
   rfl
 #align category_theory.center.tensor_β CategoryTheory.Center.tensor_β
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
   rfl
@@ -324,7 +301,6 @@ section
 
 variable (C)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The forgetful monoidal functor from the Drinfeld center to the original category. -/
 @[simps]
 def forget : MonoidalFunctor (Center C) C where
@@ -339,17 +315,15 @@ instance : ReflectsIsomorphisms (forget C).toFunctor where
 
 end
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Auxiliary definition for the `braided_category` instance on `center C`. -/
+/-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
 def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
   isoMk
     ⟨(X.2.β Y.1).hom, fun U => by
       dsimp
       simp only [Category.assoc]
-      rw [← IsIso.inv_comp_eq, IsIso.Iso.inv_hom, ← HalfBraiding.monoidal_assoc, ←
-        HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
+      rw [← IsIso.inv_comp_eq, IsIso.Iso.inv_hom, ← HalfBraiding.monoidal_assoc,
+        ← HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
       simp⟩
 #align category_theory.center.braiding CategoryTheory.Center.braiding
 
@@ -362,14 +336,14 @@ instance braidedCategoryCenter : BraidedCategory (Center C) where
       id_tensor_comp_tensor_id]
 #align category_theory.center.braided_category_center CategoryTheory.Center.braidedCategoryCenter
 
--- `obviously` handles the hexagon axioms
+-- `aesop_cat` handles the hexagon axioms
 section
 
 variable [BraidedCategory C]
 
 open BraidedCategory
 
-/-- Auxiliary construction for `of_braided`. -/
+/-- Auxiliary construction for `ofBraided`. -/
 @[simps]
 def ofBraidedObj (X : C) : Center C :=
   ⟨X, {
@@ -400,8 +374,8 @@ def ofBraided : MonoidalFunctor C (Center C) where
     { f := 𝟙 _
       comm' := fun U => by
         dsimp
-        rw [tensor_id, tensor_id, Category.id_comp, Category.comp_id, ← Iso.inv_comp_eq, ←
-          Category.assoc, ← Category.assoc, ← Iso.comp_inv_eq, Category.assoc, hexagon_reverse,
+        rw [tensor_id, tensor_id, Category.id_comp, Category.comp_id, ← Iso.inv_comp_eq,
+          ← Category.assoc, ← Category.assoc, ← Iso.comp_inv_eq, Category.assoc, hexagon_reverse,
           Category.assoc] }
 #align category_theory.center.of_braided CategoryTheory.Center.ofBraided
 
