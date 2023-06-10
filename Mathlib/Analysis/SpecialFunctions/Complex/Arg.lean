@@ -218,8 +218,8 @@ theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
   rw [Real.tan_eq_sin_div_cos, sin_arg, cos_arg h, div_div_div_cancel_right _ (abs.ne_zero h)]
 #align complex.tan_arg Complex.tan_arg
 
-theorem arg_of_real_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [arg, hx]
-#align complex.arg_of_real_of_nonneg Complex.arg_of_real_of_nonneg
+theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [arg, hx]
+#align complex.arg_of_real_of_nonneg Complex.arg_ofReal_of_nonneg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
   refine' ⟨fun h => _, _⟩
@@ -227,7 +227,7 @@ theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
     simp [abs.nonneg]
   · cases' z with x y
     rintro ⟨h, rfl : y = 0⟩
-    exact arg_of_real_of_nonneg h
+    exact arg_ofReal_of_nonneg h
 #align complex.arg_eq_zero_iff Complex.arg_eq_zero_iff
 
 theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
@@ -246,9 +246,9 @@ theorem arg_lt_pi_iff {z : ℂ} : arg z < π ↔ 0 ≤ z.re ∨ z.im ≠ 0 := by
   rw [(arg_le_pi z).lt_iff_ne, not_iff_comm, not_or, not_le, Classical.not_not, arg_eq_pi_iff]
 #align complex.arg_lt_pi_iff Complex.arg_lt_pi_iff
 
-theorem arg_of_real_of_neg {x : ℝ} (hx : x < 0) : arg x = π :=
+theorem arg_ofReal_of_neg {x : ℝ} (hx : x < 0) : arg x = π :=
   arg_eq_pi_iff.2 ⟨hx, rfl⟩
-#align complex.arg_of_real_of_neg Complex.arg_of_real_of_neg
+#align complex.arg_of_real_of_neg Complex.arg_ofReal_of_neg
 
 theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.im := by
   by_cases h₀ : z = 0; · simp [h₀, lt_irrefl, Real.pi_div_two_pos.ne]
@@ -390,10 +390,10 @@ theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
       add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
-    · rw [arg_of_real_of_neg hr, ← ofReal_neg, arg_of_real_of_nonneg (Left.neg_pos_iff.2 hr).le]
+    · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le]
       simp [hr]
     · simp [hr, hi, Real.pi_ne_zero]
-    · rw [arg_of_real_of_nonneg hr.le, ← ofReal_neg, arg_of_real_of_neg (Left.neg_neg_iff.2 hr)]
+    · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
       simp [hr.not_lt, ← add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
   · simp [hi, arg_neg_eq_arg_sub_pi_of_im_pos]
 #align complex.arg_neg_eq_arg_sub_pi_iff Complex.arg_neg_eq_arg_sub_pi_iff
@@ -404,10 +404,10 @@ theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
   · simp [hi, arg_neg_eq_arg_add_pi_of_im_neg]
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
-    · rw [arg_of_real_of_neg hr, ← ofReal_neg, arg_of_real_of_nonneg (Left.neg_pos_iff.2 hr).le]
+    · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le]
       simp [hr.not_lt, ← two_mul, Real.pi_ne_zero]
     · simp [hr, hi, Real.pi_ne_zero.symm]
-    · rw [arg_of_real_of_nonneg hr.le, ← ofReal_neg, arg_of_real_of_neg (Left.neg_neg_iff.2 hr)]
+    · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
       simp [hr]
   ·
     simp [hi, hi.ne.symm, hi.not_lt, arg_neg_eq_arg_sub_pi_of_im_pos, sub_eq_add_neg, ←
@@ -419,12 +419,10 @@ theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = a
   · rw [arg_neg_eq_arg_add_pi_of_im_neg hi, Real.Angle.coe_add]
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
-    ·
-      rw [arg_of_real_of_neg hr, ← ofReal_neg, arg_of_real_of_nonneg (Left.neg_pos_iff.2 hr).le, ←
+    · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le, ←
         Real.Angle.coe_add, ← two_mul, Real.Angle.coe_two_pi, Real.Angle.coe_zero]
     · exact False.elim (hx (ext hr hi))
-    ·
-      rw [arg_of_real_of_nonneg hr.le, ← ofReal_neg, arg_of_real_of_neg (Left.neg_neg_iff.2 hr),
+    · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr),
         Real.Angle.coe_zero, zero_add]
   · rw [arg_neg_eq_arg_sub_pi_of_im_pos hi, Real.Angle.coe_sub, Real.Angle.sub_coe_pi_eq_add_coe_pi]
 #align complex.arg_neg_coe_angle Complex.arg_neg_coe_angle
