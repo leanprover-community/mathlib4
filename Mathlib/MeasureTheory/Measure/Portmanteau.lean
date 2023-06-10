@@ -27,15 +27,15 @@ files.
 
 The main result will be the portmanteau theorem providing various characterizations of the
 weak convergence of measures. The separate implications are:
- * `measure_theory.finite_measure.limsup_measure_closed_le_of_tendsto` proves that weak convergence
+ * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` proves that weak convergence
    implies a limsup-condition for closed sets.
- * `measure_theory.limsup_measure_closed_le_iff_liminf_measure_open_ge` proves for probability
+ * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` proves for probability
    measures the equivalence of the limsup condition for closed sets and the liminf condition for
    open sets.
- * `measure_theory.tendsto_measure_of_null_frontier` proves that the liminf condition for open
+ * `MeasureTheory.tendsto_measure_of_null_frontier` proves that the liminf condition for open
    sets (which is equivalent to the limsup condition for closed sets) implies the convergence of
    probabilities of sets whose boundary carries no mass under the limit measure.
- * `measure_theory.probability_measure.tendsto_measure_of_null_frontier_of_tendsto` is a
+ * `MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto` is a
    combination of earlier implications, which shows that weak convergence of probability measures
    implies the convergence of probabilities of sets whose boundary carries no mass under the
    limit measure.
@@ -51,8 +51,8 @@ weaker assumptions than usually stated. The full portmanteau theorem, however, i
 for probability measures on metrizable spaces with their Borel sigmas.
 
 Some specific considerations on the assumptions in the different implications:
- * `measure_theory.finite_measure.limsup_measure_closed_le_of_tendsto` assumes
-   `pseudo_emetric_space`. The only reason is to have bounded continuous pointwise approximations
+ * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` assumes
+   `PseudoEMetricSpace`. The only reason is to have bounded continuous pointwise approximations
    to the indicator function of a closed set. Clearly for example metrizability or
    pseudo-emetrizability would be sufficient assumptions. The typeclass assumptions should be later
    adjusted in a way that takes into account use cases, but the proof will presumably remain
@@ -60,7 +60,7 @@ Some specific considerations on the assumptions in the different implications:
  * Where formulations are currently only provided for probability measures, one can obtain the
    finite measure formulations using the characterization of convergence of finite measures by
    their total masses and their probability-normalized versions, i.e., by
-   `measure_theory.finite_measure.tendsto_normalize_iff_tendsto`.
+   `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`.
 
 ## References
 
@@ -263,7 +263,7 @@ section ConvergenceImpliesLimsupClosedLe
 /-! ### Portmanteau implication: weak convergence implies a limsup condition for closed sets
 
 In this section we prove, under the assumption that the underlying topological space `Ω` is
-pseudo-emetrizable, that the weak convergence of measures on `measure_theory.finite_measure Ω`
+pseudo-emetrizable, that the weak convergence of measures on `MeasureTheory.FiniteMeasure Ω`
 implies that for any closed set `F` in `Ω` the limsup of the measures of `F` is at most the
 limit measure of `F`. This is one implication of the portmanteau theorem characterizing weak
 convergence of measures.
@@ -302,7 +302,7 @@ the functions are uniformly bounded, then their integrals against a finite measu
 measure of the set.
 
 A similar result with more general assumptions is
-`measure_theory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
+`MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
 -/
 theorem measure_of_cont_bdd_of_tendsto_indicator [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
     (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
@@ -415,7 +415,7 @@ carries no probability mass under the limit measure, then the limit of the measu
 equals the measure of the set under the limit probability measure.
 
 A version with coercions to ordinary `ℝ≥0∞`-valued measures is
-`measure_theory.probability_measure.tendsto_measure_of_null_frontier_of_tendsto'`.
+`MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto'`.
 -/
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type _} {L : Filter ι}
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
