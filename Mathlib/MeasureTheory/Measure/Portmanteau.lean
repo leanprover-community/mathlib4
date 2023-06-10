@@ -223,18 +223,18 @@ theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type _} 
     calc
       μ E = μ E₀ := measure_congr E₀_ae_eq_E.symm
       _ ≤ L.liminf fun i => μs i E₀ := h_E₀
-      _ ≤ L.liminf fun i => μs i E := by
-        refine' liminf_le_liminf (eventually_of_forall fun _ => measure_mono E₀_subset) _
-        infer_param
+      _ ≤ L.liminf fun i => μs i E :=
+        liminf_le_liminf (eventually_of_forall fun _ => measure_mono E₀_subset)
   · have E_ae_eq_E₁ : E =ᵐ[μ] E₁ :=
       EventuallyLE.antisymm subset_E₁.eventuallyLE
         ((ae_le_set.mpr nulldiff).trans E₀_subset.eventuallyLE)
     calc
-      (L.limsup fun i => μs i E) ≤ L.limsup fun i => μs i E₁ := _
+      (L.limsup fun i => μs i E) ≤ L.limsup fun i => μs i E₁ :=
+        limsup_le_limsup (eventually_of_forall fun _ => measure_mono subset_E₁)
       _ ≤ μ E₁ := h_E₁
       _ = μ E := measure_congr E_ae_eq_E₁.symm
-    · refine' limsup_le_limsup (eventually_of_forall fun _ => measure_mono subset_E₁) _
-      infer_param
+  · infer_param
+  · infer_param
 #align measure_theory.tendsto_measure_of_le_liminf_measure_of_limsup_measure_le MeasureTheory.tendsto_measure_of_le_liminf_measure_of_limsup_measure_le
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
