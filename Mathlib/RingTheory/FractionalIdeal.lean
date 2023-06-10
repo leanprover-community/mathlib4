@@ -1487,7 +1487,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
 #align fractional_ideal.div_span_singleton FractionalIdeal.div_spanSingleton
 
 theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
-    ∃ (a : R₁)(aI : Ideal R₁), a ≠ 0 ∧ I = spanSingleton R₁⁰ (algebraMap R₁ K a)⁻¹ * aI := by
+    ∃ (a : R₁) (aI : Ideal R₁), a ≠ 0 ∧ I = spanSingleton R₁⁰ (algebraMap R₁ K a)⁻¹ * aI := by
   obtain ⟨a_inv, nonzero, ha⟩ := I.isFractional
   have nonzero := mem_nonZeroDivisors_iff_ne_zero.mp nonzero
   have map_a_nonzero : algebraMap R₁ K a_inv ≠ 0 :=

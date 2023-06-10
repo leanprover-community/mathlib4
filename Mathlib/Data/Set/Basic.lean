@@ -189,12 +189,12 @@ theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (
 
 -- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
-    (∃ x : s, p x) ↔ ∃ (x : _)(h : x ∈ s), p ⟨x, h⟩ :=
+    (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
 #align set_coe.exists SetCoe.exists
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∃ (x : _)(h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
+    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
   (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
 #align set_coe.exists' SetCoe.exists'
 

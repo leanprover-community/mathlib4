@@ -204,7 +204,7 @@ variable {f : α → β} {s t : Set α}
 infixl:80 " '' " => image
 
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _)(_ : x ∈ s), f x = y :=
+    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 

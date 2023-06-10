@@ -684,7 +684,7 @@ Every section can locally be represented on basic opens `basic_opens g` as a fra
 -/
 theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (x : U) :
-    ∃ (f g : R)(i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
+    ∃ (f g : R) (i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
       (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) =
       (structureSheaf R).1.map i.op s := by
   -- First, any section `s` can be represented as a fraction `f/g` on some open neighborhood of `x`
@@ -735,7 +735,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
       ∀ i : ι,
         (const R (a i) (h i) (PrimeSpectrum.basicOpen (h i)) fun y hy => hy) =
           (structureSheaf R).1.map (iDh i).op s) :
-    ∃ (a' h' : ι → R)(iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
+    ∃ (a' h' : ι → R) (iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
       (U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h' i)) ∧
         (∀ (i) (_ : i ∈ t) (j) (_ : j ∈ t), a' i * h' j = h' i * a' j) ∧
           ∀ i ∈ t,

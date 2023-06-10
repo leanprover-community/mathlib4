@@ -586,7 +586,7 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 #align function.forall_update_iff Function.forall_update_iff
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
-    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _)(_ : x ≠ a), p x (f x) := by
+    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _) (_ : x ≠ a), p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b ↦ ¬p a b]
   simp [-not_and, not_and_or]
 #align function.exists_update_iff Function.exists_update_iff

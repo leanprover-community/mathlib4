@@ -1420,7 +1420,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
-    ↑u ⊆ s • t → ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
+    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_image₂
 #align finset.subset_smul Finset.subset_smul
 #align finset.subset_vadd Finset.subset_vadd

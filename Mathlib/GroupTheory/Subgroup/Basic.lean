@@ -3497,7 +3497,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 #align add_subgroup.mem_sup AddSubgroup.mem_sup
 
 @[to_additive]
-theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s)(z : t), (y : C) * z = x :=
+theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
 #align subgroup.mem_sup' Subgroup.mem_sup'
 #align add_subgroup.mem_sup' AddSubgroup.mem_sup'

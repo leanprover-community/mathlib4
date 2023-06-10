@@ -99,7 +99,7 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ (∂ )
 
 /-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
 `𝒜`. -/
-theorem mem_shadow_iff_insert_mem : s ∈ (∂ ) 𝒜 ↔ ∃ (a : _)(_ : a ∉ s), insert a s ∈ 𝒜 := by
+theorem mem_shadow_iff_insert_mem : s ∈ (∂ ) 𝒜 ↔ ∃ (a : _) (_ : a ∉ s), insert a s ∈ 𝒜 := by
   refine' mem_shadow_iff.trans ⟨_, _⟩
   · rintro ⟨s, hs, a, ha, rfl⟩
     refine' ⟨a, not_mem_erase a s, _⟩
@@ -205,7 +205,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
 
 /-- `s` is in the upper shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element
 to get `s`. -/
-theorem mem_upShadow_iff : s ∈ (∂⁺ ) 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _)(_ : a ∉ t), insert a t = s := by
+theorem mem_upShadow_iff : s ∈ (∂⁺ ) 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _) (_ : a ∉ t), insert a t = s := by
   simp_rw [upShadow, mem_sup, mem_image, exists_prop, mem_compl]
 #align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 

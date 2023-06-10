@@ -733,7 +733,7 @@ theorem mk'_sec (z : N) : f.mk' (f.sec z).1 (f.sec z).2 = z :=
 #align add_submonoid.localization_map.mk'_sec AddSubmonoid.LocalizationMap.mk'_sec
 
 @[to_additive]
-theorem mk'_surjective (z : N) : ∃ (x : _)(y : S), f.mk' x y = z :=
+theorem mk'_surjective (z : N) : ∃ (x : _) (y : S), f.mk' x y = z :=
   ⟨(f.sec z).1, (f.sec z).2, f.mk'_sec z⟩
 #align submonoid.localization_map.mk'_surjective Submonoid.LocalizationMap.mk'_surjective
 #align add_submonoid.localization_map.mk'_surjective AddSubmonoid.LocalizationMap.mk'_surjective

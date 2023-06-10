@@ -125,7 +125,7 @@ theorem trans [Algebra A B] [IsScalarTower R A B] (hRA : FiniteType R A) (hAB : 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
-    FiniteType R A ↔ ∃ (s : Finset A)(f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
+    FiniteType R A ↔ ∃ (s : Finset A) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
   constructor
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
@@ -140,7 +140,7 @@ theorem iff_quotient_mvPolynomial :
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
 theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
-    ∃ (ι : Type u) (_ : Fintype ι)(f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
+    ∃ (ι : Type u) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial]
     rintro ⟨s, ⟨f, hsur⟩⟩
@@ -154,7 +154,7 @@ theorem iff_quotient_mvPolynomial' : FiniteType R A ↔
 /-- An algebra is finitely generated if and only if it is a quotient of a polynomial ring in `n`
 variables. -/
 theorem iff_quotient_mvPolynomial'' :
-    FiniteType R A ↔ ∃ (n : ℕ)(f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f := by
+    FiniteType R A ↔ ∃ (n : ℕ) (f : MvPolynomial (Fin n) R →ₐ[R] A), Surjective f := by
   constructor
   · rw [iff_quotient_mvPolynomial']
     rintro ⟨ι, hfintype, ⟨f, hsur⟩⟩
