@@ -386,7 +386,7 @@ theorem prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 := by
   · exact absurd h (not_mem_nil _)
   · rw [prod_cons]
     cases' mem_cons.1 h with ha hL
-    exacts[mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (ihL hL)]
+    exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (ihL hL)]
 #align list.prod_eq_zero List.prod_eq_zero
 
 /-- Product of elements of a list `L` equals zero if and only if `0 ∈ L`. See also

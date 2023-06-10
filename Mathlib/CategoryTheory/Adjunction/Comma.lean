@@ -145,16 +145,14 @@ section
 
 variable {F : C ⥤ D}
 
--- porting note: aesop can't seem to add something locally. Also no tactic.discrete_cases.
--- attribute [local tidy] tactic.discrete_cases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
     IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G)
     where
-  desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom) (by aesop_cat)
-  fac _ := by rintro ⟨⟨⟩⟩
+  desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
     dsimp
@@ -167,8 +165,7 @@ category on `F`. -/
 def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
     IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A)
     where
-  lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom) (by aesop_cat)
-  fac _ := by rintro ⟨⟨⟩⟩
+  lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext
     dsimp

@@ -188,7 +188,7 @@ theorem of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : ∀ i, Me
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts[fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
+  exacts [fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
 #align measure_theory.vector_measure.of_union MeasureTheory.VectorMeasure.of_union
 
 theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
@@ -424,10 +424,10 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
     · refine' @summable_of_nonneg_of_le _ (ENNReal.toReal ∘ μ ∘ f) _ _ _ _
       · intro
         split_ifs
-        exacts[ENNReal.toReal_nonneg, le_rfl]
+        exacts [ENNReal.toReal_nonneg, le_rfl]
       · intro
         split_ifs
-        exacts[le_rfl, ENNReal.toReal_nonneg]
+        exacts [le_rfl, ENNReal.toReal_nonneg]
       exact summable_measure_toReal hf₁ hf₂
     · intro a ha
       apply ne_of_lt hμ.measure_univ_lt_top
@@ -486,7 +486,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
 
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
 @[simps]
-def toEnnrealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
+def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   measureOf' := fun i : Set α => if MeasurableSet i then μ i else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
@@ -495,26 +495,26 @@ def toEnnrealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
     rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
-#align measure_theory.measure.to_ennreal_vector_measure MeasureTheory.Measure.toEnnrealVectorMeasure
+#align measure_theory.measure.to_ennreal_vector_measure MeasureTheory.Measure.toENNRealVectorMeasure
 
-theorem toEnnrealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
-    μ.toEnnrealVectorMeasure i = μ i :=
+theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
+    μ.toENNRealVectorMeasure i = μ i :=
   if_pos hi
-#align measure_theory.measure.to_ennreal_vector_measure_apply_measurable MeasureTheory.Measure.toEnnrealVectorMeasure_apply_measurable
+#align measure_theory.measure.to_ennreal_vector_measure_apply_measurable MeasureTheory.Measure.toENNRealVectorMeasure_apply_measurable
 
 @[simp]
-theorem toEnnrealVectorMeasure_zero : (0 : Measure α).toEnnrealVectorMeasure = 0 := by
+theorem toENNRealVectorMeasure_zero : (0 : Measure α).toENNRealVectorMeasure = 0 := by
   ext i
   simp
-#align measure_theory.measure.to_ennreal_vector_measure_zero MeasureTheory.Measure.toEnnrealVectorMeasure_zero
+#align measure_theory.measure.to_ennreal_vector_measure_zero MeasureTheory.Measure.toENNRealVectorMeasure_zero
 
 @[simp]
-theorem toEnnrealVectorMeasure_add (μ ν : Measure α) :
-    (μ + ν).toEnnrealVectorMeasure = μ.toEnnrealVectorMeasure + ν.toEnnrealVectorMeasure := by
+theorem toENNRealVectorMeasure_add (μ ν : Measure α) :
+    (μ + ν).toENNRealVectorMeasure = μ.toENNRealVectorMeasure + ν.toENNRealVectorMeasure := by
   refine' MeasureTheory.VectorMeasure.ext fun i hi => _
-  rw [toEnnrealVectorMeasure_apply_measurable hi, add_apply, VectorMeasure.add_apply,
-    toEnnrealVectorMeasure_apply_measurable hi, toEnnrealVectorMeasure_apply_measurable hi]
-#align measure_theory.measure.to_ennreal_vector_measure_add MeasureTheory.Measure.toEnnrealVectorMeasure_add
+  rw [toENNRealVectorMeasure_apply_measurable hi, add_apply, VectorMeasure.add_apply,
+    toENNRealVectorMeasure_apply_measurable hi, toENNRealVectorMeasure_apply_measurable hi]
+#align measure_theory.measure.to_ennreal_vector_measure_add MeasureTheory.Measure.toENNRealVectorMeasure_add
 
 theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     {i : Set α} (hi : MeasurableSet i) :
@@ -543,15 +543,15 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
 
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
 `MeasureTheory.VectorMeasure.ennrealToMeasure` and
-`MeasureTheory.Measure.toEnnrealVectorMeasure`. -/
+`MeasureTheory.Measure.toENNRealVectorMeasure`. -/
 @[simps]
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
-  invFun := toEnnrealVectorMeasure
+  invFun := toENNRealVectorMeasure
   left_inv _ := ext fun s hs => by
-    rw [toEnnrealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
+    rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
   right_inv _ := Measure.ext fun s hs => by
-    rw [ennrealToMeasure_apply hs, toEnnrealVectorMeasure_apply_measurable hs]
+    rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
 #align measure_theory.vector_measure.equiv_measure MeasureTheory.VectorMeasure.equivMeasure
 
 end
@@ -1224,7 +1224,7 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
       · by_cases hxu' : x ∈ uᶜ
         · exact Or.inl ⟨hxu', hx⟩
         rcases ht hx with (hxu | hxv)
-        exacts[False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
+        exacts [False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
       · cases' hx with hx hx <;> exact hx.2
 #align measure_theory.vector_measure.mutually_singular.add_left MeasureTheory.VectorMeasure.MutuallySingular.add_left
 

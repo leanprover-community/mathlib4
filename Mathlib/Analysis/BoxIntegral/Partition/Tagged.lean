@@ -350,7 +350,7 @@ def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π
   tag_mem_Icc J := by
     dsimp only [Finset.piecewise]
     split_ifs
-    exacts[π₁.tag_mem_Icc J, π₂.tag_mem_Icc J]
+    exacts [π₁.tag_mem_Icc J, π₂.tag_mem_Icc J]
 #align box_integral.tagged_prepartition.disj_union BoxIntegral.TaggedPrepartition.disjUnion
 
 @[simp]

@@ -130,18 +130,16 @@ variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 `Triangle C` given by the rotation of triangles. -/
 @[simps!]
 def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
-  NatIso.ofComponents (fun T => Triangle.isoMk _ _
+  NatIso.ofComponents fun T => Triangle.isoMk _ _
     ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 #align category_theory.pretriangulated.rot_comp_inv_rot CategoryTheory.Pretriangulated.rotCompInvRot
 
 /-- The counit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
 @[simps!]
 def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
-  NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+  NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 #align category_theory.pretriangulated.inv_rot_comp_rot CategoryTheory.Pretriangulated.invRotCompRot
 
 variable (C)

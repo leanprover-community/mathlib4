@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 
 ! This file was ported from Lean 3 source module ring_theory.non_unital_subsemiring.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
+! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -532,10 +532,20 @@ theorem mem_centralizer_iff {R} [NonUnitalSemiring R] {s : Set R} {z : R} :
   Iff.rfl
 #align non_unital_subsemiring.mem_centralizer_iff NonUnitalSubsemiring.mem_centralizer_iff
 
+theorem center_le_centralizer {R} [NonUnitalSemiring R] (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+#align non_unital_subsemiring.center_le_centralizer NonUnitalSubsemiring.center_le_centralizer
+
 theorem centralizer_le {R} [NonUnitalSemiring R] (s t : Set R) (h : s ⊆ t) :
     centralizer t ≤ centralizer s :=
   Set.centralizer_subset h
 #align non_unital_subsemiring.centralizer_le NonUnitalSubsemiring.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {R} [NonUnitalSemiring R] {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align non_unital_subsemiring.centralizer_eq_top_iff_subset NonUnitalSubsemiring.centralizer_eq_top_iff_subset
 
 @[simp]
 theorem centralizer_univ {R} [NonUnitalSemiring R] : centralizer Set.univ = center R :=

@@ -27,8 +27,9 @@ Lebesgue measure on `ℝⁿ`. In particular, we prove that they are translation 
 We show that, on `ℝⁿ`, a linear map acts on Lebesgue measure by rescaling it through the absolute
 value of its determinant, in `Real.map_linearMap_volume_pi_eq_smul_volume_pi`.
 
-More properties of the Lebesgue measure are deduced from this in `Lebesgue.EqHaar.lean`, where they
-are proved more generally for any additive Haar measure on a finite-dimensional real vector space.
+More properties of the Lebesgue measure are deduced from this in
+`Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean`, where they are proved more generally for any
+additive Haar measure on a finite-dimensional real vector space.
 -/
 
 
@@ -426,8 +427,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
     Measure.map (toLin' M) volume = ENNReal.ofReal (abs (det M)⁻¹) • volume := by
   -- This follows from the cases we have already proved, of diagonal matrices and transvections,
   -- as these matrices generate all invertible matrices.
-  apply
-    diagonal_transvection_induction_of_det_ne_zero _ M hM
+  apply diagonal_transvection_induction_of_det_ne_zero _ M hM
   · intro D hD
     conv_rhs => rw [← smul_map_diagonal_volume_pi hD]
     rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,
