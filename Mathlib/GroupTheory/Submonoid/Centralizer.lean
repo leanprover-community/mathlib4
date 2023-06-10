@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.centralizer
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
+! leanprover-community/mathlib commit cc67cd75b4e54191e13c2e8d722289a89e67e4fa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -70,6 +70,7 @@ theorem mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z
 theorem center_le_centralizer (s) : center M ≤ centralizer s :=
   s.center_subset_centralizer
 #align submonoid.center_le_centralizer Submonoid.center_le_centralizer
+#align add_submonoid.center_le_centralizer AddSubmonoid.center_le_centralizer
 
 @[to_additive]
 instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
@@ -88,6 +89,7 @@ theorem centralizer_le (h : S ⊆ T) : centralizer T ≤ centralizer S :=
 theorem centralizer_eq_top_iff_subset {s : Set M} : centralizer s = ⊤ ↔ s ⊆ center M :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 #align submonoid.centralizer_eq_top_iff_subset Submonoid.centralizer_eq_top_iff_subset
+#align add_submonoid.centralizer_eq_top_iff_subset AddSubmonoid.centralizer_eq_top_iff_subset
 
 variable (M)
 
