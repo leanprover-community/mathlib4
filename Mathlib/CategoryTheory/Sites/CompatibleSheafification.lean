@@ -37,7 +37,8 @@ variable {E : Type w₂} [Category.{max v u} E]
 
 variable (F : D ⥤ E)
 
-noncomputable section
+-- porting note: Removed this and made whatever necessary noncomputable
+-- noncomputable section
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
 
@@ -60,18 +61,18 @@ Use the lemmas `whisker_right_to_sheafify_sheafify_comp_iso_hom`,
 `to_sheafify_comp_sheafify_comp_iso_inv` and `sheafify_comp_iso_inv_eq_sheafify_lift` to reduce
 the components of this isomorphisms to a state that can be handled using the universal property
 of sheafification. -/
-def sheafifyCompIso : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
+noncomputable def sheafifyCompIso : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
   J.plusCompIso _ _ ≪≫ (J.plusFunctor _).mapIso (J.plusCompIso _ _)
 #align category_theory.grothendieck_topology.sheafify_comp_iso CategoryTheory.GrothendieckTopology.sheafifyCompIso
 
 /-- The isomorphism between the sheafification of `P` composed with `F` and
 the sheafification of `P ⋙ F`, functorially in `F`. -/
-def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
+noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
     [∀ (F : D ⥤ E) (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D),
         PreservesLimit (W.index P).multicospan F] :
-    (whiskeringLeft _ _ E).obj (J.sheafify P) ≅ (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E :=
-  by
+    (whiskeringLeft _ _ E).obj (J.sheafify P) ≅
+    (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
   refine' J.plusFunctorWhiskerLeftIso _ ≪≫ _ ≪≫ Functor.associator _ _ _
   refine' isoWhiskerRight _ _
   refine' J.plusFunctorWhiskerLeftIso _
@@ -99,7 +100,7 @@ theorem sheafificationWhiskerLeftIso_inv_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
 
 /-- The isomorphism between the sheafification of `P` composed with `F` and
 the sheafification of `P ⋙ F`, functorially in `P`. -/
-def sheafificationWhiskerRightIso :
+noncomputable def sheafificationWhiskerRightIso :
     J.sheafification D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.sheafification E := by
   refine' Functor.associator _ _ _ ≪≫ _
@@ -151,9 +152,9 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
-      J.sheafifyLift (whiskerRight (J.toSheafify _) _) ((J.sheafify_isSheaf _).comp _) := by
-  apply J.sheafify_lift_unique
-  rw [iso.comp_inv_eq]
+      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
+  apply J.sheafifyLift_unique
+  rw [Iso.comp_inv_eq]
   simp
 #align category_theory.grothendieck_topology.sheafify_comp_iso_inv_eq_sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyCompIso_inv_eq_sheafifyLift
 
