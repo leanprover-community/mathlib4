@@ -8,8 +8,8 @@ Authors: Cuma Kökmen, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Constructions.Prod.Integral
-import Mathbin.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -154,8 +154,7 @@ protected theorem sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c R) 
   hf.sub hg
 #align torus_integrable.sub TorusIntegrable.sub
 
-theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusIntegrable f c 0 :=
-  by
+theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusIntegrable f c 0 := by
   rw [TorusIntegrable, torusMap_zero_radius]
   apply torus_integrable_const (f c) c 0
 #align torus_integrable.torus_integrable_zero_radius TorusIntegrable.torusIntegrable_zero_radius
@@ -163,8 +162,7 @@ theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusInteg
 /-- The function given in the definition of `torus_integral` is integrable. -/
 theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
-      (Icc (0 : ℝⁿ) fun _ => 2 * π) volume :=
-  by
+      (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine' (hf.norm.const_mul (∏ i, |R i|)).mono' _ _
   · refine' (Continuous.aestronglyMeasurable _).smul hf.1
     exact
@@ -248,8 +246,7 @@ theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x
 /-- In dimension one, `torus_integral` is the same as `circle_integral`
 (up to the natural equivalence between `ℂ` and `fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
-    (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z :=
-  by
+    (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z := by
   have : ((fun (x : ℝ) (b : Fin 1) => x) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
     (OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc _ _
   simp only [torusIntegral, circleIntegral, intervalIntegral.integral_of_le real.two_pi_pos.le,
@@ -266,8 +263,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
 theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
-      ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) :=
-  by
+      ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) := by
   set e : ℝ × ℝⁿ ≃ᵐ ℝⁿ⁺¹ := (MeasurableEquiv.piFinSuccAboveEquiv (fun _ => ℝ) i).symm
   have hem : measure_preserving e :=
     (volume_preserving_pi_fin_succ_above_equiv (fun j : Fin (n + 1) => ℝ) i).symm _
