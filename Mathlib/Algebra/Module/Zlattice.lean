@@ -8,7 +8,7 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Group.FundamentalDomain
+import Mathlib.MeasureTheory.Group.FundamentalDomain
 
 /-!
 # ℤ-lattices
@@ -93,8 +93,7 @@ theorem repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i�
 #align zspan.repr_ceil_apply Zspan.repr_ceil_apply
 
 @[simp]
-theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor b m : E) = m :=
-  by
+theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor b m : E) = m := by
   apply b.ext_elem
   simp_rw [repr_floor_apply b]
   intro i
@@ -104,8 +103,7 @@ theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor
 #align zspan.floor_eq_self_of_mem Zspan.floor_eq_self_of_mem
 
 @[simp]
-theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m :=
-  by
+theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m := by
   apply b.ext_elem
   simp_rw [repr_ceil_apply b]
   intro i
@@ -179,8 +177,7 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
     _ ≤ ∑ i, ‖Int.fract (b.repr m i) • b i‖ := (norm_sum_le _ _)
     _ ≤ ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
     _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => _
-  suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1
-    by
+  suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1 by
     convert mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
     exact (one_mul _).symm
   rw [(norm_one.symm : 1 = ‖(1 : K)‖)]
@@ -208,8 +205,7 @@ end Unique
 end Fintype
 
 theorem fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
-    Metric.Bounded (fundamentalDomain b) :=
-  by
+    Metric.Bounded (fundamentalDomain b) := by
   cases nonempty_fintype ι
   use 2 * ∑ j, ‖b j‖
   intro x hx y hy
@@ -227,8 +223,7 @@ theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x 
 #align zspan.vadd_mem_fundamental_domain Zspan.vadd_mem_fundamentalDomain
 
 theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
-    ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b :=
-  by
+    ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b := by
   cases nonempty_fintype ι
   refine' ⟨-floor b x, _, fun y h => _⟩
   · exact (vadd_mem_fundamental_domain b (-floor b x) x).mpr rfl
@@ -245,8 +240,7 @@ variable (b : Basis ι ℝ E)
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
-    MeasurableSet (fundamentalDomain b) :=
-  by
+    MeasurableSet (fundamentalDomain b) := by
   haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   let f := (Finsupp.linearEquivFunOnFinite ℝ ℝ ι).toLinearMap.comp b.repr.to_linear_map
   let D : Set (ι → ℝ) := Set.pi Set.univ fun i : ι => Set.Ico (0 : ℝ) 1
@@ -263,8 +257,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
 by `zspan.fundamental_domain` is a fundamental domain. -/
 protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
     (μ : Measure E) :
-    IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ :=
-  by
+    IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ := by
   cases nonempty_fintype ι
   exact
     is_add_fundamental_domain.mk' (null_measurable_set (fundamental_domain_measurable_set b))
