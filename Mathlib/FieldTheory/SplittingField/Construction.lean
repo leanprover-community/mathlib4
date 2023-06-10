@@ -210,9 +210,7 @@ set_option maxHeartbeats 400000 in
 theorem adjoin_roots (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (hfn : f.natDegree = n),
-        Algebra.adjoin K
-            (↑(f.map <| algebraMap K <| SplittingFieldAux n f).roots.toFinset :
-              Set (SplittingFieldAux n f)) = ⊤ :=
+        Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤ :=
   Nat.recOn (motive := fun n =>
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (hfn : f.natDegree = n),
@@ -245,24 +243,25 @@ theorem adjoin_roots (n : ℕ) :
 instance : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_roots _ _ rfl⟩
 
-def ofMvPolynomial (f : K[X]) : MvPolynomial
-    ((f.map <| algebraMap K <| SplittingFieldAux f.natDegree f).roots.toFinset :
-      Set (SplittingFieldAux f.natDegree f)) K →ₐ[K]
+def ofMvPolynomial (f : K[X]) :
+    MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K →ₐ[K]
     SplittingFieldAux f.natDegree f :=
   MvPolynomial.aeval (fun i => i.1)
 
 theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) :=
   sorry
 
-def AlgEquivQuotientMvPolynomial (f : K[X]) :=
-  Ideal.quotientKerAlgEquivOfSurjective (ofMvPolynomial_surjective f)
+def AlgEquivQuotientMvPolynomial (f : K[X]) :
+    (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
+      RingHom.ker (ofMvPolynomial f)) ≃ₐ[K]
+    SplittingFieldAux f.natDegree f :=
+  (Ideal.quotientKerAlgEquivOfSurjective (ofMvPolynomial_surjective f) : _)
 
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
 def SplittingField (f : K[X]) : Type v :=
-  MvPolynomial ((f.map <| algebraMap K <| SplittingFieldAux f.natDegree f).roots.toFinset :
-      Set (SplittingFieldAux f.natDegree f)) K ⧸
+  MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
     RingHom.ker (SplittingFieldAux.ofMvPolynomial f).toRingHom
 #align polynomial.splitting_field Polynomial.SplittingField
 
@@ -270,28 +269,37 @@ namespace SplittingField
 
 variable (f : K[X])
 
-instance : CommRing (SplittingField f) := by
+instance commRing : CommRing (SplittingField f) := by
   delta SplittingField; infer_instance
-
-instance : Field (SplittingField f) :=
-  SplittingFieldAux.field _
 
 instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
+--Porting note: new instance
+instance Qsmul : SMul ℚ (SplittingField f) :=
+  Submodule.Quotient.hasSmul' _
+
 instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) := by
-  SplittingFieldAux.algebra _ _
+  delta SplittingField; infer_instance
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
-instance : Algebra K (SplittingField f) :=
-  SplittingFieldAux.algebra _ _
+instance : Field (SplittingField f) :=
+  { toCommRing := SplittingField.commRing f
+    ratCast := fun a => algebraMap K (SplittingField f) (a : K)
+    ratCast_mk := sorry
+    qsmul := @HSMul.hSMul ℚ (SplittingField f) (SplittingField f) _
+    --qsmul_eq_mul' := sorry
+    inv := sorry
+    exists_pair_ne := sorry
+    mul_inv_cancel := sorry
+    inv_zero := sorry }
 
 instance [CharZero K] : CharZero (SplittingField f) :=
-  charZero_of_injective_algebraMap (algebraMap K _).Injective
+  charZero_of_injective_algebraMap (algebraMap K _).injective
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
--- deriving from the field structure on `splitting_field f`.
+-- deriving from the field structure on `SplittingField f`.
 example :
     (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
