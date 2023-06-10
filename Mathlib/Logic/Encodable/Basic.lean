@@ -333,7 +333,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
     rfl
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
-    exacts[h, by decide]
+    exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two

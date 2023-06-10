@@ -96,7 +96,7 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
     mk_eq_add_mul_I, neg_div, mul_div_cancel_left _ hr.ne', mul_nonneg_iff_right_nonneg_of_pos hr]
   by_cases h₁ : θ ∈ Set.Icc (-(π / 2)) (π / 2)
   · rw [if_pos]
-    exacts[Real.arcsin_sin' h₁, Real.cos_nonneg_of_mem_Icc h₁]
+    exacts [Real.arcsin_sin' h₁, Real.cos_nonneg_of_mem_Icc h₁]
   · rw [Set.mem_Icc, not_and_or, not_le, not_le] at h₁
     cases' h₁ with h₁ h₁
     · replace hθ := hθ.1
@@ -299,7 +299,7 @@ theorem arg_of_im_pos {z : ℂ} (hz : 0 < z.im) : arg z = Real.arccos (z.re / ab
 theorem arg_of_im_neg {z : ℂ} (hz : z.im < 0) : arg z = -Real.arccos (z.re / abs z) := by
   have h₀ : z ≠ 0 := mt (congr_arg im) hz.ne
   rw [← cos_arg h₀, ← Real.cos_neg, Real.arccos_cos, neg_neg]
-  exacts[neg_nonneg.2 (arg_neg_iff.2 hz).le, neg_le.2 (neg_pi_lt_arg z).le]
+  exacts [neg_nonneg.2 (arg_neg_iff.2 hz).le, neg_le.2 (neg_pi_lt_arg z).le]
 #align complex.arg_of_im_neg Complex.arg_of_im_neg
 
 theorem arg_conj (x : ℂ) : arg (conj x) = if arg x = π then π else -arg x := by
@@ -335,7 +335,7 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
     rw [iff_false_iff, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
       _root_.abs_of_nonneg him, abs_im_lt_abs]
-    exacts[hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
+    exacts [hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
   · simp only [him]
     rw [iff_true_iff, arg_of_re_neg_of_im_neg hre him]
     exact (sub_le_self _ Real.pi_pos.le).trans (Real.arcsin_le_pi_div_two _)
@@ -353,7 +353,7 @@ theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z
     rw [iff_false_iff, not_le, arg_of_re_neg_of_im_neg hre him, sub_lt_iff_lt_add', ←
       sub_eq_add_neg, sub_half, Real.arcsin_lt_pi_div_two, div_lt_one, neg_im, ← abs_of_neg him,
       abs_im_lt_abs]
-    exacts[hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
+    exacts [hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
 #align complex.neg_pi_div_two_le_arg_iff Complex.neg_pi_div_two_le_arg_iff
 
 @[simp]
@@ -545,7 +545,7 @@ theorem continuousAt_arg (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt arg x := b
     simp at h
   rw [← lt_or_lt_iff_ne] at h
   rcases h with (hx_re | hx_im | hx_im)
-  exacts[(Real.continuousAt_arcsin.comp
+  exacts [(Real.continuousAt_arcsin.comp
           (continuous_im.continuousAt.div continuous_abs.continuousAt h₀)).congr
       (arg_eq_nhds_of_re_pos hx_re).symm,
     (Real.continuous_arccos.continuousAt.comp

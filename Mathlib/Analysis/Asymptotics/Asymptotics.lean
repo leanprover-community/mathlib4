@@ -1393,7 +1393,7 @@ theorem isBigO_const_iff {c : F''} : (f'' =O[l] fun _x => c) ↔
   refine' ⟨fun h => ⟨fun hc => isBigO_zero_right_iff.1 (by rwa [← hc]), h.isBoundedUnder_le⟩, _⟩
   rintro ⟨hcf, hf⟩
   rcases eq_or_ne c 0 with (hc | hc)
-  exacts[(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
+  exacts [(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
 #align asymptotics.is_O_const_iff Asymptotics.isBigO_const_iff
 
 theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
