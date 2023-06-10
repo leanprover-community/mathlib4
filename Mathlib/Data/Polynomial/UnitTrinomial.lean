@@ -22,7 +22,8 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 ## Main results
 
-- `polynomial.irreducible_of_coprime`: An irreducibility criterion for unit trinomials.
+- `Polynomial.IsUnitTrinomial.irreducible_of_coprime`: An irreducibility criterion for unit
+  trinomials.
 
 -/
 
@@ -54,8 +55,8 @@ theorem trinomial_leading_coeff' (hkm : k < m) (hmn : m < n) :
     if_neg (hkm.trans hmn).ne', if_neg hmn.ne', if_pos rfl, zero_add, zero_add]
 #align polynomial.trinomial_leading_coeff' Polynomial.trinomial_leading_coeff'
 
-theorem trinomial_middle_coeff (hkm : k < m) (hmn : m < n) : (trinomial k m n u v w).coeff m = v :=
-  by
+theorem trinomial_middle_coeff (hkm : k < m) (hmn : m < n) :
+    (trinomial k m n u v w).coeff m = v := by
   rw [trinomial_def, coeff_add, coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X_pow, coeff_C_mul_X_pow,
     if_neg hkm.ne', if_pos rfl, if_neg hmn.ne, zero_add, add_zero]
 #align polynomial.trinomial_middle_coeff Polynomial.trinomial_middle_coeff
@@ -105,9 +106,8 @@ theorem trinomial_trailingCoeff (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
 #align polynomial.trinomial_trailing_coeff Polynomial.trinomial_trailingCoeff
 
 theorem trinomial_monic (hkm : k < m) (hmn : m < n) : (trinomial k m n u v 1).Monic := by
-  cases' subsingleton_or_nontrivial R with h h
-  · apply Subsingleton.elim
-  · exact trinomial_leadingCoeff hkm hmn one_ne_zero
+  nontriviality R
+  exact trinomial_leadingCoeff hkm hmn one_ne_zero
 #align polynomial.trinomial_monic Polynomial.trinomial_monic
 
 theorem trinomial_mirror (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) (hw : w ≠ 0) :
@@ -156,8 +156,8 @@ theorem ne_zero (hp : p.IsUnitTrinomial) : p ≠ 0 := by
   exact Nat.zero_ne_bit1 1 hp.card_support_eq_three
 #align polynomial.is_unit_trinomial.ne_zero Polynomial.IsUnitTrinomial.ne_zero
 
-theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) : IsUnit (p.coeff k) :=
-  by
+theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
+    IsUnit (p.coeff k) := by
   obtain ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩ := hp
   have := support_trinomial' k m n (u : ℤ) v w hk
   rw [mem_insert, mem_insert, mem_singleton] at this
