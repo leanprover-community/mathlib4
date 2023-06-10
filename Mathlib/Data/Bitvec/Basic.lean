@@ -274,6 +274,8 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) 
 
 def width : Bitvec n → Nat := fun _ => n
 
+section get
+
 def get : Bitvec n → Fin n → Bool :=
   Vector.get
 
@@ -290,14 +292,28 @@ theorem get_succ : get (b ::ᵥ v) (Fin.succ i) = get v i := by
 theorem get_zero : get (b ::ᵥ v) 0 = b := by
   rfl
 
+
+@[simp]
+theorem get_succ' : get (⟨b :: v, h⟩) (Fin.succ i) = get ⟨v, h'⟩ i := by
+  rfl
+
+@[simp]
+theorem get_zero' : get (⟨b :: v, h⟩) (0 : Fin <| _ + 1) = b := by
+  rfl
+
+
+
 instance {n : Nat} : GetElem (Bitvec n) (Fin n) Bool (fun _ _ => True) where
   getElem := fun x i _ => get x i
 
 instance {n : Nat} : GetElem (Bitvec n) Nat Bool (fun _ i => i < n) where
   getElem := fun x i h => get x ⟨i,h⟩
 
+end get
+
+
 instance (n : Nat) : Inhabited (Bitvec n) :=
-  ⟨List.replicate n true, by apply List.length_replicate⟩
+  ⟨Vector.replicate n true⟩
 
 /-- Two `v w : Bitvec n` are equal iff they are equal at every single index. -/
 @[ext]
