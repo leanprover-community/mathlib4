@@ -229,14 +229,14 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
     toFinsupp_add, toFinsupp_monomial, Finsupp.filter_add]
-  -- Porting note: added next line (`simp`).
+  -- Porting note: added next line (less powerful `simp`).
   rw [Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add,
     Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
   · simp only [add_zero, zero_add, ofFinsupp_add, ofFinsupp_single]
-    -- Porting note: added next two lines (`simp`).
+    -- Porting note: added next two lines (less powerful `simp`).
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
