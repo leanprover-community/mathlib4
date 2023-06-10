@@ -7,8 +7,27 @@ import Mathlib.Data.Bitvec.Core
 -/
 section ShouldMove
 
-theorem Vector.replicate.unfold : Vector.replicate (n+1) val = val ::ᵥ (Vector.replicate n val) :=
+@[simp]
+theorem Vector.replicate.unfold : replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
+
+-- @[simp]
+-- theorem Vector.append.unfold_cons {xs : Vector α n} {ys : Vector α m} :
+--       Vector.append (x ::ᵥ xs) ys = x ::ᵥ (Vector.append xs ys) :=
+--   rfl
+
+@[simp]
+theorem Vector.get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
+  rfl
+
+@[simp]
+theorem Vector.get_append_cons_succ {i : Fin (n + m)} {h} :
+    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+  rfl
+
+@[simp]
+theorem Vector.append.unfold_nil : (append xs Vector.nil) = xs :=
+  by cases xs; simp[append]
 
 @[simp]
 theorem Vector.map.unfold_cons : Vector.map f (hd ::ᵥ tl) = f hd ::ᵥ (Vector.map f tl) :=
@@ -94,9 +113,11 @@ section Constants
   @[simp]
   theorem get_ones_eq_true : get ones i = true := get_replicate_val_eq_val
 
+
   /-- The all-ones bit pattern is also spelled `-1` -/
   @[simp]
   theorem get_minus_one : get (-1 : Bitvec width) i = true := by
+    simp[OfNat.ofNat, Neg.neg, Bitvec.neg, One.one]
     sorry
 
   @[simp]
@@ -107,7 +128,7 @@ end Constants
 
 
 section Bitwise
-  variable (x y : Bitvec width)
+  variable (x y z : Bitvec width)
 
   /-!
     First, we show that these bitwise operations are indeed just determined bit-by-bit, by showing
@@ -135,27 +156,32 @@ section Bitwise
     How do the operations interact with constant patterns `000000...` and `11111....`, and what
     happens if we supply the same argument twice
   -/
-  @[simp] theorem x_or_x_eq_x             : x.or x = x            := by ext; simp
-  @[simp] theorem x_or_not_x_eq_ones      : x.or x.compl = ones   := by ext; simp
-  @[simp] theorem x_or_zeroes_eq_x        : x.or 0 = x            := by ext; simp
-  @[simp] theorem x_or_ones_eq_ones       : x.or ones = ones      := by ext; simp
+  @[simp] theorem or_self         : x.or x = x                    := by ext; simp
+  @[simp] theorem or_compl_self   : x.or (compl x) = ones         := by ext; simp
+  @[simp] theorem compl_or_self   : (compl x).or x = ones         := by ext; simp
+  @[simp] theorem or_zeroes       : x.or 0 = x                    := by ext; simp
+  @[simp] theorem or_ones         : x.or ones = ones              := by ext; simp
 
-  @[simp] theorem x_and_x_eq_x            : x.and x = x           := by ext; simp
-  @[simp] theorem x_and_zeroes_eq_zeroes  : x.and 0 = 0           := by ext; simp
-  @[simp] theorem x_and_ones_eq_x         : x.and ones = x        := by ext; simp
+  @[simp] theorem and_self        : x.and x = x                   := by ext; simp
+  @[simp] theorem and_compl_self  : x.and (compl x) = 0           := by ext; simp
+  @[simp] theorem compl_and_self  : (compl x).and x = 0           := by ext; simp
+  @[simp] theorem and_zeroes      : x.and 0 = 0                   := by ext; simp
+  @[simp] theorem and_ones        : x.and ones = x                := by ext; simp
 
-  @[simp] theorem x_xor_x_eq_0            : x.xor x = 0           := by ext; simp
-  @[simp] theorem x_xor_zeroes_eq_x       : x.xor 0 = x           := by ext; simp
-  @[simp] theorem x_xor_ones_eq_not_x     : x.xor ones = x.compl  := by ext; simp
+  @[simp] theorem xor_self        : x.xor x = 0                   := by ext; simp
+  @[simp] theorem xor_compl_self  : x.xor (compl x) = ones        := by ext; simp
+  @[simp] theorem compl_xor_self  : (compl x).xor x = ones        := by ext; simp
+  @[simp] theorem xor_zeroes      : x.xor 0 = x                   := by ext; simp
+  @[simp] theorem xor_ones        : x.xor ones = x.compl          := by ext; simp
 
 
-  theorem not_zeroes_eq_ones              : (@ones width).compl = zeroes := by ext; simp
-  theorem not_ones_eq_zeroes              : (@zeroes width).compl = ones := by ext; simp
+  theorem not_zeroes              : compl (@ones width) = zeroes  := by ext; simp
+  theorem not_ones                : compl (@zeroes width) = ones  := by ext; simp
 
 
 
   /-!
-    Associativity, Commutativity
+    Associativity and Commutativity
   -/
   theorem or_comm     : x.or y = y.or x                   := by ext; simp; apply Bool.or_comm
   theorem or_assoc    : (x.or y).or z = x.or (y.or z)     := by ext; simp; apply Bool.or_assoc
@@ -165,6 +191,45 @@ section Bitwise
 
   theorem xor_comm    : x.xor y = y.xor x                 := by ext; simp; apply Bool.xor_comm
   theorem xor_assoc   : (x.xor y).xor z = x.xor (y.xor z) := by ext; simp -- Bool.xor_assoc is `@[simp]`, is that OK/safe?
+
+
+
+  /-!
+    Distributivity
+  -/
+  theorem and_or_distrib_left : x.and (y.or z) = (x.and y).or (x.and z) := by
+    ext; simp; apply Bool.and_or_distrib_left
+
+  theorem and_or_distrib_right : (x.or y).and z = (x.and z).or (y.and z) := by
+    ext; simp; apply Bool.and_or_distrib_right
+
+  theorem and_xor_distrib_left : x.and (y.xor z) = (x.and y).xor (x.and z) := by
+    ext; simp; apply Bool.and_xor_distrib_left
+
+  theorem and_xor_distrib_right : (x.xor y).and z = (x.and z).xor (y.and z) := by
+    ext; simp; apply Bool.and_xor_distrib_right
+
+  theorem or_and_distrib_left : x.or (y.and z) = (x.or y).and (x.or z) := by
+    ext; simp; apply Bool.or_and_distrib_left
+
+  theorem or_and_distrib_right : (x.and y).or z = (x.or z).and (y.or z) := by
+    ext; simp; apply Bool.or_and_distrib_right
+
+
+
+  /--
+    De Morgan's laws for bitvectors
+  -/
+  @[simp]
+  theorem not_and : compl (x.and y) = (compl x).or (compl y) := by
+    ext; simp
+
+  @[simp]
+  theorem not_or  : compl (x.or y) = (compl x).and (compl y) := by
+    ext; simp
+
+
+
 
 
 end Bitwise
