@@ -164,8 +164,6 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : HPow.hPow (x ^ (n�
 
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
 
--- TODO: should log_ofReal_mul and ofReal_log use ofReal in their names?
-
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
