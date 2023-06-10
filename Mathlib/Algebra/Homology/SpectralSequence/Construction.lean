@@ -23,12 +23,35 @@ def Bounds.quadrantUR (p q : ℤ) : Bounds ℤt where
 
 abbrev Bounds.firstQuadrant := Bounds.quadrantUR 0 0
 
+namespace ToE₂CohomologicalSpectralSequence
+
+noncomputable def page (r : ℤ) (hr : 2 ≤ r) (pq : ℤ × ℤ) : C :=
+  (X.E (pq.1+pq.2-1) (pq.1+pq.2) (pq.1+pq.2+1) (by linarith) (by linarith)).obj
+    (ιℤt.mapArrow₃.obj (Arrow₃.mkOfLE (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1)))
+
+noncomputable def d (r : ℤ) (hr : 2 ≤ r) (pq pq' : ℤ × ℤ) (hpq' : pq + (r, 1-r) = pq') :
+    page X r hr pq ⟶ page X r hr pq' := by
+  have h₁ : pq.1 + r = pq'.1 := congr_arg _root_.Prod.fst hpq'
+  have h₂ : pq.2 + (1-r) = pq'.2 := congr_arg _root_.Prod.snd hpq'
+  refine' (X.d (pq.1 + pq.2 - 1) (pq.1 + pq.2) (pq.1 + pq.2 + 1) (pq.1 + pq.2 + 2) _ _ _).app
+     (ιℤt.mapArrow₅.obj
+        (Arrow₅.mkOfLE (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1))) ≫
+    (X.EIsoOfEq (pq.1+pq.2) (pq.1+pq.2+1) (pq.1+pq.2+2) _ _
+      (pq'.1+pq'.2-1) (pq'.1+pq'.2) (pq'.1+pq'.2+1) _ _ (by linarith)).hom.app _ ≫
+    (X.E _ _ _ _ _).map
+      (Arrow₃.Hom.mk (𝟙 _) (𝟙 _) (eqToHom _) (eqToHom _) (Subsingleton.elim _ _)
+      (Subsingleton.elim _ _) (Subsingleton.elim _ _))
+  . linarith
+  all_goals dsimp ; congr 1 ; linarith
+
+end ToE₂CohomologicalSpectralSequence
+
 noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectralSequence C where
-  page' r hr := fun ⟨p, q⟩ =>
-    (X.E (p+q-1) (p+q) (p+q+1) (by linarith) (by linarith)).obj
-      (ιℤt.mapArrow₃.obj (Arrow₃.mkOfLE (q-r+2) q (q+1) (q+r-1)))
-  d' := sorry
-  d_comp_d' := sorry
+  page' r hr pq := ToE₂CohomologicalSpectralSequence.page X r hr pq
+  d' r hr pq pq' hpq' := ToE₂CohomologicalSpectralSequence.d X r hr pq pq' hpq'
+  d_comp_d' r hr := fun ⟨p, q⟩ ⟨p', q'⟩ ⟨p'', q''⟩ hpq' hpq'' => by
+    dsimp
+    sorry
   iso' := sorry
 
 pp_extended_field_notation toE₂CohomologicalSpectralSequence

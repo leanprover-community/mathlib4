@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Homology.ShortComplex.Images
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.ArrowFour
+import Mathlib.CategoryTheory.ArrowFive
 import Mathlib.CategoryTheory.Subobject.Lattice
 
 open CategoryTheory Category Limits Preadditive
@@ -171,7 +171,7 @@ attribute [reassoc (attr := simp)] zero₁ zero₂ zero₃
 variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 variable (X : SpectralObject C ι)
 
-variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
 
 lemma δ_app_eq_zero (D : Arrow₂ ι) (h : IsIso D.f) :
     (X.δ n₀ n₁ hn₁).app D = 0 := by
@@ -296,6 +296,14 @@ def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
     rw [← eq, Arrow₃.δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj,
       reassoc_of% (X.zero₁ n₀ n₁ hn₁ (Arrow₃.δ₀.obj D)), zero_comp]
 
+def shortComplexEIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁') (hn₂' : n₁' + 1 = n₂')
+    (h : n₁ = n₁') :
+    X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ ≅ X.shortComplexE n₀' n₁' n₂' hn₁' hn₂' := eqToIso (by
+  obtain rfl : n₁ = n₁' := h
+  obtain rfl : n₀ = n₀' := by linarith
+  obtain rfl : n₂ = n₂' := by linarith
+  rfl)
+
 -- the homology of this short complex gives the terms in all the pages of the spectral sequence
 def shortComplexEObj (D : Arrow₃ ι) : ShortComplex C :=
   ShortComplex.mk ((X.δ n₀ n₁ hn₁).app (Arrow₂.mk D.g D.h))
@@ -305,6 +313,11 @@ def shortComplexEObj (D : Arrow₃ ι) : ShortComplex C :=
 pp_extended_field_notation shortComplexE
 
 noncomputable def E : Arrow₃ ι ⥤ C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homology
+
+noncomputable def EIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁') (hn₂' : n₁' + 1 = n₂')
+    (h : n₁ = n₁') :
+    X.E n₀ n₁ n₂ hn₁ hn₂ ≅ X.E n₀' n₁' n₂' hn₁' hn₂' :=
+  ShortComplex.homologyMapIso (X.shortComplexEIsoOfEq n₀ n₁ n₂ hn₁ hn₂ n₀' n₁' n₂' hn₁' hn₂' h)
 
 pp_extended_field_notation E
 
@@ -968,8 +981,57 @@ noncomputable def dFromSrcΦ :
   refine' (X.δ₀PullbackCokernelSequenceSrcΦ_exact n₀ n₁ hn₁).desc
     ((X.δ₄PullbackKernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).lift
     (whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁)) _) _
-  . sorry
-  . sorry
+  . ext ⟨f₁, f₂, f₃, f₄⟩
+    have eq := congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero (Arrow₃.mk f₁ (f₂ ≫ f₃) f₄)
+    dsimp [shortComplexE] at eq
+    dsimp [Arrow₃.δ₀, Arrow₃.δ₂, Arrow₄.δ₀]
+    erw [X.ψ_comp_app_assoc n₀ n₁ hn₁ (Arrow₃.mk f₂ f₃ f₄), eq, comp_zero]
+  . rw [← cancel_mono (X.δ₄PullbackKernelSequenceE n₀ n₁ n₂ hn₁ hn₂).f, zero_comp,
+      assoc, ShortComplex.Exact.lift_f]
+    ext D
+    exact congr_app (X.shortComplex₄Ψ n₀ n₁ hn₁).zero₁ (Arrow₄.δ₀.obj D)
+
+@[reassoc (attr := simp)]
+lemma dFromSrcΦ_fac :
+      whiskerLeft Arrow₄.δ₀ (X.toSrcΦ n₀ n₁ hn₁) ≫  X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂ ≫
+    whiskerLeft Arrow₄.δ₄ (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂) =
+      whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁) := by
+  dsimp only [dToSrcΦ]
+  erw [(X.δ₀PullbackCokernelSequenceSrcΦ_exact n₀ n₁ hn₁).g_desc_assoc,
+    (X.δ₄PullbackKernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).lift_f]
+
+@[reassoc (attr := simp)]
+lemma dFromSrcΦ_fac_app (D : Arrow₄ ι):
+    (X.toSrcΦ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D) ≫
+    (X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D ≫
+    (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₄.obj D) =
+      (X.Ψ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D) :=
+  congr_app (X.dFromSrcΦ_fac n₀ n₁ n₂ hn₁ hn₂) D
+
+noncomputable def dFromTgtΦ :
+    Arrow₄.δ₀ ⋙ X.tgtΦ n₀ n₁ hn₁ ⟶ Arrow₄.δ₄ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ :=
+  whiskerLeft Arrow₄.δ₀ (X.Φ n₀ n₁ hn₁).inv ≫ X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂
+
+@[reassoc (attr := simp)]
+lemma Φ_dFromTgtΦ_app (D : Arrow₄ ι) :
+    (X.Φ n₀ n₁ hn₁).hom.app (Arrow₄.δ₀.obj D) ≫ (X.dFromTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D =
+      (X.dFromSrcΦ n₀ n₁ n₂ hn₁ hn₂).app D := by
+  simp [dFromTgtΦ]
+
+lemma dFromTgtΦ_cyclesι_app (D : Arrow₄ ι) :
+    (X.dFromTgtΦ n₀ n₁ n₂ hn₁ hn₂).app D ≫ (X.opcyclesι n₀ n₁ n₂ hn₁ hn₂).app (Arrow₄.δ₄.obj D) =
+      (X.fromTgtΦ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D) := by
+  rw [← cancel_epi ((X.Φ n₀ n₁ hn₁).hom.app (Arrow₄.δ₀.obj D)), Φ_dFromTgtΦ_app_assoc,
+    ← cancel_epi ((X.toSrcΦ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D)),
+    dFromSrcΦ_fac_app, toSrcΦ_Φ_hom_fromTgtΦ_app]
+
+noncomputable def d : Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ ⟶
+    Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃:=
+  whiskerLeft Arrow₅.δ₀ (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂) ≫
+    whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₄) (X.Φ n₁ n₂ hn₂).hom ≫
+    whiskerLeft Arrow₅.δ₅ (X.dFromTgtΦ n₁ n₂ n₃ hn₂ hn₃)
+
+pp_extended_field_notation d
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁

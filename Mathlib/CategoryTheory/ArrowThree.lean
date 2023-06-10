@@ -208,7 +208,7 @@ variable (C)
 @[simps]
 def mkOfLE {ι : Type _} [Preorder ι] (a b c d : ι)
     (hab : a ≤ b := by linarith) (hbc : b ≤ c := by linarith) (hcd : c ≤ d := by linarith) :
-  Arrow₃ ι := Arrow₃.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd)
+    Arrow₃ ι := Arrow₃.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd)
 
 noncomputable def ιArrow (ι : Type _) [Preorder ι] [OrderBot ι] [OrderTop ι] :
     Arrow ι ⥤ Arrow₃ ι where
@@ -237,6 +237,36 @@ def _root_.CategoryTheory.Functor.mapArrow₃ {ι ι' : Type _} [Category ι] [C
       commh := by
         dsimp
         simp only [← F.map_comp, Arrow₃.Hom.commh] }
+
+variable {C}
+
+def isoMk (D₁ D₂ : Arrow₃ C) (e₀ : D₁.X₀ ≅ D₂.X₀) (e₁ : D₁.X₁ ≅ D₂.X₁)
+    (e₂ : D₁.X₂ ≅ D₂.X₂) (e₃ : D₁.X₃ ≅ D₂.X₃)
+    (commf : e₀.hom ≫ D₂.f = D₁.f ≫ e₁.hom)
+    (commg : e₁.hom ≫ D₂.g = D₁.g ≫ e₂.hom)
+    (commh : e₂.hom ≫ D₂.h = D₁.h ≫ e₃.hom) : D₁ ≅ D₂ where
+    hom :=
+      { τ₀ := e₀.hom
+        τ₁ := e₁.hom
+        τ₂ := e₂.hom
+        τ₃ := e₃.hom
+        commf := commf
+        commg := commg
+        commh := commh }
+    inv :=
+      { τ₀ := e₀.inv
+        τ₁ := e₁.inv
+        τ₂ := e₂.inv
+        τ₃ := e₃.inv
+        commf := by
+          rw [← cancel_epi e₀.hom, Iso.hom_inv_id_assoc, ← cancel_mono e₁.hom, ← commf,
+            Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+        commg := by
+          rw [← cancel_epi e₁.hom, Iso.hom_inv_id_assoc, ← cancel_mono e₂.hom, ← commg,
+            Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id]
+        commh := by
+          rw [← cancel_epi e₂.hom, Iso.hom_inv_id_assoc, ← cancel_mono e₃.hom, ← commh,
+            Category.assoc, Category.assoc, Iso.inv_hom_id, Category.comp_id] }
 
 end Arrow₃
 
