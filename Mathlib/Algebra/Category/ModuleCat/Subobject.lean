@@ -106,7 +106,10 @@ The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
 --porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
-@[ext]
+-- @[ext] this is no longer an ext lemma under the current interpretation see eg
+-- the conversation beginning at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
+-- Goal.20state.20not.20updating.2C.20bugs.2C.20etc.2E/near/338456803
 theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [HasImage f]
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
