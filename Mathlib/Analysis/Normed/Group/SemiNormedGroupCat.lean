@@ -99,7 +99,7 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroup where
   Zero _ _ := NormedAddGroupHom.zero
   comp_zero _ _ := rfl
-  zero_comp _ _ _ f:= NormedAddGroupHom.comp_zero f
+  zero_comp _ _ _ f := NormedAddGroupHom.comp_zero f
 
 
 @[simp]
@@ -107,13 +107,7 @@ theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroup.zero_apply
 
---/--porting note :Added, Needed to make isZero_of_subsingleton work -/
--- instance {V W : SemiNormedGroup}: ZeroHomClass (V ⟶ W) V W where
---   coe := NormedAddGroupHom.toFun
---   coe_injective' := NormedAddGroupHom.coe_injective
---   map_zero f := by simp only [NormedAddGroupHom.toFun_eq_coe, map_zero]
-
-/--porting note: Didn't work, manual rewrite-/
+/--Porting note: Had to add some proof steps -/
 theorem isZero_of_subsingleton (V : SemiNormedGroup) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x
