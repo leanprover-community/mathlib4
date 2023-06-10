@@ -165,7 +165,7 @@ protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
-/-- `of_real x` returns `x` if it is nonnegative, `0` otherwise. -/
+/-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
 protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 #align ennreal.of_real ENNReal.ofReal
 
@@ -2549,19 +2549,19 @@ end Set
 --       fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ≥0∞)` for `r : ℝ≥0`"
 -- #align tactic.positivity_coe_nnreal_ennreal tactic.positivity_coe_nnreal_ennreal
 
--- private theorem ennreal_of_real_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
+-- private theorem ennreal_ofReal_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
 --   ENNReal.ofReal_pos.2
--- #align tactic.ennreal_of_real_pos tactic.ennreal_of_real_pos
+-- #align tactic.ennreal_ofReal_pos tactic.ennreal_ofReal_pos
 
 -- /-- Extension for the `positivity` tactic: `ENNReal.ofReal` is positive if its input is. -/
 -- @[positivity]
--- unsafe def positivity_ennreal_of_real : expr → tactic strictness
+-- unsafe def positivity_ennreal_ofReal : expr → tactic strictness
 --   | q(ENNReal.ofReal $(r)) => do
 --     let positive p ← core r
---     positive <$> mk_app `` ennreal_of_real_pos [p]
+--     positive <$> mk_app `` ennreal_ofReal_pos [p]
 --   |-- This case is handled by `tactic.positivity_canon`
 --     e =>
 --     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `ENNReal.ofReal r`"
--- #align tactic.positivity_ennreal_of_real tactic.positivity_ennreal_of_real
+-- #align tactic.positivity_ennreal_ofReal tactic.positivity_ennreal_ofReal
 
 -- end Tactic

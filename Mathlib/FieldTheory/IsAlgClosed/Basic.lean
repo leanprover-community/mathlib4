@@ -54,7 +54,7 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 class IsAlgClosed : Prop where
-  Splits : ∀ p : k[X], p.Splits <| RingHom.id k
+  splits : ∀ p : k[X], p.Splits <| RingHom.id k
 #align is_alg_closed IsAlgClosed
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
@@ -62,7 +62,7 @@ class IsAlgClosed : Prop where
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_codomain {k K : Type _} [Field k] [IsAlgClosed k] [Field K] {f : K →+* k}
-    (p : K[X]) : p.Splits f := by convert IsAlgClosed.Splits (p.map f); simp [splits_map_iff]
+    (p : K[X]) : p.Splits f := by convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
 #align is_alg_closed.splits_codomain IsAlgClosed.splits_codomain
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
@@ -71,7 +71,7 @@ See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically c
 -/
 theorem IsAlgClosed.splits_domain {k K : Type _} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : p.Splits f :=
-  Polynomial.splits_of_splits_id _ <| IsAlgClosed.Splits _
+  Polynomial.splits_of_splits_id _ <| IsAlgClosed.splits _
 #align is_alg_closed.splits_domain IsAlgClosed.splits_domain
 
 namespace IsAlgClosed
@@ -79,7 +79,7 @@ namespace IsAlgClosed
 variable {k}
 
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsAlgClosed.Splits p) hp
+  exists_root_of_splits _ (IsAlgClosed.splits p) hp
 #align is_alg_closed.exists_root IsAlgClosed.exists_root
 
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by

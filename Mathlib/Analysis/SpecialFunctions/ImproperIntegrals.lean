@@ -97,7 +97,7 @@ theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0
     rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
   · refine' ContinuousOn.aestronglyMeasurable (fun t ht => _) measurableSet_Ioi
     exact
-      (Complex.continuousAt_of_real_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
+      (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
 
 theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
