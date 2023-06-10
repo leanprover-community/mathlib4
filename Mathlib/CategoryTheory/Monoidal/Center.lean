@@ -269,8 +269,8 @@ theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y
 
 @[simp]
 theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
-  ext
-  rw [← associator_hom_f, ← comp_f, iso.hom_inv_id]; rfl
+  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.associator_inv_f CategoryTheory.Center.associator_inv_f
 
 @[simp]
@@ -280,8 +280,8 @@ theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
 
 @[simp]
 theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
-  ext
-  rw [← leftUnitor_hom_f, ← comp_f, iso.hom_inv_id]; rfl
+  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.left_unitor_inv_f CategoryTheory.Center.leftUnitor_inv_f
 
 @[simp]
@@ -291,8 +291,8 @@ theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
 
 @[simp]
 theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
-  ext
-  rw [← rightUnitor_hom_f, ← comp_f, iso.hom_inv_id]; rfl
+  apply Iso.inv_ext' -- Porting note: Originally `ext`
+  rw [← rightUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 #align category_theory.center.right_unitor_inv_f CategoryTheory.Center.rightUnitor_inv_f
 
 end
