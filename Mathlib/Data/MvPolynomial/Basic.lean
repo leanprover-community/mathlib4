@@ -150,6 +150,14 @@ instance isScalarTower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
   IsScalarTower.right
 #align mv_polynomial.is_scalar_tower' MvPolynomial.isScalarTower'
 
+--Porting note: new instance
+instance isScalarTower_right [CommSemiring R] [CommSemiring S₁] [DistribSMul R S₁]
+    [IsScalarTower R S₁ S₁] : IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
+  ⟨by
+    rintro x p q
+    dsimp [MvPolynomial] at p q ⊢
+    rw [smul_mul_assoc]⟩
+
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
   AddMonoidAlgebra.unique
