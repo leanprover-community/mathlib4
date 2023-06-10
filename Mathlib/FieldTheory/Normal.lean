@@ -166,7 +166,7 @@ set_option maxHeartbeats 210000 in
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_roots
-    simp only [Polynomial.map_zero, roots_zero, Multiset.toFinset_zero, Finset.coe_empty,
+    simp only [Polynomial.map_zero, roots_zero, Multiset.toFinset_zero, Finset.coe_empty, rootSet,
       Algebra.adjoin_empty] at this
     exact
       Normal.of_algEquiv
