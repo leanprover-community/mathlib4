@@ -72,11 +72,11 @@ exceptional semisimple Lie algebras.
   * `CartanMatrix.E₈`
   * `CartanMatrix.F₄`
   * `CartanMatrix.G₂`
-  * `LieAlgebra.E₆`
-  * `LieAlgebra.E₇`
-  * `LieAlgebra.E₈`
-  * `LieAlgebra.F₄`
-  * `LieAlgebra.G₂`
+  * `LieAlgebra.e₆`
+  * `LieAlgebra.e₇`
+  * `LieAlgebra.e₈`
+  * `LieAlgebra.f₄`
+  * `LieAlgebra.g₂`
 
 ## Tags
 
@@ -126,27 +126,27 @@ local notation "F" => FreeLieAlgebra.of R ∘ Generators.F
 -- mathport name: exprad
 local notation "ad" => LieAlgebra.ad R (FreeLieAlgebra R (Generators B))
 
-/-- The terms correpsonding to the `⁅H, H⁆`-relations. -/
+/-- The terms corresponding to the `⁅H, H⁆`-relations. -/
 def HH : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, H j⁆
 #align cartan_matrix.relations.HH CartanMatrix.Relations.HH
 
-/-- The terms correpsonding to the `⁅E, F⁆`-relations. -/
+/-- The terms corresponding to the `⁅E, F⁆`-relations. -/
 def EF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => if i = j then ⁅E i, F i⁆ - H i else ⁅E i, F j⁆
 #align cartan_matrix.relations.EF CartanMatrix.Relations.EF
 
-/-- The terms correpsonding to the `⁅H, E⁆`-relations. -/
+/-- The terms corresponding to the `⁅H, E⁆`-relations. -/
 def HE : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, E j⁆ - A i j • E j
 #align cartan_matrix.relations.HE CartanMatrix.Relations.HE
 
-/-- The terms correpsonding to the `⁅H, F⁆`-relations. -/
+/-- The terms corresponding to the `⁅H, F⁆`-relations. -/
 def HF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ⁅H i, F j⁆ + A i j • F j
 #align cartan_matrix.relations.HF CartanMatrix.Relations.HF
 
-/-- The terms correpsonding to the `ad E`-relations.
+/-- The terms corresponding to the `ad E`-relations.
 
 Note that we use `int.to_nat` so that we can take the power and that we do not bother
 restricting to the case `i ≠ j` since these relations are zero anyway. We also defensively
@@ -155,7 +155,7 @@ def adE : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ad (E i) ^ (-A i j).toNat <| ⁅E i, E j⁆
 #align cartan_matrix.relations.ad_E CartanMatrix.Relations.adE
 
-/-- The terms correpsonding to the `ad F`-relations.
+/-- The terms corresponding to the `ad F`-relations.
 
 See also `ad_E` docstring. -/
 def adF : B × B → FreeLieAlgebra R (Generators B) :=
@@ -294,28 +294,28 @@ end CartanMatrix
 namespace LieAlgebra
 
 /-- The exceptional split Lie algebra of type e₆. -/
-abbrev E₆ :=
+abbrev e₆ :=
   CartanMatrix.E₆.ToLieAlgebra R
-#align lie_algebra.e₆ LieAlgebra.E₆
+#align lie_algebra.e₆ LieAlgebra.e₆
 
 /-- The exceptional split Lie algebra of type e₇. -/
-abbrev E₇ :=
+abbrev e₇ :=
   CartanMatrix.E₇.ToLieAlgebra R
-#align lie_algebra.e₇ LieAlgebra.E₇
+#align lie_algebra.e₇ LieAlgebra.e₇
 
 /-- The exceptional split Lie algebra of type e₈. -/
-abbrev E₈ :=
+abbrev e₈ :=
   CartanMatrix.E₈.ToLieAlgebra R
-#align lie_algebra.e₈ LieAlgebra.E₈
+#align lie_algebra.e₈ LieAlgebra.e₈
 
 /-- The exceptional split Lie algebra of type f₄. -/
-abbrev F₄ :=
+abbrev f₄ :=
   CartanMatrix.F₄.ToLieAlgebra R
-#align lie_algebra.f₄ LieAlgebra.F₄
+#align lie_algebra.f₄ LieAlgebra.f₄
 
 /-- The exceptional split Lie algebra of type g₂. -/
-abbrev G₂ :=
+abbrev g₂ :=
   CartanMatrix.G₂.ToLieAlgebra R
-#align lie_algebra.g₂ LieAlgebra.G₂
+#align lie_algebra.g₂ LieAlgebra.g₂
 
 end LieAlgebra
