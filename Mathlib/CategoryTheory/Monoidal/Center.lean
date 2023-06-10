@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Braided
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
-import Mathbin.CategoryTheory.Monoidal.Coherence
+import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Monoidal.Coherence
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -135,15 +135,13 @@ theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by cases
 a morphism whose underlying morphism is an isomorphism.
 -/
 @[simps]
-def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y
-    where
+def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   Hom := f
   inv :=
     ⟨inv f.f, fun U => by simp [← cancel_epi (f.f ⊗ 𝟙 U), ← comp_tensor_id_assoc, ← id_tensor_comp]⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
-instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f :=
-  by
+instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
   change is_iso (iso_mk f).Hom
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
@@ -249,8 +247,7 @@ attribute [local simp] associator_naturality left_unitor_naturality right_unitor
 
 attribute [local simp] center.associator center.left_unitor center.right_unitor
 
-instance : MonoidalCategory (Center C)
-    where
+instance : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom X₁ Y₁ X₂ Y₂ f g := tensorHom f g
   tensorUnit := tensorUnit
@@ -327,8 +324,7 @@ variable (C)
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The forgetful monoidal functor from the Drinfeld center to the original category. -/
 @[simps]
-def forget : MonoidalFunctor (Center C) C
-    where
+def forget : MonoidalFunctor (Center C) C where
   obj X := X.1
   map X Y f := f.f
   ε := 𝟙 (𝟙_ C)
@@ -354,8 +350,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
       simp⟩
 #align category_theory.center.braiding CategoryTheory.Center.braiding
 
-instance braidedCategoryCenter : BraidedCategory (Center C)
-    where
+instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
   braiding_naturality' X Y X' Y' f g := by
     ext
@@ -376,8 +371,7 @@ open BraidedCategory
 def ofBraidedObj (X : C) : Center C :=
   ⟨X, {
       β := fun Y => β_ X Y
-      monoidal' := fun U U' =>
-        by
+      monoidal' := fun U U' => by
         rw [iso.eq_inv_comp, ← category.assoc, ← category.assoc, iso.eq_comp_inv, category.assoc,
           category.assoc]
         exact hexagon_forward X U U' }⟩
@@ -388,8 +382,7 @@ variable (C)
 /-- The functor lifting a braided category to its center, using the braiding as the half-braiding.
 -/
 @[simps]
-def ofBraided : MonoidalFunctor C (Center C)
-    where
+def ofBraided : MonoidalFunctor C (Center C) where
   obj := ofBraidedObj
   map X X' f :=
     { f
