@@ -78,8 +78,7 @@ def insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
 #align cube.insert_at Cube.insertAt
 
 theorem insertAt_boundary (i : N) {t₀ : I} {t}
-    (H : (t₀ = 0 ∨ t₀ = 1) ∨ t ∈ boundary { j // j ≠ i }) : insertAt i ⟨t₀, t⟩ ∈ boundary N :=
-  by
+    (H : (t₀ = 0 ∨ t₀ = 1) ∨ t ∈ boundary { j // j ≠ i }) : insertAt i ⟨t₀, t⟩ ∈ boundary N := by
   obtain H | ⟨j, H⟩ := H
   · use i; rwa [funSplitAt_symm_apply, dif_pos rfl]
   · use j; rwa [funSplitAt_symm_apply, dif_neg j.prop, Subtype.coe_eta]
@@ -331,8 +330,7 @@ theorem homotopic_to (i : N) {p q : Ω^ N X x} :
 #align gen_loop.homotopy_from_apply GenLoop.homotopyFrom_apply
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
-    (toLoop i p).Homotopic (toLoop i q) → Homotopic p q :=
-  by
+    (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
   refine' Nonempty.map fun H => ⟨⟨homotopyFrom i H, _, _⟩, _⟩
   pick_goal 3
   · rintro t y ⟨j, jH⟩
@@ -378,8 +376,7 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
 #align gen_loop.symm_at GenLoop.symmAt
 
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
-    transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) :=
-  by
+    transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
   ext; simp_rw [trans_at, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
   split_ifs <;>
     · congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
