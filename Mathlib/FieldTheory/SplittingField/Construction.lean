@@ -277,8 +277,12 @@ instance inhabited : Inhabited (SplittingField f) :=
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
 --Porting note: new instance
-instance Qsmul : SMul ℚ (SplittingField f) :=
+instance [CommSemiring S] [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
   Submodule.Quotient.hasSmul' _
+
+--Porting note: new instance
+instance [DistribSMul S K] [IsScalarTower S K K] : DistribSMul S (AdjoinRoot f) :=
+  Submodule.Quotient.distribSmul' _
 
 instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) := by
   delta SplittingField; infer_instance
@@ -288,8 +292,8 @@ instance : Field (SplittingField f) :=
   { toCommRing := SplittingField.commRing f
     ratCast := fun a => algebraMap K (SplittingField f) (a : K)
     ratCast_mk := sorry
-    qsmul := @HSMul.hSMul ℚ (SplittingField f) (SplittingField f) _
-    --qsmul_eq_mul' := sorry
+    qsmul := (. • .)
+    qsmul_eq_mul' := sorry
     inv := sorry
     exists_pair_ne := sorry
     mul_inv_cancel := sorry
@@ -319,25 +323,25 @@ example [CharZero K] : SplittingField.algebra' f = algebraRat :=
 example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q :=
   rfl
 
+instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
+    IsSplittingField K (SplittingField f) f :=
+  IsSplittingField.of_algEquiv _ f (SplittingFieldAux.AlgEquivQuotientMvPolynomial f).symm
+#align polynomial.is_splitting_field.splitting_field Polynomial.IsSplittingField.splittingField
+
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
-  SplittingFieldAux.splits _ _ rfl
+  IsSplittingField.splits f.SplittingField f
 #align polynomial.splitting_field.splits Polynomial.SplittingField.splits
 
 variable [Algebra K L] (hb : Splits (algebraMap K L) f)
 
 /-- Embeds the splitting field into any other field that splits the polynomial. -/
 def lift : SplittingField f →ₐ[K] L :=
-  { Classical.choose (SplittingFieldAux.exists_lift _ _ _ _ hb) with
-    commutes' := fun r =>
-      haveI := Classical.choose_spec (splitting_field_aux.exists_lift _ _ rfl _ hb)
-      RingHom.ext_iff.1 this r }
+  IsSplittingField.lift f.SplittingField f hb
 #align polynomial.splitting_field.lift Polynomial.SplittingField.lift
 
-theorem adjoin_roots :
-    Algebra.adjoin K
-        (↑(f.map (algebraMap K <| SplittingField f)).roots.toFinset : Set (SplittingField f)) =
-      ⊤ :=
-  SplittingFieldAux.adjoin_roots _ _ rfl
+theorem adjoin_roots : Algebra.adjoin K
+    (↑(f.map (algebraMap K <| SplittingField f)).roots.toFinset : Set (SplittingField f)) = ⊤ :=
+  IsSplittingField.adjoin_roots f.SplittingField f
 #align polynomial.splitting_field.adjoin_roots Polynomial.SplittingField.adjoin_roots
 
 theorem adjoin_rootSet : Algebra.adjoin K (f.rootSet f.SplittingField) = ⊤ :=
@@ -350,13 +354,10 @@ end SplittingField
 
 namespace IsSplittingField
 
-variable (K L) [Algebra K L]
+variable (K L)
+variable [Algebra K L]
 
 variable {K}
-
-instance splittingField (f : K[X]) : IsSplittingField K (SplittingField f) f :=
-  ⟨SplittingField.splits f, SplittingField.adjoin_roots f⟩
-#align polynomial.is_splitting_field.splitting_field Polynomial.IsSplittingField.splittingField
 
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
@@ -364,21 +365,21 @@ instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
 /-- Any splitting field is isomorphic to `splitting_field f`. -/
 def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
   refine'
-    AlgEquiv.ofBijective (lift L f <| splits (splitting_field f) f)
-      ⟨RingHom.injective (lift L f <| splits (splitting_field f) f).toRingHom, _⟩
-  haveI := FiniteDimensional (splitting_field f) f
-  haveI := FiniteDimensional L f
-  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (splitting_field f) :=
+    AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
+      ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
+  haveI := finiteDimensional (SplittingField f) f
+  haveI := finiteDimensional L f
+  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
     le_antisymm
       (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift L f <| splits (splitting_field f) f).toLinearMap from
-          RingHom.injective (lift L f <| splits (splitting_field f) f : L →+* f.splitting_field)))
+        (show Function.Injective (lift L f <| splits (SplittingField f) f).toLinearMap from
+          RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)))
       (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift (splitting_field f) f <| splits L f).toLinearMap from
-          RingHom.injective (lift (splitting_field f) f <| splits L f : f.splitting_field →+* L)))
-  change Function.Surjective (lift L f <| splits (splitting_field f) f).toLinearMap
+        (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
+          RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
+  change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
   refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
-  exact RingHom.injective (lift L f <| splits (splitting_field f) f : L →+* f.splitting_field)
+  exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField
