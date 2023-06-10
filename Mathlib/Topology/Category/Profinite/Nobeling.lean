@@ -1173,13 +1173,45 @@ section JointlySurjective
 open CategoryTheory
 open CategoryTheory.Limits
 
+lemma IzeroLTTop : 0 < Ordinal.type ((·<·) : (WithTop I) → (WithTop I) → Prop) := by
+  rw [Ordinal.pos_iff_ne_zero, Ordinal.type_ne_zero_iff_nonempty]
+  exact inferInstance
+
 instance ICofiltered {o : Ordinal} (ho : o.IsLimit) :
-    IsCofiltered {i : WithTop I // ord I i < o}ᵒᵖ := sorry
-instance ResCompact (o : Ordinal) (hC : IsClosed C) : CompactSpace (Res C o) := sorry
-instance CCompact (o : Ordinal) (hC : IsClosed C) (hsC : Support C ⊆ { j | ord I j < o }) :
+    IsCofiltered {i : WithTop I // ord I i < o}ᵒᵖ :=
+{ Nonempty := by
+    use Ordinal.enum _ 0 IzeroLTTop
+    dsimp [ord]
+    simp only [Ordinal.typein_enum]
+    rw [Ordinal.pos_iff_ne_zero]
+    exact ho.1
+  cone_objs := by
+    intro i j
+    cases (le_total i.unop j.unop)
+    · use j
+      use (homOfLE (by assumption : i.unop ≤ j.unop)).op
+      use (homOfLE (le_refl j.unop)).op
+      trivial
+    · use i
+      use (homOfLE (le_refl i.unop)).op
+      use (homOfLE (by assumption : j.unop ≤ i.unop)).op
+      trivial
+  cone_maps := by
+    intro i j f g
+    suffices : f = g
+    · rw [this]
+      use i
+      use 𝟙 i
+    simp only [eq_iff_true_of_subsingleton]  }
+
+instance ResCompact (o : Ordinal) (hC : IsClosed C) : CompactSpace (Res C o) := by
+  rw [← isCompact_iff_compactSpace]
+  exact (isClosed_Res C o hC).isCompact
+
+instance CCompact (hC : IsClosed C) :
     CompactSpace C := by
-  rw [supportResEq C o hsC]
-  exact ResCompact C o hC
+  rw [← isCompact_iff_compactSpace]
+  exact hC.isCompact
 
 lemma ResOnSubsetsId (o : Ordinal) : ResOnSubsets C (le_refl o) = id := by
   ext ⟨f,hf⟩ i
@@ -1230,9 +1262,9 @@ def OrdToProfinite (o : Ordinal) (hC : IsClosed C) :
     rw [ResOnSubsetsComp] }
 
 noncomputable
-def OrdCone (o : Ordinal) (hC : IsClosed C) (hsC : Support C ⊆ { j | ord I j < o }) :
+def OrdCone (o : Ordinal) (hC : IsClosed C) :
     Cone (OrdToProfinite C o hC) :=
-{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hC hsC) _ _
+{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C hC) _ _
   π :=
   { app := fun i ↦ ⟨ResOnSubset C (ord I i.unop), continuous_ResOnSubset _ _⟩
     naturality := by
@@ -1244,14 +1276,14 @@ def OrdCone (o : Ordinal) (hC : IsClosed C) (hsC : Support C ⊆ { j | ord I j <
       rw [resOnSubsets_eq] } }
 
 lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
-    (hsC : Support C ⊆ { j | ord I j < o }) : IsLimit (OrdCone C o hC hsC) := sorry
+    (hsC : Support C ⊆ { j | ord I j < o }) : IsLimit (OrdCone C o hC) := sorry
 
 lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
     (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
     (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
   obtain ⟨i, g, h⟩ := @Profinite.exists_locallyConstant {i : WithTop I // ord I i < o}ᵒᵖ _
-    (ICofiltered ho) _ (OrdCone C o hC hsC) _
+    (ICofiltered ho) _ (OrdCone C o hC) _
     (OrdConeIsLimit C ho hC hsC) f
   use ⟨ord I i.unop.val, i.unop.prop⟩
   use g
@@ -1272,7 +1304,6 @@ lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed
     (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
     LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f :=
   comapJointlySurjective C ho hC hsC f
-
 
 end JointlySurjective
 
