@@ -17,8 +17,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 
 When `C` is a monoidal category, the functorial association `F ↦ limit F` is lax monoidal,
 i.e. there are morphisms
-* `lim_lax.ε : (𝟙_ C) → limit (𝟙_ (J ⥤ C))`
-* `lim_lax.μ : limit F ⊗ limit G ⟶ limit (F ⊗ G)`
+* `limLax.ε : (𝟙_ C) → limit (𝟙_ (J ⥤ C))`
+* `limLax.μ : limit F ⊗ limit G ⟶ limit (F ⊗ G)`
 satisfying the laws of a lax monoidal functor.
 -/
 
@@ -37,8 +37,8 @@ variable {J : Type v} [SmallCategory J]
 
 variable {C : Type u} [Category.{v} C] [HasLimits C]
 
-instance limitFunctorial : Functorial fun F : J ⥤ C => limit F :=
-  { Limits.lim with }
+instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where
+  map' := Limits.lim.map
 #align category_theory.limits.limit_functorial CategoryTheory.Limits.limitFunctorial
 
 @[simp]
@@ -49,10 +49,6 @@ theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
 
 variable [MonoidalCategory.{v} C]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simps]
 instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
   ε :=
@@ -64,17 +60,17 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
       { pt := limit F ⊗ limit G
         π :=
           { app := fun j => limit.π F j ⊗ limit.π G j
-            naturality' := fun j j' f => by
+            naturality := fun j j' f => by
               dsimp
-              simp only [category.id_comp, ← tensor_comp, limit.w] } }
-  μ_natural' X Y X' Y' f g := by
+              simp only [Category.id_comp, ← tensor_comp, limit.w] } }
+  μ_natural f g := by
     ext; dsimp
-    simp only [limit.lift_π, cones.postcompose_obj_π, monoidal.tensor_hom_app, limit.lift_map,
-      nat_trans.comp_app, category.assoc, ← tensor_comp, lim_map_π]
-  associativity' X Y Z := by
-    ext; dsimp
-    simp only [limit.lift_π, cones.postcompose_obj_π, monoidal.associator_hom_app, limit.lift_map,
-      nat_trans.comp_app, category.assoc]
+    simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
+      NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π]
+  associativity X Y Z := by
+    ext j; dsimp
+    simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.associator_hom_app, limit.lift_map,
+      NatTrans.comp_app, Category.assoc]
     slice_lhs 2 2 => rw [← tensor_id_comp_id_tensor]
     slice_lhs 1 2 =>
       rw [← comp_tensor_id, limit.lift_π]
@@ -86,25 +82,25 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
       rw [← id_tensor_comp, limit.lift_π]
       dsimp
     dsimp; simp
-  left_unitality' X := by
-    ext; dsimp
+  left_unitality X := by
+    ext j; dsimp
     simp
     conv_rhs => rw [← tensor_id_comp_id_tensor (limit.π X j)]
     slice_rhs 1 2 =>
       rw [← comp_tensor_id]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [left_unitor_naturality]
+    slice_rhs 2 3 => rw [leftUnitor_naturality]
     simp
-  right_unitality' X := by
-    ext; dsimp
+  right_unitality X := by
+    ext j; dsimp
     simp
     conv_rhs => rw [← id_tensor_comp_tensor_id _ (limit.π X j)]
     slice_rhs 1 2 =>
       rw [← id_tensor_comp]
       erw [limit.lift_π]
       dsimp
-    slice_rhs 2 3 => rw [right_unitor_naturality]
+    slice_rhs 2 3 => rw [rightUnitor_naturality]
     simp
 #align category_theory.limits.limit_lax_monoidal CategoryTheory.Limits.limitLaxMonoidal
 
@@ -136,9 +132,6 @@ theorem limLax_ε :
   rfl
 #align category_theory.limits.lim_lax_ε CategoryTheory.Limits.limLax_ε
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem limLax_μ (F G : J ⥤ C) :
     (@limLax J _ C _ _ _).μ F G =
@@ -146,11 +139,12 @@ theorem limLax_μ (F G : J ⥤ C) :
         { pt := limit F ⊗ limit G
           π :=
             { app := fun j => limit.π F j ⊗ limit.π G j
-              naturality' := fun j j' f => by
+              naturality := fun j j' f => by
                 dsimp
-                simp only [category.id_comp, ← tensor_comp, limit.w] } } :=
+                simp only [Category.id_comp, ← tensor_comp, limit.w] } } :=
   rfl
 #align category_theory.limits.lim_lax_μ CategoryTheory.Limits.limLax_μ
 
-end CategoryTheory.Limits
+end
 
+end CategoryTheory.Limits
