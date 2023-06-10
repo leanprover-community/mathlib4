@@ -196,7 +196,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
 /-- The proposed colimit cocone is a colimit in `Module R`. -/
-def colimitCoconeIsColimit : IsColimit (F := F) (colimitCocone F) where
+def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
     LinearMap.coe_injective <|
@@ -211,10 +211,10 @@ set_option linter.uppercaseLean3 false in
 
 instance forget₂AddCommGroupPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGroupCat.{u})
-    where PreservesFilteredColimits J _ _ :=
+    where preserves_filtered_colimits J _ _ :=
     {
-      PreservesColimit := fun F =>
-        preserves_colimit_of_preserves_colimit_cocone (colimit_cocone_is_colimit F)
+      preservesColimit := fun F =>
+        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
           (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) }
 set_option linter.uppercaseLean3 false in
