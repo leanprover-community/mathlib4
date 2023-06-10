@@ -182,7 +182,7 @@ theorem coeff_hermite_explicit :
       congr 2
       -- Factor out double factorials.
       norm_cast
-      -- porting note: ring_nf did not solve the goal on line 184
+      -- porting note: ring_nf did not solve the goal on line 186
       rw [(by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
