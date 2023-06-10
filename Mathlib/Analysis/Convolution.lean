@@ -393,10 +393,9 @@ theorem BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ] {x₀
   refine' BddAbove.convolutionExistsAt' L _ hs h2s hf _
   · simp_rw [← sub_eq_neg_add, hbg]
   · have : AEStronglyMeasurable g (map (fun t : G => x₀ - t) μ) :=
-      hmg.mono' (quasi_measure_preserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
+      hmg.mono' (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
     apply this.mono_measure
-    exact
-      map_mono_of_ae_measurable restrict_le_self (measurable_const.sub measurable_id').AEMeasurable
+    exact map_mono restrict_le_self (measurable_const.sub measurable_id')
 #align bdd_above.convolution_exists_at BddAbove.convolutionExistsAt
 
 variable {L} [MeasurableAdd G] [IsNegInvariant μ]
@@ -408,7 +407,8 @@ theorem convolutionExistsAt_flip :
 #align convolution_exists_at_flip convolutionExistsAt_flip
 
 theorem ConvolutionExistsAt.integrable_swap (h : ConvolutionExistsAt f g x L μ) :
-    Integrable (fun t => L (f (x - t)) (g t)) μ := by convert h.comp_sub_left x;
+    Integrable (fun t => L (f (x - t)) (g t)) μ := by
+  convert h.comp_sub_left x
   simp_rw [sub_sub_self]
 #align convolution_exists_at.integrable_swap ConvolutionExistsAt.integrable_swap
 
@@ -446,16 +446,18 @@ noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[�
 #align convolution convolution
 
 -- mathport name: convolution
-scoped[convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convolution f g L μ
+scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convolution f g L μ
 
 -- mathport name: convolution.volume
-scoped[convolution]
+scoped[Convolution]
   notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureTheory.MeasureSpace.volume
 
 -- mathport name: convolution.lsmul
-scoped[convolution]
+scoped[Convolution]
   notation:67 f " ⋆ " g:66 =>
     convolution f g (ContinuousLinearMap.lsmul ℝ ℝ) MeasureTheory.MeasureSpace.volume
+
+open scoped Convolution
 
 theorem convolution_def [Sub G] : (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ :=
   rfl
@@ -487,12 +489,14 @@ theorem convolution_smul [SMulCommClass ℝ 𝕜 F] {y : 𝕜} : f ⋆[L, μ] y 
 #align convolution_smul convolution_smul
 
 @[simp]
-theorem zero_convolution : 0 ⋆[L, μ] g = 0 := by ext;
+theorem zero_convolution : 0 ⋆[L, μ] g = 0 := by
+  ext
   simp_rw [convolution_def, Pi.zero_apply, L.map_zero₂, integral_zero]
 #align zero_convolution zero_convolution
 
 @[simp]
-theorem convolution_zero : f ⋆[L, μ] 0 = 0 := by ext;
+theorem convolution_zero : f ⋆[L, μ] 0 = 0 := by
+  ext
   simp_rw [convolution_def, Pi.zero_apply, (L _).map_zero, integral_zero]
 #align convolution_zero convolution_zero
 
@@ -503,7 +507,8 @@ theorem ConvolutionExistsAt.distrib_add {x : G} (hfg : ConvolutionExistsAt f g x
 #align convolution_exists_at.distrib_add ConvolutionExistsAt.distrib_add
 
 theorem ConvolutionExists.distrib_add (hfg : ConvolutionExists f g L μ)
-    (hfg' : ConvolutionExists f g' L μ) : f ⋆[L, μ] (g + g') = f ⋆[L, μ] g + f ⋆[L, μ] g' := by ext;
+    (hfg' : ConvolutionExists f g' L μ) : f ⋆[L, μ] (g + g') = f ⋆[L, μ] g + f ⋆[L, μ] g' := by
+  ext x
   exact (hfg x).distrib_add (hfg' x)
 #align convolution_exists.distrib_add ConvolutionExists.distrib_add
 
@@ -514,7 +519,8 @@ theorem ConvolutionExistsAt.add_distrib {x : G} (hfg : ConvolutionExistsAt f g x
 #align convolution_exists_at.add_distrib ConvolutionExistsAt.add_distrib
 
 theorem ConvolutionExists.add_distrib (hfg : ConvolutionExists f g L μ)
-    (hfg' : ConvolutionExists f' g L μ) : (f + f') ⋆[L, μ] g = f ⋆[L, μ] g + f' ⋆[L, μ] g := by ext;
+    (hfg' : ConvolutionExists f' g L μ) : (f + f') ⋆[L, μ] g = f ⋆[L, μ] g + f' ⋆[L, μ] g := by
+  ext x
   exact (hfg x).add_distrib (hfg' x)
 #align convolution_exists.add_distrib ConvolutionExists.add_distrib
 
@@ -546,7 +552,7 @@ theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ
   exact
     (h1.prod_mk <|
           h2.comp_tendsto
-            (quasi_measure_preserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp
+            (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp
       ↿fun x y => L x y
 #align convolution_congr convolution_congr
 
@@ -556,7 +562,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   apply h2x
   simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx 
   rw [convolution_def]
-  convert integral_zero G F
+  convert integral_zero G F using 2
   ext t
   rcases hx (x - t) t with (h | h | h)
   · rw [h, (L _).map_zero]
@@ -589,23 +595,6 @@ theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
 
 variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCountableTopology P]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
@@ -615,30 +604,29 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
     ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
   intro q₀ hq₀
-  replace hq₀ : q₀.1 ∈ s; · simpa only [mem_prod, mem_univ, and_true_iff] using hq₀
-  have A : ∀ p ∈ s, Continuous (g p) := by
-    intro p hp
-    apply hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => _
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hp
+  replace hq₀ : q₀.1 ∈ s; · simpa only [mem_prod, mem_univ, and_true] using hq₀
+  have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
+    refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
   have B : ∀ p ∈ s, tsupport (g p) ⊆ k := fun p hp =>
     closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) h'k
   /- We find a small neighborhood of `{q₀.1} × k` on which the function is uniformly bounded.
       This follows from the continuity at all points of the compact set `k`. -/
   obtain ⟨w, C, w_open, q₀w, Cnonneg, hw⟩ :
     ∃ w C, IsOpen w ∧ q₀.1 ∈ w ∧ 0 ≤ C ∧ ∀ p x, p ∈ w ∩ s → ‖g p x‖ ≤ C := by
-    have A : IsCompact ({q₀.1} ×ˢ k) := is_compact_singleton.prod hk
+    have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ :
-      ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ bounded (↿g '' (t ∩ s ×ˢ univ)) := by
-      apply exists_is_open_bounded_image_inter_of_is_compact_of_continuous_on A _ hg
+        ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ Bounded (↿g '' (t ∩ s ×ˢ univ)) := by
+      apply exists_isOpen_bounded_image_inter_of_isCompact_of_continuousOn A _ hg
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
         true_or_iff]
-    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ ↿g '' (t ∩ s ×ˢ univ) ⊆ closed_ball (0 : E') C
-    exact ht.subset_ball_lt 0 0
-    obtain ⟨w, w_open, q₀w, hw⟩ : ∃ w, IsOpen w ∧ q₀.1 ∈ w ∧ w ×ˢ k ⊆ t := by
-      obtain ⟨w, v, w_open, v_open, hw, hv, hvw⟩ :
+    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ ↿g '' (t ∩ s ×ˢ univ) ⊆ closedBall (0 : E') C :=
+      ht.subset_ball_lt 0 0
+    obtain ⟨w, w_open, q₀w, hw⟩ : ∃ w, IsOpen w ∧ q₀.1 ∈ w ∧ w ×ˢ k ⊆ t
+    · obtain ⟨w, v, w_open, v_open, hw, hv, hvw⟩ :
         ∃ (w : Set P) (v : Set G), IsOpen w ∧ IsOpen v ∧ {q₀.fst} ⊆ w ∧ k ⊆ v ∧ w ×ˢ v ⊆ t
       exact generalized_tube_lemma isCompact_singleton hk t_open kt
-      exact ⟨w, w_open, singleton_subset_iff.1 hw, subset.trans (Set.prod_mono subset.rfl hv) hvw⟩
+      exact ⟨w, w_open, singleton_subset_iff.1 hw, Subset.trans (Set.prod_mono Subset.rfl hv) hvw⟩
     refine' ⟨w, C, w_open, q₀w, Cpos.le, _⟩
     rintro p x ⟨hp, hps⟩
     by_cases hx : x ∈ k
@@ -647,7 +635,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
         simp only [prod_mk_mem_set_prod_eq, hp, hx, and_true_iff]
       have H' : (p, x) ∈ (s ×ˢ univ : Set (P × G)) := by
         simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hps
-      have : g p x ∈ closed_ball (0 : E') C := hC (mem_image_of_mem _ ⟨H, H'⟩)
+      have : g p x ∈ closedBall (0 : E') C := hC (mem_image_of_mem _ ⟨H, H'⟩)
       rwa [mem_closedBall_zero_iff] at this 
     · have : g p x = 0 := hgs _ _ hps hx
       rw [this]
@@ -661,12 +649,12 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     exact isCompact_of_isClosed_subset hk (isClosed_tsupport _) (B p hp)
   let K' := -k + {q₀.2}
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
-  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ integrable_on f U μ
-  exact hf.integrable_on_nhds_is_compact hK'
+  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
+    hf.integrableOn_nhds_isCompact hK'
   let bound : G → ℝ := indicator U fun a => ‖L‖ * ‖f a‖ * C
   have I2 : ∀ᶠ q : P × G in 𝓝[s ×ˢ univ] q₀, ∀ᵐ a ∂μ, ‖L (f a) (g q.1 (q.2 - a))‖ ≤ bound a := by
-    obtain ⟨V, V_mem, hV⟩ : ∃ (V : Set G) (H : V ∈ 𝓝 (0 : G)), K' + V ⊆ U
-    exact compact_open_separated_add_right hK' U_open K'U
+    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U :=
+      compact_open_separated_add_right hK' U_open K'U
     have : ((w ∩ s) ×ˢ ({q₀.2} + V) : Set (P × G)) ∈ 𝓝[s ×ˢ univ] q₀ := by
       conv_rhs => rw [← @Prod.mk.eta _ _ q₀, nhdsWithin_prod_eq, nhdsWithin_univ]
       refine' Filter.prod_mem_prod _ (singleton_add_mem_nhds_of_nhds_zero q₀.2 V_mem)
@@ -682,7 +670,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
       apply subset.trans (add_subset_add_right (add_subset_add_right _)) hV
       rw [neg_subset_neg]
       exact B p hpx.1.2
-  have I3 : integrable bound μ := by
+  have I3 : Integrable bound μ := by
     rw [integrable_indicator_iff U_open.measurable_set]
     exact (hU.norm.const_mul _).mul_const _
   have I4 :
@@ -690,21 +678,19 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     by
     apply eventually_of_forall fun a => _
     suffices H : ContinuousWithinAt (fun q : P × G => (f a, g q.1 (q.2 - a))) (s ×ˢ univ) q₀
-    exact L.continuous₂.continuous_at.comp_continuous_within_at H
-    apply continuous_within_at_const.prod
+    exact L.continuous₂.continuous_at.comp_continuousWithinAt H
+    apply continuousWithinAt_const.prod
     change ContinuousWithinAt (fun q : P × G => (↿g) (q.1, q.2 - a)) (s ×ˢ univ) q₀
     have : ContinuousAt (fun q : P × G => (q.1, q.2 - a)) (q₀.1, q₀.2) :=
       (continuous_fst.prod_mk (continuous_snd.sub continuous_const)).continuousAt
     rw [← @Prod.mk.eta _ _ q₀]
     have h'q₀ : (q₀.1, q₀.2 - a) ∈ (s ×ˢ univ : Set (P × G)) := ⟨hq₀, mem_univ _⟩
-    refine' ContinuousWithinAt.comp (hg _ h'q₀) this.continuous_within_at _
+    refine' ContinuousWithinAt.comp (hg _ h'q₀) this.continuousWithinAt _
     rintro ⟨q, x⟩ ⟨hq, hx⟩
     exact ⟨hq, mem_univ _⟩
-  exact continuous_within_at_of_dominated I1 I2 I3 I4
+  exact continuousWithinAt_of_dominated I1 I2 I3 I4
 #align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`). -/
@@ -715,7 +701,6 @@ theorem continuousOn_convolution_right_with_param [T2Space G] {g : P → G → E
   continuousOn_convolution_right_with_param' L hk hk.isClosed hgs hf hg
 #align continuous_on_convolution_right_with_param continuousOn_convolution_right_with_param
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in an open subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
@@ -726,7 +711,7 @@ theorem continuousOn_convolution_right_with_param_comp' {s : Set P} {v : P → G
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
     (hg : ContinuousOn (↿g) (s ×ˢ univ)) : ContinuousOn (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply
-    (continuousOn_convolution_right_with_param' L hk h'k hgs hf hg).comp (continuous_on_id.prod hv)
+    (continuousOn_convolution_right_with_param' L hk h'k hgs hf hg).comp (continuousOn_id.prod hv)
   intro x hx
   simp only [hx, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, id.def]
 #align continuous_on_convolution_right_with_param_comp' continuousOn_convolution_right_with_param_comp'
@@ -898,8 +883,8 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
     dist ((f ⋆[L, μ] g : G → F) x₀) (∫ t, L (f t) z₀ ∂μ) ≤ (‖L‖ * ∫ x, ‖f x‖ ∂μ) * ε := by
   have hfg : ConvolutionExistsAt f g x₀ L μ := by
     refine'
-      BddAbove.convolutionExistsAt L _ metric.is_open_ball.measurable_set (subset_trans _ hf)
-        hif.integrable_on hmg
+      BddAbove.convolutionExistsAt L _ metric.isOpen_ball.measurable_set (subset_trans _ hf)
+        hif.integrableOn hmg
     swap; · refine' fun t => mt fun ht : f t = 0 => _; simp_rw [ht, L.map_zero₂]
     rw [bddAbove_def]
     refine' ⟨‖z₀‖ + ε, _⟩
@@ -1062,7 +1047,7 @@ end Measurability
 
 end NontriviallyNormedField
 
-open scoped convolution
+open scoped Convolution
 
 section IsROrC
 
@@ -1133,7 +1118,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
     _ = ∫ s, L₃ (f s) (∫ u, L₄ (g u) (k (x₀ - s - u)) ∂μ) ∂ν := by
       refine' integral_congr_ae _
       refine'
-        ((quasi_measure_preserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _
+        ((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _
       exact (L₃ (f t)).integral_comp_comm ht
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl
 #align convolution_assoc' convolution_assoc'
@@ -1164,7 +1149,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
       quasi_measure_preserving.prod_of_left
         ((measurable_const.sub measurable_snd).sub measurable_fst) (eventually_of_forall fun y => _)
     dsimp only
-    exact quasi_measure_preserving_sub_left_of_right_invariant μ _
+    exact quasiMeasurePreserving_sub_left_of_right_invariant μ _
   have h2_meas :
     AEStronglyMeasurable (fun y => ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
     h_meas.prod_swap.norm.integral_prod_right'
@@ -1177,12 +1162,12 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     simp_rw [uncurry, Function.comp_apply, sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine'
-    ⟨((quasi_measure_preserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
+    ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
         (L₃ (f t)).integrable_comp <| ht.ofNorm L₄ hg hk,
       _⟩
   refine'
     (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
-      (((quasi_measure_preserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _)
+      (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _)
   · simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
     rw [Real.norm_of_nonneg]
     · refine'
@@ -1233,17 +1218,17 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
     simpa using
       (hg.differentiable le_rfl).DifferentiableAt.HasFDerivAt.comp x
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
-  let K' := -tsupport (fderiv 𝕜 g) + closed_ball x₀ 1
-  have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (is_compact_closed_ball x₀ 1)
+  let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
+  have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
   refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _
   · exact K'.indicator fun t => ‖L'‖ * ‖f t‖ * ⨆ x, ‖fderiv 𝕜 g x‖
   · exact hcg.convolution_exists_right L hf hg.continuous x₀
   · refine' eventually_of_forall fun t x hx => _
     exact
       (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
-        (ball_subset_closed_ball hx)
+        (ball_subset_closedBall hx)
   · rw [integrable_indicator_iff hK'.measurable_set]
-    exact ((hf.integrable_on_is_compact hK').norm.const_mul _).mul_const _
+    exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _
   · exact eventually_of_forall fun t x hx => (L _).HasFDerivAt.comp x (h3 x t)
 #align has_compact_support.has_fderiv_at_convolution_right HasCompactSupport.hasFDerivAt_convolution_right
 
@@ -1327,7 +1312,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   let g' := fderiv 𝕜 ↿g
   have A : ∀ p ∈ s, Continuous (g p) := by
     intro p hp
-    apply hg.continuous_on.comp_continuous (continuous_const.prod_mk continuous_id') fun x => _
+    apply hg.continuousOn.comp_continuous (continuous_const.prod_mk continuous_id') fun x => _
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hp
   have A' : ∀ q : P × G, q.1 ∈ s → s ×ˢ univ ∈ 𝓝 q := by
     intro q hq
@@ -1337,7 +1322,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have g'_zero : ∀ p x, p ∈ s → x ∉ k → g' (p, x) = 0 := by
     intro p x hp hx
     refine' (hasFDerivAt_zero_of_eventually_const 0 _).fderiv
-    have M2 : kᶜ ∈ 𝓝 x := IsOpen.mem_nhds hk.is_closed.is_open_compl hx
+    have M2 : kᶜ ∈ 𝓝 x := IsOpen.mem_nhds hk.is_closed.isOpen_compl hx
     have M1 : s ∈ 𝓝 p := hs.mem_nhds hp
     rw [nhds_prod_eq]
     filter_upwards [prod_mem_prod M1 M2]
@@ -1347,11 +1332,11 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     follows from the continuity at all points of the compact set `k`. -/
   obtain ⟨ε, C, εpos, Cnonneg, h₀ε, hε⟩ :
     ∃ ε C, 0 < ε ∧ 0 ≤ C ∧ ball q₀.1 ε ⊆ s ∧ ∀ p x, ‖p - q₀.1‖ < ε → ‖g' (p, x)‖ ≤ C := by
-    have A : IsCompact ({q₀.1} ×ˢ k) := is_compact_singleton.prod hk
+    have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ bounded (g' '' t) := by
       have B : ContinuousOn g' (s ×ˢ univ) :=
-        hg.continuous_on_fderiv_of_open (hs.prod isOpen_univ) le_rfl
-      apply exists_is_open_bounded_image_of_is_compact_of_continuous_on A (hs.prod isOpen_univ) _ B
+        hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+      apply exists_isOpen_bounded_image_of_isCompact_of_continuousOn A (hs.prod isOpen_univ) _ B
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
         true_or_iff]
     obtain ⟨ε, εpos, hε, h'ε⟩ :
@@ -1363,7 +1348,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       refine' ⟨min ε δ, lt_min εpos δpos, _, _⟩
       · exact subset.trans (thickening_mono (min_le_left _ _) _) hε
       · exact subset.trans (ball_subset_ball (min_le_right _ _)) hδ
-    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closed_ball 0 C; exact ht.subset_ball_lt 0 0
+    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C; exact ht.subset_ball_lt 0 0
     refine' ⟨ε, C, εpos, Cpos.le, h'ε, fun p x hp => _⟩
     have hps : p ∈ s := h'ε (mem_ball_iff_norm.2 hp)
     by_cases hx : x ∈ k
@@ -1375,7 +1360,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
             exists_eq_right]
         · rw [← dist_eq_norm] at hp 
           simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true_iff] using hp
-      have : g' (p, x) ∈ closed_ball (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
+      have : g' (p, x) ∈ closedBall (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
       rwa [mem_closedBall_zero_iff] at this 
     · have : g' (p, x) = 0 := g'_zero _ _ hps hx
       rw [this]
@@ -1399,14 +1384,14 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExistsRight (L.precompR (P × G) : _) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
-      hg.continuous_on_fderiv_of_open (hs.prod isOpen_univ) le_rfl
+      hg.continuousOn_fderiv_of_open (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
   set K' := -k + {q₀.2} with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
-  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ integrable_on f U μ
-  exact hf.integrable_on_nhds_is_compact hK'
+  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ integrableOn f U μ
+  exact hf.integrableOn_nhds_isCompact hK'
   obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
     obtain ⟨V, V_mem, hV⟩ : ∃ (V : Set G) (V_mem : V ∈ 𝓝 (0 : G)), K' + V ⊆ U
     exact compact_open_separated_add_right hK' U_open K'U
@@ -1453,7 +1438,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       apply h₀ε
       rw [Prod.dist_eq] at hx 
       exact lt_of_lt_of_le (lt_of_le_of_lt (le_max_left _ _) hx) δε
-    have Z := ((hg.differentiable_on le_rfl).DifferentiableAt N).HasFDerivAt
+    have Z := ((hg.differentiableOn le_rfl).DifferentiableAt N).HasFDerivAt
     have Z' : HasFDerivAt (fun x : P × G => (x.1, x.2 - a)) (ContinuousLinearMap.id 𝕜 (P × G)) x :=
       by
       have : (fun x : P × G => (x.1, x.2 - a)) = id - fun x => (0, a) := by
@@ -1505,7 +1490,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
       have B : ∀ (p : P) (x : G), p ∈ s → x ∉ k → fderiv 𝕜 (uncurry g) (p, x) = 0 := by
         intro p x hp hx
         apply (hasFDerivAt_zero_of_eventually_const (0 : E') _).fderiv
-        have M2 : kᶜ ∈ 𝓝 x := IsOpen.mem_nhds hk.is_closed.is_open_compl hx
+        have M2 : kᶜ ∈ 𝓝 x := IsOpen.mem_nhds hk.is_closed.isOpen_compl hx
         have M1 : s ∈ 𝓝 p := hs.mem_nhds hp
         rw [nhds_prod_eq]
         filter_upwards [prod_mem_prod M1 M2]
@@ -1549,8 +1534,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       ((ContinuousLinearEquiv.arrowCongr isoE' isoF).symm : (E' →L[𝕜] F) →L[𝕜] eE' →L[𝕜] eF) L
   let R := fun q : eP × eG => (ef ⋆[eL, eμ] eg q.1) q.2
   have R_contdiff : ContDiffOn 𝕜 n R ((isoP ⁻¹' s) ×ˢ univ) := by
-    have hek : IsCompact (isoG ⁻¹' k) := isoG.to_homeomorph.closed_embedding.is_compact_preimage hk
-    have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.is_open_preimage _ hs
+    have hek : IsCompact (isoG ⁻¹' k) := isoG.to_homeomorph.closed_embedding.isCompact_preimage hk
+    have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine' contDiffOn_convolution_right_with_param_aux eL hes hek _ _ _
     · intro p x hp hx
       simp only [comp_app, ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
