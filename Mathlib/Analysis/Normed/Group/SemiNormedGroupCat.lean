@@ -103,16 +103,18 @@ theorem zero_apply {V W : SemiNormedGroup} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroup.zero_apply
 
-/--Porting note: Had to add some proof steps -/
 theorem isZero_of_subsingleton (V : SemiNormedGroup) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x
+    --porting note: `Subsingleton.elim` didn't work without `change`
     change V at x
     have  := Subsingleton.elim (x : V) (0 : V)
+    --porting note: Next three lines were simply `simp [this, map_zero]`
     rw [this]
     suffices f 0 = (0 : V⟶ X) 0 by convert this
     simp [map_zero]
   · ext
+    --porting note: was `Subsingleton.elim`
     apply @Subsingleton.elim V _
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroup.isZero_of_subsingleton
 
