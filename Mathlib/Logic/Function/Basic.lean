@@ -403,7 +403,7 @@ noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
-  ⟨λ h =>
+  ⟨fun h =>
     have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
       rfl
     if h' : ∃ a, f a = b
@@ -412,8 +412,8 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
             subst h
             apply Classical.choose_spec h'
     else by rw [hpi, dif_neg h'] at h; contradiction,
-  λ e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
-              (dif_pos h).trans (congr_arg _ (I $ Classical.choose_spec h))⟩
+  fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
+              (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 #align function.partial_inv_of_injective Function.partialInv_of_injective
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
