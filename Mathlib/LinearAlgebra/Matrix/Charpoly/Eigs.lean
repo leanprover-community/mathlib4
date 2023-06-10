@@ -8,8 +8,8 @@ Authors: Mohanad Ahmed
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Basic
-import Mathbin.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.
@@ -70,8 +70,7 @@ theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.
 #align matrix.det_eq_prod_roots_charpoly_of_splits Matrix.det_eq_prod_roots_charpoly_of_splits
 
 theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
-    A.trace = (Matrix.charpoly A).roots.Sum :=
-  by
+    A.trace = (Matrix.charpoly A).roots.Sum := by
   cases isEmpty_or_nonempty n
   ·
     rw [Matrix.trace, Fintype.sum_empty, Matrix.charpoly,
