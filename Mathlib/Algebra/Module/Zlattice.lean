@@ -20,8 +20,8 @@ subgroup of `E` such that `L` spans `E` over `K`.
 The ℤ-lattice `L` can be defined in two ways:
 * For `b` a basis of `E`, then `submodule.span ℤ (set.range b)` is a ℤ-lattice of `E`.
 * As an `add_subgroup E` with the additional properties:
-  `∀ r : ℝ, (L ∩ metric.closed_ball 0 r).finite`, that is `L` is discrete
-  `submodule.span ℝ (L : set E) = ⊤`, that is `L` spans `E` over `K`.
+  * `∀ r : ℝ, (L ∩ metric.closed_ball 0 r).finite`, that is `L` is discrete
+  * `submodule.span ℝ (L : set E) = ⊤`, that is `L` spans `E` over `K`.
 
 ## Main result
 * `zspan.is_add_fundamental_domain`: for a ℤ-lattice `submodule.span ℤ (set.range b)`, proves that
@@ -50,8 +50,7 @@ variable (b : Basis ι K E)
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `zspan.is_add_fundamental_domain`
 for the proof that it is the fundamental domain. -/
-def fundamentalDomain : Set E :=
-  {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
+def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 #align zspan.fundamental_domain Zspan.fundamentalDomain
 
 @[simp]
@@ -68,14 +67,12 @@ variable [Fintype ι]
 
 /-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
 by rounding down its coordinates on the basis `b`. -/
-def floor (m : E) : span ℤ (Set.range b) :=
-  ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
+def floor (m : E) : span ℤ (Set.range b) := ∑ i, ⌊b.repr m i⌋ • b.restrictScalars ℤ i
 #align zspan.floor Zspan.floor
 
 /-- The map that sends a vector of `E` to the element of the ℤ-lattice spanned by `b` obtained
 by rounding up its coordinates on the basis `b`. -/
-def ceil (m : E) : span ℤ (Set.range b) :=
-  ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
+def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restrictScalars ℤ i
 #align zspan.ceil Zspan.ceil
 
 @[simp]
@@ -99,7 +96,7 @@ theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor
   intro i
   obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
   rw [← hz]
-  exact congr_arg (coe : ℤ → K) (Int.floor_intCast z)
+  exact congr_arg (Int.cast : ℤ → K) (Int.floor_intCast z)
 #align zspan.floor_eq_self_of_mem Zspan.floor_eq_self_of_mem
 
 @[simp]
@@ -109,22 +106,20 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
   intro i
   obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
   rw [← hz]
-  exact congr_arg (coe : ℤ → K) (Int.ceil_intCast z)
+  exact congr_arg (Int.cast : ℤ → K) (Int.ceil_intCast z)
 #align zspan.ceil_eq_self_of_mem Zspan.ceil_eq_self_of_mem
 
 /-- The map that sends a vector `E` to the fundamental domain of the lattice,
 see `zspan.fract_mem_fundamental_domain`. -/
-def fract (m : E) : E :=
-  m - floor b m
+def fract (m : E) : E := m - floor b m
 #align zspan.fract Zspan.fract
 
-theorem fract_apply (m : E) : fract b m = m - floor b m :=
-  rfl
+theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
 #align zspan.fract_apply Zspan.fract_apply
 
 @[simp]
 theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
-  rw [fract, map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
+  rw [fract, LinearEquiv.map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
 #align zspan.repr_fract_apply Zspan.repr_fract_apply
 
 @[simp]
@@ -136,11 +131,11 @@ theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
 theorem fract_zspan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
   classical
-  refine' (Basis.ext_elem_iff b).mpr fun i => _
+  refine (Basis.ext_elem_iff b).mpr fun i => ?_
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
-  use (b.restrict_scalars ℤ).repr ⟨v, h⟩ i
-  rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right, ←
-    eq_intCast (algebraMap ℤ K) _, Basis.restrictScalars_repr_apply, coe_mk]
+  use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
+  rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right,
+    ← eq_intCast (algebraMap ℤ K) _, Basis.restrictScalars_repr_apply, coe_mk]
 #align zspan.fract_zspan_add Zspan.fract_zspan_add
 
 @[simp]
@@ -152,7 +147,7 @@ variable {b}
 
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
-    mem_fundamental_domain, Set.mem_Ico]
+    mem_fundamentalDomain, Set.mem_Ico]
 #align zspan.fract_eq_self Zspan.fract_eq_self
 
 variable (b)
@@ -175,8 +170,8 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
     ‖fract b m‖ = ‖∑ i, b.repr (fract b m) i • b i‖ := by rw [b.sum_repr]
     _ = ‖∑ i, Int.fract (b.repr m i) • b i‖ := by simp_rw [repr_fract_apply]
     _ ≤ ∑ i, ‖Int.fract (b.repr m i) • b i‖ := (norm_sum_le _ _)
-    _ ≤ ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
-    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => _
+    _ = ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
+    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => ?_
   suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1 by
     convert mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
     exact (one_mul _).symm
@@ -209,9 +204,9 @@ theorem fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
   cases nonempty_fintype ι
   use 2 * ∑ j, ‖b j‖
   intro x hx y hy
-  refine' le_trans (dist_le_norm_add_norm x y) _
+  refine le_trans (dist_le_norm_add_norm x y) ?_
   rw [← fract_eq_self.mpr hx, ← fract_eq_self.mpr hy]
-  refine' (add_le_add (norm_fract_le b x) (norm_fract_le b y)).trans _
+  refine (add_le_add (norm_fract_le b x) (norm_fract_le b y)).trans ?_
   rw [← two_mul]
 #align zspan.fundamental_domain_bounded Zspan.fundamentalDomain_bounded
 
@@ -225,9 +220,9 @@ theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x 
 theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
     ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b := by
   cases nonempty_fintype ι
-  refine' ⟨-floor b x, _, fun y h => _⟩
-  · exact (vadd_mem_fundamental_domain b (-floor b x) x).mpr rfl
-  · exact (vadd_mem_fundamental_domain b y x).mp h
+  refine ⟨-floor b x, ?_, fun y h => ?_⟩
+  · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
+  · exact (vadd_mem_fundamentalDomain b y x).mp h
 #align zspan.exist_unique_vadd_mem_fundamental_domain Zspan.exist_unique_vadd_mem_fundamentalDomain
 
 end NormedLatticeField
@@ -242,13 +237,13 @@ variable (b : Basis ι ℝ E)
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-  let f := (Finsupp.linearEquivFunOnFinite ℝ ℝ ι).toLinearMap.comp b.repr.to_linear_map
-  let D : Set (ι → ℝ) := Set.pi Set.univ fun i : ι => Set.Ico (0 : ℝ) 1
-  rw [(_ : fundamental_domain b = f ⁻¹' D)]
-  · refine' measurableSet_preimage (LinearMap.continuous_of_finiteDimensional f).Measurable _
-    exact pi set.univ.to_countable fun (i : ι) (H : i ∈ Set.univ) => measurableSet_Ico
+  let f := (Finsupp.linearEquivFunOnFinite ℝ ℝ ι).toLinearMap.comp b.repr.toLinearMap
+  let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
+  rw [(_ : fundamentalDomain b = f ⁻¹' D)]
+  · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional f).measurable ?_
+    exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
-    simp only [fundamental_domain, Set.mem_setOf_eq, LinearMap.coe_comp,
+    simp only [fundamentalDomain, Set.mem_setOf_eq, LinearMap.coe_comp,
       LinearEquiv.coe_toLinearMap, Set.mem_preimage, Function.comp_apply, Set.mem_univ_pi,
       Finsupp.linearEquivFunOnFinite_apply]
 #align zspan.fundamental_domain_measurable_set Zspan.fundamentalDomain_measurableSet
@@ -259,12 +254,10 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ := by
   cases nonempty_fintype ι
-  exact
-    is_add_fundamental_domain.mk' (null_measurable_set (fundamental_domain_measurable_set b))
-      fun x => exist_unique_vadd_mem_fundamental_domain b x
+  exact IsAddFundamentalDomain.mk' (nullMeasurableSet (fundamentalDomain_measurableSet b))
+    fun x => exist_unique_vadd_mem_fundamentalDomain b x
 #align zspan.is_add_fundamental_domain Zspan.isAddFundamentalDomain
 
 end Real
 
 end Zspan
-
