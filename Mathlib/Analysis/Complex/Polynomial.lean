@@ -8,8 +8,8 @@ Authors: Chris Hughes, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.Liouville
-import Mathbin.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # The fundamental theorem of algebra
@@ -28,8 +28,7 @@ namespace Complex
 
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
-theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :=
-  by
+theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   contrapose! hf
   obtain ⟨c, hc⟩ := (f.differentiable.inv hf).exists_const_forall_eq_of_bounded _
   · obtain rfl : f = C c⁻¹ := Polynomial.funext fun z => by rw [eval_C, ← hc z, inv_inv]
