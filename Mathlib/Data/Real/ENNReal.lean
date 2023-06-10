@@ -1624,7 +1624,7 @@ theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
-  exacts[or_not_of_imp h₁, not_or_of_imp h₂]
+  exacts [or_not_of_imp h₁, not_or_of_imp h₂]
 #align ennreal.inv_le_iff_le_mul ENNReal.inv_le_iff_le_mul
 
 @[simp 900]
@@ -1752,7 +1752,7 @@ protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
   rw [coe_ne_zero] at hz
   rw [← coe_two, ← coe_div, coe_lt_coe]
-  exacts[NNReal.half_lt_self hz, two_ne_zero' _]
+  exacts [NNReal.half_lt_self hz, two_ne_zero' _]
 #align ennreal.half_lt_self ENNReal.half_lt_self
 
 protected theorem half_le_self : a / 2 ≤ a :=
