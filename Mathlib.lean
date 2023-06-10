@@ -2900,6 +2900,7 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
 import Mathlib.Util.Pickle
 import Mathlib.Util.Qq
+import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
