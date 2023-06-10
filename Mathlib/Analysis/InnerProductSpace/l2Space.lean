@@ -602,7 +602,7 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
 variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
-theorem _root_.exists_hilbertBasis : ∃ (w : Set E)(b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_hilbert_basis exists_hilbertBasis
