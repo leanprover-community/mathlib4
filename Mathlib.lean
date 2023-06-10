@@ -211,6 +211,7 @@ import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
@@ -1153,8 +1154,8 @@ import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
-import Mathlib.Data.Bitvec.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
