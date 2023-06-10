@@ -362,7 +362,8 @@ theorem card_support_eq_one : f.support.card = 1 ↔
 
 theorem card_support_eq_two :
     f.support.card = 2 ↔
-      ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0), f = C x * X ^ k + C y * X ^ m := by
+      ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0),
+        f = C x * X ^ k + C y * X ^ m := by
   refine' ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine' ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, _⟩

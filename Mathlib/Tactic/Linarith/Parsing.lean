@@ -89,7 +89,8 @@ def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
 
 /-- `sum.mul s1 s2` distributes the multiplication of two sums.` -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
-  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff))) RBMap.empty
+  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff)))
+    RBMap.empty
 
 /-- The `n`th power of `s : Sum` is the `n`-fold product of `s`, with `s.pow 0 = Sum.one`. -/
 def Sum.pow (s : Sum) : ℕ → Sum

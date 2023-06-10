@@ -55,9 +55,8 @@ theorem le_einfsep_iff {d} :
   simp_rw [einfsep, le_iInf_iff]
 #align set.le_einfsep_iff Set.le_einfsep_iff
 
-theorem einfsep_zero :
-    s.einfsep = 0 ↔
-      ∀ (C) (_hC : 0 < C), ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < C :=
+theorem einfsep_zero : s.einfsep = 0 ↔
+    ∀ (C) (_hC : 0 < C), ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < C :=
   by simp_rw [einfsep, ← _root_.bot_eq_zero, iInf_eq_bot, iInf_lt_iff]
 #align set.einfsep_zero Set.einfsep_zero
 

@@ -125,7 +125,8 @@ theorem trans [Algebra A B] [IsScalarTower R A B] (hRA : FiniteType R A) (hAB : 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
-    FiniteType R A ↔ ∃ (s : Finset A) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
+    FiniteType R A ↔
+      ∃ (s : Finset A) (f : MvPolynomial { x // x ∈ s } R →ₐ[R] A), Surjective f := by
   constructor
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)

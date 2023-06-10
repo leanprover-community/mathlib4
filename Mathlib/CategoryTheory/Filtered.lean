@@ -227,7 +227,8 @@ such that the triangles commute: `f ≫ T Y = T X`, for `f : X ⟶ Y` in the `Fi
 theorem sup_exists :
     ∃ (S : C) (T : ∀ {X : C}, X ∈ O → (X ⟶ S)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
-        (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H → f ≫ T mY = T mX := by
+        (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
+          f ≫ T mY = T mX := by
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := sup_objs_exists O
@@ -641,7 +642,7 @@ such that the triangles commute: `T X ≫ f = T Y`, for `f : X ⟶ Y` in the `Fi
 theorem inf_exists :
     ∃ (S : C) (T : ∀ {X : C}, X ∈ O → (S ⟶ X)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
-        (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H → 
+        (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
           T mX ≫ f = T mY := by
   classical
   induction' H using Finset.induction with h' H' nmf h''
