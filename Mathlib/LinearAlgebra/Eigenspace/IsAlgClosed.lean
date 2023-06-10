@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Eigenspace.Basic
-import Mathbin.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
 # Eigenvectors and eigenvalues over algebraically closed fields.
@@ -42,8 +42,7 @@ variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 /-- Every linear operator on a vector space over an algebraically closed field has
     an eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
-    ∃ c : K, f.HasEigenvalue c :=
-  by
+    ∃ c : K, f.HasEigenvalue c := by
   simp_rw [has_eigenvalue_iff_mem_spectrum]
   exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
 #align module.End.exists_eigenvalue Module.End.exists_eigenvalue
@@ -54,8 +53,7 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
 
 /-- The generalized eigenvectors span the entire vector space (Lemma 8.21 of [axler2015]). -/
 theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    (⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k) = ⊤ :=
-  by
+    (⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k) = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
   induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
   cases n
@@ -95,14 +93,12 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
     -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
     -- eigenspace of `f`.
     have hff' :
-      ∀ μ k, (f'.generalized_eigenspace μ k).map ER.subtype ≤ f.generalized_eigenspace μ k :=
-      by
+      ∀ μ k, (f'.generalized_eigenspace μ k).map ER.subtype ≤ f.generalized_eigenspace μ k := by
       intros
       rw [generalized_eigenspace_restrict]
       apply Submodule.map_comap_le
     -- It follows that `ER` is contained in the span of all generalized eigenvectors.
-    have hER : ER ≤ ⨆ (μ : K) (k : ℕ), f.generalized_eigenspace μ k :=
-      by
+    have hER : ER ≤ ⨆ (μ : K) (k : ℕ), f.generalized_eigenspace μ k := by
       rw [← ih_ER']
       exact iSup₂_mono hff'
     -- `ES` is contained in this span by definition.
