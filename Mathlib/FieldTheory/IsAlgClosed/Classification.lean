@@ -8,11 +8,11 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.AlgebraicIndependent
-import Mathbin.FieldTheory.IsAlgClosed.Basic
-import Mathbin.Data.Polynomial.Cardinal
-import Mathbin.Data.MvPolynomial.Cardinal
-import Mathbin.Data.Zmod.Algebra
+import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Data.Polynomial.Cardinal
+import Mathlib.Data.MvPolynomial.Cardinal
+import Mathlib.Data.ZMod.Algebra
 
 /-!
 # Classification of Algebraically closed fields
@@ -49,8 +49,7 @@ theorem cardinal_mk_le_sigma_polynomial :
       let p := Classical.indefiniteDescription _ (halg x)
       ⟨p.1, x, by
         dsimp
-        have h : p.1.map (algebraMap R L) ≠ 0 :=
-          by
+        have h : p.1.map (algebraMap R L) ≠ 0 := by
           rw [Ne.def, ← Polynomial.degree_eq_bot,
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
@@ -116,8 +115,7 @@ variable (hw : AlgebraicIndependent R w)
 closed fields have equipotent transcendence bases and the same characteristic then they are
 isomorphic. -/
 def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
-    (hv : IsTranscendenceBasis R v) (hw : IsTranscendenceBasis R w) : K ≃+* L :=
-  by
+    (hv : IsTranscendenceBasis R v) (hw : IsTranscendenceBasis R w) : K ≃+* L := by
   letI := is_alg_closure_of_transcendence_basis v hv <;>
       letI := is_alg_closure_of_transcendence_basis w hw <;>
     have e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w)
@@ -192,8 +190,7 @@ theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ <
     exists_isTranscendenceBasis ℤ
       (show Function.Injective (algebraMap ℤ L) from Int.cast_injective) with
     t ht
-  have : (#s) = (#t) :=
-    by
+  have : (#s) = (#t) := by
     rw [← cardinal_eq_cardinal_transcendence_basis_of_aleph_0_lt _ hs (le_of_eq mk_int) hK, ←
       cardinal_eq_cardinal_transcendence_basis_of_aleph_0_lt _ ht (le_of_eq mk_int), hKL]
     rwa [← hKL]
@@ -202,8 +199,7 @@ theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ <
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_zero IsAlgClosed.ringEquivOfCardinalEqOfCharZero
 
 private theorem ring_equiv_of_cardinal_eq_of_char_p (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
-    (hK : ℵ₀ < (#K)) (hKL : (#K) = (#L)) : K ≃+* L :=
-  by
+    (hK : ℵ₀ < (#K)) (hKL : (#K) = (#L)) : K ≃+* L := by
   apply Classical.choice
   cases'
     exists_isTranscendenceBasis (ZMod p)
@@ -213,8 +209,7 @@ private theorem ring_equiv_of_cardinal_eq_of_char_p (p : ℕ) [Fact p.Prime] [Ch
     exists_isTranscendenceBasis (ZMod p)
       (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _) with
     t ht
-  have : (#s) = (#t) :=
-    by
+  have : (#s) = (#t) := by
     rw [←
       cardinal_eq_cardinal_transcendence_basis_of_aleph_0_lt _ hs (lt_aleph_0_of_finite (ZMod p)).le
         hK,
