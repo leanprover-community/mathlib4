@@ -800,16 +800,16 @@ end
 
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)", "r:(scoped f => f)" ∂"μ => integral μ r
+notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)", "r:(scoped f => integral volume f) => r
+notation3 "∫ "(...)", "r:60:(scoped f => integral volume f) => r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)" in "s", "r:(scoped f => f)" ∂"μ => integral (Measure.restrict μ s) r
+notation3 "∫ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => integral (Measure.restrict μ s) r
 
 @[inherit_doc MeasureTheory.integral]
-notation3"∫ "(...)" in "s", "r:(scoped f => integral (Measure.restrict volume s) f) => r
+notation3 "∫ "(...)" in "s", "r:60:(scoped f => integral (Measure.restrict volume s) f) => r
 
 section Properties
 
@@ -1401,7 +1401,7 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
 variable {ν : Measure α}
 
 theorem integral_add_measure {f : α → E} (hμ : Integrable f μ) (hν : Integrable f ν) :
-    (∫ x, f x ∂μ + ν) = (∫ x, f x ∂μ) + ∫ x, f x ∂ν := by
+    ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
   have hfi := hμ.add_measure hν
   simp_rw [integral_eq_setToFun]
   have hμ_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul μ : Set α → E →L[ℝ] E) 1 :=
@@ -1427,7 +1427,7 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → E) :
 
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
-    (∫ a, f a ∂∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂μ i := by
+    ∫ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
   | h₁ => simp
   | h₂ h ih =>
@@ -1437,7 +1437,7 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E}
 #align measure_theory.integral_finset_sum_measure MeasureTheory.integral_finset_sum_measure
 
 theorem nndist_integral_add_measure_le_lintegral (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
-    (nndist (∫ x, f x ∂μ) (∫ x, f x ∂μ + ν) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖₊ ∂ν := by
+    (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖₊ ∂ν := by
   rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel']
   exact ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.nndist_integral_add_measure_le_lintegral MeasureTheory.nndist_integral_add_measure_le_lintegral
@@ -1575,8 +1575,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
 theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s)
-    (f : α → E) : (∫ x in s, f x ∂volume) = ∫ x : s, f x := by
-    -- Porting note: have to specify the volume in the set_integral notation
+    (f : α → E) : ∫ x in s, f x = ∫ x : s, f x := by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
 #align measure_theory.set_integral_eq_subtype MeasureTheory.set_integral_eq_subtype
