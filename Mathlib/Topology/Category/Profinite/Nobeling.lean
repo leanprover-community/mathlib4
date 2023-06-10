@@ -119,7 +119,7 @@ end List
 
 namespace NobelingProof
 
-variable {I : Type _} [LinearOrder I] [IsWellOrder I (·<·)] (C : Set ((WithTop I) → Bool))
+variable {I : Type u} [LinearOrder I] [IsWellOrder I (·<·)] (C : Set ((WithTop I) → Bool))
 
 def BoolToZ : Bool → ℤ := (if · then 1 else 0)
 
@@ -1174,6 +1174,9 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 instance (o : Ordinal) : SmallCategory {o' // o' < o} := inferInstance
+instance (o : Ordinal) : SmallCategory {i : WithTop I // ord I i < o} := inferInstance
+instance ICofiltered {o : Ordinal} (ho : o.IsLimit) :
+    IsCofiltered {i : WithTop I // ord I i < o}ᵒᵖ := sorry
 instance DownsetCofiltered {o : Ordinal} (ho : o.IsLimit) : IsCofiltered {o' // o' < o}ᵒᵖ := sorry
 instance (o : Ordinal) : CompactSpace (Res C o) := sorry
 instance CCompact (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) : CompactSpace C := by
@@ -1208,9 +1211,44 @@ lemma ResOnSubsetsComp {o₁ o₂ o₃ : Ordinal} (h₁₂ : o₁ ≤ o₂) (h�
   · rfl
 
 noncomputable
-def OrdToProfinite (o : Ordinal) : {o' // o' < o}ᵒᵖ ⥤ Profinite :=
+def OrdToProfinite' (o : Ordinal) : {o' // o' < o}ᵒᵖ ⥤ Profinite :=
 { obj := fun e ↦ Profinite.of (Res C e.unop.val)
   map := fun h ↦ ⟨ResOnSubsets C (leOfHom h.unop), (continuous_ResOnSubsets _ _)⟩
+  map_id := by
+    intro e
+    dsimp
+    simp_rw [ResOnSubsetsId]
+    rfl
+  map_comp := by
+    intro e₁ e₂ e₃ h₁₂ h₂₃
+    dsimp
+    congr
+    simp only [ContinuousMap.coe_mk]
+    rw [ResOnSubsetsComp] }
+
+noncomputable
+def OrdCone' (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
+    Cone (OrdToProfinite' C o) :=
+{ pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hsC) _ _
+  π :=
+  { app := fun e ↦ ⟨ResOnSubset C e.unop.val, continuous_ResOnSubset _ _⟩
+    naturality := by
+      intro e₁ e₂ h
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+      congr
+      simp only [ContinuousMap.coe_mk]
+      dsimp [OrdToProfinite']
+      rw [resOnSubsets_eq] } }
+
+lemma OrdConeIsLimit' {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o }) :
+    IsLimit (OrdCone' C o hsC) := sorry
+
+lemma ordILE {i j : WithTop I} (h : i ≤ j) : ord I i ≤ ord I j := by sorry
+
+noncomputable
+def OrdToProfinite (o : Ordinal) : {i : WithTop I // ord I i < o}ᵒᵖ ⥤ Profinite.{u} :=
+{ obj := fun i ↦ Profinite.of (Res C (ord I i.unop))
+  map := fun h ↦ ⟨ResOnSubsets C (ordILE (leOfHom h.unop)), (continuous_ResOnSubsets _ _)⟩
   map_id := by
     intro e
     dsimp
@@ -1228,7 +1266,7 @@ def OrdCone (o : Ordinal) (hsC : Support C ⊆ { j | ord I j < o }) :
     Cone (OrdToProfinite C o) :=
 { pt := @Profinite.of {i // i ∈ C} _ (CCompact C o hsC) _ _
   π :=
-  { app := fun e ↦ ⟨ResOnSubset C e.unop.val, continuous_ResOnSubset _ _⟩
+  { app := fun i ↦ ⟨ResOnSubset C (ord I i.unop), continuous_ResOnSubset _ _⟩
     naturality := by
       intro e₁ e₂ h
       simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
@@ -1247,13 +1285,10 @@ def LocConstConePoint {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | 
 lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
     (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
-  sorry
-  -- obtain ⟨e, g, h⟩ := @Profinite.exists_locallyConstant {o' // o' < o}ᵒᵖ _ (DownsetCofiltered ho)
-  --   _ (OrdCone C o hsC) _
-  --   (OrdConeIsLimit C ho hsC) (LocConstConePoint C ho hsC f)
-  /-- **TODO**: fix universe issues. We want {o' // o' < o} : Type u and Profinite.{u+1} to be able
-      to use the theorem as is. But that's problematic because the ordinals come from I, which we
-      now need to be : Type (u+1) ?? -/
+  obtain ⟨i, g, h⟩ := @Profinite.exists_locallyConstant {i : WithTop I // ord I i < o}ᵒᵖ _
+    (ICofiltered ho) _ (OrdCone C o hsC) _
+    (OrdConeIsLimit C ho hsC) (LocConstConePoint.{u} C ho hsC f)
+
 
 lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
