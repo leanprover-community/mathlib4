@@ -8,7 +8,7 @@ Authors: Paul Reichert, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.AddTorsorBases
+import Mathlib.Analysis.NormedSpace.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior
@@ -159,8 +159,7 @@ Note that neither `intrinsic_interior` nor `intrinsic_frontier` is monotone.
 -/
 
 
-theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t :=
-  by
+theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
   refine'
     image_subset_iff.2 fun x hx =>
       ⟨Set.inclusion (affineSpan_mono _ h) x,
@@ -229,16 +228,14 @@ theorem affineSpan_intrinsicClosure (s : Set P) :
 #align affine_span_intrinsic_closure affineSpan_intrinsicClosure
 
 protected theorem IsClosed.intrinsicClosure (hs : IsClosed (coe ⁻¹' s : Set <| affineSpan 𝕜 s)) :
-    intrinsicClosure 𝕜 s = s :=
-  by
+    intrinsicClosure 𝕜 s = s := by
   rw [intrinsicClosure, hs.closure_eq, image_preimage_eq_of_subset]
   exact (subset_affineSpan _ _).trans subtype.range_coe.superset
 #align is_closed.intrinsic_closure IsClosed.intrinsicClosure
 
 @[simp]
 theorem intrinsicClosure_idem (s : Set P) :
-    intrinsicClosure 𝕜 (intrinsicClosure 𝕜 s) = intrinsicClosure 𝕜 s :=
-  by
+    intrinsicClosure 𝕜 (intrinsicClosure 𝕜 s) = intrinsicClosure 𝕜 s := by
   refine' IsClosed.intrinsicClosure _
   set t := affineSpan 𝕜 (intrinsicClosure 𝕜 s) with ht
   clear_value t
@@ -262,8 +259,7 @@ attribute [local instance, local nolint fails_quickly] AffineSubspace.toNormedAd
 
 @[simp]
 theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
-  by
+    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp only [intrinsicInterior_empty, image_empty]
   haveI : Nonempty s := hs.to_subtype
@@ -277,8 +273,7 @@ theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
 
 @[simp]
 theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
-  by
+    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   haveI : Nonempty s := hs.to_subtype
@@ -292,8 +287,7 @@ theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
 
 @[simp]
 theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
-  by
+    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   haveI : Nonempty s := hs.to_subtype
@@ -315,8 +309,7 @@ variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCo
 include V
 
 @[simp]
-theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s :=
-  by
+theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
   ext x
   simp only [mem_closure_iff, mem_intrinsicClosure]
   refine' ⟨_, fun h => ⟨⟨x, _⟩, _, Subtype.coe_mk _ _⟩⟩
@@ -355,8 +348,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s
 
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
-    (intrinsicInterior ℝ s).Nonempty :=
-  by
+    (intrinsicInterior ℝ s).Nonempty := by
   haveI := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
   let p' : affineSpan ℝ s := ⟨p, subset_affineSpan _ _ hp⟩
