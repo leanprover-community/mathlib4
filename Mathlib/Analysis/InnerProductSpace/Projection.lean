@@ -50,7 +50,7 @@ open IsROrC Real Filter
 
 open LinearMap (ker range)
 
-open BigOperators Topology
+open scoped BigOperators Topology
 
 variable {𝕜 E F : Type _} [IsROrC 𝕜]
 

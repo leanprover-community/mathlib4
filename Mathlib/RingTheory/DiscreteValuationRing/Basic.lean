@@ -46,7 +46,7 @@ discrete valuation ring
 -/
 
 
-open Classical
+open scoped Classical
 
 universe u
 

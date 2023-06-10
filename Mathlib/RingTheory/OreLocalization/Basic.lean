@@ -879,7 +879,7 @@ noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-open Classical
+open scoped Classical
 
 variable {R : Type _} [Ring R] [Nontrivial R] [OreSet R⁰]
 

@@ -35,7 +35,7 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 universe u v w
 

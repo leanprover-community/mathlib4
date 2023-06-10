@@ -29,7 +29,7 @@ open Nat
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {R : Type _}
 

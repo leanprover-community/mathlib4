@@ -594,7 +594,7 @@ end DecidableEq
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-open Classical
+open scoped Classical
 
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=

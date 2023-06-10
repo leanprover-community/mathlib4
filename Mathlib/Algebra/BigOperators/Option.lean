@@ -18,7 +18,7 @@ In this file we prove formulas for products and sums over `Finset.insertNone s` 
 `Finset.eraseNone s`.
 -/
 
-open BigOperators
+open scoped BigOperators
 
 open Function
 

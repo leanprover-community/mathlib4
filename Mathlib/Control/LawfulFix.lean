@@ -27,7 +27,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 universe u v
 
-open Classical
+open scoped Classical
 
 variable {α : Type _} {β : α → Type _}
 

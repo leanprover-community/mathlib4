@@ -2194,7 +2194,7 @@ theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
 #align subgroup.center_le_normalizer Subgroup.center_le_normalizer
 #align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
 
-open Classical
+open scoped Classical
 
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=

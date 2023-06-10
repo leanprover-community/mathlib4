@@ -24,7 +24,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Classical Polynomial
+open scoped BigOperators Classical Polynomial
 
 namespace Polynomial
 

@@ -22,7 +22,7 @@ lemmas in this file]."
 
 open Filter Finset
 
-open Topology BigOperators
+open scoped Topology BigOperators
 
 variable {G : Type _} [NormedAddCommGroup G] [CompleteSpace G]
 

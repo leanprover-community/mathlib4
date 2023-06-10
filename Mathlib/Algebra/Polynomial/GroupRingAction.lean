@@ -95,7 +95,7 @@ variable (R : Type _) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
 
-open Classical
+open scoped Classical
 
 /-- the product of `(X - g • x)` over distinct `g • x`. -/
 noncomputable def prodXSubSmul (x : R) : R[X] :=

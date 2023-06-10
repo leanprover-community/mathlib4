@@ -161,7 +161,7 @@ end DirectSum
 
 end
 
-open DirectSum BigOperators
+open scoped DirectSum BigOperators
 
 variable {ι R A M σ σ' : Type _}
 

@@ -43,7 +43,7 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.

@@ -21,7 +21,7 @@ with chain maps identified when they are homotopic.
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

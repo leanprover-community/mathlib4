@@ -56,7 +56,7 @@ noncomputable section
 
 universe u v w
 
-open Function Set Uniformity Topology
+open scoped Function Set Uniformity Topology
 
 namespace Metric
 
@@ -296,7 +296,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type _} {E : ι → Type _} [∀ i, MetricSpace (E i)]
 
-open Classical
+open scoped Classical
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
@@ -430,7 +430,7 @@ protected def metricSpace : MetricSpace (Σi, E i) := by
 
 attribute [local instance] Sigma.metricSpace
 
-open Topology
+open scoped Topology
 
 open Filter
 

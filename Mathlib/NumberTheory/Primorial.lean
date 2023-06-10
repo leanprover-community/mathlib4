@@ -31,7 +31,7 @@ open Finset
 
 open Nat
 
-open BigOperators Nat
+open scoped BigOperators Nat
 
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/

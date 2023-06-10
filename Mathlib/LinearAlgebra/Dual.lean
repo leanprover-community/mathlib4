@@ -278,7 +278,7 @@ universe u v w
 
 open Module Module.Dual Submodule LinearMap Cardinal Function
 
-open BigOperators
+open scoped BigOperators
 
 variable {R : Type u} {M : Type v} {K : Type u₁} {V : Type u₂} {ι : Type w}
 
@@ -491,7 +491,7 @@ theorem evalEquiv_toLinearMap {ι : Type _} [Finite ι] (b : Basis ι R M) :
 
 section
 
-open Classical
+open scoped Classical
 
 variable [Finite R M] [Free R M] [Nontrivial R]
 
@@ -1087,7 +1087,7 @@ theorem dualEquivDual_apply (φ : Module.Dual K W) :
 
 section
 
-open Classical
+open scoped Classical
 
 open FiniteDimensional
 
@@ -1531,7 +1531,7 @@ variable [DecidableEq ι] [DecidableEq κ]
 
 variable [Fintype ι] [Fintype κ]
 
-open BigOperators
+open scoped BigOperators
 
 open TensorProduct
 
@@ -1631,7 +1631,7 @@ variable [Module.Finite R M] [Module.Finite R N] [Module.Free R M] [Module.Free 
 
 variable [Nontrivial R]
 
-open Classical
+open scoped Classical
 
 /--
 A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` when `M` and `N` are finite free
@@ -1644,4 +1644,3 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
-

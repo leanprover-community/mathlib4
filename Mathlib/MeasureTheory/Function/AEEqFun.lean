@@ -75,7 +75,7 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 noncomputable section
 
-open Classical ENNReal Topology
+open scoped Classical ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 

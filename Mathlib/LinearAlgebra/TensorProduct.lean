@@ -384,7 +384,7 @@ theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 
 section
 
-open BigOperators
+open scoped BigOperators
 
 theorem sum_tmul {α : Type _} (s : Finset α) (m : α → M) (n : N) :
     (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by

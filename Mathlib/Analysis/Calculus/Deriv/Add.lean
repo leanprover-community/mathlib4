@@ -27,7 +27,7 @@ derivative
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -158,7 +158,7 @@ section Sum
 /-! ### Derivative of a finite sum of functions -/
 
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
@@ -378,4 +378,3 @@ theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
 #align deriv_const_sub deriv_const_sub
 
 end Sub
-

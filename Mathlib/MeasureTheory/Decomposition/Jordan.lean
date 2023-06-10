@@ -220,7 +220,7 @@ end JordanDecomposition
 
 namespace SignedMeasure
 
-open Classical JordanDecomposition Measure Set VectorMeasure
+open scoped Classical JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α} {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 

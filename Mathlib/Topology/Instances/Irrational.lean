@@ -36,7 +36,7 @@ irrational, residual
 
 open Set Filter Metric
 
-open Filter Topology
+open scoped Filter Topology
 
 theorem isGδ_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl

@@ -22,7 +22,7 @@ topological group. We also prove continuity of `abs : G → G` and provide conve
 
 open Set Filter
 
-open Topology Filter
+open scoped Topology Filter
 
 variable {α G : Type _} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [OrderTopology G]
 

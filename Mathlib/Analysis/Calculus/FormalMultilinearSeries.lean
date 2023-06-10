@@ -30,7 +30,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open scoped Set Fin Topology
 
 -- porting note: added explicit universes to fix compile
 universe u u' v w x
@@ -263,7 +263,7 @@ section Coef
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
   {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
 
-open BigOperators
+open scoped BigOperators
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=

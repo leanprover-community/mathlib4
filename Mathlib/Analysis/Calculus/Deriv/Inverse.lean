@@ -29,7 +29,7 @@ derivative, inverse function
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -132,4 +132,3 @@ theorem not_differentiableAt_of_local_left_inverse_hasDerivAt_zero {f g : ùïú ‚
   have := (hf.comp a hg.hasDerivAt).congr_of_eventuallyEq hfg.symm
   simpa using this.unique (hasDerivAt_id a)
 #align not_differentiable_at_of_local_left_inverse_has_deriv_at_zero not_differentiableAt_of_local_left_inverse_hasDerivAt_zero
-

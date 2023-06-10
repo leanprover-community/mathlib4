@@ -49,9 +49,9 @@ import Mathlib.Topology.Semicontinuous
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory
+open scoped Classical Set Filter MeasureTheory
 
-open Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 

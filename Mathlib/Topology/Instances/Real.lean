@@ -28,7 +28,7 @@ import Mathlib.Topology.Instances.Int
 
 noncomputable section
 
-open Classical Filter Int Metric Set TopologicalSpace Topology Uniformity Interval
+open scoped Classical Filter Int Metric Set TopologicalSpace Topology Uniformity Interval
 
 universe u v w
 

@@ -84,7 +84,7 @@ variable {K : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Ty
 
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type _}
 
-open Classical BigOperators Cardinal Basis Submodule Function Set
+open scoped Classical BigOperators Cardinal Basis Submodule Function Set
 
 section Module
 

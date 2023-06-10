@@ -66,7 +66,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
 
-open Classical Set
+open scoped Classical Set
 
 variable {α β : Type _} {r : α → α → Prop} {c : Set α}
 

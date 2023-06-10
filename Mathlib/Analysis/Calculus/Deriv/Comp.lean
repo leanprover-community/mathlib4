@@ -35,7 +35,7 @@ derivative, chain rule
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -277,4 +277,3 @@ theorem fderiv.comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : Differentia
 #align fderiv.comp_deriv fderiv.comp_deriv
 
 end CompositionVector
-

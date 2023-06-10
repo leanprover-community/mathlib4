@@ -40,7 +40,7 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type _} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set BigOperators
+open scoped Set BigOperators
 
 namespace Function
 

@@ -22,7 +22,7 @@ A set is strictly convex if the open segment between any two distinct points lie
 
 open Set
 
-open Convex Pointwise
+open scoped Convex Pointwise
 
 variable {𝕜 𝕝 E F β : Type _}
 

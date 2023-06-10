@@ -63,9 +63,9 @@ combinatorial line, Ramsey theory, arithmetic progession
 -/
 
 
-open Classical
+open scoped Classical
 
-open BigOperators
+open scoped BigOperators
 
 universe u v
 

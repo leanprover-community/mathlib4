@@ -374,7 +374,7 @@ theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : �
   SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
 #align submodule.mem_bsupr_iff_exists_dfinsupp Submodule.mem_biSup_iff_exists_dfinsupp
 
-open BigOperators
+open scoped BigOperators
 
 theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
     (a ∈ ⨆ i ∈ s, p i) ↔ ∃ μ : ∀ i, p i, (∑ i in s, (μ i : N)) = a := by

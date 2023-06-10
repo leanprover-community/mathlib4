@@ -36,7 +36,7 @@ noncomputable section
 
 open Finsupp
 
-open BigOperators Classical Pointwise
+open scoped BigOperators Classical Pointwise
 
 variable {ι α : Type _} [Zero α] {s : Finset ι} {f : ι →₀ α}
 

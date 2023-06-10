@@ -20,7 +20,7 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

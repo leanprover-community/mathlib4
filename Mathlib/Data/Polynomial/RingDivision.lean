@@ -37,7 +37,7 @@ This file starts looking like the ring theory of $ R[X] $
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical Polynomial
 
 open Finset
 

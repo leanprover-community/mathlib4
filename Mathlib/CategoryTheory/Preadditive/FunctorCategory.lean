@@ -19,7 +19,7 @@ then `C ⥤ D` is also preadditive.
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 namespace CategoryTheory
 

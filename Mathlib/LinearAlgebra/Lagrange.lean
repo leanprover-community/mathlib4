@@ -30,7 +30,7 @@ associated with the _nodes_`x i`.
 -/
 
 
-open Polynomial BigOperators
+open scoped Polynomial BigOperators
 
 section PolynomialDetermination
 

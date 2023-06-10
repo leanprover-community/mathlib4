@@ -27,7 +27,7 @@ derivative, linear map
 
 universe u v w
 
-open Topology Filter
+open scoped Topology Filter
 
 open Filter Asymptotics Set
 
@@ -110,4 +110,3 @@ protected theorem LinearMap.derivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
 #align linear_map.deriv_within LinearMap.derivWithin
 
 end LinearMap
-

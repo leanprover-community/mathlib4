@@ -59,7 +59,7 @@ uniform convergence, bounded convergence
 -/
 
 
-open Topology UniformConvergence
+open scoped Topology UniformConvergence
 
 namespace ContinuousLinearMap
 

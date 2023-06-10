@@ -19,7 +19,7 @@ Notably, we show that the sum of bounded sets remain bounded.
 -/
 
 
-open Metric Set Pointwise Topology
+open scoped Metric Set Pointwise Topology
 
 variable {E : Type _}
 

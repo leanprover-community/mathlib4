@@ -66,7 +66,7 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical Pointwise
 
 variable {𝕜 E F G : Type _}
 

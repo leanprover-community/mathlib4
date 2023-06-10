@@ -16,7 +16,7 @@ import Mathlib.Data.Matrix.Basic
 -/
 
 
-open Uniformity Topology
+open scoped Uniformity Topology
 
 variable (m n 𝕜 : Type _) [UniformSpace 𝕜]
 

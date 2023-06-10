@@ -62,7 +62,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open scoped BigOperators Pointwise
 
 -- Porting note: TODO Erase this line.
 attribute [-instance] Ring.toNonAssocRing

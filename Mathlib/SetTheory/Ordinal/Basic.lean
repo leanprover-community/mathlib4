@@ -61,7 +61,7 @@ noncomputable section
 
 open Function Cardinal Set Equiv Order
 
-open Classical Cardinal InitialSeg
+open scoped Classical Cardinal InitialSeg
 
 universe u v w
 

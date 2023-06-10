@@ -45,7 +45,7 @@ basis, det, determinant
 
 noncomputable section
 
-open BigOperators Matrix LinearMap Submodule Set Function
+open scoped BigOperators Matrix LinearMap Submodule Set Function
 
 universe u v w
 
@@ -171,7 +171,7 @@ theorem detAux_comp (b : Trunc <| Basis ι A M) (f g : M →ₗ[A] M) :
 
 section
 
-open Classical
+open scoped Classical
 
 -- Discourage the elaborator from unfolding `det` and producing a huge term by marking it
 -- as irreducible.

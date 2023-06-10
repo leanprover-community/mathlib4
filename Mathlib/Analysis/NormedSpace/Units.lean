@@ -34,7 +34,7 @@ properties of `Ring.inverse (x + t)` as `t → 0`.
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 variable {R : Type _} [NormedRing R] [CompleteSpace R]
 
@@ -109,7 +109,7 @@ end nonunits
 
 namespace NormedRing
 
-open Classical BigOperators
+open scoped Classical BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 

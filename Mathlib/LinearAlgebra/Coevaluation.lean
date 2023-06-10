@@ -32,7 +32,7 @@ section coevaluation
 
 open TensorProduct FiniteDimensional
 
-open TensorProduct BigOperators
+open scoped TensorProduct BigOperators
 
 universe u v
 

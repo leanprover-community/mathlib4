@@ -36,7 +36,7 @@ universe u v w
 
 namespace LinearMap
 
-open BigOperators
+open scoped BigOperators
 
 open Matrix
 
@@ -82,7 +82,7 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 #align linear_map.trace_aux_eq LinearMap.traceAux_eq
 
-open Classical
+open scoped Classical
 
 variable (M)
 
@@ -175,7 +175,7 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
   rw [← comp_apply, trace_eq_contract]
 #align linear_map.trace_eq_contract_apply LinearMap.trace_eq_contract_apply
 
-open Classical
+open scoped Classical
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/

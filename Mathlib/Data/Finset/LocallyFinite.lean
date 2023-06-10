@@ -31,7 +31,7 @@ for some ideas.
 
 open Function OrderDual
 
-open BigOperators FinsetInterval
+open scoped BigOperators FinsetInterval
 
 variable {ι α : Type _}
 

@@ -44,7 +44,7 @@ which removes some boilerplate code.
 
 noncomputable section
 
-open Classical Nat LocalRing Padic
+open scoped Classical Nat LocalRing Padic
 
 namespace PadicInt
 

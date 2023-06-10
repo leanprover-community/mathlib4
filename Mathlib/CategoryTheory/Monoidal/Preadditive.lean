@@ -21,7 +21,7 @@ is linear in both factors.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -93,7 +93,7 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
         MonoidalPreadditive.add_tensor] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
-open BigOperators
+open scoped BigOperators
 
 theorem tensor_sum {P Q R S : C} {J : Type _} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by

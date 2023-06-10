@@ -83,7 +83,7 @@ machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help w
 
 open Set Filter
 
-open Filter Classical
+open scoped Filter Classical
 
 section sort
 

@@ -45,7 +45,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 -/
 
 
-open Classical
+open scoped Classical
 
 noncomputable instance {α : Type _} [Preorder α] [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S =>
@@ -262,7 +262,7 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 
 section
 
-open Classical
+open scoped Classical
 
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
 @[reducible]
@@ -1101,7 +1101,7 @@ end ConditionallyCompleteLinearOrderBot
 
 namespace WithTop
 
-open Classical
+open scoped Classical
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
@@ -1450,7 +1450,7 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 -/
 
 
-open Classical
+open scoped Classical
 
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/

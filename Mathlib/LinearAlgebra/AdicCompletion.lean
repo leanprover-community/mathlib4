@@ -283,7 +283,7 @@ protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingl
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 #align is_adic_complete.of_subsingleton IsAdicComplete.of_subsingleton
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

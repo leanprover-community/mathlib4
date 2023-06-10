@@ -45,7 +45,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/

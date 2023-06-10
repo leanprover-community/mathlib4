@@ -32,7 +32,7 @@ sub-modules in a commutative algebra. This important example gives rises to the 
 
 open Set Filter Function Lattice AddGroupWithZeroNhd
 
-open Topology Filter Pointwise
+open scoped Topology Filter Pointwise
 
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and

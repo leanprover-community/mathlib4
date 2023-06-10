@@ -27,7 +27,7 @@ noncomputable section
 
 open Finsupp Finset AddMonoidAlgebra
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 namespace Polynomial
 

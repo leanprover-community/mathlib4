@@ -89,7 +89,7 @@ end TwoDenominators
 
 section NDenominators
 
-open BigOperators Classical
+open scoped BigOperators Classical
 
 --Porting note: added for scoped `Algebra.cast` instance
 open algebraMap

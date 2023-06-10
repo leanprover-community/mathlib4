@@ -26,7 +26,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 universe u v w u₁ v₁
 

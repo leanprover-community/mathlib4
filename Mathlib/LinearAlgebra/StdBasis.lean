@@ -40,7 +40,7 @@ this is a basis over `Fin 3 → R`.
 
 open Function Submodule
 
-open BigOperators
+open scoped BigOperators
 
 namespace LinearMap
 

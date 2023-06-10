@@ -28,7 +28,7 @@ don't have those yet.
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι : Sort _} {α : Type _} [LinearOrderedField α]
 

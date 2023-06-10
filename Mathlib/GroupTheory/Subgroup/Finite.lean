@@ -21,7 +21,7 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-open BigOperators
+open scoped BigOperators
 
 variable {G : Type _} [Group G]
 

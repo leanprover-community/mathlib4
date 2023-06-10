@@ -53,9 +53,9 @@ integral
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 
-open MeasureTheory Set Classical Filter Function
+open scoped MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 

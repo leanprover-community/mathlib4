@@ -41,7 +41,7 @@ def Commensurable (H K : Subgroup G) : Prop :=
 
 namespace Commensurable
 
-open Pointwise
+open scoped Pointwise
 
 @[refl]
 protected theorem refl (H : Subgroup G) : Commensurable H H := by simp [Commensurable]

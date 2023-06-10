@@ -27,7 +27,7 @@ subspaces of affine spaces.
 
 noncomputable section
 
-open BigOperators Affine
+open scoped BigOperators Affine
 
 section AffineSpace'
 
@@ -96,7 +96,7 @@ theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set
   @Set.toFinite _ s (finite_of_fin_dim_affineIndependent k hi)
 #align finite_set_of_fin_dim_affine_independent finite_set_of_fin_dim_affineIndependent
 
-open Classical
+open scoped Classical
 
 variable {k}
 

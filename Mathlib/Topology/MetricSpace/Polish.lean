@@ -51,7 +51,7 @@ with additional properties:
 
 noncomputable section
 
-open Classical Topology Filter TopologicalSpace Set Metric Function
+open scoped Classical Topology Filter TopologicalSpace Set Metric Function
 
 variable {α : Type _} {β : Type _}
 

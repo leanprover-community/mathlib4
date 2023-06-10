@@ -19,7 +19,7 @@ to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 -/
 
 
-open Set Filter Topology
+open scoped Set Filter Topology
 
 variable {α β γ : Type _} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
 

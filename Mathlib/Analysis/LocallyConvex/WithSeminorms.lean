@@ -53,7 +53,7 @@ seminorm, locally convex
 
 open NormedField Set Seminorm TopologicalSpace
 
-open BigOperators NNReal Pointwise Topology
+open scoped BigOperators NNReal Pointwise Topology
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type _}
 

@@ -21,7 +21,7 @@ Some of the main results include
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical Polynomial
 
 open Finsupp Finset
 

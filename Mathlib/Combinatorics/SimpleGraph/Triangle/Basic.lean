@@ -34,7 +34,7 @@ This module defines and proves properties about triangles in simple graphs.
 
 open Finset Fintype Nat
 
-open Classical
+open scoped Classical
 
 namespace SimpleGraph
 

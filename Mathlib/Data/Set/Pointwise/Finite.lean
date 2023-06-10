@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type _}
 

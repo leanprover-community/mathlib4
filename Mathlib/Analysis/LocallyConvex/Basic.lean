@@ -44,7 +44,7 @@ absorbent, balanced, locally convex, LCTVS
 
 open Set
 
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 𝕝 E : Type _} {ι : Sort _} {κ : ι → Sort _}
 

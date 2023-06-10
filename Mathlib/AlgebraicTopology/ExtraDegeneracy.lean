@@ -374,7 +374,7 @@ namespace Augmented
 
 namespace ExtraDegeneracy
 
-open AlgebraicTopology CategoryTheory Limits
+open scoped AlgebraicTopology CategoryTheory Limits
 
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating

@@ -48,7 +48,7 @@ finiteness, finite types
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 variable {α β γ : Type _}
 

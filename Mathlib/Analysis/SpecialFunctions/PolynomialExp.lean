@@ -20,7 +20,7 @@ Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 polynomial, limit, exponential
 -/
 
-open Filter Topology Real
+open scoped Filter Topology Real
 
 namespace Polynomial
 

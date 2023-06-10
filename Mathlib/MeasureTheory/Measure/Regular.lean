@@ -132,7 +132,7 @@ proofs or statements do not apply directly.
 -/
 
 
-open Set Filter ENNReal Topology NNReal BigOperators
+open scoped Set Filter ENNReal Topology NNReal BigOperators
 
 namespace MeasureTheory
 

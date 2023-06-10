@@ -101,9 +101,9 @@ open Filter hiding map
 
 open Function MeasurableSpace
 
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 
-open Classical Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
+open scoped Classical Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
 
 variable {α β γ δ ι R R' : Type _}
 
@@ -2581,7 +2581,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
     Filter.CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) s⟩
 #align measure_theory.measure.quasi_measure_preserving.exists_preimage_eq_of_preimage_ae MeasureTheory.Measure.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem smul_ae_eq_of_ae_eq {G α : Type _} [Group G] [MulAction G α] [MeasurableSpace α]
@@ -2596,7 +2596,7 @@ end QuasiMeasurePreserving
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type _} [Group G] [MulAction G α]

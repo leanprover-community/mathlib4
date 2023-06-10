@@ -28,7 +28,7 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open Classical
+open scoped Classical
 
 namespace Filter
 

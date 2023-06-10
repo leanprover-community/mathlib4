@@ -29,7 +29,7 @@ universe u v
 
 open Equiv Function Fintype Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {α : Type u} {β : Type v}
 

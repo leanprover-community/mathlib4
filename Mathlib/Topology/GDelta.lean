@@ -38,7 +38,7 @@ Gδ set, residual set
 
 noncomputable section
 
-open Topology TopologicalSpace Filter Encodable Set
+open scoped Topology TopologicalSpace Filter Encodable Set
 
 variable {α β γ ι : Type _}
 

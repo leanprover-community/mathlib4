@@ -26,7 +26,7 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open BigOperators Real RealInnerProductSpace
+open scoped BigOperators Real RealInnerProductSpace
 
 namespace EuclideanGeometry
 

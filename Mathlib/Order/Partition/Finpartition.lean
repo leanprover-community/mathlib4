@@ -57,7 +57,7 @@ the literature and turn the order around?
 -/
 
 
-open BigOperators Finset Function
+open scoped BigOperators Finset Function
 
 variable {α : Type _}
 

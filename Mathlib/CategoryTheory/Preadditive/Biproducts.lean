@@ -61,9 +61,9 @@ open CategoryTheory.Functor
 
 open CategoryTheory.Preadditive
 
-open Classical
+open scoped Classical
 
-open BigOperators
+open scoped BigOperators
 
 universe v v' u u'
 

@@ -44,7 +44,7 @@ that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 -/
 
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 noncomputable section
 

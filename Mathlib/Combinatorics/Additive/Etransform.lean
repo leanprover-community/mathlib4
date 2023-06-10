@@ -35,7 +35,7 @@ Prove the invariance property of the Dyson e-transform.
 
 open MulOpposite
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type _} [DecidableEq α]
 

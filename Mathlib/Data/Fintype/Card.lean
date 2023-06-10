@@ -946,7 +946,7 @@ noncomputable def fintypeOfNotInfinite {α : Type _} (h : ¬Infinite α) : Finty
 
 section
 
-open Classical
+open scoped Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 

@@ -31,7 +31,7 @@ locally convex, bounded convergence
 -/
 
 
-open Topology UniformConvergence
+open scoped Topology UniformConvergence
 
 variable {R 𝕜₁ 𝕜₂ E F : Type _}
 

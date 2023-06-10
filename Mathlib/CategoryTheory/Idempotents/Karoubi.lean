@@ -29,7 +29,7 @@ complete category. It is also preadditive when `C` is preadditive.
 
 noncomputable section
 
-open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits BigOperators
+open scoped CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits BigOperators
 
 namespace CategoryTheory
 

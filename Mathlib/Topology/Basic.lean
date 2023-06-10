@@ -105,7 +105,7 @@ set_option quotPrecheck false in
 /-- Notation for `IsOpen` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 
-open Topology
+open scoped Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} {s : Set α} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 #align is_open_mk isOpen_mk
@@ -1535,7 +1535,7 @@ end lim
 
 end TopologicalSpace
 
-open Topology
+open scoped Topology
 
 /-!
 ### Continuity

@@ -26,7 +26,7 @@ assert_not_exists Finset
 assert_not_exists Module
 assert_not_exists Submonoid
 
-open Pointwise
+open scoped Pointwise
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -550,7 +550,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open Classical
+open scoped Classical
 
 instance : IsTotal ℝ (· ≤ ·) :=
   ⟨by

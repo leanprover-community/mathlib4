@@ -33,7 +33,7 @@ variable {𝕜 E F β : Type _}
 
 open LinearMap Set
 
-open BigOperators Classical Convex Pointwise
+open scoped BigOperators Classical Convex Pointwise
 
 /-! ### Convexity of sets -/
 

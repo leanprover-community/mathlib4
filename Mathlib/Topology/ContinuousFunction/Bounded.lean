@@ -26,7 +26,7 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Classical NNReal uniformity UniformConvergence
+open scoped Topology Classical NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 
@@ -765,7 +765,7 @@ instance : AddCommMonoid (α →ᵇ β) :=
   { BoundedContinuousFunction.addMonoid with
     add_comm := fun f g => by ext; simp [add_comm] }
 
-open BigOperators
+open scoped BigOperators
 
 @[simp]
 theorem coe_sum {ι : Type _} (s : Finset ι) (f : ι → α →ᵇ β) :

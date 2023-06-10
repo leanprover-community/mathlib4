@@ -21,7 +21,7 @@ This file contains results on the `R`-module structure on functions of finite su
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open Set LinearMap Submodule
 

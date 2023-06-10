@@ -50,7 +50,7 @@ since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 noncomputable section
 

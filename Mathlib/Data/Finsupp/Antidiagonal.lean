@@ -22,7 +22,7 @@ all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + 
 
 noncomputable section
 
-open Classical BigOperators
+open scoped Classical BigOperators
 
 namespace Finsupp
 

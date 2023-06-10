@@ -71,7 +71,7 @@ TODO: Show that divisibility implies injectivity in the category of `AddCommGrou
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 section AddMonoid
 

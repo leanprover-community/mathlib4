@@ -38,7 +38,7 @@ universe u v w
 namespace Ideal
 
 open Set
-open BigOperators
+open scoped BigOperators
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
@@ -210,7 +210,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
 
-open Classical
+open scoped Classical
 
 -- porting note: the original proof uses `(by infer_instance : MonoidWithZero (R ⧸ I))`;
 -- this doesn't work, `(inferInstance : MonoidWithZero (R ⧸ I))` does, but the statement with

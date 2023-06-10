@@ -61,7 +61,7 @@ theorem Fintype.card_prod (α β : Type _) [Fintype α] [Fintype β] :
 
 section
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by

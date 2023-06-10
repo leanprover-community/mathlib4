@@ -44,7 +44,7 @@ A few lemmas requiring heavier imports are in `data.is_R_or_C.lemmas`.
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 section
 

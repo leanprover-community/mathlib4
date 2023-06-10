@@ -52,7 +52,7 @@ type of linear trivializations is not even particularly well-behaved.
 -/
 
 
-open TopologicalSpace Filter Set Function Bundle Topology
+open scoped TopologicalSpace Filter Set Function Bundle Topology
 open scoped Classical
 
 variable {ι : Type _} {B : Type _} {F : Type _} {E : B → Type _}

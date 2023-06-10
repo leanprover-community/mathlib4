@@ -31,7 +31,7 @@ noncomputable section
 
 open Real Set
 
-open BigOperators
+open scoped BigOperators
 
 open Real
 

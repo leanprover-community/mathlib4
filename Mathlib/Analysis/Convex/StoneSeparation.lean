@@ -22,7 +22,7 @@ complement is convex.
 -/
 
 
-open Set BigOperators
+open scoped Set BigOperators
 
 variable {𝕜 E ι : Type _} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 

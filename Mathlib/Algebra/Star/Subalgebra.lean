@@ -326,7 +326,7 @@ end StarSubalgebra
 
 namespace Subalgebra
 
-open Pointwise
+open scoped Pointwise
 
 variable {F R A B : Type _} [CommSemiring R] [StarRing R]
 

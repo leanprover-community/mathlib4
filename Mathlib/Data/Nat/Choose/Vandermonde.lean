@@ -24,7 +24,7 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 open Polynomial Finset.Nat
 

@@ -174,7 +174,7 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 
 section
 
-open Classical
+open scoped Classical
 
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} :

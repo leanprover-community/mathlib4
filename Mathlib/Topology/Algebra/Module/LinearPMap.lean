@@ -46,7 +46,7 @@ Unbounded operators, closed operators
 -/
 
 
-open Topology
+open scoped Topology
 
 variable {R E F : Type _}
 
@@ -101,7 +101,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   rw [← hy₁, ← hy₂]
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
-open Classical
+open scoped Classical
 
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/

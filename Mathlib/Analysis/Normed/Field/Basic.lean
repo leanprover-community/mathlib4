@@ -24,7 +24,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
 open Filter Metric
 
-open Topology BigOperators NNReal ENNReal uniformity Pointwise
+open scoped Topology BigOperators NNReal ENNReal uniformity Pointwise
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/

@@ -83,7 +83,7 @@ protected def pointwiseMulAction : MulAction R' (Subalgebra R A)
 
 scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=

@@ -19,7 +19,7 @@ introduce some basic operations on this disc.
 -/
 
 
-open Set Function Metric BigOperators
+open scoped Set Function Metric BigOperators
 
 noncomputable section
 

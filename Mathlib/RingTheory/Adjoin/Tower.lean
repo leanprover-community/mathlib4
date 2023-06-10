@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Adjoin.FG
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁
 
@@ -72,7 +72,7 @@ end Algebra
 
 section
 
-open Classical
+open scoped Classical
 
 theorem Algebra.fg_trans' {R S A : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
@@ -99,7 +99,7 @@ variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
 
-open Classical
+open scoped Classical
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by

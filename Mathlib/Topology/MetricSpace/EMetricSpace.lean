@@ -33,7 +33,7 @@ to `EMetricSpace` at the end.
 -/
 
 
-open Set Filter Classical Uniformity Topology BigOperators NNReal ENNReal
+open scoped Set Filter Classical Uniformity Topology BigOperators NNReal ENNReal
 
 universe u v w
 

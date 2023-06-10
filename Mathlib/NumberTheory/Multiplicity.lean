@@ -34,7 +34,7 @@ This file contains results in number theory relating to multiplicity.
 
 open Ideal Ideal.Quotient Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {R : Type _} {n : ℕ}
 

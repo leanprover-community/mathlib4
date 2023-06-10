@@ -23,7 +23,7 @@ Mostly monotonicity results for the `∏` and `∑` operations.
 
 open Function
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι α β M N G k R : Type _}
 
@@ -582,7 +582,7 @@ section OrderedCommSemiring
 
 variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
-open Classical
+open scoped Classical
 
 -- this is also true for a ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=

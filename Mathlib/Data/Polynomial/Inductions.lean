@@ -22,7 +22,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 open Finset
 

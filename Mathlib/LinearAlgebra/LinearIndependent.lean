@@ -80,7 +80,7 @@ noncomputable section
 
 open Function Set Submodule
 
-open Classical BigOperators Cardinal
+open scoped Classical BigOperators Cardinal
 
 universe u' u
 

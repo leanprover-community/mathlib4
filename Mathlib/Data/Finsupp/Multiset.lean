@@ -22,7 +22,7 @@ promoted to an order isomorphism.
 
 open Finset
 
-open BigOperators Classical
+open scoped BigOperators Classical
 
 noncomputable section
 

@@ -33,7 +33,7 @@ p-series, Cauchy condensation test
 
 open Filter
 
-open BigOperators ENNReal NNReal Topology
+open scoped BigOperators ENNReal NNReal Topology
 
 /-!
 ### Cauchy condensation test

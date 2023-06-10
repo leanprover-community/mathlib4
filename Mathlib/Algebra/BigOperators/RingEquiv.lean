@@ -18,7 +18,7 @@ import Mathlib.Algebra.Ring.Equiv
 
 namespace RingEquiv
 
-open BigOperators
+open scoped BigOperators
 
 variable {α R S : Type _}
 

@@ -28,7 +28,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function
 
-open Classical Topology
+open scoped Classical Topology
 
 namespace Complex
 

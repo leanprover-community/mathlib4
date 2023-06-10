@@ -25,7 +25,7 @@ variable {α β γ δ : Type _}
 -- the same local notation used in `Algebra.Associated`
 local infixl:50 " ~ᵤ " => Associated
 
-open BigOperators
+open scoped BigOperators
 
 namespace Prime
 

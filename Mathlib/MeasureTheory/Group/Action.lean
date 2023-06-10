@@ -23,7 +23,7 @@ some basic properties of such measures.
 -/
 
 
-open ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
+open scoped ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
 
 namespace MeasureTheory
 

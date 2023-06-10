@@ -32,7 +32,7 @@ Where possible, try to keep them in sync.
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {α G A S : Type _}
 
@@ -487,7 +487,7 @@ section Group
 
 variable [Group α] [DistribMulAction α A]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : α} {S : AddSubgroup A} {x : A} : a • x ∈ a • S ↔ x ∈ S :=
@@ -523,7 +523,7 @@ section GroupWithZero
 
 variable [GroupWithZero α] [DistribMulAction α A]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubgroup A) (x : A) :

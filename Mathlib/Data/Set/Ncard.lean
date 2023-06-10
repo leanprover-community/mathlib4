@@ -45,7 +45,7 @@ the other inside the proof. A few of the theorems, such as `ncard_union_le` do n
 finiteness arguments; they are are true by coincidence due to junk values.
 -/
 
-open BigOperators
+open scoped BigOperators
 
 variable {α β : Type _} {s t : Set α} {a b x y : α} {f : α → β}
 

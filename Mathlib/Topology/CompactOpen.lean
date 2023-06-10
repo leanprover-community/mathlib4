@@ -40,7 +40,7 @@ compact-open, curry, function space
 
 open Set
 
-open Topology
+open scoped Topology
 
 namespace ContinuousMap
 

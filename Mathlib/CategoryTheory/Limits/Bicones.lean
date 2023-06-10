@@ -32,7 +32,7 @@ noncomputable section
 
 open CategoryTheory.Limits
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 

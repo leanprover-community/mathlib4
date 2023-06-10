@@ -28,7 +28,7 @@ follows exactly the same path.
 absolute value, uniform spaces
 -/
 
-open Set Function Filter Topology
+open scoped Set Function Filter Topology
 
 namespace AbsoluteValue
 

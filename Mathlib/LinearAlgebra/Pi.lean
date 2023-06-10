@@ -38,7 +38,7 @@ variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x} {ι' : T
 
 open Function Submodule
 
-open BigOperators
+open scoped BigOperators
 
 namespace LinearMap
 

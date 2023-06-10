@@ -146,9 +146,9 @@ integral, fundamental theorem of calculus, FTC-1, FTC-2, change of variables in 
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 
-open MeasureTheory Set Classical Filter Function
+open scoped MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 

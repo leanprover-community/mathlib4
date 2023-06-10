@@ -27,7 +27,7 @@ namespace Matrix
 
 open Matrix
 
-open BigOperators
+open scoped BigOperators
 
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 

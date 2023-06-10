@@ -33,7 +33,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 

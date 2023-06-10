@@ -22,7 +22,7 @@ import Mathlib.RingTheory.NonZeroDivisors
 
 universe u v w x
 
-open BigOperators Pointwise
+open scoped BigOperators Pointwise
 
 namespace Submodule
 
@@ -32,7 +32,7 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-open Pointwise
+open scoped Pointwise
 
 instance hasSMul' : SMul (Ideal R) (Submodule R M) :=
   ⟨Submodule.map₂ (LinearMap.lsmul R M)⟩
@@ -1887,7 +1887,7 @@ variable (M : Type _) [AddCommGroup M] {R : Type _} [CommRing R] [Module R M] (I
 
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
-open BigOperators
+open scoped BigOperators
 
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=

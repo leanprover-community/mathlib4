@@ -32,7 +32,7 @@ partition of unity
 
 open Set Function
 
-open BigOperators Topology
+open scoped BigOperators Topology
 
 variable {ι X E : Type _} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 

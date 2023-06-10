@@ -29,7 +29,7 @@ variable {α : Type _} [TopologicalSpace α] [T2Space α] {f : α → α}
 
 open Function Filter
 
-open Topology
+open scoped Topology
 
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/
@@ -44,4 +44,3 @@ theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => (f^[n]) 
 theorem isClosed_fixedPoints (hf : Continuous f) : IsClosed (fixedPoints f) :=
   isClosed_eq hf continuous_id
 #align is_closed_fixed_points isClosed_fixedPoints
-

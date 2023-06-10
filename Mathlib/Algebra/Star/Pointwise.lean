@@ -27,7 +27,7 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 local postfix:max "⋆" => star
 

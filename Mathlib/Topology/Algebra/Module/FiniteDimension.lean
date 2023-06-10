@@ -51,7 +51,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter BigOperators
+open scoped Set FiniteDimensional TopologicalSpace Filter BigOperators
 
 section Field
 

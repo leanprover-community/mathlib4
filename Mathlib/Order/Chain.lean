@@ -33,7 +33,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
 
-open Classical Set
+open scoped Classical Set
 
 variable {α β : Type _}
 
@@ -154,7 +154,7 @@ theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) 
   (h.2 (h.1.insert fun _ _ _ => Or.inr le_top) <| subset_insert _ _).symm ▸ mem_insert _ _
 #align is_max_chain.top_mem IsMaxChain.top_mem
 
-open Classical
+open scoped Classical
 
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/

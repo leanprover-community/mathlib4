@@ -29,7 +29,7 @@ This file proves statements about limits and continuity of functions involving `
 -/
 
 
-open Filter Function Int Set Topology
+open scoped Filter Function Int Set Topology
 
 variable {α β γ : Type _} [LinearOrderedRing α] [FloorRing α]
 
@@ -226,4 +226,3 @@ theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
     fun _ => hf
 #align continuous_on.comp_fract'' ContinuousOn.comp_fract''
-

@@ -225,7 +225,7 @@ section Group
 
 variable [Group M] (S : Submonoid M)
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=

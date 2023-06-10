@@ -18,7 +18,7 @@ import Mathlib.Topology.ExtendFrom
 
 open Filter Set TopologicalSpace
 
-open Topology Classical
+open scoped Topology Classical
 
 theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la lb : β}

@@ -36,7 +36,7 @@ endowed with an order.
 -/
 
 
-open Set Function Filter Topology
+open scoped Set Function Filter Topology
 
 /-!
 ### Definition and notation

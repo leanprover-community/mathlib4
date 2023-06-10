@@ -18,7 +18,7 @@ import Mathlib.Topology.Instances.Real
 This file provides lemmas about Cauchy sequences in terms of infinite sums.
 -/
 
-open Filter Finset BigOperators NNReal Topology
+open scoped Filter Finset BigOperators NNReal Topology
 
 variable {α : Type _}
 

@@ -89,7 +89,7 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
+open scoped BigOperators
 
 section CommSemiring
 

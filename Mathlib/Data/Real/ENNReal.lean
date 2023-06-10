@@ -77,7 +77,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 -/
 
 
-open Set BigOperators NNReal
+open scoped Set BigOperators NNReal
 
 variable {α : Type _} {β : Type _}
 

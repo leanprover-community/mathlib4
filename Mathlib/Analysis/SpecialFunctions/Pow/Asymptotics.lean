@@ -23,7 +23,7 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
+open scoped Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
 
 /-!
 ## Limits at `+∞`

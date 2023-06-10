@@ -22,7 +22,7 @@ bounded bilinear maps.
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
-open Topology Classical NNReal Asymptotics ENNReal
+open scoped Topology Classical NNReal Asymptotics ENNReal
 
 noncomputable section
 

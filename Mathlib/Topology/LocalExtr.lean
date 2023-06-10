@@ -40,7 +40,7 @@ universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} [TopologicalSpace α]
 
-open Set Filter Topology
+open scoped Set Filter Topology
 
 section Preorder
 
@@ -631,4 +631,3 @@ theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f 
 #align filter.eventually_eq.is_local_extr_iff Filter.EventuallyEq.isLocalExtr_iff
 
 end Eventually
-

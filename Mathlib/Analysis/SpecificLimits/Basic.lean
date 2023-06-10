@@ -25,9 +25,9 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric
+open scoped Classical Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type _} {β : Type _} {ι : Type _}
 

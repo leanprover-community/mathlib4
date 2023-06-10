@@ -21,7 +21,7 @@ We discuss several of its properties that are analogous to properties of measura
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function
 
-open MeasureTheory Filter Classical ENNReal Interval
+open scoped MeasureTheory Filter Classical ENNReal Interval
 
 variable {ι α β γ δ R : Type _} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}

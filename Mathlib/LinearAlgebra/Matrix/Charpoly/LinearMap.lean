@@ -32,7 +32,7 @@ variable {M : Type _} [AddCommGroup M] (R : Type _) [CommRing R] [Module R M] (I
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 /-- The composition of a matrix (as an endomporphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/

@@ -22,7 +22,7 @@ We prove results about big operators over intervals (mostly the `ℕ`-valued `Ic
 
 universe u v w
 
-open BigOperators
+open scoped BigOperators
 open Nat
 
 namespace Finset

@@ -23,7 +23,7 @@ This operation is called `MvPolynomial.expand` and it is an algebra homomorphism
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 namespace MvPolynomial
 

@@ -31,7 +31,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 open Function
 
-open BigOperators
+open scoped BigOperators
 
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving

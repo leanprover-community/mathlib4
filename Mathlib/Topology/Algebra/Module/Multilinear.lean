@@ -39,7 +39,7 @@ especially when defining iterated derivatives.
 
 open Function Fin Set
 
-open BigOperators
+open scoped BigOperators
 
 universe u v w w₁ w₁' w₂ w₃ w₄
 

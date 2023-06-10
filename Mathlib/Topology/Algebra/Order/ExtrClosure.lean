@@ -22,7 +22,7 @@ not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the c
 
 open Filter Set
 
-open Topology
+open scoped Topology
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f g : X → Y} {s : Set X} {a : X}

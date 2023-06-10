@@ -31,7 +31,7 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped BigOperators Classical Pointwise
 
 universe u u'
 

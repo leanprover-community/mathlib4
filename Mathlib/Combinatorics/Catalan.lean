@@ -49,7 +49,7 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

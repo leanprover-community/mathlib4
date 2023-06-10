@@ -33,7 +33,7 @@ section MoveThis
 -- Porting note: this section contains lemmas that should be moved to appropriate places after the
 -- port to lean 4
 
-open Filter Set Topology
+open scoped Filter Set Topology
 
 theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
     (hf_mono : Monotone f) : (⨅ r : Ioi x, f r) = ⨅ q : { q' : ℚ // x < q' }, f q := by
@@ -192,7 +192,7 @@ end MoveThis
 
 noncomputable section
 
-open Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open scoped Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 

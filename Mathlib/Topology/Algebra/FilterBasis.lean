@@ -42,7 +42,7 @@ Given a group `G` and a ring `R`:
 
 open Filter Set TopologicalSpace Function
 
-open Topology Filter Pointwise
+open scoped Topology Filter Pointwise
 
 universe u
 

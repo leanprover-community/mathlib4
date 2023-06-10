@@ -19,7 +19,7 @@ import Mathlib.LinearAlgebra.Dimension
 
 universe u v
 
-open Classical Cardinal
+open scoped Classical Cardinal
 
 open Cardinal Submodule Module Function
 

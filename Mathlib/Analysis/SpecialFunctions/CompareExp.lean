@@ -34,7 +34,7 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 
 open Asymptotics Filter Function
 
-open Topology
+open scoped Topology
 
 namespace Complex
 

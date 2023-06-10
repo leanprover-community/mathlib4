@@ -122,7 +122,7 @@ circle homeomorphism, rotation number
 -/
 
 
-open Filter Set Int Topology Classical
+open scoped Filter Set Int Topology Classical
 open Function hiding Commute
 
 /-!

@@ -44,7 +44,7 @@ intermediate value theorem, connected space, connected set
 
 open Filter OrderDual TopologicalSpace Function Set
 
-open Topology Filter
+open scoped Topology Filter
 
 universe u v w
 

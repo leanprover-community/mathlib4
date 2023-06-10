@@ -66,7 +66,7 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
 -- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt
 
-open BigOperators
+open scoped BigOperators
 
 namespace TrivSqZeroExt
 

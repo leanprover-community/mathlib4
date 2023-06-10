@@ -46,7 +46,7 @@ Salem-Spencer, Roth, arithmetic progression, average, three-free
 
 open Finset Function Metric Nat
 
-open Pointwise
+open scoped Pointwise
 
 variable {F α β 𝕜 E : Type _}
 

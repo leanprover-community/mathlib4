@@ -380,7 +380,7 @@ theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
   (fun h => by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
 #align padic_val_rat.min_le_padic_val_rat_add padicValRat.min_le_padicValRat_add
 
-open BigOperators
+open scoped BigOperators
 
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
@@ -484,7 +484,7 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
 
-open BigOperators
+open scoped BigOperators
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by

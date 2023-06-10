@@ -28,7 +28,7 @@ universe u v
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι → α}
 

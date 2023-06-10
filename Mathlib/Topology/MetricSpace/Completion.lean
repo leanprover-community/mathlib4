@@ -24,7 +24,7 @@ it defines the same uniformity as the already defined uniform structure on the c
 
 open Set Filter UniformSpace Metric
 
-open Filter Topology Uniformity
+open scoped Filter Topology Uniformity
 
 noncomputable section
 

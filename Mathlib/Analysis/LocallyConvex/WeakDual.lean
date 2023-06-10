@@ -45,7 +45,7 @@ weak dual, seminorm
 
 variable {𝕜 E F ι : Type _}
 
-open Topology
+open scoped Topology
 
 section BilinForm
 

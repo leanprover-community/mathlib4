@@ -25,7 +25,7 @@ matrix, diagonal, linear_map
 
 noncomputable section
 
-open LinearMap Matrix Set Submodule BigOperators Matrix
+open scoped LinearMap Matrix Set Submodule BigOperators Matrix
 
 universe u v w
 

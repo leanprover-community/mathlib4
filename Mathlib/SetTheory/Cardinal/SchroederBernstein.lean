@@ -32,7 +32,7 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 open Set Function
 
-open Classical
+open scoped Classical
 
 universe u v
 

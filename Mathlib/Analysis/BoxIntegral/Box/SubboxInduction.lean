@@ -32,7 +32,7 @@ rectangular box, induction
 -/
 
 
-open Set Finset Function Filter Metric Classical Topology Filter ENNReal
+open scoped Set Finset Function Filter Metric Classical Topology Filter ENNReal
 
 noncomputable section
 

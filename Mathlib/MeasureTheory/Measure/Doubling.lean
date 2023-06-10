@@ -33,7 +33,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 noncomputable section
 
-open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
+open scoped Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology
 
 /-- A measure `μ` is said to be a uniformly locally doubling measure if there exists a constant `C`
 such that for all sufficiently small radii `ε`, and for any centre, the measure of a ball of radius

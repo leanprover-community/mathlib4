@@ -56,7 +56,7 @@ noncomputable section
 
 open AddCommGroup Set Function AddSubgroup TopologicalSpace
 
-open Topology
+open scoped Topology
 
 variable {𝕜 B : Type _}
 

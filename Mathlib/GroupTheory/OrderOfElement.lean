@@ -35,7 +35,7 @@ order of an element
 -/
 
 
-open Function Nat Pointwise
+open scoped Function Nat Pointwise
 
 universe u v
 
@@ -644,7 +644,7 @@ section FiniteMonoid
 
 variable [Monoid G]
 
-open BigOperators
+open scoped BigOperators
 
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :

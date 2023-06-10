@@ -26,7 +26,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 namespace Nat
 

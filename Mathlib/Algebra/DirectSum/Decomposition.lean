@@ -36,7 +36,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 
 variable {ι R M σ : Type _}
 
-open DirectSum BigOperators
+open scoped DirectSum BigOperators
 
 namespace DirectSum
 

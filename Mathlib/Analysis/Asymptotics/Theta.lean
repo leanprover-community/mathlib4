@@ -20,7 +20,7 @@ In this file we define `Asymptotics.IsTheta l f g` (notation: `f =Θ[l] g`) as
 
 open Filter
 
-open Topology
+open scoped Topology
 
 namespace Asymptotics
 

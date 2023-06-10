@@ -23,7 +23,7 @@ multiplicative and additive structures on the values being combined.
 
 universe u v w
 
-open BigOperators
+open scoped BigOperators
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
@@ -35,7 +35,7 @@ section CommMonoid
 
 variable [CommMonoid β]
 
-open Classical
+open scoped Classical
 
 theorem prod_pow_eq_pow_sum {x : β} {f : α → ℕ} :
     ∀ {s : Finset α}, (∏ i in s, x ^ f i) = x ^ ∑ x in s, f x := by
@@ -124,7 +124,7 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
         Subtype.exists, exists_prop, exists_eq_right] using ha
 #align finset.prod_sum Finset.prod_sum
 
-open Classical
+open scoped Classical
 /-- The product of `f a + g a` over all of `s` is the sum
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/

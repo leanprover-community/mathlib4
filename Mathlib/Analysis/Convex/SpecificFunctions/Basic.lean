@@ -40,7 +40,7 @@ For `p : ℝ`, prove that `λ x, x ^ p` is concave when `0 ≤ p ≤ 1` and stri
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
-open Real Set BigOperators NNReal
+open scoped Real Set BigOperators NNReal
 
 /-- `Real.exp` is strictly convex on the whole real line.
 

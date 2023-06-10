@@ -25,7 +25,7 @@ local notation "‖" x "‖" => Fintype.card x
 
 open Function
 
-open Nat BigOperators
+open scoped Nat BigOperators
 
 namespace Fintype
 

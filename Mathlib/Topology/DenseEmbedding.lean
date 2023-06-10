@@ -32,7 +32,7 @@ noncomputable section
 
 open Set Filter
 
-open Classical Topology Filter
+open scoped Classical Topology Filter
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 

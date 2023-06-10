@@ -25,7 +25,7 @@ import Mathlib.RingTheory.Localization.FractionRing
 -/
 
 
-open HahnSeries BigOperators Classical Polynomial
+open scoped HahnSeries BigOperators Classical Polynomial
 
 noncomputable section
 

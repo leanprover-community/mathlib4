@@ -62,7 +62,7 @@ universe u v
 -- porting note: can this really be a good idea?
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map
 
-open Classical
+open scoped Classical
 
 namespace OrderHom
 

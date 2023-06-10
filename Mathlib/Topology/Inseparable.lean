@@ -40,7 +40,7 @@ topological space, separation setoid
 -/
 
 
-open Set Filter Function Topology List
+open scoped Set Filter Function Topology List
 
 variable {X Y Z α ι : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}

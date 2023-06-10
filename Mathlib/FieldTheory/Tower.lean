@@ -38,7 +38,7 @@ tower law
 
 universe u v w u₁ v₁ w₁
 
-open Classical BigOperators FiniteDimensional Cardinal
+open scoped Classical BigOperators FiniteDimensional Cardinal
 
 variable (F : Type u) (K : Type v) (A : Type w)
 

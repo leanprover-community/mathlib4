@@ -115,7 +115,7 @@ composition of local equivs with `≫`.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical Topology Filter
 
 universe u
 

@@ -54,7 +54,7 @@ We define order structures on both `opens α` (`complete_structure`, `frame`) an
 
 open Filter Function Order Set
 
-open Topology
+open scoped Topology
 
 variable {ι α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 

@@ -25,7 +25,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 noncomputable section
 
-open Classical Real NNReal ENNReal BigOperators ComplexConjugate
+open scoped Classical Real NNReal ENNReal BigOperators ComplexConjugate
 
 open Finset Set
 

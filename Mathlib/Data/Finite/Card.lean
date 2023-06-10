@@ -33,7 +33,7 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 variable {α β γ : Type _}
 
@@ -206,4 +206,3 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 #align set.card_union_le Set.card_union_le
 
 end Set
-

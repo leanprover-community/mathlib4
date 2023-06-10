@@ -25,7 +25,7 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {k M N : Type _}
 

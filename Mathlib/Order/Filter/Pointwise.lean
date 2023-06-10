@@ -58,7 +58,7 @@ filter multiplication, filter addition, pointwise addition, pointwise multiplica
 -/
 
 
-open Function Set Filter Pointwise
+open scoped Function Set Filter Pointwise
 
 variable {F α β γ δ ε : Type _}
 
@@ -546,7 +546,7 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 
 end Div
 
-open Pointwise
+open scoped Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
 Note [pointwise nat action].-/
@@ -734,7 +734,7 @@ protected def commMonoid [CommMonoid α] : CommMonoid (Filter α) :=
 #align filter.comm_monoid Filter.commMonoid
 #align filter.add_comm_monoid Filter.addCommMonoid
 
-open Pointwise
+open scoped Pointwise
 
 section DivisionMonoid
 
@@ -914,7 +914,7 @@ protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g�
 
 end Group
 
-open Pointwise
+open scoped Pointwise
 
 section GroupWithZero
 
@@ -1236,7 +1236,7 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
 
 end Smul
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 instance smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :

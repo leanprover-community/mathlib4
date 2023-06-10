@@ -36,7 +36,7 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 -/
 
 
-open TopologicalSpace Topology Function
+open scoped TopologicalSpace Topology Function
 
 /-- The type of open subgroups of a topological additive group. -/
 structure OpenAddSubgroup (G : Type _) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where

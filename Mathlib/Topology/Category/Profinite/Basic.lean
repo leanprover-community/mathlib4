@@ -50,7 +50,7 @@ universe u
 
 open CategoryTheory
 
-open Topology
+open scoped Topology
 
 /-- The type of profinite topological spaces. -/
 structure Profinite where

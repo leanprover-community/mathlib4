@@ -35,9 +35,9 @@ giry monad
 
 noncomputable section
 
-open Classical BigOperators ENNReal
+open scoped Classical BigOperators ENNReal
 
-open Classical Set Filter
+open scoped Classical Set Filter
 
 variable {α β : Type _}
 

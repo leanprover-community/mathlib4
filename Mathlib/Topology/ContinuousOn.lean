@@ -32,7 +32,7 @@ equipped with the subspace topology.
 -/
 
 
-open Set Filter Function Topology Filter
+open scoped Set Filter Function Topology Filter
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 

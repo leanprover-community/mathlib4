@@ -28,7 +28,7 @@ logarithm, continuity
 
 open Set Filter Function
 
-open Topology
+open scoped Topology
 
 noncomputable section
 
@@ -329,7 +329,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
     (h.tendsto.mono_left inf_le_left)
 #align real.continuous_at_log_iff Real.continuousAt_log_iff
 
-open BigOperators
+open scoped BigOperators
 
 theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i in s, f i) = ∑ i in s, log (f i) := by

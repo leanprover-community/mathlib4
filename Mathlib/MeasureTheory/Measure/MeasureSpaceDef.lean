@@ -59,13 +59,13 @@ measure, almost everywhere, measure space
 
 noncomputable section
 
-open Classical Set
+open scoped Classical Set
 
 open Filter hiding map
 
 open Function MeasurableSpace
 
-open Classical Topology BigOperators Filter ENNReal NNReal
+open scoped Classical Topology BigOperators Filter ENNReal NNReal
 
 variable {α β γ δ ι : Type _}
 

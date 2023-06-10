@@ -40,7 +40,7 @@ Besides homeomorphisms mentioned above, in this file we provide lemmas like `Con
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
 
-open Topology Pointwise
+open scoped Topology Pointwise
 
 open Filter
 

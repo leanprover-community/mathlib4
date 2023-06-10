@@ -36,7 +36,7 @@ noncomputable section
 
 universe u v w
 
-open Polynomial Matrix BigOperators Polynomial
+open scoped Polynomial Matrix BigOperators Polynomial
 
 variable {R : Type u} [CommRing R]
 

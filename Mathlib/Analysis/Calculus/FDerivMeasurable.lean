@@ -81,7 +81,7 @@ set_option linter.uppercaseLean3 false -- A B D
 noncomputable section
 
 open Set Metric Asymptotics Filter ContinuousLinearMap MeasureTheory
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 open scoped Topology
 
 namespace ContinuousLinearMap

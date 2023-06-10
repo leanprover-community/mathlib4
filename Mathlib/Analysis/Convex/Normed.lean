@@ -33,7 +33,7 @@ variable {ι : Type _} {E : Type _}
 
 open Metric Set
 
-open Pointwise Convex
+open scoped Pointwise Convex
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s t : Set E}
 

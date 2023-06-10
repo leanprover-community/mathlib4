@@ -27,11 +27,11 @@ universe u v
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
 
-open BigOperators
+open scoped BigOperators
 
 section
 
-open Classical
+open scoped Classical
 
 theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
   constructor

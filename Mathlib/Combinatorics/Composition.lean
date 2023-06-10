@@ -94,7 +94,7 @@ Composition, partition
 
 open List
 
-open BigOperators
+open scoped BigOperators
 
 variable {n : ℕ}
 

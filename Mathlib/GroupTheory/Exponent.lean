@@ -47,7 +47,7 @@ universe u
 
 variable {G : Type u}
 
-open Classical
+open scoped Classical
 
 namespace Monoid
 
@@ -360,7 +360,7 @@ section CommGroup
 
 open Subgroup
 
-open BigOperators
+open scoped BigOperators
 
 variable (G) [CommGroup G] [Group.FG G]
 
@@ -389,4 +389,3 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
-

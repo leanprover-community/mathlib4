@@ -72,7 +72,7 @@ noncomputable section
 
 open IsROrC Real Filter
 
-open BigOperators Topology ComplexConjugate
+open scoped BigOperators Topology ComplexConjugate
 
 variable {𝕜 E F : Type _} [IsROrC 𝕜]
 

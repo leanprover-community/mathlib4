@@ -43,7 +43,7 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 -/
 
 
-open Topology Pointwise Filter Set TopologicalSpace
+open scoped Topology Pointwise Filter Set TopologicalSpace
 
 /-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative

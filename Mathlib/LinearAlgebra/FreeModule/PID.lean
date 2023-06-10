@@ -52,7 +52,7 @@ free module, finitely generated module, rank, structure theorem
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 universe u v
 

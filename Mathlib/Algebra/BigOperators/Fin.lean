@@ -27,7 +27,7 @@ constant function. These results have variants for sums instead of products.
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

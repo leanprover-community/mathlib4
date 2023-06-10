@@ -25,7 +25,7 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-open BigOperators Classical
+open scoped BigOperators Classical
 
 variable {ι κ R α : Type _}
 

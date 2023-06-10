@@ -29,7 +29,7 @@ if all monomials occurring in `φ` have degree `n`.
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 namespace MvPolynomial
 

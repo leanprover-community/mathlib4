@@ -19,7 +19,7 @@ respect to some affine basis.
 -/
 
 
-open Affine BigOperators Matrix
+open scoped Affine BigOperators Matrix
 
 open Set
 

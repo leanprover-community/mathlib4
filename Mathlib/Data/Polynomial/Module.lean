@@ -25,7 +25,7 @@ universe u v
 
 open Polynomial
 
-open Polynomial BigOperators
+open scoped Polynomial BigOperators
 
 
 

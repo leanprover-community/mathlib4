@@ -176,7 +176,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
 
 end BigOperators
 
-open BigOperators
+open scoped BigOperators
 
 namespace Finset
 

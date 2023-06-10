@@ -34,7 +34,7 @@ universe u v
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-open BigOperators
+open scoped BigOperators
 
 namespace Fintype
 

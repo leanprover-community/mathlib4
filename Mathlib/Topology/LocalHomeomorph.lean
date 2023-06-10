@@ -48,9 +48,9 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 -/
 
 
-open Function Set Filter Topology
+open scoped Function Set Filter Topology
 
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]

@@ -37,7 +37,7 @@ This files introduces:
 
 noncomputable section
 
-open Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter Pointwise
+open scoped Classical NNReal ENNReal Topology Set Function TopologicalSpace Filter Pointwise
 
 universe u v w
 

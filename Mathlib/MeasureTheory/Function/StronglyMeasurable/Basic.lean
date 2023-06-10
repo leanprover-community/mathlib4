@@ -65,7 +65,7 @@ measurable functions, as a basis for the Bochner integral.
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
-open ENNReal Topology MeasureTheory NNReal BigOperators
+open scoped ENNReal Topology MeasureTheory NNReal BigOperators
 
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
 the two spaces has second countable topology. This is the right assumption to ensure that continuous

@@ -60,9 +60,9 @@ noncomputable section
 
 open Set Function Filter
 
-open TopologicalSpace (SecondCountableTopology)
+open scoped TopologicalSpace (SecondCountableTopology)
 
-open Classical BigOperators NNReal Topology ENNReal MeasureTheory
+open scoped Classical BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
 

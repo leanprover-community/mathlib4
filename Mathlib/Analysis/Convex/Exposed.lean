@@ -49,7 +49,7 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 -/
 
 
-open Classical Affine BigOperators
+open scoped Classical Affine BigOperators
 
 open Set
 

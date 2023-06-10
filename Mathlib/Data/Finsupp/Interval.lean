@@ -32,7 +32,7 @@ noncomputable section
 
 open Finset Finsupp Function
 
-open BigOperators Classical Pointwise
+open scoped BigOperators Classical Pointwise
 
 variable {ι α : Type _}
 

@@ -26,7 +26,7 @@ variable {E β : Type _} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [T
 
 open Set Filter Function
 
-open Classical Topology
+open scoped Classical Topology
 
 /-- Helper lemma for the more general case: `IsMinOn.of_isLocalMinOn_of_convexOn`.
 -/

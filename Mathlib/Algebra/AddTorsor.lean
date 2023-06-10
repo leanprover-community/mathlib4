@@ -190,7 +190,7 @@ theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 -- Porting note: simp can prove this
 --@[simp]
