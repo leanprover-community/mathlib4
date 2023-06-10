@@ -129,7 +129,9 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         pos := pos + c
         if String.csize c != String.csize c' then
           aligns := aligns.push (newStr.endPos, pos)
-      newStr := newStr ++ input.extract stopTk stopWs
+      newStr := newStr.push ' '
+      if stopWs.1 - stopTk.1 != 1 then
+        aligns := aligns.push (newStr.endPos, stopWs)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
