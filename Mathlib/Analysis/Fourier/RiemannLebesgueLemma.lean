@@ -15,7 +15,7 @@ import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.MetricSpace.EmetricParacompact
+import Mathlib.Topology.MetricSpace.EMetricParacompact
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -66,32 +66,35 @@ variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProduct
 /-- The integrand in the Riemann-Lebesgue lemma for `f` is integrable iff `f` is. -/
 theorem fourier_integrand_integrable (w : V) :
     Integrable f ↔ Integrable fun v : V => e[-⟪v, w⟫] • f v := by
-  have hL : Continuous fun p : V × V => bilin_form_of_real_inner.to_lin p.1 p.2 := continuous_inner
+  have hL : Continuous fun p : V × V => BilinForm.toLin bilinFormOfRealInner p.1 p.2 :=
+    continuous_inner
   rw [VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar hL w]
-  · simp only [BilinForm.toLin_apply, bilinFormOfRealInner_apply]
-  · infer_instance
+  simp only [BilinForm.toLin_apply, bilinFormOfRealInner_apply]
 #align fourier_integrand_integrable fourier_integrand_integrable
 
 variable [CompleteSpace E]
 
-local notation "i" => fun w => (1 / (2 * ‖w‖ ^ 2)) • w
+-- Porting note: binary operations appear not to work?
+-- local notation "i" => fun w => (1 / (2 * ‖w‖ ^ 2)) • w
+local notation "i" => fun (w : V) => HDiv.hDiv (1 : ℝ) (HMul.hMul (2 : ℝ) (HPow.hPow ‖w‖ 2)) • w
 
 /-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
 theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
-    ∫ v : V, e[-⟪v, w⟫] • f (v + i w) = -∫ v : V, e[-⟪v, w⟫] • f v := by
+    (∫ v : V, e[-⟪v, w⟫] • f (v + i w)) = -∫ v : V, e[-⟪v, w⟫] • f v := by
   have hiw : ⟪i w, w⟫ = 1 / 2 := by
     rw [inner_smul_left, inner_self_eq_norm_sq_to_K, IsROrC.ofReal_real_eq_id, id.def,
       IsROrC.conj_to_real, ← div_div, div_mul_cancel]
     rwa [Ne.def, sq_eq_zero_iff, norm_eq_zero]
   have :
-    (fun v : V => e[-⟪v, w⟫] • f (v + i w)) = fun v : V =>
-      (fun x : V => -e[-⟪x, w⟫] • f x) (v + i w) := by
+    (fun v : V => e[-⟪v, w⟫] • f (v + i w)) =
+      fun v : V => (fun x : V => -e[-⟪x, w⟫] • f x) (v + i w) := by
     ext1 v
-    simp_rw [inner_add_left, hiw, Real.fourierChar_apply, neg_add, mul_add, of_real_add, add_mul,
+    simp_rw [inner_add_left, hiw, Real.fourierChar_apply, neg_add, mul_add, ofReal_add, add_mul,
       exp_add]
     have : 2 * π * -(1 / 2) = -π := by field_simp; ring
-    rw [this, of_real_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_neg]
-  rw [this, integral_add_right_eq_self]
+    rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_neg]
+  rw [this,
+    integral_add_right_eq_self (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x) ((fun w ↦ (1 / (2 * ‖w‖ ^ 2)) • w) w)]
   simp only [neg_smul, integral_neg]
 #align fourier_integral_half_period_translate fourier_integral_half_period_translate
 
@@ -159,8 +162,8 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine' (set_integral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
-    dsimp only [A] at hv 
-    simp only [A, mem_set_of_eq, not_le] at hv 
+    dsimp only [A] at hv
+    simp only [A, mem_set_of_eq, not_le] at hv
     rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
     · rw [← sub_neg_eq_add]
       refine' le_trans _ (norm_sub_norm_le _ _)
@@ -175,7 +178,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   --* Bound integral using fact that `‖f v - f (v + w')‖` is small.
   have bdA : ∀ v : V, v ∈ A → ‖‖f v - f (v + i w)‖‖ ≤ ε / B := by
     simp_rw [norm_norm]
-    simp_rw [dist_eq_norm] at hδ2 
+    simp_rw [dist_eq_norm] at hδ2
     refine' fun x _ => (hδ2 _).le
     rw [sub_add_cancel', norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff' hδ1, div_div]
@@ -189,11 +192,11 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
         Continuous.sub hf1 <| Continuous.comp hf1 <| continuous_id'.add continuous_const
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (set_integral_nonneg mA fun x hx => norm_nonneg _)
-  rw [this] at bdA2 
+  rw [this] at bdA2
   refine' bdA2.trans_lt _
   rw [div_mul_eq_mul_div, div_lt_iff (nnreal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
     mul_lt_mul_left hε]
-  rw [← ENNReal.toReal_le_toReal] at hB_vol 
+  rw [← ENNReal.toReal_le_toReal] at hB_vol
   · refine' hB_vol.trans_lt _
     rw [(by rfl : (↑B : ENNReal).toReal = ↑B), two_mul]
     exact lt_add_of_pos_left _ hB_pos
@@ -231,7 +234,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
       VectorFourier.norm_fourierIntegral_le_integral_norm e volume bilin_form_of_real_inner.to_lin
         (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
-  rw [add_halves] at this 
+  rw [add_halves] at this
   refine' ((le_of_eq _).trans (norm_add_le _ _)).trans_lt this
   simp only [sub_zero, sub_add_cancel]
 #align tendsto_integral_exp_inner_smul_cocompact tendsto_integral_exp_inner_smul_cocompact
@@ -332,4 +335,3 @@ theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaar
 #align real.zero_at_infty_vector_fourier_integral Real.zero_at_infty_vector_fourierIntegral
 
 end NoInnerProduct
-
