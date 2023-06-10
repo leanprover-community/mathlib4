@@ -55,7 +55,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-open scoped BigOperators Function
+open scoped BigOperators
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
@@ -162,7 +162,7 @@ example : Inhabited ℝ≥0 := by infer_instance
 
 example : Nontrivial ℝ≥0 := by infer_instance
 
-protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype.coe_injective
+protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ) := Subtype.coe_injective
 #align nnreal.coe_injective NNReal.coe_injective
 
 @[simp, norm_cast]
