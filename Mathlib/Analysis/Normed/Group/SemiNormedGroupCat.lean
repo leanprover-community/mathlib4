@@ -51,10 +51,6 @@ instance : ConcreteCategory SemiNormedGroup := by
   dsimp [SemiNormedGroup]
   infer_instance
 
---Porting Note: hasCoeToSort doesn't exist anymore
---instance : CoeSort SemiNormedGroup (Type u) :=
---  Bundled.hasCoeToSort
-
 instance : CoeSort SemiNormedGroup (Type _) where
   coe X := X.α
 
