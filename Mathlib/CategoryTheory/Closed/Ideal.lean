@@ -76,9 +76,9 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   exact uncurry_injective (B.2 (cartesian_closed.uncurry g) (cartesian_closed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
-the presence of a natural isomorphism `i ⋙ exp A ⋙ left_adjoint i ⋙ i ≅ i ⋙ exp A`, that is:
+the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
 `(A ⟹ iB) ≅ i L (A ⟹ iB)`, naturally in `B`.
-The converse is given in `exponential_ideal.mk_of_iso`.
+The converse is given in `ExponentialIdeal.mk_of_iso`.
 -/
 def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
     i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A := by
@@ -90,7 +90,7 @@ def exponentialIdealReflective (A : C) [Reflective i] [ExponentialIdeal i] :
   · simp
 #align category_theory.exponential_ideal_reflective CategoryTheory.exponentialIdealReflective
 
-/-- Given a natural isomorphism `i ⋙ exp A ⋙ left_adjoint i ⋙ i ≅ i ⋙ exp A`, we can show `i`
+/-- Given a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, we can show `i`
 is an exponential ideal.
 -/
 theorem ExponentialIdeal.mk_of_iso [Reflective i]
@@ -119,7 +119,7 @@ open CartesianClosed
 variable [HasFiniteProducts C] [Reflective i] [CartesianClosed C]
 
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
-This is the converse of `preserves_binary_products_of_exponential_ideal`.
+This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/
 instance (priority := 10) exponentialIdeal_of_preserves_binary_products
     [PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i)] : ExponentialIdeal i := by
@@ -136,8 +136,8 @@ instance (priority := 10) exponentialIdeal_of_preserves_binary_products
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.hom_equiv_naturality_left,
-      ir.hom_equiv_apply_eq, assoc, assoc, prod_comparison_natural_assoc, L.map_id, ←
-      prod.map_id_comp_assoc, ir.left_triangle_components, prod.map_id_id, id_comp]
+      ir.hom_equiv_apply_eq, assoc, assoc, prod_comparison_natural_assoc, L.map_id,
+      ← prod.map_id_comp_assoc, ir.left_triangle_components, prod.map_id_id, id_comp]
     apply is_iso.hom_inv_id_assoc
   haveI : is_split_mono (η.app (A ⟹ i.obj B)) := is_split_mono.mk' ⟨_, this⟩
   apply mem_ess_image_of_unit_is_split_mono
@@ -148,10 +148,9 @@ variable [ExponentialIdeal i]
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself cartesian closed.
 -/
-def cartesianClosedOfReflective : CartesianClosed D
-    where closed' B :=
-    {
-      isAdj :=
+def cartesianClosedOfReflective : CartesianClosed D where
+  closed' B :=
+    { isAdj :=
         { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
           adj := by
             apply adjunction.restrict_fully_faithful i i (exp.adjunction (i.obj B))
@@ -179,7 +178,7 @@ This bijection has two key properties:
   comparison morphism: See `bijection_symm_apply_id`.
 
 Together these help show that `L` preserves binary products. This should be considered
-*internal implementation* towards `preserves_binary_products_of_exponential_ideal`.
+*internal implementation* towards `preservesBinaryProductsOfExponentialIdeal`.
 -/
 noncomputable def bijection (A B : C) (X : D) :
     ((leftAdjoint i).obj (A ⨯ B) ⟶ X) ≃ ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B ⟶ X) :=
@@ -205,14 +204,14 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B ⟶ X) := (equivOfFullyFaithful _).symm
 #align category_theory.bijection CategoryTheory.bijection
 
-theorem bijection_symm_apply_id (A B : C) : (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ :=
-  by
+theorem bijection_symm_apply_id (A B : C) :
+    (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
   dsimp [bijection]
   rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unit_comp_partial_bijective_symm_apply,
     unit_comp_partial_bijective_symm_apply, uncurry_natural_left, uncurry_curry,
     uncurry_natural_left, uncurry_curry, prod.lift_map_assoc, comp_id, prod.lift_map_assoc, comp_id,
-    prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp, ←
-    adjunction.eq_hom_equiv_apply, adjunction.hom_equiv_unit, iso.comp_inv_eq, assoc,
+    prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
+    ← adjunction.eq_hom_equiv_apply, adjunction.hom_equiv_unit, iso.comp_inv_eq, assoc,
     preserves_limit_pair.iso_hom]
   apply prod.hom_ext
   · rw [limits.prod.map_fst, assoc, assoc, prod_comparison_fst, ← i.map_comp, prod_comparison_fst]
@@ -232,7 +231,7 @@ theorem bijection_natural (A B : C) (X X' : D) (f : (leftAdjoint i).obj (A ⨯ B
 #align category_theory.bijection_natural CategoryTheory.bijection_natural
 
 /--
-The bijection allows us to show that `prod_comparison L A B` is an isomorphism, where the inverse
+The bijection allows us to show that `prodComparison L A B` is an isomorphism, where the inverse
 is the forward map of the identity morphism.
 -/
 theorem prodComparison_iso (A B : C) : IsIso (prodComparison (leftAdjoint i) A B) :=
@@ -246,11 +245,11 @@ attribute [local instance] prod_comparison_iso
 
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves binary products.
-This is the converse of `exponential_ideal_of_preserves_binary_products`.
+This is the converse of `exponentialIdeal_of_preserves_binary_products`.
 -/
 noncomputable def preservesBinaryProductsOfExponentialIdeal :
-    PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i)
-    where PreservesLimit K := by
+    PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i) where
+  PreservesLimit K := by
     apply limits.preserves_limit_of_iso_diagram _ (diagram_iso_pair K).symm
     apply preserves_limit_pair.of_iso_prod_comparison
 #align category_theory.preserves_binary_products_of_exponential_ideal CategoryTheory.preservesBinaryProductsOfExponentialIdeal
@@ -268,4 +267,3 @@ noncomputable def preservesFiniteProductsOfExponentialIdeal (J : Type) [Fintype 
 end
 
 end CategoryTheory
-
