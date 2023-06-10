@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Functorial
-import Mathbin.CategoryTheory.Monoidal.FunctorCategory
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -54,8 +54,7 @@ variable [MonoidalCategory.{v} C]
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simps]
-instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F
-    where
+instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
   ε :=
     limit.lift _
       { pt := _
