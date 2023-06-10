@@ -131,7 +131,7 @@ theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 #align gen_loop.mk_apply GenLoop.mk_apply
 
-/-- Copy of a `gen_loop` with a new map from the unit cube equal to the old one.
+/-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
   ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
@@ -152,7 +152,7 @@ theorem boundary (f : Ω^ N X x) : ∀ y ∈ Cube.boundary N, f y = x :=
   f.2
 #align gen_loop.boundary GenLoop.boundary
 
-/-- The constant `gen_loop` at `x`. -/
+/-- The constant `GenLoop` at `x`. -/
 def const : Ω^ N X x :=
   ⟨ContinuousMap.const _ x, fun _ _ => rfl⟩
 #align gen_loop.const GenLoop.const
@@ -316,7 +316,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   all_goals use i; rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 #align gen_loop.homotopic_to GenLoop.homotopicTo
 
-/-- The converse to `gen_loop.homotopy_to`: a homotopy between two loops in the space of
+/-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
   `n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
@@ -367,7 +367,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
       all_goals congr 1)
 #align gen_loop.trans_at GenLoop.transAt
 
-/-- Reversal of a `gen_loop` along the `i`th coordinate. -/
+/-- Reversal of a `GenLoop` along the `i`th coordinate. -/
 def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
   (copy (fromLoop i (toLoop i f).symm) fun t => f fun j => if j = i then σ (t i) else t j) <| by
     ext1; change _ = f _; congr; ext1; simp
@@ -411,8 +411,7 @@ open GenLoop
 /-- Equivalence between the homotopy group of X and the fundamental group of
   `Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
-    HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const :=
-  by
+    HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const := by
   refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
@@ -479,9 +478,9 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x
 
 #align gen_loop_equiv_of_unique genLoopEquivOfUnique
 
-/- TODO (?): deducing this from `homotopy_group_equiv_fundamental_group` would require
-  combination of `category_theory.functor.map_Aut` and
-  `fundamental_groupoid.fundamental_groupoid_functor` applied to `gen_loop_homeo_of_is_empty`,
+/- TODO (?): deducing this from `homotopyGroupEquivFundamentalGroup` would require
+  combination of `CategoryTheory.Functor.mapAut` and
+  `FundamentalGroupoid.fundamentalGroupoidFunctor` applied to `genLoopHomeoOfIsEmpty`,
   with possibly worse defeq. -/
 /-- The homotopy group at `x` indexed by a singleton is in bijection with the fundamental group,
   i.e. the loops based at `x` up to homotopy. -/
@@ -513,12 +512,12 @@ def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x 
 
 namespace HomotopyGroup
 
-/-- Group structure on `homotopy_group N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
+/-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
 instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup <| Classical.arbitrary N).group
 #align homotopy_group.group HomotopyGroup.group
 
-/-- Group structure on `homotopy_group` obtained by pulling back path composition along the
+/-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
   `i`th direction. The group structures for two different `i j : N` distribute over each
   other, and therefore are equal by the Eckmann-Hilton argument. -/
 @[reducible]
@@ -562,6 +561,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
+  -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec
@@ -571,7 +571,7 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGr
   by rw [symmAt_indep _ p, ← fromLoop_symm_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.inv_spec HomotopyGroup.inv_spec
 
-/-- Multiplication on `homotopy_group N X x` is commutative for nontrivial `N`.
+/-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.
   In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
