@@ -52,8 +52,8 @@ universe u v w x
 
 noncomputable section
 
-open scoped Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
-  NNReal
+open scoped Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators
+  Topology NNReal
 
 namespace LinearIsometry
 

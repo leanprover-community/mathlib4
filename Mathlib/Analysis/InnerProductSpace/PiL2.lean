@@ -60,8 +60,8 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 set_option linter.uppercaseLean3 false
 
-open scoped Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
-  ComplexConjugate DirectSum
+open scoped Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal
+  ENNReal ComplexConjugate DirectSum
 
 noncomputable section
 
