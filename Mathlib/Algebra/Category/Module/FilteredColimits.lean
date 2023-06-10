@@ -8,8 +8,8 @@ Authors: Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Group.FilteredColimits
-import Mathbin.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.Group.FilteredColimits
+import Mathlib.Algebra.Category.Module.Basic
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -75,8 +75,7 @@ def colimitSmulAux (r : R) (x : Σ j, F.obj j) : M :=
 
 theorem colimitSmulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
-    colimit_smul_aux r x = colimit_smul_aux r y :=
-  by
+    colimit_smul_aux r x = colimit_smul_aux r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
@@ -99,8 +98,7 @@ theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk x = M.mk ⟨
   rfl
 #align Module.filtered_colimits.colimit_smul_mk_eq ModuleCat.FilteredColimits.colimit_smul_mk_eq
 
-instance colimitModule : Module R M
-    where
+instance colimitModule : Module R M where
   one_smul x := by
     apply Quot.inductionOn x; clear x; intro x; cases' x with j x
     erw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
@@ -116,8 +114,7 @@ instance colimitModule : Module R M
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (left_to_max i j) (right_to_max i j),
       LinearMap.map_smul, LinearMap.map_smul]
     rfl
-  smul_zero r :=
-    by
+  smul_zero r := by
     erw [colimit_zero_eq _ (is_filtered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul x := by
@@ -171,8 +168,7 @@ def colimitDesc (t : cocone F) : colimit ⟶ t.pt :=
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
 /-- The proposed colimit cocone is a colimit in `Module R`. -/
-def colimitCoconeIsColimit : IsColimit colimit_cocone
-    where
+def colimitCoconeIsColimit : IsColimit colimit_cocone where
   desc := colimit_desc
   fac t j :=
     LinearMap.coe_injective <|
