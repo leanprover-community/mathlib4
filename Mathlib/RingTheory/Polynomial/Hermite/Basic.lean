@@ -187,7 +187,7 @@ theorem coeff_hermite_explicit :
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1
-      -- Match up binomial coefficients using `nat.choose_succ_right_eq`.
+      -- Match up binomial coefficients using `Nat.choose_succ_right_eq`.
       rw [(by ring : 2 * (n + 1) + (k + 1) = 2 * n + 1 + (k + 1) + 1),
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
