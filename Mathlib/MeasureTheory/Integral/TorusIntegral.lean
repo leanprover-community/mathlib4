@@ -74,6 +74,7 @@ local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-!
 ### `torus_map`, a parametrization of a torus
@@ -183,7 +184,7 @@ theorem torusIntegral_sub (hf : TorusIntegrable f c R) (hg : TorusIntegrable g c
 
 theorem torusIntegral_smul {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [SMulCommClass 𝕜 ℂ E] (a : 𝕜)
     (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : (∯ x in T(c, R), a • f x) = a • ∯ x in T(c, R), f x := by
-  simp only [torusIntegral, integral_smul, ← smul_comm a]
+  simp only [torusIntegral, integral_smul, ← smul_comm a (_ : ℂ) (_ : E)]
 #align torus_integral_smul torusIntegral_smul
 
 theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R : ℝⁿ) :
@@ -197,7 +198,7 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
     ‖∯ x in T(c, R), f x‖ ≤ ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C :=
   calc
     ‖∯ x in T(c, R), f x‖ ≤ (∏ i, |R i|) * C * (volume (Icc (0 : ℝⁿ) fun _ => 2 * π)).toReal :=
-      norm_set_integral_le_of_norm_le_const' measure_Icc_lt_top measurableSet_Icc fun θ hθ =>
+      norm_set_integral_le_of_norm_le_const' measure_Icc_lt_top measurableSet_Icc fun θ _ =>
         calc
           ‖(∏ i : Fin n, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)‖ =
               (∏ i : Fin n, |R i|) * ‖f (torusMap c R θ)‖ :=
@@ -212,8 +213,8 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
 @[simp]
 theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
-    Subsingleton.elim (fun i : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
-    integral_smul_measure, integral_dirac, Measure.pi_of_empty _ 0,
+    Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
+    integral_smul_measure, integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 #align torus_integral_dim0 torusIntegral_dim0
 
@@ -224,12 +225,13 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
   have : ((fun (x : ℝ) (b : Fin 1) => x) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
     (OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc _ _
   simp only [torusIntegral, circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
-    Measure.restrict_congr_set Ioc_ae_eq_Icc, deriv_circleMap, Fin.prod_univ_one, ←
-    ((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
-      (MeasurableEquiv.measurableEmbedding _),
-    this, MeasurableEquiv.funUnique_symm_apply]
+    Measure.restrict_congr_set (Ioc_ae_eq_Icc (α := ℝ) (μ := volume)), deriv_circleMap,
+    Fin.prod_univ_one,
+    ← ((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
+      (MeasurableEquiv.measurableEmbedding _), this, MeasurableEquiv.funUnique_symm_apply]
   simp only [torusMap, circleMap, zero_add]
-  rcongr
+  congr with x
+  
 #align torus_integral_dim1 torusIntegral_dim1
 
 /-- Recurrent formula for `torus_integral`, see also `torus_integral_succ`. -/
@@ -263,4 +265,3 @@ theorem torusIntegral_succ {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
   simpa using torusIntegral_succAbove hf 0
 #align torus_integral_succ torusIntegral_succ
-
