@@ -10,6 +10,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -112,8 +113,7 @@ theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjoin
   rw [Matrix.lie_transpose, LieRing.of_associative_ring_bracket,
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc,
     ← mul_assoc, hA, hB]
-  --noncomm_ring -- Porting note: This tactic doesn't exist yet, so write a new `rw`
-  rw [neg_sub, mul_sub_left_distrib, mul_assoc, mul_assoc, neg_mul_neg, neg_mul_neg]
+  noncomm_ring
 #align matrix.is_skew_adjoint_bracket Matrix.isSkewAdjoint_bracket
 
 /-- The Lie subalgebra of skew-adjoint square matrices corresponding to a square matrix `J`. -/
