@@ -13,19 +13,19 @@ import Mathlib.MeasureTheory.Group.FundamentalDomain
 /-!
 # ℤ-lattices
 
-Let `E` be a finite dimensional vector space over a `normed_linear_ordered_field` `K` with a solid
-norm and that is also a `floor_ring`, e.g. `ℚ` or `ℝ`. A (full) ℤ-lattice `L` of `E` is a discrete
+Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
+norm and that is also a `FloorRing`, e.g. `ℚ` or `ℝ`. A (full) ℤ-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 
 The ℤ-lattice `L` can be defined in two ways:
-* For `b` a basis of `E`, then `submodule.span ℤ (set.range b)` is a ℤ-lattice of `E`.
-* As an `add_subgroup E` with the additional properties:
-  * `∀ r : ℝ, (L ∩ metric.closed_ball 0 r).finite`, that is `L` is discrete
-  * `submodule.span ℝ (L : set E) = ⊤`, that is `L` spans `E` over `K`.
+* For `b` a basis of `E`, then `Submodule.span ℤ (Set.range b)` is a ℤ-lattice of `E`.
+* As an `AddSubgroup E` with the additional properties:
+  * `∀ r : ℝ, (L ∩ Metric.closedBall 0 r).finite`, that is `L` is discrete
+  * `Submodule.span ℝ (L : Set E) = ⊤`, that is `L` spans `E` over `K`.
 
 ## Main result
-* `zspan.is_add_fundamental_domain`: for a ℤ-lattice `submodule.span ℤ (set.range b)`, proves that
-the set defined by `zspan.fundamental_domain` is a fundamental domain.
+* `Zspan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
+the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 
 -/
 
@@ -48,8 +48,8 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 
 variable (b : Basis ι K E)
 
-/-- The fundamental domain of the ℤ-lattice spanned by `b`. See `zspan.is_add_fundamental_domain`
-for the proof that it is the fundamental domain. -/
+/-- The fundamental domain of the ℤ-lattice spanned by `b`. See `Zspan.isAddFundamentalDomain`
+for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 #align zspan.fundamental_domain Zspan.fundamentalDomain
 
@@ -109,8 +109,8 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
   exact congr_arg (Int.cast : ℤ → K) (Int.ceil_intCast z)
 #align zspan.ceil_eq_self_of_mem Zspan.ceil_eq_self_of_mem
 
-/-- The map that sends a vector `E` to the fundamental domain of the lattice,
-see `zspan.fract_mem_fundamental_domain`. -/
+/-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
+see `Zspan.fract_mem_fundamentalDomain`. -/
 def fract (m : E) : E := m - floor b m
 #align zspan.fract Zspan.fract
 
@@ -248,8 +248,8 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
       Finsupp.linearEquivFunOnFinite_apply]
 #align zspan.fundamental_domain_measurable_set Zspan.fundamentalDomain_measurableSet
 
-/-- For a ℤ-lattice `submodule.span ℤ (set.range b)`, proves that the set defined
-by `zspan.fundamental_domain` is a fundamental domain. -/
+/-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
+by `Zspan.fundamentalDomain` is a fundamental domain. -/
 protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ := by
