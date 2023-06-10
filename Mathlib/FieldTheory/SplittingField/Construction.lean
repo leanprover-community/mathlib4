@@ -280,10 +280,6 @@ instance inhabited : Inhabited (SplittingField f) :=
 instance [CommSemiring S] [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
   Submodule.Quotient.hasSmul' _
 
---Porting note: new instance
-instance [DistribSMul S K] [IsScalarTower S K K] : DistribSMul S (AdjoinRoot f) :=
-  Submodule.Quotient.distribSmul' _
-
 instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) := by
   delta SplittingField; infer_instance
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
