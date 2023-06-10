@@ -228,7 +228,6 @@ end Perfection
 
 /-- A perfection map to a ring of characteristic `p` is a map that is isomorphic
 to its perfection. -/
-@[nolint has_nonempty_instance]
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
   Injective : ∀ ⦃x y : P⦄, (∀ n, π ((pthRoot P p^[n]) x) = π ((pthRoot P p^[n]) y)) → x = y
@@ -342,7 +341,6 @@ variable {S : Type u₂} [CommSemiring S] [CharP S p]
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
-@[nolint unused_arguments]
 noncomputable def map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : PerfectionMap p σ)
     (φ : R →+* S) : P →+* Q :=
   lift p P S Q σ n <| φ.comp π
@@ -375,7 +373,6 @@ variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
 variable (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-@[nolint unused_arguments has_nonempty_instance]
 def ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 #align mod_p ModP
@@ -384,12 +381,10 @@ variable [hp : Fact p.Prime] [hvp : Fact (v p ≠ 1)]
 
 namespace ModP
 
-instance : CommRing (ModP K v O hv p) :=
-  Ideal.Quotient.commRing _
+instance commRingModP : CommRing (ModP O p) :=
+  Ideal.Quotient.commRing (Ideal.span {(p : O)} : Ideal O)
 
-include hp hvp
-
-instance : CharP (ModP K v O hv p) p :=
+instance charPmodP : @CharP (@ModP O _ p) _ p :=
   CharP.quotient O p <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
 
 instance : Nontrivial (ModP K v O hv p) :=
