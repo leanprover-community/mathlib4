@@ -83,11 +83,11 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom
 variable (A)
 
 theorem det_eq_prod_roots_charpoly [IsAlgClosed R] : A.det = (Matrix.charpoly A).roots.prod :=
-  det_eq_prod_roots_charpoly_of_splits (IsAlgClosed.Splits A.charpoly)
+  det_eq_prod_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 #align matrix.det_eq_prod_roots_charpoly Matrix.det_eq_prod_roots_charpoly
 
 theorem trace_eq_sum_roots_charpoly [IsAlgClosed R] : A.trace = (Matrix.charpoly A).roots.sum :=
-  trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.Splits A.charpoly)
+  trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 #align matrix.trace_eq_sum_roots_charpoly Matrix.trace_eq_sum_roots_charpoly
 
 end Matrix
