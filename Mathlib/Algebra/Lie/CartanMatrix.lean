@@ -114,16 +114,9 @@ namespace Relations
 
 open Function
 
--- mathport name: exprH
 local notation "H" => FreeLieAlgebra.of R ∘ Generators.H
-
--- mathport name: exprE
 local notation "E" => FreeLieAlgebra.of R ∘ Generators.E
-
--- mathport name: exprF
 local notation "F" => FreeLieAlgebra.of R ∘ Generators.F
-
--- mathport name: exprad
 local notation "ad" => LieAlgebra.ad R (FreeLieAlgebra R (Generators B))
 
 /-- The terms corresponding to the `⁅H, H⁆`-relations. -/
@@ -148,16 +141,16 @@ def HF : B × B → FreeLieAlgebra R (Generators B) :=
 
 /-- The terms corresponding to the `ad E`-relations.
 
-Note that we use `int.to_nat` so that we can take the power and that we do not bother
+Note that we use `Int.toNat` so that we can take the power and that we do not bother
 restricting to the case `i ≠ j` since these relations are zero anyway. We also defensively
-ensure this with `ad_E_of_eq_eq_zero`. -/
+ensure this with `adE_of_eq_eq_zero`. -/
 def adE : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ad (E i) ^ (-A i j).toNat <| ⁅E i, E j⁆
 #align cartan_matrix.relations.ad_E CartanMatrix.Relations.adE
 
 /-- The terms corresponding to the `ad F`-relations.
 
-See also `ad_E` docstring. -/
+See also `adE` docstring. -/
 def adF : B × B → FreeLieAlgebra R (Generators B) :=
   uncurry fun i j => ad (F i) ^ (-A i j).toNat <| ⁅F i, F j⁆
 #align cartan_matrix.relations.ad_F CartanMatrix.Relations.adF
