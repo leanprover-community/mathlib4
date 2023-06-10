@@ -385,7 +385,7 @@ theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z 
 #align complex.continuous_at_cpow_const_of_re_pos Complex.continuousAt_cpow_const_of_re_pos
 
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
-theorem continuousAt_of_real_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
+theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun p => (p.1 : ℂ) ^ p.2 : ℝ × ℂ → ℂ) (x, y) := by
   rcases lt_trichotomy (0 : ℝ) x with (hx | rfl | hx)
   · -- x > 0 : easy case
@@ -404,25 +404,25 @@ theorem continuousAt_of_real_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0)
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
-      exact fun p hp => (of_real_cpow_of_nonpos (le_of_lt hp.1) p.2).symm
+      exact fun p hp => (ofReal_cpow_of_nonpos (le_of_lt hp.1) p.2).symm
     have A : ContinuousAt (fun p => ⟨-↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) :=
       ContinuousAt.prod_map continuous_ofReal.continuousAt.neg continuousAt_id
     apply ContinuousAt.mul
     · refine' (continuousAt_cpow (Or.inl _)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
-#align complex.continuous_at_of_real_cpow Complex.continuousAt_of_real_cpow
+#align complex.continuous_at_of_real_cpow Complex.continuousAt_ofReal_cpow
 
-theorem continuousAt_of_real_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
+theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_of_real_cpow x y h)
+  @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_ofReal_cpow x y h)
     (continuous_id.prod_mk continuous_const).continuousAt
-#align complex.continuous_at_of_real_cpow_const Complex.continuousAt_of_real_cpow_const
+#align complex.continuous_at_of_real_cpow_const Complex.continuousAt_ofReal_cpow_const
 
-theorem continuous_of_real_cpow_const {y : ℂ} (hs : 0 < y.re) :
+theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
-  continuous_iff_continuousAt.mpr fun x => continuousAt_of_real_cpow_const x y (Or.inl hs)
-#align complex.continuous_of_real_cpow_const Complex.continuous_of_real_cpow_const
+  continuous_iff_continuousAt.mpr fun x => continuousAt_ofReal_cpow_const x y (Or.inl hs)
+#align complex.continuous_of_real_cpow_const Complex.continuous_ofReal_cpow_const
 
 end Complex
 
