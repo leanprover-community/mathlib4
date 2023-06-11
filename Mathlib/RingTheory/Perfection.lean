@@ -464,7 +464,7 @@ theorem preVal_eq_zero {x : ModP K v O hv p} : preVal K v O hv p x = 0 ↔ x = 0
     fun hx => hx.symm ▸ preVal_zero⟩
 #align mod_p.pre_val_eq_zero ModP.preVal_eq_zero
 
-variable (hv) (hvp)
+variable (hv) -- Porting note: Originally `(hv hvp)`. Removed `(hvp)` because it caused an error.
 
 theorem v_p_lt_val {x : O} :
     v p < v (algebraMap O K x) ↔ (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := by
@@ -474,7 +474,7 @@ theorem v_p_lt_val {x : O} :
 
 open NNReal
 
-variable {hv} (hvp)
+variable {hv} -- Porting note: Originally `{hv} (hvp)`. Removed `(hvp)` because it caused an error.
 
 theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) (hy : y ^ p ≠ 0) :
     x * y ≠ 0 := by
@@ -652,7 +652,7 @@ def Tilt :=
 namespace Tilt
 
 noncomputable instance : Field (Tilt K v O hv p) :=
-  FractionRing.field
+  FractionRing.field _
 
 end Tilt
 
