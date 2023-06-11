@@ -119,7 +119,7 @@ def ScottHausdorffTopology : TopologicalSpace α :=
     . exact Set.subset_sUnion_of_subset s s₀ hb_h hs₀_w }
 
 
-lemma ScottHausdorffTopology.Lower_IsOpen (s : Set α) (h : IsLowerSet s) :
+lemma ScottHausdorffTopology.Lower_IsOpen {s : Set α} (h : IsLowerSet s) :
 ScottHausdorffTopology.IsOpen s := by
   intros d a hd _ hda ha
   obtain ⟨b, hb⟩  := hd
@@ -195,7 +195,7 @@ section preorder
 
 variable [Preorder α]
 
-lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' (u : Set α) :
+lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
   IsOpen (WithScottTopology.ofScott ⁻¹' u) ↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) :=
 by rfl
 
@@ -212,10 +212,10 @@ variable {α}
 def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
   WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
-lemma isOpen_iff_upper_and_Scott_Hausdorff_Open (u : Set α) : IsOpen u
+lemma isOpen_iff_upper_and_Scott_Hausdorff_Open {u : Set α} : IsOpen u
 ↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) := by erw [topology_eq α]; rfl
 
-lemma isOpen_iff_upper_and_inaccessible_by_directed_joins (u : Set α) :
+lemma isOpen_iff_upper_and_inaccessible_by_directed_joins {u : Set α} :
 IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
   rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
   constructor
@@ -239,7 +239,7 @@ IsOpen u ↔ (IsUpperSet u ∧ inaccessible_by_directed_joins u) := by
       . exact e1_h_w
       . exact Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset e1_h_h)
 
-lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
+lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
   ↔ (IsLowerSet s ∧
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
   rw [← isOpen_compl_iff, isOpen_iff_upper_and_inaccessible_by_directed_joins,
@@ -261,16 +261,16 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem (s : Set α) : IsClosed s
     contradiction
 
 lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
-  ((isOpen_iff_upper_and_Scott_Hausdorff_Open s).mp h).left
+  (isOpen_iff_upper_and_Scott_Hausdorff_Open.mp h).left
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
-  ((isClosed_iff_lower_and_subset_implies_LUB_mem s).mp h).left
+  (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
 -/
-@[simp] lemma closure_singleton (a : α) : closure {a} = Iic a := by
+@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
   rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
   refine' subset_antisymm _ _
   . apply closure_minimal subset_lowerClosure
@@ -299,7 +299,7 @@ lemma continuous_monotone {f : α → β}
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
 
-@[simp] lemma scottContinuous_iff_continuous (f : α → β) : ScottContinuous f ↔ Continuous f := by
+@[simp] lemma scottContinuous_iff_continuous {f : α → β} : ScottContinuous f ↔ Continuous f := by
   constructor
   . intro h
     rw [continuous_def]
@@ -363,7 +363,7 @@ lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
   . exact fun h d a hd₁ hd₂ hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
 lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
-(u : Set α) : IsOpen u ↔
+{u : Set α} : IsOpen u ↔
 (IsUpperSet u ∧  ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
 (d∩u).Nonempty) := by
   rw [ScottTopology.isOpen_iff_upper_and_inaccessible_by_directed_joins]
@@ -372,7 +372,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
   . exact fun h d hd₁ hd₂ hd₃ => h d (sSup d) hd₁ hd₂ (isLUB_sSup d) hd₃
   . exact fun h d a hd₁ hd₂ hd₃ ha => h d hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)
 
-lemma isClosed_iff_lower_and_closed_under_Directed_Sup (s : Set α) : IsClosed s
+lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
   ↔ (IsLowerSet s ∧
   ∀ (d : Set α), d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s ) := by
   rw [ScottTopology.isClosed_iff_lower_and_subset_implies_LUB_mem]
@@ -396,4 +396,4 @@ ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
 
 lemma Scott_Hausdorff_le_Lower [Preorder α] [TopologicalSpace α] [LowerTopology α] :
 ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
-  fun _ h => ScottHausdorffTopology.Lower_IsOpen _ (LowerTopology.isLowerSet_of_isOpen h)
+  fun _ h => ScottHausdorffTopology.Lower_IsOpen (LowerTopology.isLowerSet_of_isOpen h)
