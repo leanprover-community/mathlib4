@@ -82,7 +82,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 
 
 open Function Set Order
-open scoped Classical hiding by_cases not_not
+open scoped Classical
 
 universe u v w x y
 
