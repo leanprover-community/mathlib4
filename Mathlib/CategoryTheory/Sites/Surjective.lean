@@ -94,8 +94,8 @@ theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
   rw [imageSheafι, isLocallySurjective_iff_imagePresheaf_sheafify_eq_top',
     Subpresheaf.eq_top_iff_isIso]
   exact
-    ⟨fun h => @isIso_of_reflects_iso _ _ (imageSheafι f) (sheafToPresheaf J _) h _, fun h =>
-      @Functor.map_isIso _ _ (sheafToPresheaf J _) _ h⟩
+    ⟨fun h => @isIso_of_reflects_iso _ _ _ _ _ _ (imageSheafι f) (sheafToPresheaf J _) h _, fun h =>
+      @Functor.map_isIso _ _ _ _ _ _ (sheafToPresheaf J _) _ h⟩
 #align category_theory.is_locally_surjective_iff_is_iso CategoryTheory.isLocallySurjective_iff_isIso
 
 theorem isLocallySurjective_iff_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
@@ -125,9 +125,8 @@ theorem IsLocallySurjective.comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ �
     (h₁ : IsLocallySurjective J f₁) (h₂ : IsLocallySurjective J f₂) :
     IsLocallySurjective J (f₁ ≫ f₂) := by
   intro U s
-  have :
-    (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤ imageSieve (f₁ ≫ f₂) s :=
-    by
+  have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
+      imageSieve (f₁ ≫ f₂) s := by
     rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
     refine' ⟨t', _⟩
     rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
