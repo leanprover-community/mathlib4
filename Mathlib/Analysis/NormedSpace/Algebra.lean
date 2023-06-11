@@ -8,9 +8,9 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Module.CharacterSpace
-import Mathbin.Analysis.NormedSpace.WeakDual
-import Mathbin.Analysis.NormedSpace.Spectrum
+import Mathlib.Topology.Algebra.Module.CharacterSpace
+import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Analysis.NormedSpace.Spectrum
 
 /-!
 # Normed algebras
@@ -45,11 +45,9 @@ theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : We
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
 #align weak_dual.character_space.norm_le_norm_one WeakDual.characterSpace.norm_le_norm_one
 
-instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) :=
-  by
+instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
-  have h : character_space 𝕜 A ⊆ to_normed_dual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ :=
-    by
+  have h : character_space 𝕜 A ⊆ to_normed_dual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
     exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ : _)
