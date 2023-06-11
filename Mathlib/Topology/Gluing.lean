@@ -165,26 +165,34 @@ set_option linter.uppercaseLean3 false in
 
 open CategoryTheory.Limits.WalkingParallelPair
 
---  porting note: I could not get the statement of this theorem to type-check
-theorem eqvGen_of_π_eq {x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y) :
-    EqvGen (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
-  delta glue_data.π multicoequalizer.sigma_π at h
+theorem eqvGen_of_π_eq
+    -- Porting note: was `{x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y)`
+    {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
+    (h : 𝖣.π x = 𝖣.π y) :
+    EqvGen
+      -- Porting note: was (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
+      (Types.CoequalizerRel
+        (X := sigmaObj (β := D.toGlueData.diagram.L) (C := TopCat) (D.toGlueData.diagram).left)
+        (Y := sigmaObj (β := D.toGlueData.diagram.R) (C := TopCat) (D.toGlueData.diagram).right)
+        𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
+      x y := by
+  delta GlueData.π Multicoequalizer.sigmaπ at h
   simp_rw [comp_app] at h
-  replace h := (TopCat.mono_iff_injective (multicoequalizer.iso_coequalizer 𝖣.diagram).inv).mp _ h
-  let diagram := parallel_pair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
+  replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp ?_ h
+  let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
-    rw [← ι_preserves_colimits_iso_hom]
+    rw [← ι_preservesColimitsIso_hom]
     simp [h]
   have :
-    (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.iso_colimit_cocone _).Hom) _ =
-      (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.iso_colimit_cocone _).Hom) _ :=
+    (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
+      (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
     (congr_arg
-        (colim.map (diagram_iso_parallel_pair diagram).Hom ≫
-          (colimit.iso_colimit_cocone (types.coequalizer_colimit _ _)).Hom)
+        (colim.map (diagramIsoParallelPair diagram).hom ≫
+          (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  simp only [eq_to_hom_refl, types_comp_apply, colimit.ι_map_assoc,
-    diagram_iso_parallel_pair_hom_app, colimit.iso_colimit_cocone_ι_hom, types_id_apply] at this
+  simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
+    diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
   exact Quot.eq.1 this
   infer_instance
 set_option linter.uppercaseLean3 false in
