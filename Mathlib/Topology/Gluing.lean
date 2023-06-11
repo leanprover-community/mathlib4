@@ -260,16 +260,17 @@ theorem image_inter (i j : D.J) :
   ext x
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
-    obtain ⟨⟨⟩⟩ | ⟨y, e₁, e₂⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
+    obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
         -- Porting note: was `simp [eq₁]`
         rw [TopCat.comp_app]
         erw [CategoryTheory.IsIso.inv_hom_id_apply]
         rw [eq₁]⟩
-    · dsimp only at *
-      -- porting note: another `substs e₁ eq₁`
-      rw [← e₁, ← eq₁] at *
-      exact ⟨y, by simp ; sorry⟩
+    · -- Porting note: was
+      -- dsimp only at *; substs e₁ eq₁; exact ⟨y, by simp⟩
+      dsimp only at *
+      substs eq₁
+      exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     exact ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), by simp [← hx]⟩⟩
 set_option linter.uppercaseLean3 false in
