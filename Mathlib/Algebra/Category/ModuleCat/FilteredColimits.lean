@@ -190,8 +190,6 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
-set_option pp.universes true
-
 /-- The proposed colimit cocone is a colimit in `Module R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
