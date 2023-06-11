@@ -273,6 +273,12 @@ class MeasurableSingletonClass (α : Type _) [MeasurableSpace α] : Prop where
   measurableSet_singleton : ∀ x, MeasurableSet ({x} : Set α)
 #align measurable_singleton_class MeasurableSingletonClass
 
+-- porting note: new instance
+instance (priority := 100) [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α where
+  measurableSet_singleton x := by
+    rw [Subsingleton.eq_univ_of_nonempty (singleton_nonempty _)]
+    exact .univ
+
 export MeasurableSingletonClass (measurableSet_singleton)
 
 @[simp]

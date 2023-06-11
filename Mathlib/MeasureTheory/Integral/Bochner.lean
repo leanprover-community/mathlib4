@@ -1617,6 +1617,11 @@ theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f
   · exact integral_zero_measure _
 #align measure_theory.set_integral_dirac MeasureTheory.set_integral_dirac
 
+theorem integral_unique [MeasurableSpace α] [Unique α] (f : α → E)
+    (μ : Measure α := by volume_tac) :
+    (∫ x, f x ∂μ) = (μ univ).toReal • f default := by
+  conv_lhs => rw [μ.unique_eq_smul_dirac, integral_smul_measure, integral_dirac]
+
 theorem mul_meas_ge_le_integral_of_nonneg [IsFiniteMeasure μ] {f : α → ℝ} (hf_nonneg : 0 ≤ f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
   cases' lt_or_le ε 0 with hε hε

@@ -2015,6 +2015,12 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
     simp [*]
 #align measure_theory.measure.restrict_singleton MeasureTheory.Measure.restrict_singleton
 
+-- porting note: new theorem
+theorem unique_eq_smul_dirac [Unique α] (μ : Measure α) :
+    μ = μ univ • dirac default := by
+  ext1 s hs
+  induction s using Subsingleton.set_cases <;> simp
+
 end Dirac
 
 section Sum
