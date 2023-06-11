@@ -611,7 +611,7 @@ end Thin
 
 section Disconnected
 
-/-- A subgroupoid `is_totally_disconnected` if it has only isotropy arrows. -/
+/-- A subgroupoid `IsTotallyDisconnected` if it has only isotropy arrows. -/
 nonrec abbrev IsTotallyDisconnected :=
   IsTotallyDisconnected S.objs
 #align category_theory.subgroupoid.is_totally_disconnected CategoryTheory.Subgroupoid.IsTotallyDisconnected
@@ -660,7 +660,7 @@ section Full
 
 variable (D : Set C)
 
-/-- The full subgroupoid on a set `D : set C` -/
+/-- The full subgroupoid on a set `D : Set C` -/
 def full : Subgroupoid C where
   arrows c d _ := c ∈ D ∧ d ∈ D
   inv := by rintro _ _ _ ⟨⟩; constructor <;> assumption
