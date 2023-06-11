@@ -117,7 +117,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
                                  -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
-  · intro h j; cases j; exact h j
+  · intro h j; cases j; apply h
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.is_open_iff TopCat.GlueData.isOpen_iff
 
@@ -358,8 +358,8 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
-instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by use h.t j i; constructor <;> ext1;
-  exacts [h.t_inv _ _ _, h.t_inv _ _ _]
+instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
+  use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
 /-- (Implementation) the restricted transition map to be fed into `glue_data`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
@@ -370,7 +370,18 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  sorry  -- porting note: `continuity` does not close this.
+  -- Porting note: was `continuity`
+  refine Continuous.subtype_mk ?_ ?_
+  refine Continuous.prod_mk ?_ ?_
+  · refine Continuous.subtype_mk ?_ ?_
+    refine Continuous.comp ?_ ?_
+    · continuity
+    · refine Continuous.comp ?_ ?_
+      · sorry -- exact map_continuous (t h i j)
+      · continuity
+  · refine Continuous.comp ?_ ?_
+    · sorry -- exact map_continuous (t h i j)
+    · continuity
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
 
