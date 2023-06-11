@@ -259,9 +259,16 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
           K.coe_to_submodule_eq_iff]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
-      refine' hK₁ _ fun x => _
+      -- Porting note: was refine' hK₁ _ fun x => _
+      apply hK₁
+      intro x
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
-      exact Module.End.IsNilpotent.mapQ _ hx
+      apply Module.End.IsNilpotent.mapQ ?_ hx
+      -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`
+      intro X HX
+      simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_coe_submodule] at HX
+      simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply, LieSubalgebra.mem_coe_submodule]
+      exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' :=
     isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEndomorphism R L M))
