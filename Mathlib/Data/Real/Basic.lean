@@ -807,7 +807,7 @@ theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) =
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort _} : (⨆ _i : α, (0 : ℝ)) = 0 := by
+theorem ciSup_const_zero {α : Sort _} : (⨆ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
@@ -835,7 +835,7 @@ theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨅ i, f i) =
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ)) = 0 := by
+theorem ciInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ)) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
@@ -895,7 +895,7 @@ bounded below by `0` to show that `0 ≤ sInf S`.
 -/
 theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sInf S := by
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sInf_empty.ge, le_csInf hS₂ hS]
+  exacts [sInf_empty.ge, le_csInf hS₂ hS]
 #align real.Inf_nonneg Real.sInf_nonneg
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `f i` is

@@ -332,7 +332,7 @@ instance : Membership α (Computation α) :=
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
   cases' s with f al
   induction' h with n _ IH
-  exacts[id, fun h2 => al (IH h2)]
+  exacts [id, fun h2 => al (IH h2)]
 #align computation.le_stable Computation.le_stable
 
 theorem mem_unique {s : Computation α} {a b : α} : a ∈ s → b ∈ s → a = b
@@ -635,7 +635,7 @@ def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a
   haveI T := terminates_of_mem M
   rw [eq_thinkN' s, get_eq_of_mem s M]
   generalize length s = n
-  induction' n with n IH; exacts[h1, h2 _ IH]
+  induction' n with n IH; exacts [h1, h2 _ IH]
 #align computation.mem_rec_on Computation.memRecOn
 
 /-- Recursor based on assertion of `Terminates`-/
@@ -1221,7 +1221,7 @@ theorem liftRel_congr {R : α → β → Prop} {ca ca' : Computation α} {cb cb'
   and_congr
     (forall_congr' fun _ => imp_congr (ha _) <| exists_congr fun _ => and_congr (hb _) Iff.rfl)
     (forall_congr' fun _ => imp_congr (hb _) <| exists_congr fun _ => and_congr (ha _) Iff.rfl)
-#align computation.lift_rel_congr Computation.liftRel_congr
+#align computation.lift_gcongr Computation.liftRel_congr
 
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2)

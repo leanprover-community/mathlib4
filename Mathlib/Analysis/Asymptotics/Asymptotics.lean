@@ -196,7 +196,7 @@ theorem IsBigOWith.weaken (h : IsBigOWith c l f g') (hc : c ≤ c') : IsBigOWith
     mem_of_superset h.bound fun x hx =>
       calc
         ‖f x‖ ≤ c * ‖g' x‖ := hx
-        _ ≤ _ := mul_le_mul_of_nonneg_right hc (norm_nonneg _)
+        _ ≤ _ := by gcongr
 #align asymptotics.is_O_with.weaken Asymptotics.IsBigOWith.weaken
 
 theorem IsBigOWith.exists_pos (h : IsBigOWith c l f g') :
@@ -462,7 +462,7 @@ theorem IsBigOWith.trans (hfg : IsBigOWith c l f g) (hgk : IsBigOWith c' l g k) 
   filter_upwards [hfg, hgk]with x hx hx'
   calc
     ‖f x‖ ≤ c * ‖g x‖ := hx
-    _ ≤ c * (c' * ‖k x‖) := (mul_le_mul_of_nonneg_left hx' hc)
+    _ ≤ c * (c' * ‖k x‖) := by gcongr
     _ = c * c' * ‖k x‖ := (mul_assoc _ _ _).symm
 #align asymptotics.is_O_with.trans Asymptotics.IsBigOWith.trans
 
@@ -1393,7 +1393,7 @@ theorem isBigO_const_iff {c : F''} : (f'' =O[l] fun _x => c) ↔
   refine' ⟨fun h => ⟨fun hc => isBigO_zero_right_iff.1 (by rwa [← hc]), h.isBoundedUnder_le⟩, _⟩
   rintro ⟨hcf, hf⟩
   rcases eq_or_ne c 0 with (hc | hc)
-  exacts[(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
+  exacts [(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
 #align asymptotics.is_O_const_iff Asymptotics.isBigO_const_iff
 
 theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
@@ -1631,8 +1631,7 @@ theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigO
         calc
           ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
           _ ≤ c' ^ n * ‖g x ^ n‖ := hx
-          _ ≤ c' ^ n * ‖g x‖ ^ n :=
-            (mul_le_mul_of_nonneg_left (norm_pow_le' _ hn.bot_lt) (pow_nonneg hc' _))
+          _ ≤ c' ^ n * ‖g x‖ ^ n := by gcongr; exact norm_pow_le' _ hn.bot_lt
           _ = (c' * ‖g x‖) ^ n := (mul_pow _ _ _).symm
 #align asymptotics.is_O_with.of_pow Asymptotics.IsBigOWith.of_pow
 
@@ -1934,7 +1933,7 @@ theorem isBigOWith_of_eq_mul (φ : α → 𝕜) (hφ : ∀ᶠ x in l, ‖φ x‖
   simp only [IsBigOWith_def]
   refine' h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => _)
   simp only [norm_mul, Pi.mul_apply]
-  exact mul_le_mul_of_nonneg_right hx (norm_nonneg _)
+  gcongr
 #align asymptotics.is_O_with_of_eq_mul Asymptotics.isBigOWith_of_eq_mul
 
 theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :

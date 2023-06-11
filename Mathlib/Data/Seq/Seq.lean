@@ -166,7 +166,7 @@ instance : Membership α (Seq α) :=
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al
   induction' h with n _ IH
-  exacts[id, fun h2 => al (IH h2)]
+  exacts [id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
 /-- If a sequence terminated at position `n`, it also terminated at `m ≥ n `. -/
@@ -216,7 +216,7 @@ theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   · apply Subtype.eq
     funext n
     induction' n with n IH
-    exacts[f0, s.2 IH]
+    exacts [f0, s.2 IH]
   · contradiction
 #align stream.seq.destruct_eq_nil Stream'.Seq.destruct_eq_nil
 

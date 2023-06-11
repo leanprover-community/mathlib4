@@ -123,7 +123,7 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
-set_option maxHeartbeats 250000 in
+set_option maxHeartbeats 260000 in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
 `DirectSum.decompose`. -/
 def decomposeAux : AddMonoidAlgebra R M →ₐ[R] ⨁ i : ι, gradeBy R f i :=

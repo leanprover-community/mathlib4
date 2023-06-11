@@ -65,7 +65,7 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   simp_rw [EMetric.infEdist]
   have : Function.Surjective ((c • ·) : E → E) :=
     Function.RightInverse.surjective (smul_inv_smul₀ hc)
-  trans ⨅ (y) (_H : y ∈ s), ‖c‖₊ • edist x y
+  trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
   · refine' (this.iInf_congr _ fun y => _).symm
     simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]

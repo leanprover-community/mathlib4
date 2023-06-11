@@ -387,15 +387,15 @@ theorem integrable_pair {f : α →ₛ E} {g : α →ₛ F} :
   simpa only [integrable_iff_finMeasSupp] using FinMeasSupp.pair
 #align measure_theory.simple_func.integrable_pair MeasureTheory.SimpleFunc.integrable_pair
 
-theorem memℒp_of_finiteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Measure α) [FiniteMeasure μ] :
+theorem memℒp_of_isFiniteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Measure α) [IsFiniteMeasure μ] :
     Memℒp f p μ :=
   let ⟨C, hfC⟩ := f.exists_forall_norm_le
   Memℒp.of_bound f.aestronglyMeasurable C <| eventually_of_forall hfC
-#align measure_theory.simple_func.mem_ℒp_of_is_finite_measure MeasureTheory.SimpleFunc.memℒp_of_finiteMeasure
+#align measure_theory.simple_func.mem_ℒp_of_is_finite_measure MeasureTheory.SimpleFunc.memℒp_of_isFiniteMeasure
 
-theorem integrable_of_finiteMeasure [FiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=
-  memℒp_one_iff_integrable.mp (f.memℒp_of_finiteMeasure 1 μ)
-#align measure_theory.simple_func.integrable_of_is_finite_measure MeasureTheory.SimpleFunc.integrable_of_finiteMeasure
+theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=
+  memℒp_one_iff_integrable.mp (f.memℒp_of_isFiniteMeasure 1 μ)
+#align measure_theory.simple_func.integrable_of_is_finite_measure MeasureTheory.SimpleFunc.integrable_of_isFiniteMeasure
 
 theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable f μ) {x : E}
     (hx : x ≠ 0) : μ (f ⁻¹' {x}) < ∞ :=
@@ -444,6 +444,8 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 
 variable (E)
 
+-- Porting note: the proofs were rewritten in tactic mode to avoid an
+-- "unknown free variable '_uniq.546677'" error.
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
     function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where

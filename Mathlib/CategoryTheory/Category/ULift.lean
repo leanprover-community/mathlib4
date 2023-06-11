@@ -152,8 +152,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun A => eqToIso rfl
+  counitIso := NatIso.ofComponents fun A => eqToIso rfl
 #align category_theory.ulift_hom.equiv CategoryTheory.ULiftHom.equiv
 
 end ULiftHom
@@ -198,11 +198,8 @@ def AsSmall.down : AsSmall C ⥤ C where
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents (fun X => eqToIso rfl) (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun X => eqToIso <| ULift.ext _ _ rfl)
-      (by aesop_cat)
+  unitIso := NatIso.ofComponents fun X => eqToIso rfl
+  counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
 #align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=

@@ -81,10 +81,10 @@ protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
 #align algebraic.countable Algebraic.countable
 
 @[simp]
-theorem cardinal_mk_of_countble_of_charZero [CharZero A] [IsDomain R] :
+theorem cardinal_mk_of_countable_of_charZero [CharZero A] [IsDomain R] :
     (#{ x : A // IsAlgebraic R x }) = ℵ₀ :=
   (Algebraic.countable R A).le_aleph0.antisymm (aleph0_le_cardinal_mk_of_charZero R A)
-#align algebraic.cardinal_mk_of_countble_of_char_zero Algebraic.cardinal_mk_of_countble_of_charZero
+#align algebraic.cardinal_mk_of_countble_of_char_zero Algebraic.cardinal_mk_of_countable_of_charZero
 
 end lift
 

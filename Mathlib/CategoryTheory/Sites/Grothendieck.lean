@@ -716,20 +716,19 @@ end Cover
 def pullback (f : Y ⟶ X) : J.Cover X ⥤ J.Cover Y
     where
   obj S := S.pullback f
-  -- Porting note: `(Sieve.pullback_monotone _ f.le).hom` causes issues...
-  map f := homOfLE (Sieve.pullback_monotone _ f.le)
+  map f := (Sieve.pullback_monotone _ f.le).hom
 #align category_theory.grothendieck_topology.pullback CategoryTheory.GrothendieckTopology.pullback
 
 /-- Pulling back along the identity is naturally isomorphic to the identity functor. -/
 def pullbackId (X : C) : J.pullback (𝟙 X) ≅ 𝟭 _ :=
-  (NatIso.ofComponents fun S => S.pullbackId) <| by aesop_cat
+  NatIso.ofComponents fun S => S.pullbackId
 #align category_theory.grothendieck_topology.pullback_id CategoryTheory.GrothendieckTopology.pullbackId
 
 /-- Pulling back along a composition is naturally isomorphic to
 the composition of the pullbacks. -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     J.pullback (f ≫ g) ≅ J.pullback g ⋙ J.pullback f :=
-  (NatIso.ofComponents fun S => S.pullbackComp f g) <| by aesop_cat
+  NatIso.ofComponents fun S => S.pullbackComp f g
 #align category_theory.grothendieck_topology.pullback_comp CategoryTheory.GrothendieckTopology.pullbackComp
 
 end GrothendieckTopology
