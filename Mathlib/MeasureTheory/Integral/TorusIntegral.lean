@@ -222,16 +222,16 @@ theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x
 (up to the natural equivalence between `ℂ` and `fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
     (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z := by
-  have : ((fun (x : ℝ) (b : Fin 1) => x) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
+  have H₁ : (((MeasurableEquiv.funUnique _ _).symm) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
     (OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc _ _
-  simp only [torusIntegral, circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
-    Measure.restrict_congr_set (Ioc_ae_eq_Icc (α := ℝ) (μ := volume)), deriv_circleMap,
-    Fin.prod_univ_one,
+  have H₂ : torusMap c R = fun θ _ ↦ circleMap (c 0) (R 0) (θ 0) := by
+    ext θ i : 2
+    rw [Subsingleton.elim i 0]; rfl
+  rw [torusIntegral, circleIntegral, intervalIntegral.integral_of_le Real.two_pi_pos.le,
+    Measure.restrict_congr_set Ioc_ae_eq_Icc,
     ← ((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
-      (MeasurableEquiv.measurableEmbedding _), this, MeasurableEquiv.funUnique_symm_apply]
-  simp only [torusMap, circleMap, zero_add]
-  congr with x
-  
+      (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
+  simp [circleMap_zero]
 #align torus_integral_dim1 torusIntegral_dim1
 
 /-- Recurrent formula for `torus_integral`, see also `torus_integral_succ`. -/
