@@ -30,7 +30,7 @@ would be the degree `i+n`-th term of `C`.
 ## Implementation Notes
 
 `[HasShift C A]` is implemented using `MonoidalFunctor (Discrete A) (C ⥤ C)`.
-However, the API of monodial functors is used only internally: one should use the API of
+However, the API of monoidal functors is used only internally: one should use the API of
 shifts functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
 `shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
 `shiftFunctorAdd C i j : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j`

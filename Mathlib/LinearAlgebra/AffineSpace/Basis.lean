@@ -290,7 +290,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
     -- mathlib3 proof was:
     -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
     --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffinteMap.map_vadd` works.
+    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
     rw [LinearMap.coe_mk, Pi.vadd_apply']
     dsimp
     rw [AffineMap.map_vadd, linear_eq_sumCoords,

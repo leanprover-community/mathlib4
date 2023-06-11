@@ -41,7 +41,7 @@ open Classical
 namespace Order
 
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
-    suppose `lo`, `hi`, are finite subssets with all of `lo` strictly
+    suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
     before `hi`. Then there is an element of `α` strictly between `lo`
     and `hi`. -/
 theorem exists_between_finsets {α : Type _} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]

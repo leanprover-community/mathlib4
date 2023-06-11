@@ -37,7 +37,7 @@ For additive monoids and groups:
 * `smul_right_surj_of_divisibleBy` : the constructive definition of divisiblity implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
-* `Pi.divisibleBy` : any product of divisble additive monoids is divisible.
+* `Pi.divisibleBy` : any product of divisible additive monoids is divisible.
 * `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisiblity is implied
   by nat divisiblity.
 * `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied
