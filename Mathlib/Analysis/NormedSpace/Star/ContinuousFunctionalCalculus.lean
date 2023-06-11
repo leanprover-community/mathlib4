@@ -61,7 +61,7 @@ applies to self-adjoint elements of the algebra). -/
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
 
-open WeakDual WeakDual.characterSpace elementalStarAlgebra
+open WeakDual WeakDual.CharacterSpace elementalStarAlgebra
 
 variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A]
 
@@ -76,15 +76,15 @@ instance {R A : Type _} [NormedField R] [StarRing R] [NormedRing A] [NormedAlgeb
     [ContinuousStar A] [StarModule R A] (a : A) : NormedAlgebra R (elementalStarAlgebra R a) :=
   StarSubalgebra.toNormedAlgebra (elementalStarAlgebra R a)
 
-instance {R A : Type _} [NormedField R] [StarRing R] [NormedRing A] [NormedAlgebra R A] [StarRing A]
-    [ContinuousStar A] [StarModule R A] (a : A) : NormedSpace R (elementalStarAlgebra R a) :=
-  NormedAlgebra.toNormedSpace _
+--instance {R A : Type _} [NormedField R] [StarRing R] [NormedRing A] [NormedAlgebra R A] [StarRing A]
+    --[ContinuousStar A] [StarModule R A] (a : A) : NormedSpace R (elementalStarAlgebra R a) :=
+  --NormedAlgebra.toNormedSpace _
 
 -- without this instance type class search causes timeouts
-noncomputable instance elementalStarAlgebra.Complex.normedAlgebra (a : A) :
-    NormedAlgebra ℂ (elementalStarAlgebra ℂ a) :=
-  inferInstance
-#align elemental_star_algebra.complex.normed_algebra elementalStarAlgebra.Complex.normedAlgebra
+--noncomputable instance elementalStarAlgebra.Complex.normedAlgebra (a : A) :
+    --NormedAlgebra ℂ (elementalStarAlgebra ℂ a) :=
+  --inferInstance
+--#align elemental_star_algebra.complex.normed_algebra elementalStarAlgebra.Complex.normedAlgebra
 
 variable [CompleteSpace A] (a : A) [IsStarNormal a] (S : StarSubalgebra ℂ A)
 
@@ -96,14 +96,14 @@ theorem spectrum_star_mul_self_of_isStarNormal :
     spectrum ℂ (star a * a) ⊆ Set.Icc (0 : ℂ) ‖star a * a‖ := by
   -- this instance should be found automatically, but without providing it Lean goes on a wild
   -- goose chase when trying to apply `spectrum.gelfand_transform_eq`.
-  letI := elementalStarAlgebra.Complex.normedAlgebra a
+  --letI := elementalStarAlgebra.Complex.normedAlgebra a
   rcases subsingleton_or_nontrivial A with ⟨⟩
   · simp only [spectrum.of_subsingleton, Set.empty_subset]
   · set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
     refine' (spectrum.subset_starSubalgebra (star a' * a')).trans _
     rw [← spectrum.gelfandTransform_eq (star a' * a'), ContinuousMap.spectrum_eq_range]
     rintro - ⟨φ, rfl⟩
-    rw [gelfand_transform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
+    rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
     rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
     exact
       ⟨Complex.zero_le_real.2 (norm_nonneg _),
@@ -126,7 +126,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
     formula for the spectral radius (`is_self_adjoint.spectral_radius_eq_nnnorm`) its norm is the
     supremum of the norms of elements in its spectrum (we may use the spectrum in `A` here because
     the norm in `A` and the norm in the subalgebra coincide).
-  
+
     By `spectrum_star_mul_self_of_is_star_normal`, the spectrum (in the algebra `A`) of `star a * a`
     is contained in the interval `[0, ‖star a * a‖]`, and since `a` (and hence `star a * a`) is
     invertible in `A`, we may omit `0` from this interval. Therefore, by basic spectral mapping
@@ -143,32 +143,33 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   /- Since `a` is invertible, `‖star a * a‖ ≠ 0`, so `‖star a * a‖ • 1` is invertible in
     `elemental_star_algebra ℂ a`, and so it suffices to show that the distance between this unit and
     `star a * a` is less than `‖star a * a‖`. -/
-  have h₁ : (‖star a * a‖ : ℂ) ≠ 0 := complex.of_real_ne_zero.mpr (norm_ne_zero_iff.mpr h.ne_zero)
+  have h₁ : (‖star a * a‖ : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr h.ne_zero)
   set u : Units (elementalStarAlgebra ℂ a) :=
     Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
-  refine' ⟨u.unit_of_nearby _ _, rfl⟩
+  refine' ⟨u.ofNearby _ _, rfl⟩
   simp only [Complex.abs_ofReal, map_inv₀, Units.coe_map, Units.val_inv_eq_inv_val,
-    RingHom.coe_monoidHom, RingHom.toMonoidHom_eq_coe, Units.val_mk0, Units.coe_map_inv,
-    norm_algebraMap', inv_inv, Complex.norm_eq_abs, abs_norm, Subtype.val_eq_coe, coe_coe]
+    --RingHom.coe_monoidHom,
+    RingHom.toMonoidHom_eq_coe, Units.val_mk0, Units.coe_map_inv,
+    norm_algebraMap', inv_inv, Complex.norm_eq_abs, abs_norm]
   /- Since `a` is invertible, by `spectrum_star_mul_self_of_is_star_normal`, the spectrum (in `A`)
     of `star a * a` is contained in the half-open interval `(0, ‖star a * a‖]`. Therefore, by basic
     spectral mapping properties, the spectrum of `‖star a * a‖ • 1 - star a * a` is contained in
     `[0, ‖star a * a‖)`. -/
   have h₂ : ∀ z ∈ spectrum ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a), ‖z‖₊ < ‖star a * a‖₊ := by
     intro z hz
-    rw [← spectrum.singleton_sub_eq, Set.singleton_sub] at hz 
+    rw [← spectrum.singleton_sub_eq, Set.singleton_sub] at hz
     have h₃ : z ∈ Set.Icc (0 : ℂ) ‖star a * a‖ := by
       replace hz := Set.image_subset _ (spectrum_star_mul_self_of_isStarNormal a) hz
-      rwa [Set.image_const_sub_Icc, sub_self, sub_zero] at hz 
+      rwa [Set.image_const_sub_Icc, sub_self, sub_zero] at hz
     refine' lt_of_le_of_ne (Complex.real_le_real.1 <| Complex.eq_coe_norm_of_nonneg h₃.1 ▸ h₃.2) _
     · intro hz'
       replace hz' := congr_arg (fun x : ℝ≥0 => ((x : ℝ) : ℂ)) hz'
-      simp only [coe_nnnorm] at hz' 
-      rw [← Complex.eq_coe_norm_of_nonneg h₃.1] at hz' 
+      simp only [coe_nnnorm] at hz'
+      rw [← Complex.eq_coe_norm_of_nonneg h₃.1] at hz'
       obtain ⟨w, hw₁, hw₂⟩ := hz
       refine' (spectrum.zero_not_mem_iff ℂ).mpr h _
-      rw [hz', sub_eq_self] at hw₂ 
-      rwa [hw₂] at hw₁ 
+      rw [hz', sub_eq_self] at hw₂
+      rwa [hw₂] at hw₁
   /- The norm of `‖star a * a‖ • 1 - star a * a` in the subalgebra and in `A` coincide. In `A`,
     because this element is selfadjoint, by `is_self_adjoint.spectral_radius_eq_nnnorm`, its norm is
     the supremum of the norms of the elements of the spectrum, which is strictly less than
@@ -181,25 +182,27 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
           by rw [← nnnorm_neg, neg_sub]; rfl
         _ = spectralRadius ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a) := by
           refine' (IsSelfAdjoint.spectralRadius_eq_nnnorm _).symm
-          rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm, IsROrC.star_def,
-            IsROrC.conj_ofReal]
+          rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]
+          congr!
+          exact IsROrC.conj_ofReal _
         _ < ‖star a * a‖₊ := spectrum.spectralRadius_lt_of_forall_lt _ h₂)
 #align elemental_star_algebra.is_unit_of_is_unit_of_is_star_normal elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal
 
 /-- For `x : A` which is invertible in `A`, the inverse lies in any unital C⋆-subalgebra `S`
 containing `x`. -/
 theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A))
-    {x : A} (h : IsUnit x) (hxS : x ∈ S) : ↑h.Unit⁻¹ ∈ S := by
+    {x : A} (h : IsUnit x) (hxS : x ∈ S) : ↑h.unit⁻¹ ∈ S := by
   have hx := h.star.mul h
   suffices this : (↑hx.unit⁻¹ : A) ∈ S
   · rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
-      h.mul_coe_inv, mul_one]
+      h.mul_val_inv, mul_one]
     exact mul_mem this (star_mem hxS)
-  refine' le_of_is_closed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _
-  haveI := (IsSelfAdjoint.star_mul_self x).IsStarNormal
+  refine' le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _
+  haveI := (IsSelfAdjoint.star_mul_self x).isStarNormal
   have hx' := elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal hx
-  convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).Prop using 1
-  exact left_inv_eq_right_inv hx.unit.inv_mul (congr_arg coe hx'.unit.mul_inv)
+  convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop using 1
+  refine left_inv_eq_right_inv hx.unit.inv_mul ?_
+  exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
 #align star_subalgebra.is_unit_coe_inv_mem StarSubalgebra.isUnit_coe_inv_mem
 
 /-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then
@@ -207,9 +210,9 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
 theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S} :
     IsUnit (x : A) ↔ IsUnit x := by
   refine'
-    ⟨fun hx => ⟨⟨x, ⟨(↑hx.Unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, _, _⟩, rfl⟩,
+    ⟨fun hx => ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, _, _⟩, rfl⟩,
       fun hx => hx.map S.subtype⟩
-  exacts [Subtype.coe_injective hx.mul_coe_inv, Subtype.coe_injective hx.coe_inv_mul]
+  exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
 
 theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
@@ -221,7 +224,7 @@ theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClose
 `star_subalgebra` in which it is contained. -/
 theorem StarSubalgebra.spectrum_eq {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) (x : S) :
     spectrum ℂ x = spectrum ℂ (x : A) :=
-  Set.ext fun z => StarSubalgebra.mem_spectrum_iff hS
+  Set.ext fun _z => StarSubalgebra.mem_spectrum_iff hS
 #align star_subalgebra.spectrum_eq StarSubalgebra.spectrum_eq
 
 variable (a)
@@ -246,11 +249,12 @@ theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
     (map_continuous <| gelfandTransform ℂ (elementalStarAlgebra ℂ x) ⟨x, self_mem ℂ x⟩)
 #align elemental_star_algebra.continuous_character_space_to_spectrum elementalStarAlgebra.continuous_characterSpaceToSpectrum
 
+set_option synthInstance.maxHeartbeats 27000 in
 theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
   refine'
     ⟨fun φ ψ h =>
-      star_alg_hom_class_ext ℂ (map_continuous φ) (map_continuous ψ)
+      starAlgHomClass_ext ℂ (map_continuous φ) (map_continuous ψ)
         (by
           simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
             ContinuousMap.coe_mk] using h),
@@ -258,11 +262,12 @@ theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
   rintro ⟨z, hz⟩
   have hz' :=
     (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a) ⟨a, self_mem ℂ a⟩).symm.subst hz
-  rw [character_space.mem_spectrum_iff_exists] at hz' 
+  rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
   obtain ⟨φ, rfl⟩ := hz'
   exact ⟨φ, rfl⟩
 #align elemental_star_algebra.bijective_character_space_to_spectrum elementalStarAlgebra.bijective_characterSpaceToSpectrum
 
+set_option synthInstance.maxHeartbeats 43000 in
 /-- The homeomorphism between the character space of the unital C⋆-subalgebra generated by a
 single normal element `a : A` and `spectrum ℂ a`. -/
 noncomputable def elementalStarAlgebra.characterSpaceHomeo :
@@ -273,6 +278,7 @@ noncomputable def elementalStarAlgebra.characterSpaceHomeo :
     (elementalStarAlgebra.continuous_characterSpaceToSpectrum a)
 #align elemental_star_algebra.character_space_homeo elementalStarAlgebra.characterSpaceHomeo
 
+set_option maxHeartbeats 390000 in
 /-- **Continuous functional calculus.** Given a normal element `a : A` of a unital C⋆-algebra,
 the continuous functional calculus is a `star_alg_equiv` from the complex-valued continuous
 functions on the spectrum of `a` to the unital C⋆-subalgebra generated by `a`. Moreover, this
@@ -286,7 +292,7 @@ noncomputable def continuousFunctionalCalculus :
 
 theorem continuousFunctionalCalculus_map_id :
     continuousFunctionalCalculus a ((ContinuousMap.id ℂ).restrict (spectrum ℂ a)) =
-      ⟨a, self_mem ℂ a⟩ :=
-  StarAlgEquiv.symm_apply_apply _ _
+      ⟨a, self_mem ℂ a⟩ := by
+  rw [continuousFunctionalCalculus]
+  exact StarAlgEquiv.symm_apply_apply _ _
 #align continuous_functional_calculus_map_id continuousFunctionalCalculus_map_id
-
