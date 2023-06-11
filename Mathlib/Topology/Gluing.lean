@@ -432,8 +432,11 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
-                                                       -- porting note: `sorry` was `continuity`.
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by sorry⟩
+      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
+        -- Porting note: was `continuity`.
+        refine Continuous.subtype_mk ?_ ?_
+        refine Continuous.subtype_mk ?_ ?_
+        continuity⟩
       V_id := fun i => by
         ext
         -- porting note: no longer needed `cases U i`!
