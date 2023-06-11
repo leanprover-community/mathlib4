@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.ContDiff
-import Mathbin.MeasureTheory.Measure.Hausdorff
+import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.MeasureTheory.Measure.Hausdorff
 
 /-!
 # Hausdorff dimension
@@ -113,8 +113,7 @@ theorem dimH_def (s : Set X) : dimH s = ⨆ (d : ℝ≥0) (hd : μH[d] s = ∞),
   rw [dimH]
 #align dimH_def dimH_def
 
-theorem hausdorffMeasure_of_lt_dimH {s : Set X} {d : ℝ≥0} (h : ↑d < dimH s) : μH[d] s = ∞ :=
-  by
+theorem hausdorffMeasure_of_lt_dimH {s : Set X} {d : ℝ≥0} (h : ↑d < dimH s) : μH[d] s = ∞ := by
   simp only [dimH_def, lt_iSup_iff] at h 
   rcases h with ⟨d', hsd', hdd'⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hdd' 
@@ -133,8 +132,7 @@ theorem le_dimH_of_hausdorffMeasure_eq_top {s : Set X} {d : ℝ≥0} (h : μH[d]
   by rw [dimH_def]; exact le_iSup₂ d h
 #align le_dimH_of_hausdorff_measure_eq_top le_dimH_of_hausdorffMeasure_eq_top
 
-theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) : μH[d] s = 0 :=
-  by
+theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) : μH[d] s = 0 := by
   rw [dimH_def] at h 
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hsd', hd'd⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hd'd 
@@ -158,14 +156,12 @@ theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : �
 end Measurable
 
 @[mono]
-theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t :=
-  by
+theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
   borelize X
   exact dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top <| top_unique <| hd ▸ measure_mono h
 #align dimH_mono dimH_mono
 
-theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 :=
-  by
+theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
   apply le_antisymm _ (zero_le _)
   refine' dimH_le_of_hausdorffMeasure_ne_top _
@@ -186,8 +182,7 @@ theorem dimH_singleton (x : X) : dimH ({x} : Set X) = 0 :=
 #align dimH_singleton dimH_singleton
 
 @[simp]
-theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) :=
-  by
+theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
   refine' le_antisymm (dimH_le fun d hd => _) (iSup_le fun i => dimH_mono <| subset_Union _ _)
   contrapose! hd
@@ -199,8 +194,7 @@ theorem dimH_iUnion [Encodable ι] (s : ι → Set X) : dimH (⋃ i, s i) = ⨆ 
 
 @[simp]
 theorem dimH_bUnion {s : Set ι} (hs : s.Countable) (t : ι → Set X) :
-    dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) :=
-  by
+    dimH (⋃ i ∈ s, t i) = ⨆ i ∈ s, dimH (t i) := by
   haveI := hs.to_encodable
   rw [bUnion_eq_Union, dimH_iUnion, ← iSup_subtype'']
 #align dimH_bUnion dimH_bUnion
@@ -262,8 +256,7 @@ theorem exists_mem_nhdsWithin_lt_dimH_of_lt_dimH {s : Set X} {r : ℝ≥0∞} (h
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` along
 `(𝓝[s] x).small_sets`. -/
-theorem bsupr_limsup_dimH (s : Set X) : (⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets) = dimH s :=
-  by
+theorem bsupr_limsup_dimH (s : Set X) : (⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
   refine' le_antisymm (iSup₂_le fun x hx => _) _
   · refine' Limsup_le_of_le (by infer_param) (eventually_map.2 _)
     exact eventually_small_sets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -277,8 +270,7 @@ theorem bsupr_limsup_dimH (s : Set X) : (⨆ x ∈ s, limsup dimH (𝓝[s] x).sm
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` along
 `(𝓝[s] x).small_sets`. -/
-theorem iSup_limsup_dimH (s : Set X) : (⨆ x, limsup dimH (𝓝[s] x).smallSets) = dimH s :=
-  by
+theorem iSup_limsup_dimH (s : Set X) : (⨆ x, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
   refine' le_antisymm (iSup_le fun x => _) _
   · refine' Limsup_le_of_le (by infer_param) (eventually_map.2 _)
     exact eventually_small_sets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
@@ -345,8 +337,7 @@ positive exponent `r` but possibly different coefficients, then the Hausdorff di
 of `f` is at most the Hausdorff dimension of `X` divided by `r`. -/
 theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
     (hr : 0 < r) (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, HolderOnWith C r f s) :
-    dimH (range f) ≤ dimH (univ : Set X) / r :=
-  by
+    dimH (range f) ≤ dimH (univ : Set X) / r := by
   rw [← image_univ]
   refine' dimH_image_le_of_locally_holder_on hr fun x _ => _
   simpa only [exists_prop, nhdsWithin_univ] using hf x
@@ -381,8 +372,7 @@ end LipschitzWith
 is Lipschitz in a neighborhood within `s` of every point `x ∈ s`, then the Hausdorff dimension of
 the image `f '' s` is at most the Hausdorff dimension of `s`. -/
 theorem dimH_image_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X → Y} {s : Set X}
-    (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith C f t) : dimH (f '' s) ≤ dimH s :=
-  by
+    (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith C f t) : dimH (f '' s) ≤ dimH s := by
   have : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C 1 f t := by
     simpa only [holderOnWith_one] using hf
   simpa only [ENNReal.coe_one, div_one] using dimH_image_le_of_locally_holder_on zero_lt_one this
@@ -392,8 +382,7 @@ theorem dimH_image_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X
 dimension of `range f` is at most the Hausdorff dimension of `X`. -/
 theorem dimH_range_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X → Y}
     (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, LipschitzOnWith C f s) :
-    dimH (range f) ≤ dimH (univ : Set X) :=
-  by
+    dimH (range f) ≤ dimH (univ : Set X) := by
   rw [← image_univ]
   refine' dimH_image_le_of_locally_lipschitz_on fun x _ => _
   simpa only [exists_prop, nhdsWithin_univ] using hf x
@@ -401,8 +390,7 @@ theorem dimH_range_le_of_locally_lipschitz_on [SecondCountableTopology X] {f : X
 
 namespace AntilipschitzWith
 
-theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻¹' s) ≤ dimH s :=
-  by
+theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻¹' s) ≤ dimH s := by
   borelize X Y
   refine' dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top _
   have := hf.hausdorff_measure_preimage_le d.coe_nonneg s
@@ -503,8 +491,7 @@ theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
   rw [dimH_univ_pi, Fintype.card_fin]
 #align real.dimH_univ_pi_fin Real.dimH_univ_pi_fin
 
-theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E :=
-  by
+theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
     ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
@@ -535,8 +522,7 @@ end Real
 variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense (sᶜ) :=
-  by
+theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense (sᶜ) := by
   refine' fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le _
   rw [← diff_eq, diff_eq_empty] at he 
   rw [← Real.dimH_of_mem_nhds ht]
