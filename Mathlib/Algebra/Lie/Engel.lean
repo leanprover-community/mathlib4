@@ -270,8 +270,13 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
       simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply, LieSubalgebra.mem_coe_submodule]
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
-  haveI _i5 : IsNoetherian R L' :=
-    isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEndomorphism R L M))
+  haveI _i5 : IsNoetherian R L' := by
+    -- Porting note: was
+    -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEndomorphism R L M))
+    -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
+    refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEndomorphism R L M)) ?_
+    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap, LinearMap.range_eq_top]
+    exact LieHom.surjective_rangeRestrict (toEndomorphism R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFounded_of_noetherian R L').has_min s hs
   have hK₃ : K = ⊤ := by
     by_contra contra
