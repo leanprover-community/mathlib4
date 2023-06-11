@@ -11,7 +11,6 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.LowerTopology
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Scott topology
