@@ -644,8 +644,7 @@ local notation "J" => o.rightAngleRotation
 
 open Complex
 
-private instance : Fact (finrank ℝ ℂ = 2) := -- Porting note: this instance is needed
-  finrank_real_complex_fact
+attribute [local instance] finrank_real_complex_fact -- Porting note: this instance is needed
 
 /-- The area form on an oriented real inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
