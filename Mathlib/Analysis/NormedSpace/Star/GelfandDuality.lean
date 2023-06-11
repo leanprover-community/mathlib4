@@ -76,10 +76,10 @@ algebra. In particular, the character, which may be identified as an algebra hom
 `weak_dual.character_space.equiv_alg_hom`, is given by the composition of the quotient map and
 the Gelfand-Mazur isomorphism `normed_ring.alg_equiv_complex_of_complete`. -/
 noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
-  characterSpace.equivAlgHom.symm <|
-    ((@NormedRing.algEquivComplexOfComplete (A ⧸ I) _ _
-              (letI := quotient.field I
-              @isUnit_iff_ne_zero (A ⧸ I) _)
+  CharacterSpace.equivAlgHom.symm <|
+    ((@NormedRing.algEquivComplexOfComplete (A ⧸ I) _ _ (by
+      letI := Quotient.field I
+      exact @isUnit_iff_ne_zero (A ⧸ I) _)
               _).symm :
           A ⧸ I →ₐ[ℂ] ℂ).comp
       (Quotient.mkₐ ℂ I)
@@ -88,45 +88,47 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
-  simpa only [character_space.equiv_alg_hom_symm_coe, AlgHom.coe_comp, AlgEquiv.coe_algHom,
-    quotient.mkₐ_eq_mk, Function.comp_apply, quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq,
-    NormedRing.algEquivComplexOfComplete_symm_apply] using
-    Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
+  simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgHom.coe_coe, Quotient.mkₐ_eq_mk,
+    Function.comp_apply, NormedRing.algEquivComplexOfComplete_symm_apply]
+  simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
+  exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
 #align ideal.to_character_space_apply_eq_zero_of_mem Ideal.toCharacterSpace_apply_eq_zero_of_mem
 
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivlaent
 to `gelfand_transform ℂ A a` takes the value zero at some character. -/
-theorem WeakDual.characterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
+theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
     ∃ f : characterSpace ℂ A, f a = 0 := by
   obtain ⟨M, hM, haM⟩ := (span {a}).exists_le_maximal (span_singleton_ne_top ha)
   exact
-    ⟨M.to_character_space,
-      M.to_character_space_apply_eq_zero_of_mem
+    ⟨M.toCharacterSpace,
+      M.toCharacterSpace_apply_eq_zero_of_mem
         (haM (mem_span_singleton.mpr ⟨1, (mul_one a).symm⟩))⟩
-#align weak_dual.character_space.exists_apply_eq_zero WeakDual.characterSpace.exists_apply_eq_zero
+#align weak_dual.character_space.exists_apply_eq_zero WeakDual.CharacterSpace.exists_apply_eq_zero
 
-theorem WeakDual.characterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
+theorem WeakDual.CharacterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
     z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
   refine' ⟨fun hz => _, _⟩
-  · obtain ⟨f, hf⟩ := WeakDual.characterSpace.exists_apply_eq_zero hz
+  · obtain ⟨f, hf⟩ := WeakDual.CharacterSpace.exists_apply_eq_zero hz
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes, Algebra.id.map_eq_id,
-      RingHom.id_apply] at hf 
-    exact (ContinuousMap.spectrum_eq_range (gelfand_transform ℂ A a)).symm ▸ ⟨f, hf.symm⟩
+      RingHom.id_apply] at hf
+    refine ⟨f, ?_⟩
+    rw [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply] at hf
+    exact hf.symm
   · rintro ⟨f, rfl⟩
     exact AlgHom.apply_mem_spectrum f a
-#align weak_dual.character_space.mem_spectrum_iff_exists WeakDual.characterSpace.mem_spectrum_iff_exists
+#align weak_dual.character_space.mem_spectrum_iff_exists WeakDual.CharacterSpace.mem_spectrum_iff_exists
 
 /-- The Gelfand transform is spectrum-preserving. -/
 theorem spectrum.gelfandTransform_eq (a : A) : spectrum ℂ (gelfandTransform ℂ A a) = spectrum ℂ a :=
   by
   ext z
-  rw [ContinuousMap.spectrum_eq_range, WeakDual.characterSpace.mem_spectrum_iff_exists]
+  rw [ContinuousMap.spectrum_eq_range, WeakDual.CharacterSpace.mem_spectrum_iff_exists]
   exact Iff.rfl
 #align spectrum.gelfand_transform_eq spectrum.gelfandTransform_eq
 
 instance [Nontrivial A] : Nonempty (characterSpace ℂ A) :=
   ⟨Classical.choose <|
-      WeakDual.characterSpace.exists_apply_eq_zero <| zero_mem_nonunits.2 zero_ne_one⟩
+      WeakDual.CharacterSpace.exists_apply_eq_zero <| zero_mem_nonunits.2 zero_ne_one⟩
 
 end ComplexBanachAlgebra
 
@@ -146,31 +148,33 @@ variable (A)
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
-  refine' AddMonoidHomClass.isometry_of_norm (gelfand_transform ℂ A) fun a => _
+  refine' AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => _
   /- By `spectrum.gelfand_transform_eq`, the spectra of `star a * a` and its
     `gelfand_transform` coincide. Therefore, so do their spectral radii, and since they are
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
     roots shows that the norm is preserved. -/
-  have : spectralRadius ℂ (gelfand_transform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
+  have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
-  simp only [map_mul, (IsSelfAdjoint.star_mul_self _).spectralRadius_eq_nnnorm,
-    gelfandTransform_map_star a, ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this 
+  rw [map_mul, (IsSelfAdjoint.star_mul_self _).spectralRadius_eq_nnnorm,
+    gelfandTransform_map_star a,
+    (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
+  simp only [ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
-    congr_arg ((coe : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
+    congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 #align gelfand_transform_isometry gelfandTransform_isometry
 
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
-  refine' ⟨(gelfandTransform_isometry A).Injective, _⟩
-  suffices (gelfand_transform ℂ A).range = ⊤ by
-    exact fun x => this.symm ▸ (gelfand_transform ℂ A).mem_range.mp (this.symm ▸ Algebra.mem_top)
+  refine' ⟨(gelfandTransform_isometry A).injective, _⟩
+  suffices (gelfandTransform ℂ A).range = ⊤ by
+    exact fun x => this.symm ▸ (gelfandTransform ℂ A).mem_range.mp (this.symm ▸ Algebra.mem_top)
   /- Because the `gelfand_transform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(character_space ℂ A, ℂ)` and is closed under `star`. -/
-  have h : (gelfand_transform ℂ A).range.topologicalClosure = (gelfand_transform ℂ A).range :=
+  have h : (gelfandTransform ℂ A).range.topologicalClosure = (gelfandTransform ℂ A).range :=
     le_antisymm
       (Subalgebra.topologicalClosure_minimal _ le_rfl
-        (gelfandTransform_isometry A).ClosedEmbedding.closed_range)
+        (gelfandTransform_isometry A).closedEmbedding.closed_range)
       (Subalgebra.le_topologicalClosure _)
   refine'
     h ▸
@@ -182,18 +186,18 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     exact fun h =>
       Subtype.ext
         (ContinuousLinearMap.ext fun a =>
-          h (gelfand_transform ℂ A a) ⟨gelfand_transform ℂ A a, ⟨a, rfl⟩, rfl⟩)
+          h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
   /- If `f = gelfand_transform ℂ A a`, then `star f` is also in the range of `gelfand_transform ℂ A`
     using the argument `star a`. The key lemma below may be hard to spot; it's `map_star` coming from
     `weak_dual.star_hom_class`, which is a nontrivial result. -/
-  · obtain ⟨f, ⟨a, rfl⟩, rfl⟩ := subalgebra.mem_map.mp hf
+  · obtain ⟨f, ⟨a, rfl⟩, rfl⟩ := Subalgebra.mem_map.mp hf
     refine' ⟨star a, ContinuousMap.ext fun ψ => _⟩
     simpa only [gelfandTransform_map_star a, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
 #align gelfand_transform_bijective gelfandTransform_bijective
 
 /-- The Gelfand transform as a `star_alg_equiv` between a commutative unital C⋆-algebra over `ℂ`
 and the continuous functions on its `character_space`. -/
-@[simps]
+@[simps!]
 noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) :=
   StarAlgEquiv.ofBijective
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
@@ -226,7 +230,7 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[ℂ] B) : C(characterSpace
   continuous_toFun :=
     Continuous.subtype_mk
       (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform ℂ B (ψ a)) _
-#align weak_dual.character_space.comp_continuous_map WeakDual.characterSpace.compContinuousMap
+#align weak_dual.character_space.comp_continuous_map WeakDual.CharacterSpace.compContinuousMap
 
 variable (A)
 
@@ -234,8 +238,8 @@ variable (A)
 @[simp]
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id ℂ A) = ContinuousMap.id (characterSpace ℂ A) :=
-  ContinuousMap.ext fun a => ext fun x => rfl
-#align weak_dual.character_space.comp_continuous_map_id WeakDual.characterSpace.compContinuousMap_id
+  ContinuousMap.ext fun _a => ext fun _x => rfl
+#align weak_dual.character_space.comp_continuous_map_id WeakDual.CharacterSpace.compContinuousMap_id
 
 variable {A}
 
@@ -243,12 +247,11 @@ variable {A}
 @[simp]
 theorem compContinuousMap_comp (ψ₂ : B →⋆ₐ[ℂ] C) (ψ₁ : A →⋆ₐ[ℂ] B) :
     compContinuousMap (ψ₂.comp ψ₁) = (compContinuousMap ψ₁).comp (compContinuousMap ψ₂) :=
-  ContinuousMap.ext fun a => ext fun x => rfl
-#align weak_dual.character_space.comp_continuous_map_comp WeakDual.characterSpace.compContinuousMap_comp
+  ContinuousMap.ext fun _a => ext fun _x => rfl
+#align weak_dual.character_space.comp_continuous_map_comp WeakDual.CharacterSpace.compContinuousMap_comp
 
 end CharacterSpace
 
 end WeakDual
 
 end Functoriality
-
