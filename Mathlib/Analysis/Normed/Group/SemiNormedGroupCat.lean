@@ -16,8 +16,8 @@ import Mathlib.CategoryTheory.Elementwise
 /-!
 # The category of seminormed groups
 
-We define `SemiNormedGroupCat`, the category of seminormed groups and normed group homs between them,
-as well as `SemiNormedGroupCat₁`, the subcategory of norm non-increasing morphisms.
+We define `SemiNormedGroupCat`, the category of seminormed groups and normed group homs between
+them, as well as `SemiNormedGroupCat₁`, the subcategory of norm non-increasing morphisms.
 -/
 
 
@@ -79,7 +79,8 @@ theorem coe_id (V : SemiNormedGroupCat) : (𝟙 V : V → V) = id :=
 
 -- Porting note : marked with high priority to short circuit simplifier's path
 @[simp (high)]
-theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g : M → K) = g ∘ f :=
+theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
+    (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup.coe_comp SemiNormedGroupCat.coe_comp
 
@@ -230,12 +231,14 @@ theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
 -- Porting note : removed `simp` attribute for not being simp normal form
-theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g : M → K) = g ∘ f :=
+theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
+    (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroupCat₁.coe_comp
 
 /--Porting Note: Added to make `coe_comp'` work -- might cause double coercions-/
-instance coeToNormedAddGroupHom {M N : SemiNormedGroupCat₁} : Coe (M ⟶ N) (NormedAddGroupHom M N) :=
+instance coeToNormedAddGroupHom {M N : SemiNormedGroupCat₁} :
+    Coe (M ⟶ N) (NormedAddGroupHom M N) :=
   ⟨fun f => f.1⟩
 
 -- Porting Note: This comment might no longer make sense
