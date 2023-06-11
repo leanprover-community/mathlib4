@@ -659,7 +659,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem isFilteredOrEmpty.of_Final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
+theorem IsFilteredOrEmpty.of_Final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
     IsFilteredOrEmpty D where
   cocone_objs X Y := ⟨F.obj (IsFiltered.max (Final.lift F X) (Final.lift F Y)),
     Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
@@ -686,7 +686,7 @@ theorem isFilteredOrEmpty.of_Final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem isFiltered.of_Final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
+theorem IsFiltered.of_Final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
 { isFilteredOrEmpty.of_Final F with
   Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
 
@@ -695,7 +695,7 @@ theorem isFiltered.of_Final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem isCofilteredOrEmpty.of_Initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
+theorem IsCofilteredOrEmpty.of_Initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
   IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := isFilteredOrEmpty.of_Final F.op
   isCofilteredOrEmpty_of_IsFilteredOrEmpty_op _
@@ -705,7 +705,7 @@ theorem isCofilteredOrEmpty.of_Initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem isCofiltered.of_Initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
+theorem IsCofiltered.of_Initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
   have : IsFiltered Dᵒᵖ := isFiltered.of_Final F.op
   isCofiltered_of_IsFiltered_op _
 
