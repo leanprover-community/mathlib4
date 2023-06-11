@@ -142,7 +142,9 @@ theorem rel_equiv : Equivalence D.Rel :=
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩); exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
     have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
-      simp ; sorry
+      -- Porting note: was `simp`
+      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply, Subtype.coe_mk]
+      erw [CategoryTheory.GlueData.t_inv_apply]
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
