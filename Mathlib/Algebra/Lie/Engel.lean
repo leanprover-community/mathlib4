@@ -184,7 +184,8 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent R L M := h M hnp
   apply hf.lieModuleIsNilpotent surj_id
-  simp
+  -- Porting note: was `simp`
+  intros; simp only [LinearMap.id_coe, id_eq]; rfl
 #align function.surjective.is_engelian Function.Surjective.isEngelian
 
 theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
@@ -194,7 +195,7 @@ theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
 
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
-    ∃ (K' : LieSubalgebra R L) (hK' : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K'), K < K' := by
+    ∃ (K' : LieSubalgebra R L) (_ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K'), K < K' := by
   obtain ⟨x, hx₁, hx₂⟩ := SetLike.exists_of_lt hK₂
   let K' : LieSubalgebra R L :=
     { (R ∙ x) ⊔ (K : Submodule R L) with
@@ -208,14 +209,14 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
-  have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ I = ⊤ := by
+  have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
     rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
-    simpa
+    simp
   have e : K ≃ₗ⁅R⁆ I :=
     (LieSubalgebra.equivOfLe hKK').trans
       (LieEquiv.ofEq _ _ ((LieSubalgebra.coe_set_eq _ _).mpr hI₁.symm))
-  have hI₃ : LieAlgebra.IsEngelian R I := e.is_engelian_iff.mp hK₁
+  have hI₃ : LieAlgebra.IsEngelian R I := e.isEngelian_iff.mp hK₁
   exact LieSubmodule.isNilpotentOfIsNilpotentSpanSupEqTop hI₂ (h _) (hI₃ _ fun x => h x)
 #align lie_algebra.exists_engelian_lie_subalgebra_of_lt_normalizer LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer
 
@@ -232,14 +233,14 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
   let L' := (toEndomorphism R L M).range
-  replace h : ∀ y : L', IsNilpotent (y : Module.End R M)
+  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M)
   · rintro ⟨-, ⟨y, rfl⟩⟩
     simp [h]
   change LieModule.IsNilpotent R L' M
   let s := {K : LieSubalgebra R L' | LieAlgebra.IsEngelian R K}
-  have hs : s.nonempty := ⟨⊥, LieAlgebra.isEngelian_of_subsingleton⟩
+  have hs : s.Nonempty := ⟨⊥, LieAlgebra.isEngelian_of_subsingleton⟩
   suffices ⊤ ∈ s by
-    rw [← is_nilpotent_of_top_iff]
+    rw [← isNilpotent_of_top_iff]
     apply this M
     simp [LieSubalgebra.toEndomorphism_eq, h]
   have : ∀ K ∈ s, K ≠ ⊤ → ∃ K' ∈ s, K < K' := by
