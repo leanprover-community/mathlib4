@@ -162,13 +162,13 @@ def LieAlgebra.IsEngelian : Prop :=
   ∀ (M : Type u₄) [AddCommGroup M],
     ∀ [Module R M] [LieRingModule L M],
       ∀ [LieModule R L M],
-        ∀ h : ∀ x : L, IsNilpotent (toEndomorphism R L M x), LieModule.IsNilpotent R L M
+        ∀ _ : ∀ x : L, _root_.IsNilpotent (toEndomorphism R L M x), LieModule.IsNilpotent R L M
 #align lie_algebra.is_engelian LieAlgebra.IsEngelian
 
 variable {R L}
 
 theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEngelian R L := by
-  intro M _i1 _i2 _i3 _i4 h
+  intro M _i1 _i2 _i3 _i4 _h
   use 1
   suffices (⊤ : LieIdeal R L) = ⊥ by simp [this]
   haveI := (LieSubmodule.subsingleton_iff R L L).mpr inferInstance
