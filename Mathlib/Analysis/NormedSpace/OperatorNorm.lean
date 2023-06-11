@@ -211,12 +211,16 @@ theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := b
   simp_rw [dist_eq_norm, ← map_sub, f.le_op_norm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_op_norm
 
+theorem le_of_op_norm_le_of_le {x} {a b : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) :
+    ‖f x‖ ≤ a * b :=
+  (f.le_op_norm x).trans <| by gcongr; exact (op_norm_nonneg f).trans hf
+
 theorem le_op_norm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
-  le_trans (f.le_op_norm x) (mul_le_mul_of_nonneg_left h f.op_norm_nonneg)
+  f.le_of_op_norm_le_of_le le_rfl h
 #align continuous_linear_map.le_op_norm_of_le ContinuousLinearMap.le_op_norm_of_le
 
 theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c * ‖x‖ :=
-  (f.le_op_norm x).trans (mul_le_mul_of_nonneg_right h (norm_nonneg x))
+  f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
 
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
@@ -610,6 +614,12 @@ theorem le_op_norm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_op_norm_le (f.le_op_norm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_op_norm₂
+
+-- porting note: new theorem
+theorem le_op_norm₂_of_le₃ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
+    {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c)  :
+    ‖f x y‖ ≤ a * b * c :=
+  (f x).le_of_op_norm_le_of_le (f.le_of_op_norm_le_of_le hf hx) hy
 
 end
 
