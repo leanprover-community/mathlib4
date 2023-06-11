@@ -56,8 +56,9 @@ The order is the wrong way around to make `Finpartition a` a graded order. Is it
 the literature and turn the order around?
 -/
 
+open Finset Function
 
-open scoped BigOperators Finset Function
+open scoped BigOperators
 
 variable {α : Type _}
 
