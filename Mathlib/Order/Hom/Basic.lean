@@ -81,7 +81,7 @@ variable {F α β γ δ : Type _}
 
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
-  /-- The underlying funcrion of an `OrderHom`. -/
+  /-- The underlying function of an `OrderHom`. -/
   toFun : α → β
   /-- The underlying function of an `OrderHom` is monotone. -/
   monotone' : Monotone toFun

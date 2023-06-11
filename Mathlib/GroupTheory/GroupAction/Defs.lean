@@ -389,7 +389,7 @@ theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
 are still metavariables.
 -/
 @[to_additive
-      "This cannot be an instance because it can cause infinite loops wheneverthe `VAdd` arguments
+      "This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
        are still metavariables."]
 theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
