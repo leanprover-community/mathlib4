@@ -178,7 +178,9 @@ theorem eqvGen_of_π_eq
       x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
   simp_rw [comp_app] at h
-  replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp ?_ h
+  -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
+  replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp
+    inferInstance h
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     rw [← ι_preservesColimitsIso_hom]
@@ -193,8 +195,10 @@ theorem eqvGen_of_π_eq
       _)
   simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
     diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  exact Quot.eq.1 this
-  infer_instance
+  -- TODO: was exact Quot.eq.1 this
+  refine Quot.eq.1 ?_
+  stop
+  exact this
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
 
@@ -211,13 +215,13 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     simp only [TopCat.sigmaIsoSigma_inv_apply]
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    -- porting note: the next line was `refine' EqvGen.mono _ (D.eqv_gen_of_π_eq h : _)`,
-    -- but I could not get `eqv_gen_of_π_eq` to compile...
-    stop
+    refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
+    stop
+    -- TODO: this causes universe errors, possibly because of the sorry in `eqvGen_of_π_eq`
     rw [←
       show (sigmaIsoSigma.{u} _).inv _ = x from
-        concrete_category.congr_hom (sigmaIsoSigma.{u} _).hom_inv_id x]
+        ConcreteCategory.congr_hom (sigmaIsoSigma.{u} _).hom_inv_id x]
     generalize (sigmaIsoSigma.{u} D.V).Hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
     unfold InvImage multispan_index.fst_sigma_map multispan_index.snd_sigma_map
