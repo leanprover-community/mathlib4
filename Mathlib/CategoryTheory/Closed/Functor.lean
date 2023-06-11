@@ -90,16 +90,16 @@ def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
 theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
-  convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B
-  ext
+  convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   simp
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
 
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
-  convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B
-  ext
+  convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B using 3
+  apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   dsimp
   simp
 #align category_theory.coev_exp_comparison CategoryTheory.coev_expComparison
@@ -156,8 +156,8 @@ at `A` is an isomorphism.
 -/
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
-  rw [← frobeniusMorphism_mate F h] at i 
-  exact @transfer_nat_trans_self_of_iso _ _ _ _ _ i
+  rw [← frobeniusMorphism_mate F h] at i
+  exact @transferNatTransSelf_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--
@@ -181,4 +181,3 @@ def cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Fu
 #align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
 
 end CategoryTheory
-
