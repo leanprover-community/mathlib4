@@ -810,7 +810,8 @@ section Opposite
 
 open Opposite
 
-instance isCofilteredOrEmpty_op_of_IsFilteredOrEmpty [IsFilteredOrEmpty C] : IsCofilteredOrEmpty Cᵒᵖ where
+instance isCofilteredOrEmpty_op_of_IsFilteredOrEmpty [IsFilteredOrEmpty C] :
+    IsCofilteredOrEmpty Cᵒᵖ where
   cone_objs X Y :=
     ⟨op (IsFiltered.max X.unop Y.unop), (IsFiltered.leftToMax _ _).op,
       (IsFiltered.rightToMax _ _).op, trivial⟩
@@ -820,11 +821,12 @@ instance isCofilteredOrEmpty_op_of_IsFilteredOrEmpty [IsFilteredOrEmpty C] : IsC
       congr 1
       exact IsFiltered.coeq_condition f.unop g.unop⟩
 
-instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
+instance isCofiltered_op_of_IsFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
   Nonempty := ⟨op IsFiltered.Nonempty.some⟩
-#align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_isFiltered
+#align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_IsFiltered
 
-instance isFilteredOrEmpty_op_of_isFiltered [IsCofilteredOrEmpty C] : IsFilteredOrEmpty Cᵒᵖ where
+instance isFilteredOrEmpty_op_of_IsCofilteredOrEmpty [IsCofilteredOrEmpty C] :
+    IsFilteredOrEmpty Cᵒᵖ where
   cocone_objs X Y :=
     ⟨op (IsCofiltered.min X.unop Y.unop), (IsCofiltered.minToLeft X.unop Y.unop).op,
       (IsCofiltered.minToRight X.unop Y.unop).op, trivial⟩
@@ -834,9 +836,9 @@ instance isFilteredOrEmpty_op_of_isFiltered [IsCofilteredOrEmpty C] : IsFiltered
       congr 1
       exact IsCofiltered.eq_condition f.unop g.unop⟩
 
-instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
+instance isFiltered_op_of_IsCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
   Nonempty := ⟨op IsCofiltered.Nonempty.some⟩
-#align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_isCofiltered
+#align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_IsCofiltered
 
 /-- If Cᵒᵖ is filtered or empty, then C is cofiltered or empty. -/
 lemma isCofilteredOrEmpty_of_IsFilteredOrEmpty_op [IsFilteredOrEmpty Cᵒᵖ] : IsCofilteredOrEmpty C :=
