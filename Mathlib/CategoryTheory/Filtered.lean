@@ -196,6 +196,38 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
 
 end AllowEmpty
 
+end IsFiltered
+
+namespace IsFilteredOrEmpty
+open IsFiltered
+
+variable {C}
+variable [IsFilteredOrEmpty C]
+variable {D : Type u₁} [Category.{v₁} D]
+
+/-- If `C` is filtered or emtpy, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
+filtered or empty.
+-/
+theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
+  { cocone_objs := fun X Y =>
+      ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
+    cocone_maps := fun X Y f g =>
+      ⟨_, h.homEquiv _ _ (coeqHom _ _), by
+        rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
+
+/-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is
+filtered or empty. -/
+theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFilteredOrEmpty D :=
+  of_right_adjoint (Adjunction.ofRightAdjoint R)
+
+/-- Being filtered or empty is preserved by equivalence of categories. -/
+theorem of_equivalence (h : C ≌ D) : IsFilteredOrEmpty D :=
+  of_right_adjoint h.symm.toAdjunction
+
+end IsFilteredOrEmpty
+
+namespace IsFiltered
+
 section Nonempty
 
 open CategoryTheory.Limits
@@ -311,11 +343,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 /-- If `C` is filtered, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is filtered.
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered D :=
-  { cocone_objs := fun X Y =>
-      ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
-    cocone_maps := fun X Y f g =>
-      ⟨_, h.homEquiv _ _ (coeqHom _ _), by
-        rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩
+  { IsFilteredOrEmpty.of_right_adjoint h with
     Nonempty := IsFiltered.Nonempty.map R.obj }
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
@@ -610,6 +638,39 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type _) (j : C)
 
 end AllowEmpty
 
+end IsCofiltered
+
+namespace IsCofilteredOrEmpty
+open IsCofiltered
+
+variable {C}
+variable [IsCofilteredOrEmpty C]
+variable {D : Type u₁} [Category.{v₁} D]
+
+/-- If `C` is cofiltered or empty, and we have a functor `L : C ⥤ D` with a right adjoint,
+then `D` is cofiltered or empty.
+-/
+theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOrEmpty D :=
+  { cone_objs := fun X Y =>
+      ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
+        (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
+    cone_maps := fun X Y f g =>
+      ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
+        rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩ }
+
+/-- If `C` is cofiltered or empty, and we have a left adjoint functor `L : C ⥤ D`, then `D` is
+cofiltered or empty. -/
+theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofilteredOrEmpty D :=
+  of_left_adjoint (Adjunction.ofLeftAdjoint L)
+
+/-- Being cofiltered or empty is preserved by equivalence of categories. -/
+theorem of_equivalence (h : C ≌ D) : IsCofilteredOrEmpty D :=
+  of_left_adjoint h.toAdjunction
+
+end IsCofilteredOrEmpty
+
+namespace IsCofiltered
+
 section Nonempty
 
 open CategoryTheory.Limits
@@ -727,12 +788,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 then `D` is cofiltered.
 -/
 theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered D :=
-  { cone_objs := fun X Y =>
-      ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
-        (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
-    cone_maps := fun X Y f g =>
-      ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
-        rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩
+  { IsCofilteredOrEmpty.of_left_adjoint h with
     Nonempty := IsCofiltered.Nonempty.map L.obj }
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
@@ -754,7 +810,7 @@ section Opposite
 
 open Opposite
 
-instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
+instance isCofilteredOrEmpty_op_of_IsFilteredOrEmpty [IsFilteredOrEmpty C] : IsCofilteredOrEmpty Cᵒᵖ where
   cone_objs X Y :=
     ⟨op (IsFiltered.max X.unop Y.unop), (IsFiltered.leftToMax _ _).op,
       (IsFiltered.rightToMax _ _).op, trivial⟩
@@ -763,10 +819,12 @@ instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ whe
       rw [show f = f.unop.op by simp, show g = g.unop.op by simp, ← op_comp, ← op_comp]
       congr 1
       exact IsFiltered.coeq_condition f.unop g.unop⟩
+
+instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
   Nonempty := ⟨op IsFiltered.Nonempty.some⟩
 #align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_isFiltered
 
-instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
+instance isFilteredOrEmpty_op_of_isFiltered [IsCofilteredOrEmpty C] : IsFilteredOrEmpty Cᵒᵖ where
   cocone_objs X Y :=
     ⟨op (IsCofiltered.min X.unop Y.unop), (IsCofiltered.minToLeft X.unop Y.unop).op,
       (IsCofiltered.minToRight X.unop Y.unop).op, trivial⟩
@@ -775,8 +833,26 @@ instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ whe
       rw [show f = f.unop.op by simp, show g = g.unop.op by simp, ← op_comp, ← op_comp]
       congr 1
       exact IsCofiltered.eq_condition f.unop g.unop⟩
+
+instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
   Nonempty := ⟨op IsCofiltered.Nonempty.some⟩
 #align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_isCofiltered
+
+/-- If Cᵒᵖ is filtered or empty, then C is cofiltered or empty. -/
+lemma isCofilteredOrEmpty_of_IsFilteredOrEmpty_op [IsFilteredOrEmpty Cᵒᵖ] : IsCofilteredOrEmpty C :=
+  IsCofilteredOrEmpty.of_equivalence (opOpEquivalence _)
+
+/-- If Cᵒᵖ is cofiltered or empty, then C is filtered or empty. -/
+lemma isFilteredOrEmpty_of_IsCofilteredOrEmpty_op [IsCofilteredOrEmpty Cᵒᵖ] : IsFilteredOrEmpty C :=
+  IsFilteredOrEmpty.of_equivalence (opOpEquivalence _)
+
+/-- If Cᵒᵖ is filtered, then C is cofiltered. -/
+lemma isCofiltered_of_IsFiltered_op [IsFiltered Cᵒᵖ] : IsCofiltered C :=
+  IsCofiltered.of_equivalence (opOpEquivalence _)
+
+/-- If Cᵒᵖ is cofiltered, then C is filtered. -/
+lemma isFiltered_of_IsCofiltered_op [IsCofiltered Cᵒᵖ] : IsFiltered C :=
+  IsFiltered.of_equivalence (opOpEquivalence _)
 
 end Opposite
 
