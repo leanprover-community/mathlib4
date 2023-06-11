@@ -2190,6 +2190,7 @@ import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FermatPsp
