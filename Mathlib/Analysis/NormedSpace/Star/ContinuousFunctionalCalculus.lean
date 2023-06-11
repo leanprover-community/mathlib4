@@ -252,19 +252,17 @@ theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
 set_option synthInstance.maxHeartbeats 27000 in
 theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
-  refine'
-    ⟨fun φ ψ h =>
-      starAlgHomClass_ext ℂ (map_continuous φ) (map_continuous ψ)
-        (by
-          simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
-            ContinuousMap.coe_mk] using h),
-      _⟩
-  rintro ⟨z, hz⟩
-  have hz' :=
-    (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a) ⟨a, self_mem ℂ a⟩).symm.subst hz
-  rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
-  obtain ⟨φ, rfl⟩ := hz'
-  exact ⟨φ, rfl⟩
+  refine' ⟨fun φ ψ h => starAlgHomClass_ext ℂ _ _ _, _⟩
+  · exact (map_continuous φ)
+  · exact (map_continuous ψ)
+  · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
+      ContinuousMap.coe_mk] using h
+  · rintro ⟨z, hz⟩
+    have hz' := (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a)
+      ⟨a, self_mem ℂ a⟩).symm.subst hz
+    rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
+    obtain ⟨φ, rfl⟩ := hz'
+    exact ⟨φ, rfl⟩
 #align elemental_star_algebra.bijective_character_space_to_spectrum elementalStarAlgebra.bijective_characterSpaceToSpectrum
 
 set_option synthInstance.maxHeartbeats 43000 in
@@ -292,7 +290,6 @@ noncomputable def continuousFunctionalCalculus :
 
 theorem continuousFunctionalCalculus_map_id :
     continuousFunctionalCalculus a ((ContinuousMap.id ℂ).restrict (spectrum ℂ a)) =
-      ⟨a, self_mem ℂ a⟩ := by
-  rw [continuousFunctionalCalculus]
-  exact StarAlgEquiv.symm_apply_apply _ _
+      ⟨a, self_mem ℂ a⟩ :=
+  (gelfandStarTransform (elementalStarAlgebra ℂ a)).symm_apply_apply _
 #align continuous_functional_calculus_map_id continuousFunctionalCalculus_map_id
