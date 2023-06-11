@@ -15,43 +15,43 @@ import Mathlib.MeasureTheory.Integral.CircleIntegral
 # Integral over a torus in `ℂⁿ`
 
 In this file we define the integral of a function `f : ℂⁿ → E` over a torus
-`{z : ℂⁿ | ∀ i, z i ∈ metric.sphere (c i) (R i)}`. In order to do this, we define
-`torus_map (c : ℂⁿ) (R θ : ℝⁿ)` to be the point in `ℂⁿ` given by $z_k=c_k+R_ke^{θ_ki}$,
-where $i$ is the imaginary unit, then define `torus_integral f c R` as the integral over
+`{z : ℂⁿ | ∀ i, z i ∈ Metric.sphere (c i) (R i)}`. In order to do this, we define
+`torusMap (c : ℂⁿ) (R θ : ℝⁿ)` to be the point in `ℂⁿ` given by $z_k=c_k+R_ke^{θ_ki}$,
+where $i$ is the imaginary unit, then define `torusIntegral f c R` as the integral over
 the cube $[0, (λ _, 2π)] = \{θ\|∀ k, 0 ≤ θ_k ≤ 2π\}$ of the Jacobian of the
-`torus_map` multiplied by `f (torus_map c R θ)`.
+`torusMap` multiplied by `f (torusMap c R θ)`.
 
-We also define a predicate saying that `f ∘ torus_map c R` is integrable on the cube
+We also define a predicate saying that `f ∘ torusMap c R` is integrable on the cube
 `[0, (λ _, 2\pi)]`.
 
 ## Main definitions
 
-* `torus_map c R`: the generalized multidimensional exponential map from `ℝⁿ` to `ℂⁿ` that sends
+* `torusMap c R`: the generalized multidimensional exponential map from `ℝⁿ` to `ℂⁿ` that sends
   $θ=(θ_0,…,θ_{n-1})$ to $z=(z_0,…,z_{n-1})$, where $z_k= c_k + R_ke^{θ_k i}$;
 
-* `torus_integrable f c R`: a function `f : ℂⁿ → E` is integrable over the generalized torus
-  with center `c : ℂⁿ` and radius `R : ℝⁿ` if `f ∘ torus_map c R` is integrable on the
+* `TorusIntegrable f c R`: a function `f : ℂⁿ → E` is integrable over the generalized torus
+  with center `c : ℂⁿ` and radius `R : ℝⁿ` if `f ∘ torusMap c R` is integrable on the
   closed cube `Icc (0 : ℝⁿ) (λ _, 2 * π)`;
 
-* `torus_integral f c R`: the integral of a function `f : ℂⁿ → E` over a torus with
+* `torusIntegral f c R`: the integral of a function `f : ℂⁿ → E` over a torus with
   center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ` defined as
   $\iiint_{[0, 2 * π]} (∏_{k = 1}^{n} i R_k e^{θ_k * i}) • f (c + Re^{θ_k i})\,dθ_0…dθ_{k-1}$.
 
 ## Main statements
 
-* `torus_integral_dim0`, `torus_integral_dim1`, `torus_integral_succ`: formulas for `torus_integral`
+* `torusIntegral_dim0`, `torusIntegral_dim1`, `torusIntegral_succ`: formulas for `torusIntegral`
   in cases of dimension `0`, `1`, and `n + 1`.
 
 ## Notations
 
-- `ℝ⁰`, `ℝ¹`, `ℝⁿ`, `ℝⁿ⁺¹`: local notation for `fin 0 → ℝ`, `fin 1 → ℝ`, `fin n → ℝ`, and
-  `fin (n + 1) → ℝ`, respectively;
-- `ℂ⁰`, `ℂ¹`, `ℂⁿ`, `ℂⁿ⁺¹`: local notation for `fin 0 → ℂ`, `fin 1 → ℂ`, `fin n → ℂ`, and
-  `fin (n + 1) → ℂ`, respectively;
-- `∯ z in T(c, R), f z`: notation for `torus_integral f c R`;
-- `∮ z in C(c, R), f z`: notation for `circle_integral f c R`, defined elsewhere;
-- `∏ k, f k`: notation for `finset.prod`, defined elsewhere;
-- `π`: notation for `real.pi`, defined elsewhere.
+- `ℝ⁰`, `ℝ¹`, `ℝⁿ`, `ℝⁿ⁺¹`: local notation for `Fin 0 → ℝ`, `Fin 1 → ℝ`, `Fin n → ℝ`, and
+  `Fin (n + 1) → ℝ`, respectively;
+- `ℂ⁰`, `ℂ¹`, `ℂⁿ`, `ℂⁿ⁺¹`: local notation for `Fin 0 → ℂ`, `Fin 1 → ℂ`, `Fin n → ℂ`, and
+  `Fin (n + 1) → ℂ`, respectively;
+- `∯ z in T(c, R), f z`: notation for `torusIntegral f c R`;
+- `∮ z in C(c, R), f z`: notation for `circleIntegral f c R`, defined elsewhere;
+- `∏ k, f k`: notation for `Finset.prod`, defined elsewhere;
+- `π`: notation for `Real.pi`, defined elsewhere.
 
 ## Tags
 
@@ -77,7 +77,7 @@ local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-!
-### `torus_map`, a parametrization of a torus
+### `torusMap`, a parametrization of a torus
 -/
 
 /-- The n dimensional exponential map $θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ$ representing
@@ -104,7 +104,7 @@ theorem torusMap_zero_radius (c : ℂⁿ) : torusMap c 0 = const ℝⁿ c :=
 -/
 
 /-- A function `f : ℂⁿ → E` is integrable on the generalized torus if the function
-`f ∘ torus_map c R θ` is integrable on `Icc (0 : ℝⁿ) (λ _, 2 * π)`-/
+`f ∘ torusMap c R θ` is integrable on `Icc (0 : ℝⁿ) (λ _, 2 * π)`-/
 def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
   IntegrableOn (fun θ : ℝⁿ => f (torusMap c R θ)) (Icc (0 : ℝⁿ) fun _ => 2 * π) volume
 #align torus_integrable TorusIntegrable
@@ -140,7 +140,7 @@ theorem torusIntegrable_zero_radius {f : ℂⁿ → E} {c : ℂⁿ} : TorusInteg
   apply torusIntegrable_const (f c) c 0
 #align torus_integrable.torus_integrable_zero_radius TorusIntegrable.torusIntegrable_zero_radius
 
-/-- The function given in the definition of `torus_integral` is integrable. -/
+/-- The function given in the definition of `torusIntegral` is integrable. -/
 theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
@@ -154,7 +154,7 @@ end TorusIntegrable
 variable [NormedSpace ℂ E] [CompleteSpace E] {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- The definition of the integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`
-as the `•`-product of the derivative of `torus_map` and `f (torus_map c R θ)`-/
+as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)`-/
 def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
   ∫ θ : ℝⁿ in Icc (0 : ℝⁿ) fun _ => 2 * π, (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)
 #align torus_integral torusIntegral
@@ -192,7 +192,7 @@ theorem torusIntegral_const_mul (a : ℂ) (f : ℂⁿ → ℂ) (c : ℂⁿ) (R :
   torusIntegral_smul a f c R
 #align torus_integral_const_mul torusIntegral_const_mul
 
-/-- If for all `θ : ℝⁿ`, `‖f (torus_map c R θ)‖` is less than or equal to a constant `C : ℝ`, then
+/-- If for all `θ : ℝⁿ`, `‖f (torusMap c R θ)‖` is less than or equal to a constant `C : ℝ`, then
 `‖∯ x in T(c, R), f x‖` is less than or equal to `(2 * π)^n * (∏ i, |R i|) * C`-/
 theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (torusMap c R θ)‖ ≤ C) :
     ‖∯ x in T(c, R), f x‖ ≤ ((2 * π) ^ (n : ℕ) * ∏ i, |R i|) * C :=
@@ -218,8 +218,8 @@ theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 #align torus_integral_dim0 torusIntegral_dim0
 
-/-- In dimension one, `torus_integral` is the same as `circle_integral`
-(up to the natural equivalence between `ℂ` and `fin 1 → ℂ`). -/
+/-- In dimension one, `torusIntegral` is the same as `circleIntegral`
+(up to the natural equivalence between `ℂ` and `Fin 1 → ℂ`). -/
 theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
     (∯ x in T(c, R), f x) = ∮ z in C(c 0, R 0), f fun _ => z := by
   have H₁ : (((MeasurableEquiv.funUnique _ _).symm) ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) :=
@@ -234,7 +234,7 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
   simp [circleMap_zero]
 #align torus_integral_dim1 torusIntegral_dim1
 
-/-- Recurrent formula for `torus_integral`, see also `torus_integral_succ`. -/
+/-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
 theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
@@ -259,7 +259,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this 
 #align torus_integral_succ_above torusIntegral_succAbove
 
-/-- Recurrent formula for `torus_integral`, see also `torus_integral_succ_above`. -/
+/-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succAbove`. -/
 theorem torusIntegral_succ {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
