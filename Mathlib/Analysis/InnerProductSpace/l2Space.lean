@@ -293,7 +293,7 @@ Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type 
 to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules. -/
 structure IsHilbertSum : Prop where
   ofSurjective ::
-  /-- The orthogonal family consituting the summands in the Hilbert sum. -/
+  /-- The orthogonal family constituting the summands in the Hilbert sum. -/
   protected OrthogonalFamily : OrthogonalFamily 𝕜 G V
   /-- The isometry `lp G 2 → E` induced by the orthogonal family is surjective. -/
   protected surjective_isometry : Function.Surjective OrthogonalFamily.linearIsometry
@@ -411,7 +411,7 @@ variable (ι) (𝕜) (E)
 /-- A Hilbert basis on `ι` for an inner product space `E` is an identification of `E` with the `lp`
 space `ℓ²(ι, 𝕜)`. -/
 structure HilbertBasis where ofRepr ::
-  /-- The linear isometric equivlence implementing identifiying the hilbert space with `ℓ²`. -/
+  /-- The linear isometric equivalence implementing identifying the Hilbert space with `ℓ²`. -/
   repr : E ≃ₗᵢ[𝕜] ℓ²(ι, 𝕜)
 #align hilbert_basis HilbertBasis
 

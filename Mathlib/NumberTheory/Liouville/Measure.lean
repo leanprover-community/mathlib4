@@ -17,7 +17,7 @@ import Mathlib.Analysis.PSeries
 # Volume of the set of Liouville numbers
 
 In this file we prove that the set of Liouville numbers with exponent (irrationality measure)
-strictly greater than two is a set of Lebesuge measure zero, see
+strictly greater than two is a set of Lebesgue measure zero, see
 `volume_iUnion_setOf_liouvilleWith`.
 
 Since this set is a residual set, we show that the filters `residual` and `volume.ae` are disjoint.
