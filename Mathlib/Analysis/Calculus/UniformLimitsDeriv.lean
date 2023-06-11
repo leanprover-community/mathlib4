@@ -47,7 +47,7 @@ That is, we want to prove something like:
 ∀ ε > 0, ∃ δ > 0, ∀ y ∈ B_δ(x), |y - x|⁻¹ * |(g y - g x) - g' x (y - x)| < ε.
 ```
 
-To do so, we will need to introduce a pair of quantifers
+To do so, we will need to introduce a pair of quantifiers
 
 ```lean
 ∀ ε > 0, ∃ N, ∀ n ≥ N, ∃ δ > 0, ∀ y ∈ B_δ(x), |y - x|⁻¹ * |(g y - g x) - g' x (y - x)| < ε.
@@ -73,7 +73,7 @@ try
 tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top ×ˢ 𝓝 x) (𝓝 0)
 ```
 
-but this is equivalent to the quantifer order `∀ ε > 0, ∃ N, ∃ δ > 0, ∀ n ≥ N, ∀ y ∈ B_δ(x)`, which
+but this is equivalent to the quantifier order `∀ ε > 0, ∃ N, ∃ δ > 0, ∀ n ≥ N, ∀ y ∈ B_δ(x)`, which
 again _implies_ our desired `∀ ∃ ∀ ∃ ∀` but is not equivalent to it.
 
 So to get the quantifier order we want, we need to introduce a new filter construction, which we

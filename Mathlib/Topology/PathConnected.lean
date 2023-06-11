@@ -110,7 +110,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refes to a new lemma below
+-- porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 

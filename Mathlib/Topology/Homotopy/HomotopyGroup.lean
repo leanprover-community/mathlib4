@@ -19,7 +19,7 @@ that send the boundary to the base point `x`, up to homotopic equivalence.
 Note that such functions are generalized loops `GenLoop n x`, in particular
 `GenLoop 1 x ≃ Path x x`
 
-We show that `π 0 x` is equivalent to the path-conected components, and
+We show that `π 0 x` is equivalent to the path-connected components, and
 that `π 1 x` is equivalent to the fundamental group at `x`.
 
 ## definitions

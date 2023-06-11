@@ -52,6 +52,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Images
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -211,6 +212,7 @@ import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
@@ -254,6 +256,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.Module.Zlattice
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
@@ -614,6 +617,7 @@ import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.NormedSpace.Algebra
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.BanachSteinhaus
@@ -648,10 +652,12 @@ import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
+import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.Mul
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
+import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
@@ -940,6 +946,7 @@ import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Functorial
+import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
@@ -985,6 +992,7 @@ import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
+import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
@@ -1005,6 +1013,7 @@ import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Closed
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
+import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
@@ -1023,6 +1032,7 @@ import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Sites.Subsheaf
+import Mathlib.CategoryTheory.Sites.Surjective
 import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
@@ -1153,8 +1163,8 @@ import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
-import Mathlib.Data.Bitvec.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
@@ -1528,6 +1538,7 @@ import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
+import Mathlib.Data.Polynomial.UnitTrinomial
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
@@ -2134,6 +2145,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
+import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -2178,6 +2190,7 @@ import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FermatPsp
@@ -2206,6 +2219,7 @@ import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.VonMangoldt
+import Mathlib.NumberTheory.Wilson
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
@@ -2438,6 +2452,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.Perfection
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev

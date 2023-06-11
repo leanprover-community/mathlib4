@@ -15,7 +15,7 @@ import Mathlib.Topology.Homotopy.Path
 # H-spaces
 
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
-*Homologie singulière des espaces fibrés*. The idea beaneath `H-spaces` is that they are topological
+*Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
 operation what would make `X` into a topological monoid. In particular, there exists a "neutral
 element" `e : X` such that `λ x, e ⋀ x` and `λ x, x ⋀ e` are homotopic to the identity on `X`, see

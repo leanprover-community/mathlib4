@@ -38,7 +38,7 @@ the last section, various properties of matrices are explored.
   that it is a finite-dimensional inner product space).
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
-  finite-dimensional innner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
+  finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
 
 - `Basis.toOrthonormalBasis`: constructs an `OrthonormalBasis` for a finite-dimensional
   Euclidean space from a `Basis` which is `Orthonormal`.

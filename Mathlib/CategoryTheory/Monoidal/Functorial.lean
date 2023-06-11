@@ -58,7 +58,7 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
   ε : 𝟙_ D ⟶ F (𝟙_ C)
   /-- tensorator -/
   μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
-  /-- natuality -/
+  /-- naturality -/
   μ_natural :
     ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
       (map F f ⊗ map F g) ≫ μ Y Y' = μ X X' ≫ map F (f ⊗ g) := by
