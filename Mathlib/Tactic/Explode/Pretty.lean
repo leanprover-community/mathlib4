@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.Explode.Datatypes
-import Mathlib.Data.String.Defs
 
 /-!
 # Explode command: pretty
@@ -33,7 +32,7 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
   -- 2. Pad all words in a list with " "
   let pad (md : MessageData) : MetaM MessageData := do
     let padWidth : Nat := maxLength - (← md.toString).length
-    return md ++ String.replicate padWidth ' '
+    return md ++ "".pushn ' ' padWidth
 
   mds.mapM pad
 
@@ -43,11 +42,11 @@ def rowToMessageData :
   | line :: lines, dep :: deps, thm :: thms, en :: es => do
     let pipes := String.join (List.replicate en.depth "│ ")
     let pipes := match en.status with
-      | Status.sintro => "├ "
-      | Status.intro  => "│ " ++ pipes ++ "┌ "
-      | Status.cintro => "│ " ++ pipes ++ "├ "
-      | Status.lam    => "│ " ++ pipes
-      | Status.reg    => "│ " ++ pipes
+      | Status.sintro => s!"├ "
+      | Status.intro  => s!"│ {pipes}┌ "
+      | Status.cintro => s!"│ {pipes}├ "
+      | Status.lam    => s!"│ {pipes}"
+      | Status.reg    => s!"│ {pipes}"
 
     let row := m!"{line}│{dep}│ {thm} {pipes}{en.type}\n"
     return (← rowToMessageData lines deps thms es).compose row
