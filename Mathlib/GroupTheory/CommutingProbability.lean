@@ -195,59 +195,50 @@ lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α 
 
 def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
     (ZMod n × ZMod n ⊕ ZMod n) ⊕ (ZMod n ⊕ ZMod n) where
-  toFun p := match h1 : p.1.1, h2 : p.1.2 with
+  toFun p :=
+    match h1 : p.1.1, h2 : p.1.2 with
     | r i, r j => Sum.inl (Sum.inl ⟨i, j⟩)
-    | sr i, r j => Sum.inr (Sum.inl i)
-    | r i, sr j => Sum.inl (Sum.inr j)
+    | sr i, r _ => Sum.inr (Sum.inl i)
+    | r _, sr j => Sum.inl (Sum.inr j)
     | sr i, sr j => Sum.inr (Sum.inr (i + j))
-  invFun p := match p with
+  invFun p :=
+    let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn)
+    match p with
     | Sum.inl (Sum.inl ⟨i, j⟩) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
     | Sum.inr (Sum.inl i) => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
     | Sum.inl (Sum.inr j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
-    | Sum.inr (Sum.inr k) => ⟨⟨sr ((ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn))⁻¹ * k),
-        sr ((ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn))⁻¹ * k) ⟩, rfl⟩
+    | Sum.inr (Sum.inr k) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k) ⟩, rfl⟩
   left_inv := by
     have : Fact (n % 2 = 1) := ⟨Nat.two_dvd_ne_zero.mp hn⟩
     rintro ⟨⟨i | i, j | j⟩, h⟩
     . rfl
-    . replace h := sr.inj h
-      rw [sub_eq_add_neg, add_right_inj] at h
-      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h.symm
+    . replace h : i = -i := add_left_cancel ((sr.inj h.symm).trans (sub_eq_add_neg j i))
+      replace h : i = 0 := not_imp_not.mp (ZMod.ne_neg_self n) h
       simp only [h]
-    . replace h := sr.inj h
-      rw [sub_eq_add_neg, add_right_inj] at h
-      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h
+    . replace h : j = -j := add_left_cancel ((sr.inj h).trans (sub_eq_add_neg i j))
+      replace h : j = 0 := not_imp_not.mp (ZMod.ne_neg_self n) h
       simp only [h]
-    . replace h := r.inj h
-      rw [←neg_sub] at h
-      replace h := not_imp_not.mp (ZMod.ne_neg_self n) h.symm
-      rw [sub_eq_zero] at h
-      simp [h, ←two_mul]
-      rw [←mul_assoc, ←@Nat.cast_two (ZMod n),
-          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), ←Units.val_mul,
-          inv_mul_self, Units.val_one, one_mul]
+    . replace h : j - i = -(j - i) := (r.inj h).trans (neg_sub j i).symm
+      replace h : j = i := sub_eq_zero.mp (not_imp_not.mp (ZMod.ne_neg_self n) h)
+      rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, ←two_mul, ←@Nat.cast_two (ZMod n),
+          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
+          Units.inv_mul_cancel_left, and_self]
   right_inv := by
     rintro ((a | b) | (c | d))
-    . rfl
-    . rfl
-    . rfl
-    . simp [←two_mul]
-      rw [←mul_assoc, ←@Nat.cast_two (ZMod n),
-          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), ←Units.val_mul,
-          mul_inv_self, Units.val_one, one_mul]
+    any_goals rfl
+    rw [Sum.inr.injEq, ←two_mul, ←@Nat.cast_two (ZMod n),
+        ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
+        Units.mul_inv_cancel_left]
 
--- todo: compute conjugacy classes of dihedral group by counting commuting pairs
-lemma card_conjClasses_dihedralGroup_odd (n : ℕ) (hn : ¬ 2 ∣ n) :
+lemma card_conjClasses_dihedralGroup_odd {n : ℕ} (hn : ¬ 2 ∣ n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
   have hn' : NeZero n := ⟨fun h => hn (h ▸ Nat.dvd_zero 2)⟩
-  let G := DihedralGroup n
-  suffices : Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = (n + 3) * n
-  . rw [card_comm_eq_card_conjClasses_mul_card, @Nat.card_eq_fintype_card G,
-      DihedralGroup.card, ←mul_assoc, mul_left_inj' hn'.1] at this
-    exact (Nat.div_eq_of_eq_mul_left two_pos this.symm).symm
-  rw [Nat.card_congr (myEquiv hn), Nat.card_sum, Nat.card_sum, Nat.card_sum, Nat.card_prod,
-      Nat.card_zmod]
-  ring
+  have h := card_comm_eq_card_conjClasses_mul_card (DihedralGroup n)
+  rw [mul_comm, Nat.card_congr (myEquiv hn), Nat.card_sum, Nat.card_sum, Nat.card_sum,
+      Nat.card_prod, Nat.card_zmod, Nat.card_eq_fintype_card] at h
+  rw [←Nat.div_eq_of_eq_mul_right (Fintype.card_pos) h, DihedralGroup.card,
+      ←Nat.mul_div_mul_right (n + 3) 2 (Nat.pos_of_ne_zero hn'.1)]
+  congr; ring
 
 end DihedralGroup
 
@@ -281,7 +272,7 @@ lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
   have : NeZero n := ⟨hn'⟩
-  rw [commProb_def', DihedralGroup.card_conjClasses_dihedralGroup_odd n hn,
+  rw [commProb_def', DihedralGroup.card_conjClasses_dihedralGroup_odd hn,
       Nat.card_eq_fintype_card, DihedralGroup.card]
   have : ((n + 3) / 2 : ℕ) = ((n + 3 : ℕ) : ℚ) / (2 : ℕ) := by
     rw [Nat.cast_div]
