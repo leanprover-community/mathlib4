@@ -343,7 +343,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
       have h₁ := h w' this
       exact le_of_eq h₁
       rwa [norm_eq_iInf_iff_real_inner_le_zero]
-      exacts[Submodule.convex _, hv])
+      exacts [Submodule.convex _, hv])
 #align norm_eq_infi_iff_real_inner_eq_zero norm_eq_iInf_iff_real_inner_eq_zero
 
 /-- Characterization of minimizers in the projection on a subspace.
