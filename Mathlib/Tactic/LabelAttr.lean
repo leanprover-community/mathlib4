@@ -76,7 +76,7 @@ Initialize a new "label" attribute.
 Declarations tagged with the attribute can be retrieved using `Mathlib.Tactic.LabelAttr.labelled`.
 -/
 macro (name := _root_.Lean.Parser.Command.registerLabelAttr) doc:(docComment)?
-  "register_label_attr" id:ident : command => do
+  "register_label_attr " id:ident : command => do
   let str := id.getId.toString
   let idParser := mkIdentFrom id (`Parser.Attr ++ id.getId)
   let descr := quote (removeLeadingSpaces
@@ -91,6 +91,3 @@ def labelled (attrName : Name) : MetaM (Array Name) := do
   match (← labelExtensionMapRef.get).find? attrName with
   | none => throwError "No extension named {attrName}"
   | some ext => pure <| ext.getState (← getEnv)
-
-/-- A dummy label attribute, to ease testing. -/
-register_label_attr dummy_label_attr

@@ -389,14 +389,14 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
     NatIso.ofComponents
       (fun x => by
         cases x
-        exacts[D.gluedIso F, Iso.refl _])
+        exacts [D.gluedIso F, Iso.refl _])
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
   refine' Cones.ext (Iso.refl _) _
   · rintro (_ | _ | _)
     change _ = _ ≫ (_ ≫ _) ≫ _
-    all_goals change _ = 𝟙 _ ≫ _ ≫ _; simp; aesop_cat
+    all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap
 

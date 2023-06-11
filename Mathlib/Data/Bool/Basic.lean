@@ -404,7 +404,7 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff
 
 /-- **Kaminski's Equation** -/

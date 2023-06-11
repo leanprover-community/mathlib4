@@ -302,7 +302,7 @@ instance [Nontrivial R] : Nontrivial (FractionRing R) :=
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
-noncomputable instance : Field (FractionRing A) := IsFractionRing.toField A
+noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
 
 @[simp]
 theorem mk_eq_div {r s} :

@@ -340,7 +340,7 @@ namespace Measure
 we can convert any probability measure into a `Pmf`, where the mass of a point
 is the measure of the singleton set under the original measure. -/
 def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
-    [h : ProbabilityMeasure μ] : Pmf α :=
+    [h : IsProbabilityMeasure μ] : Pmf α :=
   ⟨fun x => μ ({x} : Set α),
     ENNReal.summable.hasSum_iff.2
       (_root_.trans
@@ -351,7 +351,7 @@ def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
 #align measure_theory.measure.to_pmf MeasureTheory.Measure.toPmf
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
-  [ProbabilityMeasure μ]
+  [IsProbabilityMeasure μ]
 
 theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} := rfl
 #align measure_theory.measure.to_pmf_apply MeasureTheory.Measure.toPmf_apply
@@ -372,15 +372,15 @@ namespace Pmf
 open MeasureTheory
 
 /-- The measure associated to a `Pmf` by `toMeasure` is a probability measure. -/
-instance toMeasure.probabilityMeasure [MeasurableSpace α] (p : Pmf α) :
-    ProbabilityMeasure p.toMeasure :=
+instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : Pmf α) :
+    IsProbabilityMeasure p.toMeasure :=
   ⟨by
     simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,
       toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
-#align pmf.to_measure.is_probability_measure Pmf.toMeasure.probabilityMeasure
+#align pmf.to_measure.is_probability_measure Pmf.toMeasure.isProbabilityMeasure
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α) (μ : Measure α)
-  [ProbabilityMeasure μ]
+  [IsProbabilityMeasure μ]
 
 @[simp]
 theorem toMeasure_toPmf : p.toMeasure.toPmf = p :=
@@ -388,11 +388,11 @@ theorem toMeasure_toPmf : p.toMeasure.toPmf = p :=
     rw [← p.toMeasure_apply_singleton x (measurableSet_singleton x), p.toMeasure.toPmf_apply]
 #align pmf.to_measure_to_pmf Pmf.toMeasure_toPmf
 
-theorem toMeasure_eq_iff_eq_toPmf (μ : Measure α) [ProbabilityMeasure μ] :
+theorem toMeasure_eq_iff_eq_toPmf (μ : Measure α) [IsProbabilityMeasure μ] :
     p.toMeasure = μ ↔ p = μ.toPmf := by rw [← toMeasure_inj, Measure.toPmf_toMeasure]
 #align pmf.to_measure_eq_iff_eq_to_pmf Pmf.toMeasure_eq_iff_eq_toPmf
 
-theorem toPmf_eq_iff_toMeasure_eq (μ : Measure α) [ProbabilityMeasure μ] :
+theorem toPmf_eq_iff_toMeasure_eq (μ : Measure α) [IsProbabilityMeasure μ] :
     μ.toPmf = p ↔ μ = p.toMeasure := by rw [← toMeasure_inj, Measure.toPmf_toMeasure]
 #align pmf.to_pmf_eq_iff_to_measure_eq Pmf.toPmf_eq_iff_toMeasure_eq
 

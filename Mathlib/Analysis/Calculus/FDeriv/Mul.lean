@@ -24,9 +24,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology Classical NNReal ENNReal
 
 noncomputable section
 
@@ -65,20 +63,20 @@ variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G �
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMapComp.hasStrictFDerivAt (c x, d x)).comp x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).comp x <| hc.prod hd
 #align has_strict_fderiv_at.clm_comp HasStrictFDerivAt.clm_comp
 
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x :=
-  (isBoundedBilinearMapComp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.prod hd
 #align has_fderiv_within_at.clm_comp HasFDerivWithinAt.clm_comp
 
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMapComp.hasFDerivAt (c x, d x)).comp x <| hc.prod hd
+  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp x <| hc.prod hd
 #align has_fderiv_at.clm_comp HasFDerivAt.clm_comp
 
 theorem DifferentiableWithinAt.clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -164,7 +162,7 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
 
 end ClmCompApply
 
-section Smul
+section SMul
 
 /-! ### Derivative of the product of a scalar-valued function and a vector-valued function
 
@@ -183,17 +181,17 @@ variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 
 theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMapSmul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prod hf
 #align has_strict_fderiv_at.smul HasStrictFDerivAt.smul
 
 theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x :=
-  (isBoundedBilinearMapSmul.hasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.prod hf
 #align has_fderiv_within_at.smul HasFDerivWithinAt.smul
 
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMapSmul.hasFDerivAt (c x, f x)).comp x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp x <| hc.prod hf
 #align has_fderiv_at.smul HasFDerivAt.smul
 
 theorem DifferentiableWithinAt.smul (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -272,7 +270,7 @@ theorem fderiv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
   (hc.hasFDerivAt.smul_const f).fderiv
 #align fderiv_smul_const fderiv_smul_const
 
-end Smul
+end SMul
 
 section Mul
 

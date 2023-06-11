@@ -828,12 +828,12 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
 #align cinfi_set_le ciInf_set_le
 
 @[simp]
-theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _b : ι, a) = a := by
+theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _ : ι, a) = a := by
   rw [iSup, range_const, csSup_singleton]
 #align csupr_const ciSup_const
 
 @[simp]
-theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _b : ι, a) = a :=
+theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _ : ι, a) = a :=
   @ciSup_const αᵒᵈ _ _ _ _
 #align cinfi_const ciInf_const
 
@@ -1474,7 +1474,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type _}
     le_csInf := (@WithTop.conditionallyCompleteLattice αᵒᵈ _).csSup_le }
 #align with_bot.conditionally_complete_lattice WithBot.conditionallyCompleteLattice
 
--- Poting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
+-- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with

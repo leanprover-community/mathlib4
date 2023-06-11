@@ -86,7 +86,7 @@ in `Algebra.DirectSum.Internal`.
 This file also defines:
 
 * `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
-* `SetLike.HomogeneouSubmonoid A`, which is, as the name suggests, the submonoid consisting of
+* `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
 ## tags
@@ -171,9 +171,9 @@ theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
 end GMonoid
 
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_zero'' -/
-macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_zero)
+macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_zero)
 /-- A tactic to for use as an optional value for `Gmonoid.gnpow_succ'' -/
-macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic | apply GMonoid.gnpowRec_succ)
+macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
 
 /-- A graded version of `Monoid`
 

@@ -133,10 +133,9 @@ theorem has_deriv_at_interval_left_endpoint_of_tendsto_deriv {s : Set ℝ} {e : 
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight 1 e)) := by
     simp only [deriv_fderiv.symm]
-    exact
-      Tendsto.comp
-        (isBoundedBilinearMapSmulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
-        (tendsto_nhdsWithin_mono_left Ioo_subset_Ioi_self f_lim')
+    exact Tendsto.comp
+      (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
+      (tendsto_nhdsWithin_mono_left Ioo_subset_Ioi_self f_lim')
   -- now we can apply `has_fderiv_at_boundary_of_differentiable`
   have : HasDerivWithinAt f e (Icc a b) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
@@ -169,10 +168,9 @@ theorem has_deriv_at_interval_right_endpoint_of_tendsto_deriv {s : Set ℝ} {e :
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight 1 e)) := by
     simp only [deriv_fderiv.symm]
-    exact
-      Tendsto.comp
-        (isBoundedBilinearMapSmulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
-        (tendsto_nhdsWithin_mono_left Ioo_subset_Iio_self f_lim')
+    exact Tendsto.comp
+      (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
+      (tendsto_nhdsWithin_mono_left Ioo_subset_Iio_self f_lim')
   -- now we can apply `has_fderiv_at_boundary_of_differentiable`
   have : HasDerivWithinAt f e (Icc b a) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]

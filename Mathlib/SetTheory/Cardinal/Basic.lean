@@ -44,7 +44,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommCemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -2248,7 +2248,7 @@ theorem mk_eq_two_iff' (x : α) : (#α) = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨a, b, hne, h⟩
     simp only [eq_univ_iff_forall, mem_insert_iff, mem_singleton_iff] at h
     rcases h x with (rfl | rfl)
-    exacts[⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
+    exacts [⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 #align cardinal.mk_eq_two_iff' Cardinal.mk_eq_two_iff'

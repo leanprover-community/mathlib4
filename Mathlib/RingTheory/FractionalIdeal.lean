@@ -610,7 +610,7 @@ theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
 #align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
 
-instance : CommSemiring (FractionalIdeal S P) :=
+instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
 
