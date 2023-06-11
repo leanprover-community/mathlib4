@@ -335,18 +335,18 @@ theorem IsWide.eqToHom_mem {S : Subgroupoid C} (Sw : S.IsWide) {c d : C} (h : c 
 
 /-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
 structure IsNormal extends IsWide S : Prop where
-  conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → inv p ≫ γ ≫ p ∈ S.arrows d d
+  conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → Groupoid.inv p ≫ γ ≫ p ∈ S.arrows d d
 #align category_theory.subgroupoid.is_normal CategoryTheory.Subgroupoid.IsNormal
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
-    ∀ {c d} (p : d ⟶ c) {γ : c ⟶ c}, γ ∈ S.arrows c c → p ≫ γ ≫ inv p ∈ S.arrows d d :=
-  fun p γ hs => by convert Sn.conj (inv p) hs; simp
+    ∀ {c d} (p : d ⟶ c) {γ : c ⟶ c}, γ ∈ S.arrows c c → p ≫ γ ≫ Groupoid.inv p ∈ S.arrows d d :=
+  fun p γ hs => by convert Sn.conj (Groupoid.inv p) hs; simp
 #align category_theory.subgroupoid.is_normal.conj' CategoryTheory.Subgroupoid.IsNormal.conj'
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
-    Set.BijOn (fun γ : c ⟶ c => inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
+    Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
   refine' ⟨fun γ γS => Sn.conj p γS, fun γ₁ _ γ₂ _ h => _, fun δ δS =>
-    ⟨p ≫ δ ≫ inv p, Sn.conj' p δS, _⟩⟩
+    ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, _⟩⟩
   · simpa only [inv_eq_inv, Category.assoc, IsIso.hom_inv_id, Category.comp_id,
       IsIso.hom_inv_id_assoc] using p ≫= h =≫ inv p
   · simp only [inv_eq_inv, Category.assoc, IsIso.inv_hom_id, Category.comp_id,
@@ -439,11 +439,11 @@ theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T
   @ST ⟨_, _, _⟩
 #align category_theory.subgroupoid.comap_mono CategoryTheory.Subgroupoid.comap_mono
 
-theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap φ S) :=
-  { wide := fun c => by rw [comap, mem_setOf, Functor.map_id]; apply Sn.wide
-    conj := fun f γ hγ => by
-      simp_rw [inv_eq_inv f, comap, mem_setOf, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
-      exact Sn.conj _ hγ }
+theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap φ S) where
+  wide c := by rw [comap, mem_setOf, Functor.map_id]; apply Sn.wide
+  conj f γ hγ := by
+    simp_rw [inv_eq_inv f, comap, mem_setOf, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
+    exact Sn.conj _ hγ
 #align category_theory.subgroupoid.is_normal_comap CategoryTheory.Subgroupoid.isNormal_comap
 
 @[simp]
@@ -590,7 +590,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; subst_vars; cases hφ hb; cases hφ hb'
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
-      suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| inv f ≫ γ ≫ f) by
+      suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
         simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this ; exact this
       · constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
