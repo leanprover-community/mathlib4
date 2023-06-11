@@ -8,7 +8,7 @@ Authors: John Nicol
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Wilson's theorem.
@@ -40,8 +40,7 @@ variable (p : ℕ) [Fact p.Prime]
 
 /-- **Wilson's Lemma**: the product of `1`, ..., `p-1` is `-1` modulo `p`. -/
 @[simp]
-theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 :=
-  by
+theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   refine'
     calc
       ((p - 1)! : ZMod p) = ∏ x in Ico 1 (succ (p - 1)), x := by
@@ -70,8 +69,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 :=
 #align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]
-theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 :=
-  by
+theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
   conv in Ico 1 p => rw [← succ_sub_one p, succ_sub (Fact.out p.prime).Pos]
   rw [← prod_nat_cast, Finset.prod_Ico_id_eq_factorial, wilsons_lemma]
 #align zmod.prod_Ico_one_prime ZMod.prod_Ico_one_prime
@@ -83,8 +81,7 @@ namespace Nat
 variable {n : ℕ}
 
 /-- For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` only if n is prime. -/
-theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1) : Prime n :=
-  by
+theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1) : Prime n := by
   rcases eq_or_ne n 0 with (rfl | h0)
   · norm_num at h 
   replace h1 : 1 < n := n.two_le_iff.mpr ⟨h0, h1⟩
@@ -96,8 +93,7 @@ theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1)
 #align nat.prime_of_fac_equiv_neg_one Nat.prime_of_fac_equiv_neg_one
 
 /-- **Wilson's Theorem**: For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` iff n is prime. -/
-theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod n) = -1 :=
-  by
+theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod n) = -1 := by
   refine' ⟨fun h1 => _, fun h2 => prime_of_fac_equiv_neg_one h2 h⟩
   haveI := Fact.mk h1
   exact ZMod.wilsons_lemma n
