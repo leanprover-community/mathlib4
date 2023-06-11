@@ -655,6 +655,7 @@ import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.Exponential
+import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Mul
 import Mathlib.Analysis.NormedSpace.Star.Multiplier
 import Mathlib.Analysis.NormedSpace.Star.Spectrum

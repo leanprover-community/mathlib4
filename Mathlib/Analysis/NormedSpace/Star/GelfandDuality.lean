@@ -8,13 +8,13 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.Star.Spectrum
-import Mathbin.Analysis.Normed.Group.Quotient
-import Mathbin.Analysis.NormedSpace.Algebra
-import Mathbin.Topology.ContinuousFunction.Units
-import Mathbin.Topology.ContinuousFunction.Compact
-import Mathbin.Topology.Algebra.Algebra
-import Mathbin.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Analysis.NormedSpace.Star.Spectrum
+import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Analysis.NormedSpace.Algebra
+import Mathlib.Topology.ContinuousFunction.Units
+import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 
 /-!
 # Gelfand Duality
@@ -97,8 +97,7 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivlaent
 to `gelfand_transform ℂ A a` takes the value zero at some character. -/
 theorem WeakDual.characterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
-    ∃ f : characterSpace ℂ A, f a = 0 :=
-  by
+    ∃ f : characterSpace ℂ A, f a = 0 := by
   obtain ⟨M, hM, haM⟩ := (span {a}).exists_le_maximal (span_singleton_ne_top ha)
   exact
     ⟨M.to_character_space,
@@ -107,8 +106,7 @@ theorem WeakDual.characterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
 #align weak_dual.character_space.exists_apply_eq_zero WeakDual.characterSpace.exists_apply_eq_zero
 
 theorem WeakDual.characterSpace.mem_spectrum_iff_exists {a : A} {z : ℂ} :
-    z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z :=
-  by
+    z ∈ spectrum ℂ a ↔ ∃ f : characterSpace ℂ A, f a = z := by
   refine' ⟨fun hz => _, _⟩
   · obtain ⟨f, hf⟩ := WeakDual.characterSpace.exists_apply_eq_zero hz
     simp only [map_sub, sub_eq_zero, AlgHomClass.commutes, Algebra.id.map_eq_id,
@@ -146,8 +144,7 @@ theorem gelfandTransform_map_star (a : A) :
 variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
-theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) :=
-  by
+theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
   refine' AddMonoidHomClass.isometry_of_norm (gelfand_transform ℂ A) fun a => _
   /- By `spectrum.gelfand_transform_eq`, the spectra of `star a * a` and its
@@ -163,8 +160,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) :=
 #align gelfand_transform_isometry gelfandTransform_isometry
 
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
-theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) :=
-  by
+theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).Injective, _⟩
   suffices (gelfand_transform ℂ A).range = ⊤ by
     exact fun x => this.symm ▸ (gelfand_transform ℂ A).mem_range.mp (this.symm ▸ Algebra.mem_top)
