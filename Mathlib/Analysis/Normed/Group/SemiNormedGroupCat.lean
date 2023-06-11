@@ -62,9 +62,14 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat :=
 instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
-/-- Porting Note: Added -- needed to make coe_id work-/
-instance {X Y : SemiNormedGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X ⟶ Y) := NormedAddGroupHom.toFun f
+-- Porting Note: Added -- needed to make coe_id work
+instance FunLike_instance (X Y : SemiNormedGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+show FunLike (NormedAddGroupHom X Y) X (fun _ => Y) from inferInstance
+
+-- Porting note : Added
+instance instZeroHomClass (X Y : SemiNormedGroupCat) : ZeroHomClass (X ⟶ Y) X Y :=
+show ZeroHomClass (NormedAddGroupHom X Y) X Y from inferInstance
+
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
@@ -113,7 +118,7 @@ theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limit
     --porting note: Next three lines were simply `simp [this, map_zero]`
     rw [this]
     suffices f 0 = (0 : V⟶ X) 0 by convert this
-    simp [map_zero]
+    simp only [map_zero]
   · ext
     --porting note: was `Subsingleton.elim`
     apply @Subsingleton.elim V _
