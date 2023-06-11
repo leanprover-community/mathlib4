@@ -133,5 +133,5 @@ theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B) :=
 
 assert_no_sorry Bool_eq_iff2
 
--- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply?.20regression/near/354025788
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20regression/near/354025788
 example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
