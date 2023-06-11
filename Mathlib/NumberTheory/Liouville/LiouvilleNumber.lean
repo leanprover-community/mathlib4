@@ -98,7 +98,7 @@ theorem partialSum_succ (m : ℝ) (n : ℕ) :
   sum_range_succ _ _
 #align liouville_number.partial_sum_succ LiouvilleNumber.partialSum_succ
 
-/-- Split the sum definining a Liouville number into the first `k` terms and the rest. -/
+/-- Split the sum defining a Liouville number into the first `k` terms and the rest. -/
 theorem partialSum_add_remainder {m : ℝ} (hm : 1 < m) (k : ℕ) :
     partialSum m k + remainder m k = liouvilleNumber m :=
   sum_add_tsum_nat_add _ (LiouvilleNumber.summable hm)

@@ -218,7 +218,7 @@ instance Comp.ToFormat : ToFormat Comp :=
 /-! ### Control -/
 
 /--
-A preprocessor transforms a proof of a proposition into a proof of a different propositon.
+A preprocessor transforms a proof of a proposition into a proof of a different proposition.
 The return type is `List Expr`, since some preprocessing steps may create multiple new hypotheses,
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
