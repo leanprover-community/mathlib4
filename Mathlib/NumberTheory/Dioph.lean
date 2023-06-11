@@ -731,20 +731,7 @@ open Pell
 
 theorem pell_dioph :
     Dioph fun v : Vector3 ℕ 4 => ∃ h : 1 < v &0, xn h (v &1) = v &2 ∧ yn h (v &1) = v &3 := by
-  -- have : Dioph {v : Vector3 ℕ 4 |
-  --   1 < v &0 ∧ v &1 ≤ v &3 ∧
-  --   (v &2 = 1 ∧ v &3 = 0 ∨
-  --   ∃ u w s t b : ℕ,
-  --     v &2 * v &2 - (v &0 * v &0 - 1) * v &3 * v &3 = 1 ∧
-  --     u * u - (v &0 * v &0 - 1) * w * w = 1 ∧
-  --     s * s - (b * b - 1) * t * t = 1 ∧
-  --     1 < b ∧ b ≡ 1 [MOD 4 * v &3] ∧ b ≡ v &0 [MOD u] ∧
-  --     0 < w ∧ v &3 * v &3 ∣ w ∧
-  --     s ≡ v &2 [MOD u] ∧
-  --     t ≡ v &1 [MOD 4 * v &3])} :=
-  -- Porting note: this term closes the proof but it does match with the goal of the previous
-  -- `have` as it should
-  have := D.1 D< D&0 D∧ D&1 D≤ D&3 D∧
+  have proof := D.1 D< D&0 D∧ D&1 D≤ D&3 D∧
       ((D&2 D= D.1 D∧ D&3 D= D.0) D∨
       ((D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <|
       D&7 D* D&7 D- (D&5 D* D&5 D- D.1) D* D&8 D* D&8 D= D.1 D∧
@@ -754,6 +741,19 @@ theorem pell_dioph :
       D.0 D< D&3 D∧ D&8 D* D&8 D∣ D&3 D∧
       (D≡ (D&2) (D&7) (D&4)) D∧
       (D≡ (D&1) (D&6) (D.4 D* (D&8)))))
+  -- Porting note: TODO
+  have : Dioph {v : Vector3 ℕ 4 |
+    1 < v &0 ∧ v &1 ≤ v &3 ∧
+    (v &2 = 1 ∧ v &3 = 0 ∨
+    ∃ u w s t b : ℕ,
+      v &2 * v &2 - (v &0 * v &0 - 1) * v &3 * v &3 = 1 ∧
+      u * u - (v &0 * v &0 - 1) * w * w = 1 ∧
+      s * s - (b * b - 1) * t * t = 1 ∧
+      1 < b ∧ b ≡ 1 [MOD 4 * v &3] ∧ b ≡ v &0 [MOD u] ∧
+      0 < w ∧ v &3 * v &3 ∣ w ∧
+      s ≡ v &2 [MOD u] ∧
+      t ≡ v &1 [MOD 4 * v &3])} := by
+    exact proof
   exact Dioph.ext this fun v => matiyasevic.symm
 #align dioph.pell_dioph Dioph.pell_dioph
 
@@ -766,7 +766,17 @@ theorem xn_dioph : DiophPfun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
 #align dioph.xn_dioph Dioph.xn_dioph
 
 /-- A version of **Matiyasevic's theorem** -/
-theorem pow_dioph : DiophFn fun v => f v ^ g v :=
+theorem pow_dioph : DiophFn fun v => f v ^ g v := by
+  have proof :=
+    let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
+    (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
+    ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
+    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 $ (D∃) 7 <| (D∃) 8 <| D_pell D∧
+    (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
+    D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
+    D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧
+    D&4 D* D&4 D- ((D&5 D+ D.1) D* (D&5 D+ D.1) D- D.1) D* (D&5 D* D&2) D* (D&5 D* D&2) D= D.1))))
+  -- Porting note: TODO
   have : Dioph {v : Vector3 ℕ 3 |
     v &2 = 0 ∧ v &0 = 1 ∨ 0 < v &2 ∧
     (v &1 = 0 ∧ v &0 = 0 ∨ 0 < v &1 ∧
@@ -776,59 +786,12 @@ theorem pow_dioph : DiophFn fun v => f v ^ g v :=
       2 * a * v &1 = t + (v &1 * v &1 + 1) ∧
       v &0 < t ∧ v &1 ≤ w ∧ v &2 ≤ w ∧
       a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1)} := by
---  have :=
-    let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
-    convert (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
-      ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
-      ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 $ (D∃) 7 <| (D∃) 8 <| D_pell D∧
-      (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
-      D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
-      D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧
-      D&4 D* D&4 D- ((D&5 D+ D.1) D* (D&5 D+ D.1) D- D.1) D* (D&5 D* D&2) D* (D&5 D* D&2) D= D.1))))
-      
-  (by
-    dsimp at this
-    refine diophFn_comp2 df dg ?_
-    refine (diophFn_vec _).2 ?_
-    refine Dioph.ext this (fun v => Iff.symm ?_)
-    refine eq_pow_of_pell.trans ?_
-    refine or_congr Iff.rfl ?_
-    refine and_congr Iff.rfl ?_
-    refine or_congr Iff.rfl  ?_
-    refine and_congr Iff.rfl ?_
-    refine ⟨fun ⟨w, a, t, z, a1, h⟩ => ⟨w, a, t, z, _, _, ⟨a1, by rfl, by rfl⟩, h⟩, ?_⟩
-    dsimp only
-    rintro ⟨w, a, t, z, p1, p2, ⟨a1, rw1, rw2⟩, ⟨h1, h2, h3, h4, h5, h6⟩⟩
-    refine ⟨w, ?_⟩
-    refine ⟨a, ?_⟩
-    refine ⟨t, ?_⟩
-    refine ⟨z, ?_⟩
-    refine ⟨a1, ?_⟩
-
-    dsimp [(·∘·)] at rw1 rw2 h1 h2 h3 h4 h5 h6 ⊢
-    refine ⟨?_, ?_⟩
-
-
-    --rw [← rw1, ← rw2] at h
- --   simp at rw1 rw2 ⊢
-
-
-
-  )
-
-#exit
-
-  diophFn_comp2 df dg <|
-    (diophFn_vec _).2 <|
-      Dioph.ext this fun v =>
-        Iff.symm <|
-          eq_pow_of_pell.trans <|
-            or_congr Iff.rfl <|
-              and_congr Iff.rfl <|
-                or_congr Iff.rfl <|
-                  and_congr Iff.rfl <|
-                    ⟨fun ⟨w, a, t, z, a1, h⟩ => ⟨w, a, t, z, _, _, ⟨a1, rfl, rfl⟩, h⟩,
-                      fun ⟨w, a, t, z, _, _, ⟨a1, rfl, rfl⟩, h⟩ => ⟨w, a, t, z, a1, h⟩⟩
+    exact proof
+  exact diophFn_comp2 df dg <| (diophFn_vec _).2 <| Dioph.ext this fun v => Iff.symm <|
+    eq_pow_of_pell.trans <| or_congr Iff.rfl <| and_congr Iff.rfl <| or_congr Iff.rfl <|
+       and_congr Iff.rfl <|
+        ⟨fun ⟨w, a, t, z, a1, h⟩ => ⟨w, a, t, z, _, _, ⟨a1, rfl, rfl⟩, h⟩,
+        fun ⟨w, a, t, z, _, _, ⟨a1, rfl, rfl⟩, h⟩ => ⟨w, a, t, z, a1, h⟩⟩
 #align dioph.pow_dioph Dioph.pow_dioph
 
 end
