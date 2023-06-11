@@ -248,7 +248,6 @@ syntax (name := exact?!) "exact?!" (config)? (simpArgs)?
 syntax (name := apply?') "apply?" (config)? (simpArgs)?
   (" using " (colGt term),+)? : tactic
 
-
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
@@ -277,6 +276,11 @@ elab_rules : tactic | `(tactic| exact?%$tk $[using $[$required],*]?) => do
 
 elab_rules : tactic | `(tactic| apply?%$tk $[using $[$required],*]?) => do
   exact? tk required false
+
+elab tk:"library_search" : tactic => do
+  logWarning ("`library_search` has been renamed to `apply?`" ++
+    " (or `exact?` if you only want solutions closing the goal)")
+  exact? tk none false
 
 open Elab Term in
 elab tk:"exact?%" : term <= expectedType => do
