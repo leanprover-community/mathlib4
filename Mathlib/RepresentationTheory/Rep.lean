@@ -161,14 +161,16 @@ theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_obj_ρ Rep.linearization_obj_ρ
 
-/- Porting note: seemed worth generalising from `r = 1`, and helps fixing
-`linearizationTrivialIso`-/
-@[simp]
+theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
+    ((linearization k G).obj X).ρ g (Finsupp.single x 1) = Finsupp.single (X.ρ g x) 1 :=
+  by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+set_option linter.uppercaseLean3 false in
+#align Rep.linearization_of Rep.linearization_of
+
+/- Porting note: helps fixing `linearizationTrivialIso` due to change in behaviour of `ext` -/
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r :=
   by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
-set_option linter.uppercaseLean3 false in
-#align Rep.linearization_single Rep.linearization_single
 
 variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
 
@@ -200,9 +202,7 @@ theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
-  ext
-  dsimp
-  exact LinearEquiv.symm_apply_apply _ _
+  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_μ_inv_hom Rep.linearization_μ_inv_hom
 
@@ -287,15 +287,10 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
-/- Porting note: broken proof of left_inv was
-   refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
-   have :
-    f.hom ((of_mul_action k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
-      A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
-    LinearMap.ext_iff.1 (f.comm x) (Finsupp.single 1 1)
-   simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
-     Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
-     Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one]-/
+/- Porting note: in the proof of `left_inv`, the lines after `have : ... := ...` used to just be
+    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
+      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
+      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
@@ -311,8 +306,10 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
       LinearMap.ext_iff.1 (f.comm x) (Finsupp.single 1 1)
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
-    erw [Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, of_ρ_apply,
-      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one]
+    erw [Finsupp.lift_apply]
+    rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+    simp only [one_smul, smul_eq_mul, mul_one]
     · rw [zero_smul]
   right_inv x := leftRegularHom_apply x
 set_option linter.uppercaseLean3 false in
@@ -579,7 +576,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Functorially convert a module over `MonoidAlgebra k G` into a representation of `G`. -/
 def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
-  obj M := Rep.of (@Representation.ofModule k G _ _ M _ _)
+  obj M := Rep.of (Representation.ofModule M)
   map f :=
     { hom := { f with map_smul' := fun r x => f.map_smul (algebraMap k _ r) x }
       comm := fun g => by ext; apply f.map_smul }
@@ -593,7 +590,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra_obj_coe Rep.ofModuleMonoidAlgebra_obj_coe
 
 theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
-    (ofModuleMonoidAlgebra.obj M).ρ = @Representation.ofModule k G _ _ M _ _ :=
+    (ofModuleMonoidAlgebra.obj M).ρ = Representation.ofModule M :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra_obj_ρ Rep.ofModuleMonoidAlgebra_obj_ρ
@@ -602,8 +599,8 @@ set_option linter.uppercaseLean3 false in
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  refine' (@Representation.ofModule k G _ _ M _ _).asModuleEquiv.trans
-    (RestrictScalars.addEquiv _ _ _)
+  refine' (Representation.ofModule M).asModuleEquiv.trans
+    (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv
 
@@ -615,9 +612,7 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
-/- Porting note: broken `map_smul'` proof was
-   dsimp [counitIsoAddEquiv]
-   simp } -/
+/- Porting note: in the proof of `map_smul'`, the lines after `dsimp` used to just be one `simp`. -/
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
@@ -625,9 +620,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
-        show RestrictScalars.addEquiv k (MonoidAlgebra k G) _
-          (Representation.asModuleEquiv (@Representation.ofModule k G _ _ M _ _) _)
-          = r • (RestrictScalars.addEquiv k (MonoidAlgebra k G) _ _)
+        rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
         erw [Representation.ofModule_asAlgebraHom_apply_apply]
         exact AddEquiv.symm_apply_apply _ _}
 set_option linter.uppercaseLean3 false in
@@ -642,7 +635,10 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
--- Porting note: TODO needs fixing
+/- Porting note: in the proof of `map_smul'`, the lines after `dsimp [unitIsoAddEquiv]` were
+originally just
+simp only [Representation.asModuleEquiv_symm_map_smul,
+  RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
@@ -650,8 +646,10 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
           dsimp [unitIsoAddEquiv]
-          simp only [Representation.asModuleEquiv_symm_map_smul,
-            RestrictScalars.addEquiv_symm_map_algebraMap_smul] })
+          rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
+            Representation.asModuleEquiv_symm_map_smul,
+            RestrictScalars.addEquiv_symm_map_algebraMap_smul]
+          rfl })
     fun g => by ext; apply unit_iso_comm
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso Rep.unitIso
