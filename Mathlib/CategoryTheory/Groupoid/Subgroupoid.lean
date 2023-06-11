@@ -171,7 +171,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; simp only [Subtype.mk_eq_mk]; exact hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq  hfg
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
@@ -182,9 +182,13 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
   inv_mem' hf := S.inv hf
 #align category_theory.subgroupoid.vertex_subgroup CategoryTheory.Subgroupoid.vertexSubgroup
 
+/-- The set of all arrows of a subgroupoid, as a set in `Σ c d : C, c ⟶ d`. -/
+@[coe] def toSet (S : Subgroupoid C) : Set (Σ c d : C, c ⟶ d) :=
+  {F | F.2.2 ∈ S.arrows F.1 F.2.1}
+
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
-  coe S := {F | F.2.2 ∈ S.arrows F.1 F.2.1}
-  coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext (c d f); apply Set.ext_iff.1 h ⟨c, d, f⟩
+  coe := toSet
+  coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
 theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 ∈ S.arrows F.1 F.2.1 :=
   Iff.rfl
@@ -225,17 +229,21 @@ instance : Inf (Subgroupoid C) :=
 instance : InfSet (Subgroupoid C) :=
   ⟨fun s =>
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
-      inv := by intros; rw [mem_Inter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
-      mul := by intros; rw [mem_Inter₂] at hp hq ⊢; exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
+      inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
+      mul := fun hp _ hq ↦ by
+        rw [mem_iInter₂] at hp hq ⊢;
+        exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
+
+-- porting note: new lemma
+theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
+    p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
+  mem_iInter₂
 
 instance : CompleteLattice (Subgroupoid C) :=
-  {
-    completeLatticeOfInf (Subgroupoid C)
-      (by
-        refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;>
-          simp only [Inf, mem_iff, mem_Inter]
-        exacts [fun hp => hp S Ss, fun S Ss =>
-          Tl Ss fT]) with
+  { completeLatticeOfInf (Subgroupoid C) (by
+      refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;>
+        simp only [mem_sInf_arrows]
+      exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
     bot_le := fun S => empty_subset _
     top := ⊤
@@ -251,10 +259,10 @@ theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s
 
 /-- The functor associated to the embedding of subgroupoids -/
 def inclusion {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⥤ T.objs where
-  obj s := ⟨s.val, le_objs h s.Prop⟩
-  map s t f := ⟨f.val, @h ⟨s, t, f.val⟩ f.Prop⟩
-  map_id' _ := rfl
-  map_comp' _ _ _ _ _ := rfl
+  obj s := ⟨s.val, le_objs h s.prop⟩
+  map f := ⟨f.val, @h ⟨_, _, f.val⟩ f.prop⟩
+  map_id _ := rfl
+  map_comp _ _ := rfl
 #align category_theory.subgroupoid.inclusion CategoryTheory.Subgroupoid.inclusion
 
 theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
