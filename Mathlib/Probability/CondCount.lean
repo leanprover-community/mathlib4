@@ -160,7 +160,7 @@ theorem condCount_union (hs : s.Finite) (htu : Disjoint t u) :
     condCount s (t ∪ u) = condCount s t + condCount s u := by
   rw [condCount, cond_apply _ hs.measurableSet, cond_apply _ hs.measurableSet,
     cond_apply _ hs.measurableSet, Set.inter_union_distrib_left, measure_union, mul_add]
-  exacts[htu.mono inf_le_right inf_le_right, (hs.inter_of_left _).measurableSet]
+  exacts [htu.mono inf_le_right inf_le_right, (hs.inter_of_left _).measurableSet]
 #align probability_theory.cond_count_union ProbabilityTheory.condCount_union
 
 theorem condCount_compl (t : Set Ω) (hs : s.Finite) (hs' : s.Nonempty) :
@@ -186,7 +186,7 @@ theorem condCount_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
       ← mul_assoc]
   rw [ENNReal.mul_inv_cancel, ENNReal.mul_inv_cancel, one_mul, one_mul, ← add_mul, ← measure_union,
     Set.union_inter_distrib_right, mul_comm]
-  exacts[hst.mono inf_le_left inf_le_left, (ht.inter_of_left _).measurableSet,
+  exacts [hst.mono inf_le_left inf_le_left, (ht.inter_of_left _).measurableSet,
     Measure.count_ne_zero ht', (Measure.count_apply_lt_top.2 ht).ne, Measure.count_ne_zero hs',
     (Measure.count_apply_lt_top.2 hs).ne]
 #align probability_theory.cond_count_disjoint_union ProbabilityTheory.condCount_disjoint_union

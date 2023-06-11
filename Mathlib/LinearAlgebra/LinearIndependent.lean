@@ -362,7 +362,7 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
       intros
       assumption
     · rwa [Finsupp.embDomain_eq_mapDomain, Finsupp.sum_mapDomain_index]
-      exacts[fun _ => zero_smul _ _, fun _ _ _ => add_smul _ _ _]
+      exacts [fun _ => zero_smul _ _, fun _ _ _ => add_smul _ _ _]
 #align linear_independent_comp_subtype linearIndependent_comp_subtype
 
 theorem linearDependent_comp_subtype' {s : Set ι} :

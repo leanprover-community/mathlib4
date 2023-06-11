@@ -361,7 +361,7 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
-    exacts[subset_union_left _ _, ⟨0, Or.inl rfl⟩]
+    exacts [subset_union_left _ _, ⟨0, Or.inl rfl⟩]
   · rw [← image_smul, image_union]
     apply union_subset_union
     · rw [image_zero, smul_zero]

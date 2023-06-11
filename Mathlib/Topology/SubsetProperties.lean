@@ -379,7 +379,7 @@ theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : α} {K : Set β
   · intro s t hs ht
     filter_upwards [hs, ht]
     rintro x h1 h2 y (hys | hyt)
-    exacts[h1 y hys, h2 y hyt]
+    exacts [h1 y hys, h2 y hyt]
   · intro y hyK
     specialize hP y hyK
     rw [nhds_prod_eq, eventually_prod_iff] at hP
@@ -562,7 +562,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   have : f '' K ∈ l := by
     filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
-    exacts[(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
+    exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
   rcases hKc.image hfc (le_principal_iff.2 this) with ⟨y, hy, hyl⟩
   exact ⟨y, Or.inr <| image_subset_range _ _ hy, hyl⟩
@@ -1667,7 +1667,7 @@ theorem continuous_boolIndicator_iff_clopen (U : Set X) :
     exact ⟨(isOpen_discrete _).preimage hc, (isClosed_discrete _).preimage hc⟩
   · refine' fun hU => ⟨fun s _ => _⟩
     rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
-    exacts[isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
+    exacts [isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_clopen
 
 theorem continuousOn_boolIndicator_iff_clopen (s U : Set X) :
@@ -1969,7 +1969,7 @@ theorem IsPreirreducible.subset_irreducible {S U Z : Set α} (hZ : IsPreirreduci
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H
       rcases H with (rfl | rfl | rfl)
-      exacts[⟨z, h₂ (h₁ hz), hz⟩, ⟨x, h₂ hx, hx'⟩, ⟨y, h₂ hy, hy'⟩]
+      exacts [⟨z, h₂ (h₁ hz), hz⟩, ⟨x, h₂ hx, hx'⟩, ⟨y, h₂ hy, hy'⟩]
   replace ha' : a ∈ U ∧ a ∈ u ∧ a ∈ v := by simpa using ha'
   exact ⟨a, h₁ ha'.1, ha'.2⟩
 #align is_preirreducible.subset_irreducible IsPreirreducible.subset_irreducible

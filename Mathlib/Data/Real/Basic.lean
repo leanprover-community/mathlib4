@@ -895,7 +895,7 @@ bounded below by `0` to show that `0 ≤ sInf S`.
 -/
 theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sInf S := by
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sInf_empty.ge, le_csInf hS₂ hS]
+  exacts [sInf_empty.ge, le_csInf hS₂ hS]
 #align real.Inf_nonneg Real.sInf_nonneg
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `f i` is
