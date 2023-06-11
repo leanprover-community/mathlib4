@@ -167,7 +167,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩
   suffices (gelfandTransform ℂ A).range = ⊤ by
-    exact fun x => this.symm ▸ (gelfandTransform ℂ A).mem_range.mp (this.symm ▸ Algebra.mem_top)
+    exact fun x => ((gelfandTransform ℂ A).mem_range).mp (this.symm ▸ Algebra.mem_top)
   /- Because the `gelfand_transform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(character_space ℂ A, ℂ)` and is closed under `star`. -/
@@ -192,6 +192,8 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     `weak_dual.star_hom_class`, which is a nontrivial result. -/
   · obtain ⟨f, ⟨a, rfl⟩, rfl⟩ := Subalgebra.mem_map.mp hf
     refine' ⟨star a, ContinuousMap.ext fun ψ => _⟩
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply, AlgEquiv.toAlgHom_eq_coe,
+      AlgHom.compLeftContinuous_apply_apply, AlgHom.coe_coe, IsROrC.conjAe_coe]
     simpa only [gelfandTransform_map_star a, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
 #align gelfand_transform_bijective gelfandTransform_bijective
 
