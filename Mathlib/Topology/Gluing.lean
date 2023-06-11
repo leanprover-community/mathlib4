@@ -195,12 +195,13 @@ theorem eqvGen_of_π_eq
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
-    diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  -- TODO: was exact Quot.eq.1 this
-  refine Quot.eq.1 ?_
-  stop
-  exact this
+  -- Porting note: was
+  -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
+  --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
+  rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
+    colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
+    types_id_apply] at this
+  exact Quot.eq.1 this
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.eqv_gen_of_π_eq TopCat.GlueData.eqvGen_of_π_eq
 
@@ -220,7 +221,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
     stop
-    -- TODO: this causes universe errors, possibly because of the sorry in `eqvGen_of_π_eq`
+    -- TODO: this causes universe errors.
     rw [←
       show (sigmaIsoSigma.{u} _).inv _ = x from
         ConcreteCategory.congr_hom (sigmaIsoSigma.{u} _).hom_inv_id x]
