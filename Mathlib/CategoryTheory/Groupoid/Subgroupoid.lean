@@ -701,8 +701,9 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
 #align category_theory.subgroupoid.full_mono CategoryTheory.Subgroupoid.full_mono
 
 -- porting note: using `.1` instead of `↑`
-theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} : f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
-  by apply Subtype.ext_iff
+theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
+    f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
+  Subtype.ext_iff
 #align category_theory.subgroupoid.full_arrow_eq_iff CategoryTheory.Subgroupoid.full_arrow_eq_iff
 
 end Full
