@@ -243,7 +243,8 @@ instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
 #align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
 
 instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
-    [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) : ConcreteCategory (InducedCategory D f) where
+    [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) :
+      ConcreteCategory (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 #align category_theory.induced_category.concrete_category CategoryTheory.InducedCategory.concreteCategory
 
