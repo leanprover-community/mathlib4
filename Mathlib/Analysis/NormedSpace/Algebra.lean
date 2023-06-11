@@ -43,17 +43,16 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
   ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg (1 : A)) fun a =>
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
-#align weak_dual.character_space.norm_le_norm_one WeakDual.characterSpace.norm_le_norm_one
+#align weak_dual.character_space.norm_le_norm_one WeakDual.CharacterSpace.norm_le_norm_one
 
 instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
-  have h : character_space 𝕜 A ⊆ to_normed_dual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
+  have h : characterSpace 𝕜 A ⊆ toNormedDual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
     exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ : _)
-  exact isCompact_of_isClosed_subset (is_compact_closed_ball 𝕜 0 _) character_space.is_closed h
+  exact isCompact_of_isClosed_subset (isCompact_closedBall 𝕜 0 _) CharacterSpace.isClosed h
 
 end CharacterSpace
 
 end WeakDual
-
