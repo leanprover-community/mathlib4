@@ -267,7 +267,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
       -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`
       intro X HX
       simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_coe_submodule] at HX
-      simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply, LieSubalgebra.mem_coe_submodule]
+      simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply,
+        LieSubalgebra.mem_coe_submodule]
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' := by
