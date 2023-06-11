@@ -86,7 +86,7 @@ in `Algebra.DirectSum.Internal`.
 This file also defines:
 
 * `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
-* `SetLike.HomogeneouSubmonoid A`, which is, as the name suggests, the submonoid consisting of
+* `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
 ## tags

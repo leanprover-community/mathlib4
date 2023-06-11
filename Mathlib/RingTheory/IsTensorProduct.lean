@@ -12,7 +12,7 @@ import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Module.ULift
 
 /-!
-# The characteristice predicate of tensor product
+# The characteristic predicate of tensor product
 
 ## Main definitions
 
