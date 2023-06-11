@@ -64,8 +64,6 @@ namespace CategoryTheory
 
 open Set Groupoid
 
-attribute [local protected] CategoryTheory.inv
-
 universe u v
 
 variable {C : Type u} [Groupoid C]
@@ -76,7 +74,7 @@ under composition and inverses.
 @[ext]
 structure Subgroupoid (C : Type u) [Groupoid C] where
   arrows : ∀ c d : C, Set (c ⟶ d)
-  protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → inv p ∈ arrows d c
+  protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → Groupoid.inv p ∈ arrows d c
   protected mul : ∀ {c d e} {p}, p ∈ arrows c d → ∀ {q}, q ∈ arrows d e → p ≫ q ∈ arrows c e
 #align category_theory.subgroupoid CategoryTheory.Subgroupoid
 
@@ -84,7 +82,8 @@ namespace Subgroupoid
 
 variable (S : Subgroupoid C)
 
-theorem inv_mem_iff {c d : C} (f : c ⟶ d) : inv f ∈ S.arrows d c ↔ f ∈ S.arrows c d := by
+theorem inv_mem_iff {c d : C} (f : c ⟶ d) :
+    Groupoid.inv f ∈ S.arrows d c ↔ f ∈ S.arrows c d := by
   constructor
   · intro h
     simpa only [inv_eq_inv, IsIso.inv_inv] using S.inv h
@@ -95,7 +94,7 @@ theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ 
     f ≫ g ∈ S.arrows c e ↔ g ∈ S.arrows d e := by
   constructor
   · rintro h
-    suffices inv f ≫ f ≫ g ∈ S.arrows d e by
+    suffices Groupoid.inv f ≫ f ≫ g ∈ S.arrows d e by
       simpa only [inv_eq_inv, IsIso.inv_hom_id_assoc] using this
     · apply S.mul (S.inv hf) h
   · apply S.mul hf
@@ -105,7 +104,7 @@ theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈
     f ≫ g ∈ S.arrows c e ↔ f ∈ S.arrows c d := by
   constructor
   · rintro h
-    suffices (f ≫ g) ≫ inv g ∈ S.arrows c d by
+    suffices (f ≫ g) ≫ Groupoid.inv g ∈ S.arrows c d by
       simpa only [inv_eq_inv, IsIso.hom_inv_id, Category.comp_id, Category.assoc] using this
     · apply S.mul h (S.inv hg)
   · exact fun hf => S.mul hf hg
@@ -117,11 +116,11 @@ def objs : Set C :=
 #align category_theory.subgroupoid.objs CategoryTheory.Subgroupoid.objs
 
 theorem mem_objs_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : c ∈ S.objs :=
-  ⟨f ≫ inv f, S.mul h (S.inv h)⟩
+  ⟨f ≫ Groupoid.inv f, S.mul h (S.inv h)⟩
 #align category_theory.subgroupoid.mem_objs_of_src CategoryTheory.Subgroupoid.mem_objs_of_src
 
 theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈ S.objs :=
-  ⟨inv f ≫ f, S.mul (S.inv h) h⟩
+  ⟨Groupoid.inv f ≫ f, S.mul (S.inv h) h⟩
 #align category_theory.subgroupoid.mem_objs_of_tgt CategoryTheory.Subgroupoid.mem_objs_of_tgt
 
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
@@ -144,34 +143,30 @@ def asWideQuiver : Quiver C :=
 #align category_theory.subgroupoid.as_wide_quiver CategoryTheory.Subgroupoid.asWideQuiver
 
 /-- The coercion of a subgroupoid as a groupoid -/
-@[simps to_category_comp_coe, simps (config := lemmasOnly) inv_coe]
+@[simps comp_coe, simps (config := .lemmasOnly) inv_coe]
 instance coe : Groupoid S.objs where
   Hom a b := S.arrows a.val b.val
-  id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.Prop⟩
-  comp a b c p q := ⟨p.val ≫ q.val, S.mul p.Prop q.Prop⟩
-  id_comp' := fun a b ⟨p, hp⟩ => by simp only [category.id_comp]
-  comp_id' := fun a b ⟨p, hp⟩ => by simp only [category.comp_id]
-  assoc' := fun a b c d ⟨p, hp⟩ ⟨q, hq⟩ ⟨r, hr⟩ => by simp only [category.assoc]
-  inv a b p := ⟨inv p.val, S.inv p.Prop⟩
-  inv_comp' := fun a b ⟨p, hp⟩ => by simp only [inv_comp]
-  comp_inv' := fun a b ⟨p, hp⟩ => by simp only [comp_inv]
+  id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.prop⟩
+  comp p q := ⟨p.val ≫ q.val, S.mul p.prop q.prop⟩
+  inv p := ⟨Groupoid.inv p.val, S.inv p.prop⟩
 #align category_theory.subgroupoid.coe CategoryTheory.Subgroupoid.coe
 
 @[simp]
 theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
-  simp only [Subtype.val_eq_coe, ← inv_eq_inv, coe_inv_coe]
+  simp only [← inv_eq_inv, coe_inv_coe]
 #align category_theory.subgroupoid.coe_inv_coe' CategoryTheory.Subgroupoid.coe_inv_coe'
 
 /-- The embedding of the coerced subgroupoid to its parent-/
 def hom : S.objs ⥤ C where
   obj c := c.val
-  map c d f := f.val
-  map_id' c := rfl
-  map_comp' c d e f g := rfl
+  map f := f.val
+  map_id _ := rfl
+  map_comp _ _ := rfl
 #align category_theory.subgroupoid.hom CategoryTheory.Subgroupoid.hom
 
-theorem hom.inj_on_objects : Function.Injective (hom S).obj := by rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd;
+theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd
   simp only [Subtype.mk_eq_mk]; exact hcd
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
@@ -182,9 +177,9 @@ theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).ma
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
 def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
   carrier := S.arrows c c
-  mul_mem' f g hf hg := S.mul hf hg
+  mul_mem' hf hg := S.mul hf hg
   one_mem' := id_mem_of_nonempty_isotropy _ _ hc
-  inv_mem' f hf := S.inv hf
+  inv_mem' hf := S.inv hf
 #align category_theory.subgroupoid.vertex_subgroup CategoryTheory.Subgroupoid.vertexSubgroup
 
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
@@ -201,21 +196,22 @@ theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T
 
 instance : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ
-      mul := by rintro; trivial
-      inv := by rintro; trivial }⟩
+      mul := by intros; trivial
+      inv := by intros; trivial }⟩
 
 theorem mem_top {c d : C} (f : c ⟶ d) : f ∈ (⊤ : Subgroupoid C).arrows c d :=
   trivial
 #align category_theory.subgroupoid.mem_top CategoryTheory.Subgroupoid.mem_top
 
-theorem mem_top_objs (c : C) : c ∈ (⊤ : Subgroupoid C).objs := by dsimp [Top.top, objs];
+theorem mem_top_objs (c : C) : c ∈ (⊤ : Subgroupoid C).objs := by
+  dsimp [Top.top, objs]
   simp only [univ_nonempty]
 #align category_theory.subgroupoid.mem_top_objs CategoryTheory.Subgroupoid.mem_top_objs
 
 instance : Bot (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => ∅
-      mul := fun _ _ _ _ => False.elim
-      inv := fun _ _ _ => False.elim }⟩
+      mul := False.elim
+      inv := False.elim }⟩
 
 instance : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
@@ -223,8 +219,8 @@ instance : Inhabited (Subgroupoid C) :=
 instance : Inf (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
-      inv := by rintro; exact ⟨S.inv hp.1, T.inv hp.2⟩
-      mul := by rintro; exact ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
+      inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
+      mul := fun hp _ hq ↦ ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
 
 instance : InfSet (Subgroupoid C) :=
   ⟨fun s =>
