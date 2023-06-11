@@ -63,7 +63,7 @@ instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
 -- Porting Note: Added -- needed to make coe_id work
-instance FunLike_instance (X Y : SemiNormedGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+instance instFunLike (X Y : SemiNormedGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
 show FunLike (NormedAddGroupHom X Y) X (fun _ => Y) from inferInstance
 
 -- Porting note : Added
@@ -172,8 +172,21 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 /-- Porting Note: Added-/
-instance {X Y : SemiNormedGroupCat₁} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X ⟶ Y) := f.1
+instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X (fun _ => Y) where
+  coe f := f.1.toFun
+  coe_injective' := by
+    intros a b
+    intro h
+    apply Subtype.val_inj.mp
+    apply NormedAddGroupHom.coe_injective
+    exact h
+
+instance instZeroHomClass (X Y : SemiNormedGroupCat₁) : ZeroHomClass (X ⟶ Y) X Y where
+  map_zero := by
+    intro f
+    dsimp [instFunLike]
+    simp only [map_zero]
+
 
 @[ext]
 theorem hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
@@ -293,7 +306,9 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
-  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
+  --porting note: was `change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)`
+  dsimp only [FunLike.coe]
+  dsimp [NormedAddGroupHom.toFun]
   refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v
   apply le_antisymm (i.hom.2 v)
