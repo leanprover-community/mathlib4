@@ -41,7 +41,7 @@ and finally quotienting by the reducibility relation.
 -/
 
 
-open scoped Set Classical Function
+open Set Classical Function
 
 attribute [local instance] propDecidable
 
