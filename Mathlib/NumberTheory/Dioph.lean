@@ -105,10 +105,10 @@ instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 #align poly.fun_like Poly.funLike
 
--- Porting note: TODO -- make sure this is necessary
-/-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
+-- Porting note: This instance is not necessary anymore
+-- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
+-- directly. -/
+-- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
 
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
@@ -406,11 +406,11 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
             (exists_congr fun t =>
               (@mul_eq_zero _ _ _ (p ((v ⊗ t) ∘ (inl ⊗ inr ∘ inl)))
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
-      -- Porting note: putting everything in the same line fails
+      -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
         exact some ⊗ fun _ => none
         exact fun _ => by simp only [elim_inl]
-      -- Porting note: putting everything in the same line fails
+      -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
         exact (fun _ => none) ⊗ some
         exact fun _ => by simp only [elim_inr]⟩
@@ -511,8 +511,8 @@ open Vector3
 
 open scoped Vector3
 
--- Porting note: TODO
--- attribute [reducible] Vector3
+-- Porting note: Fails because declaration is in an imported module
+-- attribute [local reducible] Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
@@ -741,7 +741,7 @@ theorem pell_dioph :
       D.0 D< D&3 D∧ D&8 D* D&8 D∣ D&3 D∧
       (D≡ (D&2) (D&7) (D&4)) D∧
       (D≡ (D&1) (D&6) (D.4 D* (D&8)))))
-  -- Porting note: TODO
+  -- Porting note: copying directly `proof` in the proof of the following have fails
   have : Dioph {v : Vector3 ℕ 4 |
     1 < v &0 ∧ v &1 ≤ v &3 ∧
     (v &2 = 1 ∧ v &3 = 0 ∨
@@ -776,7 +776,7 @@ theorem pow_dioph : DiophFn fun v => f v ^ g v := by
     D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
     D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧
     D&4 D* D&4 D- ((D&5 D+ D.1) D* (D&5 D+ D.1) D- D.1) D* (D&5 D* D&2) D* (D&5 D* D&2) D= D.1))))
-  -- Porting note: TODO
+  -- Porting note: copying directly `proof` in the proof of the following have fails
   have : Dioph {v : Vector3 ℕ 3 |
     v &2 = 0 ∧ v &0 = 1 ∨ 0 < v &2 ∧
     (v &1 = 0 ∧ v &0 = 0 ∨ 0 < v &1 ∧
