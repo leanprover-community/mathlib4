@@ -402,7 +402,7 @@ ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
   apply le_sup_right
 
 lemma Scott_Hausdorff_le_Lower' : @ScottHausdorffTopology α ≤ @LowerTopology' α :=
-  fun _ s h => ScottHausdorffTopology.Lower_IsOpen s
+  fun _ s h => ScottHausdorffTopology.Lower_IsOpen
     (@LowerTopology.isLowerSet_of_isOpen (WithLowerTopology α) _ _  _ s h)
 
 lemma Scott_Hausdorff_le_Lower [TopologicalSpace α] [LowerTopology α] :
