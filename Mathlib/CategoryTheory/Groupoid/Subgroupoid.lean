@@ -76,11 +76,9 @@ under composition and inverses.
 @[ext]
 structure Subgroupoid (C : Type u) [Groupoid C] where
   arrows : ∀ c d : C, Set (c ⟶ d)
-  inv : ∀ {c d} {p : c ⟶ d} (hp : p ∈ arrows c d), inv p ∈ arrows d c
-  mul : ∀ {c d e} {p} (hp : p ∈ arrows c d) {q} (hq : q ∈ arrows d e), p ≫ q ∈ arrows c e
+  protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → inv p ∈ arrows d c
+  protected mul : ∀ {c d e} {p}, p ∈ arrows c d → ∀ {q}, q ∈ arrows d e → p ≫ q ∈ arrows c e
 #align category_theory.subgroupoid CategoryTheory.Subgroupoid
-
-attribute [protected] subgroupoid.inv subgroupoid.mul
 
 namespace Subgroupoid
 
@@ -88,9 +86,8 @@ variable (S : Subgroupoid C)
 
 theorem inv_mem_iff {c d : C} (f : c ⟶ d) : inv f ∈ S.arrows d c ↔ f ∈ S.arrows c d := by
   constructor
-  · rintro h
-    suffices inv (inv f) ∈ S.arrows c d by simpa only [inv_eq_inv, is_iso.inv_inv] using this
-    · apply S.inv h
+  · intro h
+    simpa only [inv_eq_inv, IsIso.inv_inv] using S.inv h
   · apply S.inv
 #align category_theory.subgroupoid.inv_mem_iff CategoryTheory.Subgroupoid.inv_mem_iff
 
@@ -99,7 +96,7 @@ theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ 
   constructor
   · rintro h
     suffices inv f ≫ f ≫ g ∈ S.arrows d e by
-      simpa only [inv_eq_inv, is_iso.inv_hom_id_assoc] using this
+      simpa only [inv_eq_inv, IsIso.inv_hom_id_assoc] using this
     · apply S.mul (S.inv hf) h
   · apply S.mul hf
 #align category_theory.subgroupoid.mul_mem_cancel_left CategoryTheory.Subgroupoid.mul_mem_cancel_left
@@ -109,7 +106,7 @@ theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈
   constructor
   · rintro h
     suffices (f ≫ g) ≫ inv g ∈ S.arrows c d by
-      simpa only [inv_eq_inv, is_iso.hom_inv_id, category.comp_id, category.assoc] using this
+      simpa only [inv_eq_inv, IsIso.hom_inv_id, Category.comp_id, Category.assoc] using this
     · apply S.mul h (S.inv hg)
   · exact fun hf => S.mul hf hg
 #align category_theory.subgroupoid.mul_mem_cancel_right CategoryTheory.Subgroupoid.mul_mem_cancel_right
@@ -130,7 +127,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
   convert S.mul hγ (S.inv hγ)
-  simp only [inv_eq_inv, is_iso.hom_inv_id]
+  simp only [inv_eq_inv, IsIso.hom_inv_id]
 #align category_theory.subgroupoid.id_mem_of_nonempty_isotropy CategoryTheory.Subgroupoid.id_mem_of_nonempty_isotropy
 
 theorem id_mem_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 c ∈ S.arrows c c :=
