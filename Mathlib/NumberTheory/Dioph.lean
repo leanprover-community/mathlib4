@@ -26,9 +26,9 @@ there exists `t : ℕ^β` with `p (v, t) = 0`.
 
 ## Main definitions
 
-* `is_poly`: a predicate stating that a function is a multivariate integer polynomial.
-* `poly`: the type of multivariate integer polynomial functions.
-* `dioph`: a predicate stating that a set is Diophantine, i.e. a set `S ⊆ ℕ^α` is
+* `IsPoly`: a predicate stating that a function is a multivariate integer polynomial.
+* `Poly`: the type of multivariate integer polynomial functions.
+* `Dioph`: a predicate stating that a set is Diophantine, i.e. a set `S ⊆ ℕ^α` is
   Diophantine if there exists a polynomial on `α ⊕ β` such that `v ∈ S` iff there
   exists `t : ℕ^β` with `p (v, t) = 0`.
 * `dioph_fn`: a predicate on a function stating that it is Diophantine in the sense that its graph
@@ -51,7 +51,7 @@ Matiyasevic's theorem, Hilbert's tenth problem
 ## TODO
 
 * Finish the solution of Hilbert's tenth problem.
-* Connect `poly` to `mv_polynomial`
+* Connect `Poly` to `MvPolynomial`
 -/
 
 
@@ -66,7 +66,7 @@ universe u
 /-!
 ### Multivariate integer polynomials
 
-Note that this duplicates `mv_polynomial`.
+Note that this duplicates `MvPolynomial`.
 -/
 
 
@@ -110,11 +110,11 @@ instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
 directly. -/
 instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
 
-/-- The underlying function of a `poly` is a polynomial -/
+/-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 #align poly.is_poly Poly.isPoly
 
-/-- Extensionality for `poly α` -/
+/-- Extensionality for `Poly α` -/
 @[ext]
 theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
 #align poly.ext Poly.ext
