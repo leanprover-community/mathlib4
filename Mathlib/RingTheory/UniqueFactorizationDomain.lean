@@ -128,7 +128,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     classical
       refine' ⟨(f.erase b).cons (b * u), fun a ha => _, _, Multiset.cons_ne_zero⟩
       · obtain rfl | ha := Multiset.mem_cons.1 ha
-        exacts[Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
+        exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨f, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
@@ -1203,7 +1203,7 @@ variable [CancelCommMonoidWithZero α]
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
 multisets in `FactorSet α` are unique by equality and restricted to irreducible elements. This
 gives us a representation of each element as a unique multisets (or the added ⊤ for 0), which has a
-complete lattice struture. Infimum is the greatest common divisor and supremum is the least common
+complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
 @[reducible]

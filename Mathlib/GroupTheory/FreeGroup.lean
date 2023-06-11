@@ -62,7 +62,7 @@ variable {α : Type u}
 attribute [local simp] List.append_eq_has_append
 
 -- porting notes: to_additive.map_namespace is not supported yet
--- worked aruond it by putting a few extra manual mappings (but not too many all in all)
+-- worked around it by putting a few extra manual mappings (but not too many all in all)
 -- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
@@ -1166,8 +1166,7 @@ theorem reduce.not {p : Prop}: ∀ {L₁ L₂ L₃: List (α × Bool)} {x : α} 
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
         -- Porting note: needed to add this step in #3414.
-        -- However it is not caused by lean4#2210 (reenableeta)
-        -- but rather by https://github.com/leanprover/lean4/pull/2146.
+        -- This is caused by https://github.com/leanprover/lean4/pull/2146.
         -- Nevertheless the proof could be cleaned up.
         cases this
       | cons hd tail =>

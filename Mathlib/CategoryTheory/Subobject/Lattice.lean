@@ -105,12 +105,12 @@ theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
 
 /-- The (unique) morphism from `⊥ : MonoOver X` to any other `f : MonoOver X`. -/
 def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
-  homMk (initial.to _) (by simp)
+  homMk (initial.to _)
 #align category_theory.mono_over.bot_le CategoryTheory.MonoOver.botLE
 
 /-- `map f` sends `⊥ : MonoOver X` to `⊥ : MonoOver Y`. -/
 def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
-  iso_of_both_ways (homMk (initial.to _) (by simp)) (homMk (𝟙 _) (by simp))
+  iso_of_both_ways (homMk (initial.to _)) (homMk (𝟙 _))
 #align category_theory.mono_over.map_bot CategoryTheory.MonoOver.mapBot
 
 end Bot
@@ -670,7 +670,7 @@ section Sup
 
 variable [WellPowered C] [HasCoproducts.{v₁} C]
 
-/-- The univesal morphism out of the coproduct of a set of subobjects,
+/-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=

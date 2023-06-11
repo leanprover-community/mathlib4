@@ -141,7 +141,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
       ⟨⟨(pullback.fst : pullback f g ⟶ _) x, (pullback.snd : pullback f g ⟶ _) x⟩, by
         simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
   apply Subtype.ext; apply Prod.ext
-  exacts[ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
+  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
     ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
 #align Top.pullback_iso_prod_subtype_hom_apply TopCat.pullbackIsoProdSubtype_hom_apply
 

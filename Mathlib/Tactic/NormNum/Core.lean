@@ -24,7 +24,7 @@ open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
-syntax (name := norm_num) "norm_num" term,+ : attr
+syntax (name := norm_num) "norm_num " term,+ : attr
 
 namespace Mathlib
 namespace Meta.NormNum
@@ -332,7 +332,7 @@ def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
-    throwError "not a characterstic zero division ring"
+    throwError "not a characteristic zero division ring"
 
 /-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
 def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=

@@ -284,7 +284,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
   Adjunction.adjunctionOfEquivLeft _ _
 #align Profinite.to_Profinite_adj_to_CompHaus Profinite.toProfiniteAdjToCompHaus
 
-/-- The category of profinite sets is reflective in the category of compact hausdroff spaces -/
+/-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus
     where toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
 #align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
@@ -302,11 +302,11 @@ noncomputable instance toTopCat.createsLimits : CreatesLimits Profinite.toTopCat
 #align Profinite.to_Top.creates_limits Profinite.toTopCat.createsLimits
 
 instance hasLimits : Limits.HasLimits Profinite :=
-  has_limits_of_has_limits_creates_limits Profinite.toTopCat
+  hasLimits_of_hasLimits_createsLimits Profinite.toTopCat
 #align Profinite.has_limits Profinite.hasLimits
 
 instance hasColimits : Limits.HasColimits Profinite :=
-  has_colimits_of_reflective profiniteToCompHaus
+  hasColimits_of_reflective profiniteToCompHaus
 #align Profinite.has_colimits Profinite.hasColimits
 
 noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by

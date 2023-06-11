@@ -17,7 +17,7 @@ This file provides notation for a product of sets, and other similar types.
 ## Notation
 
 We introduce the notation `x ×ˢ y` for the `sprod` of any `SProd` structure. Ideally, `x × y`
-notation is desirable but this notaion is defined in core for `Prod` so replacing `x ×ˢ y` with
+notation is desirable but this notation is defined in core for `Prod` so replacing `x ×ˢ y` with
 `x × y` seems difficult.
 -/
 

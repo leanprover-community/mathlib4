@@ -28,7 +28,7 @@ universe u v
 namespace ModuleCat
 set_option linter.uppercaseLean3 false -- `Module`
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 

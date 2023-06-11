@@ -205,13 +205,13 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D
 /-- The isomorphism between `F.op.unop` and `F`. -/
 @[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.functor.op_unop_iso CategoryTheory.Functor.opUnopIso
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
 @[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.functor.unop_op_iso CategoryTheory.Functor.unopOpIso
 
 variable (C D)
@@ -286,13 +286,13 @@ instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.functor.left_op_right_op_iso CategoryTheory.Functor.leftOpRightOpIso
 
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.functor.right_op_left_op_iso CategoryTheory.Functor.rightOpLeftOpIso
 
 /-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
@@ -643,7 +643,7 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         aesop_cat)
-  counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (by aesop_cat)
+  counitIso := NatIso.ofComponents fun F => F.unopOpIso
 #align category_theory.functor.op_unop_equiv CategoryTheory.Functor.opUnopEquiv
 
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
@@ -665,7 +665,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
         aesop_cat)
-  counitIso := NatIso.ofComponents (fun F => F.leftOpRightOpIso) (by aesop_cat)
+  counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
 
 end Functor

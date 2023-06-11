@@ -50,7 +50,7 @@ def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z
 #align pythagorean_triple PythagoreanTriple
 
-/-- Pythagorean triples are interchangable, i.e `x * x + y * y = y * y + x * x = z * z`.
+/-- Pythagorean triples are interchangeable, i.e `x * x + y * y = y * y + x * x = z * z`.
 This comes from additive commutativity. -/
 theorem pythagoreanTriple_comm {x y z : ℤ} : PythagoreanTriple x y z ↔ PythagoreanTriple y x z := by
   delta PythagoreanTriple
@@ -106,7 +106,7 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
       Int.gcd m n = 1
 #align pythagorean_triple.is_classified PythagoreanTriple.IsClassified
 
-/-- A primitive pythogorean triple `x, y, z` is a pythagorean triple with `x` and `y` coprime.
+/-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
  Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
  * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
  * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.

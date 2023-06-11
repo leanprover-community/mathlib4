@@ -49,7 +49,7 @@ variable [MeasurableSpace α] [MeasurableSpace β]
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
-  ⨆ (s : Set α) (_hs : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
+  ⨆ (s : Set α) (_ : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
 #align measure_theory.measure.measurable_space MeasureTheory.Measure.instMeasurableSpace
 
 theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ : Measure α => μ s :=
