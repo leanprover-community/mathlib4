@@ -162,11 +162,11 @@ lemma LawsonOpen_implies_ScottHausdorffOpen''' (s : Set α) :
   IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
   Scott_Hausdorff_le_Lawson' _
 
-lemma LawsonOpen_implies_ScottOpen''' (s : Set α) :
+lemma ScottOpen_implies_LawsonOpen (s : Set α) :
   IsOpen (WithScottTopology.ofScott ⁻¹' s) → IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) :=
   Lawson_le_Scott' _ s
 
-lemma LawsonOpen_implies_LowerOpen''' (s : Set α) :
+lemma LowerOpen_implies_LawsonOpen (s : Set α) :
   IsOpen (WithLowerTopology.ofLower ⁻¹' s) → IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) :=
   Lawson_le_Lower' _ s
 
@@ -179,12 +179,12 @@ lemma ScottLawsonCont' [Preorder α] :
 := by
   rw [continuous_def]
   intro s hs
-  apply LawsonOpen_implies_ScottOpen''' _ hs
+  apply ScottOpen_implies_LawsonOpen _ hs
 
 lemma LawsonOpen_iff_ScottOpen' [Preorder α] (s : Set α) (h : IsUpperSet s) :
   IsOpen (WithScottTopology.ofScott ⁻¹' s) ↔ IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) := by
   constructor
-  . apply LawsonOpen_implies_ScottOpen'''
+  . apply ScottOpen_implies_LawsonOpen
   . intro hs
     rw [ScottTopology.isOpen_iff_upper_and_Scott_Hausdorff_Open']
     constructor
