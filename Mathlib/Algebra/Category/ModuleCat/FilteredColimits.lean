@@ -26,19 +26,17 @@ that `forget (Module R)` preserves filtered colimits.
 -/
 
 
-universe u v
+universe v u
 
 noncomputable section
 
 open scoped Classical
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory CategoryTheory.Limits
 
 -- avoid name collision with `_root_.max`.
+open CategoryTheory.IsFiltered renaming max → max'
+
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
 namespace ModuleCat.FilteredColimits
@@ -47,7 +45,7 @@ section
 
 variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
 
-variable (F : J ⥤ ModuleCat.{max v u} R)
+variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
 
 /-- The colimit of `F ⋙ forget₂ (Module R) AddCommGroup` in the category `AddCommGroup`.
 In the following, we will show that this has the structure of an `R`-module.
@@ -154,17 +152,15 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_module ModuleCat.FilteredColimits.colimitModule
 
 /-- The bundled `R`-module giving the filtered colimit of a diagram. -/
-def colimit : ModuleCat R :=
+def colimit : ModuleCatMax.{v, u, u} R :=
   ModuleCat.of R (M F)
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit ModuleCat.FilteredColimits.colimit
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
-  {
-    (AddCommGroupCat.FilteredColimits.colimitCocone
-            (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v u})).ι.app
-      j with
+  { (AddCommGroupCat.FilteredColimits.colimitCocone
+      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v u})).ι.app j with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.cocone_morphism ModuleCat.FilteredColimits.coconeMorphism
@@ -184,9 +180,8 @@ We already know that this is a morphism between additive groups. The only thing 
 it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  {
-    (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
-          (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v u})).desc
+  { (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
+          (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGroupCat.{max v u})).desc
       ((forget₂ (ModuleCat R) AddCommGroupCat.{max v u}).mapCocone t) with
     map_smul' := fun r x => by
       refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
@@ -195,14 +190,16 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_desc ModuleCat.FilteredColimits.colimitDesc
 
+set_option pp.universes true
+
 /-- The proposed colimit cocone is a colimit in `Module R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
     LinearMap.coe_injective <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).fac
+      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
         ((forget (ModuleCat R)).mapCocone t) j
-  uniq t m h :=
+  uniq t _ h :=
     LinearMap.coe_injective <|
       (Types.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
         ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
@@ -210,13 +207,14 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone_is_colimit ModuleCat.FilteredColimits.colimitCoconeIsColimit
 
 instance forget₂AddCommGroupPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGroupCat.{u})
-    where preserves_filtered_colimits J _ _ :=
-    {
-      preservesColimit := fun F =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
-          (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
-            (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) }
+    PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u}) where
+  preserves_filtered_colimits J _ _ :=
+  { -- Porting note: without the curly braces for `F`
+    -- here we get a confusing error message about universes.
+    preservesColimit := fun {F : J ⥤ ModuleCat.{u} R} =>
+      preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+        (AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
+          (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) }
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.forget₂_AddCommGroup_preserves_filtered_colimits ModuleCat.FilteredColimits.forget₂AddCommGroupPreservesFilteredColimits
 
