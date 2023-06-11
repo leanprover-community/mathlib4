@@ -33,7 +33,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
 
-open scoped Classical Set
+open Classical Set
 
 variable {α β : Type _}
 
