@@ -189,7 +189,8 @@ instance instZeroHomClass (X Y : SemiNormedGroupCat₁) : ZeroHomClass (X ⟶ Y)
 
 
 @[ext]
-theorem hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) : f = g :=
+theorem hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) :
+    f = g :=
   Subtype.eq (NormedAddGroupHom.ext (congr_fun w))
 #align SemiNormedGroup₁.hom_ext SemiNormedGroupCat₁.hom_ext
 
