@@ -410,10 +410,8 @@ variable {K v O hv p}
 
 theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0) :
     preVal K v O hv p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
-  obtain ⟨r, hr⟩ :=
-    Ideal.mem_span_singleton'.1
-      (Ideal.Quotient.eq.1 <|
-        Quotient.sound' <| @Quotient.mk_out' O (Ideal.span {p} : Ideal O).quotientRel x)
+  obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Quotient.mk'' x).out' - x :=
+    Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
   refine' (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_le _)
   erw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
