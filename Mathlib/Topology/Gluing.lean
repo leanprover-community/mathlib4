@@ -261,7 +261,11 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, e₂⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · exact ⟨inv (D.f i i) x₁, by simp [eq₁] ; sorry⟩
+    · exact ⟨inv (D.f i i) x₁, by
+        -- Porting note: was `simp [eq₁]`
+        rw [TopCat.comp_app]
+        erw [CategoryTheory.IsIso.inv_hom_id_apply]
+        rw [eq₁]⟩
     · dsimp only at *
       -- porting note: another `substs e₁ eq₁`
       rw [← e₁, ← eq₁] at *
