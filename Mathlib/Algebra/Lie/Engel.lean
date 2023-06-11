@@ -149,6 +149,8 @@ end LieSubmodule
 
 section LieAlgebra
 
+-- Porting note: somehow this doesn't hide `LieModule.IsNilpotent`, so `_root_.IsNilpotent` is used
+-- a number of times below.
 open LieModule hiding IsNilpotent
 
 variable (R L)
@@ -193,9 +195,10 @@ theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
   ⟨e.surjective.isEngelian, e.symm.surjective.isEngelian⟩
 #align lie_equiv.is_engelian_iff LieEquiv.isEngelian_iff
 
+-- Porting note: changed statement from `∃ ∃ ..` to `∃ .. ∧ ..`
 theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalgebra R L}
     (hK₁ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K) (hK₂ : K < K.normalizer) :
-    ∃ (K' : LieSubalgebra R L) (_ : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K'), K < K' := by
+    ∃ (K' : LieSubalgebra R L), LieAlgebra.IsEngelian.{u₁, u₂, u₄} R K' ∧ K < K' := by
   obtain ⟨x, hx₁, hx₂⟩ := SetLike.exists_of_lt hK₂
   let K' : LieSubalgebra R L :=
     { (R ∙ x) ⊔ (K : Submodule R L) with
@@ -249,17 +252,17 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
     apply lt_of_le_of_ne K.le_normalizer
     rw [Ne.def, eq_comm, K.normalizer_eq_self_iff, ← Ne.def, ←
       LieSubmodule.nontrivial_iff_ne_bot R K]
-    have : Nontrivial (L' ⧸ K.to_lie_submodule) := by
-      replace hK₂ : K.to_lie_submodule ≠ ⊤ := by
-        rwa [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, K.coe_to_lie_submodule,
+    have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
+      replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
+        rwa [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, K.coe_toLieSubmodule,
           LieSubmodule.top_coeSubmodule, ← LieSubalgebra.top_coe_submodule,
           K.coe_to_submodule_eq_iff]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
-    have : LieModule.IsNilpotent R K (L' ⧸ K.to_lie_submodule) := by
+    have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
       refine' hK₁ _ fun x => _
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
       exact Module.End.IsNilpotent.mapQ _ hx
-    exact nontrivial_max_triv_of_is_nilpotent R K (L' ⧸ K.to_lie_submodule)
+    exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' :=
     isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEndomorphism R L M))
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFounded_of_noetherian R L').has_min s hs
@@ -272,7 +275,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
 
 /-- Engel's theorem. -/
 theorem LieModule.isNilpotent_iff_forall :
-    LieModule.IsNilpotent R L M ↔ ∀ x, IsNilpotent <| toEndomorphism R L M x :=
+    LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
   ⟨by
     intro h
     obtain ⟨k, hk⟩ := nilpotent_endo_of_nilpotent_module R L M
@@ -281,7 +284,7 @@ theorem LieModule.isNilpotent_iff_forall :
 
 /-- Engel's theorem. -/
 theorem LieAlgebra.isNilpotent_iff_forall :
-    LieAlgebra.IsNilpotent R L ↔ ∀ x, IsNilpotent <| LieAlgebra.ad R L x :=
+    LieAlgebra.IsNilpotent R L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 #align lie_algebra.is_nilpotent_iff_forall LieAlgebra.isNilpotent_iff_forall
 
