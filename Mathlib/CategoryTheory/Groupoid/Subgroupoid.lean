@@ -8,13 +8,13 @@ Authors: Rémi Bottinelli, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Groupoid.VertexGroup
-import Mathbin.CategoryTheory.Groupoid.Basic
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.Algebra.Group.Defs
-import Mathbin.Data.Set.Lattice
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.Order.GaloisConnection
+import Mathlib.CategoryTheory.Groupoid.VertexGroup
+import Mathlib.CategoryTheory.Groupoid.Basic
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Set.Lattice
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Subgroupoid
@@ -86,8 +86,7 @@ namespace Subgroupoid
 
 variable (S : Subgroupoid C)
 
-theorem inv_mem_iff {c d : C} (f : c ⟶ d) : inv f ∈ S.arrows d c ↔ f ∈ S.arrows c d :=
-  by
+theorem inv_mem_iff {c d : C} (f : c ⟶ d) : inv f ∈ S.arrows d c ↔ f ∈ S.arrows c d := by
   constructor
   · rintro h
     suffices inv (inv f) ∈ S.arrows c d by simpa only [inv_eq_inv, is_iso.inv_inv] using this
@@ -96,8 +95,7 @@ theorem inv_mem_iff {c d : C} (f : c ⟶ d) : inv f ∈ S.arrows d c ↔ f ∈ S
 #align category_theory.subgroupoid.inv_mem_iff CategoryTheory.Subgroupoid.inv_mem_iff
 
 theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ S.arrows c d) :
-    f ≫ g ∈ S.arrows c e ↔ g ∈ S.arrows d e :=
-  by
+    f ≫ g ∈ S.arrows c e ↔ g ∈ S.arrows d e := by
   constructor
   · rintro h
     suffices inv f ≫ f ≫ g ∈ S.arrows d e by
@@ -107,8 +105,7 @@ theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ 
 #align category_theory.subgroupoid.mul_mem_cancel_left CategoryTheory.Subgroupoid.mul_mem_cancel_left
 
 theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈ S.arrows d e) :
-    f ≫ g ∈ S.arrows c e ↔ f ∈ S.arrows c d :=
-  by
+    f ≫ g ∈ S.arrows c e ↔ f ∈ S.arrows c d := by
   constructor
   · rintro h
     suffices (f ≫ g) ≫ inv g ∈ S.arrows c d by
@@ -130,8 +127,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
   ⟨inv f ≫ f, S.mul (S.inv h) h⟩
 #align category_theory.subgroupoid.mem_objs_of_tgt CategoryTheory.Subgroupoid.mem_objs_of_tgt
 
-theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c :=
-  by
+theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
   convert S.mul hγ (S.inv hγ)
   simp only [inv_eq_inv, is_iso.hom_inv_id]
@@ -187,16 +183,14 @@ theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).ma
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
-def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c)
-    where
+def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
   carrier := S.arrows c c
   mul_mem' f g hf hg := S.mul hf hg
   one_mem' := id_mem_of_nonempty_isotropy _ _ hc
   inv_mem' f hf := S.inv hf
 #align category_theory.subgroupoid.vertex_subgroup CategoryTheory.Subgroupoid.vertexSubgroup
 
-instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
-    where
+instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe S := {F | F.2.2 ∈ S.arrows F.1 F.2.1}
   coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext (c d f); apply Set.ext_iff.1 h ⟨c, d, f⟩
 
@@ -263,8 +257,7 @@ theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s
 #align category_theory.subgroupoid.le_objs CategoryTheory.Subgroupoid.le_objs
 
 /-- The functor associated to the embedding of subgroupoids -/
-def inclusion {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⥤ T.objs
-    where
+def inclusion {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⥤ T.objs where
   obj s := ⟨s.val, le_objs h s.Prop⟩
   map s t f := ⟨f.val, @h ⟨s, t, f.val⟩ f.Prop⟩
   map_id' _ := rfl
@@ -316,8 +309,7 @@ structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 #align category_theory.subgroupoid.is_wide CategoryTheory.Subgroupoid.IsWide
 
-theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ :=
-  by
+theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
   constructor
   · rintro h
     ext; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
@@ -347,8 +339,7 @@ theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
 #align category_theory.subgroupoid.is_normal.conj' CategoryTheory.Subgroupoid.IsNormal.conj'
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
-    Set.BijOn (fun γ : c ⟶ c => inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) :=
-  by
+    Set.BijOn (fun γ : c ⟶ c => inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
   refine'
     ⟨fun γ γS => Sn.conj p γS, fun γ₁ γ₁S γ₂ γ₂S h => _, fun δ δS =>
       ⟨p ≫ δ ≫ inv p, Sn.conj' p δS, _⟩⟩
@@ -391,8 +382,7 @@ def generated : Subgroupoid C :=
   sInf {S : Subgroupoid C | ∀ c d, X c d ⊆ S.arrows c d}
 #align category_theory.subgroupoid.generated CategoryTheory.Subgroupoid.generated
 
-theorem subset_generated (c d : C) : X c d ⊆ (generated X).arrows c d :=
-  by
+theorem subset_generated (c d : C) : X c d ⊆ (generated X).arrows c d := by
   dsimp only [generated, Inf]
   simp only [subset_Inter₂_iff]
   exact fun S hS f fS => hS _ _ fS
@@ -403,8 +393,7 @@ def generatedNormal : Subgroupoid C :=
   sInf {S : Subgroupoid C | (∀ c d, X c d ⊆ S.arrows c d) ∧ S.IsNormal}
 #align category_theory.subgroupoid.generated_normal CategoryTheory.Subgroupoid.generatedNormal
 
-theorem generated_le_generatedNormal : generated X ≤ generatedNormal X :=
-  by
+theorem generated_le_generatedNormal : generated X ≤ generatedNormal X := by
   apply @sInf_le_sInf (subgroupoid C) _
   exact fun S ⟨h, _⟩ => h
 #align category_theory.subgroupoid.generated_le_generated_normal CategoryTheory.Subgroupoid.generated_le_generatedNormal
@@ -414,8 +403,7 @@ theorem generatedNormal_isNormal : (generatedNormal X).IsNormal :=
 #align category_theory.subgroupoid.generated_normal_is_normal CategoryTheory.Subgroupoid.generatedNormal_isNormal
 
 theorem IsNormal.generatedNormal_le {S : Subgroupoid C} (Sn : S.IsNormal) :
-    generatedNormal X ≤ S ↔ ∀ c d, X c d ⊆ S.arrows c d :=
-  by
+    generatedNormal X ≤ S ↔ ∀ c d, X c d ⊆ S.arrows c d := by
   constructor
   · rintro h c d
     let h' := generated_le_generated_normal X
@@ -435,8 +423,7 @@ variable {D : Type _} [Groupoid D] (φ : C ⥤ D)
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
  -/
-def comap (S : Subgroupoid D) : Subgroupoid C
-    where
+def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv c d p hp := by rw [mem_set_of, inv_eq_inv, φ.map_inv p, ← inv_eq_inv]; exact S.inv hp
   mul := by
@@ -451,8 +438,7 @@ theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T
 
 theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap φ S) :=
   { wide := fun c => by rw [comap, mem_set_of, Functor.map_id]; apply Sn.wide
-    conj := fun c d f γ hγ =>
-      by
+    conj := fun c d f γ hγ => by
       simp_rw [inv_eq_inv f, comap, mem_set_of, functor.map_comp, functor.map_inv, ← inv_eq_inv]
       exact Sn.conj _ hγ }
 #align category_theory.subgroupoid.is_normal_comap CategoryTheory.Subgroupoid.isNormal_comap
@@ -489,16 +475,14 @@ inductive Map.Arrows (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : ∀
 theorem Map.arrows_iff (hφ : Function.Injective φ.obj) (S : Subgroupoid C) {c d : D} (f : c ⟶ d) :
     Map.Arrows φ hφ S c d f ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d) (hg : g ∈ S.arrows a b),
-        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb :=
-  by
+        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
   constructor
   · rintro ⟨g, hg⟩; exact ⟨_, _, g, rfl, rfl, hg, eq_conj_eq_to_hom _⟩
   · rintro ⟨a, b, g, rfl, rfl, hg, rfl⟩; rw [← eq_conj_eq_to_hom]; constructor; exact hg
 #align category_theory.subgroupoid.map.arrows_iff CategoryTheory.Subgroupoid.Map.arrows_iff
 
 /-- The "forward" image of a subgroupoid under a functor injective on objects -/
-def map (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : Subgroupoid D
-    where
+def map (hφ : Function.Injective φ.obj) (S : Subgroupoid C) : Subgroupoid D where
   arrows := Map.Arrows φ hφ S
   inv := by
     rintro _ _ _ ⟨⟩
@@ -519,8 +503,7 @@ theorem mem_map_iff (hφ : Function.Injective φ.obj) (S : Subgroupoid C) {c d :
 #align category_theory.subgroupoid.mem_map_iff CategoryTheory.Subgroupoid.mem_map_iff
 
 theorem galoisConnection_map_comap (hφ : Function.Injective φ.obj) :
-    GaloisConnection (map φ hφ) (comap φ) :=
-  by
+    GaloisConnection (map φ hφ) (comap φ) := by
   rintro S T; simp_rw [le_iff]; constructor
   · exact fun h c d f fS => h (map.arrows.im f fS)
   · rintro h _ _ g ⟨a, gφS⟩
@@ -547,8 +530,7 @@ theorem map_le_iff_le_comap (hφ : Function.Injective φ.obj) (S : Subgroupoid C
 #align category_theory.subgroupoid.map_le_iff_le_comap CategoryTheory.Subgroupoid.map_le_iff_le_comap
 
 theorem mem_map_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
-    d ∈ (map φ hφ S).objs ↔ ∃ c ∈ S.objs, φ.obj c = d :=
-  by
+    d ∈ (map φ hφ S).objs ↔ ∃ c ∈ S.objs, φ.obj c = d := by
   dsimp [objs, map]
   constructor
   · rintro ⟨f, hf⟩
@@ -632,8 +614,7 @@ abbrev IsTotallyDisconnected :=
 #align category_theory.subgroupoid.is_totally_disconnected CategoryTheory.Subgroupoid.IsTotallyDisconnected
 
 theorem isTotallyDisconnected_iff :
-    S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d :=
-  by
+    S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d := by
   constructor
   · rintro h c d ⟨f, fS⟩
     rw [← @Subtype.mk_eq_mk _ _ c (mem_objs_of_src S fS) d (mem_objs_of_tgt S fS)]
@@ -644,8 +625,7 @@ theorem isTotallyDisconnected_iff :
 #align category_theory.subgroupoid.is_totally_disconnected_iff CategoryTheory.Subgroupoid.isTotallyDisconnected_iff
 
 /-- The isotropy subgroupoid of `S` -/
-def disconnect : Subgroupoid C
-    where
+def disconnect : Subgroupoid C where
   arrows c d f := c = d ∧ f ∈ S.arrows c d
   inv := by rintro _ _ _ ⟨rfl, h⟩; exact ⟨rfl, S.inv h⟩
   mul := by rintro _ _ _ _ ⟨rfl, h⟩ _ ⟨rfl, h'⟩; exact ⟨rfl, S.mul h h'⟩
@@ -708,8 +688,7 @@ theorem full_univ : full Set.univ = (⊤ : Subgroupoid C) := by ext;
   simp only [mem_full_iff, mem_univ, and_self_iff, true_iff_iff]
 #align category_theory.subgroupoid.full_univ CategoryTheory.Subgroupoid.full_univ
 
-theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E :=
-  by
+theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   rw [le_iff]
   rintro c d f
   simp only [mem_full_iff]
