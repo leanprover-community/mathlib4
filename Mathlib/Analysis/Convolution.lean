@@ -101,6 +101,11 @@ open ContinuousLinearMap Metric
 
 open scoped Pointwise Topology NNReal Filter
 
+
+example  (G: Type) [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G] (μ : MeasureTheory.Measure G) [SigmaFinite μ] (K : Set G) (hK : IsCompact K) : MeasurableSet K := hK.measurableSet
+
+
+
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
 variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : Type uE''} {F : Type uF}
@@ -561,7 +566,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx 
+  simp_rw [Set.mem_add, not_exists, not_and_or, nmem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -637,7 +642,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
       have H' : (p, x) ∈ (s ×ˢ univ : Set (P × G)) := by
         simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hps
       have : g p x ∈ closedBall (0 : E') C := hC (mem_image_of_mem _ (mem_inter H H'))
-      rwa [mem_closedBall_zero_iff] at this 
+      rwa [mem_closedBall_zero_iff] at this
     · have : g p x = 0 := hgs _ _ hps hx
       rw [this]
       simpa only [norm_zero] using Cpos.le
@@ -662,7 +667,7 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
       exact mem_nhdsWithin_iff_exists_mem_nhds_inter.2 ⟨w, w_open.mem_nhds q₀w, Subset.rfl⟩
     filter_upwards [this]
     rintro ⟨p, x⟩ hpx
-    simp only [prod_mk_mem_set_prod_eq] at hpx 
+    simp only [prod_mk_mem_set_prod_eq] at hpx
     refine eventually_of_forall fun a => ?_
     apply convolution_integrand_bound_right_of_le_of_subset _ _ hpx.2 _
     · intro x
@@ -850,11 +855,11 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
   have h2 : ∀ t, L (f t) (g (x₀ - t)) = L (f t) (g x₀) := fun t ↦ by
     by_cases ht : t ∈ support f
     · have h2t := hf ht
-      rw [mem_ball_zero_iff] at h2t 
+      rw [mem_ball_zero_iff] at h2t
       specialize hg (x₀ - t)
-      rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg 
+      rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       rw [hg h2t]
-    · rw [nmem_support] at ht 
+    · rw [nmem_support] at ht
       simp_rw [ht, L.map_zero₂]
   simp_rw [convolution_def, h2]
 #align convolution_eq_right' convolution_eq_right'
@@ -884,12 +889,12 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   have h2 : ∀ t, dist (L (f t) (g (x₀ - t))) (L (f t) z₀) ≤ ‖L (f t)‖ * ε := by
     intro t; by_cases ht : t ∈ support f
     · have h2t := hf ht
-      rw [mem_ball_zero_iff] at h2t 
+      rw [mem_ball_zero_iff] at h2t
       specialize hg (x₀ - t)
-      rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg 
+      rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       refine' ((L (f t)).dist_le_op_norm _ _).trans _
       exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
-    · rw [nmem_support] at ht 
+    · rw [nmem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
       rfl
   simp_rw [convolution_def]
@@ -941,13 +946,13 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
     (hmg : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
     (hk : Tendsto k l (𝓝 x₀)) :
     Tendsto (fun i : ι => (φ i ⋆[lsmul ℝ ℝ, μ] g i : G → E') (k i)) l (𝓝 z₀) := by
-  simp_rw [tendsto_smallSets_iff] at hφ 
+  simp_rw [tendsto_smallSets_iff] at hφ
   rw [Metric.tendsto_nhds] at hcg ⊢
-  simp_rw [Metric.eventually_prod_nhds_iff] at hcg 
+  simp_rw [Metric.eventually_prod_nhds_iff] at hcg
   intro ε hε
   have h2ε : 0 < ε / 3 := div_pos hε (by norm_num)
   obtain ⟨p, hp, δ, hδ, hgδ⟩ := hcg _ h2ε
-  dsimp only [uncurry] at hgδ 
+  dsimp only [uncurry] at hgδ
   have h2k := hk.eventually (ball_mem_nhds x₀ <| half_pos hδ)
   have h2φ := hφ (ball (0 : G) _) <| ball_mem_nhds _ (half_pos hδ)
   filter_upwards [hp, h2k, h2φ, hnφ, hiφ, hmg] with i hpi hki hφi hnφi hiφi hmgi
@@ -1141,7 +1146,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
   have h3 : map (fun z : G × G => (z.1 - z.2, z.2)) (μ.prod ν) = μ.prod ν :=
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by
-    rw [← h3] at this 
+    rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prod_mk measurable_snd)
     ext ⟨x, y⟩
     simp_rw [uncurry, Function.comp_apply, sub_sub_sub_cancel_right]
@@ -1200,17 +1205,19 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
-  refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _
-  · exact K'.indicator fun t => ‖L'‖ * ‖f t‖ * ⨆ x, ‖fderiv 𝕜 g x‖
-  · exact hcg.convolution_exists_right L hf hg.continuous x₀
-  · refine' eventually_of_forall fun t x hx => _
-    exact
+  -- was refine'
+  apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
+  · refine' eventually_of_forall fun t x hx =>
       (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
         (ball_subset_closedBall hx)
-  · rw [integrable_indicator_iff hK'.measurable_set]
+  · rw [integrable_indicator_iff hK'.measurableSet]
     exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _
-  · exact eventually_of_forall fun t x hx => (L _).hasFDerivAt.comp x (h3 x t)
+  · exact eventually_of_forall fun t x _ => (L _).hasFDerivAt.comp x (h3 x t)
+  · exact hcg.convolutionExists_right L hf hg.continuous x₀
+-- · exact K'.indicator fun t => ‖L'‖ * ‖f t‖ * ⨆ x, ‖fderiv 𝕜 g x‖
 #align has_compact_support.has_fderiv_at_convolution_right HasCompactSupport.hasFDerivAt_convolution_right
+
+
 
 theorem HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 1 f) (hg : LocallyIntegrable g μ) (x₀ : G) :
@@ -1326,10 +1333,10 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         refine' mem_thickening_iff.2 ⟨(q₀.1, x), _, _⟩
         · simp only [hx, singleton_prod, mem_image, Prod.mk.inj_iff, eq_self_iff_true, true_and_iff,
             exists_eq_right]
-        · rw [← dist_eq_norm] at hp 
+        · rw [← dist_eq_norm] at hp
           simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true_iff] using hp
       have : g' (p, x) ∈ closedBall (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
-      rwa [mem_closedBall_zero_iff] at this 
+      rwa [mem_closedBall_zero_iff] at this
     · have : g' (p, x) = 0 := g'_zero _ _ hps hx
       rw [this]
       simpa only [norm_zero] using Cpos.le
@@ -1360,20 +1367,26 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ
   exact hf.integrableOn_nhds_isCompact hK'
-  obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
-    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U
-    · exact compact_open_separated_add_right hK' U_open K'U
+    -- porting note: This solves the universe problem…
+  have hδ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
+--  obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
+    obtain ⟨V, V_mem, hV⟩ := compact_open_separated_add_right hK' U_open K'U
+--    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U
+--    exact compact_open_separated_add_right hK' U_open K'U
     rcases Metric.mem_nhds_iff.1 V_mem with ⟨δ, δpos, hδ⟩
-    refine' ⟨min δ ε, lt_min δpos εpos, min_le_right _ _, _⟩
+    -- porting note: stuck solving universe constraint
+    refine' ⟨min δ ε, lt_min δpos εpos, min_le_right δ ε, _⟩
     exact (add_subset_add_left ((ball_subset_ball (min_le_left _ _)).trans hδ)).trans hV
-  -- porting note: added `letI`
-  letI : Norm (E →L[𝕜] (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) := ContinuousLinearMap.hasOpNorm
-  let bound : G → ℝ := indicator U fun a => ‖L.precompR (P × G)‖ * ‖f a‖ * C
+  obtain ⟨δ, δpos, δε, hδ⟩ := hδ
+  letI: Norm (E →L[𝕜] (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) := ContinuousLinearMap.hasOpNorm
+  -- inferInstance does not work
+  -- ContinuousLinearMap.hasOpNorm gives wrong universes
+  let bound : G → ℝ := indicator U fun t => ‖L.precompR (P × G)‖ * ‖f t‖ * C
   have I4 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
       ‖L.precompR (P × G) (f a) (g' (x.fst, x.snd - a))‖ ≤ bound a := by
     apply eventually_of_forall
     intro a x hx
-    rw [Prod.dist_eq, dist_eq_norm, dist_eq_norm] at hx 
+    rw [Prod.dist_eq, dist_eq_norm, dist_eq_norm] at hx
     have : (-tsupport fun a => g' (x.1, a)) + ball q₀.2 δ ⊆ U := by
       apply Subset.trans _ hδ
       rw [K'_def, add_assoc]
@@ -1383,7 +1396,8 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         apply g'_zero x.1 z (h₀ε _) hz
         rw [mem_ball_iff_norm]
         exact ((le_max_left _ _).trans_lt hx).trans_le δε
-      · simp only [add_ball, thickening_singleton, zero_vadd]
+      · simp only [add_ball, thickening_singleton, zero_vadd, subset_rfl]
+    -- does not work while the above instance is not fixed
     apply convolution_integrand_bound_right_of_le_of_subset _ _ _ this
     · intro y
       exact hε _ _ (((le_max_left _ _).trans_lt hx).trans_le δε)
@@ -1401,7 +1415,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have N : s ×ˢ univ ∈ 𝓝 (x.1, x.2 - a) := by
       apply A'
       apply h₀ε
-      rw [Prod.dist_eq] at hx 
+      rw [Prod.dist_eq] at hx
       exact lt_of_lt_of_le (lt_of_le_of_lt (le_max_left _ _) hx) δε
     have Z := ((hg.differentiableOn le_rfl).differentiableAt N).hasFDerivAt
     have Z' :
@@ -1531,7 +1545,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
       ContinuousLinearEquiv.coe_coe, comp_app, ContinuousLinearEquiv.apply_symm_apply,
       LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply, eq_self_iff_true]
-  simp_rw [this] at A 
+  simp_rw [this] at A
   exact A
 #align cont_diff_on_convolution_right_with_param contDiffOn_convolution_right_with_param
 
@@ -1637,7 +1651,7 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
     [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)
     (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     Integrable (posConvolution f g L ν) μ := by
-  rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))] at hf hg 
+  rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))] at hf hg
   rw [posConvolution_eq_convolution_indicator f g L ν]
   exact (hf.convolution_integrand L hg).integral_prod_left
 #align integrable_pos_convolution integrable_posConvolution
