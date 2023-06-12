@@ -293,9 +293,9 @@ instance : Field (SplittingField f) :=
     ratCast := fun a => algebraMap K _ (a : K)
     inv := fun a => e.symm (e a)⁻¹
     qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x => by
-      simp
-      sorry
+    qsmul_eq_mul' := fun a x =>
+      Quotient.inductionOn x (fun p => congr_arg Quotient.mk''
+        (by ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
     ratCast_mk := fun a b h1 h2 => by
       apply_fun e
       change e (algebraMap K _ _) = _
