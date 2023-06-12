@@ -108,9 +108,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
   let cr₂ := Real.sqrt (cr * cr + ycc₂ * ycc₂)
   use ⟨cc₂, cr₂⟩
-  simp only
-  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ orthogonalProjection s p := by
-    simp
+  simp (config := { zeta := false, proj := false }) only
+  have hpo : p = (1 : ℝ) • (p -ᵥ orthogonalProjection s p : V) +ᵥ (orthogonalProjection s p : P) :=
+    by simp
   constructor
   · constructor
     · refine' vadd_mem_of_mem_direction _ (mem_affineSpan ℝ (Set.mem_insert_of_mem _ hcc))
@@ -122,7 +122,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
     · intro p1 hp1
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
-      cases hp1
+      cases' hp1 with hp1 hp1
       · rw [hp1]
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
@@ -149,8 +149,10 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
     have hu := hcccru ⟨cc₃', cr₃'⟩
     simp only at hu
     replace hu := hu ⟨hcc₃', hcr₃'⟩
-    cases' hu with hucc hucr
-    substs hucc hucr
+    -- Porting note: was
+    -- cases' hu with hucc hucr
+    -- substs hucc hucr
+    cases' hu
     have hcr₃val : cr₃ = Real.sqrt (cr₃' * cr₃' + t₃ * y * (t₃ * y)) := by
       cases' hnps with p0 hp0
       have h' : ↑(⟨cc₃', hcc₃'⟩ : s) = cc₃' := rfl
