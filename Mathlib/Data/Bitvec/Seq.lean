@@ -1,4 +1,4 @@
-import Mathlib.Data.Bitvec.Basic
+import Mathlib.Data.Bitvec.Defs
 
 namespace Bitvec
 abbrev Seq := Nat → Bool -- TODO: find a better name
