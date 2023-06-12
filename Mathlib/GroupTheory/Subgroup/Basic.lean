@@ -2330,7 +2330,7 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
 
 end Centralizer
 
-/-- Commutivity of a subgroup -/
+/-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
   is_comm : IsCommutative H (· * ·)
@@ -2338,7 +2338,7 @@ structure IsCommutative : Prop where
 
 attribute [class] IsCommutative
 
-/-- Commutivity of an additive subgroup -/
+/-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
   is_comm : _root_.IsCommutative H (· + ·)
