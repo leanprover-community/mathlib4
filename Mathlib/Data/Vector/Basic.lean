@@ -803,7 +803,9 @@ theorem Vector.get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → 
     . simp only [get_zero, head_cons]
     . simp only [get_cons_succ, ih]
 
-theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n) (h : x.toList = x'.toList) : (get x i) = (get x' i) := by
+theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n)
+                      (h : x.toList = x'.toList) :
+    (get x i) = (get x' i) := by
   rw [Vector.eq x x' h]
 
 end Vector
