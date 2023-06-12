@@ -8,13 +8,10 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Topological Kőnig's lemma
-
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
 
 A topological version of Kőnig's lemma is that the inverse limit of nonempty compact Hausdorff
 spaces is nonempty.  (Note: this can be generalized further to inverse limits of nonempty compact
@@ -36,6 +33,8 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
+-- Porting note: every ML3 decl has an uppercase letter
+set_option linter.uppercaseLean3 false
 
 open CategoryTheory
 
@@ -53,10 +52,10 @@ variable {J : Type u} [SmallCategory J]
 
 variable (F : J ⥤ TopCat.{u})
 
-private abbrev finite_diagram_arrow {J : Type u} [SmallCategory J] (G : Finset J) :=
-  Σ' (X Y : J) (mX : X ∈ G) (mY : Y ∈ G), X ⟶ Y
+private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
+  Σ' (X Y : J) (_mX : X ∈ G) (_mY : Y ∈ G), X ⟶ Y
 
-private abbrev finite_diagram (J : Type u) [SmallCategory J] :=
+private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
   Σ G : Finset J, Finset (FiniteDiagramArrow G)
 
 /-- Partial sections of a cofiltered limit are sections when restricted to
@@ -64,30 +63,30 @@ a finite subset of objects and morphisms of `J`.
 -/
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{u}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
-  {u | ∀ {f : FiniteDiagramArrow G} (hf : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
+  {u | ∀ {f : FiniteDiagramArrow G} (_hf : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
 #align Top.partial_sections TopCat.partialSections
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
   classical
   cases isEmpty_or_nonempty J
-  · exact ⟨isEmptyElim, fun j => IsEmpty.elim' inferInstance j.1⟩
-  haveI : is_cofiltered J := ⟨⟩
+  · exact ⟨isEmptyElim, fun {j} => IsEmpty.elim' inferInstance j.1⟩
+  haveI : IsCofiltered J := ⟨⟩
   use fun j : J =>
-    if hj : j ∈ G then F.map (is_cofiltered.inf_to G H hj) (h (is_cofiltered.inf G H)).some
+    if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
     else (h _).some
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
-  rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @is_cofiltered.inf_to_commutes _ _ _ G H]
+  rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
 #align Top.partial_sections.nonempty TopCat.partialSections.nonempty
 
 theorem partialSections.directed :
     Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
   intro A B
-  let ιA : finite_diagram_arrow A.1 → finite_diagram_arrow (A.1 ⊔ B.1) := fun f =>
+  let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
     ⟨f.1, f.2.1, Finset.mem_union_left _ f.2.2.1, Finset.mem_union_left _ f.2.2.2.1, f.2.2.2.2⟩
-  let ιB : finite_diagram_arrow B.1 → finite_diagram_arrow (A.1 ⊔ B.1) := fun f =>
+  let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
   refine' ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, _, _⟩
   · rintro u hu f hf
@@ -107,16 +106,21 @@ theorem partialSections.directed :
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
-    partial_sections F H =
-      ⋂ (f : finite_diagram_arrow G) (hf : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
+    partialSections F H =
+      ⋂ (f : FiniteDiagramArrow G) (_hf : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
     simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl
   rw [this]
   apply isClosed_biInter
-  intro f hf
+  intro f _hf
+  -- Porting note: can't see through forget
+  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
+    inferInstanceAs (T2Space (F.obj f.snd.fst))
   apply isClosed_eq
-  continuity
+  -- Porting note: used to be a single `continuity` that closed both goals
+  · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
+  · continuity
 #align Top.partial_sections.closed TopCat.partialSections.closed
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
@@ -132,7 +136,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty 
       partial_sections.closed F _
   use u
   intro X Y f
-  let G : finite_diagram J :=
+  let G : FiniteDiagram J :=
     ⟨{X, Y},
       {⟨X, Y, by simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert], by
           simp only [eq_self_iff_true, or_true_iff, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
@@ -142,4 +146,3 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty 
 end TopologicalKonig
 
 end TopCat
-
