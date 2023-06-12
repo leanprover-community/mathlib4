@@ -50,7 +50,7 @@ theorem two_pow_pos (n : Nat) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
 
 theorem two_pow_succ (n : Nat) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two] 
 
-lemma lt_succ_two_pow (h: b ≤ 1) (hm : m < 2^i) : 2^i * b + m < 2^(i + 1) := by 
+lemma lt_succ_two_pow (h : b ≤ 1) (hm : m < 2^i) : 2^i * b + m < 2^(i + 1) := by 
   rw [two_pow_succ]
   exact add_lt_add_of_le_of_lt (mul_le_of_le_one_right' h) hm
 
