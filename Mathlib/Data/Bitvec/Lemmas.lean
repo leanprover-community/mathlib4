@@ -236,14 +236,10 @@ private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.
   rw [foldl_addLsb_cons_zero, foldl_addLsb_cons_zero, add_add_add_comm, ← toNat_adc_aux h,
     List.mapAccumr₂, foldl_addLsb_eq_add_foldl_addLsb_zero, foldl_addLsb_cons_zero,
     foldl_addLsb_eq_add_foldl_addLsb_zero _ (addLsb _ _)]
-  cases a <;> cases b <;>
-  simp only [Bool.xor_false_right, Bool.xor_assoc, Bool.true_xor, List.length_cons,
-    List.length_mapAccumr₂, h, min_self, _root_.pow_succ, two_mul, Bool.and_false, Bool.true_and,
-    Bool.false_or, Bool.false_and, Bool.or_false, addLsb, add_zero, zero_add, add_mul,
-    Bool.cond_not, add_left_comm, add_assoc, cond_true, mul_one, cond_false, mul_zero, add_comm,
-    Bool.xor_false, Bool.false_xor, Bool.true_or, Bool.not_true, Bitvec.carry, Bitvec.xor3] <;>
+  dsimp [Bitvec.carry, Bitvec.xor3, addLsb, List.foldl]
+  cases a <;> cases b <;> simp <;>
   cases (List.mapAccumr₂ (fun x y c => (x && y || x && c || y && c, xor x (xor y c))) x y false).fst
-    <;> simp [h]
+  <;> simp [h, _root_.pow_succ, two_mul]
 
 @[simp]
 theorem toNat_adc {n : Nat} {x y : Bitvec n} :
