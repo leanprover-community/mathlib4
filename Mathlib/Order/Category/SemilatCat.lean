@@ -86,12 +86,8 @@ instance : ConcreteCategory SemilatSup where
 instance hasForgetToPartOrd : HasForget₂ SemilatSup PartOrdCat where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
-      map := fun f => f
-      -- Porting note: TODO, remove the rest
-      map_id := by
-        aesop_cat_nonterminal
-      map_comp := by
-        aesop_cat_nonterminal }
+      -- Porting note: was `map := fun f => f`
+      map := fun f => ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩ }
 #align SemilatSup.has_forget_to_PartOrd SemilatSup.hasForgetToPartOrd
 
 @[simp]
@@ -142,14 +138,8 @@ instance : ConcreteCategory SemilatInf where
 instance hasForgetToPartOrd : HasForget₂ SemilatInf PartOrdCat where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
-      map := fun {X Y} f => f
-      -- Porting note: TODO, remove the rest
-      map_id := by
-        aesop_cat_nonterminal
-        sorry
-      map_comp := by
-        aesop_cat_nonterminal
-        sorry }
+      -- Porting note: was `map := fun f => f`
+      map := fun f => ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩ }
 #align SemilatInf.has_forget_to_PartOrd SemilatInf.hasForgetToPartOrd
 
 @[simp]
@@ -192,7 +182,7 @@ def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatInf.iso.mk SemilatInf.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : SemilatInf ⥤ SemilatSup where
   obj X := SemilatSup.of Xᵒᵈ
@@ -201,8 +191,7 @@ def dual : SemilatInf ⥤ SemilatSup where
 
 end SemilatInf
 
-/-- The equivalence between `SemilatSup` and `SemilatInf` induced by `order_dual` both ways.
--/
+/-- The equivalence between `SemilatSup` and `SemilatInf` induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def semilatSupEquivSemilatInf : SemilatSup ≌ SemilatInf where
   functor := SemilatSup.dual
