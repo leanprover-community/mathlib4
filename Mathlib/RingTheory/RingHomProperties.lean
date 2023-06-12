@@ -154,15 +154,18 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
     apply TensorProduct.ext'
     intro x y
     simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
-  convert h₁.1 _ _ (h₂ H : P (_ : R' →+* _))
+  -- Porting Note: This had a lot of implicit inferences which didn't resolve anymore.
+  -- Added those in
+  convert h₁.1 (_ : R' →+* TensorProduct R R' S) (_ : TensorProduct R R' S ≃+* S')
+      (h₂ H : P (_ : R' →+* TensorProduct R R' S))
   swap
   · refine' { e with map_mul' := fun x y => _ }
     change e (x * y) = e x * e y
     simp_rw [this]
     exact map_mul f' _ _
-  · ext
+  · ext x
     change _ = e (x ⊗ₜ[R] 1)
-    dsimp only [e]
+    --Porting note: Had `dsimp only [e]` here, which didn't work anymore
     rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
 #align ring_hom.stable_under_base_change.mk RingHom.StableUnderBaseChange.mk
 
