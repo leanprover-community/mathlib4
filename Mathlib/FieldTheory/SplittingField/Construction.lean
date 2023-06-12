@@ -250,7 +250,7 @@ theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomi
 
 def algEquivQuotientMvPolynomial (f : K[X]) :
     (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
-      RingHom.ker (ofMvPolynomial f)) ≃ₐ[K]
+      RingHom.ker (ofMvPolynomial f).toRingHom) ≃ₐ[K]
     SplittingFieldAux f.natDegree f :=
   (Ideal.quotientKerAlgEquivOfSurjective (ofMvPolynomial_surjective f) : _)
 
@@ -281,16 +281,39 @@ instance algebra' {R} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField
   delta SplittingField; infer_instance
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
+/-- The algebra equivalence with `SplittingFieldAux`,
+which we will use to construct the field structure. -/
+def algEquivSplittingFieldAux (f : K[X]) :
+    SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
+  SplittingFieldAux.algEquivQuotientMvPolynomial f
+
 instance : Field (SplittingField f) :=
+  let e := algEquivSplittingFieldAux f
   { toCommRing := SplittingField.commRing f
-    ratCast := fun a => algebraMap K (SplittingField f) (a : K)
-    ratCast_mk := sorry
-    qsmul := (. • .)
-    qsmul_eq_mul' := sorry
-    inv := sorry
-    exists_pair_ne := sorry
-    mul_inv_cancel := sorry
-    inv_zero := sorry }
+    ratCast := fun a => algebraMap K _ (a : K)
+    inv := fun a => e.symm (e a)⁻¹
+    qsmul := (· • ·)
+    qsmul_eq_mul' := fun a x => by
+      simp
+      sorry
+    ratCast_mk := fun a b h1 h2 => by
+      apply_fun e
+      change e (algebraMap K _ _) = _
+      simp only [map_ratCast, map_natCast, map_mul, map_intCast, AlgEquiv.commutes,
+        AlgEquiv.apply_symm_apply]
+      apply Field.ratCast_mk
+    exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
+    mul_inv_cancel := fun a w => by
+      -- This could surely be golfed.
+      apply_fun e
+      have : e a ≠ 0 := fun w' => by
+        apply w
+        simp at w'
+        exact w'
+      simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
+      rw [mul_inv_cancel]
+      assumption
+    inv_zero := by simp }
 
 instance [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -305,9 +328,6 @@ example :
 example :
     (AddCommGroup.intModule _ : Module ℤ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
-  rfl
-
-example [CharZero K] : SplittingField.algebra' f = algebraRat :=
   rfl
 
 example [CharZero K] : SplittingField.algebra' f = algebraRat :=
