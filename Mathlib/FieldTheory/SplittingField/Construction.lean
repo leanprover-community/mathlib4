@@ -19,12 +19,12 @@ In this file we prove the existence and uniqueness of splitting fields.
 
 ## Main definitions
 
-* `polynomial.splitting_field f`: A fixed splitting field of the polynomial `f`.
+* `Polynomial.SplittingField f`: A fixed splitting field of the polynomial `f`.
 
 ## Main statements
 
-* `polynomial.is_splitting_field.alg_equiv`: Every splitting field of a polynomial `f` is isomorphic
-  to `splitting_field f` and thus, being a splitting field is unique up to isomorphism.
+* `Polynomial.IsSplittingField.algEquiv`: Every splitting field of a polynomial `f` is isomorphic
+  to `SplittingField f` and thus, being a splitting field is unique up to isomorphism.
 
 -/
 
@@ -83,7 +83,6 @@ def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
   map (AdjoinRoot.of f.factor) f /ₘ (X - C (AdjoinRoot.root f.factor))
 #align polynomial.remove_factor Polynomial.removeFactor
 
-set_option maxHeartbeats 300000 in
 theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
     (X - C (AdjoinRoot.root f.factor)) * f.removeFactor = map (AdjoinRoot.of f.factor) f := by
   let ⟨g, hg⟩ := factor_dvd_of_natDegree_ne_zero hf
@@ -94,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.X_sub_C_mul_remove_factor Polynomial.X_sub_C_mul_removeFactor
 
 theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegree - 1 := by
--- Porting note: `(map (AdjoinRoot.of f.factor) f)` was `_`
+  -- Porting note: `(map (AdjoinRoot.of f.factor) f)` was `_`
   rw [removeFactor, natDegree_divByMonic (map (AdjoinRoot.of f.factor) f) (monic_X_sub_C _),
     natDegree_map, natDegree_X_sub_C]
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
@@ -107,7 +106,7 @@ theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1)
 `n` (arbitrarily-chosen) factors.
 
 Uses recursion on the degree. For better definitional behaviour, structures
-including `splitting_field_aux` (such as instances) should be defined using
+including `SplittingFieldAux` (such as instances) should be defined using
 this recursion in each field, rather than defining the whole tuple through
 recursion.
 -/
@@ -206,7 +205,6 @@ protected theorem splits (n : ℕ) :
 
 #noalign polynomial.splitting_field_aux.exists_lift
 
-set_option maxHeartbeats 400000 in
 theorem adjoin_roots (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
@@ -222,15 +220,14 @@ theorem adjoin_roots (n : ℕ) :
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn ; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf ; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
-    rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0
-      ⊢
+    rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
       Algebra.adjoin_algebraMap K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor),
       AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
-    /- Porting note: was a `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
-        (SplittingFieldAux n f.removeFactor)]-/
+    /- Porting note: was `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
+        (SplittingFieldAux n f.removeFactor)]` -/
     have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)
         (↑(f.removeFactor.map <| algebraMap (AdjoinRoot f.factor) <|
@@ -251,7 +248,7 @@ def ofMvPolynomial (f : K[X]) :
 theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) :=
   sorry
 
-def AlgEquivQuotientMvPolynomial (f : K[X]) :
+def algEquivQuotientMvPolynomial (f : K[X]) :
     (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
       RingHom.ker (ofMvPolynomial f)) ≃ₐ[K]
     SplittingFieldAux f.natDegree f :=
@@ -276,7 +273,7 @@ instance inhabited : Inhabited (SplittingField f) :=
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
---Porting note: new instance
+-- Porting note: new instance
 instance [CommSemiring S] [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
   Submodule.Quotient.hasSmul' _
 
@@ -321,7 +318,7 @@ example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q
 
 instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
-  IsSplittingField.of_algEquiv _ f (SplittingFieldAux.AlgEquivQuotientMvPolynomial f).symm
+  IsSplittingField.of_algEquiv _ f (SplittingFieldAux.algEquivQuotientMvPolynomial f).symm
 #align polynomial.is_splitting_field.splitting_field Polynomial.IsSplittingField.splittingField
 
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
@@ -358,7 +355,7 @@ variable {K}
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-/-- Any splitting field is isomorphic to `splitting_field f`. -/
+/-- Any splitting field is isomorphic to `SplittingField f`. -/
 def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
   refine'
     AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
