@@ -30,6 +30,7 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSup : Type (u + 1) where
+  /-- The category of sup-semilattices with a bottom element. -/
   X : Type u
   [isSemilatticeSup : SemilatticeSup X]
   [isOrderBot : OrderBot.{u} X]
@@ -37,6 +38,7 @@ structure SemilatSup : Type (u + 1) where
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInf : Type (u + 1) where
+  /-- The category of inf-semilattices with a top element. -/
   X : Type u
   [isSemilatticeInf : SemilatticeInf X]
   [isOrderTop : OrderTop.{u} X]
