@@ -361,17 +361,17 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C)
   where has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
-⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
-  apply IsColimit.ofIsoColimit (colimit.isColimit _)
-  fapply Cocones.ext
-  · rfl
-  · intro j
-    simp⟩
+  ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
+    apply IsColimit.ofIsoColimit (colimit.isColimit _)
+    fapply Cocones.ext
+    · rfl
+    · intro j
+      simp⟩
 
 /-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
 -/
 instance [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
-⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
+  ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
 /-- The underlying topological space of a colimit of presheaved spaces is
 the colimit of the underlying topological spaces.

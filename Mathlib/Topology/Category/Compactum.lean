@@ -99,7 +99,7 @@ def forget : Compactum ⥤ Type _ :=
 #align Compactum.forget Compactum.forget
 
 instance : Faithful forget :=
-show Faithful <| Monad.forget _ from inferInstance
+  show Faithful <| Monad.forget _ from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
 show CreatesLimits <| Monad.forget _ from inferInstance

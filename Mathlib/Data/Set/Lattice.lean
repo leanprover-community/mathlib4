@@ -477,11 +477,11 @@ lemma iInter_const (s : Set β) : (⋂ _ : ι, s) = s := iInf_const
 #align set.Inter_const Set.iInter_const
 
 lemma iUnion_eq_const (hf : ∀ i, f i = s) : (⋃ i, f i) = s :=
-(iUnion_congr hf).trans $ iUnion_const _
+  (iUnion_congr hf).trans $ iUnion_const _
 #align set.Union_eq_const Set.iUnion_eq_const
 
 lemma iInter_eq_const (hf : ∀ i, f i = s) : (⋂ i, f i) = s :=
-(iInter_congr hf).trans $ iInter_const _
+  (iInter_congr hf).trans $ iInter_const _
 #align set.Inter_eq_const Set.iInter_eq_const
 
 end Nonempty

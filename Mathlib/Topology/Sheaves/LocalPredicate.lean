@@ -261,7 +261,7 @@ set_option linter.uppercaseLean3 false in
 every point in the fiber `T x` has an allowed section passing through it.
 -/
 theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
-    (w : ∀ t : T x, ∃ (U : OpenNhds x)(f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
+    (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
     Function.Surjective (stalkToFiber P x) := fun t => by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor
@@ -277,11 +277,12 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     (w :
       ∀ (U V : OpenNhds x) (fU : ∀ y : U.1, T y) (_ : P.pred fU) (fV : ∀ y : V.1, T y)
         (_ : P.pred fV) (_ : fU ⟨x, U.2⟩ = fV ⟨x, V.2⟩),
-        ∃ (W : OpenNhds x)(iU : W ⟶ U)(iV : W ⟶ V), ∀ w : W.1, fU (iU w : U.1) = fV (iV w : V.1)) :
+        ∃ (W : OpenNhds x) (iU : W ⟶ U) (iV : W ⟶ V), ∀ w : W.1,
+          fU (iU w : U.1) = fV (iV w : V.1)) :
     Function.Injective (stalkToFiber P x) := fun tU tV h => by
   -- We promise to provide all the ingredients of the proof later:
   let Q :
-    ∃ (W : (OpenNhds x)ᵒᵖ)(s : ∀ w : (unop W).1, T w)(hW : P.pred s),
+    ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
       tU = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ ∧
         tV = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ :=
     ?_
