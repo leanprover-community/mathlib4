@@ -1138,8 +1138,6 @@ lemma d_comp_d :
   ext D
   apply d_comp_d_app
 
-#check d
-
 noncomputable def kernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
   X₁ := Arrow₅.δ₀ ⋙ Arrow₄.δ₁ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
   X₂ := Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
@@ -1193,6 +1191,9 @@ lemma δ₀δ₀PullbackCokernelSequenceD_exact :
 noncomputable def shortComplexEEE : ShortComplex (Arrow₇ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.d_comp_d n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
 
+noncomputable def shortComplexEEEObj (D : Arrow₇ ι) : ShortComplex C :=
+  ShortComplex.mk _ _ (X.d_comp_d_app n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ D)
+
 lemma E_fac :
   whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₆ ⋙ Arrow₅.δ₀)
       (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂)) ≫
@@ -1226,6 +1227,12 @@ noncomputable def homologyShortComplexEEEIso :
     (X.shortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).homology ≅
       Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₁ ⋙ Arrow₄.δ₃ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃ :=
   (X.homologyDataShortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).left.homologyIso
+
+noncomputable def homologyShortComplexEEEObjIso (D : Arrow₇ ι) :
+    (X.shortComplexEEEObj n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ D).homology ≅
+      (X.E n₁ n₂ n₃ hn₂ hn₃).obj (Arrow₃.mk (D.g ≫ D.h) D.i (D.j ≫ D.k)) :=
+  ((X.homologyDataShortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).map
+    ((evaluation _ _).obj D)).left.homologyIso
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
