@@ -26,12 +26,12 @@ random variables with this distribution.
 
 ## Main definitions
 
-* `MeasureTheory.HasPdf` : A random variable `X : Ω → E` is said to `has_pdf` with
+* `MeasureTheory.HasPdf` : A random variable `X : Ω → E` is said to `HasPdf` with
   respect to the measure `ℙ` on `Ω` and `μ` on `E` if there exists a measurable function `f`
-  such that the push-forward measure of `ℙ` along `X` equals `μ.with_density f`.
-* `MeasureTheory.pdf` : If `X` is a random variable that `has_pdf X ℙ μ`, then `pdf X`
+  such that the push-forward measure of `ℙ` along `X` equals `μ.withDensity f`.
+* `MeasureTheory.pdf` : If `X` is a random variable that `HasPdf X ℙ μ`, then `pdf X`
   is the measurable function `f` such that the push-forward measure of `ℙ` along `X` equals
-  `μ.with_density f`.
+  `μ.withDensity f`.
 * `measure_theory.pdf.uniform` : A random variable `X` is said to follow the uniform
   distribution if it has a constant probability density function with a compact, non-null support.
 
@@ -64,9 +64,9 @@ namespace MeasureTheory
 
 variable {Ω E : Type _} [MeasurableSpace E]
 
-/-- A random variable `X : Ω → E` is said to `has_pdf` with respect to the measure `ℙ` on `Ω` and
+/-- A random variable `X : Ω → E` is said to `HasPdf` with respect to the measure `ℙ` on `Ω` and
 `μ` on `E` if there exists a measurable function `f` such that the push-forward measure of `ℙ`
-along `X` equals `μ.with_density f`. -/
+along `X` equals `μ.withDensity f`. -/
 class HasPdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : Prop where
   -- porting note: TODO: split into fields `Measurable` and `exists_pdf`
@@ -80,8 +80,8 @@ theorem HasPdf.measurable {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure
   hX.pdf'.1
 #align measure_theory.has_pdf.measurable MeasureTheory.HasPdf.measurable
 
-/-- If `X` is a random variable that `has_pdf X ℙ μ`, then `pdf X` is the measurable function `f`
-such that the push-forward measure of `ℙ` along `X` equals `μ.with_density f`. -/
+/-- If `X` is a random variable that `HasPdf X ℙ μ`, then `pdf X` is the measurable function `f`
+such that the push-forward measure of `ℙ` along `X` equals `μ.withDensity f`. -/
 def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :
     E → ℝ≥0∞ :=
   if hX : HasPdf X ℙ μ then Classical.choose hX.pdf'.2 else 0
@@ -207,7 +207,7 @@ theorem map_absolutelyContinuous {X : Ω → E} [HasPdf X ℙ μ] : map X ℙ �
   rw [map_eq_withDensity_pdf X ℙ μ]; exact withDensity_absolutelyContinuous _ _
 #align measure_theory.pdf.map_absolutely_continuous MeasureTheory.pdf.map_absolutelyContinuous
 
-/-- A random variable that `has_pdf` is quasi-measure preserving. -/
+/-- A random variable that `HasPdf` is quasi-measure preserving. -/
 theorem to_quasiMeasurePreserving {X : Ω → E} [HasPdf X ℙ μ] : QuasiMeasurePreserving X ℙ μ :=
   { measurable := HasPdf.measurable X ℙ μ
     absolutelyContinuous := map_absolutelyContinuous }
@@ -241,10 +241,10 @@ section
 
 variable {F : Type _} [MeasurableSpace F] {ν : Measure F}
 
-/-- A random variable that `has_pdf` transformed under a `quasi_measure_preserving`
-map also `has_pdf` if `(map g (map X ℙ)).have_lebesgue_decomposition μ`.
+/-- A random variable that `HasPdf` transformed under a `quasi_measure_preserving`
+map also `HasPdf` if `(map g (map X ℙ)).have_lebesgue_decomposition μ`.
 
-`quasi_measure_preserving_has_pdf'` is more useful in the case we are working with a
+`quasi_measure_preserving_hasPdf'` is more useful in the case we are working with a
 probability measure and a real-valued random variable. -/
 theorem quasiMeasurePreserving_hasPdf {X : Ω → E} [HasPdf X ℙ μ] {g : E → F}
     (hg : QuasiMeasurePreserving g μ ν) (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) :
@@ -270,7 +270,7 @@ section Real
 
 variable [IsFiniteMeasure ℙ] {X : Ω → ℝ}
 
-/-- A real-valued random variable `X` `has_pdf X ℙ λ` (where `λ` is the Lebesgue measure) if and
+/-- A real-valued random variable `X` `HasPdf X ℙ λ` (where `λ` is the Lebesgue measure) if and
 only if the push-forward measure of `ℙ` along `X` is absolutely continuous with respect to `λ`. -/
 nonrec theorem _root_.Real.hasPdf_iff_of_measurable (hX : Measurable X) :
     HasPdf X ℙ ↔ map X ℙ ≪ volume := by
