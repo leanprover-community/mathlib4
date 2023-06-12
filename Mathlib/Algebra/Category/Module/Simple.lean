@@ -8,11 +8,11 @@ Authors: Pierre-Alexandre Bazin, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Simple
-import Mathbin.Algebra.Category.Module.Subobject
-import Mathbin.Algebra.Category.Module.Algebra
-import Mathbin.RingTheory.SimpleModule
-import Mathbin.LinearAlgebra.FiniteDimensional
+import Mathlib.CategoryTheory.Simple
+import Mathlib.Algebra.Category.Module.Subobject
+import Mathlib.Algebra.Category.Module.Algebra
+import Mathlib.RingTheory.SimpleModule
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 /-!
 # Simple objects in the category of `R`-modules
