@@ -41,9 +41,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
   naturality {a b} f := by
     dsimp
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
-    -- Porting note: used to be `simp`
-    simp only [comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc,
-      Modification.whiskerLeft_naturality_assoc, whisker_assoc]
+    simp
 #align category_theory.oplax_nat_trans.whisker_left CategoryTheory.OplaxNatTrans.whiskerLeft
 
 /-- Right whiskering of an oplax natural transformation and a modification. -/
@@ -53,9 +51,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
   naturality {a b} f := by
     dsimp
     simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
-    -- Porting note: used to be `simp`
-    simp only [Modification.whiskerRight_naturality_assoc, whiskerRight_comp, assoc,
-      Iso.hom_inv_id_assoc]
+    simp
 #align category_theory.oplax_nat_trans.whisker_right CategoryTheory.OplaxNatTrans.whiskerRight
 
 /-- Associator for the vertical composition of oplax natural transformations. -/
@@ -93,53 +89,8 @@ instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   leftUnitor {F G} := OplaxNatTrans.leftUnitor
   rightUnitor {F G} := OplaxNatTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
-    -- Porting note: tidy used to be able to do this
     ext
     exact whisker_exchange _ _
-  whiskerLeft_id {a b c} f g := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact whiskerLeft_id _ _
-  whiskerLeft_comp {a b c} f g h i η θ := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact whiskerLeft_comp _ _ _
-  id_whiskerLeft {a b f g} η := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact id_whiskerLeft _
-  comp_whiskerLeft {a b c d} f g {h h'} η := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact comp_whiskerLeft _ _ _
-  id_whiskerRight {a b c} f g := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact id_whiskerRight _ _
-  comp_whiskerRight {a b c f g h} η θ i := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact comp_whiskerRight _ _ _
-  whiskerRight_id {a b f g} η := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact whiskerRight_id _
-  whiskerRight_comp {a b c d f f'} η g h := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact whiskerRight_comp _ _ _
-  whisker_assoc {a b c d} f {g g'} η h := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact whisker_assoc _ _ _
-  pentagon {a b c d e} f g h i := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact pentagon _ _ _ _
-  triangle {a b c} f g := by
-    -- Porting note: tidy used to be able to do this
-    ext
-    exact triangle _ _
 #align category_theory.oplax_functor.bicategory CategoryTheory.OplaxFunctor.bicategory
 
 end CategoryTheory
