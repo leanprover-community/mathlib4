@@ -297,6 +297,14 @@ instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   comp := Modification.vcomp
 #align category_theory.oplax_nat_trans.category CategoryTheory.OplaxNatTrans.category
 
+-- Porting note: duplicating the `ext` lemma.
+@[ext]
+lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
+    m = n := by
+  apply Modification.ext
+  ext
+  apply w
+
 /-- Construct a modification isomorphism between oplax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/

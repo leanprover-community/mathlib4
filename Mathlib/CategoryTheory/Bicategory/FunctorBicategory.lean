@@ -93,41 +93,53 @@ instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   leftUnitor {F G} := OplaxNatTrans.leftUnitor
   rightUnitor {F G} := OplaxNatTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
-    -- Porting note: broken ext
-    refine' OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whisker_exchange _ _)
+    -- Porting note: tidy used to be able to do this
+    ext
+    exact whisker_exchange _ _
   whiskerLeft_id {a b c} f g := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whiskerLeft_id _ _)
+    ext
+    exact whiskerLeft_id _ _
   whiskerLeft_comp {a b c} f g h i η θ := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whiskerLeft_comp _ _ _)
+    ext
+    exact whiskerLeft_comp _ _ _
   id_whiskerLeft {a b f g} η := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => id_whiskerLeft _)
+    ext
+    exact id_whiskerLeft _
   comp_whiskerLeft {a b c d} f g {h h'} η := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => comp_whiskerLeft _ _ _)
+    ext
+    exact comp_whiskerLeft _ _ _
   id_whiskerRight {a b c} f g := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => id_whiskerRight _ _)
+    ext
+    exact id_whiskerRight _ _
   comp_whiskerRight {a b c f g h} η θ i := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => comp_whiskerRight _ _ _)
+    ext
+    exact comp_whiskerRight _ _ _
   whiskerRight_id {a b f g} η := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whiskerRight_id _)
+    ext
+    exact whiskerRight_id _
   whiskerRight_comp {a b c d f f'} η g h := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whiskerRight_comp _ _ _)
+    ext
+    exact whiskerRight_comp _ _ _
   whisker_assoc {a b c d} f {g g'} η h := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => whisker_assoc _ _ _)
+    ext
+    exact whisker_assoc _ _ _
   pentagon {a b c d e} f g h i := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => pentagon _ _ _ _)
+    ext
+    exact pentagon _ _ _ _
   triangle {a b c} f g := by
     -- Porting note: tidy used to be able to do this
-    exact OplaxNatTrans.Modification.ext _ _ (funext <| fun _ => triangle _ _)
+    ext
+    exact triangle _ _
 #align category_theory.oplax_functor.bicategory CategoryTheory.OplaxFunctor.bicategory
 
 end CategoryTheory
