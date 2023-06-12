@@ -1140,7 +1140,7 @@ theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
 theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K V)) :
     finrank K W + finrank K W.dualCoannihilator = finrank K V := by
   rw [finrank_dualCoannihilator_eq]
-  -- Porting note: LineqrEquiv.finrank_eq needs help
+  -- Porting note: LinearEquiv.finrank_eq needs help
   let equiv := W.quotEquivAnnihilator
   have eq := LinearEquiv.finrank_eq (R := K) (M := (Module.Dual K V) ⧸ W)
     (M₂ := { x // x ∈ dualAnnihilator W }) equiv
@@ -1575,7 +1575,7 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  -- Porting note: ∑ (i) (j) does not seem to work; applyₗneeds a little help to unify
+  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       (applyₗ (R := R) (c j)) ∘ₗ (applyₗ (R := R) (b i)) ∘ₗ lcurry R M N R

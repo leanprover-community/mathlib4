@@ -457,7 +457,7 @@ theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 
--- porting note: todo: refurmulate using `𝓝ˢ`
+-- porting note: todo: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set α` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `α` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
@@ -1162,7 +1162,7 @@ theorem exists_compact_mem_nhds [LocallyCompactSpace α] (x : α) : ∃ K, IsCom
   ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
 #align exists_compact_mem_nhds exists_compact_mem_nhds
 
-/-- In a locally compact space, for every containement `K ⊆ U` of a compact set `K` in an open
+/-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
   compact `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
 theorem exists_compact_between [hα : LocallyCompactSpace α] {K U : Set α} (hK : IsCompact K)

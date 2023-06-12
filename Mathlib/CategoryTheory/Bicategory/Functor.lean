@@ -42,7 +42,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
 because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy
-to investigage this issue further in mathlib4. Similarly, the composition is also defined by using
+to investigate this issue further in mathlib4. Similarly, the composition is also defined by using
 `mkOfOplax'` after giving appropriate instances for `IsIso`. The former constructor
 `mkOfOplax` requires isomorphisms as data type `Iso`, and so it is useful if you don't want
 to forget the definitions of the inverses. On the other hand, the latter constructor

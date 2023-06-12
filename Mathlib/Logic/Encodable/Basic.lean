@@ -646,7 +646,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
 theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
-  generalize eq : hf.sequence f n = p
+  generalize hf.sequence f n = p
   cases' h : (decode n: Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1

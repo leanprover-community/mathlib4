@@ -20,7 +20,7 @@ A normal monomorphism is a morphism that is the kernel of some other morphism.
 We give the construction `NormalMono → RegularMono` (`CategoryTheory.NormalMono.regularMono`)
 as well as the dual construction for normal epimorphisms. We show equivalences reflect normal
 monomorphisms (`CategoryTheory.equivalenceReflectsNormalMono`), and that the pullback of a
-normal monomorphism is normal (`CategoryTheoCy.normalOfIsPullbackSndOfNormal`).
+normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 
 We also define classes `NormalMonoCategory` and `NormalEpiCategory` for classes in which
 every monomorphism or epimorphism is normal, and deduce that these categories are

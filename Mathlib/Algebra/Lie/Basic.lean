@@ -1058,7 +1058,7 @@ theorem refl_apply (m : M) : (refl : M ≃ₗ⁅R,L⁆ M) m = m :=
   rfl
 #align lie_module_equiv.refl_apply LieModuleEquiv.refl_apply
 
-/-- Lie module equivalences are syemmtric. -/
+/-- Lie module equivalences are symmetric. -/
 @[symm]
 def symm (e : M ≃ₗ⁅R,L⁆ N) : N ≃ₗ⁅R,L⁆ M :=
   { LieModuleHom.inverse e.toLieModuleHom e.invFun e.left_inv e.right_inv,

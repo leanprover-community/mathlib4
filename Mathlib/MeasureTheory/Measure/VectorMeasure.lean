@@ -38,7 +38,7 @@ We require all non-measurable sets to be mapped to zero in order for the extensi
 to only compare the underlying functions for measurable sets.
 
 We use `HasSum` instead of `tsum` in the definition of vector measures in comparison to `Measure`
-since this provides summablity.
+since this provides summability.
 
 ## Tags
 
