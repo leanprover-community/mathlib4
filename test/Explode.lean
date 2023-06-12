@@ -3,65 +3,68 @@ import Mathlib.Data.Real.Basic
 set_option linter.unusedVariables false
 open Lean
 
--- See that the explode command itself works
-#explode true_iff
+/--
+info: true_iff : ∀ (p : Prop), (True ↔ p) = p
+
+0 │    │ p         ├ Prop
+1 │    │ x✝        │ ┌ True ↔ p
+2 │    │ trivial   │ │ True
+3 │1,2 │ Iff.mp    │ │ p
+4 │1,3 │ ∀I        │ (True ↔ p) → p
+5 │    │ h         │ ┌ p
+6 │    │ x✝        │ │ ┌ True
+7 │6,5 │ ∀I        │ │ True → p
+8 │    │ x✝        │ │ ┌ p
+9 │8,2 │ ∀I        │ │ p → True
+10│7,9 │ Iff.intro │ │ True ↔ p
+11│5,10│ ∀I        │ p → (True ↔ p)
+12│4,11│ Iff.intro │ (True ↔ p) ↔ p
+13│12  │ propext   │ (True ↔ p) = p
+14│0,13│ ∀I        │ ∀ (p : Prop), (True ↔ p) = p
+-/
+#guard_msgs in #explode true_iff
 
 -- On command line, tests format functions with => rather than ↦ without this.
 set_option pp.unicode.fun true
-
-elab dc?:docComment ? tk:"#explode_test " stx:term : command => do
-  let some msg ← Mathlib.Explode.runExplode stx
-    | throwErrorAt tk "❌ failure in #explode"
-  if let some dc := dc? then
-    let str := toString (← msg.format)
-    let ds := (← getDocStringText dc)
-    if str.trim == ds.trim then
-      logInfoAt tk m!"✅ success"
-      logInfoAt tk msg
-    else
-      logErrorAt tk m!"❌ expected from docstring:\n\n{ds}\n❌ actual:\n\n{msg}"
-  else
-    logErrorAt tk m!"❌ missing docstring"
-    logInfoAt tk msg
 
 theorem lambda : True → True :=
   λ a => a
 
 /--
-lambda : True → True
+info: lambda : True → True
 
 0│   │ a  ├ True
 1│0,0│ ∀I │ True → True
 -/
-#explode_test lambda
+#guard_msgs in #explode lambda
 
 theorem application : True ∧ True :=
   And.intro True.intro True.intro
 
 /--
-application : True ∧ True
+info: application : True ∧ True
 
 0│   │ True.intro │ True
 1│0,0│ And.intro  │ True ∧ True
 -/
-#explode_test application
+#guard_msgs in #explode application
 
 theorem theorem_1 : ∀ (p : Prop), p → p :=
   λ (p : Prop) => (λ hP : p => hP)
 /--
-theorem_1 : ∀ (p : Prop), p → p
+info: theorem_1 : ∀ (p : Prop), p → p
 
 0│     │ p  ├ Prop
 1│     │ hP ├ p
 2│0,1,1│ ∀I │ ∀ (p : Prop), p → p
 -/
-#explode_test theorem_1
+#guard_msgs in #explode theorem_1
 
 theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
   λ p => λ q => λ hP => λ hQ => And.intro hP hQ
 
 /--
-theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
+info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 
 0│         │ p         ├ Prop
 1│         │ q         ├ Prop
@@ -70,7 +73,7 @@ theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 4│2,3      │ And.intro │ p ∧ q
 5│0,1,2,3,4│ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
 -/
-#explode_test theorem_2
+#guard_msgs in #explode theorem_2
 
 theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
   Iff.intro
@@ -78,7 +81,7 @@ theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
     (λ hr => h)
 
 /--
-theorem_3 : ∀ (a : Prop), a → (a ↔ True)
+info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 
 0│     │ a         ├ Prop
 1│     │ h         ├ a
@@ -90,14 +93,14 @@ theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 7│4,6  │ Iff.intro │ a ↔ True
 8│0,1,7│ ∀I        │ ∀ (a : Prop), a → (a ↔ True)
 -/
-#explode_test theorem_3
+#guard_msgs in #explode theorem_3
 
 
 theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
   λ U => λ W => λ hPQ => λ hNQ => λ hP => False.elim (hNQ (hPQ hP))
 
 /--
-theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
+info: theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 
 0│           │ U          ├ Prop
 1│           │ W          ├ Prop
@@ -109,7 +112,7 @@ theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 7│6          │ False.elim │ False
 8│0,1,2,3,4,7│ ∀I         │ ∀ (U W : Prop), (U → W) → ¬W → U → False
 -/
-#explode_test theorem_4
+#guard_msgs in #explode theorem_4
 
 lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   λ p => λ q =>
@@ -122,7 +125,7 @@ lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
       False.elim (hNP hP))
 
 /--
-lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
+info: lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 
 0 │          │ p            ├ Prop
 1 │          │ q            ├ Prop
@@ -139,14 +142,14 @@ lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 13│4,6,12    │ Or.elim      │ q
 14│0,1,2,3,13│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
-#explode_test lemma_5
+#guard_msgs in #explode lemma_5
 
 
 lemma lemma_6 : ∀ p q : Prop, (p → q) → p → q :=
   λ p h hpq hp => hpq hp
 
 /--
-lemma_6 : ∀ (p q : Prop), (p → q) → p → q
+info: lemma_6 : ∀ (p q : Prop), (p → q) → p → q
 
 0│         │ p   ├ Prop
 1│         │ h   ├ Prop
@@ -155,7 +158,7 @@ lemma_6 : ∀ (p q : Prop), (p → q) → p → q
 4│2,3      │ ∀E  │ h
 5│0,1,2,3,4│ ∀I  │ ∀ (p h : Prop), (p → h) → p → h
 -/
-#explode_test lemma_6
+#guard_msgs in #explode lemma_6
 
 lemma lemma_7 : ∀ p q r : Prop, (p → q) → (p → q → r) → (p → r) :=
   λ p q r hq hqr hp =>
@@ -164,7 +167,7 @@ lemma lemma_7 : ∀ p q r : Prop, (p → q) → (p → q → r) → (p → r) :=
     hqr' hq'
 
 /--
-lemma_7 : ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
+info: lemma_7 : ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 
 0 │              │ p   ├ Prop
 1 │              │ q   ├ Prop
@@ -177,7 +180,7 @@ lemma_7 : ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 10│8,6           │ ∀E  │ r
 11│0,1,2,3,4,5,10│ ∀I  │ ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 -/
-#explode_test lemma_7
+#guard_msgs in #explode lemma_7
 
 lemma lemma_5' : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   λ p => λ q =>
@@ -189,7 +192,7 @@ lemma lemma_5' : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
       False.elim (hNP hP))
 
 /--
-lemma_5' : ∀ (p q : Prop), (¬q → ¬p) → p → q
+info: lemma_5' : ∀ (p q : Prop), (¬q → ¬p) → p → q
 
 0 │        │ p            ├ Prop
 1 │        │ q            ├ Prop
@@ -207,23 +210,23 @@ lemma_5' : ∀ (p q : Prop), (¬q → ¬p) → p → q
 14│3,6,13  │ Or.elim      │ p → q
 15│0,1,2,14│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
-#explode_test lemma_5'
+#guard_msgs in #explode lemma_5'
 
 section
 variable (p q : Prop)
 
 /--
-fun hp hnp ↦ hnp hp : p → (p → q) → q
+info: fun hp hnp ↦ hnp hp : p → (p → q) → q
 
 0│     │ hp  ├ p
 1│     │ hnp ├ p → q
 2│1,0  │ ∀E  │ q
 3│0,1,2│ ∀I  │ p → (p → q) → q
 -/
-#explode_test fun (hp : p) (hnp : p → q) => hnp hp
+#guard_msgs in #explode fun (hp : p) (hnp : p → q) => hnp hp
 
 /--
-fun hNQNP ↦
+info: fun hNQNP ↦
   Or.elim (Classical.em q) (fun hQ hP ↦ hQ) fun hNQ hP ↦
     let hNP := hNQNP hNQ;
     False.elim (hNP hP) : (¬q → ¬p) → p → q
@@ -242,7 +245,7 @@ fun hNQNP ↦
 12│1,4,11│ Or.elim      │ p → q
 13│0,12  │ ∀I           │ (¬q → ¬p) → p → q
 -/
-#explode_test fun (hNQNP : ¬q → ¬p) =>
+#guard_msgs in #explode fun (hNQNP : ¬q → ¬p) =>
   Or.elim (Classical.em q)
     (λ hQ hP => hQ)
     (λ hNQ hP =>
