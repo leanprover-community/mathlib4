@@ -902,6 +902,15 @@ def prodEquiv (s : Submonoid M) (t : Submonoid N) : s.prod t ≃* s × t :=
 #align submonoid.prod_equiv Submonoid.prodEquiv
 #align add_submonoid.prod_equiv AddSubmonoid.prodEquiv
 
+/-- The collection of nonnegative element in an ordered commutative monoid, as a submonoid. -/
+@[to_additive (attr := simps) AddSubmonoid.nonneg
+  "The collection of nonnegative element in an ordered additive commutative monoid, as an
+additive submonoid."]
+def _root_.Submonoid.oneLE (M : Type _) [OrderedCommMonoid M] : Submonoid M where
+  carrier := Set.Ici 1
+  mul_mem' := one_le_mul
+  one_mem' := le_rfl
+
 open MonoidHom
 
 @[to_additive]
