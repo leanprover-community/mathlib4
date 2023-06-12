@@ -798,21 +798,21 @@ composite of multiple projections).
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
   or `as_prefix <name>`.-/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
-| `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
-| `(simpsRule| - $id)         => return .erase id.getId id.raw
-| `(simpsRule| + $id)         => return .add id.getId id.raw
-| `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
-| _                           => Elab.throwUnsupportedSyntax
+  | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
+  | `(simpsRule| - $id)         => return .erase id.getId id.raw
+  | `(simpsRule| + $id)         => return .add id.getId id.raw
+  | `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
+  | _                           => Elab.throwUnsupportedSyntax
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
-| stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
-  let stxs := stxs.getD <| .mk #[]
-  let rules ← stxs.getElems.raw.mapM elabSimpsRule
-  let nm ← resolveGlobalConstNoOverload id
-  _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
-  _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
-| _ => throwUnsupportedSyntax
+  | stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
+    let stxs := stxs.getD <| .mk #[]
+    let rules ← stxs.getElems.raw.mapM elabSimpsRule
+    let nm ← resolveGlobalConstNoOverload id
+    _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
+    _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
+  | _ => throwUnsupportedSyntax
 
 /-- Configuration options for `@[simps]` -/
 structure Config where

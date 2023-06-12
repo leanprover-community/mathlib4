@@ -316,7 +316,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
   map_smul' r D := by ext; rfl
 #align derivation.llcomp Derivation.llcomp
 
-/-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
+/-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer

@@ -236,7 +236,7 @@ theorem types_π_surjective (D : GlueData (Type _)) : Function.Surjective D.π :
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
 theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
-    ∃ (i : _)(y : D.U i), D.ι i y = x := by
+    ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
@@ -389,7 +389,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
     NatIso.ofComponents
       (fun x => by
         cases x
-        exacts[D.gluedIso F, Iso.refl _])
+        exacts [D.gluedIso F, Iso.refl _])
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
@@ -407,7 +407,7 @@ set_option linter.uppercaseLean3 false in
 be jointly surjective. -/
 theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]
     [∀ i j k : D.J, PreservesLimit (cospan (D.f i j) (D.f i k)) F] (x : F.obj D.glued) :
-    ∃ (i : _)(y : F.obj (D.U i)), F.map (D.ι i) y = x := by
+    ∃ (i : _) (y : F.obj (D.U i)), F.map (D.ι i) y = x := by
   let e := D.gluedIso F
   obtain ⟨i, y, eq⟩ := (D.mapGlueData F).types_ι_jointly_surjective (e.hom x)
   replace eq := congr_arg e.inv eq

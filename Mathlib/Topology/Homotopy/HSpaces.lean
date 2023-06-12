@@ -15,7 +15,7 @@ import Mathlib.Topology.Homotopy.Path
 # H-spaces
 
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
-*Homologie singulière des espaces fibrés*. The idea beaneath `H-spaces` is that they are topological
+*Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
 operation what would make `X` into a topological monoid. In particular, there exists a "neutral
 element" `e : X` such that `λ x, e ⋀ x` and `λ x, x ⋀ e` are homotopic to the identity on `X`, see
@@ -101,7 +101,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     -- porting note: was `use ⟨G, hG⟩`
     refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
-      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
     · rintro t ⟨x, y⟩ h
@@ -121,7 +121,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     -- porting note: was `use ⟨G, hG⟩`
     refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
     · rintro ⟨x, y⟩
-      exacts[Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩
       exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
     · rintro t ⟨x, y⟩ h
@@ -258,7 +258,7 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
     refl_apply]
   split_ifs with h; swap; conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
-  exacts[if_neg h, if_pos h]
+  exacts [if_neg h, if_pos h]
 #align path.delay_refl_right_zero Path.delayReflRight_zero
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by

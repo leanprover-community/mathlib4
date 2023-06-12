@@ -359,7 +359,7 @@ def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : 
   { lift := lift
     fac := fun s j => by
       rcases j with ⟨⟨⟩⟩
-      exacts[fac_left s, fac_right s]
+      exacts [fac_left s, fac_right s]
     uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 #align category_theory.limits.binary_fan.is_limit_mk CategoryTheory.Limits.BinaryFan.isLimitMk
 
@@ -377,7 +377,7 @@ def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
   { desc := desc
     fac := fun s j => by
       rcases j with ⟨⟨⟩⟩
-      exacts[fac_left s, fac_right s]
+      exacts [fac_left s, fac_right s]
     uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 #align category_theory.limits.binary_cofan.is_colimit_mk CategoryTheory.Limits.BinaryCofan.isColimitMk
 
@@ -552,7 +552,7 @@ abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
   limit.π (pair X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.prod.fst CategoryTheory.Limits.prod.fst
 
-/-- The projecton map to the second component of the product. -/
+/-- The projection map to the second component of the product. -/
 abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
   limit.π (pair X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.prod.snd CategoryTheory.Limits.prod.snd

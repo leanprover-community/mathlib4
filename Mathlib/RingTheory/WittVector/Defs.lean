@@ -55,7 +55,7 @@ structure WittVector (p : ℕ) (R : Type _) where mk' ::
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
-def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R): WittVector p R := mk' coeff
+def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
 
