@@ -31,7 +31,6 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
-import Mathlib.Algebra.Category.Group.Subobject
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts
@@ -43,6 +42,7 @@ import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.GroupCat.Subobject
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Zero
 import Mathlib.Algebra.Category.GroupWithZeroCat

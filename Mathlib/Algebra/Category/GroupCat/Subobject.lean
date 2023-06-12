@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.ZModuleEquivalence
-import Mathlib.Algebra.Category.Module.Subobject
+import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 /-!
 # The category of abelian groups is well-powered
