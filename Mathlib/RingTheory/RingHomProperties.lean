@@ -35,7 +35,8 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Prop)
+-- Porting Note: Deleted variable `f` here, since it wasn't used explicitly
+variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
 
 section RespectsIso
 
@@ -76,14 +77,21 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   refine' (hP.cancel_right_isIso (CommRingCat.ofHom _) e₂.toCommRingCatIso.hom).symm.trans _
   rw [← eq_iff_iff]
   congr 1
-  dsimp [CommRingCat.ofHom, CommRingCat.of, Bundled.of]
-  refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
-  ext1
-  revert e₁ e₂
-  dsimp [RingEquiv.toRingHom, IsLocalization.Away.map]
-  simp only [CategoryTheory.comp_apply, RingEquiv.refl_apply, IsLocalization.algEquiv_apply,
-    IsLocalization.ringEquivOfRingEquiv_apply, RingHom.coe_mk, RingEquiv.congr_fun,
-    IsLocalization.ringEquivOfRingEquiv_eq, IsLocalization.map_eq]
+  -- Porting Note : Here, the proof used to have a huge `simp` involving `[anonymous]`, which didn't
+  -- work out anymore. The issue seemed to be that it couldn't handle a term in which Ring
+  -- homomorphisms were repeatedly casted to the bundled category and back. Here we resolve the
+  -- problem by converting the goal to a more straightforward form.
+  let e := (e₂ : Localization.Away (f r) →+* S').comp
+      (((IsLocalization.map (Localization.Away (f r)) f
+            (by rintro x ⟨n, rfl⟩; use n; simp : Submonoid.powers r ≤ Submonoid.comap f
+                (Submonoid.powers (f r)))) : Localization.Away r →+* Localization.Away (f r)).comp
+                (e₁: R' →+* Localization.Away r))
+  suffices e = IsLocalization.Away.map R' S' f r by
+    convert this
+  apply IsLocalization.ringHom_ext (Submonoid.powers r) _
+  ext1 x
+  dsimp [IsLocalization.Away.map]
+  simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
 #align ring_hom.respects_iso.is_localization_away_iff RingHom.RespectsIso.is_localization_away_iff
 
 end RespectsIso
@@ -94,7 +102,7 @@ section StableUnderComposition
 still falls in the class. -/
 def StableUnderComposition : Prop :=
   ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
-    ∀ (f : R →+* S) (g : S →+* T) (hf : P f) (hg : P g), P (g.comp f)
+    ∀ (f : R →+* S) (g : S →+* T) (_ : P f) (_ : P g), P (g.comp f)
 #align ring_hom.stable_under_composition RingHom.StableUnderComposition
 
 variable {P}
