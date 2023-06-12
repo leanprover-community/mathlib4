@@ -26,10 +26,10 @@ random variables with this distribution.
 
 ## Main definitions
 
-* `measure_theory.has_pdf` : A random variable `X : Ω → E` is said to `has_pdf` with
+* `MeasureTheory.HasPdf` : A random variable `X : Ω → E` is said to `has_pdf` with
   respect to the measure `ℙ` on `Ω` and `μ` on `E` if there exists a measurable function `f`
   such that the push-forward measure of `ℙ` along `X` equals `μ.with_density f`.
-* `measure_theory.pdf` : If `X` is a random variable that `has_pdf X ℙ μ`, then `pdf X`
+* `MeasureTheory.pdf` : If `X` is a random variable that `has_pdf X ℙ μ`, then `pdf X`
   is the measurable function `f` such that the push-forward measure of `ℙ` along `X` equals
   `μ.with_density f`.
 * `measure_theory.pdf.uniform` : A random variable `X` is said to follow the uniform
@@ -37,10 +37,10 @@ random variables with this distribution.
 
 ## Main results
 
-* `measure_theory.pdf.integral_fun_mul_eq_integral` : Law of the unconscious statistician,
+* `MeasureTheory.pdf.integral_fun_mul_eq_integral` : Law of the unconscious statistician,
   i.e. if a random variable `X : Ω → E` has pdf `f`, then `𝔼(g(X)) = ∫ x, g x * f x dx` for
   all measurable `g : E → ℝ`.
-* `measure_theory.pdf.integral_mul_eq_integral` : A real-valued random variable `X` with
+* `MeasureTheory.pdf.integral_mul_eq_integral` : A real-valued random variable `X` with
   pdf `f` has expectation `∫ x, x * f x dx`.
 * `measure_theory.pdf.uniform.integral_eq` : If `X` follows the uniform distribution with
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
@@ -69,7 +69,7 @@ variable {Ω E : Type _} [MeasurableSpace E]
 along `X` equals `μ.with_density f`. -/
 class HasPdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : Prop where
-  -- porting note: TODO: split into fields `measurable` and `exists_pdf`
+  -- porting note: TODO: split into fields `Measurable` and `exists_pdf`
   pdf' : Measurable X ∧ ∃ f : E → ℝ≥0∞, Measurable f ∧ map X ℙ = μ.withDensity f
 #align measure_theory.has_pdf MeasureTheory.HasPdf
 
