@@ -32,7 +32,7 @@ def mkToExprHeader (indVal : InductiveVal) : TermElabM Header := do
   let header ← mkHeader ``ToExpr 1 indVal
   return header
 
-/-- Give a term that is equivalent to `(term|mkAppN $f #[$args,*])`.
+/-- Give a term that is equivalent to `(term| mkAppN $f #[$args,*])`.
 As an optimization, `mkAppN` is pre-expanded out to use `Expr.app` directly. -/
 def mkAppNTerm (f : Term) (args : Array Term) : MetaM Term :=
   args.foldlM (fun a b => `(Expr.app $a $b)) f
