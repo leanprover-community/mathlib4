@@ -59,7 +59,7 @@ variable {ℱ 𝒢 : X.Presheaf C}
 section `t` over `U`, and `x ∈ U`, there exists an open set `x ∈ V ⊆ U` and a section `s` over `V`
 such that `$T_*(s_V) = t|_V$`.
 
-See `is_locally_surjective_iff` below.
+See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
@@ -96,7 +96,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
     use ℱ.germ ⟨x, hxV⟩ s
-    convert stalk_functor_map_germ_apply V ⟨x, hxV⟩ T s
+    convert stalkFunctor_map_germ_apply V ⟨x, hxV⟩ T s
     simpa [h_eq] using germ_res_apply 𝒢 ι ⟨x, hxV⟩ t
   · /- human proof:
         Let U be an open set, t ∈ Γ ℱ U a section, x ∈ U a point.
