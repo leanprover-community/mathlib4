@@ -13,9 +13,6 @@ import Mathlib.Topology.Category.Top.Limits.Basic
 /-!
 # Cofiltered limits in Top.
 
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
-
 Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
@@ -77,7 +74,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     let U : ∀ i, Set (F.obj i) := fun i => if h : i = j then by rw [h]; exact V else Set.univ
     refine' ⟨U, {j}, _, _⟩
     · rintro i h
-      rw [Finset.mem_singleton] at h 
+      rw [Finset.mem_singleton] at h
       dsimp [U]
       rw [dif_pos h]
       subst h
@@ -129,4 +126,3 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
 end CofilteredLimit
 
 end TopCat
-
