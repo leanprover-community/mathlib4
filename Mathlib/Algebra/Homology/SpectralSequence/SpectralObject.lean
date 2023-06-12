@@ -297,6 +297,11 @@ def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
     rw [← eq, Arrow₃.δ₀_map_δ₃Toδ₂_app_eq_δ₂Toδ₁_app_δ₀_obj,
       reassoc_of% (X.zero₁ n₀ n₁ hn₁ (Arrow₃.δ₀.obj D)), zero_comp]
 
+@[reassoc (attr := simp)]
+lemma shortComplexE_zero_app' {x₀ x₁ x₂ x₃ : ι} (f₁ : x₀ ⟶ x₁) (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) :
+    (X.δ n₀ n₁ hn₁).app (Arrow₂.mk f₂ f₃) ≫ (X.δ n₁ n₂ hn₂).app (Arrow₂.mk f₁ f₂) = 0 :=
+  congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero (Arrow₃.mk f₁ f₂ f₃)
+
 def shortComplexEIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁') (hn₂' : n₁' + 1 = n₂')
     (h : n₁ = n₁') :
     X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ ≅ X.shortComplexE n₀' n₁' n₂' hn₁' hn₂' := eqToIso (by
@@ -1036,20 +1041,91 @@ noncomputable def d : Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ h
 
 pp_extended_field_notation d
 
-/-lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ ⟶ x₁)
+noncomputable def EιH : X.E n₀ n₁ n₂ hn₁ hn₂ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ ⋙ X.H n₁ :=
+  X.opcyclesι n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft Arrow₃.δ₀ (X.opcyclesToHδ₁ n₀ n₁ hn₁)
+
+instance : Mono (X.EιH n₀ n₁ n₂ hn₁ hn₂) := by
+  dsimp only [EιH]
+  infer_instance
+
+noncomputable def HπE : Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ :=
+  whiskerLeft Arrow₃.δ₃ (X.Hδ₁ToCycles n₁ n₂ hn₂) ≫ X.cyclesπ n₀ n₁ n₂ hn₁ hn₂
+
+instance : Epi (X.HπE n₀ n₁ n₂ hn₁ hn₂) := by
+  dsimp only [HπE]
+  infer_instance
+
+lemma HπE_EιH :
+    X.HπE n₀ n₁ n₂ hn₁ hn₂ ≫ X.EιH n₀ n₁ n₂ hn₁ hn₂ =
+      whiskerRight Arrow₃.δ₃δ₁Toδ₂δ₀ (X.H n₁) := by
+  dsimp [HπE, EιH, cyclesπ, opcyclesι]
+  simp only [assoc, ShortComplex.homology_π_ι_assoc,
+    comp_δ₀PullbackOpcyclesIsoShortComplexEOpcycles_inv_assoc,
+    δ₃PullbackCyclesIsoShortComplexECycles_hom_comp_iCycles_assoc]
+  ext D
+  dsimp
+  simp only [pOpcycles_opcyclesToHδ₁_app, Hδ₁ToCycles_iCycles_app_assoc, ← Functor.map_comp]
+  congr 1
+  ext <;> dsimp <;> simp
+
+@[reassoc (attr := simp)]
+lemma HπE_EιH_app (D : Arrow₃ ι):
+    (X.HπE n₀ n₁ n₂ hn₁ hn₂).app D ≫ (X.EιH n₀ n₁ n₂ hn₁ hn₂).app D =
+      (X.H n₁).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app D) :=
+  congr_app (X.HπE_EιH n₀ n₁ n₂ hn₁ hn₂) D
+
+lemma π_d_ι_app' {x₀ x₁ x₂ x₃ x₄ x₅ : ι} (f₁ : x₀ ⟶ x₁) (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃)
+    (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) :
+    (X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅) ≫
+      (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₁ f₂ f₃ f₄ f₅) ≫
+        (X.EιH n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃) =
+    (X.H n₁).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app (Arrow₃.mk f₃ f₄ f₅)) ≫
+      (X.δ n₁ n₂ hn₂).app (Arrow₂.mk (f₂ ≫ f₃) (f₄ ≫ f₅)) := by
+  dsimp [HπE, EιH, d]
+  rw [assoc, assoc, assoc]
+  erw [X.cyclesπ_dToSrcΦ_app_assoc n₀ n₁ n₂ hn₁ hn₂ (Arrow₄.mk f₂ f₃ f₄ f₅),
+    dFromTgtΦ_opcyclesι_app_assoc, X.toSrcΦ_Φ_hom_fromTgtΦ_app_assoc,
+    X.comp_ψ_app_assoc n₁ n₂ hn₂ (Arrow₃.mk f₂ f₃ f₄),
+    pOpcycles_opcyclesToHδ₁_app]
+  dsimp [Arrow₃.δ₂]
+  let φ : Arrow₂.mk f₂ (f₃ ≫ f₄) ⟶ Arrow₂.mk (f₂ ≫ f₃) (f₄ ≫ f₅) :=
+    { τ₀ := 𝟙 _
+      τ₁ := f₃
+      τ₂ := f₅
+      commf := by dsimp ; simp
+      commg := by dsimp ; simp }
+  exact ((X.δ n₁ n₂ hn₂).naturality φ).symm
+
+@[reassoc]
+lemma d_ι_app' {x₀ x₁ x₂ x₃ x₄ x₅ : ι} (f₁ : x₀ ⟶ x₁)
+    (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) :
+    (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₁ f₂ f₃ f₄ f₅) ≫
+      (X.EιH n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃) =
+    (X.EιH n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅) ≫
+      (X.δ n₁ n₂ hn₂).app (Arrow₂.mk (f₂ ≫ f₃) (f₄ ≫ f₅)) := by
+  rw [← cancel_epi ((X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅)),
+    π_d_ι_app', HπE_EιH_app_assoc]
+
+lemma d_ι_app (D : Arrow₅ ι) :
+    (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app D ≫
+      (X.EιH n₁ n₂ n₃ hn₂ hn₃).app ((Arrow₅.δ₅ ⋙ Arrow₄.δ₄).obj D) =
+    (X.EιH n₀ n₁ n₂ hn₁ hn₂).app ((Arrow₅.δ₀ ⋙ Arrow₄.δ₀).obj D) ≫
+      (X.δ n₁ n₂ hn₂).app ((Arrow₅.δ₀ ⋙ Arrow₄.δ₁ ⋙ Arrow₃.δ₂).obj D) := by
+  apply d_ι_app'
+
+lemma d_ι :
+    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ ≫ whiskerLeft (Arrow₅.δ₅ ⋙ Arrow₄.δ₄) (X.EιH n₁ n₂ n₃ hn₂ hn₃) =
+      whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₀) (X.EιH n₀ n₁ n₂ hn₁ hn₂) ≫
+        whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₁ ⋙ Arrow₃.δ₂) (X.δ n₁ n₂ hn₂) := by
+  ext D
+  apply d_ι_app
+
+lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ ⟶ x₁)
     (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) (f₆ : x₅ ⟶ x₆) (f₇ : x₆ ⟶ x₇) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₃ f₄ f₅ f₆ f₇) ≫
       (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).app (Arrow₅.mk f₁ f₂ f₃ f₄ f₅) = 0 := by
-  dsimp [d, Arrow₅.δ₀, Arrow₄.δ₄, Arrow₅.δ₅]
-  rw [← cancel_mono ((X.opcyclesι n₂ n₃ n₄ hn₃ hn₄).app (Arrow₃.mk f₁ f₂ f₃)), zero_comp,
-    assoc, assoc, assoc, assoc, assoc,
-    ← cancel_epi ((X.cyclesπ n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₅ f₆ f₇)), comp_zero]
-  erw [X.cyclesπ_dToSrcΦ_app_assoc n₀ n₁ n₂ hn₁ hn₂ (Arrow₄.mk f₄ f₅ f₆ f₇),
-    X.Φ_dFromTgtΦ_app_assoc n₁ n₂ n₃ hn₂ hn₃ (Arrow₄.mk f₃ f₄ f₅ f₆),
-    X.dFromTgtΦ_opcyclesι_app n₂ n₃ n₄ hn₃ hn₄ (Arrow₄.mk f₁ f₂ f₃ f₄),
-    X.dToSrcΦ_Φ_app_assoc n₁ n₂ n₃ hn₂ hn₃ (Arrow₄.mk f₂ f₃ f₄ f₅)]
-  dsimp [Arrow₄.δ₄, Arrow₄.δ₀]
-  sorry
+  rw [← cancel_mono ((X.EιH n₂ n₃ n₄ hn₃ hn₄).app (Arrow₃.mk f₁ f₂ f₃)), assoc, zero_comp,
+    d_ι_app', d_ι_app'_assoc, shortComplexE_zero_app', comp_zero]
 
 lemma d_comp_d_app (D : Arrow₇ ι) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D) ≫
@@ -1060,7 +1136,7 @@ lemma d_comp_d :
     whiskerLeft (Arrow₇.δ₀ ⋙ Arrow₆.δ₀) (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃) ≫
       whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₆) (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄) = 0 := by
   ext D
-  apply d_comp_d_app-/
+  apply d_comp_d_app
 
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
