@@ -513,12 +513,13 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
 #align valuation_subring.unit_group_mul_equiv ValuationSubring.unitGroupMulEquiv
 
 @[simp]
-theorem coe_unitGroupMulEquiv_apply (a : A.unitGroup) : (A.unitGroupMulEquiv a : K) = a :=
+theorem coe_unitGroupMulEquiv_apply (a : A.unitGroup) :
+    ((A.unitGroupMulEquiv a : A) : K) = ((a : Kˣ) : K) :=
   rfl
 #align valuation_subring.coe_unit_group_mul_equiv_apply ValuationSubring.coe_unitGroupMulEquiv_apply
 
 @[simp]
-theorem coe_unitGroupMulEquiv_symm_apply (a : Aˣ) : (A.unitGroupMulEquiv.symm a : K) = a :=
+theorem coe_unitGroupMulEquiv_symm_apply (a : Aˣ) : ((A.unitGroupMulEquiv.symm a : Kˣ) : K) = a :=
   rfl
 #align valuation_subring.coe_unit_group_mul_equiv_symm_apply ValuationSubring.coe_unitGroupMulEquiv_symm_apply
 
@@ -529,7 +530,7 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
     by_cases h_1 : x = 0; · simp only [h_1, zero_mem]
     by_cases h_2 : 1 + x = 0
     · simp only [← add_eq_zero_iff_neg_eq.1 h_2, neg_mem _ _ (one_mem _)]
-    cases hx
+    cases' hx with hx hx
     · have := h (show Units.mk0 _ h_2 ∈ A.unitGroup from A.valuation.map_one_add_of_lt hx)
       simpa using
         B.add_mem _ _ (show 1 + x ∈ B from SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B))
@@ -567,7 +568,8 @@ section nonunits
 /-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
-  mul_mem' {a b} ha hb := (mul_lt_mul₀ ha hb).trans_eq <| mul_one _
+  -- Porting note: added `Set.mem_setOf.mp`
+  mul_mem' ha hb := (mul_lt_mul₀ (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)).trans_eq <| mul_one _
 #align valuation_subring.nonunits ValuationSubring.nonunits
 
 theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
