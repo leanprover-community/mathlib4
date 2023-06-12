@@ -73,8 +73,8 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
   ⟨c, cmem, neg_injective hc⟩
 #align exists_has_deriv_within_at_eq_of_lt_of_gt exists_hasDerivWithinAt_eq_of_lt_of_gt
 
-/-- **Darboux's theorem**: the image of an `ord_connected` set under `f'` is an `ord_connected`
-set, `has_deriv_within_at` version. -/
+/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
+set, `HasDerivWithinAt` version. -/
 theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
   apply ordConnected_of_Ioo
@@ -92,14 +92,14 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
     exact ⟨c, this <| Ioo_subset_Icc_self cmem, hc⟩
 #align set.ord_connected.image_has_deriv_within_at Set.OrdConnected.image_hasDerivWithinAt
 
-/-- **Darboux's theorem**: the image of an `ord_connected` set under `f'` is an `ord_connected`
-set, `deriv_within` version. -/
+/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
+set, `derivWithin` version. -/
 theorem Set.OrdConnected.image_derivWithin {s : Set ℝ} (hs : OrdConnected s)
     (hf : DifferentiableOn ℝ f s) : OrdConnected (derivWithin f s '' s) :=
   hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivWithinAt
 #align set.ord_connected.image_deriv_within Set.OrdConnected.image_derivWithin
 
-/-- **Darboux's theorem**: the image of an `ord_connected` set under `f'` is an `ord_connected`
+/-- **Darboux's theorem**: the image of a `Set.OrdConnected` set under `f'` is a `Set.OrdConnected`
 set, `deriv` version. -/
 theorem Set.OrdConnected.image_deriv {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) : OrdConnected (deriv f '' s) :=
@@ -107,14 +107,14 @@ theorem Set.OrdConnected.image_deriv {s : Set ℝ} (hs : OrdConnected s)
 #align set.ord_connected.image_deriv Set.OrdConnected.image_deriv
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
-`has_deriv_within_at` version. -/
+`HasDerivWithinAt` version. -/
 theorem Convex.image_hasDerivWithinAt {s : Set ℝ} (hs : Convex ℝ s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : Convex ℝ (f' '' s) :=
   (hs.ordConnected.image_hasDerivWithinAt hf).convex
 #align convex.image_has_deriv_within_at Convex.image_hasDerivWithinAt
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
-`deriv_within` version. -/
+`derivWithin` version. -/
 theorem Convex.image_derivWithin {s : Set ℝ} (hs : Convex ℝ s) (hf : DifferentiableOn ℝ f s) :
     Convex ℝ (derivWithin f s '' s) :=
   (hs.ordConnected.image_derivWithin hf).convex
