@@ -9,7 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Bounded
 
 /-!
@@ -114,4 +114,3 @@ theorem bddOrd_dual_comp_forget_to_bipointed :
     BddOrd.dual ⋙ forget₂ BddOrd Bipointed = forget₂ BddOrd Bipointed ⋙ Bipointed.swap :=
   rfl
 #align BddOrd_dual_comp_forget_to_Bipointed bddOrd_dual_comp_forget_to_bipointed
-
