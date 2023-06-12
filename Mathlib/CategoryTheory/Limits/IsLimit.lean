@@ -997,7 +997,7 @@ def coconeOfHom {Y : C} (f : X ⟶ Y) : Cocone F where
 #align category_theory.limits.is_colimit.of_nat_iso.cocone_of_hom CategoryTheory.Limits.IsColimit.OfNatIso.coconeOfHom
 
 /-- If `F.cocones` is corepresented by `X`, each cocone `s` gives a morphism `X ⟶ s.pt`. -/
-def homOfCocone (s : Cocone F) : X ⟶ s.pt:=
+def homOfCocone (s : Cocone F) : X ⟶ s.pt :=
   (h.inv.app s.pt s.ι).down
 #align category_theory.limits.is_colimit.of_nat_iso.hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.homOfCocone
 

@@ -950,7 +950,7 @@ end LieModuleHom
 /-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
 Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
-/-- The inverse function of an equivalence of Lie modules -/
+  /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M
   /-- The inverse function of an equivalence of Lie modules is a left inverse of the underlying
   function. -/

@@ -29,11 +29,11 @@ variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
 instance : EquivLike (MyIso A B) A (λ _, B) :=
-{ coe := MyIso.toEquiv.toFun,
-  inv := MyIso.toEquiv.invFun,
-  left_inv := MyIso.toEquiv.left_inv,
-  right_inv := MyIso.toEquiv.right_inv,
-  coe_injective' := λ f g h, by cases f; cases g; congr' }
+  { coe := MyIso.toEquiv.toFun,
+    inv := MyIso.toEquiv.invFun,
+    left_inv := MyIso.toEquiv.left_inv,
+    right_inv := MyIso.toEquiv.right_inv,
+    coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
 instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
@@ -43,11 +43,11 @@ instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : MyIso A B :=
-{ toFun := f',
-  invFun := f_inv,
-  left_inv := h.symm ▸ f.left_inv,
-  right_inv := h.symm ▸ f.right_inv,
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    invFun := f_inv,
+    left_inv := h.symm ▸ f.left_inv,
+    right_inv := h.symm ▸ f.right_inv,
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyIso
 ```
@@ -73,12 +73,12 @@ end
 
 -- You can replace `MyIso.EquivLike` with the below instance:
 instance : MyIsoClass (MyIso A B) A B :=
-{ coe := MyIso.toFun,
-  inv := MyIso.invFun,
-  left_inv := MyIso.left_inv,
-  right_inv := MyIso.right_inv,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := MyIso.map_op' }
+  { coe := MyIso.toFun,
+    inv := MyIso.invFun,
+    left_inv := MyIso.left_inv,
+    right_inv := MyIso.right_inv,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := MyIso.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -105,10 +105,10 @@ end
 CoolerIsoClass.map_cool
 
 instance : CoolerIsoClass (CoolerIso A B) A B :=
-{ coe := CoolerIso.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := CoolerIso.map_op',
-  map_cool := CoolerIso.map_cool' }
+  { coe := CoolerIso.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := CoolerIso.map_op',
+    map_cool := CoolerIso.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -231,7 +231,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
+  ⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike

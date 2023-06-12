@@ -367,7 +367,7 @@ instance [Inhabited α] : Inhabited (SeparationQuotient α) :=
   inferInstanceAs (Inhabited (Quotient (separationSetoid α)))
 
 lemma mk_eq_mk {x y : α} : (⟦x⟧ : SeparationQuotient α) = ⟦y⟧ ↔ Inseparable x y :=
-Quotient.eq'.trans separationRel_iff_inseparable
+  Quotient.eq'.trans separationRel_iff_inseparable
 #align uniform_space.separation_quotient.mk_eq_mk UniformSpace.SeparationQuotient.mk_eq_mk
 
 /-- Factoring functions to a separated space through the separation quotient. -/

@@ -468,7 +468,7 @@ instance CommMonoid.gCommMonoid [AddCommMonoid ι] [CommMonoid R] :
 /-- When all the indexed types are the same, the dependent product is just the regular product. -/
 @[simp]
 theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α → ι) (fA : α → R) :
-    @List.dProd _ _ (fun _:ι => R) _ _ l fι fA = (l.map fA).prod := by
+    @List.dProd _ _ (fun _ : ι => R) _ _ l fι fA = (l.map fA).prod := by
   match l with
   | [] =>
     rw [List.dProd_nil, List.map_nil, List.prod_nil]

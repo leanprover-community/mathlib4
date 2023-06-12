@@ -116,7 +116,7 @@ allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
-macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
@@ -126,7 +126,7 @@ A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
 nonterminal `simp`.
 -/
-macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))

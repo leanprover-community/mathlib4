@@ -899,10 +899,10 @@ end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
 instance : CompactSpace (PrimeSpectrum R) :=
-{ isCompact_univ := by
-    convert isCompact_basicOpen (1 : R)
-    rw [basicOpen_one]
-    rfl }
+  { isCompact_univ := by
+      convert isCompact_basicOpen (1 : R)
+      rw [basicOpen_one]
+      rfl }
 
 section Order
 
