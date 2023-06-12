@@ -42,7 +42,7 @@ structure SemilatInf : Type (u + 1) where
   [isOrderTop : OrderTop.{u} X]
 #align SemilatInf SemilatInf
 
--- Porting note: disabled without checking
+-- Porting note: does not work
 -- attribute [protected] SemilatSup.X SemilatInf.X
 
 namespace SemilatSup
@@ -73,27 +73,25 @@ instance : LargeCategory.{u} SemilatSup where
   comp_id := SupBotHom.id_comp
   assoc _ _ _ := SupBotHom.comp_assoc _ _ _
 
--- Porting note: added because nothing worked, but it still doesnt :(
-instance funLike (X Y : SemilatSup) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  sorry
+-- Porting note: added
+instance instFunLike (X Y : SemilatSup) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory SemilatSup where
   forget :=
     { obj := SemilatSup.X
-      map := FunLike.coe
-      map_id := fun X => by
-        aesop_cat_nonterminal
-        sorry
-      map_comp := fun f g => by
-        aesop_cat_nonterminal
-        sorry./
-      }
+      map := FunLike.coe }
   forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 
-instance hasForgetToPartOrd : HasForget₂ SemilatSup PartOrdCat
-    where forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y f => f }
+instance hasForgetToPartOrd : HasForget₂ SemilatSup PartOrdCat where
+  forget₂ :=
+    { obj := fun X => ⟨X, inferInstance⟩
+      map := fun f => f
+      -- Porting note: TODO, remove the rest
+      map_id := by
+        aesop_cat_nonterminal
+      map_comp := by
+        aesop_cat_nonterminal }
 #align SemilatSup.has_forget_to_PartOrd SemilatSup.hasForgetToPartOrd
 
 @[simp]
@@ -126,21 +124,32 @@ instance : Inhabited SemilatInf :=
 instance : LargeCategory.{u} SemilatInf where
   Hom X Y := InfTopHom X Y
   id X := InfTopHom.id X
-  comp X Y Z f g := g.comp f
-  id_comp' X Y := InfTopHom.comp_id
-  comp_id' X Y := InfTopHom.id_comp
-  assoc' W X Y Z _ _ _ := InfTopHom.comp_assoc _ _ _
+  comp f g := g.comp f
+  id_comp := InfTopHom.comp_id
+  comp_id := InfTopHom.id_comp
+  assoc _ _ _ := InfTopHom.comp_assoc _ _ _
+
+-- Porting note: added
+instance instFunLike (X Y : SemilatInf) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (InfTopHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory SemilatInf where
   forget :=
     { obj := SemilatInf.X
-      map := fun X Y => coeFn }
-  forget_faithful := ⟨fun X Y => FunLike.coe_injective⟩
+      map := FunLike.coe }
+  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 
-instance hasForgetToPartOrd : HasForget₂ SemilatInf PartOrdCat
-    where forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y f => f }
+instance hasForgetToPartOrd : HasForget₂ SemilatInf PartOrdCat where
+  forget₂ :=
+    { obj := fun X => ⟨X, inferInstance⟩
+      map := fun {X Y} f => f
+      -- Porting note: TODO, remove the rest
+      map_id := by
+        aesop_cat_nonterminal
+        sorry
+      map_comp := by
+        aesop_cat_nonterminal
+        sorry }
 #align SemilatInf.has_forget_to_PartOrd SemilatInf.hasForgetToPartOrd
 
 @[simp]
@@ -152,23 +161,22 @@ end SemilatInf
 
 /-! ### Order dual -/
 
-
 namespace SemilatSup
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatSup.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := e
+  hom := e
   inv := e.symm
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatSup.iso.mk SemilatSup.Iso.mk
 
 /-- `order_dual` as a functor. -/
 @[simps]
 def dual : SemilatSup ⥤ SemilatInf where
   obj X := SemilatInf.of Xᵒᵈ
-  map X Y := SupBotHom.dual
+  map {X Y} := SupBotHom.dual
 #align SemilatSup.dual SemilatSup.dual
 
 end SemilatSup
@@ -178,17 +186,17 @@ namespace SemilatInf
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := e
+  hom := e
   inv := e.symm
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatInf.iso.mk SemilatInf.Iso.mk
 
 /-- `order_dual` as a functor. -/
 @[simps]
 def dual : SemilatInf ⥤ SemilatSup where
   obj X := SemilatSup.of Xᵒᵈ
-  map X Y := InfTopHom.dual
+  map {X Y} := InfTopHom.dual
 #align SemilatInf.dual SemilatInf.dual
 
 end SemilatInf
