@@ -3,24 +3,73 @@ import Mathlib.Tactic.junkAttribute
 import Mathlib.Tactic.RunCmd
 import Std.Lean.Expr
 
-open Lean Elab Tactic Meta Parser
+namespace Lean.Expr
+
+open Elab Tactic Meta
+
+def getNeg (e : Expr) : MetaM (Bool × Expr) := do
+  if e.isConst then return (true, e) else
+  let we := ← whnf e
+  if (we.isForall && we.bindingBody! == (.const `False [])) then
+    return (false, we.bindingDomain!)
+  else
+    match e with
+      | (.app _ unNot) => do
+        if (← isDefEq e (mkNot unNot)) then pure (false, unNot) else pure (true, e)
+      | _ =>
+        pure (true, e)
+
+/-- Test that both `≠` and `¬` get interpreted as "negations". -/
+example : (0 ≠ 1) = (¬ 0 = 1)  := by
+  run_tac do
+    if let some (_, lhs, rhs) := (← getMainTarget).eq? then
+    let nelhs := ← lhs.getNeg
+    let nerhs := ← rhs.getNeg
+    guard <| nelhs == nerhs
+    guard <| nelhs.1 == false
+  rfl
+
+private def myProp : Prop := ¬ True
+
+/-- Test that `const`ants do not get unfolded, when using `getNeg`. -/
+example (q : myProp) : myProp := by
+  run_tac do
+    let (notNot?, exp) := ← getNeg (← getMainTarget)
+    let ft := ← ppExpr exp
+    guard <| ft.pretty == "Lean.Expr.myProp"
+    guard <| notNot? == true
+  assumption
+
+example (q : ¬ myProp) : ¬ myProp := by
+  run_tac do
+    let (notNot?, exp) := ← getNeg (← getMainTarget)
+    let ft := ← ppExpr exp
+    dbg_trace (notNot?, exp)
+    guard <| ft.pretty == "Lean.Expr.myProp"
+    guard <| notNot? == false
+  assumption
+
+end Lean.Expr
+
 noncomputable section
 
 open scoped BigOperators
 open MeasureTheory
 
-def getNot : Expr → MetaM (Bool × Expr)
-  | x@(.app isNot? unNot) => do
-    dbg_trace f!"isNot?: {isNot?}\n"
-    dbg_trace f!"\n{(← isDefEq x (mkNot unNot))}\n"
-    if (← isDefEq x (mkNot unNot)) then pure (false, unNot) else pure (true, x)
-  | x => --dbg_trace "not not"
-    pure (true, x)
+open Lean Elab Tactic Meta Parser
+#check IsSymm
+example (q : myProp) : myProp := q
+example {α β} [AddCommMonoid α] [TopologicalSpace α] (f : β → α) : ¬ Summable f := by
+  run_tac (do
+    let g := ← getMainTarget
+    logInfo g.ctorName
+    logInfo m!"{← g.getNeg}"
+  )
+  sorry
 
 
 
-def myProp : Prop := True
-theorem mp (q : myProp) : myProp := q
+
 #check mul_inv_cancel
 def getProps (thm : Name) : MetaM (Array Expr) := do
 let env := ← getEnv
