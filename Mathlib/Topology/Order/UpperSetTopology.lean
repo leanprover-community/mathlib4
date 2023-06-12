@@ -139,6 +139,27 @@ lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
 
+-- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
+lemma isClosed_iff_isLower {s : Set α} : IsClosed s
+  ↔ (IsLowerSet s) := by
+  rw [← isOpen_compl_iff, IsOpen_iff_IsUpperSet,
+    isLowerSet_compl.symm, compl_compl]
+
+lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
+  (isClosed_iff_isLower.mp h)
+
+/--
+The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
+interval (-∞,a].
+-/
+@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
+  rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
+  refine' subset_antisymm _ _
+  . apply closure_minimal subset_lowerClosure
+    rw [isClosed_iff_isLower]
+    apply (lowerClosure {a}).lower
+  . exact lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+
 end Preorder
 
 section maps
@@ -155,6 +176,14 @@ lemma coinduced_le {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : To
   rw [IsOpen_iff_IsUpperSet] at hs
   exact (IsUpperSet.preimage hs hf)
 
+open Topology
+
+lemma test1 {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
+  [UpperSetTopology β] {f : α → β} (hf : Monotone f) : Continuous[t₁, t₂] f := by
+  rw [continuous_iff_coinduced_le]
+  exact coinduced_le hf
+
+
 lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
   [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
   rw [TopologicalSpace.le_def]
@@ -167,6 +196,11 @@ lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : Topo
   rw [IsOpen_iff_IsUpperSet, ← ht.2]
   exact (IsUpperSet.preimage ht.1 hf)
 
+-- Proof of le_induced from coinduced_le
+lemma le_induced' {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
+  [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
+  rw [← continuous_iff_le_induced]
+  apply test1 hf
 
 end maps
 
