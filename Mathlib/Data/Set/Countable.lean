@@ -18,7 +18,7 @@ import Mathlib.Logic.Equiv.List
 
 noncomputable section
 
-open scoped Function Set Encodable Classical
+open Function Set Encodable Classical
 
 universe u v w x
 

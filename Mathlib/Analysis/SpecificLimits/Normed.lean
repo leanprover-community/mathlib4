@@ -25,7 +25,7 @@ spaces.
 
 noncomputable section
 
-open scoped Classical Set Function Filter Finset Metric Asymptotics
+open Classical Set Function Filter Finset Metric Asymptotics
 
 open scoped Classical Topology Nat BigOperators uniformity NNReal ENNReal
 

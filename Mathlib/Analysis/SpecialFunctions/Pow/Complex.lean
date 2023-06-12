@@ -17,7 +17,9 @@ We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
 
-open scoped Classical Real Topology Filter ComplexConjugate Finset Set
+open scoped Classical Real Topology Filter ComplexConjugate
+
+open Filter Finset Set
 
 namespace Complex
 

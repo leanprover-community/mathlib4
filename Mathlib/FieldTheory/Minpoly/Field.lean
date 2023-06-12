@@ -22,7 +22,9 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open scoped Classical Polynomial Set Function minpoly
+open scoped Classical Polynomial
+
+open Polynomial Set Function minpoly
 
 namespace minpoly
 

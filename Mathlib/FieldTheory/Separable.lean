@@ -30,7 +30,9 @@ properties about separable polynomials here.
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial Finset
+open scoped Classical BigOperators Polynomial
+
+open Finset
 
 namespace Polynomial
 

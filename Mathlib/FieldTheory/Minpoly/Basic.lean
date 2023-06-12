@@ -20,7 +20,9 @@ such as ireducibility under the assumption `B` is a domain.
 -/
 
 
-open scoped Classical Polynomial Set Function
+open scoped Classical Polynomial
+
+open Polynomial Set Function
 
 variable {A B B' : Type _}
 

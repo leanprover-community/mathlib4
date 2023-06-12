@@ -47,7 +47,9 @@ equivalence, isomorphism, morphism, ring hom, hom
 
 noncomputable section
 
-open scoped BigOperators Polynomial Set Function Finsupp AddMonoidAlgebra
+open scoped BigOperators Polynomial
+
+open Set Function Finsupp AddMonoidAlgebra
 
 universe u v w x
 

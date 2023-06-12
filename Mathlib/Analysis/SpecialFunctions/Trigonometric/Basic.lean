@@ -46,7 +46,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open scoped Classical Topology Filter Set
+open scoped Classical Topology Filter
+
+open Set Filter
 
 namespace Complex
 
