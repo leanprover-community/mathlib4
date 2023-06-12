@@ -13,14 +13,10 @@ import Mathlib.Analysis.Calculus.LocalExtr
 /-!
 # Darboux's theorem
 
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
-
 In this file we prove that the derivative of a differentiable function on an interval takes all
 intermediate values. The proof is based on the
 [Wikipedia](https://en.wikipedia.org/wiki/Darboux%27s_theorem_(analysis)) page about this theorem.
 -/
-
 
 open Filter Set
 
@@ -41,16 +37,16 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c
   exact
-    is_compact_Icc.exists_forall_le (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).ContinuousWithinAt
+    isCompact_Icc.exists_forall_le (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
     rcases cmem.1.eq_or_lt with (rfl | hac)
     -- Show that `c` can't be equal to `a`
     · refine'
         absurd (sub_nonneg.1 <| nonneg_of_mul_nonneg_right _ (sub_pos.2 hab')) (not_le_of_lt hma)
       have : b - a ∈ posTangentConeAt (Icc a b) a :=
-        mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ subset.refl _)
-      simpa [-sub_nonneg, -ContinuousLinearMap.map_sub] using
-        hc.localize.has_fderiv_within_at_nonneg (hg a (left_mem_Icc.2 hab)) this
+        mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.refl _)
+      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
+        using hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
     rcases cmem.2.eq_or_gt with (rfl | hcb)
     -- Show that `c` can't be equal to `b`
     · refine'
@@ -58,13 +54,13 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
           (not_le_of_lt hmb)
       have : a - b ∈ posTangentConeAt (Icc a b) b :=
         mem_posTangentConeAt_of_segment_subset (by rw [segment_symm, segment_eq_Icc hab])
-      simpa [-sub_nonneg, -ContinuousLinearMap.map_sub] using
-        hc.localize.has_fderiv_within_at_nonneg (hg b (right_mem_Icc.2 hab)) this
+      simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
+        using hc.localize.hasFDerivWithinAt_nonneg (hg b (right_mem_Icc.2 hab)) this
     exact ⟨hac, hcb⟩
   use c, cmem'
   rw [← sub_eq_zero]
   have : Icc a b ∈ 𝓝 c := by rwa [← mem_interior_iff_mem_nhds, interior_Icc]
-  exact (hc.is_local_min this).hasDerivAt_eq_zero ((hg c cmem).HasDerivAt this)
+  exact (hc.isLocalMin this).hasDerivAt_eq_zero ((hg c cmem).hasDerivAt this)
 #align exists_has_deriv_within_at_eq_of_gt_of_lt exists_hasDerivWithinAt_eq_of_gt_of_lt
 
 /-- **Darboux's theorem**: if `a ≤ b` and `f' b < m < f' a`, then `f' c = m` for some `c ∈ (a, b)`.
@@ -82,7 +78,7 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
 set, `has_deriv_within_at` version. -/
 theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
-  apply ord_connected_of_Ioo
+  apply ordConnected_of_Ioo
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
   cases' le_total a b with hab hab
   · have : Icc a b ⊆ s := hs.out ha hb
@@ -101,35 +97,35 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
 set, `deriv_within` version. -/
 theorem Set.OrdConnected.image_derivWithin {s : Set ℝ} (hs : OrdConnected s)
     (hf : DifferentiableOn ℝ f s) : OrdConnected (derivWithin f s '' s) :=
-  hs.image_hasDerivWithinAt fun x hx => (hf x hx).HasDerivWithinAt
+  hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivWithinAt
 #align set.ord_connected.image_deriv_within Set.OrdConnected.image_derivWithin
 
 /-- **Darboux's theorem**: the image of an `ord_connected` set under `f'` is an `ord_connected`
 set, `deriv` version. -/
 theorem Set.OrdConnected.image_deriv {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) : OrdConnected (deriv f '' s) :=
-  hs.image_hasDerivWithinAt fun x hx => (hf x hx).HasDerivAt.HasDerivWithinAt
+  hs.image_hasDerivWithinAt fun x hx => (hf x hx).hasDerivAt.hasDerivWithinAt
 #align set.ord_connected.image_deriv Set.OrdConnected.image_deriv
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
 `has_deriv_within_at` version. -/
 theorem Convex.image_hasDerivWithinAt {s : Set ℝ} (hs : Convex ℝ s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : Convex ℝ (f' '' s) :=
-  (hs.OrdConnected.image_hasDerivWithinAt hf).Convex
+  (hs.ordConnected.image_hasDerivWithinAt hf).convex
 #align convex.image_has_deriv_within_at Convex.image_hasDerivWithinAt
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
 `deriv_within` version. -/
 theorem Convex.image_derivWithin {s : Set ℝ} (hs : Convex ℝ s) (hf : DifferentiableOn ℝ f s) :
     Convex ℝ (derivWithin f s '' s) :=
-  (hs.OrdConnected.image_derivWithin hf).Convex
+  (hs.ordConnected.image_derivWithin hf).convex
 #align convex.image_deriv_within Convex.image_derivWithin
 
 /-- **Darboux's theorem**: the image of a convex set under `f'` is a convex set,
 `deriv` version. -/
 theorem Convex.image_deriv {s : Set ℝ} (hs : Convex ℝ s) (hf : ∀ x ∈ s, DifferentiableAt ℝ f x) :
     Convex ℝ (deriv f '' s) :=
-  (hs.OrdConnected.image_deriv hf).Convex
+  (hs.ordConnected.image_deriv hf).convex
 #align convex.image_deriv Convex.image_deriv
 
 /-- **Darboux's theorem**: if `a ≤ b` and `f' a ≤ m ≤ f' b`, then `f' c = m` for some
@@ -157,8 +153,7 @@ theorem hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs :
     (∀ x ∈ s, f' x < m) ∨ ∀ x ∈ s, m < f' x := by
   contrapose! hf'
   rcases hf' with ⟨⟨b, hb, hmb⟩, ⟨a, ha, hma⟩⟩
-  exact
-    (hs.ord_connected.image_has_deriv_within_at hf).out (mem_image_of_mem f' ha)
-      (mem_image_of_mem f' hb) ⟨hma, hmb⟩
+  exact (hs.ordConnected.image_hasDerivWithinAt hf).out (mem_image_of_mem f' ha)
+    (mem_image_of_mem f' hb) ⟨hma, hmb⟩
 #align has_deriv_within_at_forall_lt_or_forall_gt_of_forall_ne hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne
 
