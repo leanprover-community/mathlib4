@@ -228,7 +228,8 @@ def P' (o : Ordinal) : Prop :=
   LinearIndependent ℤ (GoodProducts.eval C)
 
 def Q' (o : Ordinal) : Prop :=
-∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
+o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) →
+  ∀ C, IsClosed C → Support C ⊆ {j : WithTop I | ord I j < o} →
   ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval C))
 
 lemma PsetEq (i : WithTop I) : {j : WithTop I | ord I j < ord I i} = {j : WithTop I | j < i} := by
@@ -240,9 +241,20 @@ lemma PIffP (i : WithTop I) : P i ↔ P' I (ord I i) := by
   dsimp [P, P']
   rw [PsetEq]
 
-lemma QIffQ (i : WithTop I) : Q i ↔ Q' I (ord I i) := by
+lemma ord_le_type (i : WithTop I) :
+    ord I i ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop) := by
+  dsimp [ord]
+  exact le_of_lt (Ordinal.typein_lt_type _ _)
+
+lemma QIffQ (i : WithTop I) :
+    Q i ↔ Q' I (ord I i) := by
   dsimp [Q, Q']
   rw [PsetEq]
+  refine' ⟨_,_⟩
+  · intro h _
+    exact h
+  · intro h
+    exact h (ord_le_type _ _)
 
 variable {I}
 
@@ -1275,35 +1287,271 @@ def OrdCone (o : Ordinal) (hC : IsClosed C) :
       dsimp [OrdToProfinite]
       rw [resOnSubsets_eq] } }
 
-lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
-    (hsC : Support C ⊆ { j | ord I j < o }) : IsLimit (OrdCone C o hC) := sorry
+lemma succ_le_type {o o' : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop)) (ho' : o' < o) :
+    Order.succ o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) :=
+lt_of_lt_of_le (ho.2 o' ho') hto
 
-lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+noncomputable
+def ISucc {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    {i : WithTop I} (hi : ord I i < o) : {i // ord I i < o} :=
+{ val := Ordinal.enum (·<·) (Order.succ (ord I i)) (succ_le_type ho hto hi)
+  property := by
+    dsimp [ord] at *
+    simp only [Ordinal.typein_enum]
+    exact ho.2 _ hi }
+
+lemma ord_lt_succ {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    {i : WithTop I} (hi : ord I i < o) : ord I i < ord I (ISucc ho hto hi).val := by
+  dsimp [ord, ISucc]
+  simp only [Ordinal.typein_enum, Order.lt_succ_iff_not_isMax, gt_iff_lt, not_isMax,
+    not_false_eq_true]
+
+noncomputable
+def OrdConeIsLimitLiftFunAux {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (s : Cone (OrdToProfinite C o hC)) : s.pt → ((WithTop I) → Bool) :=
+fun x i ↦ if h : ord I i < o then (s.π.app (Opposite.op (ISucc ho hto h)) x).val i
+  else false
+
+lemma ordConeIsLimitLiftFunAux_mem {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s : Cone (OrdToProfinite C o hC)) (x : s.pt) :
+    OrdConeIsLimitLiftFunAux C ho hto hC s x ∈ C := by
+  dsimp [OrdConeIsLimitLiftFunAux]
+  have : C = Res C o := supportResEq C o hsC
+  rw [Set.ext_iff] at this
+  rw [this]
+  dsimp [Res, ProjOrd]
+  simp only [Set.mem_image]
+  have hs := fun i ↦ (s.π.app i x).prop
+  dsimp [Res] at hs
+  simp only [Set.mem_image] at hs
+  let f' := fun i ↦ (hs (Opposite.op i)).choose
+  have hf' := fun i ↦ (hs (Opposite.op i)).choose_spec
+  let f : WithTop I → Bool :=
+    fun i ↦ if h : ord I i < o then f' (ISucc ho hto h) i else false
+  use f
+  refine' ⟨_,_⟩
+  · let S : {i // ord I i < o} → Set {i // ord I i < o} := fun i ↦ {j | ord I i.val ≤ ord I j.val}
+    have h0 : ord I (Ordinal.enum _ 0 IzeroLTTop) < o
+    · dsimp [ord]
+      simp only [Ordinal.typein_enum, Ordinal.pos_iff_ne_zero]
+      exact ho.1
+    let b : Filter {i // ord I i < o} := Filter.generate (Set.range S)
+    have hb : b.NeBot
+    · rw [Filter.generate_neBot_iff]
+      intro t hts ht
+      simp only [Set.nonempty_sInter]
+      rw [Set.subset_range_iff_exists_image_eq] at hts
+      obtain ⟨r,hr⟩ := hts
+      rw [← hr, Set.finite_image_iff] at ht
+      · by_cases hre : Set.Nonempty r
+        · have hmax := Set.exists_max_image r id ht hre
+          obtain ⟨a, ha⟩ := hmax
+          use a
+          intro w hw
+          rw [← hr] at hw
+          obtain ⟨w',hw⟩ := hw
+          rw [← hw.2]
+          dsimp [ord]
+          simp only [Ordinal.typein_le_typein, Subtype.coe_lt_coe, not_lt]
+          exact ha.2 w' hw.1
+        · use ⟨(Ordinal.enum _ 0 IzeroLTTop), h0⟩
+          intro w hw
+          rw [Set.not_nonempty_iff_eq_empty] at hre
+          rw [hre] at hr
+          simp only [ge_iff_le, Set.image_empty] at hr
+          rw [← hr] at hw
+          exfalso
+          exact Set.not_mem_empty w hw
+      · intro i hi j hj hsij
+        dsimp at hsij
+        rw [Set.ext_iff] at hsij
+        have hsi := hsij i
+        have hsj := hsij j
+        simp at hsi hsj
+        have hij := le_antisymm hsj hsi
+        dsimp [ord] at hij
+        simp [Ordinal.typein_inj] at hij
+        exact Subtype.ext hij
+    have hf : Filter.Tendsto f' b (nhds f)
+    · rw [Filter.tendsto_def]
+      intro S hS
+      dsimp
+      rw [Filter.mem_generate_iff]
+      simp only [exists_and_left, exists_prop]
+      sorry
+    exact IsClosed.mem_of_tendsto hC hf (Filter.eventually_of_forall (fun i ↦ (hf' i).1))
+  · ext i
+    by_cases h : ord I i < o
+    · rw [ite_eq_iff]
+      left
+      refine' ⟨h,_⟩
+      apply Eq.symm
+      rw [dite_eq_iff]
+      left
+      use h
+      rw [← (hf' (ISucc ho hto h)).2]
+      dsimp [ProjOrd]
+      split_ifs with h'
+      · rfl
+      · exfalso
+        exact h' (ord_lt_succ _ _ _)
+    · rw [ite_eq_iff]
+      right
+      refine' ⟨h,_⟩
+      apply Eq.symm
+      rw [dite_eq_iff]
+      right
+      use h
+
+noncomputable
+def OrdConeIsLimitLiftFun {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s : Cone (OrdToProfinite C o hC)) : s.pt → {i // i ∈ C} :=
+  fun x ↦ ⟨OrdConeIsLimitLiftFunAux C ho hto hC s x, ordConeIsLimitLiftFunAux_mem _ _ _ _ hsC _ x⟩
+
+lemma continuous_ordConeIsLimitLiftFun {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s : Cone (OrdToProfinite C o hC)) : Continuous (OrdConeIsLimitLiftFun C ho hto hC hsC s) := by
+  rw [continuous_induced_rng]
+  have : (Subtype.val ∘ OrdConeIsLimitLiftFun C ho hto hC hsC s) =
+      OrdConeIsLimitLiftFunAux C ho hto hC s
+  · ext
+    rfl
+  rw [this]
+  refine' continuous_pi _
+  intro i
+  dsimp [OrdConeIsLimitLiftFunAux]
+  split_ifs with h
+  · refine' Continuous.comp (continuous_apply _) _
+    exact Continuous.comp continuous_subtype_val
+      (s.π.app (Opposite.op (ISucc ho hto h))).continuous
+  · exact continuous_const
+
+noncomputable
+def OrdConeIsLimitLift {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s : Cone (OrdToProfinite C o hC)) : s.pt ⟶ (OrdCone C o hC).pt :=
+  ⟨OrdConeIsLimitLiftFun C ho hto hC hsC s, continuous_ordConeIsLimitLiftFun C ho hto hC hsC s⟩
+
+lemma le_of_leOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) :
+    i ≤ j := by
+  dsimp [ord] at h
+  simp only [Ordinal.typein_le_typein, not_lt] at h
+  exact h
+
+def HomOfLEOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) : i ⟶ j :=
+homOfLE (le_of_leOrd h)
+
+lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o }) : IsLimit (OrdCone C o hC) :=
+{ lift := fun s ↦ OrdConeIsLimitLift C ho hto hC hsC s
+  fac := by
+    rintro s ⟨⟨i,hi⟩⟩
+    ext x
+    simp only [FunctorToTypes.map_comp_apply]
+    dsimp [OrdCone, ResOnSubset, ProjOrd]
+    congr
+    ext j
+    split_ifs with h
+    <;> dsimp [OrdConeIsLimitLift, OrdConeIsLimitLiftFun, OrdConeIsLimitLiftFunAux]
+    · split_ifs with hj
+      · have hs : ord I (ISucc ho hto hj) ≤ ord I i
+        · dsimp [ord, ISucc]
+          dsimp [ord] at h
+          simp only [Ordinal.typein_lt_typein] at h
+          simpa only [Ordinal.typein_enum, Order.succ_le_iff, Ordinal.typein_lt_typein]
+        let f := (@HomOfLEOrd I _ _ o (ISucc ho hto hj) ⟨i,hi⟩ hs)
+        have := Cone.w s f.op
+        rw [← this]
+        dsimp [OrdToProfinite, ResOnSubsets, ProjOrd]
+        simp only [FunctorToTypes.map_comp_apply, Profinite.forget_ContinuousMap_mk]
+        split_ifs with hjs
+        · rfl
+        · exfalso
+          exact hjs (ord_lt_succ _ _ _)
+      · exfalso
+        exact hj (lt_trans h hi)
+    · have hR := (s.π.app ⟨i,hi⟩ x).prop
+      dsimp [Res] at hR
+      obtain ⟨g,⟨_,hg⟩⟩ := hR
+      dsimp [ProjOrd] at hg
+      have hgj := congr_fun hg j
+      split_ifs at hgj
+      rw [hgj]
+      rfl
+  uniq := by
+    rintro s ⟨m,hm⟩ h
+    dsimp [OrdCone] at m
+    congr
+    dsimp [OrdConeIsLimitLift, OrdConeIsLimitLiftFun, OrdConeIsLimitLiftFunAux]
+    ext x
+    apply Subtype.ext_val
+    ext i
+    dsimp
+    split_ifs with hi
+    · rw [← h (Opposite.op (ISucc ho hto hi) : {i // ord I i < o}ᵒᵖ)]
+      simp only [FunctorToTypes.map_comp_apply, Profinite.forget_ContinuousMap_mk]
+      dsimp [OrdCone, ResOnSubset, ProjOrd]
+      split_ifs with hi'
+      · rfl
+      · exfalso
+        exact hi' (ord_lt_succ _ _ _)
+    · have := (m x).prop
+      dsimp [Support] at hsC
+      simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+      specialize hsC i (m x).val this
+      rw [← not_imp_not] at hsC
+      simp only [Bool.not_eq_true] at hsC
+      exact hsC hi }
+
+lemma comapJointlySurjectiveAuxSubtype {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
     (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ (e : {o' // o' < o})
     (g : LocallyConstant {i // i ∈ Res C e.val} ℤ), g.comap (ResOnSubset C e.val) = f := by
   obtain ⟨i, g, h⟩ := @Profinite.exists_locallyConstant {i : WithTop I // ord I i < o}ᵒᵖ _
     (ICofiltered ho) _ (OrdCone C o hC) _
-    (OrdConeIsLimit C ho hC hsC) f
+    (OrdConeIsLimit C ho hto hC hsC) f
   use ⟨ord I i.unop.val, i.unop.prop⟩
   use g
   rw [h]
   congr
 
-lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+lemma comapJointlySurjective {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
     (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ), g.comap (ResOnSubset C o') = f := by
-  obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hC hsC f
+  obtain ⟨e, g, h⟩ := comapJointlySurjectiveAuxSubtype C ho hto hC hsC f
   exact ⟨e.val, e.prop,⟨g,h⟩⟩
 
-lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit) (hC : IsClosed C)
+lemma comapLinearJointlySurjective {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
     (hsC : Support C ⊆ { j | ord I j < o })
     (f : LocallyConstant {i // i ∈ C} ℤ) : ∃ o', o' < o ∧
     ∃ (g : LocallyConstant {i // i ∈ Res C o'} ℤ),
     (LocallyConstant.comapLinear (ResOnSubset C o') (continuous_ResOnSubset _ _) :
     LocallyConstant {i // i ∈ Res C o'} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ) g = f :=
-  comapJointlySurjective C ho hC hsC f
+  comapJointlySurjective C ho hto hC hsC f
 
 end JointlySurjective
 
@@ -1342,9 +1590,12 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
 
 lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
   rw [QIffQ I i]
+  have hto : ord I i ≤ Ordinal.type (·<· : (WithTop I) → (WithTop I) → Prop)
+  · dsimp [ord]
+    exact le_of_lt (Ordinal.typein_lt_type _ _)
   apply Ordinal.limitRecOn
   · dsimp [Q']
-    intro C _ hsC
+    intro _ C _ hsC
     dsimp [Support] at hsC
     have : C ⊆ {(fun a ↦ false)}
     · intro c hc
@@ -1365,7 +1616,7 @@ lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
   · sorry
   · intro o ho h
     dsimp [Q'] at *
-    intro C hC hsC
+    intro hto C hC hsC
     have hr : ∀ (s : Set (WithTop I → Bool)), Set.range (eval s) = ModProducts s
     · intro
       rfl
@@ -1375,12 +1626,13 @@ lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
     simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
     dsimp [ModProducts.smaller]
     simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
-    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hC hsC f
+    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hto hC hsC f
     use o'
     use ho'
     use g
     refine' ⟨_,hg⟩
-    specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
+    specialize h o' ho' (le_of_lt (lt_of_lt_of_le ho' hto)) (Res C o') (isClosed_Res C o' hC)
+      (support_Res_le_o C o')
     rw [hr (Res C o'), top_le_iff] at h
     rw [h]
     exact Submodule.mem_top
