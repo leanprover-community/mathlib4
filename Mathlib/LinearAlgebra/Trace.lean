@@ -212,12 +212,12 @@ theorem trace_prodMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext
-  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply_apply, coe_comp,
+  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply, coe_comp,
       LinearEquiv.coe_toLinearMap, coe_inl, Function.comp_apply, LinearEquiv.prod_apply,
       dualTensorHomEquivOfBasis_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
       trace_eq_contract_apply, contractLeft_apply, fst_apply, prodMap_apply, coprod_apply, id_coe,
       id.def, add_zero]
-  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply_apply, coe_comp,
+  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply, coe_comp,
       LinearEquiv.coe_toLinearMap, coe_inr, Function.comp_apply, LinearEquiv.prod_apply, map_zero,
       dualTensorHomEquivOfBasis_apply, prodMapLinear_apply, zero_prodMap_dualTensorHom,
       trace_eq_contract_apply, contractLeft_apply, snd_apply, prodMap_apply, coprod_apply, id_coe,
@@ -244,7 +244,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
   ext (f m g n)
-  simp only [AlgebraTensorModule.curry_apply_apply, toFun_eq_coe, TensorProduct.curry_apply,
+  simp only [AlgebraTensorModule.curry_apply, toFun_eq_coe, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
@@ -256,7 +256,7 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext (g m f n)
-  simp only [AlgebraTensorModule.curry_apply_apply, compl₁₂_apply, compr₂_apply, llcomp_apply',
+  simp only [AlgebraTensorModule.curry_apply, compl₁₂_apply, compr₂_apply, llcomp_apply',
     comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply, trace_eq_contract_apply, contractLeft_apply,
     smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
