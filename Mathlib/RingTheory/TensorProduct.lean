@@ -86,7 +86,7 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a)
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps!]
+@[simps]
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
