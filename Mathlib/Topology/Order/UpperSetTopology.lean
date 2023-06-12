@@ -202,6 +202,9 @@ lemma le_induced' {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : Top
   rw [← continuous_iff_le_induced]
   apply test1 hf
 
+-- Conjecture - Continuous[t₁, t₂] f ↔ Monotone f
+-- https://en.wikipedia.org/wiki/Alexandrov_topology#Equivalence_between_monotonicity_and_continuity
+
 end maps
 
 end UpperSetTopology
