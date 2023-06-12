@@ -8,12 +8,12 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Irrational
-import Mathbin.Topology.Algebra.Order.Archimedean
-import Mathbin.Topology.Paracompact
-import Mathbin.Topology.MetricSpace.Metrizable
-import Mathbin.Topology.MetricSpace.EmetricParacompact
-import Mathbin.Data.Set.Intervals.Monotone
+import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Paracompact
+import Mathlib.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.MetricSpace.EmetricParacompact
+import Mathlib.Data.Set.Intervals.Monotone
 
 /-!
 # Sorgenfrey line
@@ -72,12 +72,10 @@ theorem isOpen_Ici (a : ℝₗ) : IsOpen (Ici a) :=
   iUnion_Ico_right a ▸ isOpen_iUnion (isOpen_Ico a)
 #align counterexample.sorgenfrey_line.is_open_Ici Counterexample.SorgenfreyLine.isOpen_Ici
 
-theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b => Ico a b :=
-  by
+theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b => Ico a b := by
   rw [TopologicalSpace.nhds_generateFrom]
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
-  have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) :=
-    by
+  have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
     refine' (IsLeast.isGLB _).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_range_iff.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_set_of_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
@@ -90,8 +88,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b =
 #align counterexample.sorgenfrey_line.nhds_basis_Ico Counterexample.SorgenfreyLine.nhds_basis_Ico
 
 theorem nhds_basis_Ico_rat (a : ℝₗ) :
-    (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r :=
-  by
+    (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by
   refine'
     ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun r hr => ⟨_, hr, subset.rfl⟩,
       Set.to_countable _⟩
@@ -100,8 +97,7 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
 #align counterexample.sorgenfrey_line.nhds_basis_Ico_rat Counterexample.SorgenfreyLine.nhds_basis_Ico_rat
 
 theorem nhds_basis_Ico_inv_pNat (a : ℝₗ) :
-    (𝓝 a).HasBasis (fun n : ℕ+ => True) fun n => Ico a (a + n⁻¹) :=
-  by
+    (𝓝 a).HasBasis (fun n : ℕ+ => True) fun n => Ico a (a + n⁻¹) := by
   refine'
     (nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun n hn =>
       ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.Pos), subset.rfl⟩
@@ -139,8 +135,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 #align counterexample.sorgenfrey_line.exists_Ico_disjoint_closed Counterexample.SorgenfreyLine.exists_Ico_disjoint_closed
 
 @[simp]
-theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a :=
-  by
+theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine' ((nhds_basis_Ico a).map _).eq_of_same_basis _
   simpa only [to_real.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (to_real a)
 #align counterexample.sorgenfrey_line.map_to_real_nhds Counterexample.SorgenfreyLine.map_toReal_nhds
@@ -162,8 +157,7 @@ theorem continuous_toReal : Continuous toReal :=
 instance : OrderClosedTopology ℝₗ :=
   ⟨isClosed_le_prod.Preimage (continuous_toReal.Prod_map continuous_toReal)⟩
 
-instance : ContinuousAdd ℝₗ :=
-  by
+instance : ContinuousAdd ℝₗ := by
   refine' ⟨continuous_iff_continuousAt.2 _⟩
   rintro ⟨x, y⟩
   simp only [ContinuousAt, nhds_prod_eq, nhds_eq_map, nhds_eq_comap (x + y), prod_map_map_eq,
@@ -191,8 +185,7 @@ instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).IsCountablyGenerated⟩
 
 /-- Sorgenfrey line is a completely normal Hausdorff topological space. -/
-instance : T5Space ℝₗ :=
-  by
+instance : T5Space ℝₗ := by
   /- Let `s` and `t` be disjoint closed sets. For each `x ∈ s` we choose `X x` such that
     `set.Ico x (X x)` is disjoint with `t`. Similarly, for each `y ∈ t` we choose `Y y` such that
     `set.Ico y (Y y)` is disjoint with `s`. Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
@@ -220,8 +213,7 @@ instance : T5Space ℝₗ :=
       _ ≤ x := (not_lt.1 fun hxy => (hYd y hy).le_bot ⟨⟨hle, hxy⟩, subset_closure hx⟩)
       _ ≤ max x y := le_max_left _ _
 
-theorem denseRange_coe_rat : DenseRange (coe : ℚ → ℝₗ) :=
-  by
+theorem denseRange_coe_rat : DenseRange (coe : ℚ → ℝₗ) := by
   refine' dense_iff_inter_open.2 _
   rintro U Uo ⟨x, hx⟩
   rcases is_open_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
@@ -242,8 +234,7 @@ theorem isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
 
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
 theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ}
-    (hs : ∀ x : ℝₗ × ℝₗ, x ∈ s → x.1 + x.2 = c) : IsClosed s :=
-  by
+    (hs : ∀ x : ℝₗ × ℝₗ, x ∈ s → x.1 + x.2 = c) : IsClosed s := by
   rw [← closure_subset_iff_isClosed]
   rintro ⟨x, y⟩ H
   obtain rfl : x + y = c := by
@@ -260,8 +251,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nhds_prod_antitone_basis_inv_pNat (x y : ℝₗ) :
-    (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + n⁻¹) ×ˢ Ico y (y + n⁻¹) :=
-  by
+    (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + n⁻¹) ×ˢ Ico y (y + n⁻¹) := by
   rw [nhds_prod_eq]
   exact (nhds_antitone_basis_Ico_inv_pnat x).Prod (nhds_antitone_basis_Ico_inv_pnat y)
 #align counterexample.sorgenfrey_line.nhds_prod_antitone_basis_inv_pnat Counterexample.SorgenfreyLine.nhds_prod_antitone_basis_inv_pNat
@@ -269,8 +259,7 @@ theorem nhds_prod_antitone_basis_inv_pNat (x y : ℝₗ) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The product of the Sorgenfrey line and itself is not a normal topological space. -/
-theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
-  by
+theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) := by
   have h₀ : ∀ {n : ℕ+}, (0 : ℝ) < n⁻¹ := fun n => inv_pos.2 (Nat.cast_pos.2 n.Pos)
   have h₀' : ∀ {n : ℕ+} {x : ℝ}, x < x + n⁻¹ := fun n x => lt_add_of_pos_right _ h₀
   intro
@@ -289,8 +278,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
   rcases normal_separation hSc hTc hd with ⟨U, V, Uo, Vo, SU, TV, UV⟩
   /- For each point `(x, -x) ∈ T`, choose a neighborhood
     `Ico x (x + k⁻¹) ×ˢ Ico (-x) (-x + k⁻¹) ⊆ V`. -/
-  have : ∀ x : ℝₗ, Irrational x.toReal → ∃ k : ℕ+, Ico x (x + k⁻¹) ×ˢ Ico (-x) (-x + k⁻¹) ⊆ V :=
-    by
+  have : ∀ x : ℝₗ, Irrational x.toReal → ∃ k : ℕ+, Ico x (x + k⁻¹) ×ˢ Ico (-x) (-x + k⁻¹) ⊆ V := by
     intro x hx
     have hV : V ∈ 𝓝 (x, -x) := Vo.mem_nhds (@TV (x, -x) ⟨add_neg_self x, hx⟩)
     exact (nhds_prod_antitone_basis_inv_pnat _ _).mem_iff.1 hV
@@ -314,8 +302,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
   /- Finally, choose `x ∈ Ioo (r : ℝ) (r + n⁻¹) ∩ C N`. Then `(x, -r)` belongs both to `U` and `V`,
     so they are not disjoint. This contradiction completes the proof. -/
   obtain ⟨x, hxn, hx_irr, rfl⟩ :
-    ∃ x : ℝ, x ∈ Ioo (r : ℝ) (r + n⁻¹) ∧ Irrational x ∧ k (to_real.symm x) = N :=
-    by
+    ∃ x : ℝ, x ∈ Ioo (r : ℝ) (r + n⁻¹) ∧ Irrational x ∧ k (to_real.symm x) = N := by
     have : (r : ℝ) ∈ closure (Ioo (r : ℝ) (r + n⁻¹)) := by rw [closure_Ioo h₀'.ne, left_mem_Icc];
       exact h₀'.le
     rcases mem_closure_iff_nhds.1 this _ (mem_interior_iff_mem_nhds.1 hr) with ⟨x', hx', hx'ε⟩
@@ -331,8 +318,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
 #align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
 
 /-- Topology on the Sorgenfrey line is not metrizable. -/
-theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ :=
-  by
+theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
   intro
   letI := metrizable_space_metric ℝₗ
   exact not_normal_space_prod inferInstance
