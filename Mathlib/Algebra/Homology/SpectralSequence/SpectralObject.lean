@@ -1164,6 +1164,69 @@ instance : Epi (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := 
 
 lemma cokernelSequenceD_exact : (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
 
+noncomputable def δ₇δ₆PullbackKernelSequenceD : ShortComplex (Arrow₇ ι ⥤ C) :=
+  (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).map
+    (((whiskeringLeft _ _ C).obj (Arrow₇.δ₇ ⋙ Arrow₆.δ₆)))
+
+instance : Mono (X.δ₇δ₆PullbackKernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := by
+  dsimp [δ₇δ₆PullbackKernelSequenceD]
+  infer_instance
+
+lemma δ₇δ₆PullbackKernelSequenceD_exact :
+  (X.δ₇δ₆PullbackKernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact :=
+  (X.kernelSequenceD_exact n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).map
+    (((whiskeringLeft _ _ C).obj (Arrow₇.δ₇ ⋙ Arrow₆.δ₆)))
+
+noncomputable def δ₀δ₀PullbackCokernelSequenceD : ShortComplex (Arrow₇ ι ⥤ C) :=
+  (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).map
+    (((whiskeringLeft _ _ C).obj (Arrow₇.δ₀ ⋙ Arrow₆.δ₀)))
+
+instance : Epi (X.δ₀δ₀PullbackCokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := by
+  dsimp [δ₀δ₀PullbackCokernelSequenceD]
+  infer_instance
+
+lemma δ₀δ₀PullbackCokernelSequenceD_exact :
+  (X.δ₀δ₀PullbackCokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact :=
+  (X.cokernelSequenceD_exact n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).map
+    (((whiskeringLeft _ _ C).obj (Arrow₇.δ₀ ⋙ Arrow₆.δ₀)))
+
+noncomputable def shortComplexEEE : ShortComplex (Arrow₇ ι ⥤ C) :=
+  ShortComplex.mk _ _ (X.d_comp_d n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
+
+lemma E_fac :
+  whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₆ ⋙ Arrow₅.δ₀)
+      (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂)) ≫
+    whiskerLeft (Arrow₇.δ₀ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₅)
+      (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₀ n₁ n₂ hn₁ hn₂)) =
+  whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₁)
+      (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₀ n₁ n₂ hn₁ hn₂)) ≫
+    whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₄)
+      (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))
+       := by
+  ext D
+  dsimp
+  simp only [← Functor.map_comp]
+  congr 1
+  ext <;> dsimp <;> simp
+
+instance : Epi (whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₁)
+      (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₀ n₁ n₂ hn₁ hn₂))) := sorry
+
+instance : Mono (whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₄)
+      (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))) := sorry
+
+noncomputable def homologyDataShortComplexEEE :
+    (X.shortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).HomologyData :=
+  ShortComplex.HomologyData.ofEpiMonoFactorisation _
+    (X.δ₇δ₆PullbackKernelSequenceD_exact n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).fIsKernel
+    (X.δ₀δ₀PullbackCokernelSequenceD_exact n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).gIsCokernel
+    (X.E_fac n₁ n₂ n₃ hn₂ hn₃)
+
+noncomputable def homologyShortComplexEEEIso :
+    (X.shortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).homology ≅
+      Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₁ ⋙ Arrow₄.δ₃ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃ :=
+  (X.homologyDataShortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).left.homologyIso
+
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
   S := (X.shortComplex₁ n₀ n₁ hn₁).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₀)

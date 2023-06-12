@@ -204,7 +204,7 @@ namespace OfEpiMonoFactorisation
 variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (hkf : IsLimit kf) (hcc : IsColimit cc)
   {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt}
-  (fac : π ≫ ι = kf.ι ≫ cc.π)
+  (fac : kf.ι ≫ cc.π = π ≫ ι)
   [Epi π] [Mono ι]
 
 noncomputable def isoK : kf.pt ≅ S.cycles :=
@@ -230,7 +230,7 @@ lemma pOpcycles_isoQ_inv : S.pOpcycles ≫ (isoQ S hcc).inv = cc.π := by
   rw [← π_isoQ_hom S hcc, assoc, Iso.hom_inv_id, comp_id]
 
 lemma fac' : ((isoK S hkf).inv ≫ π) ≫ ι ≫ (isoQ S hcc).hom = S.iCycles ≫ S.pOpcycles := by
-  simp only [assoc, reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
+  simp only [assoc, ← reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
 
 noncomputable def isoImage : H ≅ image (S.iCycles ≫ S.pOpcycles) := by
   have := epi_comp (isoK S hkf).inv π
@@ -244,7 +244,7 @@ lemma isoImage_ι :
   have := epi_comp (isoK S hkf).inv π
   have := mono_comp ι (isoQ S hcc).hom
   apply image.isoStrongEpiMono_hom_comp_ι
-  simp only [assoc, reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
+  simp only [assoc, ← reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
 
 noncomputable def isoHomology : H ≅ S.homology :=
   isoImage S hkf hcc fac ≪≫ S.homologyIsoImageICyclesCompPOpcycles.symm
@@ -255,7 +255,7 @@ lemma π_comp_isoHomology_hom :
   dsimp [isoHomology]
   simp only [← cancel_mono (S.homologyIsoImageICyclesCompPOpcycles.hom), assoc,
     Iso.inv_hom_id, comp_id, ← cancel_mono (image.ι (S.iCycles ≫ S.pOpcycles)),
-    isoImage_ι, homologyIsoImageICyclesCompPOpcycles_ι, homology_π_ι, reassoc_of% fac,
+    isoImage_ι, homologyIsoImageICyclesCompPOpcycles_ι, homology_π_ι, ← reassoc_of% fac,
     π_isoQ_hom, isoK_hom_iCycles_assoc]
 
 @[reassoc (attr := simp)]
@@ -263,7 +263,7 @@ lemma isoHomology_hom_comp_ι :
     (isoHomology S hkf hcc fac).inv ≫ ι = S.homologyι ≫ (isoQ S hcc).inv := by
   rw [← cancel_epi S.homologyπ, ← cancel_epi (isoK S hkf).hom,
     homology_π_ι_assoc, ← π_comp_isoHomology_hom_assoc S hkf hcc fac, Iso.hom_inv_id_assoc,
-    fac, isoK_hom_iCycles_assoc, pOpcycles_isoQ_inv]
+    ← fac, isoK_hom_iCycles_assoc, pOpcycles_isoQ_inv]
 
 lemma f'_eq : hkf.lift (KernelFork.ofι S.f S.zero) = S.toCycles ≫ (isoK S hkf).inv := by
   have : Mono kf.ι := ⟨fun _ _ h => Fork.IsLimit.hom_ext hkf h⟩
@@ -336,7 +336,7 @@ end OfEpiMonoFactorisation
 @[simps]
 noncomputable def ofEpiMonoFactorisation {kf : KernelFork S.g} {cc : CokernelCofork S.f}
     (hkf : IsLimit kf) (hcc : IsColimit cc) {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt}
-    (fac : π ≫ ι = kf.ι ≫ cc.π) [Epi π] [Mono ι] :
+    (fac : kf.ι ≫ cc.π = π ≫ ι) [Epi π] [Mono ι] :
     S.HomologyData where
   left := OfEpiMonoFactorisation.leftHomologyData S hkf hcc fac
   right := OfEpiMonoFactorisation.rightHomologyData S hkf hcc fac
