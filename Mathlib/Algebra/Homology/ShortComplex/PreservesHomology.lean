@@ -373,7 +373,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D]
   (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
   (ψl : LeftHomologyMapData φ hl₁ hl₂)
   (ψr : RightHomologyMapData φ hr₁ hr₂)
-  (F : C ⥤ D) [F.PreservesZeroMorphisms]
+  (F G : C ⥤ D) [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
 
 namespace LeftHomologyData
 
@@ -631,6 +631,29 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
 
 section
 
+variable {F G S}
+variable (h : LeftHomologyData S) (τ : F ⟶ G)
+  [F.PreservesLeftHomologyOf S] [G.PreservesLeftHomologyOf S]
+  [F.PreservesRightHomologyOf S] [G.PreservesRightHomologyOf S]
+
+@[simps]
+def leftHomologyMapDataOfNatTrans :
+    LeftHomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
+  φK := τ.app h.K
+  φH := τ.app h.H
+
+variable (S)
+
+lemma homologyMap_mapNatTrans [S.HasHomology] :
+    homologyMap (S.mapNatTrans τ) =
+      (S.mapHomologyIso F).hom ≫ τ.app S.homology ≫ (S.mapHomologyIso G).inv :=
+  (leftHomologyMapDataOfNatTrans S.homologyData.left τ).homologyMap_eq
+
+
+end
+
+section
+
 variable [HasKernels C] [HasCokernels C]
   [HasKernels D] [HasCokernels D]
 
@@ -768,5 +791,14 @@ noncomputable def preservesRightHomologyOf_of_zero_left (hf : S.f = 0)
       exact Limits.preservesLimitOfIsoDiagram F e }⟩
 
 end Functor
+
+lemma NatTrans.app_homology {F G : C ⥤ D} [HasZeroMorphisms C] [HasZeroMorphisms D] (τ : F ⟶ G)
+    (S : ShortComplex C) [S.HasHomology] [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+    [F.PreservesLeftHomologyOf S] [G.PreservesLeftHomologyOf S] [F.PreservesRightHomologyOf S]
+    [G.PreservesRightHomologyOf S] :
+    τ.app S.homology = (S.mapHomologyIso F).inv ≫
+      ShortComplex.homologyMap (S.mapNatTrans τ) ≫ (S.mapHomologyIso G).hom := by
+  rw [ShortComplex.homologyMap_mapNatTrans, assoc, assoc, Iso.inv_hom_id,
+    comp_id, Iso.inv_hom_id_assoc]
 
 end CategoryTheory

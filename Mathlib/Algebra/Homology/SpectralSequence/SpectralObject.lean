@@ -3,6 +3,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.ArrowSeven
 import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.MorphismProperty
 
 open CategoryTheory Category Limits Preadditive
 
@@ -121,6 +122,41 @@ instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] (i : ι) 
   ((evaluation ι C).obj i).map_mono τ
 
 end Limits
+
+namespace ShortComplex
+
+variable {C ι : Type _} [Category C] [Category ι] [Abelian C]
+variable (S : ShortComplex (ι ⥤ C))
+
+noncomputable def evaluationHomologyIso (a : ι) :
+    (S.map ((evaluation _ _).obj a)).homology ≅ S.homology.obj a :=
+  S.mapHomologyIso ((evaluation _ _).obj a)
+
+lemma homology_map {a b : ι} (φ : a ⟶ b) :
+    S.homology.map φ =
+  (S.evaluationHomologyIso a).inv ≫ homologyMap (S.mapNatTrans ((evaluation _ _).map φ)) ≫
+    (S.evaluationHomologyIso b).hom :=
+  NatTrans.app_homology ((evaluation _ _).map φ) S
+
+noncomputable def homologyMapMapNatTransEvaluationMapArrowIso {a b : ι} (φ : a ⟶ b) :
+  Arrow.mk (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) ≅
+    Arrow.mk (S.homology.map φ) := by
+  refine' Arrow.isoMk (S.evaluationHomologyIso a) (S.evaluationHomologyIso b) _
+  dsimp
+  rw [homology_map, Iso.hom_inv_id_assoc]
+
+lemma mono_homology_map_iff {a b : ι} (φ : a ⟶ b) :
+    Mono (S.homology.map φ) ↔ Mono (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
+  (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff
+    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
+
+lemma epi_homology_map_iff {a b : ι} (φ : a ⟶ b) :
+    Epi (S.homology.map φ) ↔ Epi (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
+  (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
+    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
+
+end ShortComplex
+
 
 end CategoryTheory
 
@@ -482,6 +518,11 @@ lemma Hδ₂Toδ₁_Hδ₁ToCycles :
   exact (X.shortComplex₂ n₀).zero
 
 @[reassoc (attr := simp)]
+lemma Hδ₂Toδ₁_Hδ₁ToCycles_app (D : Arrow₂ ι) :
+    (X.H n₀).map (Arrow₂.δ₂Toδ₁.app D) ≫ (X.Hδ₁ToCycles n₀ n₁ hn₁).app D = 0 :=
+  congr_app (X.Hδ₂Toδ₁_Hδ₁ToCycles n₀ n₁ hn₁) D
+
+@[reassoc (attr := simp)]
 lemma opcyclesToHδ₁_Hδ₁Toδ₀ :
     X.opcyclesToHδ₁ n₀ n₁ hn₁ ≫ whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁) = 0 := by
   rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁), pOpcycles_opcyclesToHδ₁_assoc, comp_zero]
@@ -489,7 +530,7 @@ lemma opcyclesToHδ₁_Hδ₁Toδ₀ :
 
 @[reassoc]
 lemma opcyclesToHδ₁_Hδ₁Toδ₀_app (D : Arrow₂ ι) :
-    (X.opcyclesToHδ₁ n₀ n₁ hn₁).app D ≫ (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁)).app D = 0 :=
+    (X.opcyclesToHδ₁ n₀ n₁ hn₁).app D ≫ (X.H n₁).map (Arrow₂.δ₁Toδ₀.app D) = 0 :=
   congr_app (X.opcyclesToHδ₁_Hδ₁Toδ₀ n₀ n₁ hn₁) D
 
 @[simps]
@@ -520,6 +561,30 @@ lemma kernelSequenceOpcycles_exact : (X.kernelSequenceOpcycles n₀ n₁ hn₁).
   apply ShortComplex.exact_of_f_is_kernel
   exact IsLimit.ofIsoLimit (kernelIsKernel _)
     (Fork.ext ((X.opcyclesIsoKernel n₀ n₁ hn₁).symm) (by simp [opcyclesToHδ₁]))
+
+@[simps]
+noncomputable def cokernelSequenceCyclesObj (D : Arrow₂ ι) : ShortComplex C :=
+  ShortComplex.mk _ _ (X.Hδ₂Toδ₁_Hδ₁ToCycles_app n₀ n₁ hn₁ D)
+
+instance (D : Arrow₂ ι) : Epi (X.cokernelSequenceCyclesObj n₀ n₁ hn₁ D).g := by
+  dsimp only [cokernelSequenceCyclesObj]
+  infer_instance
+
+lemma cokernelSequenceCyclesObj_exact (D : Arrow₂ ι) :
+    (X.cokernelSequenceCyclesObj n₀ n₁ hn₁ D).Exact :=
+  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁).map ((evaluation _ _).obj D)
+
+@[simps]
+noncomputable def kernelSequenceOpcyclesObj (D : Arrow₂ ι) : ShortComplex C :=
+  ShortComplex.mk _ _ (X.opcyclesToHδ₁_Hδ₁Toδ₀_app n₀ n₁ hn₁ D)
+
+instance (D : Arrow₂ ι) : Mono (X.kernelSequenceOpcyclesObj n₀ n₁ hn₁ D).f := by
+  dsimp only [kernelSequenceOpcyclesObj]
+  infer_instance
+
+lemma kernelSequenceOpcyclesObj_exact (D : Arrow₂ ι) :
+    (X.kernelSequenceOpcyclesObj n₀ n₁ hn₁ D).Exact :=
+  (X.kernelSequenceOpcycles_exact n₀ n₁ hn₁).map ((evaluation _ _).obj D)
 
 @[simps!]
 noncomputable def δ₀PullbackCokernelSequenceCycles :
@@ -821,6 +886,18 @@ lemma cokernelSequenceE_exact : (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂)
   . simp [cyclesπ]
 
 @[simps!]
+noncomputable def cokernelSequenceEObj (D : Arrow₃ ι) : ShortComplex C :=
+  (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂).map ((evaluation _ _).obj D)
+
+instance (D : Arrow₃ ι) : Epi (X.cokernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ D).g := by
+  dsimp [cokernelSequenceEObj]
+  infer_instance
+
+lemma cokernelSequenceEObj_exact (D : Arrow₃ ι) :
+  (X.cokernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ D).Exact :=
+  (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).map ((evaluation _ _).obj D)
+
+@[simps!]
 noncomputable def δ₀PullbackCokernelSequenceOpcycles : ShortComplex (Arrow₃ ι ⥤ C) :=
   (X.cokernelSequenceOpcycles n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
 
@@ -885,6 +962,18 @@ lemma kernelSequenceE_exact : (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).Exa
     (X.δ₀PullbackOpcyclesIsoShortComplexEOpcycles n₀ n₁ n₂ hn₁ hn₂) (Iso.refl _) _ _
   . simp [opcyclesι]
   . simp
+
+@[simps!]
+noncomputable def kernelSequenceEObj (D : Arrow₃ ι) : ShortComplex C :=
+  (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).map ((evaluation _ _).obj D)
+
+instance (D : Arrow₃ ι) : Mono (X.kernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ D).f := by
+  dsimp [kernelSequenceEObj]
+  infer_instance
+
+lemma kernelSequenceEObj_exact (D : Arrow₃ ι) :
+  (X.kernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ D).Exact :=
+  (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).map ((evaluation _ _).obj D)
 
 @[simps!]
 noncomputable def δ₀PullbackCokernelSequenceE : ShortComplex (Arrow₄ ι ⥤ C) :=
@@ -1106,6 +1195,7 @@ lemma d_ι_app' {x₀ x₁ x₂ x₃ x₄ x₅ : ι} (f₁ : x₀ ⟶ x₁)
   rw [← cancel_epi ((X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅)),
     π_d_ι_app', HπE_EιH_app_assoc]
 
+@[reassoc]
 lemma d_ι_app (D : Arrow₅ ι) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app D ≫
       (X.EιH n₁ n₂ n₃ hn₂ hn₃).app ((Arrow₅.δ₅ ⋙ Arrow₄.δ₄).obj D) =
@@ -1138,15 +1228,81 @@ lemma d_comp_d :
   ext D
   apply d_comp_d_app
 
+section
+
+variable {x₀ x₁ x₂ x₃ : ι} (f₁ : x₀ ⟶ x₁) (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃)
+
+@[simps]
+noncomputable def kernelSequenceE' : ShortComplex C where
+  X₁ := (X.E n₀ n₁ n₂ hn₁ hn₂).obj (Arrow₃.mk f₁ f₂ f₃)
+  X₂ := (X.H n₁).obj (Arrow.mk (f₂ ≫ f₃))
+  X₃ := (X.H n₁).obj (Arrow.mk f₃) ⊞ (X.H n₂).obj (Arrow.mk f₁)
+  f := (X.EιH  n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₁ f₂ f₃)
+  g := biprod.lift ((X.H n₁).map (Arrow₂.δ₁Toδ₀.app (Arrow₂.mk f₂ f₃)))
+      ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk f₁ (f₂ ≫ f₃)))
+  zero := by
+    ext
+    . dsimp [EιH]
+      erw [assoc, assoc, biprod.lift_fst, zero_comp,
+        X.opcyclesToHδ₁_Hδ₁Toδ₀_app n₀ n₁ hn₁, comp_zero]
+    . dsimp [EιH]
+      rw [assoc, assoc, biprod.lift_snd, zero_comp]
+      exact (X.kernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ (Arrow₃.mk f₁ f₂ f₃)).zero
+
+instance : Mono (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f := by
+  dsimp [kernelSequenceE']
+  infer_instance
+
+lemma kernelSequenceE'_exact :
+    (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A₀ y₀ hy₀
+  dsimp at y₀ hy₀
+  have hy₀₁ := hy₀ =≫ biprod.fst
+  have hy₀₂ := hy₀ =≫ biprod.snd
+  simp only [assoc, biprod.lift_fst, zero_comp, biprod.lift_snd] at hy₀₁ hy₀₂
+  obtain ⟨A₁, π₁, hπ₁, y₁, hy₁⟩ := (X.kernelSequenceOpcyclesObj_exact n₀ n₁ hn₁
+    (Arrow₂.mk f₂ f₃)).exact_up_to_refinements y₀ hy₀₁
+  dsimp at y₁ hy₁
+  obtain ⟨A₂, π₂, hπ₂, y₂, hy₂⟩ := (X.kernelSequenceEObj_exact n₀ n₁ n₂ hn₁ hn₂
+    (Arrow₃.mk f₁ f₂ f₃)).exact_up_to_refinements y₁ (by
+    dsimp
+    erw [← reassoc_of% hy₁, hy₀₂, comp_zero])
+  dsimp at y₂ hy₂
+  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, y₂, _⟩
+  dsimp [EιH]
+  rw [assoc, hy₁, reassoc_of% hy₂]
+  rfl
+
+end
+
 noncomputable def kernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
   X₁ := Arrow₅.δ₀ ⋙ Arrow₄.δ₁ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
   X₂ := Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
   X₃ := Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃
   f := whiskerLeft Arrow₅.δ₀ (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))
   g := X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃
-  zero := sorry
+  zero := by
+    ext ⟨f₁, f₂, f₃, f₄, f₅⟩
+    dsimp [Arrow₅.δ₀]
+    rw [← cancel_mono ((X.EιH n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃)), assoc, zero_comp,
+      X.d_ι_app' n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅]
+    erw [NatTrans.naturality_assoc, Functor.map_id, id_comp]
+    dsimp [EιH, Arrow₃.δ₀, Arrow₃.δ₁]
+    rw [assoc]
+    exact (X.kernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ (Arrow₃.mk (f₂ ≫ f₃ ) f₄ f₅)).zero
 
-instance : Mono (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := sorry
+instance : Mono (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := by
+  refine @NatTrans.mono_of_mono_app _ _ _ _ _ _ _ (fun D => ?_)
+  dsimp [kernelSequenceD, E]
+  rw [ShortComplex.mono_homology_map_iff]
+  apply ShortComplex.mono_homologyMap_of_mono_opcyclesMap'
+  refine @IsIso.mono_of_iso _ _ _ _ _ ?_
+  apply ShortComplex.isIso_opcyclesMap_of_isIso_of_epi'
+  all_goals
+    dsimp [shortComplexE]
+    erw [Functor.map_id]
+    infer_instance
 
 lemma kernelSequenceD_exact : (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
 
@@ -1156,9 +1312,20 @@ noncomputable def cokernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
   X₃ := Arrow₅.δ₅ ⋙ Arrow₄.δ₃ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃
   f := X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃
   g := whiskerLeft Arrow₅.δ₅ (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₁ n₂ n₃ hn₂ hn₃))
-  zero := sorry
+  zero := by
+    sorry
 
-instance : Epi (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := sorry
+instance : Epi (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := by
+  refine @NatTrans.epi_of_epi_app _ _ _ _ _ _ _ (fun D => ?_)
+  dsimp [cokernelSequenceD, E]
+  rw [ShortComplex.epi_homology_map_iff]
+  apply ShortComplex.epi_homologyMap_of_epi_cyclesMap'
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
+  apply ShortComplex.isIso_cyclesMap_of_isIso_of_mono'
+  all_goals
+    dsimp [shortComplexE]
+    erw [Functor.map_id]
+    infer_instance
 
 lemma cokernelSequenceD_exact : (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
 
@@ -1211,10 +1378,30 @@ lemma E_fac :
   ext <;> dsimp <;> simp
 
 instance : Epi (whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₁)
-      (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₀ n₁ n₂ hn₁ hn₂))) := sorry
+      (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₀ n₁ n₂ hn₁ hn₂))) := by
+  refine @NatTrans.epi_of_epi_app _ _ _ _ _ _ _ (fun D => ?_)
+  dsimp [E]
+  rw [ShortComplex.epi_homology_map_iff]
+  apply ShortComplex.epi_homologyMap_of_epi_cyclesMap'
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
+  apply ShortComplex.isIso_cyclesMap_of_isIso_of_mono'
+  all_goals
+    dsimp [shortComplexE]
+    erw [Functor.map_id]
+    infer_instance
 
 instance : Mono (whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₀ ⋙ Arrow₅.δ₄)
-      (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))) := sorry
+      (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))) := by
+  refine @NatTrans.mono_of_mono_app _ _ _ _ _ _ _ (fun D => ?_)
+  dsimp [E]
+  rw [ShortComplex.mono_homology_map_iff]
+  apply ShortComplex.mono_homologyMap_of_mono_opcyclesMap'
+  refine @IsIso.mono_of_iso _ _ _ _ _ ?_
+  apply ShortComplex.isIso_opcyclesMap_of_isIso_of_epi'
+  all_goals
+    dsimp [shortComplexE]
+    erw [Functor.map_id]
+    infer_instance
 
 noncomputable def homologyDataShortComplexEEE :
     (X.shortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).HomologyData :=
