@@ -87,8 +87,8 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b =
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_range_iff.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right]
-  simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal, ← inf_iInf, ←
-    iInf_inf, this, iInf_subtype]
+  simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal, ← inf_iInf (ι := { x // x ≤ a }),
+    ← iInf_inf, this, iInf_subtype]
   suffices : (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio; exact this.principal_inf _
   refine' has_basis_binfi_principal _ nonempty_Ioi
   exact directedOn_iff_directed.2 (directed_of_inf fun x y hxy => Iio_subset_Iio hxy)
@@ -121,7 +121,8 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
-    (fun k l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.Pos) (Nat.mono_cast hkl)) _⟩
+    (fun k _l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.2)
+      (Nat.mono_cast $ Subtype.coe_le_coe.2 hkl)) _⟩
 #align counterexample.sorgenfrey_line.nhds_antitone_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_antitone_basis_Ico_inv_pnat
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
@@ -242,7 +243,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
-  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).1 le_rfl with
+  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).1 left_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
   · refine' hx.antisymm _
@@ -254,7 +255,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
 theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
     (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
   rw [nhds_prod_eq]
-  exact (nhds_antitone_basis_Ico_inv_pnat x).Prod (nhds_antitone_basis_Ico_inv_pnat y)
+  exact (nhds_antitone_basis_Ico_inv_pnat x).prod (nhds_antitone_basis_Ico_inv_pnat y)
 #align counterexample.sorgenfrey_line.nhds_prod_antitone_basis_inv_pnat Counterexample.SorgenfreyLine.nhds_prod_antitone_basis_inv_pnat
 
 /-- The product of the Sorgenfrey line and itself is not a normal topological space. -/
@@ -296,18 +297,19 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) := by
   rcases Rat.denseRange_cast.exists_mem_open isOpen_interior hN with ⟨r, hr⟩
   have hrU : ((r, -r) : ℝₗ × ℝₗ) ∈ U := @SU (r, -r) ⟨add_neg_self _, r, rfl⟩
   obtain ⟨n, hnN, hn⟩ :
-    ∃ n, N ≤ n ∧ Ico (r : ℝₗ) (r + (n : ℝₗ)⁻¹) ×ˢ Ico (-r : ℝₗ) (-r + n⁻¹) ⊆ U
+    ∃ n, N ≤ n ∧ Ico (r : ℝₗ) (r + (n : ℝₗ)⁻¹) ×ˢ Ico (-r : ℝₗ) (-r + (n : ℝₗ)⁻¹) ⊆ U
   exact ((nhds_prod_antitone_basis_inv_pnat _ _).hasBasis_ge N).mem_iff.1 (Uo.mem_nhds hrU)
   /- Finally, choose `x ∈ Ioo (r : ℝ) (r + n⁻¹) ∩ C N`. Then `(x, -r)` belongs both to `U` and `V`,
     so they are not disjoint. This contradiction completes the proof. -/
   obtain ⟨x, hxn, hx_irr, rfl⟩ :
-    ∃ x : ℝ, x ∈ Ioo (r : ℝ) (r + n⁻¹) ∧ Irrational x ∧ k (to_real.symm x) = N := by
-    have : (r : ℝ) ∈ closure (Ioo (r : ℝ) (r + n⁻¹)) := by rw [closure_Ioo h₀'.ne, left_mem_Icc];
+    ∃ x : ℝ, x ∈ Ioo (r : ℝ) (r + (n : ℝ)⁻¹) ∧ Irrational x ∧ k (toReal.symm x) = N := by
+    have : (r : ℝ) ∈ closure (Ioo (r : ℝ) (r + (n : ℝ)⁻¹)) := by
+      rw [closure_Ioo h₀'.ne, left_mem_Icc]
       exact h₀'.le
     rcases mem_closure_iff_nhds.1 this _ (mem_interior_iff_mem_nhds.1 hr) with ⟨x', hx', hx'ε⟩
     exact mem_closure_iff.1 hx' _ isOpen_Ioo hx'ε
-  refine' UV.le_bot (_ : (to_real.symm x, -↑r) ∈ _)
-  refine' ⟨hn ⟨_, _⟩, hkV (to_real.symm x) hx_irr ⟨_, _⟩⟩
+  refine' UV.le_bot (_ : (toReal.symm x, -(r : ℝₗ)) ∈ _)
+  refine' ⟨hn ⟨_, _⟩, hkV (toReal.symm x) hx_irr ⟨_, _⟩⟩
   · exact Ioo_subset_Ico_self hxn
   · exact left_mem_Ico.2 h₀'
   · exact left_mem_Ico.2 h₀'
