@@ -65,15 +65,32 @@ instance largeCategory : LargeCategory.{u} BddOrdCat where
   assoc _ _ _ := BoundedOrderHom.comp_assoc _ _ _
 #align BddOrd.large_category BddOrdCat.largeCategory
 
+-- Porting note: TODO, added. Another problem with Quivers?
+instance funLike (X Y : BddOrdCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  sorry
+--show FunLike (NormedAddGroupHom X Y) X (fun _ => Y) from inferInstance
+
 instance concreteCategory : ConcreteCategory BddOrdCat where
-  forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
-  forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
+  -- Porting note: mathport output.
+  -- forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
+  -- forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
+  forget := {
+    obj := (↥)
+    map := FunLike.coe
+    map_id := fun X => by
+      dsimp
+      sorry -- Porting note: HERE!
+    map_comp := fun f g => by
+      dsimp
+      sorry
+  }
+  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 #align BddOrd.concrete_category BddOrdCat.concreteCategory
 
 instance hasForgetToPartOrd : HasForget₂ BddOrdCat PartOrdCat where
   forget₂ :=
     { obj := fun X => X.toPartOrd
-      map := fun X Y => BoundedOrderHom.toOrderHom }
+      map := fun {X Y} => BoundedOrderHom.toOrderHom }
 #align BddOrd.has_forget_to_PartOrd BddOrdCat.hasForgetToPartOrd
 
 instance hasForgetToBipointed : HasForget₂ BddOrdCat Bipointed where
