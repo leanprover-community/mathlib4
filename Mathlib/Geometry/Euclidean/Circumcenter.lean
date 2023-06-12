@@ -254,7 +254,7 @@ variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ
 
 /-- The circumsphere of a simplex. -/
 def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
-  s.Independent.existsUnique_dist_eq.some
+  s.Independent.existsUnique_dist_eq.choose
 #align affine.simplex.circumsphere Affine.Simplex.circumsphere
 
 /-- The property satisfied by the circumsphere. -/
@@ -326,9 +326,12 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_range_iff, mem_sphere, true_and_iff] at h
-  apply (h _).1
-  sorry
+    Set.forall_range_iff, mem_sphere, true_and] at h
+  -- Porting note: added the next three lines (`simp` less powerful)
+  rw [subset_sphere (s := ⟨p, r⟩)] at h
+  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
+    Set.forall_range_iff, mem_sphere, true_and] at h
+  exact h.1
 #align affine.simplex.eq_circumcenter_of_dist_eq Affine.Simplex.eq_circumcenter_of_dist_eq
 
 /-- Given a point in the affine span from which all the points are
@@ -339,8 +342,11 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
     Set.forall_range_iff, mem_sphere, true_and_iff] at h
-  apply (h _).2
-  sorry
+  -- Porting note: added the next three lines (`simp` less powerful)
+  rw [subset_sphere (s := ⟨p, r⟩)] at h
+  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
+    Set.forall_range_iff, mem_sphere, true_and_iff] at h
+  exact h.2
 #align affine.simplex.eq_circumradius_of_dist_eq Affine.Simplex.eq_circumradius_of_dist_eq
 
 /-- The circumradius is non-negative. -/
@@ -429,7 +435,7 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} (s : 
 theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {r₁ : ℝ}
     (s : Simplex ℝ P n) {p p₁o : P} (hp₁o : p₁o ∈ affineSpan ℝ (Set.range s.points)) :
     ↑(s.orthogonalProjectionSpan (r₁ • (p -ᵥ ↑(s.orthogonalProjectionSpan p)) +ᵥ p₁o)) = p₁o :=
-  congrArg Coe.coe (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
+  congrArg ((↑) : _ → P) (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
 #align affine.simplex.coe_orthogonal_projection_vadd_smul_vsub_orthogonal_projection Affine.Simplex.coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection
 
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq {n : ℕ}
@@ -577,9 +583,8 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     (∑ j, pointWeightsWithCircumcenter i j) = 1 := by
-  convert sum_ite_eq' univ (point_index i) (Function.const _ (1 : ℝ))
-  · ext j
-    cases j <;> simp [pointWeightsWithCircumcenter]
+  convert sum_ite_eq' univ (point_index i) (Function.const _ (1 : ℝ)) with j
+  · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
 #align affine.simplex.sum_point_weights_with_circumcenter Affine.Simplex.sum_pointWeightsWithCircumcenter
 
@@ -647,8 +652,8 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 @[simp]
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     (∑ i, circumcenterWeightsWithCircumcenter n i) = 1 := by
-  convert sum_ite_eq' univ circumcenter_index (Function.const _ (1 : ℝ))
-  · ext ⟨j⟩ <;> simp [circumcenter_weights_with_circumcenter]
+  convert sum_ite_eq' univ circumcenter_index (Function.const _ (1 : ℝ)) with j
+  · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp
 #align affine.simplex.sum_circumcenter_weights_with_circumcenter Affine.Simplex.sum_circumcenterWeightsWithCircumcenter
 
@@ -692,23 +697,25 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
         (reflectionCircumcenterWeightsWithCircumcenter i₁ i₂) := by
   have hc : card ({i₁, i₂} : Finset (Fin (n + 1))) = 2 := by simp [h]
   -- Making the next line a separate definition helps the elaborator:
-  set W : AffineSubspace ℝ P := affineSpan ℝ (s.points '' {i₁, i₂}) with W_def
+  set W : AffineSubspace ℝ P := affineSpan ℝ (s.points '' {i₁, i₂})
   have h_faces :
-    ↑(orthogonalProjection W s.circumcenter) =
+    (orthogonalProjection W s.circumcenter : P) =
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
     simp
   rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
-    centroid_eq_affine_combination_of_pointsWithCircumcenter,
-    circumcenter_eq_affine_combination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,
-    affine_combination_vsub, weighted_vsub_vadd_affine_combination, affine_combination_vsub,
-    weighted_vsub_apply, sum_pointsWithCircumcenter]
+    centroid_eq_affineCombination_of_pointsWithCircumcenter,
+    circumcenter_eq_affineCombination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,
+    affineCombination_vsub, weightedVSub_vadd_affineCombination, affineCombination_vsub,
+    weightedVSub_apply, sum_pointsWithCircumcenter]
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.sub_apply, sub_smul, add_smul, sub_smul,
-    centroid_weights_with_circumcenter, circumcenter_weights_with_circumcenter,
-    reflection_circumcenter_weights_with_circumcenter, ite_smul, zero_smul, sub_zero,
+    centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
+    reflectionCircumcenterWeightsWithCircumcenter, ite_smul, zero_smul, sub_zero,
     apply_ite₂ (· + ·), add_zero, ← add_smul, hc, zero_sub, neg_smul, sub_self, add_zero]
-  convert sum_const_zero
+  -- Porting note: was `convert sum_const_zero`
+  rw [← sum_const_zero]
+  congr
   norm_num
 #align affine.simplex.reflection_circumcenter_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter
 
