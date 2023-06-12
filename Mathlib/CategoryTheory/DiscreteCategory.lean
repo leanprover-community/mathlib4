@@ -196,7 +196,7 @@ composition of two discrete functors.
 @[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
     Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.discrete.functor_comp CategoryTheory.Discrete.functorComp
 
 /-- For functors out of a discrete category,
@@ -282,8 +282,8 @@ open Opposite
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   Equivalence.mk F.leftOp F
-  (NatIso.ofComponents (fun ⟨X⟩ => Iso.refl _) <| fun {X Y} => by aesop_cat)
-  (Discrete.natIso <| fun ⟨X⟩ => Iso.refl _)
+  (NatIso.ofComponents fun ⟨X⟩ => Iso.refl _)
+  (Discrete.natIso fun ⟨X⟩ => Iso.refl _)
 
 #align category_theory.discrete.opposite CategoryTheory.Discrete.opposite
 

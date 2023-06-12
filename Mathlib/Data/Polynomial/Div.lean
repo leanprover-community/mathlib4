@@ -412,7 +412,7 @@ theorem map_dvd_map [CommRing S] (f : R →+* S) (hf : Function.Injective f) {x 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (dvd_iff_modByMonic_eq_zero (by convert monic_one (R:=R))).2 (one_dvd _)
+  (dvd_iff_modByMonic_eq_zero (by convert monic_one (R := R))).2 (one_dvd _)
 #align polynomial.mod_by_monic_one Polynomial.modByMonic_one
 
 @[simp]
@@ -526,7 +526,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.multiplicity_X_sub_C_finite Polynomial.multiplicity_X_sub_C_finite
 
 /- Porting note: stripping out classical for decidability instance parameter might
-make for better ergnomics -/
+make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`.
 This is computable via the divisibility algorithm `Polynomial.decidableDvdMonic`. -/
 def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
@@ -537,7 +537,7 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     Nat.find (multiplicity_X_sub_C_finite a h0)
 #align polynomial.root_multiplicity Polynomial.rootMultiplicity
 
-/- Porting note: added the following due to diamand with decidableProp and
+/- Porting note: added the following due to diamond with decidableProp and
 decidableDvdMonic see also [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
 non-defeq.20aliased.20instance) -/

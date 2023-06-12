@@ -38,7 +38,7 @@ the last section, various properties of matrices are explored.
   that it is a finite-dimensional inner product space).
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
-  finite-dimensional innner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
+  finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
 
 - `Basis.toOrthonormalBasis`: constructs an `OrthonormalBasis` for a finite-dimensional
   Euclidean space from a `Basis` which is `Orthonormal`.
@@ -768,7 +768,7 @@ variable [FiniteDimensional 𝕜 E]
 /-- In a finite-dimensional `InnerProductSpace`, any orthonormal subset can be extended to an
 orthonormal basis. -/
 theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((↑) : v → E)) :
-    ∃ (u : Finset E)(b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
+    ∃ (u : Finset E) (b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
   obtain ⟨u₀, hu₀s, hu₀, hu₀_max⟩ := exists_maximal_orthonormal hv
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
   have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
@@ -806,7 +806,7 @@ variable (𝕜 E)
 
 /-- A finite-dimensional inner product space admits an orthonormal basis. -/
 theorem _root_.exists_orthonormalBasis :
-    ∃ (w : Finset E)(b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+    ∃ (w : Finset E) (b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_orthonormalBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_orthonormal_basis exists_orthonormalBasis

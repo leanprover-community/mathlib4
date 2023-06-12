@@ -88,7 +88,7 @@ alias disjoint_self ↔ Disjoint.eq_bot_of_self _
 #align disjoint.eq_bot_of_self Disjoint.eq_bot_of_self
 
 theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
-fun h ↦ ha <| disjoint_self.1 <| by rwa [← h] at hab
+  fun h ↦ ha <| disjoint_self.1 <| by rwa [← h] at hab
 #align disjoint.ne Disjoint.ne
 
 theorem Disjoint.eq_bot_of_le (hab : Disjoint a b) (h : a ≤ b) : a = ⊥ :=

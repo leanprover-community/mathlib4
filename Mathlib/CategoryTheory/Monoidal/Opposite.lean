@@ -75,16 +75,8 @@ theorem unmop_mop (X : C) : unmop (mop X) = X :=
   rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
-instance monoidalOppositeCategory [I : Category.{v₁} C] : Category Cᴹᵒᵖ where
-  Hom X Y := unmop X ⟶ unmop Y
-  id X := 𝟙 (unmop X)
-  comp f g :=
-    letI : CategoryStruct Cᴹᵒᵖ := I.toCategoryStruct -- Porting note: Added this instance
-    f ≫ g
-  -- Porting note: Added a new proof for `id_comp`, `comp_id`, `assoc`
-  id_comp f := Category.id_comp (self := I) f
-  comp_id f := Category.comp_id (self := I) f
-  assoc f g h := Category.assoc (self := I) f g h
+instance monoidalOppositeCategory [Category.{v₁} C] : Category Cᴹᵒᵖ :=
+  InducedCategory.category unmop
 #align category_theory.monoidal_opposite.monoidal_opposite_category CategoryTheory.MonoidalOpposite.monoidalOppositeCategory
 
 end MonoidalOpposite
@@ -167,8 +159,10 @@ variable {X Y : C}
 def mop (f : X ≅ Y) : mop X ≅ mop Y where
   hom := f.hom.mop
   inv := f.inv.mop
-  hom_inv_id := unmop_inj (by simp) -- Porting note: Changed `f.inv_hom_id` to `by simp`
-  inv_hom_id := unmop_inj (by simp) -- Porting note: Changed `f.inv_hom_id` to `by simp`
+  -- Porting note: it's a pity `attribute [aesop safe apply (rule_sets [CategoryTheory])] unmop_inj`
+  -- doesn't automate these proofs.
+  hom_inv_id := unmop_inj (by simp)
+  inv_hom_id := unmop_inj (by simp)
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso

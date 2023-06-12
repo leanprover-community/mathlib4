@@ -99,7 +99,7 @@ def forget : Compactum ⥤ Type _ :=
 #align Compactum.forget Compactum.forget
 
 instance : Faithful forget :=
-show Faithful <| Monad.forget _ from inferInstance
+  show Faithful <| Monad.forget _ from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
 show CreatesLimits <| Monad.forget _ from inferInstance
@@ -185,7 +185,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
   · intro h1 F h2
     specialize h1 F
     cases' F.mem_or_compl_mem S with h h
-    exacts[absurd (h1 h) h2, h]
+    exacts [absurd (h1 h) h2, h]
 #align Compactum.is_closed_iff Compactum.isClosed_iff
 
 instance {X : Compactum} : CompactSpace X := by
@@ -212,7 +212,7 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
   constructor
   · intro hG
     constructor <;> filter_upwards [hG]with _
-    exacts[And.left, And.right]
+    exacts [And.left, And.right]
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
 -- Porting note: removed #align declaration since it is a private lemma
@@ -499,10 +499,7 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  (NatIso.ofComponents fun X => eqToIso rfl) <| by
-    intro X Y f
-    dsimp
-    simp
+  NatIso.ofComponents fun X => eqToIso rfl
 #align Compactum_to_CompHaus_comp_forget compactumToCompHausCompForget
 
 /-

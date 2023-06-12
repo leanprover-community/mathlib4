@@ -31,7 +31,7 @@ in the file `RingTheory/LaurentSeries`.
   * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
   * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
-  * If `R` is a (comm_)(semi)ring, then so is `HahnSeries Γ R`.
+  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
