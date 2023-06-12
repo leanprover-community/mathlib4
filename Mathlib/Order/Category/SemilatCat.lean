@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -200,4 +200,3 @@ theorem semilatInf_dual_comp_forget_to_partOrdCat :
       forget₂ SemilatInf PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
 #align SemilatInf_dual_comp_forget_to_PartOrd semilatInf_dual_comp_forget_to_partOrdCat
-
