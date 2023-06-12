@@ -22,6 +22,7 @@ element and inf-semilattices with a top element.
 * [nLab, *semilattice*](https://ncatlab.org/nlab/show/semilattice)
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u
 
@@ -29,26 +30,27 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSup : Type (u + 1) where
-  pt : Type u
+  X : Type u
   [isSemilatticeSup : SemilatticeSup X]
-  [isOrderBot : OrderBot X]
+  [isOrderBot : OrderBot.{u} X]
 #align SemilatSup SemilatSup
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInf : Type (u + 1) where
-  pt : Type u
+  X : Type u
   [isSemilatticeInf : SemilatticeInf X]
-  [isOrderTop : OrderTop X]
+  [isOrderTop : OrderTop.{u} X]
 #align SemilatInf SemilatInf
 
-attribute [protected] SemilatSup.X SemilatInf.X
+-- Porting note: disabled without checking
+-- attribute [protected] SemilatSup.X SemilatInf.X
 
 namespace SemilatSup
 
 instance : CoeSort SemilatSup (Type _) :=
   ⟨SemilatSup.X⟩
 
-attribute [instance] is_semilattice_sup is_order_bot
+attribute [instance] isSemilatticeSup isOrderBot
 
 /-- Construct a bundled `SemilatSup` from a `semilattice_sup`. -/
 def of (α : Type _) [SemilatticeSup α] [OrderBot α] : SemilatSup :=
@@ -66,16 +68,27 @@ instance : Inhabited SemilatSup :=
 instance : LargeCategory.{u} SemilatSup where
   Hom X Y := SupBotHom X Y
   id X := SupBotHom.id X
-  comp X Y Z f g := g.comp f
-  id_comp' X Y := SupBotHom.comp_id
-  comp_id' X Y := SupBotHom.id_comp
-  assoc' W X Y Z _ _ _ := SupBotHom.comp_assoc _ _ _
+  comp f g := g.comp f
+  id_comp := SupBotHom.comp_id
+  comp_id := SupBotHom.id_comp
+  assoc _ _ _ := SupBotHom.comp_assoc _ _ _
+
+-- Porting note: added because nothing worked, but it still doesnt :(
+instance funLike (X Y : SemilatSup) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  sorry
 
 instance : ConcreteCategory SemilatSup where
   forget :=
     { obj := SemilatSup.X
-      map := fun X Y => coeFn }
-  forget_faithful := ⟨fun X Y => FunLike.coe_injective⟩
+      map := FunLike.coe
+      map_id := fun X => by
+        aesop_cat_nonterminal
+        sorry
+      map_comp := fun f g => by
+        aesop_cat_nonterminal
+        sorry./
+      }
+  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSup PartOrdCat
     where forget₂ :=
@@ -95,7 +108,7 @@ namespace SemilatInf
 instance : CoeSort SemilatInf (Type _) :=
   ⟨SemilatInf.X⟩
 
-attribute [instance] is_semilattice_inf is_order_top
+attribute [instance] isSemilatticeInf isOrderTop
 
 /-- Construct a bundled `SemilatInf` from a `semilattice_inf`. -/
 def of (α : Type _) [SemilatticeInf α] [OrderTop α] : SemilatInf :=
