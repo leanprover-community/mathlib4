@@ -322,7 +322,7 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coersions
+@[reducible] -- Porting note: added reducible, it seems to help with coercions
 def Interval (α : Type _) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
@@ -681,8 +681,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           if h : S ⊆ {⊥} then ⊥
           else
             some
-              ⟨⟨⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
-                  ⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩, by
+              ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+                  ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
                 obtain ⟨s, hs, ha⟩ := not_subset.1 h
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
@@ -716,8 +716,8 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 ∀ ⦃s : NonemptyInterval α⦄,
                   ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
             some
-              ⟨⟨⨆ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.fst,
-                  ⨅ (s : NonemptyInterval α) (_h : ↑s ∈ S), s.snd⟩,
+              ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
+                  ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
@@ -762,7 +762,7 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
-  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_H : s ∈ S), (s : Set α)
+  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]

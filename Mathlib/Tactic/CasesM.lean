@@ -111,11 +111,11 @@ Example: The following tactic destructs all conjunctions and disjunctions in the
 cases_type* Or And
 ```
 -/
-elab (name := casesType) "cases_type" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
+elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
 @[inherit_doc casesType]
-elab (name := casesType!) "cases_type!" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
+elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
 /--
@@ -125,7 +125,7 @@ Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 * `throwOnNoMatch`: if true, throws an error if no match is found
 -/
 partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (throwOnNoMatch := !recursive): MetaM (List MVarId) := do
+    (recursive := false) (throwOnNoMatch := !recursive) : MetaM (List MVarId) := do
   let result ←
     (if recursive then (do
       let result ← go g

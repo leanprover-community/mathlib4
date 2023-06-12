@@ -77,7 +77,7 @@ structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
     (∀ x ∈ s, f x ⊆ setsAt x) → (∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ f x, a ⊆ closedBall x ε) →
     ∃ t : Set (α × Set α),
       (∀ p : α × Set α, p ∈ t → p.1 ∈ s) ∧ (t.PairwiseDisjoint fun p => p.2) ∧
-      (∀ p : α × Set α, p ∈ t → p.2 ∈ f p.1) ∧ μ (s \ ⋃ (p : α × Set α) (_hp : p ∈ t), p.2) = 0
+      (∀ p : α × Set α, p ∈ t → p.2 ∈ f p.1) ∧ μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0
 #align vitali_family VitaliFamily
 
 namespace VitaliFamily
@@ -113,7 +113,7 @@ theorem exists_disjoint_covering_ae :
       (∀ p : α × Set α, p ∈ t → p.1 ∈ s) ∧
       (t.PairwiseDisjoint fun p => p.2) ∧
       (∀ p : α × Set α, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
-      μ (s \ ⋃ (p : α × Set α) (_hp : p ∈ t), p.2) = 0 :=
+      μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0 :=
   v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left _ _) h
 #align vitali_family.fine_subfamily_on.exists_disjoint_covering_ae VitaliFamily.FineSubfamilyOn.exists_disjoint_covering_ae
 
@@ -190,10 +190,10 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
   setsAt x := v.setsAt x ∪ { a | MeasurableSet a ∧ (interior a).Nonempty ∧ ¬a ⊆ closedBall x δ }
   MeasurableSet' x a ha := by
     cases' ha with ha ha
-    exacts[v.MeasurableSet' _ _ ha, ha.1]
+    exacts [v.MeasurableSet' _ _ ha, ha.1]
   nonempty_interior x a ha := by
     cases' ha with ha ha
-    exacts[v.nonempty_interior _ _ ha, ha.2.1]
+    exacts [v.nonempty_interior _ _ ha, ha.2.1]
   Nontrivial := by
     intro x ε εpos
     rcases v.Nontrivial x ε εpos with ⟨a, ha, h'a⟩

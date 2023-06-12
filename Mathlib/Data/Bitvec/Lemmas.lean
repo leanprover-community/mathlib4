@@ -8,7 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.NormNum
 
@@ -19,6 +19,8 @@ This file contains theorems about bitvectors and their coercions to
 `Nat` and `Fin`.
 -/
 namespace Bitvec
+
+open Nat
 
 private theorem toList_neg_one_aux : ∀ (n : ℕ),
   (List.mapAccumr (fun y c ↦ (y || c, xor y c))
@@ -38,20 +40,65 @@ theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate 
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat
 
-/-- convert `Fin` to `Bitvec` -/
-def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
-  Bitvec.ofNat _ i.val
-#align bitvec.of_fin Bitvec.ofFin
+theorem bitsToNat_toList {n : ℕ} (x : Bitvec n) : Bitvec.toNat x = bitsToNat (Vector.toList x) :=
+  rfl
+#align bitvec.bits_to_nat_to_list Bitvec.bitsToNat_toList
+
+attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
+
+attribute [local simp] Nat.zero_add Nat.add_zero Nat.one_mul Nat.mul_one Nat.zero_mul Nat.mul_zero
+
+local infixl:65 "++ₜ" => Vector.append
+
+-- mul_left_comm
+theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
+    Bitvec.toNat (xs++ₜb ::ᵥ Vector.nil) =
+      Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ Vector.nil) := by
+  cases' xs with xs P
+  simp [bitsToNat_toList]; clear P
+  unfold bitsToNat
+  -- porting note: was `unfold List.foldl`, which now unfolds to an ugly match
+  rw [List.foldl, List.foldl]
+  -- generalize the accumulator of foldl
+  generalize h : 0 = x
+  conv in addLsb x b =>
+    rw [← h]
+  clear h
+  simp
+  induction' xs with x xs xs_ih generalizing x
+  · simp
+    unfold addLsb
+    simp [Nat.mul_succ]
+  · simp
+    apply xs_ih
+#align bitvec.to_nat_append Bitvec.toNat_append
+
+-- Porting Note: the mathlib3port version of the proof was :
+--  simp [bits_to_nat_to_list]
+--  unfold bits_to_nat add_lsb List.foldl cond
+--  simp [cond_to_bool_mod_two]
+theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ Vector.nil) = n % 2 := by
+  simp [bitsToNat_toList]
+  unfold bitsToNat addLsb List.foldl
+  simp [Nat.cond_decide_mod_two, -Bool.cond_decide]
+#align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
+
+theorem ofNat_succ {k n : ℕ} :
+    Bitvec.ofNat k.succ n = Bitvec.ofNat k (n / 2)++ₜdecide (n % 2 = 1) ::ᵥ Vector.nil :=
+  rfl
+#align bitvec.of_nat_succ Bitvec.ofNat_succ
+
+theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k := by
+  induction' k with k ih generalizing n
+  · simp [Nat.mod_one]
+    rfl
+  · rw [ofNat_succ, toNat_append, ih, bits_toNat_decide, mod_pow_succ, Nat.mul_comm]
+#align bitvec.to_nat_of_nat Bitvec.toNat_ofNat
 
 theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
   rw [ofFin, toNat_ofNat, Nat.mod_eq_of_lt]
   apply i.is_lt
 #align bitvec.of_fin_val Bitvec.ofFin_val
-
-/-- convert `Bitvec` to `Fin` -/
-def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
-  i.toNat
-#align bitvec.to_fin Bitvec.toFin
 
 theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]
@@ -155,7 +202,7 @@ theorem foldl_addLsb_add : ∀ (n k : ℕ) (x : List Bool),
     have : (n + k) + (n + k) + cond a 1 0 = (n + n + cond a 1 0) + (k + k) :=
       by simp [add_assoc, add_comm, add_left_comm]
     rw [List.foldl_cons, List.foldl_cons, addLsb, addLsb, this, foldl_addLsb_add _ (k + k) l]
-    simp [pow_succ, two_mul, mul_add, add_mul, add_assoc]
+    simp [Nat.pow_succ, two_mul, mul_add, add_mul, add_assoc]
 
 theorem foldl_addLsb_eq_add_foldl_addLsb_zero (x : List Bool) (k : ℕ) :
     x.foldl addLsb k = 2 ^ x.length * k + x.foldl addLsb 0 := by
@@ -212,11 +259,9 @@ private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.
     List.mapAccumr₂, foldl_addLsb_eq_add_foldl_addLsb_zero, foldl_addLsb_cons_zero,
     foldl_addLsb_eq_add_foldl_addLsb_zero _ (addLsb _ _)]
   cases a <;> cases b <;>
-  simp only [Bool.xor_false_right, Bool.xor_assoc, Bool.true_xor, List.length_cons,
-    List.length_mapAccumr₂, h, min_self, pow_succ, two_mul, Bool.and_false, Bool.true_and,
-    Bool.false_or, Bool.false_and, Bool.or_false, addLsb, add_zero, zero_add, add_mul,
-    Bool.cond_not, add_left_comm, add_assoc, cond_true, mul_one, cond_false, mul_zero, add_comm,
-    Bool.xor_false, Bool.false_xor, Bool.true_or, Bool.not_true, Bitvec.carry, Bitvec.xor3] <;>
+  simp only [Bitvec.xor3, Bool.xor_self, Bitvec.carry, Bool.xor_assoc, Bool.xor_false_left, List.length_cons,
+    List.length_mapAccumr₂, h, min_self, Nat.pow_succ, Nat.mul_comm, two_mul, Bool.and_self, Bool.false_and,
+    Bool.or_self, addLsb._eq_1, add_zero, cond_false, mul_zero, zero_add] <;>
   cases (List.mapAccumr₂ (fun x y c => (x && y || x && c || y && c, xor x (xor y c))) x y false).fst
     <;> simp [h]
 

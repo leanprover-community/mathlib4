@@ -63,7 +63,6 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 #align dfinsupp.order_embedding_to_fun Dfinsupp.orderEmbeddingToFun
 
 -- Porting note: we added implicit arguments here in #3414.
--- This could be investigated in cleanup after lean4#2210.
 @[simp]
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     (@orderEmbeddingToFun ι α _ _ f) i = f i :=

@@ -70,7 +70,7 @@ arrows over `X` with `f` as the cone point. This is the underlying diagram.
 @[simps]
 def toDiagram : J ⥤ StructuredArrow c.pt K where
   obj j := StructuredArrow.mk (c.π.app j)
-  map g := StructuredArrow.homMk g (by simp)
+  map g := StructuredArrow.homMk g
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
 
 /-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/

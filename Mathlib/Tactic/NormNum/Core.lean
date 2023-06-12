@@ -24,7 +24,7 @@ open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
-syntax (name := norm_num) "norm_num" term,+ : attr
+syntax (name := norm_num) "norm_num " term,+ : attr
 
 namespace Mathlib
 namespace Meta.NormNum
@@ -640,7 +640,7 @@ def isRatLit (e : Expr) : Option ℚ := do
   in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
 @[reducible]
 def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
-Q(Bool.rec (¬ $p) ($p) $b)
+  Q(Bool.rec (¬ $p) ($p) $b)
 
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
 and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/

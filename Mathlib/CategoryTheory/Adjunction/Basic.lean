@@ -590,8 +590,8 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
     where
   functor := F
   inverse := G
-  unitIso := NatIso.ofComponents (fun X => asIso (adj.unit.app X)) (by simp)
-  counitIso := NatIso.ofComponents (fun Y => asIso (adj.counit.app Y)) (by simp)
+  unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
+  counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 #align category_theory.adjunction.to_equivalence CategoryTheory.Adjunction.toEquivalence
 
 /--

@@ -1023,7 +1023,8 @@ theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
   rw [pow_two, real_inner_self_eq_norm_mul_norm]
 #align real_inner_self_eq_norm_sq real_inner_self_eq_norm_sq
 
-variable (𝕜)
+-- Porting note: this was present in mathlib3 but seemingly didn't do anything.
+-- variable (𝕜)
 
 /-- Expand the square -/
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
@@ -1049,7 +1050,7 @@ alias norm_add_sq_real ← norm_add_pow_two_real
 theorem norm_add_mul_self (x y : E) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + 2 * re ⟪x, y⟫ + ‖y‖ * ‖y‖ := by
   repeat' rw [← sq (M := ℝ)]
-  exact norm_add_sq _ _ _
+  exact norm_add_sq _ _
 #align norm_add_mul_self norm_add_mul_self
 
 /-- Expand the square -/
@@ -1080,7 +1081,7 @@ alias norm_sub_sq_real ← norm_sub_pow_two_real
 theorem norm_sub_mul_self (x y : E) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ - 2 * re ⟪x, y⟫ + ‖y‖ * ‖y‖ := by
   repeat' rw [← sq (M := ℝ)]
-  exact norm_sub_sq _ _ _
+  exact norm_sub_sq _ _
 #align norm_sub_mul_self norm_sub_mul_self
 
 /-- Expand the square -/
@@ -1098,22 +1099,24 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 #align norm_inner_le_norm norm_inner_le_norm
 
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
-  norm_inner_le_norm 𝕜 x y
+  norm_inner_le_norm x y
 #align nnnorm_inner_le_nnnorm nnnorm_inner_le_nnnorm
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
-  le_trans (re_le_norm (inner x y)) (norm_inner_le_norm 𝕜 x y)
+  le_trans (re_le_norm (inner x y)) (norm_inner_le_norm x y)
 #align re_inner_le_norm re_inner_le_norm
 
 /-- Cauchy–Schwarz inequality with norm -/
 theorem abs_real_inner_le_norm (x y : F) : |⟪x, y⟫_ℝ| ≤ ‖x‖ * ‖y‖ :=
-  (Real.norm_eq_abs _).ge.trans (norm_inner_le_norm ℝ x y)
+  (Real.norm_eq_abs _).ge.trans (norm_inner_le_norm x y)
 #align abs_real_inner_le_norm abs_real_inner_le_norm
 
 /-- Cauchy–Schwarz inequality with norm -/
 theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
   le_trans (le_abs_self _) (abs_real_inner_le_norm _ _)
 #align real_inner_le_norm real_inner_le_norm
+
+variable (𝕜)
 
 theorem parallelogram_law_with_norm (x y : E) :
     ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) := by
@@ -1785,7 +1788,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine'
-    le_antisymm ((innerSL 𝕜 x).op_norm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _ _) _
+    le_antisymm ((innerSL 𝕜 x).op_norm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) _
   rcases eq_or_ne x 0 with (rfl | h)
   · simp
   · refine' (mul_le_mul_right (norm_pos_iff.2 h)).mp _
@@ -1864,7 +1867,7 @@ theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] :
     bound :=
       ⟨1, zero_lt_one, fun x y => by
         rw [one_mul]
-        exact norm_inner_le_norm _ x y⟩ }
+        exact norm_inner_le_norm x y⟩ }
 #align is_bounded_bilinear_map_inner isBoundedBilinearMap_inner
 
 end Norm

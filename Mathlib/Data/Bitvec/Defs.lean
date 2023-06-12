@@ -283,18 +283,10 @@ protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
   | succ n, x => Bitvec.ofNat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
 #align bitvec.of_nat Bitvec.ofNat
 
-/-- Create a bitvector from an `Int`. This is the ring homorphism, and
-it is not sign preserving. -/
+/-- Create a bitvector from an `Int`. The ring homomorphism from Int to bitvectors. -/
 protected def ofInt : ∀ n : ℕ, Int → Bitvec n
   | n, Int.ofNat m => Bitvec.ofNat n m
   | n, Int.negSucc m => (Bitvec.ofNat n m).not
-
-/-- The sign preserving map from `Int` to `Bitvec` in two's complements.
-This function is not a ring homomorphism -/
-protected def ofIntSign : ∀ n : ℕ, Int → Bitvec (succ n)
-  | n, Int.ofNat m => false ::ᵥ Bitvec.ofNat n m
-  | n, Int.negSucc m => true ::ᵥ (Bitvec.ofNat n m).not
-#align bitvec.of_int Bitvec.ofIntSign
 
 /-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
 def addLsb (r : ℕ) (b : Bool) :=
@@ -311,57 +303,19 @@ protected def toNat {n : Nat} (v : Bitvec n) : Nat :=
   bitsToNat (toList v)
 #align bitvec.to_nat Bitvec.toNat
 
-theorem bitsToNat_toList {n : ℕ} (x : Bitvec n) : Bitvec.toNat x = bitsToNat (Vector.toList x) :=
-  rfl
-#align bitvec.bits_to_nat_to_list Bitvec.bitsToNat_toList
+instance (n : ℕ) : Preorder (Bitvec n) :=
+  Preorder.lift Bitvec.toNat
 
-attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
+/-- convert `fin` to `Bitvec` -/
+def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
+  Bitvec.ofNat _ i.val
+#align bitvec.of_fin Bitvec.ofFin
 
-attribute [local simp] Nat.zero_add Nat.add_zero Nat.one_mul Nat.mul_one Nat.zero_mul Nat.mul_zero
+/-- convert `Bitvec` to `fin` -/
+def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
+  i.toNat
+#align bitvec.to_fin Bitvec.toFin
 
--- mul_left_comm
-theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
-    Bitvec.toNat (xs++ₜb ::ᵥ nil) = Bitvec.toNat xs * 2 + Bitvec.toNat (b ::ᵥ nil) := by
-  cases' xs with xs P
-  simp [bitsToNat_toList]; clear P
-  unfold bitsToNat
-  -- porting note: was `unfold List.foldl`, which now unfolds to an ugly match
-  rw [List.foldl, List.foldl]
-  -- generalize the accumulator of foldl
-  generalize h : 0 = x
-  conv in addLsb x b =>
-    rw [← h]
-  clear h
-  simp
-  induction' xs with x xs xs_ih generalizing x
-  · simp
-    unfold addLsb
-    simp [Nat.mul_succ]
-  · simp
-    apply xs_ih
-#align bitvec.to_nat_append Bitvec.toNat_append
-
--- Porting Note: the mathlib3port version of the proof was :
---  simp [bits_to_nat_to_list]
---  unfold bits_to_nat add_lsb List.foldl cond
---  simp [cond_to_bool_mod_two]
-theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ nil) = n % 2 := by
-  simp [bitsToNat_toList]
-  unfold bitsToNat addLsb List.foldl
-  simp [Nat.cond_decide_mod_two, -Bool.cond_decide]
-#align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
-
-theorem ofNat_succ {k n : ℕ} :
-    Bitvec.ofNat (succ k) n = Bitvec.ofNat k (n / 2)++ₜdecide (n % 2 = 1) ::ᵥ nil :=
-  rfl
-#align bitvec.of_nat_succ Bitvec.ofNat_succ
-
-theorem toNat_ofNat {k n : ℕ} : Bitvec.toNat (Bitvec.ofNat k n) = n % 2 ^ k := by
-  induction' k with k ih generalizing n
-  · simp [Nat.mod_one]
-    rfl
-  · rw [ofNat_succ, toNat_append, ih, bits_toNat_decide, mod_pow_succ, Nat.mul_comm]
-#align bitvec.to_nat_of_nat Bitvec.toNat_ofNat
 
 /-- Return the integer encoded by the input bitvector -/
 protected def toInt : ∀ {n : Nat}, Bitvec n → Int
