@@ -92,8 +92,6 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have h_deg := minpoly.degree_le_of_ne_zero K f p_ne_0 this
   · rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
     norm_cast at h_deg
-    -- porting note; the `coe_le_coe` was not needed before
-    have := WithBot.coe_le_coe.mp h_deg
     linarith
 #align module.End.has_eigenvalue_of_is_root Module.End.hasEigenvalue_of_isRoot
 
@@ -103,29 +101,25 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
 noncomputable instance (f : End K V) : Fintype f.Eigenvalues :=
+  -- Porting note: added `show` to avoid unfolding `Set K` to `K → Prop`
+  show Fintype { μ : K | f.HasEigenvalue μ } from
   Set.Finite.fintype
     (by
       have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
-      convert (minpoly K f).rootSet_finite K using 1
+      convert (minpoly K f).rootSet_finite K
       ext μ
-      have : μ ∈ {μ : K | f.eigenspace μ = ⊥ → False} ↔ ¬f.eigenspace μ = ⊥ := by tauto
-      convert rfl.mpr this
-      -- porting note was:
-      --simp [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-      --    HasEigenvalue]
-      rw [Polynomial.rootSet_def]
-      norm_cast
-      --have : DecidableEq K := by sorry
-      simp [Finset.mem_coe]
-      -- porting note: TODO: `Multiset.mem_toFinset` not working anymore, wants `DecidableEq K` or something
-      rw [Multiset.mem_toFinset, Polynomial.mem_roots h]
-      simp [Polynomial.mem_roots h, ←hasEigenvalue_iff_isRoot, HasEigenvalue, Algebra.id.map_eq_id,
-      map_id, Finset.mem_coe,
-        Multiset.mem_toFinset]
-
-
-      )
-
+      -- Porting note: was
+      -- have : μ ∈ {μ : K | f.eigenspace μ = ⊥ → False} ↔ ¬f.eigenspace μ = ⊥ := by tauto
+      -- convert rfl.mpr this
+      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
+      --   HasEigenvalue]
+      -- which didn't work, but worked with
+      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
+      --   HasEigenvalue, (Multiset.mem_toFinset), Algebra.id.map_eq_id, iff_self, Ne.def,
+      --   Polynomial.map_id, Finset.mem_coe]
+      -- but the code below is simpler.
+      rw [Set.mem_setOf_eq, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
+        coe_aeval_eq_eval])
 
 end End
 
