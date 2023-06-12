@@ -56,12 +56,12 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           intro x
           rfl)
       left_inv := fun N => by
-        --porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
-        --choice here
+        -- Porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
+        -- choice here
         convert congr_arg LinearMap.range
             (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M)) using 1
         · have :
-            --porting note: added the `.toLinearEquiv.toLinearMap`
+            -- Porting note: added the `.toLinearEquiv.toLinearMap`
             (underlyingIso (↾N.subtype : of R _ ⟶ M)).inv =
               (underlyingIso (↾N.subtype : of R _ ⟶ M)).symm.toLinearEquiv.toLinearMap := by
               apply LinearMap.ext
