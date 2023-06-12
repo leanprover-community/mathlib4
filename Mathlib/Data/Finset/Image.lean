@@ -26,7 +26,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
-* `Finset.subtype`: `s.subtype p` is the the finset of `Subtype p` whose elements belong to `s`.
+* `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
 -/

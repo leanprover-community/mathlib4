@@ -324,7 +324,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.M.mk
 
 /-- `Agree' n` relates two trees of type `M F` that
-are the same up to dept `n` -/
+are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :

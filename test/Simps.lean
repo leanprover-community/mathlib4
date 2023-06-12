@@ -692,7 +692,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
--- test: intentionally using different unvierse levels for Equiv.symm than for Equiv
+-- test: intentionally using different universe levels for Equiv.symm than for Equiv
 def Equiv.Simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
 
 -- check whether we can generate custom projections even if the universe names don't match
