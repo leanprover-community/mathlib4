@@ -98,7 +98,9 @@ the previous paragraph kicks in.
 
 noncomputable section
 
-open scoped QuotientAddGroup Metric Set Topology NNReal
+open quotientAddGroup Metric Set
+
+open scoped Topology NNReal
 
 variable {M N : Type _} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 

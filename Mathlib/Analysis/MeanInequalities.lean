@@ -95,7 +95,9 @@ less than or equal to the sum of the maximum values of the summands.
 
 universe u v
 
-open scoped Finset Classical BigOperators NNReal ENNReal
+open Finset
+
+open scoped Classical BigOperators NNReal ENNReal
 
 set_option linter.uppercaseLean3 false
 

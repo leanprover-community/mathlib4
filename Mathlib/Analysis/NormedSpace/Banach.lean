@@ -20,9 +20,11 @@ bounded linear map between Banach spaces has a bounded inverse.
 -/
 
 
-open scoped Function Metric Set Filter Finset Classical Topology BigOperators NNReal
+open Function Metric Set Filter Finset
 
 open LinearMap (range ker)
+
+open scoped Classical Topology BigOperators NNReal
 
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →L[𝕜] F)

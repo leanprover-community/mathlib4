@@ -34,7 +34,9 @@ rectangular box, additive function
 
 noncomputable section
 
-open scoped Classical BigOperators Function Set
+open scoped Classical BigOperators
+
+open Function Set
 
 namespace BoxIntegral
 

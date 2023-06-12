@@ -31,7 +31,9 @@ a convex set.
 -/
 
 
-open scoped Finset LinearMap Set BigOperators Classical Convex Pointwise
+open Finset LinearMap Set
+
+open scoped BigOperators Classical Convex Pointwise
 
 variable {𝕜 E F α β ι : Type _}
 

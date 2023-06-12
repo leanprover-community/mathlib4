@@ -30,7 +30,9 @@ multilinear, formal series
 
 noncomputable section
 
-open scoped Set Fin Topology
+open Set Fin
+
+open scoped Topology
 
 -- porting note: added explicit universes to fix compile
 universe u u' v w x

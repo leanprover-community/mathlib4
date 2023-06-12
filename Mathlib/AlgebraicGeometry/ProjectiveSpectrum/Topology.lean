@@ -42,7 +42,9 @@ It is naturally endowed with a topology: the Zariski topology.
 
 noncomputable section
 
-open scoped DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
+open scoped DirectSum BigOperators Pointwise
+
+open DirectSum SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type _}
 

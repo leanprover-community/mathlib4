@@ -53,7 +53,9 @@ Compact operator
 -/
 
 
-open scoped Function Set Filter Bornology Metric Pointwise BigOperators Topology
+open Function Set Filter Bornology Metric
+
+open scoped Pointwise BigOperators Topology
 
 /-- A compact operator between two topological vector spaces. This definition is usually
 given as "there exists a neighborhood of zero whose image is contained in a compact set",

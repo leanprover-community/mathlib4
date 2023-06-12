@@ -27,7 +27,9 @@ We prove the following facts:
 
 assert_not_exists Norm
 
-open scoped Metric Set Pointwise Convex
+open Metric Set
+
+open scoped Pointwise Convex
 
 variable {ι 𝕜 E : Type _}
 

@@ -24,7 +24,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 -/
 
 
-open scoped Filter Asymptotics ContinuousLinearMap Set Metric Topology Classical NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric
+
+open scoped Topology Classical NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 

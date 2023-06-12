@@ -25,7 +25,9 @@ about these definitions.
 
 variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
-open scoped Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity
+open Filter Metric Function Set
+
+open scoped Topology BigOperators NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
