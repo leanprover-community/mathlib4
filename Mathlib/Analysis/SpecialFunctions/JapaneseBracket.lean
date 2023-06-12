@@ -54,22 +54,12 @@ theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
   calc
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)
       = (2 : ℝ) ^ (r / 2) * ((Real.sqrt 2 * Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
-      rw []
+      rw [rpow_div_two_eq_sqrt, rpow_div_two_eq_sqrt, mul_rpow, mul_inv, rpow_neg,
+        mul_inv_cancel_left₀] <;> positivity
     _ ≤ (2 : ℝ) ^ (r / 2) * ((1 + ‖x‖) ^ r)⁻¹ := by
       gcongr
-      apply rpow_le_rpow
-    
- -- by
- --  have h1 : 0 ≤ (2 : ℝ) := by positivity
- --  have h3 : 0 < sqrt 2 := by positivity
- --  have h4 : 0 < 1 + ‖x‖ := by positivity
- --  have h5 : 0 < sqrt (1 + ‖x‖ ^ 2) := by positivity
- --  have h6 : 0 < sqrt 2 * sqrt (1 + ‖x‖ ^ 2) := mul_pos h3 h5
- --  rw [rpow_div_two_eq_sqrt _ h1, rpow_div_two_eq_sqrt _ (zero_lt_one_add_norm_sq x).le, ←
- --    inv_mul_le_iff (rpow_pos_of_pos h3 _), rpow_neg h4.le, rpow_neg (sqrt_nonneg _), ← mul_inv, ←
- --    mul_rpow h3.le h5.le, inv_le_inv (rpow_pos_of_pos h6 _) (rpow_pos_of_pos h4 _),
- --    rpow_le_rpow_iff h4.le h6.le hr]
- --  exact one_add_norm_le_sqrt_two_mul_sqrt _
+      apply one_add_norm_le_sqrt_two_mul_sqrt
+    _ = (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) := by rw [rpow_neg]; positivity
 #align rpow_neg_one_add_norm_sq_le rpow_neg_one_add_norm_sq_le
 
 theorem le_rpow_one_add_norm_iff_norm_le {r t : ℝ} (hr : 0 < r) (ht : 0 < t) (x : E) :
@@ -160,7 +150,7 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
     fun t ht => by rw [closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
   -- The integral over the constant zero function is finite:
   rw [set_lintegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
-    MulZeroClass.zero_mul]
+    zero_mul]
   exact WithTop.zero_lt_top
 #align finite_integral_one_add_norm finite_integral_one_add_norm
 
@@ -176,15 +166,13 @@ theorem integrable_one_add_norm [MeasureSpace E] [BorelSpace E] [(@volume E _).I
 
 theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
     [(@volume E _).IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
-    Integrable fun x : E => (1 + ‖x‖ ^ 2) ^ (-r / 2) := by
+    Integrable fun x : E => ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
-  refine'
-    ((integrable_one_add_norm hnr).const_mul <| 2 ^ (r / 2)).mono (by measurability)
-      (eventually_of_forall fun x => _)
-  have h1 : 0 ≤ (1 + ‖x‖ ^ 2) ^ (-r / 2) := by positivity
-  have h2 : 0 ≤ (1 + ‖x‖) ^ (-r) := by positivity
-  have h3 : 0 ≤ (2 : ℝ) ^ (r / 2) := by positivity
-  simp_rw [norm_mul, norm_eq_abs, abs_of_nonneg h1, abs_of_nonneg h2, abs_of_nonneg h3]
-  exact rpow_neg_one_add_norm_sq_le _ hr
+  refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
+    ?_ (eventually_of_forall fun x => ?_)
+  · -- porting note: was `measurability`
+    refine (((measurable_id.norm.pow_const _).const_add _).pow_const _).aestronglyMeasurable
+  refine (abs_of_pos ?_).trans_le  (rpow_neg_one_add_norm_sq_le x hr)
+  positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq
 
