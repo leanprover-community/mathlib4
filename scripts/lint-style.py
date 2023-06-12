@@ -83,6 +83,8 @@ new_exceptions = False
 def skip_comments(enumerate_lines):
     in_comment = False
     for line_nr, line in enumerate_lines:
+        if line.startswith("--"):
+            continue
         if "/-" in line:
             in_comment = True
         if "-/" in line:
