@@ -44,7 +44,7 @@ ERR_SAV = 4 # ᾰ
 ERR_RNT = 5 # reserved notation
 ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported tactic{,.omega,.observe}
+ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
 
@@ -278,7 +278,7 @@ def format_errors(errors):
         if errno == ERR_AUT:
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder, nor tactic.omega or tactic.observe")
+            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
 
