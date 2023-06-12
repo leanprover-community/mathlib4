@@ -659,7 +659,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem IsFilteredOrEmpty.of_Final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
+theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
     IsFilteredOrEmpty D where
   cocone_objs X Y := ⟨F.obj (IsFiltered.max (Final.lift F X) (Final.lift F Y)),
     Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
@@ -686,8 +686,8 @@ theorem IsFilteredOrEmpty.of_Final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
 -/
-theorem IsFiltered.of_Final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
-{ IsFilteredOrEmpty.of_Final F with
+theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
+{ IsFilteredOrEmpty.of_final F with
   Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
 
 /-- Initial functors preserve cofilteredness.
@@ -695,9 +695,9 @@ theorem IsFiltered.of_Final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem IsCofilteredOrEmpty.of_Initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
+theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
   IsCofilteredOrEmpty D :=
-  have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_Final F.op
+  have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_IsFilteredOrEmpty_op _
 
 /-- Initial functors preserve cofilteredness.
@@ -705,8 +705,8 @@ theorem IsCofilteredOrEmpty.of_Initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
-theorem IsCofiltered.of_Initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
-  have : IsFiltered Dᵒᵖ := IsFiltered.of_Final F.op
+theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
+  have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
   isCofiltered_of_IsFiltered_op _
 
 end Filtered
