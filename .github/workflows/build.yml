@@ -88,7 +88,7 @@ jobs:
 
       - name: update Counterexamples.lean
         run: |
-          git ls-files Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Counterexamples.lean
+          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Counterexamples.lean
 
       - name: check that all files are imported
         run: git diff --exit-code
