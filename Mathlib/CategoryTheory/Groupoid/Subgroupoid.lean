@@ -26,7 +26,7 @@ Also defined are:
 * containment of subgroupoids is a complete lattice;
 * images and preimages of subgroupoids under a functor;
 * the notion of normality of subgroupoids and its stability under intersection and preimage;
-* compatibility of the above with `groupoid.vertex_group`.
+* compatibility of the above with `CategoryTheory.Groupoid.vertexGroup`.
 
 
 ## Main definitions
@@ -600,7 +600,8 @@ end Hom
 
 section Thin
 
-/-- A subgroupoid `is_thin` if it has at most one arrow between any two vertices. -/
+/-- A subgroupoid is thin (`CategoryTheory.Subgroupoid.IsThin`) if it has at most one arrow between
+any two vertices. -/
 abbrev IsThin :=
   Quiver.IsThin S.objs
 #align category_theory.subgroupoid.is_thin CategoryTheory.Subgroupoid.IsThin
