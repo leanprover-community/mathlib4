@@ -137,11 +137,11 @@ theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
 #align vector.nth_map Vector.get_map
 
 @[simp]
-theorem Vector.map₂_nil (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
+theorem map₂_nil (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
   rfl
 
 @[simp]
-theorem Vector.map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vector β n) (f : α → β → γ) :
+theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vector β n) (f : α → β → γ) :
     Vector.map₂ f (hd₁ ::ᵥ tl₁) (hd₂ ::ᵥ tl₂) = f hd₁ hd₂ ::ᵥ (Vector.map₂ f tl₁ tl₂) :=
   rfl
 
@@ -774,31 +774,31 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 -- #align vector.reflect vector.reflect
 
 @[simp]
-theorem Vector.replicate_succ : replicate (n+1) val = val ::ᵥ (replicate n val) :=
+theorem replicate_succ : replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 @[simp]
-theorem Vector.get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
+theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
   rfl
 
 @[simp]
-theorem Vector.get_append_cons_succ {i : Fin (n + m)} {h} :
+theorem get_append_cons_succ {i : Fin (n + m)} {h} :
     get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
   rfl
 
 @[simp]
-theorem Vector.append_nil : (append xs Vector.nil) = xs :=
+theorem append_nil : (append xs nil) = xs :=
   by cases xs; simp[append]
 
 
 @[simp]
-theorem Vector.get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
-    Vector.get (Vector.map₂ f v₁ v₂) i = f (Vector.get v₁ i) (Vector.get v₂ i) := by
-  induction v₁, v₂ using Vector.inductionOn₂
+theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
+    get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
+  induction v₁, v₂ using inductionOn₂
   case nil =>
     exact Fin.elim0 i
   case cons x xs y ys ih =>
-    rw [Vector.map₂_cons]
+    rw [map₂_cons]
     cases i using Fin.cases
     . simp only [get_zero, head_cons]
     . simp only [get_cons_succ, ih]
