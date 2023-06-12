@@ -45,9 +45,9 @@ namespace TopCat.Presheaf
 
 section LocallySurjective
 
-attribute [local instance] concrete_category.has_coe_to_fun
+attribute [local instance] ConcreteCategory.hasCoeToFun
 
-attribute [local instance] concrete_category.has_coe_to_sort
+attribute [local instance] ConcreteCategory.hasCoeToSort
 
 open scoped AlgebraicGeometry
 
@@ -63,12 +63,14 @@ See `is_locally_surjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   Iff.rfl
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
 
 section SurjectiveOnStalks
@@ -104,19 +106,18 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         we have T(s) |_ W = t |_ W. -/
     intro U t x hxU
     set t_x := 𝒢.germ ⟨x, hxU⟩ t with ht_x
-    obtain ⟨s_x, hs_x : ((stalk_functor C x).map T) s_x = t_x⟩ := hT x t_x
+    obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
     obtain ⟨V, hxV, s, rfl⟩ := ℱ.germ_exist x s_x
     -- rfl : ℱ.germ x s = s_x
-    have key_W :=
-      𝒢.germ_eq x hxV hxU (T.app _ s) t
-        (by
-          convert hs_x
-          symm
-          convert stalk_functor_map_germ_apply _ _ _ s)
+    have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
+      convert hs_x using 1
+      symm
+      convert stalkFunctor_map_germ_apply _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
     refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
-    convert h_eq
+    convert h_eq using 1
     simp only [← comp_apply, T.naturality]
+set_option linter.uppercaseLean3 false in
 #align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
 
 end SurjectiveOnStalks
@@ -124,4 +125,3 @@ end SurjectiveOnStalks
 end LocallySurjective
 
 end TopCat.Presheaf
-
