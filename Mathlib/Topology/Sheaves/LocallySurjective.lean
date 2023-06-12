@@ -8,9 +8,9 @@ Authors: Sam van Gool, Jake Levinson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sheaves.Presheaf
-import Mathbin.Topology.Sheaves.Stalks
-import Mathbin.CategoryTheory.Sites.Surjective
+import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.CategoryTheory.Sites.Surjective
 
 /-!
 
@@ -78,8 +78,7 @@ variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 /-- An equivalent condition for a map of presheaves to be locally surjective
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
-    IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) :=
-  by
+    IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
   constructor <;> intro hT
   · /- human proof:
         Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X
