@@ -199,15 +199,9 @@ end NonUnitalSemiring
 
 namespace StarOrderedRing
 
+/-- In a `StarOrderedRing` we always have `0 ≤ 1` since `0 ≤ (star 1) * 1 = 1`. -/
 instance instZeroLEOneClass [Semiring R] [PartialOrder R] [StarOrderedRing R] :
     ZeroLEOneClass R where
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
-
--- TODO: Move me
-instance _root_.AddMonoidWithOne.instCharZero {R : Type u} [AddMonoidWithOne R]
-  [NeZero (1 : R)] [PartialOrder R] [CovariantClass R R (· + ·) (· < ·)] [ZeroLEOneClass R] :
-    CharZero R where
-  cast_injective := StrictMono.injective <| strictMono_nat_of_lt_succ fun n => by
-    simpa only [Nat.cast_add, Nat.cast_one] using lt_add_of_pos_right _ one_pos
 
 end StarOrderedRing
