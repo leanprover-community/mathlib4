@@ -61,9 +61,9 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         convert congr_arg LinearMap.range
             (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M)) using 1
         · have :
-            --porting note: added the `toFun` ... is this a problem?
-            (underlyingIso (↾N.subtype : of R { x // x ∈ N } ⟶ M)).inv =
-        (underlyingIso (↾N.subtype : of R { x // x ∈ N } ⟶ M)).symm.toLinearEquiv.toLinearMap := by
+            --porting note: added the `.toLinearEquiv.toLinearMap`
+            (underlyingIso (↾N.subtype : of R _ ⟶ M)).inv =
+              (underlyingIso (↾N.subtype : of R _ ⟶ M)).symm.toLinearEquiv.toLinearMap := by
               apply LinearMap.ext
               intro x
               rfl
@@ -91,7 +91,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
---porting note: used to be `simp [toKernelSubobject]`, doesn't suffice anymore
+  -- Porting note: The whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
@@ -105,7 +105,7 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
---porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
+-- Porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
 -- @[ext] this is no longer an ext lemma under the current interpretation see eg
 -- the conversation beginning at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/
@@ -114,10 +114,10 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
-  --porting note: Had to add the following manually
+  -- Porting note: The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
   change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
-  rw [ ← coe_comp, ← coe_comp, Category.assoc]
+  rw [← coe_comp, ← coe_comp, Category.assoc]
   simp only [cokernel.condition, comp_zero]
   rfl
 #align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
