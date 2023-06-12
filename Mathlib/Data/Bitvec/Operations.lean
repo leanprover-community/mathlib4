@@ -1,56 +1,11 @@
-import Mathlib.Data.Bitvec.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 
 
 /-!
   Some theorems & defintions I needed along the way, but which should find their home elsewhere
 -/
 section ShouldMove
-
-@[simp]
-theorem Vector.replicate.unfold : replicate (n+1) val = val ::ᵥ (replicate n val) :=
-  rfl
-
--- @[simp]
--- theorem Vector.append.unfold_cons {xs : Vector α n} {ys : Vector α m} :
---       Vector.append (x ::ᵥ xs) ys = x ::ᵥ (Vector.append xs ys) :=
---   rfl
-
-@[simp]
-theorem Vector.get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
-  rfl
-
-@[simp]
-theorem Vector.get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
-  rfl
-
-@[simp]
-theorem Vector.append.unfold_nil : (append xs Vector.nil) = xs :=
-  by cases xs; simp[append]
-
-@[simp]
-theorem Vector.map.unfold_cons : Vector.map f (hd ::ᵥ tl) = f hd ::ᵥ (Vector.map f tl) :=
-  rfl
-
-@[simp]
-theorem Vector.map₂.unfold_cons : Vector.map₂ f (hd₁ ::ᵥ tl₁) (hd₂ ::ᵥ tl₂)
-                                  = f hd₁ hd₂ ::ᵥ (Vector.map₂ f tl₁ tl₂) :=
-  rfl
-
-@[simp]
-theorem Vector.get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) :
-    Vector.get (Vector.map₂ f v₁ v₂) i = f (Vector.get v₁ i) (Vector.get v₂ i) := by
-  induction n
-  case zero =>
-    exact Fin.elim0 i
-  case succ n ih =>
-    cases v₁ using Vector.cases with | cons x_hd x_tl =>
-    cases v₂ using Vector.cases with | cons y_hd y_tl =>
-    simp only [Vector.map₂.unfold_cons]
-    cases i using Fin.cases
-    . simp only [get_zero, head_cons]
-    . simp only [get_cons_succ, ih]
 
 /--
   The bitwise complement, i.e., take the complement of each bit
