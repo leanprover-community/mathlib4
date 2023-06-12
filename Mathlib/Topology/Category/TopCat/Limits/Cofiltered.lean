@@ -14,7 +14,7 @@ import Mathlib.Topology.Category.Top.Limits.Basic
 # Cofiltered limits in Top.
 
 Given a *compatible* collection of topological bases for the factors in a cofiltered limit
-which contain `set.univ` and are closed under intersections, the induced *naive* collection
+which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
 
@@ -39,7 +39,7 @@ variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max 
 include hC
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
-which contain `set.univ` and are closed under intersections, the induced *naive* collection
+which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
 theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
@@ -87,7 +87,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (he : e ∈ G), Vs e
     refine' ⟨j, V, _, _⟩
-    · -- An intermediate claim used to apply induction along `G : finset J` later on.
+    · -- An intermediate claim used to apply induction along `G : Finset J` later on.
       have :
         ∀ (S : Set (Set (F.obj j))) (E : Finset J) (P : J → Set (F.obj j)) (univ : Set.univ ∈ S)
           (inter : ∀ A B : Set (F.obj j), A ∈ S → B ∈ S → A ∩ B ∈ S)
