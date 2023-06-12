@@ -30,17 +30,22 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSup : Type (u + 1) where
-  /-- The category of sup-semilattices with a bottom element. -/
+  /-- Porting note: docstring missing -/
   X : Type u
+  /-- Porting note: docstring missing -/
   [isSemilatticeSup : SemilatticeSup X]
+  /-- Porting note: docstring missing -/
   [isOrderBot : OrderBot.{u} X]
 #align SemilatSup SemilatSup
 
+#lint
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInf : Type (u + 1) where
-  /-- The category of inf-semilattices with a top element. -/
+  /-- Porting note: docstring missing -/
   X : Type u
+  /-- Porting note: docstring missing -/
   [isSemilatticeInf : SemilatticeInf X]
+  /-- Porting note: docstring missing -/
   [isOrderTop : OrderTop.{u} X]
 #align SemilatInf SemilatInf
 
@@ -213,3 +218,4 @@ theorem semilatInf_dual_comp_forget_to_partOrdCat :
       forget₂ SemilatInf PartOrdCat ⋙ PartOrdCat.dual :=
   rfl
 #align SemilatInf_dual_comp_forget_to_PartOrd semilatInf_dual_comp_forget_to_partOrdCat
+#lint
