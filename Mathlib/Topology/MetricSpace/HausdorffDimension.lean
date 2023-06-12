@@ -515,8 +515,8 @@ namespace Real
 
 variable {E : Type _} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
-theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) : dimH (Metric.ball x r) = Fintype.card ι :=
-  by
+theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
+    dimH (Metric.ball x r) = Fintype.card ι := by
   cases isEmpty_or_nonempty ι
   · rwa [dimH_subsingleton, eq_comm, Nat.cast_eq_zero, Fintype.card_eq_zero_iff]
     exact fun x _ y _ => Subsingleton.elim x y
