@@ -166,8 +166,8 @@ namespace SemilatSup
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatSup.{u}} (e : α ≃o β) : α ≅ β where
-  hom := e
-  inv := e.symm
+  hom := (e : SupBotHom _ _)
+  inv := (e.symm : SupBotHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatSup.iso.mk SemilatSup.Iso.mk
@@ -186,8 +186,8 @@ namespace SemilatInf
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β where
-  hom := e
-  inv := e.symm
+  hom := (e : InfTopHom _ _)
+  inv := (e.symm :  InfTopHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatInf.iso.mk SemilatInf.Iso.mk
@@ -203,11 +203,12 @@ end SemilatInf
 
 /-- The equivalence between `SemilatSup` and `SemilatInf` induced by `order_dual` both ways.
 -/
-@[simps Functor inverse]
-def semilatSupEquivSemilatInf : SemilatSup ≌ SemilatInf :=
-  Equivalence.mk SemilatSup.dual SemilatInf.dual
-    (NatIso.ofComponents (fun X => SemilatSup.Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => SemilatInf.Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+@[simps functor inverse]
+def semilatSupEquivSemilatInf : SemilatSup ≌ SemilatInf where
+  functor := SemilatSup.dual
+  inverse := SemilatInf.dual
+  unitIso := NatIso.ofComponents fun X => SemilatSup.Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => SemilatInf.Iso.mk <| OrderIso.dualDual X
 #align SemilatSup_equiv_SemilatInf semilatSupEquivSemilatInf
 
 theorem semilatSup_dual_comp_forget_to_partOrdCat :
