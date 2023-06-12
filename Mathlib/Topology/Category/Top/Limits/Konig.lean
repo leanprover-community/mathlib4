@@ -8,7 +8,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Category.Top.Limits.Basic
+import Mathlib.Topology.Category.Top.Limits.Basic
 
 /-!
 # Topological Kőnig's lemma
@@ -91,15 +91,13 @@ theorem partialSections.directed :
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
   refine' ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, _, _⟩
   · rintro u hu f hf
-    have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB :=
-      by
+    have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left
       rw [Finset.mem_image]
       refine' ⟨f, hf, rfl⟩
     exact hu this
   · rintro u hu f hf
-    have : ιB f ∈ A.2.image ιA ⊔ B.2.image ιB :=
-      by
+    have : ιB f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_right
       rw [Finset.mem_image]
       refine' ⟨f, hf, rfl⟩
@@ -107,12 +105,10 @@ theorem partialSections.directed :
 #align Top.partial_sections.directed TopCat.partialSections.directed
 
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
-    (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) :=
-  by
+    (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partial_sections F H =
-      ⋂ (f : finite_diagram_arrow G) (hf : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} :=
-    by
+      ⋂ (f : finite_diagram_arrow G) (hf : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
     simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl
