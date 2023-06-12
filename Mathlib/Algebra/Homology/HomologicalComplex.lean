@@ -305,7 +305,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align homological_complex.forget_eval HomologicalComplex.forgetEval
 
 end
@@ -484,7 +484,8 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom) : C₁ ≅ C₂ where
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom
       comm' := hf }
@@ -512,8 +513,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents (fun n => asIso (f.f n))
-    (by aesop_cat))
+  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
@@ -705,7 +705,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
@@ -977,7 +977,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/

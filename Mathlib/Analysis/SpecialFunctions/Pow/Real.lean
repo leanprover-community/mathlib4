@@ -10,6 +10,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Qq
 
 
 /-! # Power function on `ℝ`
@@ -31,7 +32,7 @@ namespace Real
 
 /-- The real power function `x ^ y`, defined as the real part of the complex power function.
 For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`, one sets `0 ^ 0=1` and `0 ^ y=0` for
-`y ≠ 0`. For `x < 0`, the definition is somewhat arbitary as it depends on the choice of a complex
+`y ≠ 0`. For `x < 0`, the definition is somewhat arbitrary as it depends on the choice of a complex
 determination of the logarithm. With our conventions, it is equal to `exp (y log x) cos (π y)`. -/
 noncomputable def rpow (x y : ℝ) :=
   ((x : ℂ) ^ (y : ℂ)).re
@@ -49,7 +50,7 @@ theorem rpow_def (x y : ℝ) : x ^ y = ((x : ℂ) ^ (y : ℂ)).re := rfl
 theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) := by
   simp only [rpow_def, Complex.cpow_def] ; split_ifs <;>
-  simp_all [(Complex.of_real_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
+  simp_all [(Complex.ofReal_log hx).symm, -Complex.ofReal_mul, -IsROrC.ofReal_mul,
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 #align real.rpow_def_of_nonneg Real.rpow_def_of_nonneg
 
@@ -74,7 +75,7 @@ open Real
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
   rw [rpow_def, Complex.cpow_def, if_neg]
   have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
-    simp only [Complex.log, abs_of_neg hx, Complex.arg_of_real_of_neg hx, Complex.abs_ofReal,
+    simp only [Complex.log, abs_of_neg hx, Complex.arg_ofReal_of_neg hx, Complex.abs_ofReal,
       Complex.ofReal_mul]
     ring
   · rw [this, Complex.exp_add_mul_I, ← Complex.ofReal_exp, ← Complex.ofReal_cos, ←
@@ -98,6 +99,8 @@ theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
 @[simp]
 theorem rpow_zero (x : ℝ) : x ^ (0 : ℝ) = 1 := by simp [rpow_def]
 #align real.rpow_zero Real.rpow_zero
+
+theorem rpow_zero_pos (x : ℝ) : 0 < x ^ (0 : ℝ) := by simp
 
 @[simp]
 theorem zero_rpow {x : ℝ} (h : x ≠ 0) : (0 : ℝ) ^ x = 0 := by simp [rpow_def, *]
@@ -240,20 +243,20 @@ end Real
 
 namespace Complex
 
-theorem of_real_cpow {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : ((x ^ y : ℝ) : ℂ) = (x : ℂ) ^ (y : ℂ) := by
+theorem ofReal_cpow {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : ((x ^ y : ℝ) : ℂ) = (x : ℂ) ^ (y : ℂ) := by
   simp only [Real.rpow_def_of_nonneg hx, Complex.cpow_def, ofReal_eq_zero] ; split_ifs <;>
-    simp [Complex.of_real_log hx]
-#align complex.of_real_cpow Complex.of_real_cpow
+    simp [Complex.ofReal_log hx]
+#align complex.of_real_cpow Complex.ofReal_cpow
 
-theorem of_real_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
+theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     (x : ℂ) ^ y = (-x : ℂ) ^ y * exp (π * I * y) := by
   rcases hx.eq_or_lt with (rfl | hlt)
   · rcases eq_or_ne y 0 with (rfl | hy) <;> simp [*]
   have hne : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr hlt.ne
   rw [cpow_def_of_ne_zero hne, cpow_def_of_ne_zero (neg_ne_zero.2 hne), ← exp_add, ← add_mul, log,
-    log, abs.map_neg, arg_of_real_of_neg hlt, ← ofReal_neg,
-    arg_of_real_of_nonneg (neg_nonneg.2 hx), ofReal_zero, MulZeroClass.zero_mul, add_zero]
-#align complex.of_real_cpow_of_nonpos Complex.of_real_cpow_of_nonpos
+    log, abs.map_neg, arg_ofReal_of_neg hlt, ← ofReal_neg,
+    arg_ofReal_of_nonneg (neg_nonneg.2 hx), ofReal_zero, MulZeroClass.zero_mul, add_zero]
+#align complex.of_real_cpow_of_nonpos Complex.ofReal_cpow_of_nonpos
 
 theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
     abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
@@ -289,7 +292,7 @@ theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Comple
 #align complex.abs_cpow_inv_nat Complex.abs_cpow_inv_nat
 
 theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re := by
-  rw [abs_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_of_real_of_nonneg hx.le,
+  rw [abs_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_ofReal_of_nonneg hx.le,
     MulZeroClass.zero_mul, Real.exp_zero, div_one, abs_of_nonneg hx.le]
 #align complex.abs_cpow_eq_rpow_re_of_pos Complex.abs_cpow_eq_rpow_re_of_pos
 
@@ -315,9 +318,9 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 variable {x y z : ℝ}
 
 theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
-  rw [← Complex.ofReal_inj, Complex.of_real_cpow (rpow_nonneg_of_nonneg hx _),
-      Complex.of_real_cpow hx, Complex.ofReal_mul, Complex.cpow_mul, Complex.of_real_cpow hx] <;>
-    simp only [(Complex.ofReal_mul _ _).symm, (Complex.of_real_log hx).symm, Complex.ofReal_im,
+  rw [← Complex.ofReal_inj, Complex.ofReal_cpow (rpow_nonneg_of_nonneg hx _),
+      Complex.ofReal_cpow hx, Complex.ofReal_mul, Complex.cpow_mul, Complex.ofReal_cpow hx] <;>
+    simp only [(Complex.ofReal_mul _ _).symm, (Complex.ofReal_log hx).symm, Complex.ofReal_im,
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
 #align real.rpow_mul Real.rpow_mul
 
@@ -688,7 +691,7 @@ theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 <
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
 theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
-    {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ (q ^ n : α) < y := by
+    {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
   obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
   obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
   have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
@@ -699,8 +702,7 @@ theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean �
 
 end Real
 
--- Porting note: tactics removed
--- section Tactics
+section Tactics
 
 -- /-!
 -- ## Tactic extensions for real powers
@@ -756,32 +758,36 @@ end Real
 
 -- end NormNum
 
--- namespace Tactic
+namespace Mathlib.Meta.Positivity
 
--- namespace Positivity
+open Lean Meta Qq
 
--- /-- Auxiliary definition for the `positivity` tactic to handle real powers of reals. -/
--- unsafe def prove_rpow (a b : expr) : tactic strictness := do
---   let strictness_a ← core a
---   match strictness_a with
---     | nonnegative p => nonnegative <$> mk_app `` Real.rpow_nonneg_of_nonneg [p, b]
---     | positive p => positive <$> mk_app `` Real.rpow_pos_of_pos [p, b]
---     | _ => failed
--- #align tactic.positivity.prove_rpow tactic.positivity.prove_rpow
+/-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
+when the exponent is zero. The other cases are done in `evalRpow`. -/
+@[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
+def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
+    | throwError "not Real.rpow"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
+  pure (.positive (q(Real.rpow_zero_pos $a) : Expr))
 
--- end Positivity
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive. -/
+@[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
+def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} zα pα e := do
+  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
+    | throwError "not Real.rpow"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa =>
+      have pa' : Q(0 < $a) := pa
+      pure (.positive (q(Real.rpow_pos_of_pos $pa' $b) : Expr))
+  | .nonnegative pa =>
+      have pa' : Q(0 ≤ $a) := pa
+      pure (.nonnegative (q(Real.rpow_nonneg_of_nonneg $pa' $b) : Expr))
+  | _ => pure .none
 
--- open Positivity
+end Mathlib.Meta.Positivity
 
--- /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
--- the base is nonnegative and positive when the base is positive. -/
--- @[positivity]
--- unsafe def positivity_rpow : expr → tactic strictness
---   | q(@Pow.pow _ _ Real.hasPow $(a) $(b)) => prove_rpow a b
---   | q(Real.rpow $(a) $(b)) => prove_rpow a b
---   | _ => failed
--- #align tactic.positivity_rpow tactic.positivity_rpow
-
--- end Tactic
-
--- end Tactics
+end Tactics

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 
 ! This file was ported from Lean 3 source module analysis.normed_space.operator_norm
-! leanprover-community/mathlib commit 91862a6001a8b6ae3f261cdd8eea42f6ac596886
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -355,7 +355,7 @@ protected theorem tmp_closedBall_div_subset {a b : ℝ} (ha : 0 < a) (hb : 0 < b
   rw [mem_closedBall_zero_iff] at hf hx⊢
   calc
     ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-    _ ≤ a / b * b := (mul_le_mul hf hx (norm_nonneg _) (div_pos ha hb).le)
+    _ ≤ a / b * b := by gcongr
     _ = a := div_mul_cancel a hb.ne.symm
 #align continuous_linear_map.tmp_closed_ball_div_subset ContinuousLinearMap.tmp_closedBall_div_subset
 
@@ -1990,52 +1990,6 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
   exact ContinuousLinearMap.homothety_norm _ fun y =>
     homothety_inverse _ hx _ (toSpanNonzeroSingleton_homothety 𝕜 x h) _
 #align continuous_linear_equiv.coord_norm ContinuousLinearEquiv.coord_norm
-
-variable {𝕜} {𝕜₄ : Type _} [NontriviallyNormedField 𝕜₄]
-
-variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜₄ H] [NormedSpace 𝕜₃ G]
-
-variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
-
-variable {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃}
-
-variable {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄}
-
-variable [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
-
-variable [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
-
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-
-variable [RingHomIsometric σ₁₄] [RingHomIsometric σ₂₃]
-
-variable [RingHomIsometric σ₄₃] [RingHomIsometric σ₂₄]
-
-variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁₂]
-
-variable [RingHomIsometric σ₃₄]
-
-/-- A pair of continuous (semi)linear equivalences generates an continuous (semi)linear equivalence
-between the spaces of continuous (semi)linear maps. -/
-@[simps apply symm_apply]
-def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-  {e₁₂.arrowCongrEquiv e₄₃ with -- given explicitly to help `simps`
-    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
-    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
-    continuous_toFun := (continuous_id.clm_comp_const _).const_clm_comp _
-    continuous_invFun := (continuous_id.clm_comp_const _).const_clm_comp _ }
-set_option linter.uppercaseLean3 false in
-#align continuous_linear_equiv.arrow_congrSL ContinuousLinearEquiv.arrowCongrSL
-
-/-- A pair of continuous linear equivalences generates an continuous linear equivalence between
-the spaces of continuous linear maps. -/
-def arrowCongr {F H : Type _} [NormedAddCommGroup F] [NormedAddCommGroup H] [NormedSpace 𝕜 F]
-    [NormedSpace 𝕜 G] [NormedSpace 𝕜 H] (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
-    (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
-  arrowCongrSL e₁ e₂
-#align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
 
 end
 

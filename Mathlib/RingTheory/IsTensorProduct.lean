@@ -12,7 +12,7 @@ import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Module.ULift
 
 /-!
-# The characteristice predicate of tensor product
+# The characteristic predicate of tensor product
 
 ## Main definitions
 
@@ -168,7 +168,7 @@ section
 variable [Module R Q] [IsScalarTower R S Q]
 
 /-- Suppose `f : M →ₗ[R] N` is the base change of `M` along `R → S`. Then any `R`-linear map from
-`M` to an `S`-module factors thorugh `f`. -/
+`M` to an `S`-module factors through `f`. -/
 noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :=
   { h.lift
       (((Algebra.ofId S <| Module.End S (M →ₗ[R] Q)).toLinearMap.flip g).restrictScalars R) with

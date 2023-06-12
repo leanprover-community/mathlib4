@@ -89,13 +89,13 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
       let g : ∀ (e) (_he : e ∈ G), j ⟶ e := fun _ he => (hj he).some
       let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
+      let V : Set (F.obj j) := ⋂ (e : J) (_ : e ∈ G), Vs e
       refine' ⟨j, V, _, _⟩
       · -- An intermediate claim used to apply induction along `G : Finset J` later on.
         have :
           ∀ (S : Set (Set (F.obj j))) (E : Finset J) (P : J → Set (F.obj j)) (_ : Set.univ ∈ S)
             (_ : ∀ A B : Set (F.obj j), A ∈ S → B ∈ S → A ∩ B ∈ S)
-            (_ : ∀ (e : J) (_ : e ∈ E), P e ∈ S), (⋂ (e) (_he : e ∈ E), P e) ∈ S := by
+            (_ : ∀ (e : J) (_ : e ∈ E), P e ∈ S), (⋂ (e) (_ : e ∈ E), P e) ∈ S := by
           intro S E
           induction' E using Finset.induction_on with a E _ hh1
           · intro P he _
@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         exact compat j e (g e he) (U e) (h1 e he)
       · -- conclude...
         rw [h2]
-        change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_he : e ∈ G), Vs e
+        change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
         rw [Set.preimage_iInter]
         apply congrArg
         ext1 e

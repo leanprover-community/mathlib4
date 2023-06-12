@@ -361,15 +361,13 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 
 @[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff]
+  simp [div_eq_mul_inv]
 #align div_le_self_iff div_le_self_iff
 #align sub_le_self_iff sub_le_self_iff
 
 @[to_additive (attr := simp)]
 theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff]
+  simp [div_eq_mul_inv]
 #align le_div_self_iff le_div_self_iff
 #align le_sub_self_iff le_sub_self_iff
 
@@ -421,8 +419,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 
 @[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
-  -- Porting note: was `simp [div_eq_mul_inv]`
-  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff]
+  simp [div_eq_mul_inv]
 #align div_lt_self_iff div_lt_self_iff
 #align sub_lt_self_iff sub_lt_self_iff
 
@@ -1171,7 +1168,7 @@ namespace AddCommGroup
 
 /-- A collection of elements in an `AddCommGroup` designated as "non-negative".
 This is useful for constructing an `OrderedAddCommGroup`
-by choosing a positive cone in an exisiting `AddCommGroup`. -/
+by choosing a positive cone in an existing `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type _) [AddCommGroup α] where
   nonneg : α → Prop
