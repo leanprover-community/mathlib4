@@ -61,7 +61,7 @@ lemma toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
 lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by 
   simp [Nat.testBit, Nat.mod_two_of_bodd]
 
-lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m):= by 
+lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m) := by 
   simp_rw [Nat.shiftr_eq_div_pow, Nat.div_add_mod]
 
 /-- Useful for induction on the most significant bit-/
