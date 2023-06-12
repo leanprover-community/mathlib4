@@ -104,8 +104,8 @@ noncomputable def endMonoidalStarFunctorIsEquivalence :
   inverse :=
     { obj := fun X => X
       map := fun f => f }
-  unitIso := NatIso.ofComponents (fun X => asIso (𝟙 _)) (by simp)
-  counitIso := NatIso.ofComponents (fun X => asIso (𝟙 _)) (by simp)
+  unitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
+  counitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctorIsEquivalence
 
 end MonoidalSingleObj

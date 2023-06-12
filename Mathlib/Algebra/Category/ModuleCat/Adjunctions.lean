@@ -391,7 +391,7 @@ instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
 is isomorphic to the original functor.
 -/
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.Free.embedding_lift_iso CategoryTheory.Free.embeddingLiftIso
 
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their

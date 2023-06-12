@@ -379,7 +379,7 @@ theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : α} {K : Set β
   · intro s t hs ht
     filter_upwards [hs, ht]
     rintro x h1 h2 y (hys | hyt)
-    exacts[h1 y hys, h2 y hyt]
+    exacts [h1 y hys, h2 y hyt]
   · intro y hyK
     specialize hP y hyK
     rw [nhds_prod_eq, eventually_prod_iff] at hP
@@ -457,7 +457,7 @@ theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 
--- porting note: todo: refurmulate using `𝓝ˢ`
+-- porting note: todo: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set α` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `α` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
@@ -562,7 +562,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   have : f '' K ∈ l := by
     filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
-    exacts[(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
+    exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
   rcases hKc.image hfc (le_principal_iff.2 this) with ⟨y, hy, hyl⟩
   exact ⟨y, Or.inr <| image_subset_range _ _ hy, hyl⟩
@@ -1176,7 +1176,7 @@ theorem exists_compact_mem_nhds [LocallyCompactSpace α] (x : α) : ∃ K, IsCom
   ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
 #align exists_compact_mem_nhds exists_compact_mem_nhds
 
-/-- In a locally compact space, for every containement `K ⊆ U` of a compact set `K` in an open
+/-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
   compact `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
 theorem exists_compact_between [hα : LocallyCompactSpace α] {K U : Set α} (hK : IsCompact K)
@@ -1405,7 +1405,7 @@ protected noncomputable def LocallyFinite.encodable {ι : Type _} {f : ι → Se
 `x` of a closed set `s` to a neighborhood of `x` within `s`, then for some countable set `t ⊆ s`,
 the neighborhoods `f x`, `x ∈ t`, cover the whole set `s`. -/
 theorem countable_cover_nhdsWithin_of_sigma_compact {f : α → Set α} {s : Set α} (hs : IsClosed s)
-    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ (t : _)(_ : t ⊆ s), t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
+    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ (t : _) (_ : t ⊆ s), t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
     ((isCompact_compactCovering α n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
@@ -1681,7 +1681,7 @@ theorem continuous_boolIndicator_iff_clopen (U : Set X) :
     exact ⟨(isOpen_discrete _).preimage hc, (isClosed_discrete _).preimage hc⟩
   · refine' fun hU => ⟨fun s _ => _⟩
     rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
-    exacts[isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
+    exacts [isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_clopen
 
 theorem continuousOn_boolIndicator_iff_clopen (s U : Set X) :
@@ -1983,7 +1983,7 @@ theorem IsPreirreducible.subset_irreducible {S U Z : Set α} (hZ : IsPreirreduci
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H
       rcases H with (rfl | rfl | rfl)
-      exacts[⟨z, h₂ (h₁ hz), hz⟩, ⟨x, h₂ hx, hx'⟩, ⟨y, h₂ hy, hy'⟩]
+      exacts [⟨z, h₂ (h₁ hz), hz⟩, ⟨x, h₂ hx, hx'⟩, ⟨y, h₂ hy, hy'⟩]
   replace ha' : a ∈ U ∧ a ∈ u ∧ a ∈ v := by simpa using ha'
   exact ⟨a, h₁ ha'.1, ha'.2⟩
 #align is_preirreducible.subset_irreducible IsPreirreducible.subset_irreducible

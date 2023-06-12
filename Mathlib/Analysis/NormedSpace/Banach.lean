@@ -92,14 +92,14 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     refine' mem_iUnion.2 ⟨n, subset_closure _⟩
     refine' (mem_image _ _ _).2 ⟨x, ⟨_, hx⟩⟩
     rwa [mem_ball, dist_eq_norm, sub_zero]
-  have : ∃ (n : ℕ)(x : _), x ∈ interior (closure (f '' ball 0 n)) :=
+  have : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
     nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine' ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, _, fun y => _⟩
   · refine' mul_nonneg (mul_nonneg (mul_nonneg _ (norm_nonneg _)) (by norm_num)) _
-    exacts[inv_nonneg.2 (div_nonneg (le_of_lt εpos) (by norm_num)), n.cast_nonneg]
+    exacts [inv_nonneg.2 (div_nonneg (le_of_lt εpos) (by norm_num)), n.cast_nonneg]
   · by_cases hy : y = 0
     · use 0
       simp [hy]

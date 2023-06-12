@@ -554,7 +554,7 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
 theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
-  repeat' rw [degreeOf_eq_sup (R:=R) i]
+  repeat' rw [degreeOf_eq_sup (R := R) i]
   rw [support_mul_X]
   simp only [Finset.sup_map]
   congr
@@ -571,7 +571,7 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
   repeat' rw [degreeOf]
   apply (Multiset.count_le_of_le j (degrees_mul f (X j))).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert Multiset.count_le_of_le j (degrees_X' (R:=R) j)
+  convert Multiset.count_le_of_le j (degrees_X' (R := R) j)
   rw [Multiset.count_singleton_self]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_mul_X_eq MvPolynomial.degreeOf_mul_X_eq

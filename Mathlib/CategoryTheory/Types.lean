@@ -194,8 +194,6 @@ and the original type.
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom a := a.1
   inv a := .up a
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
@@ -225,7 +223,7 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
-  NatIso.ofComponents uliftTrivial (by aesop_cat)
+  NatIso.ofComponents uliftTrivial
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
 
 -- TODO We should connect this to a general story about concrete categories

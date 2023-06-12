@@ -36,7 +36,7 @@ The main definitions for this file are
   composite, and is coprime with `b` (this last condition is automatically true if `n` divides
   `b ^ (n - 1) - 1`, but some sources include it in the definition).
 
-Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definiton of
+Note that all composite numbers are pseudoprimes to base 0 and 1, and that the definition of
 `ProbablePrime` in this file implies that all numbers are probable primes to bases 0 and 1, and
 that 0 and 1 are probable primes to any base.
 

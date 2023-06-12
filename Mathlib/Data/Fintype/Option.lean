@@ -117,5 +117,5 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     [Finite α] : P α := by
   cases nonempty_fintype α
   refine' Fintype.induction_empty_option _ _ _ α
-  exacts[fun α β _ => of_equiv, h_empty, @h_option]
+  exacts [fun α β _ => of_equiv, h_empty, @h_option]
 #align finite.induction_empty_option Finite.induction_empty_option

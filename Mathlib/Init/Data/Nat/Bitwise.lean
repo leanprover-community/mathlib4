@@ -24,7 +24,7 @@ Possibly only of archaeological significance.
 
 universe u
 
--- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+-- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
