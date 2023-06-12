@@ -1051,6 +1051,7 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
     rw [nthLe_of_eq (nthLe_splitWrtComposition _ _ _), nthLe_drop', nthLe_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
@@ -1064,8 +1065,10 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     sizeUpTo a (sizeUpTo b i + j) =
       sizeUpTo (a.gather b) i +
         sizeUpTo (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ hi⟩) j := by
-  induction' j with j IHj
-  · show
+  -- Porting note: `induction'` left a spurious `hj` in the context
+  induction j with
+  | zero =>
+    show
       sum (take (b.blocks.take i).sum a.blocks) =
         sum (take i (map sum (splitWrtComposition a.blocks b)))
     induction' i with i IH
@@ -1073,7 +1076,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     · have A : i < b.length := Nat.lt_of_succ_lt hi
       have B : i < List.length (map List.sum (splitWrtComposition a.blocks b)) := by simp [A]
       have C : 0 < blocksFun b ⟨i, A⟩ := Composition.blocks_pos' _ _ _
-      rw [sum_take_succ _ _ B, ← IH A _ C]
+      rw [sum_take_succ _ _ B, ← IH A C]
       have :
         take (sum (take i b.blocks)) a.blocks =
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
@@ -1084,8 +1087,8 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
         sum_append]
       congr
       rw [take_append_drop]
-      sorry
-  · have A : j < blocksFun b ⟨i, hi⟩ := lt_trans (lt_add_one j) hj
+  | succ j IHj =>
+    have A : j < blocksFun b ⟨i, hi⟩ := lt_trans (lt_add_one j) hj
     have B : j < length (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ hi⟩) := by
       convert A; rw [← length_sigmaCompositionAux]
     have C : sizeUpTo b i + j < sizeUpTo b (i + 1) := by
@@ -1095,8 +1098,8 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    sorry
-    --rw [nthLe_of_eq (nthLe_splitWrtComposition _ _ _), nthLe_drop', nthLe_take _ _ C]
+    simp_rw [← nthLe_eq]
+    rw [nthLe_of_eq (nthLe_splitWrtComposition _ _ _), nthLe_drop', nthLe_take _ _ C]
 #align composition.size_up_to_size_up_to_add Composition.sizeUpTo_sizeUpTo_add
 
 /-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
