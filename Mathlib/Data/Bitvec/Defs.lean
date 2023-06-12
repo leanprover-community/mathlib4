@@ -343,3 +343,7 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   decEq _ _
+
+instance : NatCast (Bitvec n) := ⟨Bitvec.ofNat _⟩
+
+instance : IntCast (Bitvec n) := ⟨Bitvec.ofInt _⟩

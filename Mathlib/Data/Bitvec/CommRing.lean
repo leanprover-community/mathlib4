@@ -28,9 +28,17 @@ theorem ofZMod_toZMod {n} (v : Bitvec n) : ofZMod (toZMod v) = v := by
   rw [toZMod_val, ofNat_toNat]
 
 @[simp]
-theorem toZMod_natCast {n x : ℕ} : (↑x : Bitvec n).toZMod = x := by
+theorem toZMod_natCast {n : ℕ} (x : ℕ) : (↑x : Bitvec n).toZMod = x := by
   show (Bitvec.ofNat n x).toZMod = x
   simp [toZMod, toNat_ofNat]
+#print Bitvec.neg
+@[simp]
+theorem toZMod_intCast {n : ℕ} (x : ℤ) : (↑x : Bitvec n).toZMod = x := by
+  show (Bitvec.ofInt n x).toZMod = x
+  cases x
+  . simp [Bitvec.ofInt, toZMod, toNat_ofNat]
+  . simp [Bitvec.ofInt]
+
 
 @[simp]
 theorem toZMod_add {n : ℕ} (x y : Bitvec n) : (x + y).toZMod = (x.toZMod + y.toZMod) := by
@@ -158,6 +166,10 @@ theorem toZMod_npow : ∀ (x : Bitvec n) (y : ℕ), (x ^ y).toZMod = x.toZMod ^ 
     rw [npow_def, npowRec, toZMod_mul, ← npow_def, toZMod_npow x y]
     simp [pow_succ, mul_comm]
 
-
+instance : CommRing (Bitvec n) :=
+  Function.Injective.commRing toZMod
+    (Function.injective_iff_hasLeftInverse.2 ⟨_, ofZMod_toZMod⟩)
+    toZMod_zero toZMod_one toZMod_add toZMod_mul toZMod_neg toZMod_sub
+      toZMod_nsmul toZMod_zsmul toZMod_npow toZMod_natCast toZMod_intCast
 
 end Bitvec
