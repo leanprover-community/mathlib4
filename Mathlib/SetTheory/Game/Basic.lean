@@ -191,12 +191,12 @@ instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) 
     exact @add_lt_add_right _ _ _ _ b c h a⟩
 #align game.covariant_class_swap_add_lt Game.covariantClass_swap_add_lt
 
-theorem add_lf_add_right : ∀ {b c : Game} (h : b ⧏ c) (a), (b + a : Game) ⧏ c + a := by
+theorem add_lf_add_right : ∀ {b c : Game} (_ : b ⧏ c) (a), (b + a : Game) ⧏ c + a := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply PGame.add_lf_add_right h
 #align game.add_lf_add_right Game.add_lf_add_right
 
-theorem add_lf_add_left : ∀ {b c : Game} (h : b ⧏ c) (a), (a + b : Game) ⧏ a + c := by
+theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏ a + c := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply PGame.add_lf_add_left h
 #align game.add_lf_add_left Game.add_lf_add_left
@@ -394,17 +394,15 @@ theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
 /-- `x * y` and `y * x` have the same moves. -/
 def mulCommRelabelling : ∀ x y : PGame.{u}, x * y ≡r y * x
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine'
-            ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
-              (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)),
-              _, _⟩ <;>
-          rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
-        dsimp <;>
-      exact
-        ((addCommRelabelling _ _).trans <|
-              (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
-          (mulCommRelabelling _ _)decreasing_by
-pgame_wf_tac
+    refine' ⟨Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _),
+      (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.prodComm _ _) (Equiv.prodComm _ _)), _, _⟩
+      <;>
+    rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
+    { dsimp
+      exact ((addCommRelabelling _ _).trans <|
+        (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
+        (mulCommRelabelling _ _) }
+  decreasing_by sorry --pgame_wf_tac
 #align pgame.mul_comm_relabelling PGame.mulCommRelabelling
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
@@ -469,11 +467,13 @@ theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 def negMulRelabelling : ∀ x y : PGame.{u}, -x * y ≡r -(x * y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩) <;> dsimp <;>
-          apply ((negAddRelabelling _ _).trans _).symm <;>
-        apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr <;>
-      exact (negMulRelabelling _ _).symm decreasing_by
-  pgame_wf_tac
+    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;>
+    rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
+    dsimp <;>
+    apply ((negAddRelabelling _ _).trans _).symm <;>
+    apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr <;>
+    exact (negMulRelabelling _ _).symm
+  decreasing_by pgame_wf_tac
 #align pgame.neg_mul_relabelling PGame.negMulRelabelling
 
 @[simp]
@@ -499,21 +499,17 @@ theorem quot_left_distrib : ∀ x y z : PGame, (⟦x * (y + z)⟧ : Game) = ⟦x
     let z := mk zl zr zL zR
     refine' quot_eq_of_mk'_quot_eq _ _ _ _
     · fconstructor
-      ·
-        rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
-          solve_by_elim (config := { max_depth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
-      ·
-        rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
-          solve_by_elim (config := { max_depth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
+          solve_by_elim (config := { maxDepth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
+          solve_by_elim (config := { maxDepth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;> rfl
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
     · fconstructor
-      ·
-        rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
-          solve_by_elim (config := { max_depth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
-      ·
-        rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
-          solve_by_elim (config := { max_depth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
+          solve_by_elim (config := { maxDepth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
+          solve_by_elim (config := { maxDepth := 5 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;> rfl
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
     · rintro (⟨i, j | k⟩ | ⟨i, j | k⟩)
@@ -557,7 +553,8 @@ theorem quot_left_distrib : ∀ x y z : PGame, (⟦x * (y + z)⟧ : Game) = ⟦x
           ⟦xR i * (y + z) + x * (y + zL k) - xR i * (y + zL k)⟧ =
             ⟦x * y + (xR i * z + x * zL k - xR i * zL k)⟧
         simp [quot_left_distrib]
-        abel decreasing_by pgame_wf_tac
+        abel
+  decreasing_by pgame_wf_tac
 #align pgame.quot_left_distrib PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
@@ -594,18 +591,15 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     unfold One.one
     unfold instOnePGame
     simp
-    refine'
-                  ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
-                    (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), _, _⟩ <;>
-                try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩) <;>
-              try intro i <;>
-            dsimp <;>
-          apply (relabelling.sub_congr (relabelling.refl _) (mul_zero_relabelling _)).trans <;>
-        rw [sub_zero] <;>
-      exact
-        (add_zero_relabelling _).trans
-          (((mul_one_relabelling _).addCongr (mul_zero_relabelling _)).trans <|
-            add_zero_relabelling _)
+    refine' ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
+      (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), _, _⟩ <;>
+    try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩) <;>
+    try intro i <;>
+    dsimp <;>
+    apply (relabelling.sub_congr (relabelling.refl _) (mul_zero_relabelling _)).trans <;>
+    rw [sub_zero] <;>
+    exact (add_zero_relabelling _).trans
+      (((mul_one_relabelling _).addCongr (mul_zero_relabelling _)).trans <| add_zero_relabelling _)
 #align pgame.mul_one_relabelling PGame.mulOneRelabelling
 
 @[simp]
@@ -640,21 +634,17 @@ theorem quot_mul_assoc : ∀ x y z : PGame, (⟦x * y * z⟧ : Game) = ⟦x * (y
     let z := mk zl zr zL zR
     refine' quot_eq_of_mk'_quot_eq _ _ _ _
     · fconstructor
-      ·
-        rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
-          solve_by_elim (config := { max_depth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
-      ·
-        rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
-          solve_by_elim (config := { max_depth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
+          solve_by_elim (config := { maxDepth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
+          solve_by_elim (config := { maxDepth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;> rfl
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
     · fconstructor
-      ·
-        rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
-          solve_by_elim (config := { max_depth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
-      ·
-        rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
-          solve_by_elim (config := { max_depth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
+          solve_by_elim (config := { maxDepth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
+      · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
+          solve_by_elim (config := { maxDepth := 7 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;> rfl
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
     · rintro (⟨⟨i, j⟩ | ⟨i, j⟩, k⟩ | ⟨⟨i, j⟩ | ⟨i, j⟩, k⟩)
@@ -714,7 +704,8 @@ theorem quot_mul_assoc : ∀ x y z : PGame, (⟦x * y * z⟧ : Game) = ⟦x * (y
             ⟦xR i * (y * z) + x * (yL j * z + y * zL k - yL j * zL k) -
                 xR i * (yL j * z + y * zL k - yL j * zL k)⟧
         simp [quot_mul_assoc]
-        abel decreasing_by pgame_wf_tac
+        abel
+  decreasing_by pgame_wf_tac
 #align pgame.quot_mul_assoc PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/
@@ -726,11 +717,11 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
 on each side, we have to define the two families inductively.
 This is the indexing set for the function, and `inv_val` is the function part. -/
 inductive InvTy (l r : Type u) : Bool → Type u
-  | zero : inv_ty false
-  | left₁ : r → inv_ty false → inv_ty false
-  | left₂ : l → inv_ty true → inv_ty false
-  | right₁ : l → inv_ty false → inv_ty true
-  | right₂ : r → inv_ty true → inv_ty true
+  | zero : InvTy l r false
+  | left₁ : r → InvTy l r false → InvTy l r false
+  | left₂ : l → InvTy l r true → InvTy l r false
+  | right₁ : l → InvTy l r false → InvTy l r true
+  | right₂ : r → InvTy l r true → InvTy l r true
 #align pgame.inv_ty PGame.InvTy
 
 instance (l r : Type u) [IsEmpty l] [IsEmpty r] : IsEmpty (InvTy l r true) :=
@@ -752,11 +743,11 @@ of each side, we have to define the two families inductively.
 This is the function part, defined by recursion on `inv_ty`. -/
 def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame) :
     ∀ {b}, InvTy l r b → PGame
-  | _, inv_ty.zero => 0
-  | _, inv_ty.left₁ i j => (1 + (R i - mk l r L R) * inv_val j) * IHr i
-  | _, inv_ty.left₂ i j => (1 + (L i - mk l r L R) * inv_val j) * IHl i
-  | _, inv_ty.right₁ i j => (1 + (L i - mk l r L R) * inv_val j) * IHl i
-  | _, inv_ty.right₂ i j => (1 + (R i - mk l r L R) * inv_val j) * IHr i
+  | _, InvTy.zero => 0
+  | _, InvTy.left₁ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
+  | _, InvTy.left₂ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
+  | _, InvTy.right₁ i j => (1 + (L i - mk l r L R) * invVal L R IHl IHr j) * IHl i
+  | _, InvTy.right₂ i j => (1 + (R i - mk l r L R) * invVal L R IHl IHr j) * IHr i
 #align pgame.inv_val PGame.invVal
 
 @[simp]
@@ -774,7 +765,7 @@ given by `x⁻¹ = {0,
 Because the two halves `x⁻¹L, x⁻¹R` of `x⁻¹` are used in their own
 definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
-  | ⟨l, r, L, R⟩ =>
+  | ⟨_, r, L, R⟩ =>
     let l' := { i // 0 < L i }
     let L' : l' → PGame := fun i => L i.1
     let IHl' : l' → PGame := fun i => inv' (L i.1)
@@ -784,7 +775,7 @@ def inv' : PGame → PGame
 
 theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
   | ⟨xl, xr, xL, xR⟩ => by
-    convert lf_mk _ _ inv_ty.zero
+    convert lf_mk _ _ InvTy.zero
     rfl
 #align pgame.zero_lf_inv' PGame.zero_lf_inv'
 
@@ -792,10 +783,8 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
   refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩
-  · apply Equiv.equivPUnit (inv_ty _ _ _)
-    infer_instance
-  · apply Equiv.equivPEmpty (inv_ty _ _ _)
-    infer_instance
+  · apply Equiv.equivPUnit (InvTy _ _ _)
+  · apply Equiv.equivPEmpty (InvTy _ _ _)
   · simp
   · dsimp
     infer_instance
