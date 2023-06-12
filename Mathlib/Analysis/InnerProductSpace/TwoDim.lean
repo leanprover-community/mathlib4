@@ -77,6 +77,8 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type _} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
   fact_finiteDimensional_of_finrank_eq_succ 1
@@ -448,20 +450,16 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
   constructor
   · let a : ℝ := (o.basisRightAngleRotation x hx).repr y 0
     let b : ℝ := (o.basisRightAngleRotation x hx).repr y 1
-    suffices 0 ≤ a * ‖x‖ ^ 2 ∧ b * ‖x‖ ^ 2 = 0 → SameRay ℝ x (a • x + b • J x) by
-      -- Porting note: `simp only` rewritten as `rw`
-      rw [← (o.basisRightAngleRotation x hx).sum_repr y,
-        Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
-        Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
-        Matrix.cons_val_one, Matrix.head_cons,
-        inner_add_right, real_inner_smul_right, real_inner_smul_right,
-        real_inner_self_eq_norm_sq, inner_rightAngleRotation_right,
-        areaForm_apply_self, neg_zero, mul_zero, add_zero,
-        map_add, map_smul, map_smul, areaForm_rightAngleRotation_right, real_inner_self_eq_norm_sq,
-        areaForm_apply_self, smul_eq_mul, mul_zero, zero_add, smul_eq_mul, ← Real.rpow_two]
+    suffices ↑0 ≤ a * ‖x‖ ^ 2 ∧ b * ‖x‖ ^ 2 = 0 → SameRay ℝ x (a • x + b • J x) by
+      rw [← (o.basisRightAngleRotation x hx).sum_repr y]
+      simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
+        Fin.succ_zero_eq_one', Fintype.univ_of_isEmpty, Finset.sum_empty, areaForm_apply_self,
+        map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
+        Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
+        mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
+        real_inner_self_eq_norm_sq]
       exact this
     rintro ⟨ha, hb⟩
-    rw [Real.rpow_two] at hb
     have hx' : 0 < ‖x‖ := by simpa using hx
     have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
     have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
@@ -551,7 +549,7 @@ theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * 
 
 theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
   rw [← sq_eq_sq, Complex.sq_abs]
-  · linear_combination (norm := ring_nf) o.normSq_kahler x y; simp
+  · linear_combination (norm := ring_nf) o.normSq_kahler x y
   · positivity
   · positivity
 #align orientation.abs_kahler Orientation.abs_kahler
@@ -608,12 +606,10 @@ attribute [local instance] Complex.finrank_real_complex_fact
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
-  -- Porting note: split `simp only` for greater proof control
-  rw [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    Basis.det_apply, Matrix.det_fin_two]
-  repeat rw [Basis.toMatrix_apply]
-  simp only [toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.head_cons, coe_basisOneI_repr, mul_im, conj_re, conj_im, neg_mul]
+  simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
+    (Basis.det_apply), Matrix.det_fin_two, (Basis.toMatrix_apply), toBasis_orthonormalBasisOneI,
+    Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
+    conj_re, conj_im]
   ring
 #align complex.area_form Complex.areaForm
 
