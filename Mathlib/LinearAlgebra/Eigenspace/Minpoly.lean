@@ -35,14 +35,14 @@ variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=
   calc
-    eigenspace f (-q.coeff 0 / q.leadingCoeff) =
-        LinearMap.ker (q.leadingCoeff • f - algebraMap K (End K V) (-q.coeff 0)) := by
-        rw [eigenspace_div]
-        intro h
-        rw [leadingCoeff_eq_zero_iff_deg_eq_bot.1 h] at hq
-        cases hq
+    eigenspace f (-q.coeff 0 / q.leadingCoeff)
+    _ = LinearMap.ker (q.leadingCoeff • f - algebraMap K (End K V) (-q.coeff 0)) := by
+          rw [eigenspace_div]
+          intro h
+          rw [leadingCoeff_eq_zero_iff_deg_eq_bot.1 h] at hq
+          cases hq
     _ = LinearMap.ker (aeval f (C q.leadingCoeff * X + C (q.coeff 0))) := by
-        rw [C_mul', aeval_def]; simp [algebraMap, Algebra.toRingHom]
+          rw [C_mul', aeval_def]; simp [algebraMap, Algebra.toRingHom]
     _ = LinearMap.ker (aeval f q) := by rwa [← eq_X_add_C_of_degree_eq_one]
 #align module.End.eigenspace_aeval_polynomial_degree_1 Module.End.eigenspace_aeval_polynomial_degree_1
 
@@ -90,9 +90,9 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
     revert h_aeval
     simp [hp, ← hu]
   have h_deg := minpoly.degree_le_of_ne_zero K f p_ne_0 this
-  · rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
-    norm_cast at h_deg
-    linarith
+  rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
+  norm_cast at h_deg
+  linarith
 #align module.End.has_eigenvalue_of_is_root Module.End.hasEigenvalue_of_isRoot
 
 theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot μ :=
