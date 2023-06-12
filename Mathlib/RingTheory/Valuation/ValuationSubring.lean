@@ -409,16 +409,17 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
       ⟨fun h => by
-        have := idealOfLE_le_of_le A _ _ _ _ h
-        iterate 2 erw [ideal_of_le_ofPrime] at this
-        exact this, fun h => by apply ofPrime_le_of_le; exact h⟩ }
+        have := idealOfLE_le_of_le A _ _ ?_ ?_ h
+        iterate 2 erw [idealOfLE_ofPrime] at this
+        exact this
+        -- Porting note: the `erw` should have resolved the metavariables. Try filling in the
+        -- underscores for `idealOfLE_le_of_le`?
+        ,
+      fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
 instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
-  {
-    (inferInstance :
-      PartialOrder
-        _) with
+  { (inferInstance : PartialOrder _) with
     le_total :=
       let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
       (primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total
@@ -441,12 +442,12 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      cases h : le_or_lt (v x) 1
+      cases' le_or_lt (v x) 1 with h h
       · left; exact h
       · right; change v x⁻¹ ≤ 1
         rw [map_inv₀ v, ← inv_one, inv_le_inv₀]
         · exact le_of_lt h
-        · intro c; simpa [c] using h
+        · intro c; simp [c] at h
         · exact one_ne_zero }
 #align valuation.valuation_subring Valuation.valuationSubring
 
@@ -480,8 +481,8 @@ variable {K}
 variable (A : ValuationSubring K)
 
 @[simp]
-theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by ext;
-  rw [← A.valuation_le_one_iff]; rfl
+theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
+  ext; rw [← A.valuation_le_one_iff]; rfl
 #align valuation_subring.valuation_subring_valuation ValuationSubring.valuationSubring_valuation
 
 section UnitGroup
@@ -499,10 +500,12 @@ theorem mem_unitGroup_iff (x : Kˣ) : x ∈ A.unitGroup ↔ A.valuation x = 1 :=
 /-- For a valuation subring `A`, `A.unit_group` agrees with the units of `A`. -/
 def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
   toFun x :=
-    { val := ⟨x, mem_of_valuation_le_one A _ x.prop.le⟩
-      inv := ⟨↑x⁻¹, mem_of_valuation_le_one _ _ x⁻¹.prop.le⟩
-      val_inv := Subtype.ext (Units.mul_inv x)
-      inv_val := Subtype.ext (Units.inv_mul x) }
+    { val := ⟨(x : Kˣ), mem_of_valuation_le_one A _ x.prop.le⟩
+      inv := ⟨((x⁻¹ : A.unitGroup) : Kˣ), mem_of_valuation_le_one _ _ x⁻¹.prop.le⟩
+      -- Porting note: was `Units.mul_inv x`
+      val_inv := Subtype.ext (by simp)
+      -- Porting note: was `Units.inv_mul x`
+      inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
   left_inv a := by ext; rfl
   right_inv a := by ext; rfl
