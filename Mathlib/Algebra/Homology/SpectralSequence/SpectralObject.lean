@@ -1138,6 +1138,32 @@ lemma d_comp_d :
   ext D
   apply d_comp_d_app
 
+#check d
+
+noncomputable def kernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
+  X₁ := Arrow₅.δ₀ ⋙ Arrow₄.δ₁ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
+  X₂ := Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
+  X₃ := Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃
+  f := whiskerLeft Arrow₅.δ₀ (whiskerRight Arrow₄.δ₁Toδ₀ (X.E n₀ n₁ n₂ hn₁ hn₂))
+  g := X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃
+  zero := sorry
+
+instance : Mono (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := sorry
+
+lemma kernelSequenceD_exact : (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
+
+noncomputable def cokernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
+  X₁ := Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
+  X₂ := Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃
+  X₃ := Arrow₅.δ₅ ⋙ Arrow₄.δ₃ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃
+  f := X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃
+  g := whiskerLeft Arrow₅.δ₅ (whiskerRight Arrow₄.δ₄Toδ₃ (X.E n₁ n₂ n₃ hn₂ hn₃))
+  zero := sorry
+
+instance : Epi (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := sorry
+
+lemma cokernelSequenceD_exact : (X.cokernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
+
 def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
   S := (X.shortComplex₁ n₀ n₁ hn₁).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₀)

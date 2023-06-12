@@ -135,6 +135,22 @@ def δ₄ : Arrow₄ C ⥤ Arrow₃ C where
       τ₂ := φ.τ₂
       τ₃ := φ.τ₃ }
 
+@[simps]
+def δ₁Toδ₀ : (Arrow₄.δ₁ : Arrow₄ C ⥤ _) ⟶ Arrow₄.δ₀ where
+  app D :=
+    { τ₀ := D.f
+      τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := 𝟙 _ }
+
+@[simps]
+def δ₄Toδ₃ : (Arrow₄.δ₄ : Arrow₄ C ⥤ _) ⟶ Arrow₄.δ₃ where
+  app D :=
+    { τ₀ := 𝟙 _
+      τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := D.i }
+
 end Arrow₄
 
 end CategoryTheory
