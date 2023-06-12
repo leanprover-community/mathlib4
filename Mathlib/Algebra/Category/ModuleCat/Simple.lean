@@ -9,8 +9,8 @@ Authors: Pierre-Alexandre Bazin, Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Simple
-import Mathlib.Algebra.Category.Module.Subobject
-import Mathlib.Algebra.Category.Module.Algebra
+import Mathlib.Algebra.Category.ModuleCat.Subobject
+import Mathlib.Algebra.Category.ModuleCat.Algebra
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -45,11 +45,10 @@ instance isSimpleModule_of_simple (M : ModuleCat R) [Simple M] : IsSimpleModule 
 
 open FiniteDimensional
 
-attribute [local instance] module_of_algebra_Module is_scalar_tower_of_algebra_Module
+attribute [local instance] moduleOfAlgebraModule isScalarTower_of_algebra_moduleCat
 
 /-- Any `k`-algebra module which is 1-dimensional over `k` is simple. -/
 theorem simple_of_finrank_eq_one {k : Type _} [Field k] [Algebra k R] {V : ModuleCat R}
     (h : finrank k V = 1) : Simple V :=
   (simple_iff_is_simple_module' V).mpr (is_simple_module_of_finrank_eq_one h)
 #align simple_of_finrank_eq_one simple_of_finrank_eq_one
-
