@@ -202,21 +202,39 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
     ext; rfl
   callCC_dummy := by intros; simp [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 
-def WriterT.mkLabel {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
+/- Porting note: In Lean 3, `One ω` is required for `MonadLift (WriterT ω m)`. In Lean 4,
+                 `EmptyCollection ω` or `Monoid ω` is required. So we give definitions for the both
+                 instances. -/
+
+def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
+  | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
+
+def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
-#align writer_t.mk_label WriterTₓ.mkLabel
+#align writer_t.mk_label WriterTₓ.mkLabel'
 
-theorem WriterT.goto_mkLabel {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
-    goto (WriterT.mkLabel x) i = monadLift (goto x (i, 1)) := by cases x; rfl
-#align writer_t.goto_mk_label WriterTₓ.goto_mkLabel
+theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
+    goto (WriterT.mkLabel x) i = monadLift (goto x (i, ∅)) := by cases x; rfl
 
-nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [Monoid ω]
+theorem WriterT.goto_mkLabel' {α β ω : Type _} [Monoid ω] (x : Label (α × ω) m β) (i : α) :
+    goto (WriterT.mkLabel' x) i = monadLift (goto x (i, 1)) := by cases x; rfl
+#align writer_t.goto_mk_label WriterTₓ.goto_mkLabel'
+
+nonrec def WriterT.callCC [MonadCont m] {α β ω : Type _} [EmptyCollection ω]
     (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
   WriterT.mk <| callCC (WriterT.run ∘ f ∘ WriterT.mkLabel : Label (α × ω) m β → m (α × ω))
-#align writer_t.call_cc WriterTₓ.callCC
+
+def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
+    (f : Label α (WriterT ω m) β → WriterT ω m α) : WriterT ω m α :=
+  WriterT.mk <|
+    MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
+#align writer_t.call_cc WriterTₓ.callCC'
+
+instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
+  callCC := WriterT.callCC
 
 instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
-  callCC := WriterT.callCC
+  callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
   | ⟨f⟩ => ⟨fun a => fun s => f (a, s)⟩
@@ -237,11 +255,11 @@ instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
 instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
-    simp [callCC, StateT.callCC, callCC_bind_right, (· >>= ·), StateT.bind]; ext
-    congr with ⟨x₀, x₁⟩; rfl
+    simp [callCC, StateT.callCC, callCC_bind_right, (· >>= ·), StateT.bind, StateT.run]
   callCC_bind_left := by
     intros;
-    simp [callCC, StateT.callCC, callCC_bind_left, (· >>= ·), StateT.bind, StateT.goto_mkLabel]
+    simp [callCC, StateT.callCC, callCC_bind_left, (· >>= ·), StateT.bind, StateT.goto_mkLabel,
+      StateT.run]
     ext; rfl
   callCC_dummy := by
     intros;
