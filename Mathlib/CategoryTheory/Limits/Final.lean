@@ -698,7 +698,7 @@ adjoints preserve cofilteredness), as right adjoints are always initial, see `in
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
   IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
-  isCofilteredOrEmpty_of_IsFilteredOrEmpty_op _
+  isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 
 /-- Initial functors preserve cofilteredness.
 
@@ -707,7 +707,7 @@ adjoints preserve cofilteredness), as right adjoints are always initial, see `in
 -/
 theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
   have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
-  isCofiltered_of_IsFiltered_op _
+  isCofiltered_of_isFiltered_op _
 
 end Filtered
 
