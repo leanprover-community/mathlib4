@@ -10,6 +10,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # M-structure
@@ -140,11 +141,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
       calc
         P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
-        --porting note: noncomm_ring tactic not yet ported, so complete proof with rewrites for now
-        _ = 1 * (P * (1 - Q)) - Q * (P * (1 - Q)) := by rw [mul_assoc, sub_mul]
-        _ = P * (1 - Q) - Q * (P * (1 - Q)) := by rw [one_mul]
-        _ = P * (1 - Q) - Q * (P - P * Q) := by rw [mul_sub, mul_one]
-        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by rw [mul_sub Q, mul_assoc]
+        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
   · rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
@@ -171,8 +168,7 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
-  --porting note: noncomm_ring tactic not yet ported, so complete proof with rewrites for now
-  rw [sub_mul, one_mul, sub_sub, sub_sub_self, mul_sub, mul_one, add_sub, add_comm]
+  noncomm_ring
 #align is_Lprojection.join IsLprojection.join
 
 --porting note: Advice is to explicitly name instances

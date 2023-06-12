@@ -19,7 +19,7 @@ over `⨁ i, A i` such that `(*) : A i → A j → A (i + j)`; that is to say, `
 additively-graded ring. The typeclasses are:
 
 * `DirectSum.GNonUnitalNonAssocSemiring A`
-* `DirectSsum.GSemiring A`
+* `DirectSum.GSemiring A`
 * `DirectSum.GRing A`
 * `DirectSum.GCommSemiring A`
 * `DirectSum.GCommRing A`
@@ -62,11 +62,11 @@ Additionally, this module provides helper functions to construct `GSemiring` and
 instances for:
 
 * `A : ι → Submonoid S`:
-  `DirectSum.GSemiring.ofAddAubmonoids`, `DirectSum.GCommSemiring.ofAddSubmonoids`.
+  `DirectSum.GSemiring.ofAddSubmonoids`, `DirectSum.GCommSemiring.ofAddSubmonoids`.
 * `A : ι → Subgroup S`:
   `DirectSum.GSemiring.ofAddSubgroups`, `DirectSum.GCommSemiring.ofAddSubgroups`.
 * `A : ι → Submodule S`:
-  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GcommSemiring.ofSubmodules`.
+  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
 If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
@@ -705,7 +705,7 @@ open DirectSum
 
 -- To check `Mul.gmul_mul` matches
 example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
-    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _i, R) = DirectSum.of _ (i + j) (a * b) := by
+    (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.

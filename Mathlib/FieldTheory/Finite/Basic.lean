@@ -73,7 +73,6 @@ theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 
         congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
       _ ≤ Multiset.card (p - C a).roots := (Multiset.toFinset_card_le _)
       _ ≤ _ := card_roots_sub_C' hp)
-
 #align finite_field.card_image_polynomial_eval FiniteField.card_image_polynomial_eval
 
 /-- If `f` and `g` are quadratic polynomials, then the `f.eval a + g.eval b = 0` has a solution. -/
@@ -127,7 +126,6 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
       classical
         rw [← Fintype.card_units, pow_card_eq_one]
         rfl
-
 #align finite_field.pow_card_sub_one_eq_one FiniteField.pow_card_sub_one_eq_one
 
 theorem pow_card (a : K) : a ^ q = a := by
@@ -161,7 +159,7 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
 #align finite_field.card FiniteField.card
 
 -- this statement doesn't use `q` because we want `K` to be an explicit parameter
-theorem card' : ∃ (p : ℕ)(n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
+theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 #align finite_field.card' FiniteField.card'
@@ -224,7 +222,6 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : (∑ x : K, x ^ i) =
           zero_pow (Nat.pos_of_ne_zero hi), add_zero]
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [← this, univ.sum_map φ]
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
-
 #align finite_field.sum_pow_lt_card_sub_one FiniteField.sum_pow_lt_card_sub_one
 
 open Polynomial
@@ -277,8 +274,8 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     apply nodup_roots
     rw [separable_def]
     convert isCoprime_one_right.neg_right (R := K[X]) using 1
-    · rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
-        MulZeroClass.zero_mul, zero_sub]
+    rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
+      MulZeroClass.zero_mul, zero_sub]
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
 
@@ -315,7 +312,7 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
   · subst p
     change Fin 2 at x
     fin_cases x
-    · use 0; simp;
+    · use 0; simp
     · use 0, 1; simp
   let f : (ZMod p)[X] := X ^ 2
   let g : (ZMod p)[X] := X ^ 2 - C x
@@ -328,6 +325,26 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
 #align zmod.sq_add_sq ZMod.sq_add_sq
 
 end ZMod
+
+/-- If `p` is a prime natural number and `x` is an integer number, then there exist natural numbers
+`a ≤ p / 2` and `b ≤ p / 2` such that `a ^ 2 + b ^ 2 ≡ x [ZMOD p]`. This is a version of
+`ZMod.sq_add_sq` with estimates on `a` and `b`. -/
+theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ (a : ℤ) ^ 2 + (b : ℤ) ^ 2 ≡ x [ZMOD p] := by
+  rcases ZMod.sq_add_sq p x with ⟨a, b, hx⟩
+  refine ⟨a.valMinAbs.natAbs, b.valMinAbs.natAbs, ZMod.natAbs_valMinAbs_le _,
+    ZMod.natAbs_valMinAbs_le _, ?_⟩
+  rw [← a.coe_valMinAbs, ← b.coe_valMinAbs] at hx
+  push_cast
+  rw [sq_abs, sq_abs, ← ZMod.int_cast_eq_int_cast_iff]
+  exact_mod_cast hx
+
+/-- If `p` is a prime natural number and `x` is a natural number, then there exist natural numbers
+`a ≤ p / 2` and `b ≤ p / 2` such that `a ^ 2 + b ^ 2 ≡ x [MOD p]`. This is a version of
+`ZMod.sq_add_sq` with estimates on `a` and `b`. -/
+theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
+    ∃ a b : ℕ, a ≤ p / 2 ∧ b ≤ p / 2 ∧ a ^ 2 + b ^ 2 ≡ x [MOD p] := by
+  simpa only [← Int.coe_nat_modEq_iff] using Nat.sq_add_sq_zmodEq p x
 
 namespace CharP
 
@@ -397,10 +414,10 @@ theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := 
 #align zmod.pow_card_pow ZMod.pow_card_pow
 
 @[simp]
-theorem frobenius_zMod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
+theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by
   ext a
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
-#align zmod.frobenius_zmod ZMod.frobenius_zMod
+#align zmod.frobenius_zmod ZMod.frobenius_zmod
 
 --Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
 theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by

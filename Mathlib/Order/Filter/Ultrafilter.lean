@@ -19,7 +19,7 @@ In this file we define
 
 * `Ultrafilter.of`: an ultrafilter that is less than or equal to a given filter;
 * `Ultrafilter`: subtype of ultrafilters;
-* `pure x : Ultrafilter α`: `pure x` as an `ultrafiler`;
+* `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
@@ -444,7 +444,7 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
 theorem iSup_ultrafilter_le_eq (f : Filter α) :
-    (⨆ (g : Ultrafilter α) (_hg : g ≤ f), (g : Filter α)) = f :=
+    (⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α)) = f :=
   eq_of_forall_ge_iff fun f' => by simp only [iSup_le_iff, ← le_iff_ultrafilter]
 #align filter.supr_ultrafilter_le_eq Filter.iSup_ultrafilter_le_eq
 

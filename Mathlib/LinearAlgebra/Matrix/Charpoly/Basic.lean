@@ -17,7 +17,7 @@ import Mathlib.RingTheory.PolynomialAlgebra
 We define characteristic polynomials of matrices and
 prove the Cayley–Hamilton theorem over arbitrary commutative rings.
 
-See the file `matrix/charpoly/coeff` for corollaries of this theorem.
+See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries of this theorem.
 
 ## Main definitions
 
@@ -36,9 +36,7 @@ noncomputable section
 
 universe u v w
 
-open Polynomial Matrix
-
-open BigOperators Polynomial
+open Polynomial Matrix BigOperators Polynomial
 
 variable {R : Type u} [CommRing R]
 

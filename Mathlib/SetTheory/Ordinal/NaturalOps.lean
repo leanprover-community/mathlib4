@@ -181,7 +181,7 @@ theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
 #align ordinal.to_nat_ordinal_eq_one Ordinal.toNatOrdinal_eq_one
 
 @[simp]
-theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b ):=
+theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b ) :=
   rfl
 #align ordinal.to_nat_ordinal_max Ordinal.toNatOrdinal_max
 

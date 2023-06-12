@@ -66,6 +66,30 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
+open private getIntrosSize from Lean.Meta.Tactic.Intro in
+/-- Introduce variables, giving them names from a specified list. -/
+def MVarId.introsWithBinderIdents
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
+  let type ← g.getType
+  let type ← instantiateMVars type
+  let n := getIntrosSize type
+  if n == 0 then
+    return (ids, #[], g)
+  let mut ids := ids
+  let mut names := #[]
+  for _ in [0:n] do
+    names := names.push (ids.headD (Unhygienic.run `(binderIdent| _)))
+    ids := ids.tail
+  let (xs, g) ← g.introN n <| names.toList.map fun stx =>
+    match stx.raw with
+    | `(binderIdent| $n:ident) => n.getId
+    | _ => `_
+  g.withContext do
+    for n in names, fvar in xs do
+      (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
+  return (ids, xs, g)
+
 end Lean
 
 namespace Mathlib.Tactic
@@ -175,23 +199,23 @@ variable [Monad m] [MonadExcept Exception m]
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
 def iterateAtMost : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
+  | 0, _ => pure ()
+  | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
 /-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
 -/
 def iterateExactly' : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n+1, tac => tac *> iterateExactly' n tac
+  | 0, _ => pure ()
+  | n+1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and
 at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
 -/
 def iterateRange : Nat → Nat → m Unit → m Unit
-| 0, 0, _   => pure ()
-| 0, b, tac => iterateAtMost b tac
-| (a+1), n, tac => do tac; iterateRange a (n-1) tac
+  | 0, 0, _   => pure ()
+  | 0, b, tac => iterateAtMost b tac
+  | (a+1), n, tac => do tac; iterateRange a (n-1) tac
 
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=

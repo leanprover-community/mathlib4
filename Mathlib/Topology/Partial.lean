@@ -14,7 +14,7 @@ import Mathlib.Order.Filter.Partial
 /-!
 # Partial functions and topological spaces
 
-In this file we prove properties of `Filter.Ptendsto` etc in topological spaces. We also introduce
+In this file we prove properties of `Filter.PTendsto` etc in topological spaces. We also introduce
 `PContinuous`, a version of `Continuous` for partially defined functions.
 -/
 
@@ -26,24 +26,24 @@ open Topology
 variable {α β : Type _} [TopologicalSpace α]
 
 theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
+    RTendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
 #align rtendsto_nhds rtendsto_nhds
 
 theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
+    RTendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
 #align rtendsto'_nhds rtendsto'_nhds
 
 theorem ptendsto_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
+    PTendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
   rtendsto_nhds
 #align ptendsto_nhds ptendsto_nhds
 
 theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
+    PTendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
 #align ptendsto'_nhds ptendsto'_nhds
 
@@ -62,7 +62,7 @@ theorem open_dom_of_pcontinuous {f : α →. β} (h : PContinuous f) : IsOpen f.
 #align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
 theorem pcontinuous_iff' {f : α →. β} :
-    PContinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) := by
+    PContinuous f ↔ ∀ {x y} (h : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
     simp only [ptendsto'_def, mem_nhds_iff]
@@ -77,7 +77,7 @@ theorem pcontinuous_iff' {f : α →. β} :
   apply mem_of_superset _ h
   have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
     intro s hs
-    have : Ptendsto' f (𝓝 x) (𝓝 y) := hf fxy
+    have : PTendsto' f (𝓝 x) (𝓝 y) := hf fxy
     rw [ptendsto'_def] at this
     exact this s hs
   show f.preimage s ∈ 𝓝 x
@@ -87,6 +87,6 @@ theorem pcontinuous_iff' {f : α →. β} :
 #align pcontinuous_iff' pcontinuous_iff'
 
 theorem continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α} :
-    ContinuousWithinAt f s x ↔ Ptendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
+    ContinuousWithinAt f s x ↔ PTendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
   tendsto_iff_ptendsto _ _ _ _
 #align continuous_within_at_iff_ptendsto_res continuousWithinAt_iff_ptendsto_res

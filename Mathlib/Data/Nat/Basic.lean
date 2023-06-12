@@ -140,7 +140,7 @@ theorem and_forall_succ {p : ℕ → Prop} : (p 0 ∧ ∀ n, p (n + 1)) ↔ ∀ 
 theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n, p n :=
   ⟨fun h => h.elim (fun h0 => ⟨0, h0⟩) fun ⟨n, hn⟩ => ⟨n + 1, hn⟩, by
     rintro ⟨_ | n, hn⟩
-    exacts[Or.inl hn, Or.inr ⟨n, hn⟩]⟩
+    exacts [Or.inl hn, Or.inr ⟨n, hn⟩]⟩
 #align nat.or_exists_succ Nat.or_exists_succ
 
 /-! ### `succ` -/
@@ -862,7 +862,7 @@ theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn => _⟩
   cases' n with n
-  exacts[h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
+  exacts [h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
 
 end Find

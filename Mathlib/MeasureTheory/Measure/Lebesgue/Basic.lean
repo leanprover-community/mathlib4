@@ -27,8 +27,9 @@ Lebesgue measure on `ℝⁿ`. In particular, we prove that they are translation 
 We show that, on `ℝⁿ`, a linear map acts on Lebesgue measure by rescaling it through the absolute
 value of its determinant, in `Real.map_linearMap_volume_pi_eq_smul_volume_pi`.
 
-More properties of the Lebesgue measure are deduced from this in `Lebesgue.EqHaar.lean`, where they
-are proved more generally for any additive Haar measure on a finite-dimensional real vector space.
+More properties of the Lebesgue measure are deduced from this in
+`Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean`, where they are proved more generally for any
+additive Haar measure on a finite-dimensional real vector space.
 -/
 
 
@@ -56,7 +57,7 @@ variable {ι : Type _} [Fintype ι]
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
 theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.measure := by
-  haveI : AddLeftInvariant StieltjesFunction.id.measure :=
+  haveI : IsAddLeftInvariant StieltjesFunction.id.measure :=
     ⟨fun a =>
       Eq.symm <|
         Real.measure_ext_Ioo_rat fun p q => by
@@ -98,7 +99,7 @@ theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [v
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
 #align real.volume_singleton Real.volume_singleton
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this, after mathlib4#4628
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
     calc
@@ -169,28 +170,28 @@ theorem volume_Iio {a : ℝ} : volume (Iio a) = ∞ :=
 theorem volume_Iic {a : ℝ} : volume (Iic a) = ∞ := by rw [← measure_congr Iio_ae_eq_Iic]; simp
 #align real.volume_Iic Real.volume_Iic
 
-instance locallyFinite_volume : LocallyFiniteMeasure (volume : Measure ℝ) :=
+instance locallyFinite_volume : IsLocallyFiniteMeasure (volume : Measure ℝ) :=
   ⟨fun x =>
     ⟨Ioo (x - 1) (x + 1),
       IsOpen.mem_nhds isOpen_Ioo ⟨sub_lt_self _ zero_lt_one, lt_add_of_pos_right _ zero_lt_one⟩, by
       simp only [Real.volume_Ioo, ENNReal.ofReal_lt_top]⟩⟩
 #align real.locally_finite_volume Real.locallyFinite_volume
 
-instance finiteMeasure_restrict_Icc (x y : ℝ) : FiniteMeasure (volume.restrict (Icc x y)) :=
+instance isFiniteMeasure_restrict_Icc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Icc x y)) :=
   ⟨by simp⟩
-#align real.is_finite_measure_restrict_Icc Real.finiteMeasure_restrict_Icc
+#align real.is_finite_measure_restrict_Icc Real.isFiniteMeasure_restrict_Icc
 
-instance finiteMeasure_restrict_Ico (x y : ℝ) : FiniteMeasure (volume.restrict (Ico x y)) :=
+instance isFiniteMeasure_restrict_Ico (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ico x y)) :=
   ⟨by simp⟩
-#align real.is_finite_measure_restrict_Ico Real.finiteMeasure_restrict_Ico
+#align real.is_finite_measure_restrict_Ico Real.isFiniteMeasure_restrict_Ico
 
-instance finiteMeasure_restrict_Ioc (x y : ℝ) : FiniteMeasure (volume.restrict (Ioc x y)) :=
+instance isFiniteMeasure_restrict_Ioc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioc x y)) :=
   ⟨by simp⟩
-#align real.is_finite_measure_restrict_Ioc Real.finiteMeasure_restrict_Ioc
+#align real.is_finite_measure_restrict_Ioc Real.isFiniteMeasure_restrict_Ioc
 
-instance finiteMeasure_restrict_Ioo (x y : ℝ) : FiniteMeasure (volume.restrict (Ioo x y)) :=
+instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioo x y)) :=
   ⟨by simp⟩
-#align real.is_finite_measure_restrict_Ioo Real.finiteMeasure_restrict_Ioo
+#align real.is_finite_measure_restrict_Ioo Real.isFiniteMeasure_restrict_Ioo
 
 theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
   by_cases hs : Metric.Bounded s
@@ -414,27 +415,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
       refine Measurable.add ?_ measurable_snd
       refine measurable_pi_lambda _ fun _ => Measurable.const_mul ?_ _
       exact this.comp measurable_fst
-    /-
-    Porting note: TODO
-    In Lean 4, the following tc search fails, even if we make `volume` reducible in
-    `MeasureSpaceDef`.
-    ```lean
-    variable [Fintype ι]
-    #synth SigmaFinite (volume : Measure (ι → ℝ))
-    -- fails
-    #synth SigmaFinite (Measure.pi fun _ => volume : Measure (ι → ℝ))
-    -- defeq and succeeds
-    #synth AddLeftInvariant (volume : Measure (ι → ℝ))
-    -- fails
-    #synth AddLeftInvariant (Measure.pi fun _ =>
-      (stdOrthonormalBasis ℝ ℝ).toBasis.addHaar : Measure (ι → ℝ))
-    -- defeq and succeeds
-    ```
-    These instances are required in this file.
-    This file can be built by specifying latter measures now, but this should be fixed clearly.
-    -/
-    (MeasurePreserving.id _).skew_product (μb := Measure.pi fun _ => volume)
-      (μd := Measure.pi fun _ => volume) g_meas
+    (MeasurePreserving.id _).skew_product g_meas
       (eventually_of_forall fun a => map_add_left_eq_self
         (Measure.pi fun _ => (stdOrthonormalBasis ℝ ℝ).toBasis.addHaar) _)
   exact ((A.symm e).comp B).comp A
@@ -446,8 +427,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
     Measure.map (toLin' M) volume = ENNReal.ofReal (abs (det M)⁻¹) • volume := by
   -- This follows from the cases we have already proved, of diagonal matrices and transvections,
   -- as these matrices generate all invertible matrices.
-  apply
-    diagonal_transvection_induction_of_det_ne_zero _ M hM
+  apply diagonal_transvection_induction_of_det_ne_zero _ M hM
   · intro D hD
     conv_rhs => rw [← smul_map_diagonal_volume_pi hD]
     rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,

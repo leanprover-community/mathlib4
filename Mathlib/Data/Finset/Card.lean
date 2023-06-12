@@ -293,7 +293,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
   classical
-    have : ∀ a : α, a ∈ s ↔ ∃ (i : _)(hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
+    have : ∀ a : α, a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
       ⟨fun ha =>
         let ⟨i, hi, eq⟩ := hf a ha
         ⟨i, mem_range.2 hi, eq⟩,
@@ -513,7 +513,7 @@ theorem card_eq_one : s.card = 1 ↔ ∃ a, s = {a} := by
 #align finset.card_eq_one Finset.card_eq_one
 
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
-    (∃ (a : _)(_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
+    (∃ (a : _) (_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
   constructor
   · rintro ⟨a, ha, rfl⟩
     exact ⟨subset_insert _ _, (card_insert_of_not_mem ha).symm⟩

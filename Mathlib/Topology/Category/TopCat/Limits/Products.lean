@@ -310,7 +310,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     rfl
   · intro s m h₁ h₂
     ext (x | x)
-    exacts[(ConcreteCategory.congr_hom h₁ x : _), (ConcreteCategory.congr_hom h₂ x : _)]
+    exacts [(ConcreteCategory.congr_hom h₁ x : _), (ConcreteCategory.congr_hom h₂ x : _)]
 #align Top.binary_cofan_is_colimit TopCat.binaryCofanIsColimit
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
