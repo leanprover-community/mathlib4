@@ -25,58 +25,58 @@ properties of Hausdorff dimension.
 
 ## Main definitions
 
-* `measure_theory.dimH`: the Hausdorff dimension of a set. For the Hausdorff dimension of the whole
-  space we use `measure_theory.dimH (set.univ : set X)`.
+* `MeasureTheory.dimH`: the Hausdorff dimension of a set. For the Hausdorff dimension of the whole
+  space we use `MeasureTheory.dimH (Set.univ : Set X)`.
 
 ## Main results
 
 ### Basic properties of Hausdorff dimension
 
-* `hausdorff_measure_of_lt_dimH`, `dimH_le_of_hausdorff_measure_ne_top`,
-  `le_dimH_of_hausdorff_measure_eq_top`, `hausdorff_measure_of_dimH_lt`, `measure_zero_of_dimH_lt`,
-  `le_dimH_of_hausdorff_measure_ne_zero`, `dimH_of_hausdorff_measure_ne_zero_ne_top`: various forms
+* `hausdorffMeasure_of_lt_dimH`, `dimH_le_of_hausdorffMeasure_ne_top`,
+  `le_dimH_of_hausdorffMeasure_eq_top`, `hausdorffMeasure_of_dimH_lt`, `measure_zero_of_dimH_lt`,
+  `le_dimH_of_hausdorffMeasure_ne_zero`, `dimH_of_hausdorffMeasure_ne_zero_ne_top`: various forms
   of the characteristic property of the Hausdorff dimension;
 * `dimH_union`: the Hausdorff dimension of the union of two sets is the maximum of their Hausdorff
   dimensions.
-* `dimH_Union`, `dimH_bUnion`, `dimH_sUnion`: the Hausdorff dimension of a countable union of sets
+* `dimH_iUnion`, `dimH_bUnion`, `dimH_sUnion`: the Hausdorff dimension of a countable union of sets
   is the supremum of their Hausdorff dimensions;
-* `dimH_empty`, `dimH_singleton`, `set.subsingleton.dimH_zero`, `set.countable.dimH_zero` : `dimH s
+* `dimH_empty`, `dimH_singleton`, `Set.Subsingleton.dimH_zero`, `Set.Countable.dimH_zero` : `dimH s
   = 0` whenever `s` is countable;
 
 ### (Pre)images under (anti)lipschitz and Hölder continuous maps
 
-* `holder_with.dimH_image_le` etc: if `f : X → Y` is Hölder continuous with exponent `r > 0`, then
-  for any `s`, `dimH (f '' s) ≤ dimH s / r`. We prove versions of this statement for `holder_with`,
-  `holder_on_with`, and locally Hölder maps, as well as for `set.image` and `set.range`.
-* `lipschitz_with.dimH_image_le` etc: Lipschitz continuous maps do not increase the Hausdorff
+* `HolderWith.dimH_image_le` etc: if `f : X → Y` is Hölder continuous with exponent `r > 0`, then
+  for any `s`, `dimH (f '' s) ≤ dimH s / r`. We prove versions of this statement for `HolderWith`,
+  `HolderOnWith`, and locally Hölder maps, as well as for `Set.image` and `Set.range`.
+* `LipschitzWith.dimH_image_le` etc: Lipschitz continuous maps do not increase the Hausdorff
   dimension of sets.
-* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an `isometry` or
-  a `continuous_linear_equiv`) we also prove `dimH (f '' s) = dimH s`.
+* for a map that is known to be both Lipschitz and antilipschitz (e.g., for an `Isometry` or
+  a `ContinuousLinearEquiv`) we also prove `dimH (f '' s) = dimH s`.
 
 ### Hausdorff measure in `ℝⁿ`
 
-* `real.dimH_of_nonempty_interior`: if `s` is a set in a finite dimensional real vector space `E`
+* `Real.dimH_of_nonempty_interior`: if `s` is a set in a finite dimensional real vector space `E`
   with nonempty interior, then the Hausdorff dimension of `s` is equal to the dimension of `E`.
 * `dense_compl_of_dimH_lt_finrank`: if `s` is a set in a finite dimensional real vector space `E`
   with Hausdorff dimension strictly less than the dimension of `E`, the `s` has a dense complement.
-* `cont_diff.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a `C¹`
+* `ContDiff.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a `C¹`
   smooth map is dense provided that the dimension of the domain is strictly less than the dimension
   of the codomain.
 
 ## Notations
 
-We use the following notation localized in `measure_theory`. It is defined in
-`measure_theory.measure.hausdorff`.
+We use the following notation localized in `MeasureTheory`. It is defined in
+`MeasureTheory.Measure.Hausdorff`.
 
-- `μH[d]` : `measure_theory.measure.hausdorff_measure d`
+- `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
 
 ## Implementation notes
 
 * The definition of `dimH` explicitly uses `borel X` as a measurable space structure. This way we
   can formulate lemmas about Hausdorff dimension without assuming that the environment has a
-  `[measurable_space X]` instance that is equal but possibly not defeq to `borel X`.
+  `[MeasurableSpace X]` instance that is equal but possibly not defeq to `borel X`.
 
-  Lemma `dimH_def` unfolds this definition using whatever `[measurable_space X]` instance we have in
+  Lemma `dimH_def` unfolds this definition using whatever `[MeasurableSpace X]` instance we have in
   the environment (as long as it is equal to `borel X`).
 
 * The definition `dimH` is irreducible; use API lemmas or `dimH_def` instead.
@@ -108,7 +108,7 @@ section Measurable
 
 variable [MeasurableSpace X] [BorelSpace X]
 
-/-- Unfold the definition of `dimH` using `[measurable_space X] [borel_space X]` from the
+/-- Unfold the definition of `dimH` using `[MeasurableSpace X] [BorelSpace X]` from the
 environment. -/
 theorem dimH_def (s : Set X) : dimH s = ⨆ (d : ℝ≥0) (_ : μH[d] s = ∞), (d : ℝ≥0∞) := by
   borelize X; rw [dimH]
@@ -283,7 +283,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` along
-`(𝓝[s] x).small_sets`. -/
+`(𝓝[s] x).smallSets`. -/
 theorem bsupr_limsup_dimH (s : Set X) : (⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
@@ -298,7 +298,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- In an (extended) metric space with second countable topology, the Hausdorff dimension
 of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` along
-`(𝓝[s] x).small_sets`. -/
+`(𝓝[s] x).smallSets`. -/
 theorem iSup_limsup_dimH (s : Set X) : (⨆ x, limsup dimH (𝓝[s] x).smallSets) = dimH s := by
   refine le_antisymm (iSup_le fun x => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
@@ -600,7 +600,7 @@ dimension of sets.
 on a convex set `s`, then the Hausdorff dimension of `f '' s` is less than or equal to the Hausdorff
 dimension of `s`.
 
-TODO: do we actually need `convex ℝ s`? -/
+TODO: do we actually need `Convex ℝ s`? -/
 theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
     (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
   dimH_image_le_of_locally_lipschitz_on fun x hx =>
