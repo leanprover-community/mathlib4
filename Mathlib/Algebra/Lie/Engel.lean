@@ -17,7 +17,7 @@ import Mathlib.Algebra.Lie.Normalizer
 This file contains a proof of Engel's theorem providing necessary and sufficient conditions for Lie
 algebras and Lie modules to be nilpotent.
 
-The key result `lie_module.is_nilpotent_iff_forall` says that if `M` is a Lie module of a
+The key result `LieModule.isNilpotent_iff_forall` says that if `M` is a Lie module of a
 Noetherian Lie algebra `L`, then `M` is nilpotent iff the image of `L → End(M)` consists of
 nilpotent elements. In the special case that we have the adjoint representation `M = L`, this says
 that a Lie algebra is nilpotent iff `ad x : End(L)` is nilpotent for all `x : L`.
@@ -39,7 +39,7 @@ the cost of obtaining a weaker end result).
 
 Since we work with general coefficients, we cannot induct on dimension and an alternate approach
 must be taken. The key ingredient is the concept of nilpotency, not just for Lie algebras, but for
-Lie modules. Using this concept, we define an _Engelian Lie algebra_ `lie_algebra.is_engelian` to
+Lie modules. Using this concept, we define an _Engelian Lie algebra_ `LieAlgebra.IsEngelian` to
 be one for which a Lie module is nilpotent whenever the action consists of nilpotent endomorphisms.
 The argument then proceeds by selecting a maximal Engelian Lie subalgebra and showing that it cannot
 be proper.
@@ -47,14 +47,14 @@ be proper.
 The first part of the traditional statement of Engel's theorem consists of the statement that if `M`
 is a non-trivial `R`-module and `L ⊆ End(M)` is a finite-dimensional Lie subalgebra of nilpotent
 elements, then there exists a non-zero element `m : M` that is annihilated by every element of `L`.
-This follows trivially from the result established here `lie_module.is_nilpotent_iff_forall`, that
+This follows trivially from the result established here `LieModule.isNilpotent_iff_forall`, that
 `M` is a nilpotent Lie module over `L`, since the last non-zero term in the lower central series
-will consist of such elements `m` (see: `lie_module.nontrivial_max_triv_of_is_nilpotent`). It seems
+will consist of such elements `m` (see: `LieModule.nontrivial_max_triv_of_isNilpotent`). It seems
 that this result has not previously been established at this level of generality.
 
 The second part of the traditional statement of Engel's theorem concerns nilpotency of the Lie
 algebra and a proof of this for general coefficients appeared in the literature as long ago
-[as 1937](zorn1937). This also follows trivially from `lie_module.is_nilpotent_iff_forall` simply by
+[as 1937](zorn1937). This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
 taking `M = L`.
 
 It is pleasing that the two parts of the traditional statements of Engel's theorem are thus unified
@@ -62,10 +62,10 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 ## Main definitions
 
-  * `lie_algebra.is_engelian`
-  * `lie_algebra.is_engelian_of_is_noetherian`
-  * `lie_module.is_nilpotent_iff_forall`
-  * `lie_algebra.is_nilpotent_iff_forall`
+  * `LieAlgebra.IsEngelian`
+  * `LieAlgebra.isEngelian_of_isNoetherian`
+  * `LieModule.isNilpotent_iff_forall`
+  * `LieAlgebra.isNilpotent_iff_forall`
 
 -/
 
@@ -158,7 +158,7 @@ variable (R L)
 /-- A Lie algebra `L` is said to be Engelian if a sufficient condition for any `L`-Lie module `M` to
 be nilpotent is that the image of the map `L → End(M)` consists of nilpotent elements.
 
-Engel's theorem `lie_algebra.is_engelian_of_is_noetherian` states that any Noetherian Lie algebra is
+Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
   ∀ (M : Type u₄) [AddCommGroup M],
@@ -230,8 +230,8 @@ variable [IsNoetherian R L]
 /-- *Engel's theorem*.
 
 Note that this implies all traditional forms of Engel's theorem via
-`lie_module.nontrivial_max_triv_of_is_nilpotent`, `lie_module.is_nilpotent_iff_forall`,
-`lie_algebra.is_nilpotent_iff_forall`. -/
+`LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
+`LieAlgebra.isNilpotent_iff_forall`. -/
 theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
