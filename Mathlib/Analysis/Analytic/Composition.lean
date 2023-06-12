@@ -599,6 +599,7 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
   simp only [Composition.length, map_ofFn, length_ofFn]
 #align formal_multilinear_series.comp_change_of_variables_length FormalMultilinearSeries.compChangeOfVariables_length
 
+set_option linter.deprecated false in
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
     (compChangeOfVariables m M N i hi).2.blocksFun
@@ -606,8 +607,7 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [map_ofFn, List.get_ofFn, Function.comp_apply]
-  sorry
+  simp only [map_ofFn, List.nthLe_ofFn, Function.comp_apply]
 #align formal_multilinear_series.comp_change_of_variables_blocks_fun FormalMultilinearSeries.compChangeOfVariables_blocksFun
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -646,6 +646,7 @@ theorem mem_compPartialSumTarget_iff {m M N : ℕ} {a : Σ n, Composition n} :
   by simp [compPartialSumTarget, compPartialSumTargetSet]
 #align formal_multilinear_series.mem_comp_partial_sum_target_iff FormalMultilinearSeries.mem_compPartialSumTarget_iff
 
+set_option linter.deprecated false in
 /-- `comp_change_of_variables m M N` is a bijection between `comp_partial_sum_source m M N`
 and `comp_partial_sum_target m M N`, yielding equal sums for functions that correspond to each
 other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
@@ -661,11 +662,18 @@ theorem compChangeOfVariables_sum {α : Type _} [AddCommMonoid α] (m M N : ℕ)
   -- 1 - show that the image belongs to `comp_partial_sum_target m N N`
   · rintro ⟨k, blocks_fun⟩ H
     rw [mem_compPartialSumSource_iff] at H
-    simp at H
+    -- Porting note: added
+    simp only at H
     simp only [mem_compPartialSumTarget_iff, Composition.length, Composition.blocks, H.left,
       map_ofFn, length_ofFn, true_and_iff, compChangeOfVariables]
     intro j
-    sorry -- rw [Composition.blocksFun, (H.right _).right, List.get_ofFn]
+    -- Porting note: the following `simp` was sufficient in lean 3.
+    simp only [Composition.blocksFun, (H.right _).right, List.nthLe_ofFn]
+    convert (H.right ⟨j, ?_⟩).right
+    · convert List.nthLe_ofFn _ _ using 2
+      rfl
+    · apply j.prop.trans_eq
+      simp [Composition.length]
   -- 2 - show that the composition gives the `comp_along_composition` application
   · rintro ⟨k, blocks_fun⟩ H
     rw [h]
