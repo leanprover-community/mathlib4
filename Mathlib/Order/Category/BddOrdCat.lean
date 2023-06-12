@@ -18,9 +18,6 @@ import Mathlib.Order.Hom.Bounded
 This defines `BddOrdCat`, the category of bounded orders.
 -/
 
--- Porting note: TODO, remove
-set_option autoImplicit false
-
 set_option linter.uppercaseLean3 false
 
 universe u v
@@ -65,25 +62,17 @@ instance largeCategory : LargeCategory.{u} BddOrdCat where
   assoc _ _ _ := BoundedOrderHom.comp_assoc _ _ _
 #align BddOrd.large_category BddOrdCat.largeCategory
 
--- Porting note: TODO, added. Another problem with Quivers?
-instance funLike (X Y : BddOrdCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  sorry
---show FunLike (NormedAddGroupHom X Y) X (fun _ => Y) from inferInstance
+-- Porting note: added.
+instance instFunLike (X Y : BddOrdCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
 
 instance concreteCategory : ConcreteCategory BddOrdCat where
   -- Porting note: mathport output.
   -- forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
   -- forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
-  forget := {
-    obj := (↥)
-    map := FunLike.coe
-    map_id := fun X => by
-      dsimp
-      sorry -- Porting note: HERE!
-    map_comp := fun f g => by
-      dsimp
-      sorry
-  }
+  forget :=
+    { obj := (↥)
+      map := FunLike.coe }
   forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 #align BddOrd.concrete_category BddOrdCat.concreteCategory
 
@@ -92,6 +81,10 @@ instance hasForgetToPartOrd : HasForget₂ BddOrdCat PartOrdCat where
     { obj := fun X => X.toPartOrd
       map := fun {X Y} => BoundedOrderHom.toOrderHom }
 #align BddOrd.has_forget_to_PartOrd BddOrdCat.hasForgetToPartOrd
+
+-- Porting note: TODO, remove
+#check @BoundedOrderHomClass.toTopHomClass
+#check @BoundedOrderHomClass.toBotHomClass
 
 instance hasForgetToBipointed : HasForget₂ BddOrdCat Bipointed where
   forget₂ :=
@@ -104,24 +97,25 @@ instance hasForgetToBipointed : HasForget₂ BddOrdCat Bipointed where
 @[simps]
 def dual : BddOrdCat ⥤ BddOrdCat where
   obj X := of Xᵒᵈ
-  map X Y := BoundedOrderHom.dual
+  map {X Y} := BoundedOrderHom.dual
 #align BddOrd.dual BddOrdCat.dual
 
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrdCat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := e
-  inv := e.symm
+  hom := (e : BoundedOrderHom _ _)
+  inv := (e.symm : BoundedOrderHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align BddOrd.iso.mk BddOrdCat.Iso.mk
 
 /-- The equivalence between `BddOrd` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : BddOrdCat ≌ BddOrdCat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+@[simps functor inverse]
+def dualEquiv : BddOrdCat ≌ BddOrdCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align BddOrd.dual_equiv BddOrdCat.dualEquiv
 
 end BddOrdCat
