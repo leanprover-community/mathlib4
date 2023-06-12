@@ -1022,6 +1022,32 @@ lemma asIsoHomologyι_inv_comp_homologyι (hg : S.g = 0) [S.HasHomology] :
 lemma homologyι_comp_asIsoHomologyι_inv (hg : S.g = 0) [S.HasHomology] :
   S.homologyι ≫ (S.asIsoHomologyι hg).inv  = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
 
+lemma mono_homologyMap_of_mono_opcyclesMap' [S₁.HasHomology] [S₂.HasHomology]
+    (h : Mono (opcyclesMap φ)) :
+    Mono (homologyMap φ) := by
+  have : Mono (homologyMap φ ≫ S₂.homologyι) := by
+    rw [homologyι_naturality φ]
+    apply mono_comp
+  exact mono_of_mono (homologyMap φ) S₂.homologyι
+
+instance mono_homologyMap_of_mono_opcyclesMap [S₁.HasHomology] [S₂.HasHomology]
+    [Mono (opcyclesMap φ)] :
+    Mono (homologyMap φ) :=
+  mono_homologyMap_of_mono_opcyclesMap' φ inferInstance
+
+lemma epi_homologyMap_of_epi_cyclesMap' [S₁.HasHomology] [S₂.HasHomology]
+    (h : Epi (cyclesMap φ)) :
+    Epi (homologyMap φ) := by
+  have : Epi (S₁.homologyπ ≫ homologyMap φ) := by
+    rw [homologyπ_naturality φ]
+    apply epi_comp
+  exact epi_of_epi S₁.homologyπ (homologyMap φ)
+
+instance epi_homologyMap_of_epi_cyclesMap [S₁.HasHomology] [S₂.HasHomology]
+    [Epi (cyclesMap φ)] :
+    Epi (homologyMap φ) :=
+  epi_homologyMap_of_epi_cyclesMap' φ inferInstance
+
 end ShortComplex
 
 end CategoryTheory

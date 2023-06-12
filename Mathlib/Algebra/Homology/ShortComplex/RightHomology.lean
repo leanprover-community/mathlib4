@@ -1099,6 +1099,27 @@ noncomputable def asIsoRightHomologyι (hg : S.g = 0) [S.HasRightHomology] :
   have := S.isIso_rightHomologyι hg
   exact asIso S.rightHomologyι
 
+lemma isIso_opcyclesMap'_of_isIso_of_epi' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    IsIso (opcyclesMap' φ h₁ h₂) := by
+  refine' ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) _, _, _⟩
+  . simp only [← cancel_epi φ.τ₁, comp_zero, φ.comm₁₂_assoc, IsIso.hom_inv_id_assoc, h₁.wp]
+  . simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ,
+      IsIso.hom_inv_id_assoc, comp_id]
+  . simp only [← cancel_epi h₂.p, h₂.p_descQ_assoc, assoc, p_opcyclesMap',
+      IsIso.inv_hom_id_assoc, comp_id]
+
+lemma isIso_opcyclesMap_of_isIso_of_epi' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Epi φ.τ₁)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap'_of_isIso_of_epi' φ h₂ h₃ _ _
+
+instance isIso_cyclesMap_of_isIso_of_epi (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Epi φ.τ₁]
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap_of_isIso_of_epi' φ inferInstance inferInstance
+
+
 end ShortComplex
 
 end CategoryTheory
