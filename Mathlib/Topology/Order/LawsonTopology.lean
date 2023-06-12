@@ -166,6 +166,8 @@ lemma ScottOpen_implies_LawsonOpen (s : Set α) :
   IsOpen (WithScottTopology.ofScott ⁻¹' s) → IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) :=
   Lawson_le_Scott' _ s
 
+
+
 lemma LowerOpen_implies_LawsonOpen (s : Set α) :
   IsOpen (WithLowerTopology.ofLower ⁻¹' s) → IsOpen (WithLawsonTopology.ofLawson ⁻¹' s) :=
   Lawson_le_Lower' _ s
@@ -173,6 +175,30 @@ lemma LowerOpen_implies_LawsonOpen (s : Set α) :
 end ts
 
 section csh
+
+variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+  [ScottTopology α] [LawsonTopology β] (e : OrderIso α β) (s : Set α)
+
+
+lemma Lawson_le_Scott'' [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+  [ScottTopology α] [LawsonTopology β] (e : OrderIso α β) : Equiv.toHomeomorphOfInducing e  ≤ α := inf_le_right
+
+#check image e s
+
+#check e '' s
+
+lemma ScottOpen_implies_LawsonOpen' [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+  [ScottTopology α] [LawsonTopology β] (e : OrderIso α β) (s : Set α) : IsOpen s → IsOpen (e '' s) := by
+  apply   Lawson_le_Scott'
+
+example [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+  [ScottTopology α] [LawsonTopology β] (e : OrderIso α β) : Continuous e := by
+  rw [continuous_def]
+  intro s hs
+  apply ScottOpen_implies_LawsonOpen'
+  --apply ScottOpen_implies_LawsonOpen
+  --apply Lawson_le_Scott'
+
 
 lemma ScottLawsonCont' [Preorder α] :
   Continuous (WithScottTopology.toScott ∘ WithLawsonTopology.ofLawson : WithLawsonTopology α → _)
