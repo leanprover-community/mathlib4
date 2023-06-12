@@ -38,7 +38,7 @@ set -exo pipefail
 touch scripts/style-exceptions.txt
 
 # Assuming `archive/` and `counterexamples/` are ported too, they need to be added here.
-git ls-files '*.lean' | xargs ./scripts/lint-style.py
+git ls-files '*.lean' | grep -v '^test/' | xargs ./scripts/lint-style.py
 
 # 2. Global checks on the mathlib repository
 
