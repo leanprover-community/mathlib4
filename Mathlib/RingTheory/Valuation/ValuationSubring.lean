@@ -735,13 +735,13 @@ def principalUnitGroupEquiv :
 
 @[simp]
 theorem principalUnitGroupEquiv_apply (a : A.principalUnitGroup) :
-    (principalUnitGroupEquiv A a : K) = a :=
+    (((principalUnitGroupEquiv A a : Aˣ) : A) : K) = (a : Kˣ) :=
   rfl
 #align valuation_subring.principal_unit_group_equiv_apply ValuationSubring.principalUnitGroupEquiv_apply
 
 @[simp]
 theorem principalUnitGroup_symm_apply (a : (Units.map (LocalRing.residue A).toMonoidHom).ker) :
-    (A.principalUnitGroupEquiv.symm a : K) = a :=
+    ((A.principalUnitGroupEquiv.symm a : Kˣ) : K) = ((a : Aˣ) : A) :=
   rfl
 #align valuation_subring.principal_unit_group_symm_apply ValuationSubring.principalUnitGroup_symm_apply
 
@@ -758,8 +758,8 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
 #align valuation_subring.coe_unit_group_to_residue_field_units_apply ValuationSubring.coe_unitGroupToResidueFieldUnits_apply
 
 theorem ker_unitGroupToResidueFieldUnits :
-    A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by ext;
-  simpa only [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principal_unit_group_iff]
+    A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
+  ext; simp only [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
 #align valuation_subring.ker_unit_group_to_residue_field_units ValuationSubring.ker_unitGroupToResidueFieldUnits
 
 theorem surjective_unitGroupToResidueFieldUnits :
