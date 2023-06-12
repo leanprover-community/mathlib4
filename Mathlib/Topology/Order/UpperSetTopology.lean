@@ -135,6 +135,39 @@ variable {α}
 def withUpperSetTopologyHomeomorph : WithUpperSetTopology α ≃ₜ α :=
   WithUpperSetTopology.ofUpperSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
+lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
+  rw [topology_eq α]
+  rfl
+
 end Preorder
+
+section maps
+
+variable [Preorder α] [Preorder β]
+
+lemma coinduced_le {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
+  [UpperSetTopology β] {f : α → β} (hf : Monotone f) :  coinduced f t₁ ≤ t₂  := by
+  rw [TopologicalSpace.le_def]
+  intro s
+  simp only [le_Prop_eq]
+  intro hs
+  rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+  rw [IsOpen_iff_IsUpperSet] at hs
+  exact (IsUpperSet.preimage hs hf)
+
+lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
+  [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
+  rw [TopologicalSpace.le_def]
+  intro s
+  rw [isOpen_induced_iff]
+  simp only [le_Prop_eq]
+  intros hs
+  obtain ⟨t,ht⟩  := hs
+  rw [IsOpen_iff_IsUpperSet] at ht
+  rw [IsOpen_iff_IsUpperSet, ← ht.2]
+  exact (IsUpperSet.preimage ht.1 hf)
+
+
+end maps
 
 end UpperSetTopology
