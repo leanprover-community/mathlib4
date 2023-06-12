@@ -314,21 +314,25 @@ instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R
 /-- The coarsening of a valuation ring associated to a prime ideal. -/
 def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubring K :=
   ofLE A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors).toSubring
-  sorry --fun a ha => Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
-  -- Porting note: TODO. was:
-  -- ofLE A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors).toSubring fun a ha =>
-  --  Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
+    -- Porting note: added `Subalgebra.mem_toSubring.mpr`
+    fun a ha => Subalgebra.mem_toSubring.mpr <|
+      Subalgebra.algebraMap_mem
+        (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors) (⟨a, ha⟩ : A)
 #align valuation_subring.of_prime ValuationSubring.ofPrime
-#check Subalgebra.algebraMap_mem
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  Subalgebra.algebra _
+  -- Porting note: filled in the argument
+  Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 #align valuation_subring.of_prime_algebra ValuationSubring.ofPrimeAlgebra
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
+    -- Porting note: added instance
+    letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
-  IsScalarTower.subalgebra' A K K _
+  IsScalarTower.subalgebra' A K K
+    -- Porting note: filled in the argument
+    (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 #align valuation_subring.of_prime_scalar_tower ValuationSubring.ofPrime_scalar_tower
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
@@ -339,7 +343,8 @@ instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
 #align valuation_subring.of_prime_localization ValuationSubring.ofPrime_localization
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
-  fun a ha => Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
+  -- Porting note: added `Subalgebra.mem_toSubring.mpr`
+  fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
 #align valuation_subring.le_of_prime ValuationSubring.le_ofPrime
 
 theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P : Ideal A)
@@ -367,12 +372,13 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
-    · use 1, x⁻¹, hr; constructor
+    · -- Porting note: added `⟨⟩` brackets and reordered goals
+      use 1, ⟨x⁻¹, hr⟩; constructor
+      · field_simp
       · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
-        erw [mem_nonunits_iff, Classical.not_not]
+        rw [mem_nonunits_iff, Classical.not_not]
         apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
         ext; field_simp
-      · field_simp
 #align valuation_subring.of_prime_ideal_of_le ValuationSubring.ofPrime_idealOfLE
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
