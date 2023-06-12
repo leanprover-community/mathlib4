@@ -26,6 +26,7 @@ open CategoryTheory
 
 /-- The category of bounded orders with monotone functions. -/
 structure BddOrdCat where
+  /-- Porting note: missing docstring -/
   toPartOrd : PartOrdCat
   [isBoundedOrder : BoundedOrder toPartOrd]
 #align BddOrd BddOrdCat
@@ -82,14 +83,10 @@ instance hasForgetToPartOrd : HasForget₂ BddOrdCat PartOrdCat where
       map := fun {X Y} => BoundedOrderHom.toOrderHom }
 #align BddOrd.has_forget_to_PartOrd BddOrdCat.hasForgetToPartOrd
 
--- Porting note: TODO, remove
-#check @BoundedOrderHomClass.toTopHomClass
-#check @BoundedOrderHomClass.toBotHomClass
-
 instance hasForgetToBipointed : HasForget₂ BddOrdCat Bipointed where
   forget₂ :=
     { obj := fun X => ⟨X, ⊥, ⊤⟩
-      map := fun f => ⟨f, map_bot f, map_top f⟩ }
+      map := fun f => ⟨f, f.map_bot', f.map_top'⟩ }
   forget_comp := rfl
 #align BddOrd.has_forget_to_Bipointed BddOrdCat.hasForgetToBipointed
 
@@ -109,7 +106,7 @@ def Iso.mk {α β : BddOrdCat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align BddOrd.iso.mk BddOrdCat.Iso.mk
 
-/-- The equivalence between `BddOrd` and itself induced by `order_dual` both ways. -/
+/-- The equivalence between `BddOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : BddOrdCat ≌ BddOrdCat where
   functor := dual
