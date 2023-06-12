@@ -549,7 +549,7 @@ theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * 
 
 theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
   rw [← sq_eq_sq, Complex.sq_abs]
-  · linear_combination (norm := ring_nf) o.normSq_kahler x y
+  · linear_combination o.normSq_kahler x y
   · positivity
   · positivity
 #align orientation.abs_kahler Orientation.abs_kahler
@@ -593,8 +593,8 @@ theorem kahler_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 automorphism. -/
 theorem kahler_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x y : E) :
-    o.kahler (φ x) (φ y) = o.kahler x y :=
-  by simp [kahler_apply_apply, o.areaForm_comp_linearIsometryEquiv φ hφ]
+    o.kahler (φ x) (φ y) = o.kahler x y := by
+  simp [kahler_apply_apply, o.areaForm_comp_linearIsometryEquiv φ hφ]
 #align orientation.kahler_comp_linear_isometry_equiv Orientation.kahler_comp_linearIsometryEquiv
 
 end Orientation
