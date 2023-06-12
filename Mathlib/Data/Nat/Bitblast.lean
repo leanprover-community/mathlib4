@@ -60,9 +60,11 @@ lemma toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
 
 @[simp] lemma bif_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
 
-lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by simp [Nat.testBit, Nat.mod_two_of_bodd]
+lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by 
+  simp [Nat.testBit, Nat.mod_two_of_bodd]
 
-lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m):= by simp_rw [Nat.shiftr_eq_div_pow, Nat.div_add_mod]
+lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m):= by 
+  simp_rw [Nat.shiftr_eq_div_pow, Nat.div_add_mod]
 
 /-- Useful for induction on the most significant bit-/
 theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (Nat.testBit n i).toNat + n % (2^i):= by 
@@ -81,9 +83,11 @@ def bitult (n m w : Nat) := loop n m (w - 1)
 where
   loop (n m : Nat) : Nat →  Prop
     | 0     => ¬ n.testBit 0  ∧ m.testBit 0
-    | i + 1 => (¬ n.testBit (i + 1) ∧ m.testBit (i + 1)) ∨ (¬ (n.testBit (i + 1) ∧ ¬ m.testBit (i + 1)) ∧ loop n m i)
+    | i + 1 => (¬ n.testBit (i + 1) ∧ m.testBit (i + 1)) 
+               ∨ (¬ (n.testBit (i + 1) ∧ ¬ m.testBit (i + 1)) ∧ loop n m i)
 
-theorem testBit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧ Nat.testBit m i = true ∧ ∀ j, i < j → Nat.testBit m j = Nat.testBit n j := by
+theorem testBit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧ 
+  Nat.testBit m i = true ∧ ∀ j, i < j → Nat.testBit m j = Nat.testBit n j := by
   induction' n using Nat.binaryRec with b n ih generalizing m
   · have ⟨i, _, _⟩ := exists_most_significant_bit (ne_of_lt h).symm
     use i; simpa [*]
@@ -101,7 +105,8 @@ theorem testBit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧ Nat.testBi
                                  simp[hj, testBit_succ, h3.1]⟩ 
 
 theorem testBit_false_of_lt (h: n < 2^i) (h1: i ≤ j) : n.testBit j = false:= by 
-  simp [testBit, shiftr_eq_div_pow, Nat.div_eq_zero (lt_of_lt_of_le h (pow_le_pow_of_le_right (by decide) h1))]
+  simp [testBit, shiftr_eq_div_pow, 
+        Nat.div_eq_zero (lt_of_lt_of_le h (pow_le_pow_of_le_right (by decide) h1))]
 
 theorem lt_of_testBit_true (h: n.testBit i = true) (hn : n < 2^w) : i < w := by
   by_contra'; simp [testBit_false_of_lt hn this] at h
@@ -137,9 +142,11 @@ theorem testBit_translate' (h: n < 2^w) : Nat.testBit (2^w * b.toNat + n) w = b:
 
 @[simp] lemma toNat_true : true.toNat = 1 := rfl
 
-theorem testBit_translate_one (h : i < w) : Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_translate h)
+theorem testBit_translate_one (h : i < w) : 
+  Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_translate h)
 
-theorem testBit_translate_one' (h : n < 2^w) : Nat.testBit (2^w + n) w = true:= mul_one (2^w) ▸ toNat_true ▸ (@testBit_translate' n w true h)
+theorem testBit_translate_one' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
+  mul_one (2^w) ▸ toNat_true ▸ (@testBit_translate' n w true h)
 
 @[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
 
@@ -177,11 +184,16 @@ def bitcarry (n m : Nat) : Nat → Bool
   | i + 1 => (n.testBit i && m.testBit i) || ((n.testBit i ^^ m.testBit i) && bitcarry n m i)
 
 /-- Binary addition-/
-@[simp] def bitadd (n m i : Nat) := toNat (λ j => (n.testBit j ^^ m.testBit j) ^^ bitcarry n m j) 0 i
+@[simp] def bitadd (n m i : Nat) := 
+  toNat (λ j => (n.testBit j ^^ m.testBit j) ^^ bitcarry n m j) 0 i
 
-lemma unfold_carry (n m i : Nat) : (bitcarry n m (i + 1)).toNat = ((Nat.testBit n i && Nat.testBit m i) || ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by simp [bitcarry]
+lemma unfold_carry (n m i : Nat) : (bitcarry n m (i + 1)).toNat = 
+  ((Nat.testBit n i && Nat.testBit m i) || 
+  ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by 
+  simp [bitcarry]
 
-lemma bitadd_eq_add_base : n % (2^(i + 1)) + m % (2^(i + 1)) = bitadd n m i + 2^(i + 1) * (bitcarry n m (i + 1)).toNat := by
+lemma bitadd_eq_add_base : n % (2^(i + 1)) + m % (2^(i + 1)) = 
+  bitadd n m i + 2^(i + 1) * (bitcarry n m (i + 1)).toNat := by
   induction' i with i hi
   · simp only [bitcarry, bitadd, toNat]
     cases' hn: Nat.bodd n  <;> cases' hm: Nat.bodd m
@@ -202,7 +214,9 @@ theorem bitadd_eq_add : bitadd n m i = (n + m) % 2^(i + 1) := by
   · simp [bitadd, Nat.mod_eq_of_lt toNat_lt]
 
 theorem testBit_add : (n + m).testBit i = ((n.testBit i ^^ m.testBit i) ^^ bitcarry n m i):= by
-  have := lt_of_lt_of_le (lt_trans (lt_two_pow (n + m)) (pow_lt_pow_succ (by decide) (n + m))) (pow_le_pow_of_le_right (show 0 < 2 by decide) (@le_add_self _ _ _ i))
+  have := lt_of_lt_of_le 
+          (lt_trans (lt_two_pow (n + m)) (pow_lt_pow_succ (by decide) (n + m))) 
+          (pow_le_pow_of_le_right (show 0 < 2 by decide) (@le_add_self _ _ _ i))
   rw [← Nat.mod_eq_of_lt this, ← add_assoc, ← bitadd_eq_add]
   simp [toNat_testBit (show i ≤ i + (n + m) by linarith)]
 
