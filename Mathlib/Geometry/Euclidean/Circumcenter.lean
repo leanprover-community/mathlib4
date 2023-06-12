@@ -943,7 +943,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
       simpa only [Ne.def, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
-    cases hd₁
+    cases' hd₁ with hd₁ hd₁
     · left
       rw [hd₁]
     · right
