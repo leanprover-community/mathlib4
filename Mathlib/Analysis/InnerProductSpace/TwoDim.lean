@@ -160,7 +160,7 @@ theorem abs_areaForm_of_orthogonal {x y : E} (h : ⟪x, y⟫ = 0) : |ω x y| = �
 #align orientation.abs_area_form_of_orthogonal Orientation.abs_areaForm_of_orthogonal
 
 theorem areaForm_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-    [Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
+    [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).areaForm x y =
     o.areaForm (φ.symm x) (φ.symm y) := by
   have : φ.symm ∘ ![x, y] = ![φ.symm x, φ.symm y] := by
@@ -333,7 +333,7 @@ theorem rightAngleRotation_trans_neg_orientation :
 #align orientation.right_angle_rotation_trans_neg_orientation Orientation.rightAngleRotation_trans_neg_orientation
 
 theorem rightAngleRotation_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-    [Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
+    [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).rightAngleRotation x =
       φ (o.rightAngleRotation (φ.symm x)) := by
   apply ext_inner_right ℝ
@@ -584,7 +584,7 @@ theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 
 #align orientation.kahler_ne_zero_iff Orientation.kahler_ne_zero_iff
 
 theorem kahler_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-    [Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
+    [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x y : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).kahler x y = o.kahler (φ.symm x) (φ.symm y) := by
   simp [kahler_apply_apply, areaForm_map]
 #align orientation.kahler_map Orientation.kahler_map
@@ -640,14 +640,12 @@ local notation "J" => o.rightAngleRotation
 
 open Complex
 
-attribute [local instance] finrank_real_complex_fact -- Porting note: this instance is needed
-
 /-- The area form on an oriented real inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
 theorem areaForm_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : E) :
     ω x y = (conj (f x) * f y).im := by
-  rw [← Complex.areaForm, ← hf, areaForm_map]
+  rw [← Complex.areaForm, ← hf, areaForm_map (hF := _)]
   iterate 2 rw [LinearIsometryEquiv.symm_apply_apply]
 #align orientation.area_form_map_complex Orientation.areaForm_map_complex
 
@@ -656,7 +654,7 @@ evaluated in terms of a complex-number representation of the space. -/
 theorem rightAngleRotation_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x : E) :
     f (J x) = I * f x := by
-  rw [← Complex.rightAngleRotation, ← hf, o.rightAngleRotation_map,
+  rw [← Complex.rightAngleRotation, ← hf, rightAngleRotation_map (hF := _),
     LinearIsometryEquiv.symm_apply_apply]
 #align orientation.right_angle_rotation_map_complex Orientation.rightAngleRotation_map_complex
 
@@ -665,7 +663,7 @@ of a complex-number representation of the space. -/
 theorem kahler_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : E) :
     o.kahler x y = conj (f x) * f y := by
-  rw [← Complex.kahler, ← hf, o.kahler_map]
+  rw [← Complex.kahler, ← hf, kahler_map (hF := _)]
   iterate 2 rw [LinearIsometryEquiv.symm_apply_apply]
 #align orientation.kahler_map_complex Orientation.kahler_map_complex
 
