@@ -212,16 +212,14 @@ theorem trace_prodMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext
-  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply, coe_comp,
-      LinearEquiv.coe_toLinearMap, coe_inl, Function.comp_apply, LinearEquiv.prod_apply,
-      dualTensorHomEquivOfBasis_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
-      trace_eq_contract_apply, contractLeft_apply, fst_apply, prodMap_apply, coprod_apply, id_coe,
-      id.def, add_zero]
-  · simp only [dualTensorHomEquiv, AlgebraTensorModule.curry_apply, coe_comp,
-      LinearEquiv.coe_toLinearMap, coe_inr, Function.comp_apply, LinearEquiv.prod_apply, map_zero,
-      dualTensorHomEquivOfBasis_apply, prodMapLinear_apply, zero_prodMap_dualTensorHom,
-      trace_eq_contract_apply, contractLeft_apply, snd_apply, prodMap_apply, coprod_apply, id_coe,
-      id.def, zero_add]
+  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+    AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
+    Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
+    trace_eq_contract_apply, contractLeft_apply, fst_apply, coprod_apply, id_coe, id_eq, add_zero]
+  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+    AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inr,
+    Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom,
+    trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
 #align linear_map.trace_prod_map LinearMap.trace_prodMap
 
 variable {R M N}
@@ -256,9 +254,9 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext (g m f n)
-  simp only [AlgebraTensorModule.curry_apply, compl₁₂_apply, compr₂_apply, llcomp_apply',
-    comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply, trace_eq_contract_apply, contractLeft_apply,
-    smul_eq_mul, mul_comm, flip_apply]
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
+    trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
 variable {R M N}
