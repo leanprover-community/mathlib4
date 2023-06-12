@@ -28,7 +28,7 @@ We provide a group instance using path composition and show commutativity when `
 
 ## definitions
 
-* `GenLoop N x` is the type of continuous fuctions `I^N → X` that send the boundary to `x`,
+* `GenLoop N x` is the type of continuous functions `I^N → X` that send the boundary to `x`,
 * `HomotopyGroup.Pi n X x` denoted `π_ n X x` is the quotient of `GenLoop (Fin n) x` by
   homotopy relative to the boundary,
 * group instance `Group (π_(n+1) X x)`,
