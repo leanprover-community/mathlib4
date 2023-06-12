@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.PartOrd
-import Mathbin.Order.Hom.Lattice
+import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # The categories of semilattices
@@ -63,8 +63,7 @@ theorem coe_of (α : Type _) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α
 instance : Inhabited SemilatSup :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} SemilatSup
-    where
+instance : LargeCategory.{u} SemilatSup where
   Hom X Y := SupBotHom X Y
   id X := SupBotHom.id X
   comp X Y Z f g := g.comp f
@@ -72,8 +71,7 @@ instance : LargeCategory.{u} SemilatSup
   comp_id' X Y := SupBotHom.id_comp
   assoc' W X Y Z _ _ _ := SupBotHom.comp_assoc _ _ _
 
-instance : ConcreteCategory SemilatSup
-    where
+instance : ConcreteCategory SemilatSup where
   forget :=
     { obj := SemilatSup.X
       map := fun X Y => coeFn }
@@ -112,8 +110,7 @@ theorem coe_of (α : Type _) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α
 instance : Inhabited SemilatInf :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} SemilatInf
-    where
+instance : LargeCategory.{u} SemilatInf where
   Hom X Y := InfTopHom X Y
   id X := InfTopHom.id X
   comp X Y Z f g := g.comp f
@@ -121,8 +118,7 @@ instance : LargeCategory.{u} SemilatInf
   comp_id' X Y := InfTopHom.id_comp
   assoc' W X Y Z _ _ _ := InfTopHom.comp_assoc _ _ _
 
-instance : ConcreteCategory SemilatInf
-    where
+instance : ConcreteCategory SemilatInf where
   forget :=
     { obj := SemilatInf.X
       map := fun X Y => coeFn }
@@ -148,8 +144,7 @@ namespace SemilatSup
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : SemilatSup.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : SemilatSup.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
@@ -158,8 +153,7 @@ def Iso.mk {α β : SemilatSup.{u}} (e : α ≃o β) : α ≅ β
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : SemilatSup ⥤ SemilatInf
-    where
+def dual : SemilatSup ⥤ SemilatInf where
   obj X := SemilatInf.of Xᵒᵈ
   map X Y := SupBotHom.dual
 #align SemilatSup.dual SemilatSup.dual
@@ -170,8 +164,7 @@ namespace SemilatInf
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
@@ -180,8 +173,7 @@ def Iso.mk {α β : SemilatInf.{u}} (e : α ≃o β) : α ≅ β
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : SemilatInf ⥤ SemilatSup
-    where
+def dual : SemilatInf ⥤ SemilatSup where
   obj X := SemilatSup.of Xᵒᵈ
   map X Y := InfTopHom.dual
 #align SemilatInf.dual SemilatInf.dual
