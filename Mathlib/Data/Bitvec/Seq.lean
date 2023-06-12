@@ -1,4 +1,5 @@
-import Mathlib.Data.Bitvec.Basic
+import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 
 namespace Bitvec
 abbrev Seq := Nat → Bool -- TODO: find a better name
@@ -101,7 +102,7 @@ instance : Zero Seq := ⟨zeroSeq⟩
 instance : One Seq := ⟨oneSeq⟩
 instance : Inhabited Seq := ⟨zeroSeq⟩
 
-def ofBitvec {w : Nat} (x : Bitvec w) : Seq := ofBitvecFun $ Bitvec.toFun x
+def ofBitvec {w : Nat} (x : Bitvec w) : Seq := ofBitvecFun $ Bitvec.get x
 
 @[reducible]
 def toBitvec {w : Nat} (x : Seq) : Bitvec w := Bitvec.ofFun $ toBitvecFun x

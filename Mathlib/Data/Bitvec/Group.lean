@@ -1,4 +1,5 @@
-import Mathlib.Data.Bitvec.Basic
+import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.ZMod.Basic
 
 namespace Bitvec

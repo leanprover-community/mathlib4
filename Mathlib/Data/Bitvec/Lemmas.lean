@@ -30,12 +30,18 @@ private theorem toList_neg_one_aux : ∀ (n : ℕ),
   | n+1 => by rw [List.replicate_succ, List.cons_append, List.mapAccumr,
     toList_neg_one_aux n]; simp
 
-theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate n true
+
+theorem neg_one : ∀ {n : ℕ}, (-1: Bitvec n) = Vector.replicate n true
   | 0 => rfl
   | n+1 => by
-    show (Bitvec.one (n+1)).neg.toList = List.replicate (n+1) true
+    show (Bitvec.one (n+1)).neg = Vector.replicate (n+1) true
     simp [Bitvec.neg, Bitvec.one, Vector.mapAccumr, Vector.replicate,
       Vector.append, List.cons_append, List.mapAccumr, toList_neg_one_aux n]
+
+
+theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate n true := by
+  simp only [neg_one, Vector.replicate, Vector.toList_mk, forall_const]
+
 
 instance (n : ℕ) : Preorder (Bitvec n) :=
   Preorder.lift Bitvec.toNat

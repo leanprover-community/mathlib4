@@ -56,9 +56,7 @@ section Constants
     case succ n ih =>
       cases i using Fin.cases
       case H0 => rfl
-      case Hs =>
-        simp[Vector.replicate.unfold]
-        apply ih
+      case Hs => apply ih
 
   /-- Every bit in `zeroes` is `0`/`false` -/
   @[simp]
