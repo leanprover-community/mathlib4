@@ -94,7 +94,7 @@ theorem pdf_undef {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {
 theorem hasPdf_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
     (h : pdf X ℙ μ ≠ 0) : HasPdf X ℙ μ := by
   by_contra hpdf
-  simp [pdf, hpdf] at h 
+  simp [pdf, hpdf] at h
 #align measure_theory.has_pdf_of_pdf_ne_zero MeasureTheory.hasPdf_of_pdf_ne_zero
 
 theorem pdf_eq_zero_of_not_measurable {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
@@ -200,7 +200,7 @@ theorem integral_fun_mul_eq_integral [IsFiniteMeasure ℙ] {X : Ω → E} [HasPd
       rw [lintegral_congr_ae this]
       exact hpdf.2
   · rw [integral_undef hpdf, integral_undef]
-    rwa [← integrable_iff_integrable_mul_pdf hf] at hpdf 
+    rwa [← integrable_iff_integrable_mul_pdf hf] at hpdf
 #align measure_theory.pdf.integral_fun_mul_eq_integral MeasureTheory.pdf.integral_fun_mul_eq_integral
 
 theorem map_absolutelyContinuous {X : Ω → E} [HasPdf X ℙ μ] : map X ℙ ≪ μ := by
@@ -255,7 +255,7 @@ theorem quasiMeasurePreserving_hasPdf {X : Ω → E} [HasPdf X ℙ μ] {g : E �
   refine' AbsolutelyContinuous.mk fun s hsm hs => _
   rw [map_apply hg.measurable hsm, withDensity_apply _ (hg.measurable hsm)]
   have := hg.absolutelyContinuous hs
-  rw [map_apply hg.measurable hsm] at this 
+  rw [map_apply hg.measurable hsm] at this
   exact set_lintegral_measure_zero _ _ this
 #align measure_theory.pdf.quasi_measure_preserving_has_pdf MeasureTheory.pdf.quasiMeasurePreserving_hasPdf
 
@@ -324,13 +324,13 @@ theorem hasPdf {m : MeasurableSpace Ω} {X : Ω → E} {ℙ : Measure Ω} {μ : 
   hasPdf_of_pdf_ne_zero
     (by
       intro hpdf
-      simp only [IsUniform, hpdf] at hu 
+      simp only [IsUniform, hpdf] at hu
       suffices μ (s ∩ Function.support ((μ s)⁻¹ • (1 : E → ℝ≥0∞))) = 0 by
         have heq : Function.support ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) = Set.univ := by
           ext x
           rw [Function.mem_support]
           simp [hnt]
-        rw [heq, Set.inter_univ] at this 
+        rw [heq, Set.inter_univ] at this
         exact hns this
       exact MeasureTheory.Set.indicator_ae_eq_zero hu.symm)
 #align measure_theory.pdf.is_uniform.has_pdf MeasureTheory.pdf.IsUniform.hasPdf
@@ -378,10 +378,10 @@ theorem mul_pdf_integrable [IsFiniteMeasure ℙ] (hcs : IsCompact s) (huX : IsUn
   · exact aestronglyMeasurable_id.mul
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
   refine' hasFiniteIntegral_mul huX _
-  set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞) with hind
+  set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [this, lintegral_indicator _ hms, hind, mul_one, Algebra.id.smul_eq_mul, Pi.one_apply,
+  simp only [this, lintegral_indicator _ hms, mul_one, Algebra.id.smul_eq_mul, Pi.one_apply,
     Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
   refine' (ENNReal.mul_lt_top (set_lintegral_lt_top_of_isCompact hsupp hcs continuous_nnnorm).ne
