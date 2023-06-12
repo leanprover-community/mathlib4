@@ -139,7 +139,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
     simp only at hcc₃ hcr₃
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
-      ∃ (r : ℝ)(p0 : P)(hp0 : p0 ∈ s), cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
+      ∃ (r : ℝ)(p0 : P)(_ : p0 ∈ s), cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
       rwa [mem_affineSpan_insert_iff (orthogonalProjection_mem p)] at hcc₃
     have hcr₃' : ∃ r, ∀ p1 ∈ ps, dist p1 cc₃ = r :=
       ⟨cr₃, fun p1 hp1 => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp1) hcr₃⟩
@@ -153,15 +153,15 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
     -- cases' hu with hucc hucr
     -- substs hucc hucr
     cases' hu
-    have hcr₃val : cr₃ = Real.sqrt (cr₃' * cr₃' + t₃ * y * (t₃ * y)) := by
+    have hcr₃val : cr₃ = Real.sqrt (cr * cr + t₃ * y * (t₃ * y)) := by
       cases' hnps with p0 hp0
-      have h' : ↑(⟨cc₃', hcc₃'⟩ : s) = cc₃' := rfl
+      have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
       rw [← dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp0) hcr₃, hcc₃'', ←
         mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)),
         dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp0),
         orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃', h',
-        dist_of_mem_subset_mk_sphere hp0 hcr, dist_eq_norm_vsub V _ cc₃', vadd_vsub, norm_smul, ←
+        dist_of_mem_subset_mk_sphere hp0 hcr, dist_eq_norm_vsub V _ cc, vadd_vsub, norm_smul, ←
         dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ (|t₃|), ← mul_assoc,
         abs_mul_abs_self]
       ring
@@ -191,7 +191,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
 in the affine subspace they span. -/
-theorem AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonempty ι] [Finite ι]
+theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonempty ι] [Finite ι]
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
@@ -219,8 +219,8 @@ theorem AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonempty ι]
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
         · rw [Finset.filter_not]
-          simp_rw [eq_comm]
-          rw [Finset.filter_eq, if_pos (Finset.mem_univ _),
+          -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
+          rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
             Finset.card_sdiff (Finset.subset_univ _), Finset.card_singleton, Finset.card_univ, hn]
           simp
         · simp
