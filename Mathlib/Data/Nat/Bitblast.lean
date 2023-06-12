@@ -56,7 +56,7 @@ lemma lt_succ_two_pow (h: b ≤ 1) (hm : m < 2^i) : 2^i * b + m < 2^(i + 1) := b
 
 lemma toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
 
-@[simp] lemma bif_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
+@[simp] lemma cond_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
 
 lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by 
   simp [Nat.testBit, Nat.mod_two_of_bodd]
