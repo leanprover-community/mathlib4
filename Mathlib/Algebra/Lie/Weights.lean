@@ -82,17 +82,18 @@ def preWeightSpace (χ : L → R) : Submodule R M :=
 #align lie_module.pre_weight_space LieModule.preWeightSpace
 
 theorem mem_preWeightSpace (χ : L → R) (m : M) :
-    m ∈ preWeightSpace M χ ↔ ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • 1) ^ k) m = 0 := by
-  simp [pre_weight_space, -LinearMap.pow_apply]
+    m ∈ preWeightSpace M χ ↔
+    ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
+  simp [preWeightSpace, -LinearMap.pow_apply]
 #align lie_module.mem_pre_weight_space LieModule.mem_preWeightSpace
 
 variable (R)
 
 theorem exists_preWeightSpace_zero_le_ker_of_isNoetherian [IsNoetherian R M] (x : L) :
-    ∃ k : ℕ, preWeightSpace M (0 : L → R) ≤ (toEndomorphism R L M x ^ k).ker := by
-  use (to_endomorphism R L M x).maximalGeneralizedEigenspaceIndex 0
-  simp only [← Module.End.generalizedEigenspace_zero, pre_weight_space, Pi.zero_apply, iInf_le, ←
-    (to_endomorphism R L M x).maximalGeneralizedEigenspace_eq]
+    ∃ k : ℕ, preWeightSpace M (0 : L → R) ≤ LinearMap.ker (toEndomorphism R L M x ^ k) := by
+  use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex 0
+  simp only [← Module.End.generalizedEigenspace_zero, preWeightSpace, Pi.zero_apply, iInf_le,
+    ← (toEndomorphism R L M x).maximalGeneralizedEigenspace_eq]
 #align lie_module.exists_pre_weight_space_zero_le_ker_of_is_noetherian LieModule.exists_preWeightSpace_zero_le_ker_of_isNoetherian
 
 variable {R} (L)
@@ -102,18 +103,18 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
     [AddCommGroup M₁] [Module R M₁] [LieRingModule L M₁] [LieModule R L M₁] [AddCommGroup M₂]
     [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂] [AddCommGroup M₃] [Module R M₃]
     [LieRingModule L M₃] [LieModule R L M₃] (g : M₁ ⊗[R] M₂ →ₗ⁅R,L⁆ M₃) (χ₁ χ₂ : L → R) :
-    ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (mapIncl (preWeightSpace M₁ χ₁) (preWeightSpace M₂ χ₂))).range ≤
+    LinearMap.range ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp
+    (mapIncl (preWeightSpace M₁ χ₁) (preWeightSpace M₂ χ₂))) ≤
       preWeightSpace M₃ (χ₁ + χ₂) := by
   -- Unpack the statement of the goal.
   intro m₃
-  simp only [LieModuleHom.coe_toLinearMap, Pi.add_apply, Function.comp_apply, mem_pre_weight_space,
+  simp only [LieModuleHom.coe_toLinearMap, Pi.add_apply, Function.comp_apply, mem_preWeightSpace,
     LinearMap.coe_comp, TensorProduct.mapIncl, exists_imp, LinearMap.mem_range]
   rintro t rfl x
   -- Set up some notation.
-  let F : Module.End R M₃ := to_endomorphism R L M₃ x - (χ₁ x + χ₂ x) • 1
-  change ∃ k, (F ^ k) (g _) = 0
+  let F : Module.End R M₃ := toEndomorphism R L M₃ x - (χ₁ x + χ₂ x) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  apply t.induction_on
+  refine t.induction_on ?_ ?_ ?_
   · use 0; simp only [LinearMap.map_zero, LieModuleHom.map_zero]
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
@@ -122,25 +123,26 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
       LinearMap.pow_map_zero_of_le (le_max_right k₁ k₂) hk₂, add_zero]
   -- Now the main argument: pure tensors.
   rintro ⟨m₁, hm₁⟩ ⟨m₂, hm₂⟩
-  change ∃ k, (F ^ k) ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃) (m₁ ⊗ₜ m₂)) = 0
+--  change ∃ k, (F ^ k) ((g : M₁ ⊗[R] M₂ →ₗ[R] M₃) (m₁ ⊗ₜ m₂)) = 0
   -- Eliminate `g` from the picture.
-  let f₁ : Module.End R (M₁ ⊗[R] M₂) := (to_endomorphism R L M₁ x - χ₁ x • 1).rTensor M₂
-  let f₂ : Module.End R (M₁ ⊗[R] M₂) := (to_endomorphism R L M₂ x - χ₂ x • 1).lTensor M₁
+  let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEndomorphism R L M₁ x - χ₁ x • ↑1).rTensor M₂
+  let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEndomorphism R L M₂ x - χ₂ x • ↑1).lTensor M₁
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
     ext (m₁ m₂);
     simp only [← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul, lie_tmul_right,
-      tmul_smul, to_endomorphism_apply_apply, LieModuleHom.map_smul, LinearMap.one_apply,
+      tmul_smul, toEndomorphism_apply_apply, LieModuleHom.map_smul, LinearMap.one_apply,
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieModuleHom.map_add, LinearMap.add_apply, LieModuleHom.map_sub,
-      LinearMap.sub_apply, LinearMap.lTensor_tmul, algebra_tensor_module.curry_apply, curry_apply,
-      LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
+      LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply_apply,
+      curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
     abel
   rsuffices ⟨k, hk⟩ : ∃ k, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
+    change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, LinearMap.map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
-  simp only [mem_pre_weight_space] at hm₁ hm₂ 
+  simp only [mem_preWeightSpace] at hm₁ hm₂
   obtain ⟨k₁, hk₁⟩ := hm₁ x
   obtain ⟨k₂, hk₂⟩ := hm₂ x
   have hf₁ : (f₁ ^ k₁) (m₁ ⊗ₜ m₂) = 0 := by
@@ -149,9 +151,10 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
     simp only [hk₂, tmul_zero, LinearMap.lTensor_tmul, LinearMap.lTensor_pow]
   -- It's now just an application of the binomial theorem.
   use k₁ + k₂ - 1
-  have hf_comm : Commute f₁ f₂ := by ext (m₁ m₂);
+  have hf_comm : Commute f₁ f₂ := by
+    ext (m₁ m₂)
     simp only [LinearMap.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-      algebra_tensor_module.curry_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
+      AlgebraTensorModule.curry_apply_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
       curry_apply, LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
   simp only [TensorProduct.mapIncl, Submodule.subtype_apply, Finset.sum_apply, Submodule.coe_mk,
@@ -162,9 +165,8 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
   -- Eliminate the binomial coefficients from the picture.
   suffices (f₁ ^ i * f₂ ^ j) (m₁ ⊗ₜ m₂) = 0 by rw [this]; apply smul_zero
   -- Finish off with appropriate case analysis.
-  cases' Nat.le_or_le_of_add_eq_add_pred (finset.nat.mem_antidiagonal.mp hij) with hi hj
-  ·
-    rw [(hf_comm.pow_pow i j).Eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hf₁,
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
+  · rw [(hf_comm.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hf₁,
       LinearMap.map_zero]
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hf₂, LinearMap.map_zero]
 #align lie_module.weight_vector_multiplication LieModule.weight_vector_multiplication
@@ -174,12 +176,11 @@ variable {L M}
 theorem lie_mem_preWeightSpace_of_mem_preWeightSpace {χ₁ χ₂ : L → R} {x : L} {m : M}
     (hx : x ∈ preWeightSpace L χ₁) (hm : m ∈ preWeightSpace M χ₂) :
     ⁅x, m⁆ ∈ preWeightSpace M (χ₁ + χ₂) := by
-  apply LieModule.weight_vector_multiplication L L M M (to_module_hom R L M) χ₁ χ₂
+  apply LieModule.weight_vector_multiplication L L M M (toModuleHom R L M) χ₁ χ₂
   simp only [LieModuleHom.coe_toLinearMap, Function.comp_apply, LinearMap.coe_comp,
     TensorProduct.mapIncl, LinearMap.mem_range]
   use ⟨x, hx⟩ ⊗ₜ ⟨m, hm⟩
-  simp only [Submodule.subtype_apply, to_module_hom_apply, TensorProduct.map_tmul]
-  rfl
+  simp only [Submodule.subtype_apply, toModuleHom_apply, TensorProduct.map_tmul]
 #align lie_module.lie_mem_pre_weight_space_of_mem_pre_weight_space LieModule.lie_mem_preWeightSpace_of_mem_preWeightSpace
 
 variable (M)
@@ -187,16 +188,16 @@ variable (M)
 /-- If a Lie algebra is nilpotent, then pre-weight spaces are Lie submodules. -/
 def weightSpace [LieAlgebra.IsNilpotent R L] (χ : L → R) : LieSubmodule R L M :=
   { preWeightSpace M χ with
-    lie_mem := fun x m hm => by
+    lie_mem := fun hm => by
+      dsimp only
       rw [← zero_add χ]
-      refine' lie_mem_pre_weight_space_of_mem_pre_weight_space _ hm
-      suffices pre_weight_space L (0 : L → R) = ⊤ by simp only [this, Submodule.mem_top]
+      refine lie_mem_preWeightSpace_of_mem_preWeightSpace ?_ hm
+      suffices preWeightSpace L (0 : L → R) = ⊤ by simp only [this, Submodule.mem_top]
       exact LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L }
 #align lie_module.weight_space LieModule.weightSpace
 
 theorem mem_weightSpace [LieAlgebra.IsNilpotent R L] (χ : L → R) (m : M) :
-    m ∈ weightSpace M χ ↔ m ∈ preWeightSpace M χ :=
-  Iff.rfl
+    m ∈ weightSpace M χ ↔ m ∈ preWeightSpace M χ := Iff.rfl
 #align lie_module.mem_weight_space LieModule.mem_weightSpace
 
 /-- See also the more useful form `lie_module.zero_weight_space_eq_top_of_nilpotent`. -/
@@ -204,14 +205,14 @@ theorem mem_weightSpace [LieAlgebra.IsNilpotent R L] (χ : L → R) (m : M) :
 theorem zero_weightSpace_eq_top_of_nilpotent' [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
     weightSpace M (0 : L → R) = ⊤ := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule]
-  exact infi_max_gen_zero_eigenspace_eq_top_of_nilpotent R L M
+  exact iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L M
 #align lie_module.zero_weight_space_eq_top_of_nilpotent' LieModule.zero_weightSpace_eq_top_of_nilpotent'
 
 theorem coe_weightSpace_of_top [LieAlgebra.IsNilpotent R L] (χ : L → R) :
     (weightSpace M (χ ∘ (⊤ : LieSubalgebra R L).incl) : Submodule R M) = weightSpace M χ := by
   ext m
-  simp only [weight_space, LieSubmodule.coe_toSubmodule_mk, LieSubalgebra.coe_bracket_of_module,
-    Function.comp_apply, mem_pre_weight_space]
+  simp only [weightSpace, LieSubmodule.coe_toSubmodule_mk, LieSubalgebra.coe_bracket_of_module,
+    Function.comp_apply, mem_preWeightSpace]
   constructor <;> intro h x
   · obtain ⟨k, hk⟩ := h ⟨x, Set.mem_univ x⟩; use k; exact hk
   · obtain ⟨k, hk⟩ := h x; use k; exact hk
@@ -224,7 +225,7 @@ theorem zero_weightSpace_eq_top_of_nilpotent [LieAlgebra.IsNilpotent R L] [IsNil
       `is_nilpotent R (⊤ : lie_subalgebra R L) M` is equivalent to `is_nilpotent R L M`. -/
   have h₀ : (0 : L → R) ∘ (⊤ : LieSubalgebra R L).incl = 0 := by ext; rfl
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule, ← h₀,
-    coe_weight_space_of_top, ← infi_max_gen_zero_eigenspace_eq_top_of_nilpotent R L M]
+    coe_weightSpace_of_top, ← iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L M]
   rfl
 #align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
@@ -238,7 +239,7 @@ def IsWeight (χ : LieCharacter R H) : Prop :=
 weight with respect to the `⊤` Lie subalgebra. -/
 theorem isWeight_zero_of_nilpotent [Nontrivial M] [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
     IsWeight (⊤ : LieSubalgebra R L) M 0 := by
-  rw [is_weight, LieHom.coe_zero, zero_weight_space_eq_top_of_nilpotent]; exact top_ne_bot
+  rw [IsWeight, LieHom.coe_zero, zero_weightSpace_eq_top_of_nilpotent]; exact top_ne_bot
 #align lie_module.is_weight_zero_of_nilpotent LieModule.isWeight_zero_of_nilpotent
 
 /-- A (nilpotent) Lie algebra acts nilpotently on the zero weight space of a Noetherian Lie
@@ -298,7 +299,7 @@ theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
     (∀ y : H, ∃ k : ℕ, (f y ^ k).comp (H.incl : H →ₗ[R] L) x = 0) ↔
       ∀ y : H, ∃ k : ℕ, (H.incl : H →ₗ[R] L).comp (g y ^ k) x = 0 by
     simp only [LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, Function.comp_apply,
-      LinearMap.coe_comp, Submodule.coe_eq_zero] at this 
+      LinearMap.coe_comp, Submodule.coe_eq_zero] at this
     simp only [mem_weight_space, mem_pre_weight_space, LieSubalgebra.coe_incl',
       LieSubmodule.mem_comap, this]
   have hfg : ∀ y : H, (f y).comp (H.incl : H →ₗ[R] L) = (H.incl : H →ₗ[R] L).comp (g y) := by
@@ -397,7 +398,7 @@ def zeroRootSubalgebra : LieSubalgebra R L :=
     lie_mem' := fun x y hx hy => by
       let xy : root_space H 0 ⊗[R] root_space H 0 := ⟨x, hx⟩ ⊗ₜ ⟨y, hy⟩
       suffices (root_space_product R L H 0 0 0 (add_zero 0) xy : L) ∈ root_space H 0 by
-        rwa [root_space_product_tmul, Subtype.coe_mk, Subtype.coe_mk] at this 
+        rwa [root_space_product_tmul, Subtype.coe_mk, Subtype.coe_mk] at this
       exact (root_space_product R L H 0 0 0 (add_zero 0) xy).property }
 #align lie_algebra.zero_root_subalgebra LieAlgebra.zeroRootSubalgebra
 
@@ -415,7 +416,7 @@ theorem mem_zeroRootSubalgebra (x : L) :
 
 theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 := by
   intro x hx
-  simp only [LieSubalgebra.mem_toLieSubmodule] at hx 
+  simp only [LieSubalgebra.mem_toLieSubmodule] at hx
   simp only [mem_weight_space, mem_pre_weight_space, Pi.zero_apply, sub_zero, zero_smul]
   intro y
   obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)
@@ -429,7 +430,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   change (g ^ k).comp (H : Submodule R L).Subtype ⟨x, hx⟩ = 0
   rw [LinearMap.commute_pow_left_of_commute hfg k]
   have h := iterate_to_endomorphism_mem_lower_central_series R H H y ⟨x, hx⟩ k
-  rw [hk, LieSubmodule.mem_bot] at h 
+  rw [hk, LieSubmodule.mem_bot] at h
   simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.pow_apply, LinearMap.coe_comp,
     Submodule.coe_eq_zero]
   exact h
@@ -446,13 +447,13 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
     (zeroRootSubalgebra R L H).normalizer = zeroRootSubalgebra R L H := by
   refine' le_antisymm _ (LieSubalgebra.le_normalizer _)
   intro x hx
-  rw [LieSubalgebra.mem_normalizer_iff] at hx 
+  rw [LieSubalgebra.mem_normalizer_iff] at hx
   rw [mem_zero_root_subalgebra]
   rintro ⟨y, hy⟩
   specialize hx y (le_zero_root_subalgebra R L H hy)
-  rw [mem_zero_root_subalgebra] at hx 
+  rw [mem_zero_root_subalgebra] at hx
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
-  rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk 
+  rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
   use k + 1
   rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, to_endomorphism_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
@@ -511,4 +512,3 @@ theorem coe_weightSpace' (χ : H → R) : (weightSpace' M χ : Submodule R M) = 
 #align lie_module.coe_weight_space' LieModule.coe_weightSpace'
 
 end LieModule
-
