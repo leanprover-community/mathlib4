@@ -143,6 +143,7 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 #align vector.map_nil Vector.map_nil
 
 /-- `map` is natural with respect to `cons`. -/
+@[simp]
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 #align vector.map_cons Vector.map_cons
@@ -269,45 +270,5 @@ instance {α : Type u} {n : Nat} : GetElem (Vector α n) (Fin n) α (fun _ _ => 
 
 instance {α : Type u} {n : Nat} : GetElem (Vector α n) Nat α (fun _ i => i < n) where
   getElem := fun x i h => get x ⟨i,h⟩
-
-theorem vec_get_zero_eq_head {α : Type u} {n : Nat} {x : Vector α n.succ} : x[@Fin.ofNat n 0] = x.head := by
-  cases x
-  case mk x hx =>
-    cases x
-    case nil => contradiction
-    case cons head tail => rfl
-
-theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n) (h : x.toList = x'.toList) : x[i] = x'[i] := by
-  rw [Vector.eq x x' h]
-
-
-
-section cases
-
-  /--
-    An alternative induction principle for `Vector` that doesn't expose the fact that it is a subtype
-    of `List`. Instead, it works much like the induction principle of a definition of `Vector` as
-    an inductive family of types.
-  -/
-  def induction {motive : ∀{n}, Vector α n → Sort v}
-                (nil : motive Vector.nil)
-                (cons : ∀{n}, (hd : α) → (tl : Vector α n) → motive tl → motive (Vector.cons hd tl)) :
-                ∀{m}, (v : Vector α m) → motive v
-    | 0,    ⟨[], _⟩ => nil
-    | _+1,  ⟨hd :: tl, h⟩ =>
-      let tl : Vector .. := ⟨tl, by simp_all only [List.length_cons, succ.injEq]⟩
-      cons hd tl (induction nil cons tl)
-
-  /--
-    Similar to `inductive`, an alternative case-analysis for `Vector`.
-  -/
-  def cases {motive : ∀{n}, Vector α n → Sort v}
-            (nil : motive Vector.nil)
-            (cons : ∀{n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
-            ∀{m}, (v : Vector α m) → motive v :=
-    induction nil fun hd tl _ => cons hd tl
-
-
-end cases
 
 end Vector
