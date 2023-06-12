@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Bipointed
-import Mathbin.Order.Category.PartOrd
-import Mathbin.Order.Hom.Bounded
+import Mathlib.CategoryTheory.Category.Bipointed
+import Mathlib.Order.Category.PartOrd
+import Mathlib.Order.Hom.Bounded
 
 /-!
 # The category of bounded orders
@@ -52,8 +52,7 @@ theorem coe_of (α : Type _) [PartialOrder α] [BoundedOrder α] : ↥(of α) = 
 instance : Inhabited BddOrd :=
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory.{u} BddOrd
-    where
+instance largeCategory : LargeCategory.{u} BddOrd where
   Hom X Y := BoundedOrderHom X Y
   id X := BoundedOrderHom.id X
   comp X Y Z f g := g.comp f
@@ -62,8 +61,7 @@ instance largeCategory : LargeCategory.{u} BddOrd
   assoc' W X Y Z _ _ _ := BoundedOrderHom.comp_assoc _ _ _
 #align BddOrd.large_category BddOrd.largeCategory
 
-instance concreteCategory : ConcreteCategory BddOrd
-    where
+instance concreteCategory : ConcreteCategory BddOrd where
   forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
   forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
 #align BddOrd.concrete_category BddOrd.concreteCategory
@@ -74,8 +72,7 @@ instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrdCat
       map := fun X Y => BoundedOrderHom.toOrderHom }
 #align BddOrd.has_forget_to_PartOrd BddOrd.hasForgetToPartOrd
 
-instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed
-    where
+instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
     { obj := fun X => ⟨X, ⊥, ⊤⟩
       map := fun X Y f => ⟨f, map_bot f, map_top f⟩ }
@@ -91,8 +88,7 @@ def dual : BddOrd ⥤ BddOrd where
 
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _

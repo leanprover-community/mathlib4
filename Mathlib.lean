@@ -2236,6 +2236,7 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
