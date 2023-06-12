@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.LocalExtr
 
 /-!
 # Darboux's theorem
@@ -32,13 +32,11 @@ variable {a b : ℝ} {f f' : ℝ → ℝ}
 `c ∈ (a, b)`. -/
 theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : f' a < m)
-    (hmb : m < f' b) : m ∈ f' '' Ioo a b :=
-  by
+    (hmb : m < f' b) : m ∈ f' '' Ioo a b := by
   rcases hab.eq_or_lt with (rfl | hab')
   · exact (lt_asymm hma hmb).elim
   set g : ℝ → ℝ := fun x => f x - m * x
-  have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x :=
-    by
+  have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c
@@ -83,8 +81,7 @@ theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
 /-- **Darboux's theorem**: the image of an `ord_connected` set under `f'` is an `ord_connected`
 set, `has_deriv_within_at` version. -/
 theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected s)
-    (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) :=
-  by
+    (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
   apply ord_connected_of_Ioo
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
   cases' le_total a b with hab hab
@@ -157,8 +154,7 @@ theorem exists_hasDerivWithinAt_eq_of_le_of_ge (hab : a ≤ b)
 it is always greater than `m`, or it is always less than `m`. -/
 theorem hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs : Convex ℝ s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) {m : ℝ} (hf' : ∀ x ∈ s, f' x ≠ m) :
-    (∀ x ∈ s, f' x < m) ∨ ∀ x ∈ s, m < f' x :=
-  by
+    (∀ x ∈ s, f' x < m) ∨ ∀ x ∈ s, m < f' x := by
   contrapose! hf'
   rcases hf' with ⟨⟨b, hb, hmb⟩, ⟨a, ha, hma⟩⟩
   exact
