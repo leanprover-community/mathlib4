@@ -190,7 +190,7 @@ theorem _root_.Prod.snd_zmod_cast (a : ZMod n) : (a : R × S).snd = a := by
 end
 
 /-- So-named because the coercion is `Nat.cast` into `ZMod`. For `Nat.cast` into an arbitrary ring,
-see `ZMmod.nat_cast_val`. -/
+see `ZMod.nat_cast_val`. -/
 theorem nat_cast_zmod_val {n : ℕ} [NeZero n] (a : ZMod n) : (a.val : ZMod n) = a := by
   cases n
   · cases NeZero.ne 0 rfl
@@ -215,7 +215,7 @@ theorem int_cast_zmod_cast (a : ZMod n) : ((a : ℤ) : ZMod n) = a := by
     erw [Int.cast_ofNat, Fin.cast_val_eq_self]
 #align zmod.int_cast_zmod_cast ZMod.int_cast_zmod_cast
 
-theorem int_cast_rightInverse : Function.RightInverse ((↑) : ZMod n → ℤ) ((↑): ℤ → ZMod n) :=
+theorem int_cast_rightInverse : Function.RightInverse ((↑) : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
   int_cast_zmod_cast
 #align zmod.int_cast_right_inverse ZMod.int_cast_rightInverse
 
@@ -726,7 +726,7 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
-the subtype of terms `x : ZMod n` for which `x.val` is comprime to `n` -/
+the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
 def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.coprime x.val n }
     where
   toFun x := ⟨x, val_coe_unit_coprime x⟩

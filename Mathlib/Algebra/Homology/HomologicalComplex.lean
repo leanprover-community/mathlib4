@@ -684,14 +684,15 @@ structure MkStruct where
 variable {V}
 
 /-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) : Σ'(X₀ X₁ X₂ : V)(d₀ : X₁ ⟶ X₀)(d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
+def MkStruct.flat (t : MkStruct V) :
+    Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
   ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
 #align chain_complex.mk_struct.flat ChainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
   (succ :
-    ∀ t : Σ'(X₀ X₁ X₂ : V)(d₀ : X₁ ⟶ X₀)(d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
-      Σ'(X₃ : V)(d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
+    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
+      Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
 
 /-- Auxiliary definition for `mk`. -/
 def mkAux : ∀ _ : ℕ, MkStruct V
@@ -752,13 +753,13 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ'(X₂ : V)(d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
+    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
     ChainComplex V ℕ :=
   mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
     succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
 #align chain_complex.mk' ChainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ'(X₂ : V)(d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
+variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
@@ -809,7 +810,7 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
   (succ :
     ∀ (n : ℕ)
       (p :
-        Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+        Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
       Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
@@ -822,7 +823,7 @@ in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
@@ -956,14 +957,15 @@ structure MkStruct where
 variable {V}
 
 /-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) : Σ'(X₀ X₁ X₂ : V)(d₀ : X₀ ⟶ X₁)(d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
+def MkStruct.flat (t : MkStruct V) :
+    Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
   ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
 #align cochain_complex.mk_struct.flat CochainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
   (succ :
-    ∀ t : Σ'(X₀ X₁ X₂ : V)(d₀ : X₀ ⟶ X₁)(d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0,
-      Σ'(X₃ : V)(d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
+    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0,
+      Σ' (X₃ : V) (d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
 def mkAux : ∀ _ : ℕ, MkStruct V
@@ -1024,13 +1026,13 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ'(X₂ : V)(d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     CochainComplex V ℕ :=
   mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
     succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
 #align cochain_complex.mk' CochainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ'(X₂ : V)(d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
+variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
@@ -1058,9 +1060,9 @@ section MkHom
 variable {V}
 variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.X 1)
   (one_zero_comm : zero ≫ Q.d 0 1 = P.d 0 1 ≫ one)
-  (succ : ∀ (n : ℕ) (p : Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+  (succ : ∀ (n : ℕ) (p : Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'),
-      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
+      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
 
 /-- An auxiliary construction for `mkHom`.
 
@@ -1071,7 +1073,7 @@ in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩

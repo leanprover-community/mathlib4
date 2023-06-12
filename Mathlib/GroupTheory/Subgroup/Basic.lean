@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit 6b60020790e39e77bfd633ba3d5562ff82e52c79
+! leanprover-community/mathlib commit cc67cd75b4e54191e13c2e8d722289a89e67e4fa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -108,7 +108,7 @@ export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
 class NegMemClass (S G : Type _) [Neg G] [SetLike S G] : Prop where
-/-- `s` is closed under negation -/
+  /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 #align neg_mem_class NegMemClass
 
@@ -370,7 +370,7 @@ structure Subgroup (G : Type _) [Group G] extends Submonoid G where
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
 structure AddSubgroup (G : Type _) [AddGroup G] extends AddSubmonoid G where
-/-- `G` is closed under negation -/
+  /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
 
@@ -736,7 +736,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := norm_cast)] -- Porting note: dsimp can provce this
+@[to_additive (attr := norm_cast)] -- Porting note: dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
@@ -2253,7 +2253,7 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
 
 variable (H)
 
-/-- In a group that satisifes the normalizer condition, every maximal subgroup is normal -/
+/-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
   normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
@@ -2302,10 +2302,22 @@ theorem le_centralizer_iff : H ≤ K.centralizer ↔ K ≤ H.centralizer :=
 #align add_subgroup.le_centralizer_iff AddSubgroup.le_centralizer_iff
 
 @[to_additive]
+theorem center_le_centralizer (s) : center G ≤ centralizer s :=
+  Set.center_subset_centralizer (s : Set G)
+#align subgroup.center_le_centralizer Subgroup.center_le_centralizer
+#align add_subgroup.center_le_centralizer AddSubgroup.center_le_centralizer
+
+@[to_additive]
 theorem centralizer_le (h : H ≤ K) : centralizer K ≤ centralizer H :=
   Submonoid.centralizer_le h
 #align subgroup.centralizer_le Subgroup.centralizer_le
 #align add_subgroup.centralizer_le AddSubgroup.centralizer_le
+
+@[to_additive (attr := simp)]
+theorem centralizer_eq_top_iff_subset {s} : centralizer s = ⊤ ↔ s ≤ center G :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subgroup.centralizer_eq_top_iff_subset Subgroup.centralizer_eq_top_iff_subset
+#align add_subgroup.centralizer_eq_top_iff_subset AddSubgroup.centralizer_eq_top_iff_subset
 
 @[to_additive]
 instance Centralizer.characteristic [hH : H.Characteristic] :
@@ -3497,7 +3509,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 #align add_subgroup.mem_sup AddSubgroup.mem_sup
 
 @[to_additive]
-theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s)(z : t), (y : C) * z = x :=
+theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
 #align subgroup.mem_sup' Subgroup.mem_sup'
 #align add_subgroup.mem_sup' AddSubgroup.mem_sup'
@@ -3601,7 +3613,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive "Elements of disjoint, normal subgroups commute."]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
--- Porting note: Goal was `Commute x y`. Removed ambiguity.
+    -- Porting note: Goal was `Commute x y`. Removed ambiguity.
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : _root_.Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x

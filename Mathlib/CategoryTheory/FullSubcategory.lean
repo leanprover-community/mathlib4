@@ -54,7 +54,7 @@ in `D` from `F X` to `F Y`.
 -/
 -- Porting note: @[nolint has_nonempty_instance unused_arguments]
 @[nolint unusedArguments]
-def InducedCategory (_F: C → D): Type u₁ :=
+def InducedCategory (_F : C → D) : Type u₁ :=
   C
 #align category_theory.induced_category CategoryTheory.InducedCategory
 
