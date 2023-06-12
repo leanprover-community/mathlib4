@@ -14,7 +14,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms
 
-In this file, we prove several forms of "L'Hopital's rule" for computing 0/0
+In this file, we prove several forms of "L'Hôpital's rule" for computing 0/0
 indeterminate forms. The proof of `HasDerivAt.lhopital_zero_right_on_Ioo`
 is based on the one given in the corresponding
 [Wikibooks](https://en.wikibooks.org/wiki/Calculus/L%27H%C3%B4pital%27s_Rule)

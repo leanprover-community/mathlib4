@@ -42,14 +42,9 @@ See <https://stacks.math.columbia.edu/tag/001O>.
 def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
     { obj := fun Y => unop Y ⟶ X
-      map := fun f g => f.unop ≫ g
-      map_comp := fun f g => by funext; dsimp; erw [Category.assoc]
-      map_id := fun Y => by funext; dsimp; erw [Category.id_comp] }
+      map := fun f g => f.unop ≫ g }
   map f :=
-    { app := fun Y g => g ≫ f
-      naturality := fun Y Y' g => by funext Z; aesop_cat }
-  map_id := by aesop_cat
-  map_comp f g := by ext Y; dsimp; rw [Category.assoc]
+    { app := fun Y g => g ≫ f }
 #align category_theory.yoneda CategoryTheory.yoneda
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
@@ -58,12 +53,9 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
 def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ where
   obj X :=
     { obj := fun Y => unop X ⟶ Y
-      map := fun f g => g ≫ f
-      map_comp := fun f g => by funext; dsimp; erw [Category.assoc]
-      map_id := fun Y => by funext; dsimp; erw [Category.comp_id] }
+      map := fun f g => g ≫ f }
   map f :=
-    { app := fun Y g => f.unop ≫ g
-      naturality := fun Y Y' g => by funext Z; aesop_cat }
+    { app := fun Y g => f.unop ≫ g }
 #align category_theory.coyoneda CategoryTheory.coyoneda
 
 namespace Yoneda
@@ -86,7 +78,6 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
   preimage {X} {Y} f := f.app (op X) (𝟙 X)
-  witness {X} {Y} f := by simp only [yoneda]; aesop_cat
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yonedaFull
 
 /-- The Yoneda embedding is faithful.
@@ -110,13 +101,9 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y)) (q : ∀ {Z : C}, (
     (h₁ : ∀ {Z : C} (f : Z ⟶ X), q (p f) = f) (h₂ : ∀ {Z : C} (f : Z ⟶ Y), p (q f) = f)
     (n : ∀ {Z Z' : C} (f : Z' ⟶ Z) (g : Z ⟶ X), p (f ≫ g) = f ≫ p g) : X ≅ Y :=
   yoneda.preimageIso
-    (NatIso.ofComponents
-      (fun Z =>
-        { hom := p
-          inv := q
-          hom_inv_id := by simp only [yoneda]; funext; apply h₁
-          inv_hom_id := by simp only [yoneda]; funext; apply h₂ })
-      (fun f => by simp only [yoneda]; funext; apply n))
+    (NatIso.ofComponents fun Z =>
+      { hom := p
+        inv := q })
 #align category_theory.yoneda.ext CategoryTheory.Yoneda.ext
 
 /-- If `yoneda.map f` is an isomorphism, so was `f`.
@@ -154,17 +141,15 @@ theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :
 
 /-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `punit`. -/
 def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := fun f => f ⟨⟩
-        inv := fun x _ => x })
-    (by aesop_cat)
+  NatIso.ofComponents fun X =>
+    { hom := fun f => f ⟨⟩
+      inv := fun x _ => x }
 #align category_theory.coyoneda.punit_iso CategoryTheory.Coyoneda.punitIso
 
 /-- Taking the `unop` of morphisms is a natural isomorphism. -/
 @[simps!]
 def objOpOp (X : C) : coyoneda.obj (op (op X)) ≅ yoneda.obj X :=
-  NatIso.ofComponents (fun _ => (opEquiv _ _).toIso) fun _ {_Y} _f => rfl
+  NatIso.ofComponents fun _ => (opEquiv _ _).toIso
 #align category_theory.coyoneda.obj_op_op CategoryTheory.Coyoneda.objOpOp
 
 end Coyoneda
@@ -177,7 +162,7 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
   /-- `Hom(-,X) ≅ F` via `f` -/
-  has_representation : ∃ (X : _)(f : yoneda.obj X ⟶ F), IsIso f
+  has_representation : ∃ (X : _) (f : yoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.representable CategoryTheory.Functor.Representable
 
 instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, 𝟙 _, inferInstance⟩
@@ -188,7 +173,7 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Corepresentable (F : C ⥤ Type v₁) : Prop where
   /-- `Hom(X,-) ≅ F` via `f` -/
-  has_corepresentation : ∃ (X : _)(f : coyoneda.obj X ⟶ F), IsIso f
+  has_corepresentation : ∃ (X : _) (f : coyoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
 instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
@@ -204,7 +189,7 @@ variable [F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
 noncomputable def reprX : C :=
-  (Representable.has_representation : ∃ (_ : _)(_ : _ ⟶ F), _).choose
+  (Representable.has_representation : ∃ (_ : _) (_ : _ ⟶ F), _).choose
 set_option linter.uppercaseLean3 false
 #align category_theory.functor.repr_X CategoryTheory.Functor.reprX
 
@@ -253,7 +238,7 @@ variable [F.Corepresentable]
 
 /-- The representing object for the corepresentable functor `F`. -/
 noncomputable def coreprX : C :=
-  (Corepresentable.has_corepresentation : ∃ (_ : _)(_ : _ ⟶ F), _).choose.unop
+  (Corepresentable.has_corepresentation : ∃ (_ : _) (_ : _ ⟶ F), _).choose.unop
 set_option linter.uppercaseLean3 false
 #align category_theory.functor.corepr_X CategoryTheory.Functor.coreprX
 

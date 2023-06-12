@@ -1393,7 +1393,7 @@ theorem isBigO_const_iff {c : F''} : (f'' =O[l] fun _x => c) ↔
   refine' ⟨fun h => ⟨fun hc => isBigO_zero_right_iff.1 (by rwa [← hc]), h.isBoundedUnder_le⟩, _⟩
   rintro ⟨hcf, hf⟩
   rcases eq_or_ne c 0 with (hc | hc)
-  exacts[(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
+  exacts [(hcf hc).trans_isBigO (isBigO_zero _ _), hf.isBigO_const hc]
 #align asymptotics.is_O_const_iff Asymptotics.isBigO_const_iff
 
 theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
@@ -1937,7 +1937,7 @@ theorem isBigOWith_of_eq_mul (φ : α → 𝕜) (hφ : ∀ᶠ x in l, ‖φ x‖
 #align asymptotics.is_O_with_of_eq_mul Asymptotics.isBigOWith_of_eq_mul
 
 theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
-    IsBigOWith c l u v ↔ ∃ (φ : α → 𝕜)(_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v := by
+    IsBigOWith c l u v ↔ ∃ (φ : α → 𝕜) (_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v := by
   constructor
   · intro h
     use fun x => u x / v x
@@ -1948,12 +1948,12 @@ theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
 #align asymptotics.is_O_with_iff_exists_eq_mul Asymptotics.isBigOWith_iff_exists_eq_mul
 
 theorem IsBigOWith.exists_eq_mul (h : IsBigOWith c l u v) (hc : 0 ≤ c) :
-    ∃ (φ : α → 𝕜)(_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v :=
+    ∃ (φ : α → 𝕜) (_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v :=
   (isBigOWith_iff_exists_eq_mul hc).mp h
 #align asymptotics.is_O_with.exists_eq_mul Asymptotics.IsBigOWith.exists_eq_mul
 
 theorem isBigO_iff_exists_eq_mul :
-    u =O[l] v ↔ ∃ (φ : α → 𝕜)(_hφ : l.IsBoundedUnder (· ≤ ·) (norm ∘ φ)), u =ᶠ[l] φ * v := by
+    u =O[l] v ↔ ∃ (φ : α → 𝕜) (_hφ : l.IsBoundedUnder (· ≤ ·) (norm ∘ φ)), u =ᶠ[l] φ * v := by
   constructor
   · rintro h
     rcases h.exists_nonneg with ⟨c, hnnc, hc⟩
@@ -1967,7 +1967,7 @@ alias isBigO_iff_exists_eq_mul ↔ IsBigO.exists_eq_mul _
 #align asymptotics.is_O.exists_eq_mul Asymptotics.IsBigO.exists_eq_mul
 
 theorem isLittleO_iff_exists_eq_mul :
-    u =o[l] v ↔ ∃ (φ : α → 𝕜)(_hφ : Tendsto φ l (𝓝 0)), u =ᶠ[l] φ * v := by
+    u =o[l] v ↔ ∃ (φ : α → 𝕜) (_hφ : Tendsto φ l (𝓝 0)), u =ᶠ[l] φ * v := by
   constructor
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]

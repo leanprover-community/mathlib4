@@ -1023,14 +1023,14 @@ A good example is the case of a morphism of monoids. A convenient definition for
 definitional convenience, we first define `Submonoid.copy` as follows:
 ```lean
 protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M :=
-{ carrier  := s,
-  one_mem' := hs.symm ▸ S.one_mem',
-  mul_mem' := hs.symm ▸ S.mul_mem' }
+  { carrier  := s,
+    one_mem' := hs.symm ▸ S.one_mem',
+    mul_mem' := hs.symm ▸ S.mul_mem' }
 ```
 and then finally define:
 ```lean
 def mrange (f : M →* N) : Submonoid N :=
-((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm
+  ((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm
 ```
 -/
 
@@ -1369,7 +1369,7 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
-    _ ↔ ∃ (x : _)(hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
+    _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
     _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne.def]
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero

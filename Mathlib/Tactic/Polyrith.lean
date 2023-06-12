@@ -292,7 +292,7 @@ def sageOutput (args : Array String) : IO SageResult := do
 /--
 This is the main body of the `polyrith` tactic. It takes in the following inputs:
 * `only : Bool` - This represents whether the user used the key word "only"
-* `hyps : Array Expr` - the hypotheses/proof terms selecteed by the user
+* `hyps : Array Expr` - the hypotheses/proof terms selected by the user
 * `traceOnly : Bool` - If enabled, the returned syntax will be `.missing`
 
 First, the tactic converts the target into a `Poly`, and finds out what type it

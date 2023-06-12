@@ -660,10 +660,10 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul_left_inv ϕ := ext <| symm_apply_apply ϕ
 #align alg_equiv.aut AlgEquiv.aut
 
-theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁): ϕ * ψ = ψ.trans ϕ :=
+theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
   rfl
 
-theorem aut_one : 1 = AlgEquiv.refl (R:= R) (A₁ := A₁) :=
+theorem aut_one : 1 = AlgEquiv.refl (R := R) (A₁ := A₁) :=
   rfl
 
 @[simp]

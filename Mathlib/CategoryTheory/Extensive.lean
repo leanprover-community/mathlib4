@@ -169,7 +169,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     · intro H
       exact ⟨H _, H _⟩
     · rintro H ⟨⟨⟩⟩
-      exacts[H.1, H.2]
+      exacts [H.1, H.2]
   · introv H F' hα h
     let X' := F'.obj ⟨WalkingPair.left⟩
     let Y' := F'.obj ⟨WalkingPair.right⟩
@@ -184,7 +184,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
         (NatTrans.congr_app hα ⟨WalkingPair.right⟩)]
     constructor
     · rintro H ⟨⟨⟩⟩
-      exacts[H.1, H.2]
+      exacts [H.1, H.2]
     · intro H
       exact ⟨H _, H _⟩
 #align category_theory.binary_cofan.is_van_kampen_iff CategoryTheory.BinaryCofan.isVanKampen_iff
@@ -351,7 +351,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
     have : ∀ x, f x = Sum.inl PUnit.unit ∨ f x = Sum.inr PUnit.unit := by
       intro x
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
-      exacts[Or.inl rfl, Or.inr rfl]
+      exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
@@ -392,7 +392,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
   have : ∀ x, f x = Sum.inl PUnit.unit ∨ f x = Sum.inr PUnit.unit := by
     intro x
     rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
-    exacts[Or.inl rfl, Or.inr rfl]
+    exacts [Or.inl rfl, Or.inr rfl]
   letI eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
     ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inl <| Subsingleton.elim _ _)⟩,
       fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩

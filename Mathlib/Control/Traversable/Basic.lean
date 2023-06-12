@@ -271,7 +271,7 @@ class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends Lawful
 #align is_lawful_traversable IsLawfulTraversable
 
 instance : Traversable Id :=
-⟨id⟩
+  ⟨id⟩
 
 instance : IsLawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 

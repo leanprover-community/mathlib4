@@ -54,7 +54,7 @@ in `D` from `F X` to `F Y`.
 -/
 -- Porting note: @[nolint has_nonempty_instance unused_arguments]
 @[nolint unusedArguments]
-def InducedCategory (_F: C → D): Type u₁ :=
+def InducedCategory (_F : C → D) : Type u₁ :=
   C
 #align category_theory.induced_category CategoryTheory.InducedCategory
 
@@ -184,7 +184,7 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
     `fullSubcategoryInclusion_obj_lift_obj` and `fullSubcategoryInclusion_map_lift_map`. -/
 def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by simp)
+  NatIso.ofComponents fun X => Iso.refl _
 #align category_theory.full_subcategory.lift_comp_inclusion CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
