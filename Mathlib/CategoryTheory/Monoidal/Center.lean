@@ -65,9 +65,7 @@ structure HalfBraiding (X : C) where
     aesop_cat
 #align category_theory.half_braiding CategoryTheory.HalfBraiding
 
--- Porting note: Originally `[reassoc (attr := simp)]`. This caused a lint error,
--- because `simp` can prove `monoidal_assoc`.
-attribute [simp, reassoc] HalfBraiding.monoidal
+attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundant as a simp lemma
 
 attribute [simp, reassoc] HalfBraiding.naturality
 
