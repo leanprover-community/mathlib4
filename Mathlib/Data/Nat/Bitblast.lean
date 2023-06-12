@@ -72,7 +72,7 @@ theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (Nat.testBit n i).toN
   have := lt_succ_two_pow (toNat_le_one (n.testBit i)) (mod_lt n (NeZero.pos (2^i)))
   simp [(Nat.div_mod_unique (two_pow_pos (i + 1))).mpr ⟨add_rotate _ _ (n % (2^i)) ▸ h1.symm, this⟩]
 
-lemma bit_lt (h: bit b n < bit b' m) : n < m ∨ (n = m ∧ b = false ∧ b'= true) := by 
+lemma bit_lt (h: bit b n < bit b' m) : n < m ∨ (n = m ∧ b = false ∧ b' = true) := by 
   cases' b <;> cases' b' <;> revert h
   <;> simp [le_iff_lt_or_eq]
 
