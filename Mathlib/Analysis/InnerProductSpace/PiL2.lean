@@ -28,7 +28,7 @@ between `E` and `EuclideanSpace 𝕜 ι`. Then `stdOrthonormalBasis` shows that 
 always exists if `E` is finite dimensional. We provide language for converting between a basis
 that is orthonormal and an orthonormal basis (e.g. `Basis.toOrthonormalBasis`). We show that
 orthonormal bases for each summand in a direct sum of spaces can be combined into an orthonormal
-basis for the the whole sum in `DirectSum.IsInternal.subordinateOrthonormalBasis`. In
+basis for the whole sum in `DirectSum.IsInternal.subordinateOrthonormalBasis`. In
 the last section, various properties of matrices are explored.
 
 ## Main definitions

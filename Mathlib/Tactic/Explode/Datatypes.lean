@@ -51,7 +51,7 @@ structure Entry where
   passed to `explodeCore`. Exception: `∀I` may ignore this for introduced hypotheses. -/
   useAsDep : Bool
 
-/-- Get the `line` for an `Entry` that thas been added to the `Entries` structure. -/
+/-- Get the `line` for an `Entry` that has been added to the `Entries` structure. -/
 def Entry.line! (entry : Entry) : Nat := entry.line.get!
 
 /-- Instead of simply keeping a list of entries (`List Entry`), we create a datatype `Entries`
