@@ -219,13 +219,13 @@ def regular_check(lines, path):
                 errors += [(ERR_IMP, line_nr, path)]
     return errors
 
-def import_omega_check(lines, path):
+def banned_import_check(lines, path):
     errors = []
     for line_nr, line in skip_comments(enumerate(lines, 1)):
         imports = line.split()
         if imports[0] != "import":
             break
-        if imports[1] in ["tactic", "tactic.omega", "tactic.observe"]:
+        if imports[1] in ["Mathlib.Tactic"]:
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
@@ -301,7 +301,7 @@ def lint(path):
         format_errors(errs)
         errs = set_option_check(lines, path)
         format_errors(errs)
-        errs = import_omega_check(lines, path)
+        errs = banned_import_check(lines, path)
         format_errors(errs)
 
 for filename in sys.argv[1:]:
