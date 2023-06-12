@@ -11,7 +11,6 @@ Authors: Scott Morrison, Johan Commelin
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Tactic
 
 /-!
 # The tensor product of R-algebras
