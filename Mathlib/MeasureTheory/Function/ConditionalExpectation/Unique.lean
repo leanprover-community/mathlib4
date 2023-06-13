@@ -17,7 +17,8 @@ import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 Two Lp functions `f, g` which are almost everywhere strongly measurable with respect to a σ-algebra
 `m` and verify `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ` for all `m`-measurable sets `s` are equal
 almost everywhere. This proves the uniqueness of the conditional expectation, which is not yet
-defined in this file but is introduced in `measure_theory.function.conditional_expectation.basic`.
+defined in this file but is introduced in
+`Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic`.
 
 ## Main statements
 
@@ -25,7 +26,7 @@ defined in this file but is introduced in `measure_theory.function.conditional_e
   defining the conditional expectation are equal.
 * `ae_eq_of_forall_set_integral_eq_of_sigma_finite'`: two functions verifying the equality of
   integrals defining the conditional expectation are equal almost everywhere.
-  Requires `[sigma_finite (μ.trim hm)]`.
+  Requires `[SigmaFinite (μ.trim hm)]`.
 
 -/
 
