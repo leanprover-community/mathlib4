@@ -445,7 +445,6 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
   rcases germ_exist F x t with ⟨U₂, hxU₂, t, rfl⟩
   erw [stalkFunctor_map_germ_apply _ ⟨x, _⟩] at hst
   erw [stalkFunctor_map_germ_apply _ ⟨x, _⟩] at hst
-  rw [comp_apply, comp_apply] at hst
   obtain ⟨W, hxW, iWU₁, iWU₂, heq⟩ := G.germ_eq x hxU₁ hxU₂ _ _ hst
   rw [← comp_apply, ← comp_apply, ← f.naturality, ← f.naturality, comp_apply, comp_apply] at heq
   replace heq := h W heq
@@ -484,8 +483,7 @@ theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshea
     (U : Opens X) (h : ∀ x : U, Function.Injective ((stalkFunctor C x.val).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x =>
-    h x <| by erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, comp_apply, comp_apply,
-      hst]
+    h x <| by erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_injective_of_stalk_functor_map_injective TopCat.Presheaf.app_injective_of_stalkFunctor_map_injective
 
@@ -568,7 +566,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   apply hinj ⟨z, (iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) z.2)⟩
   dsimp only
   erw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
-  simp_rw [← comp_apply, f.1.naturality_assoc, comp_apply, heq, ← comp_apply, ← G.1.map_comp]
+  simp_rw [← comp_apply, f.1.naturality, comp_apply, heq, ← comp_apply, ← G.1.map_comp]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_surjective_of_injective_of_locally_surjective TopCat.Presheaf.app_surjective_of_injective_of_locally_surjective
@@ -583,7 +581,7 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
   obtain ⟨V₁, hxV₁, s₁, hs₁⟩ := F.presheaf.germ_exist x.1 s₀
   subst hs₁; rename' hs₀ => hs₁
-  erw [stalkFunctor_map_germ_apply V₁ ⟨x.1, hxV₁⟩ f.1 s₁, comp_apply] at hs₁
+  erw [stalkFunctor_map_germ_apply V₁ ⟨x.1, hxV₁⟩ f.1 s₁] at hs₁
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on
   -- some open neighborhood `V₂`.
   obtain ⟨V₂, hxV₂, iV₂V₁, iV₂U, heq⟩ := G.presheaf.germ_eq x.1 hxV₁ x.2 _ _ hs₁
