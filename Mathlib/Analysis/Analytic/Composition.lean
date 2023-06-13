@@ -1145,7 +1145,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     dsimp
     constructor
     · conv_rhs =>
-        rw [← join_splitWrtComposition a.blocks b, ← ofFn_nthLe (splitWrtComposition a.blocks b)]
+        rw [← join_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         -- length_map (List.sum (α := List ℕ)) (splitWrtComposition a.blocks b)
         simp only [length, gather, length_map, length_splitWrtComposition]
@@ -1153,12 +1153,11 @@ def sigmaEquivSigmaPi (n : ℕ) :
       · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
-      conv_rhs => rw [← ofFn_nthLe b.blocks]
+      conv_rhs => rw [← ofFn_get b.blocks]
       congr 1
       refine' (Fin.heq_fun_iff B).2 fun i => _
       rw [sigmaCompositionAux, Composition.length, List.get_map_rev List.length,
         List.get_of_eq (map_length_splitWrtComposition _ _)]
-      rfl
   right_inv := by
     -- the fact that we have a right inverse is essentially `splitWrtComposition_join`,
     -- but we need to massage it to take care of the dependent setting.
@@ -1176,6 +1175,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · congr
     · ext1
       dsimp [Composition.gather, sigmaCompositionAux]
+      simp [get_splitWrtComposition]
       sorry
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
@@ -1185,6 +1185,7 @@ namespace FormalMultilinearSeries
 
 open Composition
 
+set_option maxHeartbeats 700000 in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext (n v)
@@ -1196,13 +1197,18 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    ---simp only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
-      --compAlongComposition_apply, ContinuousMultilinearMap.map_sum, Finset.sum_sigma',
-      --applyComposition]
-    rw [FormalMultilinearSeries.comp, FormalMultilinearSeries.comp,
-      ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.sum_apply]
-    simp only [compAlongComposition_apply, ContinuousMultilinearMap.map_sum, Finset.sum_sigma']
-    sorry
+    -- Porting note: (simp regression?)
+    -- This had been just:
+    --   simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
+    --     compAlongComposition_apply, Finset.sum_sigma', applyComposition,
+    --     ContinuousMultilinearMap.map_sum]
+    -- but it is extremely slow (if it finishes at all?) (and much slower than in mathlib3).
+    -- Instead we hold simp's hand, and it's still very slow:
+    simp only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply]
+    simp_rw [compAlongComposition_apply, ContinuousMultilinearMap.sum_apply, Finset.sum_sigma',
+      applyComposition, ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.map_sum,
+      Finset.sum_sigma']
+    exact this
   /- Now, we use `composition.sigma_equiv_sigma_pi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
