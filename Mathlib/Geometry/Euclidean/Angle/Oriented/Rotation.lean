@@ -31,8 +31,6 @@ open scoped Real RealInnerProductSpace ComplexConjugate
 
 namespace Orientation
 
-attribute [local instance] fact_finite_dimensional_of_finrank_eq_succ
-
 attribute [local instance] Complex.finrank_real_complex_fact
 
 variable {V V' : Type _}
@@ -43,13 +41,13 @@ variable [InnerProductSpace ℝ V] [InnerProductSpace ℝ V']
 
 variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation ℝ V (Fin 2))
 
--- mathport name: exprJ
 local notation "J" => o.rightAngleRotation
 
 /-- Auxiliary construction to build a rotation by the oriented angle `θ`. -/
 def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
   LinearMap.isometryOfInner
-    (Real.Angle.cos θ • LinearMap.id + Real.Angle.sin θ • ↑(LinearIsometryEquiv.toLinearEquiv J))
+    (Real.Angle.cos θ • LinearMap.id +
+      Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       intro x y
       simp only [IsROrC.conj_to_real, id.def, LinearMap.smul_apply, LinearMap.add_apply,
@@ -57,7 +55,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
-      linear_combination inner x y * θ.cos_sq_add_sin_sq)
+      linear_combination inner (𝕜 := ℝ) x y * θ.cos_sq_add_sin_sq)
 #align orientation.rotation_aux Orientation.rotationAux
 
 @[simp]
@@ -69,11 +67,12 @@ theorem rotationAux_apply (θ : Real.Angle) (x : V) :
 /-- A rotation by the oriented angle `θ`. -/
 def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
   LinearIsometryEquiv.ofLinearIsometry (o.rotationAux θ)
-    (Real.Angle.cos θ • LinearMap.id - Real.Angle.sin θ • ↑(LinearIsometryEquiv.toLinearEquiv J))
+    (Real.Angle.cos θ • LinearMap.id -
+      Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
-      · simp only [o.right_angle_rotation_right_angle_rotation, o.rotation_aux_apply,
+      · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, ← mul_smul, add_smul,
@@ -83,11 +82,12 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
     (by
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
-      · simp only [o.right_angle_rotation_right_angle_rotation, o.rotation_aux_apply,
+      · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
-          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, add_smul, ← mul_smul,
-          mul_comm, smul_add, smul_neg, sq]
+          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply,
+          add_smul, smul_neg, smul_sub, smul_smul]
+        ring_nf
         abel
       · simp)
 #align orientation.rotation Orientation.rotation
@@ -106,7 +106,7 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
     (o.rotation θ).toLinearMap =
       Matrix.toLin (o.basisRightAngleRotation x hx) (o.basisRightAngleRotation x hx)
         !![θ.cos, -θ.sin; θ.sin, θ.cos] := by
-  apply (o.basis_right_angle_rotation x hx).ext
+  apply (o.basisRightAngleRotation x hx).ext
   intro i
   fin_cases i
   · rw [Matrix.toLin_self]
@@ -117,29 +117,30 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
 
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
-theorem det_rotation (θ : Real.Angle) : (o.rotation θ).toLinearMap.det = 1 := by
+theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearMap = 1 := by
   haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (Fact.out (finrank ℝ V = 2))
+    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
-  rw [o.rotation_eq_matrix_to_lin θ hx]
+  rw [o.rotation_eq_matrix_toLin θ hx]
   simpa [sq] using θ.cos_sq_add_sin_sq
 #align orientation.det_rotation Orientation.det_rotation
 
 /-- The determinant of `rotation` (as a linear equiv) is equal to `1`. -/
 @[simp]
-theorem linearEquiv_det_rotation (θ : Real.Angle) : (o.rotation θ).toLinearEquiv.det = 1 :=
+theorem linearEquiv_det_rotation (θ : Real.Angle) :
+    LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| o.det_rotation θ
 #align orientation.linear_equiv_det_rotation Orientation.linearEquiv_det_rotation
 
 /-- The inverse of `rotation` is rotation by the negation of the angle. -/
 @[simp]
 theorem rotation_symm (θ : Real.Angle) : (o.rotation θ).symm = o.rotation (-θ) := by
-  ext <;> simp [o.rotation_apply, o.rotation_symm_apply, sub_eq_add_neg]
+  ext; simp [o.rotation_apply, o.rotation_symm_apply, sub_eq_add_neg]
 #align orientation.rotation_symm Orientation.rotation_symm
 
 /-- Rotation by 0 is the identity. -/
 @[simp]
-theorem rotation_zero : o.rotation 0 = LinearIsometryEquiv.refl ℝ V := by ext <;> simp [rotation]
+theorem rotation_zero : o.rotation 0 = LinearIsometryEquiv.refl ℝ V := by ext; simp [rotation]
 #align orientation.rotation_zero Orientation.rotation_zero
 
 /-- Rotation by π is negation. -/
@@ -165,7 +166,7 @@ theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
   simp only [o.rotation_apply, ← mul_smul, Real.Angle.cos_add, Real.Angle.sin_add, add_smul,
     sub_smul, LinearIsometryEquiv.trans_apply, smul_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.map_smul, right_angle_rotation_right_angle_rotation, smul_neg]
+    LinearIsometryEquiv.map_smul, rightAngleRotation_rightAngleRotation, smul_neg]
   ring_nf
   abel
 #align orientation.rotation_rotation Orientation.rotation_rotation
@@ -182,7 +183,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
-    LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_right_angle_rotation_left,
+    LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_expMapCircle, IsROrC.conj_ofReal, conj_I]
   ring
 #align orientation.kahler_rotation_left Orientation.kahler_rotation_left
@@ -208,7 +209,7 @@ theorem neg_rotation_pi_div_two (x : V) : -o.rotation (π / 2 : ℝ) x = o.rotat
 -/
 theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).expMapCircle * o.kahler x y := by
-  simpa [coe_inv_circle_eq_conj, -kahler_rotation_left] using o.kahler_rotation_left x y θ
+  simp only [Real.Angle.expMapCircle_neg, coe_inv_circle_eq_conj, kahler_rotation_left]
 #align orientation.kahler_rotation_left' Orientation.kahler_rotation_left'
 
 /-- Rotating the second of two vectors by `θ` scales their Kahler form by `cos θ + sin θ * I`. -/
@@ -216,7 +217,7 @@ theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
     o.kahler x (o.rotation θ y) = θ.expMapCircle * o.kahler x y := by
   simp only [o.rotation_apply, map_add, LinearMap.map_smulₛₗ, RingHom.id_apply, real_smul,
-    kahler_right_angle_rotation_right, Real.Angle.coe_expMapCircle]
+    kahler_rightAngleRotation_right, Real.Angle.coe_expMapCircle]
   ring
 #align orientation.kahler_rotation_right Orientation.kahler_rotation_right
 
@@ -338,7 +339,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (
     (θ : Real.Angle) : o.oangle x y = θ ↔ ∃ r : ℝ, 0 < r ∧ y = r • o.rotation θ x := by
   constructor
   · intro h
-    rw [o.oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero hx hy] at h 
+    rw [o.oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero hx hy] at h
     exact ⟨‖y‖ / ‖x‖, div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx), h⟩
   · rintro ⟨r, hr, rfl⟩
     rw [o.oangle_smul_right_of_pos _ _ hr, o.oangle_rotation_self_right hx]
@@ -374,31 +375,32 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle
 
 /-- Any linear isometric equivalence in `V` with positive determinant is `rotation`. -/
 theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
-    (hd : 0 < (f.toLinearEquiv : V →ₗ[ℝ] V).det) : ∃ θ : Real.Angle, f = o.rotation θ := by
+    (hd : 0 < LinearMap.det (f.toLinearEquiv : V →ₗ[ℝ] V)) :
+    ∃ θ : Real.Angle, f = o.rotation θ := by
   haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (Fact.out (finrank ℝ V = 2))
+    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   use o.oangle x (f x)
   apply LinearIsometryEquiv.toLinearEquiv_injective
   apply LinearEquiv.toLinearMap_injective
-  apply (o.basis_right_angle_rotation x hx).ext
+  apply (o.basisRightAngleRotation x hx).ext
   intro i
   symm
   fin_cases i
   · simp
   have : o.oangle (J x) (f (J x)) = o.oangle x (f x) := by
-    simp only [oangle, o.linear_isometry_equiv_comp_right_angle_rotation f hd,
-      o.kahler_comp_right_angle_rotation]
+    simp only [oangle, o.linearIsometryEquiv_comp_rightAngleRotation f hd,
+      o.kahler_comp_rightAngleRotation]
   simp [← this]
 #align orientation.exists_linear_isometry_equiv_eq_of_det_pos Orientation.exists_linearIsometryEquiv_eq_of_det_pos
 
 theorem rotation_map (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] V') (x : V') :
     (Orientation.map (Fin 2) f.toLinearEquiv o).rotation θ x = f (o.rotation θ (f.symm x)) := by
-  simp [rotation_apply, o.right_angle_rotation_map]
+  simp [rotation_apply, o.rightAngleRotation_map]
 #align orientation.rotation_map Orientation.rotation_map
 
 @[simp]
-protected theorem Complex.rotation (θ : Real.Angle) (z : ℂ) :
+protected theorem _root_.Complex.rotation (θ : Real.Angle) (z : ℂ) :
     Complex.orientation.rotation θ z = θ.expMapCircle * z := by
   simp only [rotation_apply, Complex.rightAngleRotation, Real.Angle.coe_expMapCircle, real_smul]
   ring
@@ -409,8 +411,7 @@ complex-number representation of the space. -/
 theorem rotation_map_complex (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x : V) :
     f (o.rotation θ x) = θ.expMapCircle * f x := by
-  rw [← Complex.rotation, ← hf, o.rotation_map]
-  simp
+  rw [← Complex.rotation, ← hf, o.rotation_map, LinearIsometryEquiv.symm_apply_apply]
 #align orientation.rotation_map_complex Orientation.rotation_map_complex
 
 /-- Negating the orientation negates the angle in `rotation`. -/
@@ -421,7 +422,7 @@ theorem rotation_neg_orientation_eq_neg (θ : Real.Angle) : (-o).rotation θ = o
 /-- The inner product between a `π / 2` rotation of a vector and that vector is zero. -/
 @[simp]
 theorem inner_rotation_pi_div_two_left (x : V) : ⟪o.rotation (π / 2 : ℝ) x, x⟫ = 0 := by
-  rw [rotation_pi_div_two, inner_right_angle_rotation_self]
+  rw [rotation_pi_div_two, inner_rightAngleRotation_self]
 #align orientation.inner_rotation_pi_div_two_left Orientation.inner_rotation_pi_div_two_left
 
 /-- The inner product between a vector and a `π / 2` rotation of that vector is zero. -/
@@ -487,16 +488,14 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
   · rcases h with (rfl | rfl | h | h)
     · exact Or.inl rfl
     · exact Or.inr ⟨0, zero_smul _ _⟩
-    · obtain ⟨r, hr, rfl⟩ :=
+    · obtain ⟨r, _, rfl⟩ :=
         (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero (o.left_ne_zero_of_oangle_eq_pi_div_two h)
-              (o.right_ne_zero_of_oangle_eq_pi_div_two h) _).1
-          h
+          (o.right_ne_zero_of_oangle_eq_pi_div_two h) _).1 h
       exact Or.inr ⟨r, rfl⟩
-    · obtain ⟨r, hr, rfl⟩ :=
+    · obtain ⟨r, _, rfl⟩ :=
         (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero
-              (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
-              (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1
-          h
+          (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
+          (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1 h
       refine' Or.inr ⟨-r, _⟩
       rw [neg_smul, ← smul_neg, o.neg_rotation_pi_div_two]
   · rcases h with (rfl | ⟨r, rfl⟩)
@@ -512,4 +511,3 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
 #align orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two Orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two
 
 end Orientation
-
