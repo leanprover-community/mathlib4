@@ -12,6 +12,8 @@ Authors: Sebastian Ullrich
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Basic
 
+/-! ## Functor Laws, applicative laws, and monad Laws -/
+
 universe u v
 
 #align is_lawful_functor LawfulFunctor
