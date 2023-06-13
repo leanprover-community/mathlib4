@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.BddDistLat
+import Mathlib.Order.Category.BddDistLatCat
 import Mathlib.Order.Heyting.Hom
 
 /-!
@@ -74,4 +74,3 @@ def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β where
 #align HeytAlg.iso.mk HeytAlg.Iso.mk
 
 end HeytAlg
-

@@ -2254,7 +2254,7 @@ import Mathlib.Order.Category.BddOrdCat
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
-import Mathlib.Order.Category.HeytAlg
+import Mathlib.Order.Category.HeytAlgCat
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
