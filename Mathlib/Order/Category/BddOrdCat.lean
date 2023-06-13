@@ -26,7 +26,7 @@ open CategoryTheory
 
 /-- The category of bounded orders with monotone functions. -/
 structure BddOrdCat where
-  /-- Porting note: missing docstring -/
+  /-- The underlying object in the category of partial orders. -/
   toPartOrd : PartOrdCat
   [isBoundedOrder : BoundedOrder toPartOrd]
 #align BddOrd BddOrdCat
@@ -43,7 +43,8 @@ attribute [instance] BddOrdCat.isBoundedOrder
 
 /-- Construct a bundled `BddOrdCat` from a `Fintype` `PartialOrder`. -/
 def of (α : Type _) [PartialOrder α] [BoundedOrder α] : BddOrdCat :=
-  ⟨⟨α, inferInstance⟩⟩ -- Porting note: was ⟨⟨α⟩⟩
+  -- Porting note: was ⟨⟨α⟩⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
+  ⟨{ α := α }⟩
 #align BddOrd.of BddOrdCat.of
 
 @[simp]
@@ -68,9 +69,6 @@ instance instFunLike (X Y : BddOrdCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
 
 instance concreteCategory : ConcreteCategory BddOrdCat where
-  -- Porting note: mathport output.
-  -- forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
-  -- forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
   forget :=
     { obj := (↥)
       map := FunLike.coe }
@@ -90,7 +88,7 @@ instance hasForgetToBipointed : HasForget₂ BddOrdCat Bipointed where
   forget_comp := rfl
 #align BddOrd.has_forget_to_Bipointed BddOrdCat.hasForgetToBipointed
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : BddOrdCat ⥤ BddOrdCat where
   obj X := of Xᵒᵈ
