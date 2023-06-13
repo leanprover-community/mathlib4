@@ -197,9 +197,8 @@ protected theorem splits (n : ℕ) :
       splits_of_degree_le_one _
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
-    skip;
-    rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits, ←
-      X_sub_C_mul_removeFactor f fun h => by rw [h] at hf ; cases hf]
+    rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
+      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf ; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
 #align polynomial.splitting_field_aux.splits Polynomial.SplittingFieldAux.splits
 
