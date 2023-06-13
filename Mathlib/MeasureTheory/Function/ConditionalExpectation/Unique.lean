@@ -8,8 +8,8 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.Function.AeEqOfIntegral
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.AeMeasurable
+import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 
 /-!
 # Uniqueness of the conditional expectation
