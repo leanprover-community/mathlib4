@@ -460,7 +460,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
             Set S)).smul_mem
       a hx' using
     1
-  convert ha₂.symm
+  convert ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
   · exact Algebra.smul_def _ _
