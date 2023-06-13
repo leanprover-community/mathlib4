@@ -581,7 +581,7 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       ext s
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
         CommRingCat.coe_of, Category.comp_id]
-      rw [stalkToFiberRingHom_germ']
+      rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
       obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
         exists_const _ _ s x hxU
       erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']

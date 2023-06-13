@@ -229,14 +229,14 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
   -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
   -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
   letI : ReflectsIsomorphisms (forget CommSemiRingCatMax.{v, u}) :=
-    CommSemiRing.forgetReflectIsos.{max v u}
+    CommSemiRingCat.forgetReflectIsos.{max v u}
   letI : ReflectsIsomorphisms
     (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}
   let c : Cone F :=
-    { pt := CommSemiRing.of (Types.limitCone (F ⋙ forget _)).pt
+    { pt := CommSemiRingCat.of (Types.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun j => CommSemiRing.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
+        { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) j
           naturality := (SemiRingCat.HasLimits.limitCone.{v, u}
             (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})).π.naturality } }
@@ -246,7 +246,7 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
       makesLimit := by
         refine IsLimit.ofFaithful (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})
           (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _)
-          (fun s : Cone F => CommSemiRing.ofHom
+          (fun s : Cone F => CommSemiRingCat.ofHom
             ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
             fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
             Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,
