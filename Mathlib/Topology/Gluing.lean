@@ -432,12 +432,10 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
-    simp only [TopCat.comp_app, ContinuousMap.coe_mk, Prod.mk.inj_iff, TopCat.id_app,
-      Subtype.mk_eq_mk, Subtype.coe_mk]
-    stop
-    rw [← Subtype.coe_injective.eq_iff, Subtype.val_eq_coe, Subtype.coe_mk, and_self_iff]
-    convert congr_arg coe (h.t_inv k i ⟨x, hx'⟩) using 3
-    ext
+    rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
+      Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
+    convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
+    refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
   f_hasPullback i j k := inferInstance
