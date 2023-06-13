@@ -20,6 +20,7 @@ Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab
 being a lattice is understood to entail having a bottom and a top element.
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u
 
@@ -28,22 +29,24 @@ open CategoryTheory
 /-- The category of bounded distributive lattices with bounded lattice morphisms. -/
 structure BddDistLatCat where
   toDistLatCat : DistLatCat
-  [isBoundedOrder : BoundedOrderCat to_DistLat]
+  [isBoundedOrder : BoundedOrder toDistLatCat]
 #align BddDistLat BddDistLatCat
 
 namespace BddDistLatCat
 
 instance : CoeSort BddDistLatCat (Type _) :=
-  ⟨fun X => X.toDistLat⟩
+  ⟨fun X => X.toDistLatCat⟩
 
-instance (X : BddDistLat) : DistribLattice X :=
-  X.toDistLat.str
+instance (X : BddDistLatCat) : DistribLattice X :=
+  X.toDistLatCat.str
 
 attribute [instance] BddDistLatCat.isBoundedOrder
 
-/-- Construct a bundled `BddDistLatCat` from a `bounded_order` `distrib_lattice`. -/
-def of (α : Type _) [DistribLattice α] [BoundedOrder α] : BddDistLat :=
-  ⟨⟨α⟩⟩
+/-- Construct a bundled `BddDistLatCat` from a `BoundedOrder` `DistribLattice`. -/
+def of (α : Type _) [DistribLattice α] [BoundedOrder α] : BddDistLatCat :=
+  -- Porting note: was `⟨⟨α⟩⟩`
+  -- see https://github.com/leanprover-community/mathlib4/issues/4998
+  ⟨{α := α}⟩
 #align BddDistLat.of BddDistLatCat.of
 
 @[simp]
@@ -70,10 +73,12 @@ instance : LargeCategory.{u} BddDistLatCat :=
 instance : ConcreteCategory BddDistLatCat :=
   InducedCategory.concreteCategory toBddLat
 
-instance hasForgetToDistLat : HasForget₂ BddDistLatCat DistLatCat
-    where forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y => BoundedLatticeHom.toLatticeHom }
+instance hasForgetToDistLat : HasForget₂ BddDistLatCat DistLatCat where
+  forget₂ :=
+    -- Porting note: was `⟨X⟩`
+    -- see https://github.com/leanprover-community/mathlib4/issues/4998
+    { obj := fun X => { α := X}
+      map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
 #align BddDistLat.has_forget_to_DistLat BddDistLatCat.hasForgetToDistLat
 
 instance hasForgetToBddLat : HasForget₂ BddDistLatCat BddLatCat :=
@@ -90,30 +95,31 @@ theorem forget_bddLat_latCat_eq_forget_distLatCat_latCat :
 between them. -/
 @[simps]
 def Iso.mk {α β : BddDistLatCat.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := (e : BoundedLatticeHom α β)
+  hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align BddDistLat.iso.mk BddDistLatCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : BddDistLatCat ⥤ BddDistLatCat where
   obj X := of Xᵒᵈ
-  map X Y := BoundedLatticeHom.dual
+  map {X Y} := BoundedLatticeHom.dual
 #align BddDistLat.dual BddDistLatCat.dual
 
-/-- The equivalence between `BddDistLatCat` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : BddDistLatCat ≌ BddDistLatCat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+/-- The equivalence between `BddDistLatCat` and itself induced by `OrderDual` both ways. -/
+@[simps functor inverse]
+def dualEquiv : BddDistLatCat ≌ BddDistLatCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align BddDistLat.dual_equiv BddDistLatCat.dualEquiv
 
-end BddDistLat
+end BddDistLatCat
 
-theorem bddDistLat_dual_comp_forget_to_distLatCat :
+theorem bddDistLatCat_dual_comp_forget_to_distLatCat :
     BddDistLatCat.dual ⋙ forget₂ BddDistLatCat DistLatCat =
       forget₂ BddDistLatCat DistLatCat ⋙ DistLatCat.dual :=
   rfl
