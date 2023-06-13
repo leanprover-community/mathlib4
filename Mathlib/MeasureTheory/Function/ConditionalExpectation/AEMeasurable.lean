@@ -15,7 +15,7 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 A function `f` verifies `ae_strongly_measurable' m f μ` if it is `μ`-a.e. equal to
 an `m`-strongly measurable function. This is similar to `ae_strongly_measurable`, but the
-`measurable_space` structures used for the measurability statement and for the measure are
+`MeasurableSpace` structures used for the measurability statement and for the measure are
 different.
 
 We define `Lp_meas F 𝕜 m p μ`, the subspace of `Lp F p μ` containing functions `f` verifying
@@ -24,7 +24,7 @@ measurable function.
 
 ## Main statements
 
-We define an `isometry_equiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
+We define an `IsometryEquiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
 measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of `Lp_meas`.
 
 `Lp.induction_strongly_measurable` (see also `mem_ℒp.induction_strongly_measurable`):
@@ -47,7 +47,7 @@ namespace MeasureTheory
 
 /-- A function `f` verifies `ae_strongly_measurable' m f μ` if it is `μ`-a.e. equal to
 an `m`-strongly measurable function. This is similar to `ae_strongly_measurable`, but the
-`measurable_space` structures used for the measurability statement and for the measure are
+`MeasurableSpace` structures used for the measurability statement and for the measure are
 different. -/
 def AEStronglyMeasurable' {α β} [TopologicalSpace β] (m : MeasurableSpace α)
     {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) : Prop :=
@@ -269,7 +269,7 @@ section CompleteSubspace
 
 /-! ## The subspace `Lp_meas` is complete.
 
-We define an `isometry_equiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
+We define an `IsometryEquiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
 measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of
 `Lp_meas_subgroup` (and `Lp_meas`). -/
 
@@ -277,7 +277,7 @@ measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies complet
 variable {ι : Type _} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- If `f` belongs to `Lp_meas_subgroup F m p μ`, then the measurable function it is almost
-everywhere equal to (given by `ae_measurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
+everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
 theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
     (hf_meas : f ∈ lpMeasSubgroup F m p μ) :
     Memℒp (mem_lpMeasSubgroup_iff_aeStronglyMeasurable'.mp hf_meas).choose p (μ.trim hm) := by
@@ -491,7 +491,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
 -- For now just no-lint this; lean4's tree-based logging will make this easier to debug.
--- One possible change might be to generalize `𝕜` from `is_R_or_C` to `normed_field`, as this
+-- One possible change might be to generalize `𝕜` from `IsROrC` to `NormedField`, as this
 -- result may well hold there.
 -- Porting note: removed @[nolint fails_quickly]
 instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
