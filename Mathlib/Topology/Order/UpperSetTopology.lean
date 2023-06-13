@@ -167,26 +167,22 @@ section maps
 
 variable [Preorder α] [Preorder β]
 
-lemma coinduced_le {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
-  [UpperSetTopology β] {f : α → β} (hf : Monotone f) :  coinduced f t₁ ≤ t₂  := by
-  rw [TopologicalSpace.le_def]
-  intro s
-  simp only [le_Prop_eq]
-  intro hs
-  rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
-  rw [IsOpen_iff_IsUpperSet] at hs
-  exact (IsUpperSet.preimage hs hf)
-
 open Topology
 
 open List Set in lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
     TFAE [ Monotone f,
-           Continuous[t₁, t₂] f ] := by
-  tfae_have 1 → 2
-  . intro hf
-    rw [continuous_iff_coinduced_le]
-    exact coinduced_le hf
+           Continuous[t₁, t₂] f,
+           coinduced f t₁ ≤ t₂,
+           t₁ ≤ induced f t₂ ] := by
+  tfae_have 1 → 3
+  . rw [TopologicalSpace.le_def]
+    intro hf
+    simp only [le_Prop_eq]
+    intro s hs
+    rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+    rw [IsOpen_iff_IsUpperSet] at hs
+    exact (IsUpperSet.preimage hs hf)
   tfae_have 2 → 1
   . intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
@@ -195,28 +191,11 @@ open List Set in lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopol
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+  tfae_have 2 ↔ 4
+  . exact continuous_iff_le_induced
+  tfae_have 2 ↔ 3
+  . exact continuous_iff_coinduced_le
   tfae_finish
-
-lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
-  [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
-  rw [TopologicalSpace.le_def]
-  intro s
-  rw [isOpen_induced_iff]
-  simp only [le_Prop_eq]
-  intros hs
-  obtain ⟨t,ht⟩  := hs
-  rw [IsOpen_iff_IsUpperSet] at ht
-  rw [IsOpen_iff_IsUpperSet, ← ht.2]
-  exact (IsUpperSet.preimage ht.1 hf)
-
--- Proof of le_induced from coinduced_le
-/-
-lemma le_induced' {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
-  [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
-  rw [← continuous_iff_le_induced]
-  apply ((Monotone_iff_Continuous hf).out 1 2)
-  exact hf
--/
 
 end maps
 
