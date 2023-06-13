@@ -9,6 +9,7 @@ Authors: Thomas Browning
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Data.Set.Ncard
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -16,6 +17,7 @@ import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Qify
 import Mathlib.Util.PiNotation
 
 /-!
@@ -242,6 +244,7 @@ lemma card_conjClasses_dihedralGroup_odd {n : ℕ} (hn : ¬ 2 ∣ n) :
 
 end DihedralGroup
 
+-- Construction of group with commuting probability 1/n
 namespace CommutingProbability
 
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -268,22 +271,16 @@ lemma commProb_ReciprocalGroup (l : List ℕ) :
   . simp_rw [List.length_cons, Fin.prod_univ_succ, List.map_cons, List.prod_cons, ←h]
     rfl
 
+-- todo: golf
 lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   have hn' : n ≠ 0 := fun h => hn (h ▸ Nat.dvd_zero 2)
   have : NeZero n := ⟨hn'⟩
   rw [commProb_def', DihedralGroup.card_conjClasses_dihedralGroup_odd hn,
       Nat.card_eq_fintype_card, DihedralGroup.card]
-  have : ((n + 3) / 2 : ℕ) = ((n + 3 : ℕ) : ℚ) / (2 : ℕ) := by
-    rw [Nat.cast_div]
-    rw [Nat.two_dvd_ne_zero] at hn
-    rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hn]
-    norm_num
-    norm_num
-  rw [this]
-  field_simp [hn']
-  left
-  ring
+  rw [Nat.two_dvd_ne_zero] at hn
+  have : 2 ∣ n + 3 := by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hn]; rfl
+  qify [this]; field_simp [hn']; left; ring
 
 theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
     commProb (ReciprocalGroup (reciprocalFactors n)) = 1 / n := by
@@ -315,5 +312,37 @@ theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
             positivity
         . have : ¬ 2 ∣ n % 4 := by rcases key with h | h <;> rw [h] <;> norm_num
           exact Nat.prime_two.not_dvd_mul this h2
+
+end CommutingProbability
+
+namespace CommutingProbability
+
+open Pointwise
+
+-- growth lemma for powers of symmetric sets
+lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
+    (h : g ∈ A ^ (k + 2) \ A ^ (k + 1)) : g • A ⊆ A ^ (k + 3) \ A ^ k := by
+  rintro - ⟨a, ha, rfl⟩
+  refine' ⟨_, fun hg => h.2 _⟩ <;> rw [pow_succ', Set.mem_mul]
+  . exact ⟨g, a, h.1, ha, rfl⟩
+  . exact ⟨g * a, a⁻¹, hg, Set.mem_inv.mp (hA.symm ▸ ha), mul_inv_cancel_right g a⟩
+
+-- growth lemma for powers of symmetric sets
+lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
+    (h : Nat.card (A ^ (k + 1) : Set G) < Nat.card (A ^ (k + 2) : Set G)) :
+    Nat.card (A ^ k : Set G) + Nat.card A ≤ Nat.card (A ^ (k + 3) : Set G) := by
+  have := Set.ncard_diff
+  sorry
+
+-- growth lemma for powers of symmetric sets
+lemma mylem3 (A : Set G) (hA1 : 1 ∈ A) (hA2 : A⁻¹ = A) (k : ℕ) (g : G)
+    (h : Nat.card (A ^ (3 * k + 2) : Set G) < Nat.card (A ^ (3 * k + 3) : Set G)) :
+    (k + 2) * Nat.card A ≤ Nat.card (A ^ (3 * k + 4) : Set G) := by
+  induction' k with k ih
+  . simp at h ⊢
+    sorry
+
+
+
 
 end CommutingProbability
