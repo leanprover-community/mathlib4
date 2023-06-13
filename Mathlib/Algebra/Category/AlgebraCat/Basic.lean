@@ -11,7 +11,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.Module.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Category instance for algebras over a commutative ring
