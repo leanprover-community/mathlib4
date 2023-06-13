@@ -323,17 +323,7 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) 
   Subtype.ext (add_eq_or_of_and_eq_zero_aux₂ (x.2.trans y.2.symm)
     (by convert congr_arg Vector.toList hxy; simp))
 
-def width : Bitvec n → Nat := fun _ => n
-
 section get
-
-def get : Bitvec n → Fin n → Bool :=
-  Vector.get
-
-/-- nth element of a bitvec, indexed by a `Nat`.
-    Returns `none` if bitvec is not long enough -/
-def get? : Bitvec n → Nat → Option Bool :=
-  fun v i => if h : i < n then some (v.get ⟨i,h⟩) else none
 
 @[simp]
 theorem get_succ : get (b ::ᵥ v) (Fin.succ i) = get v i := by
@@ -382,10 +372,6 @@ theorem ext_nat : ∀ {v w : Bitvec n} (_ : ∀ m : Nat, Bitvec.get? v m = Bitve
   have h' := h m
   simp [get?, Option.isSome_iff_exists, hm] at h'
   apply h'
-
-/-- The list obtained from a vector. -/
-def toList (v : Bitvec n) : List Bool :=
-  v.1
 
 def Fun (width : Nat) := Fin width → Bool
 

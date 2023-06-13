@@ -36,6 +36,12 @@ open Vector
 -- mathport name: «expr ++ₜ »
 local infixl:65 "++ₜ" => Vector.append
 
+
+/-!
+  ### Constant bitvectors
+-/
+section Constants
+
 /-- Create a zero bitvector. This represents the value `0` and has `00000...` as its bitpattern -/
 @[reducible]
 protected def zero (n : ℕ) : Bitvec n :=
@@ -54,6 +60,18 @@ protected def one : ∀ n : ℕ, Bitvec n
 def allOnes (n : ℕ) : Bitvec n :=
   replicate n true
 
+
+instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
+instance : Top (Bitvec n) := ⟨Bitvec.allOnes n⟩
+
+end Constants
+
+
+/-!
+  ### Operations on bitvectors as collection of bits
+-/
+section Collection
+
 /-- Create a bitvector from another with a provably equal length. -/
 protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
   | ⟨x, p⟩ => ⟨x, h ▸ p⟩
@@ -64,9 +82,26 @@ def append {m n} : Bitvec m → Bitvec n → Bitvec (m + n) :=
   Vector.append
 #align bitvec.append Bitvec.append
 
+/-- Get the width (i.e., number of bits) of a `Bitvec` -/
+def width : Bitvec n → Nat := fun _ => n
 
-instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
-instance : Top (Bitvec n) := ⟨Bitvec.allOnes n⟩
+/-- `Bitvec` specific version of `Vector.get` -/
+def get : Bitvec n → Fin n → Bool :=
+  Vector.get
+
+/-- nth element of a bitvec, indexed by a `Nat`.
+    Returns `none` if bitvec is not long enough -/
+def get? : Bitvec n → Nat → Option Bool :=
+  fun v i => if h : i < n then some (v.get ⟨i,h⟩) else none
+
+/-- The list obtained from a vector. -/
+def toList (v : Bitvec n) : List Bool :=
+  v.1
+
+
+end Collection
+
+
 
 
 /-! ### Shift operations -/
