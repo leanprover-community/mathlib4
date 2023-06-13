@@ -47,7 +47,7 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_sin (x * (2 * z))) a
-  have c := b.comp_of_real.div_const (2 * z)
+  have c := b.comp_ofReal.div_const (2 * z)
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
   exact c
 #align euler_sine.antideriv_cos_comp_const_mul EulerSine.antideriv_cos_comp_const_mul
@@ -57,7 +57,7 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
-  have c := (b.comp_of_real.div_const (2 * z)).neg
+  have c := (b.comp_ofReal.div_const (2 * z)).neg
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
   exact c
 #align euler_sine.antideriv_sin_comp_const_mul EulerSine.antideriv_sin_comp_const_mul
@@ -72,7 +72,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
         HasDerivAt (fun y : ℝ => (cos y : ℂ) ^ n) (-n * sin x * (cos x : ℂ) ^ (n - 1)) x := by
     intro x _
     have b : HasDerivAt (fun y : ℝ => (cos y : ℂ)) (-sin x) x := by
-      simpa using (hasDerivAt_cos x).of_real_comp
+      simpa using (hasDerivAt_cos x).ofReal_comp
     convert HasDerivAt.comp x (hasDerivAt_pow _ _) b using 1
     ring
   convert (config := { sameFun := true })
@@ -104,7 +104,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
-    convert ((Complex.hasDerivAt_sin x).mul c).comp_of_real using 1
+    convert ((Complex.hasDerivAt_sin x).mul c).comp_ofReal using 1
     · ext1 y; simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
@@ -137,7 +137,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · apply Nat.sub_pos_of_lt; exact one_lt_two.trans_le hn
     refine' integral_congr fun x _ => _
     dsimp only
-    -- get rid of real trig functions and divions by 2 * z:
+    -- get rid of real trig functions and divisions by 2 * z:
     rw [Complex.ofReal_cos, Complex.ofReal_sin, Complex.sin_sq, ← mul_div_right_comm, ←
       mul_div_right_comm, ← sub_div, mul_div, ← neg_div]
     congr 1

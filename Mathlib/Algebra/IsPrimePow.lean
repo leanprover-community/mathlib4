@@ -23,16 +23,16 @@ variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/
 def IsPrimePow : Prop :=
-  ∃ (p : R)(k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
+  ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
 #align is_prime_pow IsPrimePow
 
-theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R)(k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n :=
+theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n :=
   Iff.rfl
 #align is_prime_pow_def isPrimePow_def
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a prime `p` and a
 natural `k` such that `n` can be written as `p^(k+1)`. -/
-theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R)(k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
+theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
   (isPrimePow_def _).trans
     ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨_, _, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨p, k, hp, hn⟩ =>
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
@@ -129,4 +129,3 @@ theorem IsPrimePow.one_lt {n : ℕ} (h : IsPrimePow n) : 1 < n :=
 #align is_prime_pow.one_lt IsPrimePow.one_lt
 
 end Nat
-

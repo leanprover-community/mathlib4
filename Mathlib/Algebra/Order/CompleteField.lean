@@ -168,7 +168,7 @@ end CutMap
 /-!
 ### Induced map
 
-`LinearOrderField.cutMap` spits out a `Set β`. To get something in `β`, we now take the supremum.
+`LinearOrderedField.cutMap` spits out a `Set β`. To get something in `β`, we now take the supremum.
 -/
 
 

@@ -588,7 +588,7 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dif_pos h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts[rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
   · rw [dif_neg h, dif_neg (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 #align category_theory.limits.biproduct.from_subtype_π CategoryTheory.Limits.biproduct.fromSubtype_π
 
@@ -604,7 +604,7 @@ theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
   apply biproduct.hom_ext'; intro i
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts[rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
 #align category_theory.limits.biproduct.from_subtype_π_subtype CategoryTheory.Limits.biproduct.fromSubtype_π_subtype
 
 @[reassoc (attr := simp)]
@@ -622,7 +622,7 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dif_pos h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts[rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
   · rw [dif_neg h, dif_neg (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 #align category_theory.limits.biproduct.ι_to_subtype CategoryTheory.Limits.biproduct.ι_toSubtype
 
@@ -638,7 +638,7 @@ theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
   apply biproduct.hom_ext; intro i
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts[rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
 #align category_theory.limits.biproduct.ι_to_subtype_subtype CategoryTheory.Limits.biproduct.ι_toSubtype_subtype
 
 @[reassoc (attr := simp)]

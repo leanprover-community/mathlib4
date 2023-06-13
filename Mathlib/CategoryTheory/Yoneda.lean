@@ -162,7 +162,7 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
   /-- `Hom(-,X) ≅ F` via `f` -/
-  has_representation : ∃ (X : _)(f : yoneda.obj X ⟶ F), IsIso f
+  has_representation : ∃ (X : _) (f : yoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.representable CategoryTheory.Functor.Representable
 
 instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, 𝟙 _, inferInstance⟩
@@ -173,7 +173,7 @@ See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Corepresentable (F : C ⥤ Type v₁) : Prop where
   /-- `Hom(X,-) ≅ F` via `f` -/
-  has_corepresentation : ∃ (X : _)(f : coyoneda.obj X ⟶ F), IsIso f
+  has_corepresentation : ∃ (X : _) (f : coyoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
 instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
@@ -189,7 +189,7 @@ variable [F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
 noncomputable def reprX : C :=
-  (Representable.has_representation : ∃ (_ : _)(_ : _ ⟶ F), _).choose
+  (Representable.has_representation : ∃ (_ : _) (_ : _ ⟶ F), _).choose
 set_option linter.uppercaseLean3 false
 #align category_theory.functor.repr_X CategoryTheory.Functor.reprX
 
@@ -238,7 +238,7 @@ variable [F.Corepresentable]
 
 /-- The representing object for the corepresentable functor `F`. -/
 noncomputable def coreprX : C :=
-  (Corepresentable.has_corepresentation : ∃ (_ : _)(_ : _ ⟶ F), _).choose.unop
+  (Corepresentable.has_corepresentation : ∃ (_ : _) (_ : _ ⟶ F), _).choose.unop
 set_option linter.uppercaseLean3 false
 #align category_theory.functor.corepr_X CategoryTheory.Functor.coreprX
 

@@ -184,7 +184,7 @@ avoids having to go back to the `(Pseudo)MetricSpace` level when declaring a `No
 instance as a special case of a more general `SeminormedGroup` instance. -/
 @[to_additive (attr := reducible) "Construct a `NormedAddGroup` from a `SeminormedAddGroup`
 satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(Pseudo)MetricSpace`
-level when declaring a `MormedAddGroup` instance as a special case of a more general
+level when declaring a `NormedAddGroup` instance as a special case of a more general
 `SeminormedAddGroup` instance."]
 def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) : NormedGroup E :=
   { ‹SeminormedGroup E› with
@@ -205,7 +205,7 @@ declaring a `NormedCommGroup` instance as a special case of a more general `Semi
 instance. -/
 @[to_additive (attr := reducible) "Construct a `NormedAddCommGroup` from a
 `SeminormedAddCommGroup` satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the
-`(Pseudo)MetricSpace` level when declaring a `MormedAddCommGroup` instance as a special case
+`(Pseudo)MetricSpace` level when declaring a `NormedAddCommGroup` instance as a special case
 of a more general `SeminormedAddCommGroup` instance."]
 def NormedCommGroup.ofSeparation [SeminormedCommGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormedCommGroup E :=

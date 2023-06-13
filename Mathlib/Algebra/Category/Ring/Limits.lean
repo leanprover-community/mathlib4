@@ -52,13 +52,13 @@ set_option linter.uppercaseLean3 false in
 /-- The flat sections of a functor into `SemiRing` form a subsemiring of all sections.
 -/
 def sectionsSubsemiring (F : J ⥤ SemiRingCatMax.{v, u}) : Subsemiring.{max v u} (∀ j, F.obj j) :=
--- Porting note : if `f` and `g` were inlined, it does not compile
-letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
-  forget₂ AddCommMonCat AddMonCat
-letI g : J ⥤ MonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u}
-{ (MonCat.sectionsSubmonoid.{v, u} (J := J) g),
-  (AddMonCat.sectionsAddSubmonoid.{v, u} (J := J) f) with
-  carrier := (F ⋙ forget SemiRingCat).sections }
+  -- Porting note : if `f` and `g` were inlined, it does not compile
+  letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
+    forget₂ AddCommMonCat AddMonCat
+  letI g : J ⥤ MonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u}
+  { (MonCat.sectionsSubmonoid.{v, u} (J := J) g),
+    (AddMonCat.sectionsAddSubmonoid.{v, u} (J := J) f) with
+    carrier := (F ⋙ forget SemiRingCat).sections }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.sections_subsemiring SemiRingCat.sectionsSubsemiring
 
@@ -72,7 +72,7 @@ set_option linter.uppercaseLean3 false in
 def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
     (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
   -- Porting note : if `f` and `g` were inlined, it does not compile
-  letI f : J ⥤ AddMonCat.{max v u}:= F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
+  letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
     forget₂ AddCommMonCat AddMonCat
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{max v u}) j with
@@ -229,14 +229,14 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
   -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
   -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
   letI : ReflectsIsomorphisms (forget CommSemiRingCatMax.{v, u}) :=
-    CommSemiRing.forgetReflectIsos.{max v u}
+    CommSemiRingCat.forgetReflectIsos.{max v u}
   letI : ReflectsIsomorphisms
     (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}
   let c : Cone F :=
-    { pt := CommSemiRing.of (Types.limitCone (F ⋙ forget _)).pt
+    { pt := CommSemiRingCat.of (Types.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun j => CommSemiRing.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
+        { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) j
           naturality := (SemiRingCat.HasLimits.limitCone.{v, u}
             (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})).π.naturality } }
@@ -246,7 +246,7 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
       makesLimit := by
         refine IsLimit.ofFaithful (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})
           (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _)
-          (fun s : Cone F => CommSemiRing.ofHom
+          (fun s : Cone F => CommSemiRingCat.ofHom
             ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
             fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
             Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,

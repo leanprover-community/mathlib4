@@ -597,7 +597,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 -/
 
 
-/-- **Fundamental theorem of calculus-1**, strict diferentiability in both endpoints.
+/-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
 
 If `f : ℝ → E` is integrable on `a..b` and `f x` has finite limits `ca` and `cb` almost surely as
 `x` tends to `a` and `b`, respectively, then

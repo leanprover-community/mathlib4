@@ -26,7 +26,7 @@ localization at `R - {0}` results in a division ring.
 ## Notations
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
-subset `S`. Also defines a new heterogeneos division notation `r /ₒ s` for a numerator `r : R` and
+subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
 a denominator `s : S`.
 
 ## References
@@ -111,7 +111,7 @@ protected theorem ind {β : R[S⁻¹] → Prop} (c : ∀ (r : R) (s : S), β (r 
 #align ore_localization.ind OreLocalization.ind
 
 theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
-    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S)(v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
+    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
   Quotient.eq''
 #align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 
