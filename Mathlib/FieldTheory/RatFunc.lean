@@ -699,7 +699,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
 #align ratfunc.coe_map_ring_hom_eq_coe_map RatFunc.coe_mapRingHom_eq_coe_map
 
 -- TODO: Generalize to `FunLike` classes,
-/-- Lift an monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
+/-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
@@ -1288,7 +1288,7 @@ theorem num_denom_mul (x y : RatFunc K) :
 #align ratfunc.num_denom_mul RatFunc.num_denom_mul
 
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
-    num x ∣ p ↔ ∃ (q : K[X])(hq : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
+    num x ∣ p ↔ ∃ (q : K[X]) (hq : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
   · rintro ⟨q, rfl⟩
     obtain ⟨_hx, hq⟩ := mul_ne_zero_iff.mp hp

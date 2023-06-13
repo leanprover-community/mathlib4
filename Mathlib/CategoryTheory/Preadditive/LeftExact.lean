@@ -169,7 +169,7 @@ attribute [local instance] preservesBinaryCoproductsOfPreservesCokernels
 
 variable [HasBinaryBiproducts C]
 
-/-- A functor between preadditive categoris preserves the coequalizer of two
+/-- A functor between preadditive categories preserves the coequalizer of two
 morphisms if it preserves all cokernels. -/
 def preservesCoequalizerOfPreservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} (f g : X ⟶ Y) :

@@ -106,13 +106,18 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ TopCat.Presheaf.germ
 
-@[elementwise (attr := simp)]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
   colimit.w ((OpenNhds.inclusion x.1).op ⋙ F) i'.op
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
+
+-- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
+  (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.
@@ -412,7 +417,7 @@ For presheaves valued in a concrete category whose forgetful functor preserves f
 every element of the stalk is the germ of a section.
 -/
 theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) :
-    ∃ (U : Opens X)(m : x ∈ U)(s : F.obj (op U)), F.germ ⟨x, m⟩ s = t := by
+    ∃ (U : Opens X) (m : x ∈ U) (s : F.obj (op U)), F.germ ⟨x, m⟩ s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
@@ -425,7 +430,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : F.obj (op U)) (t : F.obj (op V)) (h : germ F ⟨x, mU⟩ s = germ F ⟨x, mV⟩ t) :
-    ∃ (W : Opens X)(_m : x ∈ W)(iU : W ⟶ U)(iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
+    ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
   obtain ⟨W, iU, iV, e⟩ :=
     (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
           (isColimitOfPreserves _ (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp h
@@ -444,7 +449,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
   rw [← comp_apply, ← comp_apply, ← f.naturality, ← f.naturality, comp_apply, comp_apply] at heq
   replace heq := h W heq
   convert congr_arg (F.germ ⟨x, hxW⟩) heq using 1
-  exacts[(F.germ_res_apply iWU₁ ⟨x, hxW⟩ s).symm, (F.germ_res_apply iWU₂ ⟨x, hxW⟩ t).symm]
+  exacts [(F.germ_res_apply iWU₁ ⟨x, hxW⟩ s).symm, (F.germ_res_apply iWU₂ ⟨x, hxW⟩ t).symm]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_injective_of_app_injective TopCat.Presheaf.stalkFunctor_map_injective_of_app_injective
 

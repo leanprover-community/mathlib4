@@ -1009,7 +1009,7 @@ theorem HasSum.int_rec {b : α} {f g : ℕ → α} (hf : HasSum f a) (hg : HasSu
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) _
-      exacts[Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
+      exacts [Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
   exact HasSum.add_isCompl this (h₁.hasSum_range_iff.mpr hf) (h₂.hasSum_range_iff.mpr hg)
 #align has_sum.int_rec HasSum.int_rec
 

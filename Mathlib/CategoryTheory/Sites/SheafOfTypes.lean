@@ -854,7 +854,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v₁ u₁ :=
-  ∏ fun f : Σ(Y Z : _)(_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}

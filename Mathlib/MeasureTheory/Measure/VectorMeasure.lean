@@ -15,7 +15,7 @@ import Mathlib.Analysis.Complex.Basic
 
 # Vector valued measures
 
-This file defines vector valued measures, which are σ-additive functions from a set to a add monoid
+This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
 `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
 Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`.
@@ -38,7 +38,7 @@ We require all non-measurable sets to be mapped to zero in order for the extensi
 to only compare the underlying functions for measurable sets.
 
 We use `HasSum` instead of `tsum` in the definition of vector measures in comparison to `Measure`
-since this provides summablity.
+since this provides summability.
 
 ## Tags
 
@@ -188,7 +188,7 @@ theorem of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : ∀ i, Me
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts[fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
+  exacts [fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
 #align measure_theory.vector_measure.of_union MeasureTheory.VectorMeasure.of_union
 
 theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
@@ -424,10 +424,10 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
     · refine' @summable_of_nonneg_of_le _ (ENNReal.toReal ∘ μ ∘ f) _ _ _ _
       · intro
         split_ifs
-        exacts[ENNReal.toReal_nonneg, le_rfl]
+        exacts [ENNReal.toReal_nonneg, le_rfl]
       · intro
         split_ifs
-        exacts[le_rfl, ENNReal.toReal_nonneg]
+        exacts [le_rfl, ENNReal.toReal_nonneg]
       exact summable_measure_toReal hf₁ hf₂
     · intro a ha
       apply ne_of_lt hμ.measure_univ_lt_top
@@ -1224,7 +1224,7 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
       · by_cases hxu' : x ∈ uᶜ
         · exact Or.inl ⟨hxu', hx⟩
         rcases ht hx with (hxu | hxv)
-        exacts[False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
+        exacts [False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
       · cases' hx with hx hx <;> exact hx.2
 #align measure_theory.vector_measure.mutually_singular.add_left MeasureTheory.VectorMeasure.MutuallySingular.add_left
 

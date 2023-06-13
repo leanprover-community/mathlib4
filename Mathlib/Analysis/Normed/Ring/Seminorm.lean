@@ -133,7 +133,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
           refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
             · change _ ≤ ite _ _ _
               split_ifs
-              exacts[le_rfl, zero_le_one]
+              exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
           simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
