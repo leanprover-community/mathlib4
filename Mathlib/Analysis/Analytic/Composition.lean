@@ -1191,7 +1191,7 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 500000 in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext (n v)
@@ -1203,18 +1203,9 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    -- Porting note: (simp regression?)
-    -- This had been just:
-    --   simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
-    --     compAlongComposition_apply, Finset.sum_sigma', applyComposition,
-    --     ContinuousMultilinearMap.map_sum]
-    -- but it is extremely slow (if it finishes at all?) (and much slower than in mathlib3).
-    -- Instead we hold simp's hand, and it's still very slow:
-    simp only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply]
-    simp_rw [compAlongComposition_apply, ContinuousMultilinearMap.sum_apply, Finset.sum_sigma',
-      applyComposition, ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.map_sum,
-      Finset.sum_sigma']
-    exact this
+    simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
+      compAlongComposition_apply, Finset.sum_sigma', applyComposition,
+      ContinuousMultilinearMap.map_sum]
   /- Now, we use `composition.sigma_equiv_sigma_pi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
