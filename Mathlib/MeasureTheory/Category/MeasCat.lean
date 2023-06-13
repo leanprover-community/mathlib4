@@ -72,6 +72,7 @@ instance unbundledHom : UnbundledHom @Measurable :=
 deriving instance LargeCategory for MeasCat
 
 -- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory MeasCat := by
   unfold MeasCat
   infer_instance

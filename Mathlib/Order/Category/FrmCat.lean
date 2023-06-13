@@ -69,6 +69,7 @@ instance bundledHom : BundledHom Hom where
 #align Frm.bundled_hom FrmCat.bundledHom
 
 -- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for FrmCat`
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for FrmCat
 
 instance : ConcreteCategory FrmCat := by

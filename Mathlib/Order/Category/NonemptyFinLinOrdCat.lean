@@ -69,6 +69,7 @@ instance : BundledHom.ParentProjection @NonemptyFinLinOrd.toLinearOrder :=
 
 deriving instance LargeCategory for NonemptyFinLinOrdCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
