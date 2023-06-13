@@ -27,7 +27,7 @@ section Field
 
 variable [Field K]
 
-/-- A natural number `t` is invertible in a field `K` if the charactistic of `K` does not divide
+/-- A natural number `t` is invertible in a field `K` if the characteristic of `K` does not divide
 `t`. -/
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
@@ -38,7 +38,7 @@ theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringCh
   exact nonzero_of_invertible (t : K)
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
 
-/-- A natural number `t` is invertible in a field `K` of charactistic `p` if `p` does not divide
+/-- A natural number `t` is invertible in a field `K` of characteristic `p` if `p` does not divide
 `t`. -/
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)

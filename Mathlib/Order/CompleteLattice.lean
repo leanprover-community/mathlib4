@@ -279,12 +279,12 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sSup, bot, top
-  ..completeLatticeOfInf my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sSup, bot, top
+    ..completeLatticeOfInf my_T _ }
 ```
 -/
 def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
@@ -328,12 +328,12 @@ provided; for example, if `inf` is known explicitly, construct the `CompleteLatt
 instance as
 ```
 instance : CompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sInf, bot, top
-  ..completeLatticeOfSup my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sInf, bot, top
+    ..completeLatticeOfSup my_T _ }
 ```
 -/
 def completeLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]

@@ -979,7 +979,7 @@ See also `count_normalizedFactors_eq` which expands the definition of `multiplic
 to produce a specification for `count (normalizedFactors _) _`..
 -/
 theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-(hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
+    (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,

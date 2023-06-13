@@ -54,7 +54,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 ## TODO
 
 The above theorems are also true in `ℕ+`, `Fin n`... To make that work, we need `SuccOrder α`
-and `SuccArchmidean α`.
+and `IsSuccArchimedean α`.
 
 ## Tags
 

@@ -285,7 +285,7 @@ syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
 
 open Elab Tactic
 
-def cancelDenominatorsAt (fvar: FVarId) : TacticM Unit := do
+def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
   liftMetaTactic' fun g => do

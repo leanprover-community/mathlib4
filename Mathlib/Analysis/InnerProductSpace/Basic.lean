@@ -1985,7 +1985,7 @@ The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairw
 
 This definition is less lightweight, but allows for better definitional properties when the inner
 product space structure on each of the submodules is important -- for example, when considering
-their Hilbert sum (`Pilp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
+their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
 def OrthogonalFamily (G : ι → Type _) [∀ i, NormedAddCommGroup (G i)]

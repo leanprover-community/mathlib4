@@ -204,7 +204,7 @@ variable {f : α → β} {s t : Set α}
 infixl:80 " '' " => image
 
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _)(_ : x ∈ s), f x = y :=
+    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 
@@ -1362,7 +1362,7 @@ namespace EquivLike
 variable {E : Type _} [EquivLike E ι ι']
 
 @[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
-(EquivLike.surjective _).range_comp _
+  (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
 
 end EquivLike

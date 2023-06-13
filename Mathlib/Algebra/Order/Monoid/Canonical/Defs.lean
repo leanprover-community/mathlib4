@@ -22,7 +22,7 @@ universe u
 
 variable {α : Type u}
 
-/-- An `OrderCommMonoid` with one-sided 'division' in the sense that
+/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedMonoid`. -/
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
@@ -30,7 +30,7 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
 #align has_exists_mul_of_le ExistsMulOfLE
 
-/-- An `OrderAddCommMonoid` with one-sided 'subtraction' in the sense that
+/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddMonoid`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where

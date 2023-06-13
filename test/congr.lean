@@ -135,7 +135,7 @@ example : partiallyApplied (True ∧ True) = partiallyApplied True := by
   decide
 
 inductive walk (α : Type) : α → α → Type
-| nil (n : α) : walk α n n
+  | nil (n : α) : walk α n n
 
 def walk.map (f : α → β) (w : walk α x y) : walk β (f x) (f y) :=
   match x, y, w with
