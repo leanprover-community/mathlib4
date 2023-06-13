@@ -17,7 +17,7 @@ import Mathlib.Topology.MetricSpace.Antilipschitz
 /-!
 # The Lax-Milgram Theorem
 
-We consider an Hilbert space `V` over `ℝ`
+We consider a Hilbert space `V` over `ℝ`
 equipped with a bounded bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ`.
 
 Recall that a bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ` is *coercive*

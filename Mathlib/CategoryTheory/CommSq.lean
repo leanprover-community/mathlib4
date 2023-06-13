@@ -106,7 +106,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
   B ---g---> Y
 ```
 
-The datum of a lift in a commutative square, i.e. a up-right-diagonal
+The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 @[ext]

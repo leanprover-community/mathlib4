@@ -96,7 +96,7 @@ theorem HasDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} (hg
   (hf.hasFDerivAt_equiv hf').of_local_left_inverse hg hfg
 #align has_deriv_at.of_local_left_inverse HasDerivAt.of_local_left_inverse
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
@@ -132,4 +132,3 @@ theorem not_differentiableAt_of_local_left_inverse_hasDerivAt_zero {f g : 𝕜 �
   have := (hf.comp a hg.hasDerivAt).congr_of_eventuallyEq hfg.symm
   simpa using this.unique (hasDerivAt_id a)
 #align not_differentiable_at_of_local_left_inverse_has_deriv_at_zero not_differentiableAt_of_local_left_inverse_hasDerivAt_zero
-
