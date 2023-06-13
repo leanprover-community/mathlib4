@@ -36,7 +36,7 @@ open Vector
 -- mathport name: «expr ++ₜ »
 local infixl:65 "++ₜ" => Vector.append
 
-/-- Create a zero bitvector -/
+/-- Create a zero bitvector. This represents the value `0` and has `00000...` as its bitpattern -/
 @[reducible]
 protected def zero (n : ℕ) : Bitvec n :=
   replicate n false
@@ -49,6 +49,11 @@ protected def one : ∀ n : ℕ, Bitvec n
   | succ n => replicate n false++ₜtrue ::ᵥ nil
 #align bitvec.one Bitvec.one
 
+/-- The bitvector `1111...` where all entries are 1. Represents the value `-1` -/
+@[reducible]
+def allOnes (n : ℕ) : Bitvec n :=
+  replicate n true
+
 /-- Create a bitvector from another with a provably equal length. -/
 protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
   | ⟨x, p⟩ => ⟨x, h ▸ p⟩
@@ -58,6 +63,11 @@ protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
 def append {m n} : Bitvec m → Bitvec n → Bitvec (m + n) :=
   Vector.append
 #align bitvec.append Bitvec.append
+
+
+instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
+instance : Top (Bitvec n) := ⟨Bitvec.allOnes n⟩
+
 
 /-! ### Shift operations -/
 
@@ -130,6 +140,13 @@ protected def or : Bitvec n → Bitvec n → Bitvec n :=
 protected def xor : Bitvec n → Bitvec n → Bitvec n :=
   map₂ xor
 #align bitvec.xor Bitvec.xor
+
+/-- bitwise Boolean negation/complement -/
+protected def compl : Bitvec n → Bitvec n :=
+  map not
+
+
+instance : Complement (Bitvec n) := ⟨Bitvec.compl⟩
 
 end Bitwise
 
