@@ -90,7 +90,7 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
 
--- We might want a `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
+-- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
 -- however we'd need another type class for lattices with bot, and all the API for that.
 section GeneralizedBooleanAlgebra
 
@@ -218,12 +218,12 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
 lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
-⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
-  by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
+  ⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
+    by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
 #align le_sdiff le_sdiff
 
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
-⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
+  ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
 #align sdiff_eq_left sdiff_eq_left
 
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using

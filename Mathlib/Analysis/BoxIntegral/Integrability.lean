@@ -45,7 +45,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   refine' HasIntegral.of_mul ‖y‖ fun ε ε0 => _
   lift ε to ℝ≥0 using ε0.le; rw [NNReal.coe_pos] at ε0 
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
-    both `(s ∩ I.Icc) \ F` and `U \ s` have measuer less than `ε`. -/
+    both `(s ∩ I.Icc) \ F` and `U \ s` have measure less than `ε`. -/
   have A : μ (s ∩ Box.Icc I) ≠ ∞ :=
     ((measure_mono <| Set.inter_subset_right _ _).trans_lt (I.measure_Icc_lt_top μ)).ne
   have B : μ (s ∩ I) ≠ ∞ :=

@@ -119,7 +119,7 @@ namespace Hom
 attribute [reassoc] comm
 attribute [local simp] comm comm_assoc
 
-/-- The identity morphism on a `Action V G`. -/
+/-- The identity morphism on an `Action V G`. -/
 @[simps]
 def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in
@@ -165,8 +165,8 @@ set_option linter.uppercaseLean3 false in
 from an isomorphism of the the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
-def mkIso {M N : Action V G} (f : M.V ≅ N.V) (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g) :
-    M ≅ N where
+def mkIso {M N : Action V G} (f : M.V ≅ N.V)
+    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by aesop_cat) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }
@@ -221,15 +221,14 @@ set_option linter.uppercaseLean3 false in
 /-- Auxilliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun M => mkIso (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.unit_iso Action.FunctorCategoryEquivalence.unitIso
 
 /-- Auxilliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
-  NatIso.ofComponents (fun M => NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence.counit_iso Action.FunctorCategoryEquivalence.counitIso
 
@@ -767,11 +766,11 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
     { obj := fun X => ⟨X, 1⟩
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
-    NatIso.ofComponents (fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
+    NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
-      exact ρ_one X) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+      exact ρ_one X
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align Action.Action_punit_equivalence Action.actionPunitEquivalence
 
@@ -798,7 +797,7 @@ the identity functor on `Action V G`.
 -/
 @[simps!]
 def resId {G : MonCat} : res V (𝟙 G) ≅ 𝟭 (Action V G) :=
-  NatIso.ofComponents (fun M => mkIso (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.res_id Action.resId
 
@@ -807,7 +806,7 @@ to the restriction along the composition of homomorphism.
 -/
 @[simps!]
 def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f ≅ res V (f ≫ g) :=
-  NatIso.ofComponents (fun M => mkIso (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.res_comp Action.resComp
 

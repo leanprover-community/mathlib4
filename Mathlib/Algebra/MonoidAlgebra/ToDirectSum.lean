@@ -69,7 +69,7 @@ open DirectSum
 
 section Defs
 
-/-- Interpret a `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
+/-- Interpret an `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
 def AddMonoidAlgebra.toDirectSum [Semiring M] (f : AddMonoidAlgebra M ι) : ⨁ _ : ι, M :=
   Finsupp.toDfinsupp f
 #align add_monoid_algebra.to_direct_sum AddMonoidAlgebra.toDirectSum
@@ -86,7 +86,7 @@ theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
 
 variable [∀ m : M, Decidable (m ≠ 0)]
 
-/-- Interpret a homogenous `DirectSum` as a `AddMonoidAlgebra`. -/
+/-- Interpret a homogenous `DirectSum` as an `AddMonoidAlgebra`. -/
 def DirectSum.toAddMonoidAlgebra (f : ⨁ _ : ι, M) : AddMonoidAlgebra M ι :=
   Dfinsupp.toFinsupp f
 #align direct_sum.to_add_monoid_algebra DirectSum.toAddMonoidAlgebra

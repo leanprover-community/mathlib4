@@ -216,8 +216,8 @@ set_option maxHeartbeats 300000 in -- Porting note: needs more Heartbeats to ela
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
 def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
-{ Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
-  smul := fun a b => DirectSum.decompose 𝓐 a • b }
+  { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
+    smul := fun a b => DirectSum.decompose 𝓐 a • b }
 #align graded_module.is_module GradedModule.isModule
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.

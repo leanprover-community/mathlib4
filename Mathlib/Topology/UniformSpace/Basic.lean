@@ -264,7 +264,7 @@ def UniformSpace.Core.mk' {α : Type u} (U : Filter (α × α)) (refl : ∀ r �
     mem_of_superset (mem_lift' hs) hsr⟩
 #align uniform_space.core.mk' UniformSpace.Core.mk'
 
-/-- Defining an `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
+/-- Defining a `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
 def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     (refl : ∀ r ∈ B, ∀ (x), (x, x) ∈ r) (symm : ∀ r ∈ B, ∃ t ∈ B, t ⊆ Prod.swap ⁻¹' r)
     (comp : ∀ r ∈ B, ∃ t ∈ B, t ○ t ⊆ r) : UniformSpace.Core α
@@ -880,7 +880,7 @@ theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
     𝓝 a ×ˢ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
       (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
   rw [nhds_eq_uniformity', nhds_eq_uniformity, prod_lift'_lift']
-  exacts[rfl, monotone_preimage, monotone_preimage]
+  exacts [rfl, monotone_preimage, monotone_preimage]
 #align nhds_nhds_eq_uniformity_uniformity_prod nhds_nhds_eq_uniformity_uniformity_prod
 
 theorem nhds_eq_uniformity_prod {a b : α} :

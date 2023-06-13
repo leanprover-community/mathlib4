@@ -159,7 +159,7 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
 
 -- porting note: added the next two lemmas to ease automation; without these lemmas,
 -- `limit.hom_ext` would be applied, but the goal would involve terms
--- in `Discete β` rather than `β` itself
+-- in `Discrete β` rather than `β` itself
 @[ext 1050]
 lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
@@ -172,13 +172,12 @@ lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f �
 
 /-- The fan constructed of the projections from the product is limiting. -/
 def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)) :=
-  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _) (by aesop_cat))
+  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f)) (Cones.ext (Iso.refl _))
 #align category_theory.limits.product_is_product CategoryTheory.Limits.productIsProduct
 
 /-- The cofan constructed of the inclusions from the coproduct is colimiting. -/
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
-    (Cocones.ext (Iso.refl _) (by aesop_cat))
+  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 #align category_theory.limits.coproduct_is_coproduct CategoryTheory.Limits.coproductIsCoproduct
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
@@ -238,7 +237,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product
-of `f`, see `PreservesProduct.ofIsoComparison.of_iso_comparison`. -/
+of `f`, see `PreservesProduct.ofIsoComparison`. -/
 def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ f) ⟶ ∏ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
@@ -259,7 +258,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
 #align category_theory.limits.map_lift_pi_comparison CategoryTheory.Limits.map_lift_piComparison
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
-of `f`, see `PreservesCoroduct.ofIsoComparison.of_iso_comparison`. -/
+of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
 def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
     (∐ fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
   Sigma.desc fun b => G.map (Sigma.ι f b)
@@ -380,7 +379,7 @@ instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
   HasColimit.mk (colimitCoconeOfUnique f)
 #align category_theory.limits.has_coproduct_unique CategoryTheory.Limits.hasCoproduct_unique
 
-/-- A coproduct over a index type with exactly one term is just the object over that term. -/
+/-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def coproductUniqueIso : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit

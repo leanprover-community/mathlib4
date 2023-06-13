@@ -84,7 +84,7 @@ theorem gen_empty_right {s : Set α} (h : s.Nonempty) : CompactOpen.gen s (∅ :
 -- The compact-open topology on the space of continuous maps α → β.
 instance compactOpen : TopologicalSpace C(α, β) :=
   TopologicalSpace.generateFrom
-    { m | ∃ (s : Set α)(_ : IsCompact s)(u : Set β)(_ : IsOpen u), m = CompactOpen.gen s u }
+    { m | ∃ (s : Set α) (_ : IsCompact s) (u : Set β) (_ : IsOpen u), m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :

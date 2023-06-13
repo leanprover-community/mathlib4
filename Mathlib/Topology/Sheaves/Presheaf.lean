@@ -56,9 +56,9 @@ variable {C}
 namespace Presheaf
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.hasCoeToFun
+  CategoryTheory.ConcreteCategory.funLike
 
-/-- attribute `sheaf_restrict` to mark lemmas related to restricting sheafs -/
+/-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
   `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Restrict):ident]))
 

@@ -340,7 +340,7 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
     exact inner_self_nonneg
 #align inner_product_space.core.inner_mul_inner_self_le InnerProductSpace.Core.inner_mul_inner_self_le
 
-/-- Norm constructed from a `InnerProductSpace.Core` structure, defined to be the square root
+/-- Norm constructed from an `InnerProductSpace.Core` structure, defined to be the square root
 of the scalar product. -/
 def toNorm : Norm F where norm x := sqrt (re ⟪x, x⟫)
 #align inner_product_space.core.to_has_norm InnerProductSpace.Core.toNorm
@@ -390,7 +390,7 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
 
 attribute [local instance] toNormedAddCommGroup
 
-/-- Normed space structure constructed from a `InnerProductSpace.Core` structure -/
+/-- Normed space structure constructed from an `InnerProductSpace.Core` structure -/
 def toNormedSpace : NormedSpace 𝕜 F where
   norm_smul_le r x := by
     rw [norm_eq_sqrt_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
@@ -405,7 +405,7 @@ section
 
 attribute [local instance] InnerProductSpace.Core.toNormedAddCommGroup
 
-/-- Given a `InnerProductSpace.Core` structure on a space, one can use it to turn
+/-- Given an `InnerProductSpace.Core` structure on a space, one can use it to turn
 the space into an inner product space. The `NormedAddCommGroup` structure is expected
 to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroup`. -/
 def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (c : InnerProductSpace.Core 𝕜 F) :
@@ -1985,7 +1985,7 @@ The connection to the subobject spelling is shown in `orthogonalFamily_iff_pairw
 
 This definition is less lightweight, but allows for better definitional properties when the inner
 product space structure on each of the submodules is important -- for example, when considering
-their Hilbert sum (`Pilp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
+their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
 def OrthogonalFamily (G : ι → Type _) [∀ i, NormedAddCommGroup (G i)]

@@ -48,7 +48,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
   requires it. However, problems may arise in the case where `ι` is infinite; use at your own
   caution.
 * Instead of requiring `DecidableEq ι` as an argument to `PiTensorProduct` itself, we include it
-  as an argument in the constructors of the relation. A decidability isntance still has to come
+  as an argument in the constructors of the relation. A decidability instance still has to come
   from somewhere due to the use of `Function.update`, but this hides it from the downstream user.
   See the implementation notes for `MultilinearMap` for an extended discussion of this choice.
 
