@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 
 ! This file was ported from Lean 3 source module data.polynomial.ring_division
-! leanprover-community/mathlib commit 517cc149e0b515d2893baa376226ed10feb319c7
+! leanprover-community/mathlib commit 8efcf8022aac8e01df8d302dcebdbc25d6a886c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -37,7 +37,7 @@ This file starts looking like the ring theory of $ R[X] $
 
 noncomputable section
 
-open Classical Polynomial
+open Polynomial
 
 open Finset
 
@@ -150,8 +150,9 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
 #align polynomial.trailing_degree_mul Polynomial.trailingDegree_mul
 
 @[simp]
-theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p :=
-  if hp0 : p = 0 then
+theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
+  classical
+  exact if hp0 : p = 0 then
     if hn0 : n = 0 then by simp [hp0, hn0]
     else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
   else
@@ -159,8 +160,9 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
       (by rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp0)
 #align polynomial.nat_degree_pow Polynomial.natDegree_pow
 
-theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) :=
-  if hp : p = 0 then by simp only [hp, MulZeroClass.zero_mul, le_refl]
+theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
+  classical
+  exact if hp : p = 0 then by simp only [hp, MulZeroClass.zero_mul, le_refl]
   else by
     rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq];
       exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
@@ -368,6 +370,7 @@ introduced  `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the 
   `(X - a) ^ n` divides `p`. -/
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
+  classical
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, Nat.le_find_iff]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
@@ -443,6 +446,7 @@ theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associate
 
 theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
+  classical
   have hp : p ≠ 0 := left_ne_zero_of_mul hpq
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), dif_neg hpq, rootMultiplicity_eq_multiplicity p,
@@ -451,12 +455,14 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
 #align polynomial.root_multiplicity_mul Polynomial.rootMultiplicity_mul
 
 theorem rootMultiplicity_X_sub_C_self {x : R} : rootMultiplicity x (X - C x) = 1 := by
+  classical
   rw [rootMultiplicity_eq_multiplicity, dif_neg (X_sub_C_ne_zero x),
     multiplicity.get_multiplicity_self]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_self Polynomial.rootMultiplicity_X_sub_C_self
 
-theorem rootMultiplicity_X_sub_C {x y : R} :
+-- porting note: swapped instance argument order
+theorem rootMultiplicity_X_sub_C [DecidableEq R] {x y : R} :
     rootMultiplicity x (X - C y) = if x = y then 1 else 0 := by
   split_ifs with hxy
   · rw [hxy]
@@ -476,7 +482,7 @@ theorem rootMultiplicity_X_sub_C_pow (a : R) (n : ℕ) : rootMultiplicity a ((X 
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
 
-theorem exists_multiset_roots :
+theorem exists_multiset_roots [DecidableEq R] :
     ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
       (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
   | p, hp =>
@@ -1157,7 +1163,8 @@ theorem eq_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hf : Function.Inject
   apply pow_rootMultiplicity_dvd
 #align polynomial.eq_root_multiplicity_map Polynomial.eq_rootMultiplicity_map
 
-theorem count_map_roots [IsDomain A] {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (b : B) :
+theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0)
+    (b : B) :
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   rw [le_rootMultiplicity_iff hmap, ← Multiset.prod_replicate, ←
     Multiset.map_replicate fun a => X - C a]
@@ -1170,7 +1177,7 @@ theorem count_map_roots [IsDomain A] {p : A[X]} {f : A →+* B} (hmap : map f p 
   simp only [Function.comp_apply, Polynomial.map_sub, map_X, map_C]
 #align polynomial.count_map_roots Polynomial.count_map_roots
 
-theorem count_map_roots_of_injective [IsDomain A] (p : A[X]) {f : A →+* B}
+theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) (b : B) :
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   by_cases hp0 : p = 0
@@ -1179,9 +1186,10 @@ theorem count_map_roots_of_injective [IsDomain A] (p : A[X]) {f : A →+* B}
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 
-theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
-    p.roots.map f ≤ (p.map f).roots :=
-  Multiset.le_iff_count.2 fun b => by
+theorem map_roots_le [IsDomain A] [IsDomain B]  {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
+    p.roots.map f ≤ (p.map f).roots := by
+  classical
+  exact Multiset.le_iff_count.2 fun b => by
     rw [count_roots]
     apply count_map_roots h
 #align polynomial.map_roots_le Polynomial.map_roots_le
