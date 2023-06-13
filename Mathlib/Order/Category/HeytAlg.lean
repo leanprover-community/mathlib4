@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.BddDistLat
-import Mathbin.Order.Heyting.Hom
+import Mathlib.Order.Category.BddDistLat
+import Mathlib.Order.Heyting.Hom
 
 /-!
 # The category of Heyting algebras
@@ -48,8 +48,7 @@ theorem coe_of (α : Type _) [HeytingAlgebra α] : ↥(of α) = α :=
 instance : Inhabited HeytAlg :=
   ⟨of PUnit⟩
 
-instance bundledHom : BundledHom HeytingHom
-    where
+instance bundledHom : BundledHom HeytingHom where
   toFun α β [HeytingAlgebra α] [HeytingAlgebra β] := (coeFn : HeytingHom α β → α → β)
   id := HeytingHom.id
   comp := @HeytingHom.comp
@@ -67,8 +66,7 @@ instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
