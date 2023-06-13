@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.BddLat
+import Mathlib.Order.Category.BddLatCat
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
@@ -97,4 +97,3 @@ theorem completeLat_dual_comp_forget_to_bddLat :
     CompleteLat.dual ⋙ forget₂ CompleteLat BddLat = forget₂ CompleteLat BddLat ⋙ BddLat.dual :=
   rfl
 #align CompleteLat_dual_comp_forget_to_BddLat completeLat_dual_comp_forget_to_bddLat
-
