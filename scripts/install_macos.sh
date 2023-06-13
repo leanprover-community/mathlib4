@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -exo pipefail
+
 # Install Homebrew
 set -e
 

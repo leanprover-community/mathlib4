@@ -1,4 +1,6 @@
-#! /bin/bash
+#!/usr/bin/env bash
+
+set -exo pipefail
 
 sudo apt install -y git curl
 # The following test is needed in case VScode or VSCodium was installed by other
