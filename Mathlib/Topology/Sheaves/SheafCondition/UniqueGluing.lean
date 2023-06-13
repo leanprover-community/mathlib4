@@ -20,8 +20,8 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `Mon`, `AddCommGroup`, `Ring`, `CommRing` etc. are all examples of this kind of
-category.
+structures, such as `MonCat`, `AddCommGroupCat`, `RingCat`, `CommRingCat` etc. are all examples of
+this kind of category.
 
 A presheaf `F : presheaf C X` satisfies the sheaf condition if and only if, for every
 compatible family of sections `sf : Π i : ι, F.obj (op (U i))`, there exists a unique gluing
@@ -35,28 +35,15 @@ We show that the sheaf condition in terms of unique gluings is equivalent to the
 in terms of equalizers. Our approach is as follows: First, we show them to be equivalent for
 `Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
 isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
-`topology/sheaves/forget.lean`.
+`Mathlib/Topology/Sheaves/Forget.lean`.
 
 -/
 
 
 noncomputable section
 
-open TopCat
-
-open TopCat.Presheaf
-
-open TopCat.Presheaf.SheafConditionEqualizerProducts
-
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open TopologicalSpace
-
-open TopologicalSpace.Opens
-
-open Opposite
+open TopCat TopCat.Presheaf TopCat.Presheaf.SheafConditionEqualizerProducts CategoryTheory
+  CategoryTheory.Limits TopologicalSpace TopologicalSpace.Opens Opposite
 
 universe u v
 
@@ -94,7 +81,7 @@ condition if and only if, for every compatible family of sections `sf : Π i : �
 there exists a unique gluing `s : F.obj (op (supr U))`.
 
 We prove this to be equivalent to the usual one below in
-`is_sheaf_iff_is_sheaf_unique_gluing`
+`TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`
 -/
 def IsSheafUniqueGluing : Prop :=
   ∀ ⦃ι : Type v⦄ (U : ι → Opens X) (sf : ∀ i : ι, F.obj (op (U i))),
@@ -108,7 +95,7 @@ section TypeValued
 
 variable {X : TopCat.{v}} (F : Presheaf (Type v) X) {ι : Type v} (U : ι → Opens X)
 
-/-- For presheaves of types, terms of `pi_opens F U` are just families of sections.
+/-- For presheaves of types, terms of `piOpens F U` are just families of sections.
 -/
 def piOpensIsoSectionsFamily : piOpens F U ≅ ∀ i : ι, F.obj (op (U i)) :=
   Limits.IsLimit.conePointUniqueUpToIso
@@ -117,8 +104,8 @@ def piOpensIsoSectionsFamily : piOpens F U ≅ ∀ i : ι, F.obj (op (U i)) :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pi_opens_iso_sections_family TopCat.Presheaf.piOpensIsoSectionsFamily
 
-/-- Under the isomorphism `pi_opens_iso_sections_family`, compatibility of sections is the same
-as being equalized by the arrows `left_res` and `right_res` of the equalizer diagram.
+/-- Under the isomorphism `piOpensIsoSectionsFamily`, compatibility of sections is the same
+as being equalized by the arrows `leftRes` and `rightRes` of the equalizer diagram.
 -/
 theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     IsCompatible F U ((piOpensIsoSectionsFamily F U).hom sf) ↔
@@ -138,7 +125,7 @@ theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.compatible_iff_left_res_eq_right_res TopCat.Presheaf.compatible_iff_leftRes_eq_rightRes
 
-/-- Under the isomorphism `pi_opens_iso_sections_family`, being a gluing of a family of
+/-- Under the isomorphism `piOpensIsoSectionsFamily`, being a gluing of a family of
 sections `sf` is the same as lying in the preimage of `res` (the leftmost arrow of the
 equalizer diagram).
 -/

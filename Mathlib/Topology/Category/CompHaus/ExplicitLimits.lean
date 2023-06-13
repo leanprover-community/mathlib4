@@ -95,7 +95,7 @@ lemma pullback.hom_ext {Z : CompHaus.{u}} (a b : Z ⟶ pullback f g)
 The pullback cone whose cone point is the explicit pullback.
 -/
 @[simps! pt π]
-def pullback.cone : Limits.PullbackCone f g:=
+def pullback.cone : Limits.PullbackCone f g :=
   Limits.PullbackCone.mk (pullback.fst f g) (pullback.snd f g) (pullback.condition f g)
 
 /--

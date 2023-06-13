@@ -262,7 +262,7 @@ theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map 
 then the functors `Opens Y ⥤ Opens X` they induce are isomorphic.
 -/
 def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
-  NatIso.ofComponents (fun U => eqToIso (by rw [congr_arg map h])) (by aesop_cat)
+  NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
 #align topological_space.opens.map_iso TopologicalSpace.Opens.mapIso
 
 theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
@@ -295,14 +295,8 @@ TODO: define `OrderIso.equivalence`, use it.
 def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
   functor := map H.hom
   inverse := map H.inv
-  unitIso :=
-    NatIso.ofComponents (fun U => eqToIso
-      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
-      (by intros; simp)
-  counitIso :=
-    NatIso.ofComponents (fun U => eqToIso
-      (by simp [map, ←comp_apply, id_apply, Set.preimage_preimage]))
-      (by intros; simp)
+  unitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
+  counitIso := NatIso.ofComponents fun U => eqToIso (by simp [map, Set.preimage_preimage])
 #align topological_space.opens.map_map_iso TopologicalSpace.Opens.mapMapIso
 
 end TopologicalSpace.Opens

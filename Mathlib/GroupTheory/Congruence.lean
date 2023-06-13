@@ -1110,12 +1110,12 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
-For a `computable` version, see `con.quotientKerEquivOfRightOnverse`.
+For a `computable` version, see `Con.quotientKerEquivOfRightInverse`.
 -/
 @[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a surjective
 homomorphism.
 
-For a `computable` version, see `add_con.quotient_ker_equiv_of_right_inverse`.
+For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`.
 "]
 noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f) :
     (ker f).Quotient ≃* P :=

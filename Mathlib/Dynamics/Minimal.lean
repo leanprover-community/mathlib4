@@ -125,7 +125,7 @@ theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
   · intro _ _
     exact eq_empty_or_univ_of_smul_invariant_closed M
   refine' fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ _ _).resolve_left _⟩
-  exacts[isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
+  exacts [isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
     (orbit_nonempty _).closure.ne_empty]
 #align is_minimal_iff_closed_smul_invariant isMinimal_iff_closed_smul_invariant
 #align is_minimal_iff_closed_vadd_invariant isMinimal_iff_closed_vadd_invariant

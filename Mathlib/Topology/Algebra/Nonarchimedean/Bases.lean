@@ -26,7 +26,7 @@ family as a basis of neighborhoods of zero. In particular the given subgroups be
 (`RingSubgroupsBasis.nonarchimedean`).
 
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-sub-modules in a commutative algebra. This important example gives rises to the adic topology
+sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
 
@@ -186,7 +186,6 @@ theorem hasBasis_nhds (a : A) :
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  -- Check again during lean4#2210 cleanup.
   let _ := hB.topology
   { B i with
     isOpen' := by

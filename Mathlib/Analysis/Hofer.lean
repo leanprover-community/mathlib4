@@ -82,7 +82,7 @@ theorem hofer {X : Type _} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) 
           congr with i
           field_simp
         _ = (∑ i in r, ((1 : ℝ) / 2) ^ i) * ε := Finset.sum_mul.symm
-        _ ≤ 2 * ε := mul_le_mul_of_nonneg_right (sum_geometric_two_le _) (le_of_lt ε_pos)
+        _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
     have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
       refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
       exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le

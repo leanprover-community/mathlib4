@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.free_module.pid
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
+! leanprover-community/mathlib commit d87199d51218d36a0a42c66c82d147b5a7ff87b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -166,16 +166,16 @@ but must also feed in a basis for `M` using `basis_of_pid` to keep the induction
 theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
     ∃ y ∈ M,
-      ∃ (a : R)(_ : a • y ∈ N),
+      ∃ (a : R) (_ : a • y ∈ N),
         ∃ M' ≤ M,
           ∃ N' ≤ N,
-            ∃ (_N'_le_M' : N' ≤ M')(_y_ortho_M' :
-              ∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0)(_ay_ortho_N' :
+            ∃ (_N'_le_M' : N' ≤ M') (_y_ortho_M' :
+              ∀ (c : R) (z : O), z ∈ M' → c • y + z = 0 → c = 0) (_ay_ortho_N' :
               ∀ (c : R) (z : O), z ∈ N' → c • a • y + z = 0 → c = 0),
               ∀ (n') (bN' : Basis (Fin n') R N'),
                 ∃ bN : Basis (Fin (n' + 1)) R N,
                   ∀ (m') (hn'm' : n' ≤ m') (bM' : Basis (Fin m') R M'),
-                    ∃ (hnm : n' + 1 ≤ m' + 1)(bM : Basis (Fin (m' + 1)) R M),
+                    ∃ (hnm : n' + 1 ≤ m' + 1) (bM : Basis (Fin (m' + 1)) R M),
                       ∀ (as : Fin n' → R)
                         (_h : ∀ i : Fin n', (bN' i : O) = as i • (bM' (Fin.castLE hn'm' i) : O)),
                         ∃ as' : Fin (n' + 1) → R,
@@ -452,7 +452,7 @@ This is a strengthening of `Submodule.basisOfPidOfLE`.
 -/
 theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
     (N_le_O : N ≤ O) :
-    ∃ (n o : ℕ)(hno : n ≤ o)(bO : Basis (Fin o) R O)(bN : Basis (Fin n) R N)(a : Fin n → R),
+    ∃ (n o : ℕ) (hno : n ≤ o) (bO : Basis (Fin o) R O) (bN : Basis (Fin n) R N) (a : Fin n → R),
       ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i) := by
   cases nonempty_fintype ι
   revert N
@@ -553,7 +553,7 @@ The definitions `Ideal.ringBasis`, `Ideal.selfBasis`, `Ideal.smithCoeffs` are (n
 choices of values for this existential quantifier.
 -/
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
-    ∃ (b' : Basis ι R S)(a : ι → R)(ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
+    ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
   cases nonempty_fintype ι
   let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
   let e : Fin (Fintype.card ι) ≃ ι :=
@@ -622,6 +622,9 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   refine' Subtype.coe_injective _
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
+
+-- porting note: can be inferred in Lean 4 so no longer necessary
+#noalign has_quotient.quotient.module
 
 end Ideal
 

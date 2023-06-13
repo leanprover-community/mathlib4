@@ -90,7 +90,7 @@ theorem IsCompact.has_extreme_point (hscomp : IsCompact s) (hsnemp : s.Nonempty)
     (fun t => isCompact_of_isClosed_subset hscomp (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
-  exacts[⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
+  exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 #align is_compact.has_extreme_point IsCompact.has_extreme_point
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull

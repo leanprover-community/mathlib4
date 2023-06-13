@@ -22,15 +22,7 @@ presheaves.
 -/
 
 
-open CategoryTheory
-
-open TopCat
-
-open TopologicalSpace
-
-open Opposite
-
-open CategoryTheory.Category CategoryTheory.Functor
+open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
 
 variable (C : Type _) [Category C]
 
@@ -44,7 +36,7 @@ variable (C : Type _) [Category C]
 -- local attribute [tidy] tactic.op_induction'
 -- A possible replacement would be:
 -- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
--- but this would require further investigation.
+-- but it doesn't seem necessary here.
 
 namespace AlgebraicGeometry
 

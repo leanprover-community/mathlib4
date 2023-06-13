@@ -56,16 +56,16 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     calc
       exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add]; ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
-      _ < exp y * -(x - y) := (mul_lt_mul_of_pos_left ?_ y.exp_pos)
+      _ < exp y * -(x - y) := by gcongr; linarith [add_one_lt_exp_of_nonzero h2.ne]
       _ = exp y * (y - x) := by ring
-    linarith [add_one_lt_exp_of_nonzero h2.ne]
   · have h1 : 0 < z - y := by linarith
     rw [lt_div_iff h1]
     calc
-      exp y * (z - y) < exp y * (exp (z - y) - 1) := mul_lt_mul_of_pos_left ?_ y.exp_pos
+      exp y * (z - y) < exp y * (exp (z - y) - 1) := by
+        gcongr _ * ?_
+        linarith [add_one_lt_exp_of_nonzero h1.ne']
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
-    linarith [add_one_lt_exp_of_nonzero h1.ne']
 #align strict_convex_on_exp strictConvexOn_exp
 
 /-- `Real.exp` is convex on the whole real line. -/
@@ -85,15 +85,15 @@ theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   have H := IH.2 ha hb hμ hν h
   have : 0 ≤ (b ^ k - a ^ k) * (b - a) * μ * ν := by
     cases' le_or_lt a b with hab hab
-    · have : a ^ k ≤ b ^ k := pow_le_pow_of_le_left ha hab k
+    · have : a ^ k ≤ b ^ k := by gcongr
       have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
       positivity
-    · have : b ^ k ≤ a ^ k := pow_le_pow_of_le_left hb hab.le k
+    · have : b ^ k ≤ a ^ k := by gcongr
       have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
       positivity
   calc
     (μ * a + ν * b) ^ k.succ = (μ * a + ν * b) * (μ * a + ν * b) ^ k := pow_succ _ _
-    _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) := (mul_le_mul_of_nonneg_left H (by positivity))
+    _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) := by gcongr; exact H
     _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) + (b ^ k - a ^ k) * (b - a) * μ * ν := by linarith
     _ = (μ + ν) * (μ * a ^ k.succ + ν * b ^ k.succ) := by rw [Nat.succ_eq_add_one]; ring
     _ = μ * a ^ k.succ + ν * b ^ k.succ := by rw [h]; ring
@@ -112,13 +112,12 @@ nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) :
   have : (0 : ℝ) ≤ (a - b) ^ 2 * μ * ν := by positivity
   calc
     (μ * a + ν * b) ^ (2 * k) = ((μ * a + ν * b) ^ 2) ^ k := by rw [pow_mul]
-    _ ≤ ((μ + ν) * (μ * a ^ 2 + ν * b ^ 2)) ^ k := (pow_le_pow_of_le_left (by positivity) ?_ k)
+    _ ≤ ((μ + ν) * (μ * a ^ 2 + ν * b ^ 2)) ^ k := by gcongr; linarith
     _ = (μ * a ^ 2 + ν * b ^ 2) ^ k := by rw [h]; ring
     _ ≤ μ * (a ^ 2) ^ k + ν * (b ^ 2) ^ k := ?_
     _ ≤ μ * a ^ (2 * k) + ν * b ^ (2 * k) := by ring_nf; rfl
-  · linarith
-  · -- Porting note: `rw [mem_Ici]` was `dsimp`
-    refine' (convexOn_pow k).2 _ _ hμ hν h <;> rw [mem_Ici] <;> positivity
+  -- Porting note: `rw [mem_Ici]` was `dsimp`
+  refine' (convexOn_pow k).2 _ _ hμ hν h <;> rw [mem_Ici] <;> positivity
 #align even.convex_on_pow Even.convexOn_pow
 
 open Int in
@@ -139,15 +138,15 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     · -- Porting note: added type ascription to LHS
       calc
         (1 : ℝ) * (a ^ (n + 1) * b ^ (n + 1)) = ((μ + ν) ^ 2 * (a * b)) ^ (n + 1) := by rw [h]; ring
-        _ ≤ ((μ * b + ν * a) * (μ * a + ν * b)) ^ (n + 1) := (pow_le_pow_of_le_left ?_ ?_ _)
+        _ ≤ ((μ * b + ν * a) * (μ * a + ν * b)) ^ (n + 1) := ?_
         _ = (μ * b + ν * a) ^ (n + 1) * (μ * a + ν * b) ^ (n + 1) := by rw [mul_pow]
         _ ≤ (μ * b ^ (n + 1) + ν * a ^ (n + 1)) * (μ * a + ν * b) ^ (n + 1) := ?_
-      · positivity
       · -- Porting note: added type ascription to LHS
+        gcongr (?_ : ℝ) ^ _
         have : (0 : ℝ) ≤ μ * ν * (a - b) ^ 2 := by positivity
         linarith
-      · apply mul_le_mul_of_nonneg_right ((convexOn_pow (n + 1)).2 hb.le ha.le hμ hν h)
-        positivity
+      · gcongr
+        apply (convexOn_pow (n + 1)).2 hb.le ha.le hμ hν h
     · have : 0 < μ * a + ν * b := by cases le_or_lt a b <;> nlinarith
       positivity
     · positivity

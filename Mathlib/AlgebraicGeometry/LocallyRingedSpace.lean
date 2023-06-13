@@ -80,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.𝒪 AlgebraicGeometry.LocallyRingedSpace.𝒪
 
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
- such that the morphims induced on stalks are local ring homomorphisms. -/
+ such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type u where
   /-- the underlying morphism between ringed spaces -/

@@ -232,7 +232,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
-    ∃ (S : J.Cover X)(y : Meq P S), x = mk y := by
+    ∃ (S : J.Cover X) (y : Meq P S), x = mk y := by
   obtain ⟨S, y, h⟩ := Concrete.colimit_exists_rep (J.diagram P X) x
   use S.unop, Meq.equiv _ _ y
   rw [← h]
@@ -241,7 +241,7 @@ theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
 #align category_theory.grothendieck_topology.plus.exists_rep CategoryTheory.GrothendieckTopology.Plus.exists_rep
 
 theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
-    mk x = mk y ↔ ∃ (W : J.Cover X)(h1 : W ⟶ S)(h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
+    mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
@@ -377,7 +377,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   choose Z e1 e2 he2 _ _ using fun I : B.Arrow => I.hf
   -- Construct a compatible system of local sections over this large cover, using the chosen
   -- representatives of our local sections.
-  -- The compatilibity here follows from the separatedness assumption.
+  -- The compatibility here follows from the separatedness assumption.
   let w : Meq P B := meqOfSep P hsep X S s T t ht
   -- The associated gluing will be the candidate section.
   use mk w
@@ -666,7 +666,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
     J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents (fun P => Iso.refl _) (by simp)
+  NatIso.ofComponents fun P => Iso.refl _
 
 variable {J D}
 

@@ -28,7 +28,9 @@ section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
 def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
-  hashMap.foldM (init := "") fun acc _ hash => do
+  -- We sort the list so that the large files in `MathlibExtras` are requested first.
+  hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
+    |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asTarGz
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
@@ -90,7 +92,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           if now - last ≥ 100 then -- max 10/s update rate
             let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
             if failed != 0 then
-              msg := msg ++ ", {failed} failed"
+              msg := msg ++ s!", {failed} failed"
             IO.eprint msg
             last := now
         pure (last, success, failed, done)
@@ -98,7 +100,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         -- to avoid confusingly moving on without finishing the count
         let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
         if failed != 0 then
-          msg := msg ++ ", {failed} failed"
+          msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
       pure failed
@@ -122,7 +124,7 @@ end Get
 
 section Put
 
-/-- Formats the config file for `curl`, containing the list of files to be uploades -/
+/-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
   let l ← fileNames.data.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {← mkFileURL fileName (some token)}"
@@ -157,7 +159,7 @@ def getGitCommitHash : IO String := do
   | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
 
 /--
-Sends a commit file to the server, containing the hashes of the respective commited files.
+Sends a commit file to the server, containing the hashes of the respective committed files.
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
