@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom AddGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -311,7 +311,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.of_hom AddCommGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGroup`. -/
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -397,7 +397,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv.to_AddCommGroup_iso AddEquiv.toAddCommGroupCatIso
 
-/-- Build an isomorphism in the category `AddCommGroupCat` from a `AddEquiv`
+/-- Build an isomorphism in the category `AddCommGroupCat` from an `AddEquiv`
 between `AddCommGroup`s. -/
 add_decl_doc AddEquiv.toAddCommGroupCatIso
 
