@@ -1230,7 +1230,7 @@ theorem subsingleton_of_image {α β : Type _} {f : α → β} (hf : Function.In
   (hs.preimage hf).anti <| subset_preimage_image _ _
 #align set.subsingleton_of_image Set.subsingleton_of_image
 
-/-- If the preimage of a set under an surjective map is a subsingleton,
+/-- If the preimage of a set under a surjective map is a subsingleton,
 the set is a subsingleton. -/
 theorem subsingleton_of_preimage {α β : Type _} {f : α → β} (hf : Function.Surjective f) (s : Set β)
     (hs : (f ⁻¹' s).Subsingleton) : s.Subsingleton := fun fx hx fy hy => by

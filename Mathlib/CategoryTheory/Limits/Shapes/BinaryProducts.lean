@@ -905,7 +905,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
 #align category_theory.limits.coprod.map_id_comp CategoryTheory.Limits.coprod.map_id_comp
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-   `g : W ≅ Z` induces a isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
+   `g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where

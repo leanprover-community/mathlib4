@@ -160,7 +160,7 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
   congr
 #align fin.cons_cases_cons Fin.consCases_cons
 
-/-- Recurse on an tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
+/-- Recurse on a tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
 def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x

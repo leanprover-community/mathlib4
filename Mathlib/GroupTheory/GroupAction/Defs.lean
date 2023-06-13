@@ -827,7 +827,7 @@ def DistribSMul.compFun (f : N → M) : DistribSMul N A :=
     smul_add := fun x => smul_add (f x) }
 #align distrib_smul.comp_fun DistribSMul.compFun
 
-/-- Each element of the scalars defines a additive monoid homomorphism. -/
+/-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
@@ -903,7 +903,7 @@ def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
   { DistribSMul.compFun A f, MulAction.compHom A f with smul := SMul.comp.smul f }
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
-/-- Each element of the monoid defines a additive monoid homomorphism. -/
+/-- Each element of the monoid defines an additive monoid homomorphism. -/
 @[simps!]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x

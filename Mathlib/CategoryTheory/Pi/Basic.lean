@@ -77,7 +77,7 @@ instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
   infer_instance
 
-/-- Pull back an `I`-indexed family of objects to an `J`-indexed family, along a function `J → I`.
+/-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
 @[simps]
 def comap (h : J → I) : (∀ i, C i) ⥤  (∀ j, C (h j)) where
