@@ -306,13 +306,13 @@ theorem equiv_relation [IsConnected J] (r : J → J → Prop) (hr : _root_.Equiv
   apply hr.3 (hr.2 (z _)) (z _)
 #align category_theory.equiv_relation CategoryTheory.equiv_relation
 
-/-- In a connected category, any two objects are related by `zigzag`. -/
+/-- In a connected category, any two objects are related by `Zigzag`. -/
 theorem isConnected_zigzag [IsConnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isConnected_zigzag
 
-/-- If any two objects in a nonempty category are related by `zigzag`, the category is connected.
+/-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.
 -/
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J := by
   apply IsConnected.of_induct
@@ -348,13 +348,13 @@ theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
 #align category_theory.is_connected_of_zigzag CategoryTheory.isConnected_of_zigzag
 
 /-- If `Discrete α` is connected, then `α` is (type-)equivalent to `PUnit`. -/
-def discreteIsConnectedEquivPunit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
+def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
   Discrete.equivOfEquivalence.{u₁, u₁}
     { functor := Functor.star (Discrete α)
       inverse := Discrete.functor fun _ => Classical.arbitrary _
       unitIso := isoConstant _ (Classical.arbitrary _)
-      counitIso := Functor.pUnitExt _ _ }
-#align category_theory.discrete_is_connected_equiv_punit CategoryTheory.discreteIsConnectedEquivPunit
+      counitIso := Functor.punitExt _ _ }
+#align category_theory.discrete_is_connected_equiv_punit CategoryTheory.discreteIsConnectedEquivPUnit
 
 variable {C : Type u₂} [Category.{u₁} C]
 

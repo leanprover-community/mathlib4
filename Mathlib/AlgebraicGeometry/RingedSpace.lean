@@ -78,12 +78,8 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
     exact heq
   obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x.1 hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
-  -- Porting note : this `change` was not necessary in Lean3
-  change X.presheaf.map _ _ = X.presheaf.map _ _ at heq'
-  rw [map_one, map_mul] at heq'
-  -- Porting note : this `change` was not necessary in Lean3
-  change (X.presheaf.map _ ≫ X.presheaf.map _) _ * (X.presheaf.map _ ≫ _) _ = _ at heq'
-  rw [←X.presheaf.map_comp, ←op_comp] at heq'
+  rw [(X.presheaf.map i₂.op).map_one, (X.presheaf.map i₁.op).map_mul] at heq'
+  rw [← comp_apply, ←X.presheaf.map_comp, ←comp_apply, ←X.presheaf.map_comp, ←op_comp] at heq'
   exact isUnit_of_mul_eq_one _ _ heq'
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_res_of_is_unit_germ AlgebraicGeometry.RingedSpace.isUnit_res_of_isUnit_germ
@@ -130,13 +126,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   apply isUnit_of_mul_eq_one f gl
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
-  -- Porting note : this `change` was not necessary in Lean3
-  change X.sheaf.1.map _ _ = X.sheaf.1.map _ 1
-  rw [RingHom.map_one, RingHom.map_mul]
-  -- Porting note : this `change` was not necessary in Lean3
-  specialize gl_spec i
-  change X.sheaf.1.map _ _ = _ at gl_spec
-  rw [gl_spec]
+  rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_of_is_unit_germ AlgebraicGeometry.RingedSpace.isUnit_of_isUnit_germ
@@ -202,15 +192,11 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
   let g := i.unop; have : i = g.op := rfl; clear_value g; subst this
   ext; constructor
   · rintro ⟨x, hx : IsUnit _, rfl⟩
-    -- Porting note : now need explicitly typing the rewrites and use `erw`
-    erw [show X.presheaf.germ x ((X.presheaf.map g.op) f) = X.presheaf.germ (g x) f
-     from X.presheaf.germ_res_apply _ _ _] at hx
+    erw [X.presheaf.germ_res_apply _ _ _] at hx
     exact ⟨x.2, g x, hx, rfl⟩
   · rintro ⟨hxV, x, hx, rfl⟩
     refine' ⟨⟨x, hxV⟩, (_ : IsUnit _), rfl⟩
-    -- Porting note : now need explicitly typing the rewrites and use `erw`
-    erw [show X.presheaf.germ ⟨x, hxV⟩ (X.presheaf.map g.op f) = X.presheaf.germ (g ⟨x, hxV⟩) f from
-      X.presheaf.germ_res_apply _ _ _]
+    erw [X.presheaf.germ_res_apply _ _ _]
     exact hx
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_res AlgebraicGeometry.RingedSpace.basicOpen_res
@@ -224,11 +210,9 @@ theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.
     @basicOpen X (unop V) (X.presheaf.map i f) = @RingedSpace.basicOpen X (unop U) f := by
   apply le_antisymm
   · rw [X.basicOpen_res i f]; exact inf_le_right
-  · -- Porting note : now need explicitly typing the rewrites
-    have : X.basicOpen ((X.presheaf.map _ ≫ X.presheaf.map _) f) = _ :=
-      X.basicOpen_res (inv i) (X.presheaf.map i f)
-    rw [← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id] at this
-    erw [this]
+  · have := X.basicOpen_res (inv i) (X.presheaf.map i f)
+    rw [← comp_apply, ← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id, id_apply] at this
+    rw [this]
     exact inf_le_right
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_res_eq AlgebraicGeometry.RingedSpace.basicOpen_res_eq

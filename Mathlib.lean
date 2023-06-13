@@ -42,6 +42,7 @@ import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.GroupCat.Subobject
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Zero
 import Mathlib.Algebra.Category.GroupWithZeroCat
@@ -61,6 +62,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
 import Mathlib.Algebra.Category.Mon.FilteredColimits
@@ -549,6 +551,7 @@ import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.Convex.Independent
 import Mathlib.Analysis.Convex.Integral
+import Mathlib.Analysis.Convex.Intrinsic
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.KreinMilman
@@ -585,6 +588,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Symmetric
+import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
@@ -657,6 +661,7 @@ import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Mul
@@ -683,6 +688,7 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
@@ -828,6 +834,7 @@ import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
+import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Idempotents.Basic
 import Mathlib.CategoryTheory.Idempotents.Biproducts
@@ -1930,6 +1937,7 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.IsAlgClosed
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.Finsupp
@@ -2239,6 +2247,7 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.Category.BddOrdCat
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
@@ -2356,6 +2365,7 @@ import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.Probability.Density
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
@@ -2467,6 +2477,7 @@ import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.Quotient
@@ -2483,6 +2494,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
@@ -2849,6 +2861,7 @@ import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
+import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.Infsep
