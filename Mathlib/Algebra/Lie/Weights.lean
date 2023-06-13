@@ -133,7 +133,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
       tmul_smul, toEndomorphism_apply_apply, LieModuleHom.map_smul, LinearMap.one_apply,
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieModuleHom.map_add, LinearMap.add_apply, LieModuleHom.map_sub,
-      LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply_apply,
+      LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply,
       curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
     abel
   rsuffices ⟨k, hk⟩ : ∃ k, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
@@ -154,7 +154,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
   have hf_comm : Commute f₁ f₂ := by
     ext (m₁ m₂)
     simp only [LinearMap.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-      AlgebraTensorModule.curry_apply_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
+      AlgebraTensorModule.curry_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
       curry_apply, LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
   simp only [TensorProduct.mapIncl, Submodule.subtype_apply, Finset.sum_apply, Submodule.coe_mk,
