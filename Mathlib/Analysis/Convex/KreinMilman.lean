@@ -22,7 +22,7 @@ The lemma states that a nonempty compact set `s` has an extreme point. The proof
 1. Using Zorn's lemma, find a minimal nonempty closed `t` that is an extreme subset of `s`. We will
   show that `t` is a singleton, thus corresponding to an extreme point.
 2. By contradiction, `t` contains two distinct points `x` and `y`.
-3. With the (geometric) Hahn-Banach theorem, find an hyperplane that separates `x` and `y`.
+3. With the (geometric) Hahn-Banach theorem, find a hyperplane that separates `x` and `y`.
 4. Look at the extreme (actually exposed) subset of `t` obtained by going the furthest away from
   the separating hyperplane in the direction of `x`. It is nonempty, closed and an extreme subset
   of `s`.
@@ -33,7 +33,7 @@ The lemma states that a nonempty compact set `s` has an extreme point. The proof
 The theorem states that a compact convex set `s` is the closure of the convex hull of its extreme
 points. It is an almost immediate strengthening of the lemma. The proof goes:
 1. By contradiction, `s \ closure (convexHull ℝ (extremePoints ℝ s))` is nonempty, say with `x`.
-2. With the (geometric) Hahn-Banach theorem, find an hyperplane that separates `x` from
+2. With the (geometric) Hahn-Banach theorem, find a hyperplane that separates `x` from
   `closure (convexHull ℝ (extremePoints ℝ s))`.
 3. Look at the extreme (actually exposed) subset of
   `s \ closure (convexHull ℝ (extremePoints ℝ s))` obtained by going the furthest away from the
@@ -90,7 +90,7 @@ theorem IsCompact.has_extreme_point (hscomp : IsCompact s) (hsnemp : s.Nonempty)
     (fun t => isCompact_of_isClosed_subset hscomp (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
-  exacts[⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
+  exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 #align is_compact.has_extreme_point IsCompact.has_extreme_point
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull

@@ -362,7 +362,7 @@ variable [CommRing R]
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
 `Mathlib.Data.Polynomial.Div` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced  `Polynomial.rootMultipulicity_eq_nat_find_of_nonzero` to contain the issue
+introduced  `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
   `(X - a) ^ n` divides `p`. -/
@@ -588,6 +588,11 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 #align polynomial.is_root_of_mem_roots Polynomial.isRoot_of_mem_roots
+
+-- Porting note: added during port.
+lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
+  rw [mem_roots w, IsRoot.def, aeval_def, eval₂_eq_eval_map]
+  simp
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     Z.card ≤ p.natDegree :=
@@ -1107,7 +1112,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     rw [monic_prod_multiset_X_sub_C.natDegree_mul' hq, natDegree_multiset_prod_X_sub_C_eq_card]
   · replace he := congr_arg roots he.symm
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
-    exacts[add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
+    exacts [add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
 set_option linter.uppercaseLean3 false in
 #align polynomial.exists_prod_multiset_X_sub_C_mul Polynomial.exists_prod_multiset_X_sub_C_mul
 

@@ -388,7 +388,7 @@ theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈
 
 /-- The class group of principal ideal domain is finite (in fact a singleton).
 
-See `class_group.fintype_of_admissible` for a finiteness proof that works for rings of integers
+See `ClassGroup.fintypeOfAdmissibleOfFinite` for a finiteness proof that works for rings of integers
 of global fields.
 -/
 noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where

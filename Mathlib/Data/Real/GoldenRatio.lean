@@ -13,6 +13,7 @@ import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.LinearRecurrence
+import Mathlib.Tactic.NormNum.NatFib
 
 /-!
 # The golden ratio and its conjugate

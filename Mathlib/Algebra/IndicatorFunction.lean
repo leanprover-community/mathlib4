@@ -357,7 +357,7 @@ theorem mulIndicator_rel_mulIndicator {r : M → M → Prop} (h1 : r 1 1) (ha : 
     r (mulIndicator s f a) (mulIndicator s g a) := by
   simp only [mulIndicator]
   split_ifs with has
-  exacts[ha has, h1]
+  exacts [ha has, h1]
 #align set.mul_indicator_rel_mul_indicator Set.mulIndicator_rel_mulIndicator
 #align set.indicator_rel_indicator Set.indicator_rel_indicator
 
@@ -493,7 +493,7 @@ theorem indicator_smul_apply (s : Set α) (r : α → M) (f : α → A) (x : α)
     indicator s (fun x => r x • f x) x = r x • indicator s f x := by
   dsimp only [indicator]
   split_ifs
-  exacts[rfl, (smul_zero (r x)).symm]
+  exacts [rfl, (smul_zero (r x)).symm]
 #align set.indicator_smul_apply Set.indicator_smul_apply
 
 theorem indicator_smul (s : Set α) (r : α → M) (f : α → A) :

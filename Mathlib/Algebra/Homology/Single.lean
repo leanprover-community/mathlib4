@@ -199,6 +199,7 @@ is the same as doing nothing.
 noncomputable def homologyFunctor0Single₀ : single₀ V ⋙ homologyFunctor V _ 0 ≅ 𝟭 V :=
   NatIso.ofComponents (fun X => homology.congr _ _ (by simp) (by simp) ≪≫ homologyZeroZero)
     fun f => by
+      -- Porting note: why can't `aesop_cat` do this?
       dsimp
       ext
       simp
@@ -395,6 +396,7 @@ is the same as doing nothing.
 noncomputable def homologyFunctor0Single₀ : single₀ V ⋙ homologyFunctor V _ 0 ≅ 𝟭 V :=
   NatIso.ofComponents (fun X => homology.congr _ _ (by simp) (by simp) ≪≫ homologyZeroZero)
     fun f => by
+      -- Porting note: why can't `aesop_cat` do this?
       dsimp
       ext
       simp
@@ -462,19 +464,17 @@ variable (V)
 
 /-- `single₀` is the same as `single V _ 0`. -/
 def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
-        inv := { f := fun i => by cases i <;> exact 𝟙 _ }
-        hom_inv_id := from_single₀_ext _ _ (by simp)
-        inv_hom_id := by
-          ext (_|_)
-          . dsimp
-            simp
-          . dsimp
-            rw [Category.id_comp]
-            rfl })
-    fun f => by ext; simp
+  NatIso.ofComponents fun X =>
+    { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
+      inv := { f := fun i => by cases i <;> exact 𝟙 _ }
+      hom_inv_id := from_single₀_ext _ _ (by simp)
+      inv_hom_id := by
+        ext (_|_)
+        . dsimp
+          simp
+        . dsimp
+          rw [Category.id_comp]
+          rfl }
 #align cochain_complex.single₀_iso_single CochainComplex.single₀IsoSingle
 
 instance : Faithful (single₀ V) :=

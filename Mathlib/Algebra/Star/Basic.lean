@@ -323,7 +323,7 @@ instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalSemiring R] [StarR
     StarAddMonoid R where star_add := StarRing.star_add
 #align star_ring.to_star_add_monoid StarRing.toStarAddMonoid
 
-/-- `star` as an `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
+/-- `star` as a `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
 def starRingEquiv [NonUnitalSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
@@ -338,7 +338,7 @@ theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
 
 --Porting note: new theorem
 @[simp]
-theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo]:
+theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (OfNat.ofNat n : R) = OfNat.ofNat n :=
   star_natCast _
 

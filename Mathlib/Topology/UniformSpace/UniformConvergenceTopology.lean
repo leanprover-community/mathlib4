@@ -27,7 +27,7 @@ of uniform and `𝔖`-convergence respectively.
 Usual examples of the second construction include :
 - the topology of compact convergence, when `𝔖` is the set of compacts of `α`
 - the strong topology on the dual of a topological vector space (TVS) `E`, when `𝔖` is the set of
-  Von Neuman bounded subsets of `E`
+  Von Neumann bounded subsets of `E`
 - the weak-* topology on the dual of a TVS `E`, when `𝔖` is the set of singletons of `E`.
 
 This file contains a lot of technical facts, so it is heavily commented, proofs included!
