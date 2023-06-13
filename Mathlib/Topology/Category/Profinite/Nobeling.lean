@@ -1317,6 +1317,15 @@ def OrdConeIsLimitLiftFunAux {o : Ordinal} (ho : o.IsLimit)
 fun x i ↦ if h : ord I i < o then (s.π.app (Opposite.op (ISucc ho hto h)) x).val i
   else false
 
+lemma le_of_leOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) :
+    i ≤ j := by
+  dsimp [ord] at h
+  simp only [Ordinal.typein_le_typein, not_lt] at h
+  exact h
+
+def HomOfLEOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) : i ⟶ j :=
+homOfLE (le_of_leOrd h)
+
 lemma ordConeIsLimitLiftFunAux_mem {o : Ordinal} (ho : o.IsLimit)
     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
     (hC : IsClosed C)
@@ -1370,7 +1379,7 @@ lemma ordConeIsLimitLiftFunAux_mem {o : Ordinal} (ho : o.IsLimit)
           rw [← hr] at hw
           exfalso
           exact Set.not_mem_empty w hw
-      · intro i hi j hj hsij
+      · intro i _ j _ hsij
         dsimp at hsij
         rw [Set.ext_iff] at hsij
         have hsi := hsij i
@@ -1381,12 +1390,103 @@ lemma ordConeIsLimitLiftFunAux_mem {o : Ordinal} (ho : o.IsLimit)
         simp [Ordinal.typein_inj] at hij
         exact Subtype.ext hij
     have hf : Filter.Tendsto f' b (nhds f)
-    · rw [Filter.tendsto_def]
-      intro S hS
-      dsimp
-      rw [Filter.mem_generate_iff]
-      simp only [exists_and_left, exists_prop]
-      sorry
+    · rw [nhds_pi, Filter.tendsto_pi]
+      intro i
+      rw [Filter.tendsto_def]
+      intro U hU
+      have hf := mem_of_mem_nhds hU
+      dsimp at hf
+      split_ifs at hf with h
+      · dsimp
+        rw [Filter.mem_generate_iff]
+        simp only [exists_and_left, exists_prop]
+        use {S (ISucc ho hto h)}
+        refine' ⟨Set.finite_singleton _,_,_⟩
+        · intro W hW
+          use (ISucc ho hto h)
+          simp only [Set.mem_singleton_iff] at hW
+          rw [hW]
+        · simp only [Set.sInter_singleton]
+          intro j hj
+          simp only [Set.mem_preimage]
+          simp only [Set.mem_setOf_eq] at hj
+          suffices : f' j i ∈ U
+          · exact this
+          suffices : f' (ISucc ho hto h) i = f' j i
+          · rw [← this]
+            exact hf
+          suffices : ∀ y,
+            ((y ∈ C ∧ (ProjOrd (ord I (ISucc ho hto h).val) y =
+            ((forget Profinite).map (s.π.app (Opposite.op (ISucc ho hto h))) x).val)) →
+            y i = f' j i)
+          · specialize this (f' (ISucc ho hto h))
+            exact this (hf' (ISucc ho hto h))
+          rintro y ⟨_, hy⟩
+          suffices : ∀ z,
+            ((z ∈ C ∧ (ProjOrd (ord I j.val) z =
+            ((forget Profinite).map (s.π.app (Opposite.op j)) x).val)) →
+            y i = z i)
+          · specialize this (f' j)
+            exact this (hf' j)
+          rintro z ⟨_, hz⟩
+          have hy' := congr_fun hy i
+          have hz' := congr_fun hz i
+          dsimp [ProjOrd] at hy' hz'
+          split_ifs at hy' hz' with h₁ h₂
+          · rw [hy', hz']
+            have hsw := Cone.w s (HomOfLEOrd hj).op
+            rw [← hsw]
+            dsimp [OrdToProfinite, ResOnSubsets, ProjOrd]
+            simp only [FunctorToTypes.map_comp_apply, Profinite.forget_ContinuousMap_mk,
+              ite_eq_left_iff, not_lt]
+            intro hord
+            exfalso
+            simp only [← not_lt] at hord
+            exact hord (ord_lt_succ _ _ _)
+          · exfalso
+            apply h₂
+            exact lt_of_lt_of_le (ord_lt_succ _ _ _) hj
+          · exfalso
+            exact h₁ (ord_lt_succ _ _ _)
+          · exfalso
+            exact h₁ (ord_lt_succ _ _ _)
+      · dsimp
+        rw [Filter.mem_generate_iff]
+        simp only [exists_and_left, exists_prop]
+        use {S ⟨(Ordinal.enum _ 0 IzeroLTTop), h0⟩}
+        refine' ⟨Set.finite_singleton _,_,_⟩
+        · intro W hW
+          use ⟨(Ordinal.enum _ 0 IzeroLTTop), h0⟩
+          simp only [Set.mem_singleton_iff] at hW
+          rw [hW]
+        · simp only [Set.sInter_singleton]
+          intro j hj
+          simp only [Set.mem_preimage]
+          simp only [Set.mem_setOf_eq] at hj
+          suffices : f' j i ∈ U
+          · exact this
+          suffices : f' j i = false
+          · rw [this]
+            exact hf
+          suffices : ∀ z,
+            ((z ∈ C ∧ (ProjOrd (ord I j.val) z =
+            ((forget Profinite).map (s.π.app (Opposite.op j)) x).val)) →
+            z i = false)
+          · specialize this (f' j)
+            exact this (hf' j)
+          rintro z ⟨hzC, hz⟩
+          have hz' := congr_fun hz i
+          dsimp [ProjOrd] at hz'
+          split_ifs at hz' with h₁
+          · exfalso
+            apply h
+            exact lt_trans h₁ j.prop
+          · dsimp [Support] at hsC
+            simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+            specialize hsC i z hzC
+            rw [← not_imp_not] at hsC
+            simp only [Bool.not_eq_true] at hsC
+            exact hsC h
     exact IsClosed.mem_of_tendsto hC hf (Filter.eventually_of_forall (fun i ↦ (hf' i).1))
   · ext i
     by_cases h : ord I i < o
@@ -1446,15 +1546,6 @@ def OrdConeIsLimitLift {o : Ordinal} (ho : o.IsLimit)
     (hsC : Support C ⊆ { j | ord I j < o })
     (s : Cone (OrdToProfinite C o hC)) : s.pt ⟶ (OrdCone C o hC).pt :=
   ⟨OrdConeIsLimitLiftFun C ho hto hC hsC s, continuous_ordConeIsLimitLiftFun C ho hto hC hsC s⟩
-
-lemma le_of_leOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) :
-    i ≤ j := by
-  dsimp [ord] at h
-  simp only [Ordinal.typein_le_typein, not_lt] at h
-  exact h
-
-def HomOfLEOrd {o : Ordinal} {i j : {i // ord I i < o}} (h : ord I i.val ≤ ord I j.val) : i ⟶ j :=
-homOfLE (le_of_leOrd h)
 
 lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
