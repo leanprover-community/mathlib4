@@ -96,8 +96,8 @@ theorem Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = ∫ x in s, g x ∂μ)
-    (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g :=
-  by
+    (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) :
+    f =ᵐ[μ] g := by
   suffices h_sub : ⇑(f - g) =ᵐ[μ] 0
   · rw [← sub_ae_eq_zero]; exact (Lp.coeFn_sub f g).symm.trans h_sub
   have hfg' : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, (f - g) x ∂μ) = 0 := by
@@ -125,8 +125,7 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
     (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
   rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
   have hf_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hfm.mk f) s (μ.trim hm) :=
-    by
+    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hfm.mk f) s (μ.trim hm) := by
     intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
@@ -137,8 +136,7 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
     refine' Integrable.trim hm _ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
   have hg_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) :=
-    by
+    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) := by
     intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
