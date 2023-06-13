@@ -240,27 +240,50 @@ theorem _root_.MeasurableSet.analyticSet {α : Type _} [t : TopologicalSpace α]
   simp only [id.def, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
-/-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
-a finer Polish topology on the source space for which the function is continuous. -/
-theorem _root_.Measurable.exists_continuous {α β : Type _} [t : TopologicalSpace α] [PolishSpace α]
-    [MeasurableSpace α] [BorelSpace α] [tβ : TopologicalSpace β] [SecondCountableTopology β]
-    [MeasurableSpace β] [BorelSpace β] {f : α → β} (hf : Measurable f) :
+/-- Given a Borel-measurable function from a Polish space with a second-countable topology on the
+range, there exists a finer Polish topology on the source space for which the function is
+continuous. -/
+theorem _root_.Measurable.exists_continuous' {α β : Type _} [t : TopologicalSpace α] [PolishSpace α]
+    [MeasurableSpace α] [BorelSpace α] [tβ : TopologicalSpace β] [MeasurableSpace β]
+    [OpensMeasurableSpace β] {f : α → β} [SecondCountableTopology (range f)] (hf : Measurable f) :
     ∃ t' : TopologicalSpace α, t' ≤ t ∧ @Continuous α β t' tβ f ∧ @PolishSpace α t' := by
-  obtain ⟨b, b_count, -, hb⟩ : ∃ b : Set (Set β), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b :=
-    exists_countable_basis β
-  haveI : Encodable b := b_count.toEncodable
-  have : ∀ s : b, IsClopenable (f ⁻¹' s) := by
-    intro s
+  obtain ⟨b, b_count, -, hb⟩ :
+      ∃ b : Set (Set (range f)), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b :=
+    exists_countable_basis (range f)
+  have : Countable b := b_count.to_subtype
+  have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := fun s ↦ by
     apply MeasurableSet.isClopenable
-    exact hf (hb.isOpen s.2).measurableSet
+    exact hf.subtype_mk (hb.isOpen s.2).measurableSet
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
     ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le T Tt Tpolish
   refine' ⟨t', t't, _, t'_polish⟩
-  refine hb.continuous _ fun s hs => ?_
-  exact t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+  have : Continuous[t', _] (rangeFactorization f)
+  · exact hb.continuous _ fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+  exact continuous_subtype_val.comp this
+
+/-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
+a finer Polish topology on the source space for which the function is continuous. -/
+theorem _root_.Measurable.exists_continuous {α β : Type _} [t : TopologicalSpace α] [PolishSpace α]
+    [MeasurableSpace α] [BorelSpace α] [tβ : TopologicalSpace β] [SecondCountableTopology β]
+    [MeasurableSpace β] [OpensMeasurableSpace β] {f : α → β} (hf : Measurable f) :
+    ∃ t' : TopologicalSpace α, t' ≤ t ∧ @Continuous α β t' tβ f ∧ @PolishSpace α t' :=
+  hf.exists_continuous'
 #align measurable.exists_continuous Measurable.exists_continuous
+
+/-- Image of a measurable set in a Polish space under a measurable map is an analytic set. -/
+theorem _root_.MeasurableSet.analyticSet_image
+    [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X] [BorelSpace X]
+    [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y]
+    {f : X → Y} [SecondCountableTopology (range f)] {s : Set X} (hs : MeasurableSet s)
+    (hf : Measurable f) : AnalyticSet (f '' s) := by
+  borelize X
+  rcases hf.exists_continuous' with ⟨τ', hle, hfc, hτ'⟩
+  letI m' : MeasurableSpace X := @borel _ τ'
+  haveI b' : BorelSpace X := ⟨rfl⟩
+  have hle := borel_anti hle
+  exact (hle _ hs).analyticSet.image_of_continuous hfc
 
 /-! ### Separating sets with measurable sets -/
 
@@ -290,8 +313,8 @@ theorem MeasurablySeparable.iUnion [Countable ι] {α : Type _} [MeasurableSpace
 contained in disjoint Borel sets (see the full statement in `AnalyticSet.measurablySeparable`).
 Here, we prove this when our analytic sets are the ranges of functions from `ℕ → ℕ`.
 -/
-theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] [BorelSpace α]
-    {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g)
+theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
+    [OpensMeasurableSpace α] {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g)
     (h : Disjoint (range f) (range g)) : MeasurablySeparable (range f) (range g) := by
   /- We follow [Kechris, *Classical Descriptive Set Theory* (Theorem 14.7)][kechris1995].
     If the ranges are not Borel-separated, then one can find two cylinders of length one whose
@@ -404,8 +427,9 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] 
 
 /-- The Lusin separation theorem: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
-theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [BorelSpace α] {s t : Set α}
-    (hs : AnalyticSet s) (ht : AnalyticSet t) (h : Disjoint s t) : MeasurablySeparable s t := by
+theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    {s t : Set α} (hs : AnalyticSet s) (ht : AnalyticSet t) (h : Disjoint s t) :
+    MeasurablySeparable s t := by
   rw [AnalyticSet] at hs ht
   rcases hs with (rfl | ⟨f, f_cont, rfl⟩)
   · refine' ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
@@ -414,8 +438,81 @@ theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [Borel
   exact measurablySeparable_range_of_disjoint f_cont g_cont h
 #align measure_theory.analytic_set.measurably_separable MeasureTheory.AnalyticSet.measurablySeparable
 
-/-! ### Injective images of Borel sets -/
+/-- **Suslin's Theorem**: in a Hausdorff topological space, an analytic set with an analytic
+complement is measurable. -/
+theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    {s : Set α} (hs : AnalyticSet s) (hsc : AnalyticSet (sᶜ)) : MeasurableSet s := by
+  rcases hs.measurablySeparable hsc disjoint_compl_right with ⟨u, hsu, hdu, hmu⟩
+  obtain rfl : s = u := hsu.antisymm (disjoint_compl_left_iff_subset.1 hdu)
+  exact hmu
 
+end MeasureTheory
+
+/-!
+### Measurability of preimages under measurable maps
+-/
+
+namespace Measurable
+
+variable
+  [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X] [BorelSpace X]
+  [TopologicalSpace Y] [T2Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y]
+
+/-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
+with second countable topology, then the preimage of a set `s` is measurable if and only if the set
+is measurable.
+
+One implication is the definition of measurability, the other one heavily relies on `X` being a
+Polish space. -/
+theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
+    (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ hf h⟩
+  apply AnalyticSet.measurableSet_of_compl
+  · rw [← image_preimage_eq s hsurj]
+    exact h.analyticSet_image hf
+  · rw [← image_preimage_eq (sᶜ) hsurj]
+    exact h.compl.analyticSet_image hf
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology, then the preimage of a set `s` is measurable if and only if the set is
+measurable in `Set.range f`. -/
+theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
+    (hf : Measurable f) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (Subtype.val ⁻¹' s : Set (range f)) :=
+  have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology and the range of `f` is measurable, then the preimage of a set `s` is measurable
+if and only if the intesection with `Set.range f` is measurable. -/
+theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
+    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
+  rw [hf.measurableSet_preimage_iff_preimage_val,
+    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology, then for any measurable space `α` and `g : Y → α`, the composition `g ∘ f` is
+measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
+theorem measurable_comp_iff_restrict [MeasurableSpace α] {f : X → Y}
+    [SecondCountableTopology (range f)] (hf : Measurable f) {g : Y → α} :
+    Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+  forall₂_congr fun s _ ↦ hf.measurableSet_preimage_iff_preimage_val (s := g ⁻¹' s)
+
+/-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
+with second countable topology, then for any measurable space `α` and `g : Y → α`, the composition
+`g ∘ f` is measurable if and only if `g` is measurable. -/
+theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] [MeasurableSpace α]
+    {f : X → Y} (hf : Measurable f) (hsurj : Surjective f) {g : Y → α} :
+    Measurable (g ∘ f) ↔ Measurable g :=
+  forall₂_congr fun s _ ↦ hf.measurableSet_preimage_iff_of_surjective hsurj (s := g ⁻¹' s)
+
+end Measurable
+
+namespace MeasureTheory
+
+/-! ### Injective images of Borel sets -/
 
 variable {γ : Type _} [tγ : TopologicalSpace γ] [PolishSpace γ]
 
@@ -709,7 +806,6 @@ theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable 
 end MeasureTheory
 
 /-! ### The Borel Isomorphism Theorem -/
-
 
 -- Porting note: Move to topology/metric_space/polish when porting.
 instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopology α] :
