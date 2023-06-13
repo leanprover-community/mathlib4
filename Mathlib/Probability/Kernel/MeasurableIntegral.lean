@@ -159,13 +159,18 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
     · exact fun n => (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => SimpleFunc.monotone_eapprox (uncurry f) hij _
   simp_rw [this]
-  refine' measurable_iSup fun n => SimpleFunc.induction _ _ (F n)
-  stop
+  -- Porting note: trouble finding the induction motive
+  -- refine' measurable_iSup fun n => SimpleFunc.induction _ _ (F n)
+  refine' measurable_iSup fun n => _
+  refine' SimpleFunc.induction
+    (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) _ _ (F n)
+  show ∀ (c : ℝ≥0∞) {s : Set (α × β)} (hs : MeasurableSet s),
+    Measurable (fun (a : α) => ∫⁻ (b : β), (SimpleFunc.piecewise s hs (SimpleFunc.const (α × β) c) (SimpleFunc.const (α × β) 0)) (a, b) ∂κ a)
   · intro c t ht
-    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+    simp only [SimpleFunc.eapprox, SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
-    exact Kernel.measurable_lintegral_indicator_const ht c
-  · intro g₁ g₂ h_disj hm₁ hm₂
+    exact Kernel.measurable_lintegral_indicator_const (κ := κ) ht c
+  · intro g₁ g₂ _ hm₁ hm₂
     simp only [SimpleFunc.coe_add, Pi.add_apply]
     have h_add :
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
