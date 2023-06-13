@@ -1166,6 +1166,8 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp [map_ofFn, (· ∘ ·), Composition.blocks_sum, Composition.ofFn_blocksFun]
     rw [sigma_pi_composition_eq_iff]
     dsimp
+    -- Porting FIXME: I can't work out how to reproduce the behaviour of the `congr`
+    -- that appears at this point in mathlib3, and so the proof goes off track here.
     congr! 2
     · ext1
       dsimp [Composition.gather]
