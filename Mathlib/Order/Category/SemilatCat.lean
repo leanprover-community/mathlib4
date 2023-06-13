@@ -91,7 +91,8 @@ instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrdCat where
 #align SemilatSup.has_forget_to_PartOrd SemilatSupCat.hasForgetToPartOrd
 
 @[simp]
-theorem coe_forget_to_partOrdCat (X : SemilatSupCat) : ↥((forget₂ SemilatSupCat PartOrdCat).obj X) = ↥X :=
+theorem coe_forget_to_partOrdCat (X : SemilatSupCat) :
+    ↥((forget₂ SemilatSupCat PartOrdCat).obj X) = ↥X :=
   rfl
 #align SemilatSup.coe_forget_to_PartOrd SemilatSupCat.coe_forget_to_partOrdCat
 
@@ -143,7 +144,8 @@ instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrdCat where
 #align SemilatInf.has_forget_to_PartOrd SemilatInfCat.hasForgetToPartOrd
 
 @[simp]
-theorem coe_forget_to_partOrdCat (X : SemilatInfCat) : ↥((forget₂ SemilatInfCat PartOrdCat).obj X) = ↥X :=
+theorem coe_forget_to_partOrdCat (X : SemilatInfCat) :
+    ↥((forget₂ SemilatInfCat PartOrdCat).obj X) = ↥X :=
   rfl
 #align SemilatInf.coe_forget_to_PartOrd SemilatInfCat.coe_forget_to_partOrdCat
 
