@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 A differential object in a category with zero morphisms and a shift is
 an object `X` equipped with
-a morphism `d : X ⟶ X⟦1⟧`, such that `d^2 = 0`.
+a morphism `d : obj ⟶ obj⟦1⟧`, such that `d^2 = 0`.
 
 We build the category of differential objects, and some basic constructions
 such as the forgetful functor, zero morphisms and zero objects, and the shift functor
@@ -37,14 +37,14 @@ variable (C : Type u) [Category.{v} C]
 variable [HasZeroMorphisms C] [HasShift C ℤ]
 
 /-- A differential object in a category with zero morphisms and a shift is
-an object `pt` equipped with
-a morphism `d : X ⟶ X⟦1⟧`, such that `d^2 = 0`. -/
+an object `obj` equipped with
+a morphism `d : obj ⟶ obj⟦1⟧`, such that `d^2 = 0`. -/
 -- Porting note: Removed `@[nolint has_nonempty_instance]`
 structure DifferentialObject where
   /-- The underlying object of a differential object. -/
-  pt : C
+  obj : C
   /-- The differential of a differential object. -/
-  d : pt ⟶ pt⟦(1 : ℤ)⟧
+  d : obj ⟶ obj⟦(1 : ℤ)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
   d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object CategoryTheory.DifferentialObject
@@ -59,7 +59,7 @@ namespace DifferentialObject
 @[ext] -- Porting note: Removed `nolint has_nonempty_instance`
 structure Hom (X Y : DifferentialObject C) where
   /-- the morphism between underlying objects of the two differentiable object -/
-  f : X.pt ⟶ Y.pt
+  f : X.obj ⟶ Y.obj
   /-- the morphism should form a commutative square:
   ```
      d
@@ -81,7 +81,7 @@ namespace Hom
 /-- The identity morphism of a differential object. -/
 @[simps]
 def id (X : DifferentialObject C) : Hom X X where
-  f := 𝟙 X.pt
+  f := 𝟙 X.obj
 #align category_theory.differential_object.hom.id CategoryTheory.DifferentialObject.Hom.id
 
 /-- The composition of morphisms of differential objects. -/
@@ -99,7 +99,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject C) where
 #align category_theory.differential_object.category_of_differential_objects CategoryTheory.DifferentialObject.categoryOfDifferentialObjects
 
 @[simp]
-theorem id_f (X : DifferentialObject C) : (𝟙 X : X ⟶ X).f = 𝟙 X.pt := rfl
+theorem id_f (X : DifferentialObject C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj := rfl
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
@@ -118,7 +118,7 @@ variable (C)
 
 /-- The forgetful functor taking a differential object to its underlying object. -/
 def forget : DifferentialObject C ⥤ C where
-  obj X := X.pt
+  obj X := X.obj
   map f := f.f
 #align category_theory.differential_object.forget CategoryTheory.DifferentialObject.forget
 
@@ -141,7 +141,7 @@ theorem zero_f (P Q : DifferentialObject C) : (0 : P ⟶ Q).f = 0 := rfl
 
 /-- An isomorphism of differential objects gives an isomorphism of the underlying objects. -/
 @[simps]
-def isoApp {X Y : DifferentialObject C} (f : X ≅ Y) : X.pt ≅ Y.pt :=
+def isoApp {X Y : DifferentialObject C} (f : X ≅ Y) : X.obj ≅ Y.obj :=
   ⟨f.hom.f, f.inv.f, by
     dsimp
     rw [← comp_f, Iso.hom_inv_id, id_f], by
@@ -150,7 +150,7 @@ def isoApp {X Y : DifferentialObject C} (f : X ≅ Y) : X.pt ≅ Y.pt :=
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
-theorem isoApp_refl (X : DifferentialObject C) : isoApp (Iso.refl X) = Iso.refl X.pt := rfl
+theorem isoApp_refl (X : DifferentialObject C) : isoApp (Iso.refl X) = Iso.refl X.obj := rfl
 #align category_theory.differential_object.iso_app_refl CategoryTheory.DifferentialObject.isoApp_refl
 
 @[simp]
@@ -166,7 +166,7 @@ theorem isoApp_trans {X Y Z : DifferentialObject C} (f : X ≅ Y) (g : Y ≅ Z) 
 /-- An isomorphism of differential objects can be constructed
 from an isomorphism of the underlying objects that commutes with the differentials. -/
 @[simps]
-def mkIso {X Y : DifferentialObject C} (f : X.pt ≅ Y.pt) (hf : X.d ≫ f.hom⟦1⟧' = f.hom ≫ Y.d) :
+def mkIso {X Y : DifferentialObject C} (f : X.obj ≅ Y.obj) (hf : X.d ≫ f.hom⟦1⟧' = f.hom ≫ Y.d) :
     X ≅ Y where
   hom := ⟨f.hom, hf⟩
   inv := ⟨f.inv, by
@@ -200,8 +200,8 @@ def mapDifferentialObject (F : C ⥤ D)
     (η : (shiftFunctor C (1 : ℤ)).comp F ⟶ F.comp (shiftFunctor D (1 : ℤ)))
     (hF : ∀ c c', F.map (0 : c ⟶ c') = 0) : DifferentialObject C ⥤ DifferentialObject D where
   obj X :=
-    { pt := F.obj X.pt
-      d := F.map X.d ≫ η.app X.pt
+    { obj := F.obj X.obj
+      d := F.map X.d ≫ η.app X.obj
       d_squared := by
         rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D (1 : ℤ))]
         slice_lhs 2 3 => rw [← η.naturality X.d]
@@ -275,7 +275,7 @@ noncomputable section
 @[simps]
 def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C where
   obj X :=
-    { pt := X.pt⟦n⟧
+    { obj := X.obj⟦n⟧
       d := X.d⟦n⟧' ≫ (shiftComm _ _ _).hom
       d_squared := by
         rw [Functor.map_comp, Category.assoc, shiftComm_hom_comp_assoc, ← Functor.map_comp_assoc,
@@ -301,14 +301,14 @@ def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C where
 @[simps!]
 nonrec def shiftFunctorAdd (m n : ℤ) :
     shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
-  refine' NatIso.ofComponents (fun X => mkIso (shiftAdd X.pt _ _) _) (fun f => _)
+  refine' NatIso.ofComponents (fun X => mkIso (shiftAdd X.obj _ _) _) (fun f => _)
   · dsimp
-    rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.pt)]
+    rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
     erw [← NatTrans.naturality_assoc]
     dsimp
     simp only [Functor.map_comp, Category.assoc,
-      shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.pt,
+      shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.obj,
       Iso.inv_hom_id_app_assoc]
   · apply Hom.ext -- Porting note: Originally `ext`
     dsimp
@@ -320,7 +320,7 @@ section
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject C) := by
-  refine' NatIso.ofComponents (fun X => mkIso ((shiftFunctorZero C ℤ).app X.pt) _) (fun f => _)
+  refine' NatIso.ofComponents (fun X => mkIso ((shiftFunctorZero C ℤ).app X.obj) _) (fun f => _)
   · erw [← NatTrans.naturality]
     dsimp
     simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
@@ -337,16 +337,16 @@ instance : HasShift (DifferentialObject C) ℤ :=
       add := shiftFunctorAdd C
       assoc_hom_app := fun m₁ m₂ m₃ X => by
         apply Hom.ext -- Porting note: Originally `ext1`
-        convert shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.pt
+        convert shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
         dsimp [shiftFunctorAdd']
         simp
       zero_add_hom_app := fun n X => by
         apply Hom.ext -- Porting note: Originally `ext1`
-        convert shiftFunctorAdd_zero_add_hom_app n X.pt
+        convert shiftFunctorAdd_zero_add_hom_app n X.obj
         simp
       add_zero_hom_app := fun n X => by
         apply Hom.ext -- Porting note: Originally `ext1`
-        convert shiftFunctorAdd_add_zero_hom_app n X.pt
+        convert shiftFunctorAdd_add_zero_hom_app n X.obj
         simp }
 
 end
