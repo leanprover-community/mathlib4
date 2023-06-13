@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Category.DistLat
+import Mathlib.Order.Category.BddLatCat
+import Mathlib.Order.Category.DistLatCat
 
 /-!
 # The category of bounded distributive lattices
@@ -118,4 +118,3 @@ theorem bddDistLat_dual_comp_forget_to_distLatCat :
       forget₂ BddDistLat DistLatCat ⋙ DistLatCat.dual :=
   rfl
 #align BddDistLat_dual_comp_forget_to_DistLat bddDistLat_dual_comp_forget_to_distLatCat
-
