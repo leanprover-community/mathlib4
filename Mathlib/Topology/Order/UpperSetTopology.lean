@@ -169,15 +169,14 @@ variable [Preorder α] [Preorder β]
 
 open Topology
 
-open List Set in lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
+lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
-    TFAE [ Monotone f,
+    List.TFAE [ Monotone f,
            Continuous[t₁, t₂] f,
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
-  . rw [TopologicalSpace.le_def]
-    intro hf
+  . intro hf
     simp only [le_Prop_eq]
     intro s hs
     rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
