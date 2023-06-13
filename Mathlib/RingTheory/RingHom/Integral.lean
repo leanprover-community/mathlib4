@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.RingHomProperties
-import Mathbin.RingTheory.IntegralClosure
+import Mathlib.RingTheory.RingHomProperties
+import Mathlib.RingTheory.IntegralClosure
 
 /-!
 
@@ -28,8 +28,7 @@ theorem isIntegral_stableUnderComposition : StableUnderComposition fun R S _ _ f
   by introv R hf hg; exact RingHom.isIntegral_trans _ _ hf hg
 #align ring_hom.is_integral_stable_under_composition RingHom.isIntegral_stableUnderComposition
 
-theorem isIntegral_respectsIso : RespectsIso fun R S _ _ f => f.is_integral :=
-  by
+theorem isIntegral_respectsIso : RespectsIso fun R S _ _ f => f.is_integral := by
   apply is_integral_stable_under_composition.respects_iso
   introv x
   skip
