@@ -194,10 +194,12 @@ theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0
 
 theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ∫⁻ y, f (x, y) ∂η (a, x) := by
+  -- Porting note: used `Prod.mk a` instead of `fun x => (a, x)` below
   change
     Measurable
-      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
-  refine' (Measurable.lintegral_kernel_prod_right' _).comp measurable_prod_mk_left
+      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ Prod.mk a)
+  -- Porting note: specified `κ`, `f`.
+  refine' (Measurable.lintegral_kernel_prod_right' (κ := η) (f := (fun u ↦ f (u.fst.snd, u.snd))) _).comp measurable_prod_mk_left
   exact hf.comp (measurable_fst.snd.prod_mk measurable_snd)
 #align measurable.lintegral_kernel_prod_right'' Measurable.lintegral_kernel_prod_right''
 
