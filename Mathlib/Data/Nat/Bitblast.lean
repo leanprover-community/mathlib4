@@ -34,10 +34,7 @@ This used extensively in the proof of each of the bitblast operations.
 xor of the `testBit` of the two bitvectors and the `testBit` of their carry.
 
 ## Notation
-* `^^`: boolean `xor`
-
-## References
-See [`QF_BV` logic](https://smtlib.cs.uiowa.edu/logics-all.shtml#QF_BV) for more operations.
+`^^`: boolean `xor`
 -/
 
 infix:30 " ^^ " => xor
@@ -64,7 +61,8 @@ lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by
 lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m) := by 
   simp_rw [Nat.shiftr_eq_div_pow, Nat.div_add_mod]
 
-/-- Useful for induction on the most significant bit-/
+/-- `n % 2^(i+1)` can be espressed in terms of `n % (2^i)`. 
+This is useful for induction on the most significant bit-/
 theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (Nat.testBit n i).toNat + n % (2^i):= by 
   have h1 := div_add_mod_two_pow i n
   have h3 := div_add_mod (Nat.shiftr n i) 2
@@ -76,7 +74,8 @@ lemma bit_lt (h: bit b n < bit b' m) : n < m ∨ (n = m ∧ b = false ∧ b' = t
   cases' b <;> cases' b' <;> revert h
   <;> simp [le_iff_lt_or_eq]
 
-/-- Bitblast unsigned less than-/
+/-- Bitblast unsigned less than for natural numbers `n < m`
+and `w` - the length of their binary representation.-/
 def bitult (n m w : Nat) := loop n m (w - 1) 
 where
   loop (n m : Nat) : Nat →  Prop
@@ -148,8 +147,10 @@ theorem testBit_translate_one' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
 
 @[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
 
-/-- Generic method to create a natural number by tail-recursively appending 
-bits. This is an alternative to using `List` altogether.-/
+/-- Generic method to create a natural number by appending bits tail-recursively.
+It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
+It is almost always specialized with `z = 0` and `i = w` - the length of the bitvector.
+This is an alternative to using `List` altogether.-/
 def toNat (f : Nat → Bool) (z : Nat) : Nat → Nat
   | 0 => z.bit (f 0)
   | i + 1 => toNat f (z.bit (f (i + 1))) i
@@ -176,12 +177,12 @@ theorem toNat_testBit (h1: i ≤ j): (toNat f 0 j).testBit i = f i := by
     · rw [← ih (show i ≤ j by linarith), toNat, toNat_succ, testBit_translate h1]
     · rw [h1, toNat, toNat_succ, bit_toNat, testBit_translate' (toNat_lt)]
 
-/-- Carry function for binary addition.-/
+/-- Carry function at the `i`th bit for binary addition on `n` and `m`.-/
 def bitcarry (n m : Nat) : Nat → Bool
   | 0     => false
   | i + 1 => (n.testBit i && m.testBit i) || ((n.testBit i ^^ m.testBit i) && bitcarry n m i)
 
-/-- Binary addition-/
+/-- Binary addition is `toNat` specialized with the right function on the bits `f`.-/
 @[simp] def bitadd (n m i : Nat) := 
   toNat (λ j => (n.testBit j ^^ m.testBit j) ^^ bitcarry n m j) 0 i
 
