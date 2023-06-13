@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Opposites
-import Mathbin.Order.Category.BddOrd
-import Mathbin.Order.Category.Lat
-import Mathbin.Order.Category.Semilat
+import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.Order.Category.BddOrd
+import Mathlib.Order.Category.Lat
+import Mathlib.Order.Category.Semilat
 
 /-!
 # The category of bounded lattices
@@ -56,8 +56,7 @@ theorem coe_of (α : Type _) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} BddLat
-    where
+instance : LargeCategory.{u} BddLat where
   Hom X Y := BoundedLatticeHom X Y
   id X := BoundedLatticeHom.id X
   comp X Y Z f g := g.comp f
@@ -65,8 +64,7 @@ instance : LargeCategory.{u} BddLat
   comp_id' X Y := BoundedLatticeHom.id_comp
   assoc' W X Y Z _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
-instance : ConcreteCategory BddLat
-    where
+instance : ConcreteCategory BddLat where
   forget := ⟨coeSort, fun X Y => coeFn, fun X => rfl, fun X Y Z f g => rfl⟩
   forget_faithful := ⟨fun X Y => by convert FunLike.coe_injective⟩
 
@@ -135,8 +133,7 @@ theorem forget_semilatInf_partOrdCat_eq_forget_bddOrd_partOrdCat :
 /-- Constructs an equivalence between bounded lattices from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : BddLat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : BddLat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
@@ -181,8 +178,7 @@ theorem bddLat_dual_comp_forget_to_semilatInf :
 #align BddLat_dual_comp_forget_to_SemilatInf bddLat_dual_comp_forget_to_semilatInf
 
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
-def latToBddLat : LatCat.{u} ⥤ BddLat
-    where
+def latToBddLat : LatCat.{u} ⥤ BddLat where
   obj X := BddLat.of <| WithTop <| WithBot X
   map X Y := LatticeHom.withTopWithBot
   map_id' X := LatticeHom.withTopWithBot_id
