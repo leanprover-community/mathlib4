@@ -761,7 +761,6 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   /- We will consider `y` which is smaller than `r` and `rf`, and also small enough that
     `f (x + y)` is close enough to `f x` to be in the disk where `g` is well behaved. Let
     `min (r, rf, δ)` be this new radius.-/
-  have : ContinuousAt f x := Hf.analyticAt.continuousAt
   obtain ⟨δ, δpos, hδ⟩ :
     ∃ (δ : ℝ≥0∞) (_H : 0 < δ), ∀ {z : E}, z ∈ EMetric.ball x δ → f z ∈ EMetric.ball (f x) rg := by
     have : EMetric.ball (f x) rg ∈ 𝓝 (f x) := EMetric.ball_mem_nhds _ Hg.r_pos
