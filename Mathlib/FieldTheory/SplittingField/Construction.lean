@@ -205,7 +205,7 @@ protected theorem splits (n : ℕ) :
 
 #noalign polynomial.splitting_field_aux.exists_lift
 
-theorem adjoin_roots (n : ℕ) :
+theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤ :=
@@ -235,10 +235,10 @@ theorem adjoin_roots (n : ℕ) :
               Set (SplittingFieldAux n f.removeFactor))
     refine this.trans ?_
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
-#align polynomial.splitting_field_aux.adjoin_roots Polynomial.SplittingFieldAux.adjoin_roots
+#align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
 
 instance : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
-  ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_roots _ _ rfl⟩
+  ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
 def ofMvPolynomial (f : K[X]) :
     MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K →ₐ[K]
