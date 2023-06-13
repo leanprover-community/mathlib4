@@ -3,8 +3,6 @@
 set -exo pipefail
 
 # Install Homebrew
-set -e
-
 if ! which brew > /dev/null; then
     # Install Homebrew
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -21,4 +19,6 @@ elan default stable
 if ! which code > /dev/null; then
     brew install --cask visual-studio-code
 fi
+
+# Install the Lean4 VS Code extension
 code --install-extension leanprover.lean4
