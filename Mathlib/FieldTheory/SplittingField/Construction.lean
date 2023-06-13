@@ -244,8 +244,14 @@ def ofMvPolynomial (f : K[X]) :
     SplittingFieldAux f.natDegree f :=
   MvPolynomial.aeval (fun i => i.1)
 
-theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) :=
-  sorry
+theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomial f) := by
+  suffices AlgHom.range (ofMvPolynomial f) = ⊤ by
+    rw [← Set.range_iff_surjective]; rwa [SetLike.ext'_iff] at this
+  rw [ofMvPolynomial, ← Algebra.adjoin_range_eq_range_aeval K, eq_top_iff, ← adjoin_rootSet _ _ rfl]
+  apply Algebra.adjoin_le
+  intro α hα
+  apply Algebra.subset_adjoin
+  exact ⟨⟨α, hα⟩, rfl⟩
 
 def algEquivQuotientMvPolynomial (f : K[X]) :
     (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
