@@ -103,7 +103,8 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
 theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← kernel.kernel_sum_seq κ]
-  have : ∀ a, kernel.sum (kernel.seq κ) a (Prod.mk a ⁻¹' t) = ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
+  have : ∀ a, kernel.sum (kernel.seq κ) a (Prod.mk a ⁻¹' t) =
+      ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
     kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
   refine' Measurable.ennreal_tsum fun n => _
@@ -147,8 +148,8 @@ theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : M
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
 map from `α × β` (hypothesis `Measurable (uncurry f)`), the integral `a ↦ ∫⁻ b, f a b ∂(κ a)` is
 measurable. -/
-theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞} (hf : Measurable (uncurry f)) :
-    Measurable fun a => ∫⁻ b, f a b ∂κ a := by
+theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞}
+    (hf : Measurable (uncurry f)) : Measurable fun a => ∫⁻ b, f a b ∂κ a := by
   let F : ℕ → SimpleFunc (α × β) ℝ≥0∞ := SimpleFunc.eapprox (uncurry f)
   have h : ∀ a, (⨆ n, F n a) = uncurry f a := SimpleFunc.iSup_eapprox_apply (uncurry f) hf
   simp only [Prod.forall, uncurry_apply_pair] at h
@@ -164,10 +165,8 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
   refine' measurable_iSup fun n => _
   refine' SimpleFunc.induction
     (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) _ _ (F n)
-  show ∀ (c : ℝ≥0∞) {s : Set (α × β)} (hs : MeasurableSet s),
-    Measurable (fun (a : α) => ∫⁻ (b : β), (SimpleFunc.piecewise s hs (SimpleFunc.const (α × β) c) (SimpleFunc.const (α × β) 0)) (a, b) ∂κ a)
   · intro c t ht
-    simp only [SimpleFunc.eapprox, SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
     exact Kernel.measurable_lintegral_indicator_const (κ := κ) ht c
   · intro g₁ g₂ _ hm₁ hm₂
@@ -199,7 +198,8 @@ theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥
     Measurable
       ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ Prod.mk a)
   -- Porting note: specified `κ`, `f`.
-  refine' (Measurable.lintegral_kernel_prod_right' (κ := η) (f := (fun u ↦ f (u.fst.snd, u.snd))) _).comp measurable_prod_mk_left
+  refine' (Measurable.lintegral_kernel_prod_right' (κ := η)
+    (f := (fun u ↦ f (u.fst.snd, u.snd))) _).comp measurable_prod_mk_left
   exact hf.comp (measurable_fst.snd.prod_mk measurable_snd)
 #align measurable.lintegral_kernel_prod_right'' Measurable.lintegral_kernel_prod_right''
 
