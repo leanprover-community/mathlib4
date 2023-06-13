@@ -46,7 +46,7 @@ structure DifferentialObject where
   /-- The differential of a differential object. -/
   d : obj ⟶ obj⟦(1 : ℤ)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
+  d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat
 #align category_theory.differential_object CategoryTheory.DifferentialObject
 
 attribute [simp] DifferentialObject.d_squared
@@ -60,13 +60,12 @@ namespace DifferentialObject
 structure Hom (X Y : DifferentialObject C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
-  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat -- Porting note: Originally `by obviously`
+  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat
 #align category_theory.differential_object.hom CategoryTheory.DifferentialObject.Hom
 
-attribute [simp, reassoc (attr := simp)] Hom.comm
+attribute [reassoc (attr := simp)] Hom.comm
 
 namespace Hom
-
 
 /-- The identity morphism of a differential object. -/
 @[simps]
@@ -120,18 +119,16 @@ def forget : DifferentialObject C ⥤ C where
 instance forget_faithful : Faithful (forget C) where
 #align category_theory.differential_object.forget_faithful CategoryTheory.DifferentialObject.forget_faithful
 
--- Porting note : `aesop(_cat)` can't solve `comp_zero` and `zero_comp`
-instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where
-  Zero X Y := ⟨{ f := 0 }⟩
-  comp_zero := fun {X Y} f Z => Hom.ext _ _ <| comp_zero (f := f.f)
-  zero_comp := fun {X Y Z} f => Hom.ext _ _ <| zero_comp (f := f.f)
-#align category_theory.differential_object.has_zero_morphisms CategoryTheory.DifferentialObject.hasZeroMorphisms
+instance {X Y : DifferentialObject C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
 
 variable {C}
 
 @[simp]
 theorem zero_f (P Q : DifferentialObject C) : (0 : P ⟶ Q).f = 0 := rfl
 #align category_theory.differential_object.zero_f CategoryTheory.DifferentialObject.zero_f
+
+instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where
+#align category_theory.differential_object.has_zero_morphisms CategoryTheory.DifferentialObject.hasZeroMorphisms
 
 /-- An isomorphism of differential objects gives an isomorphism of the underlying objects. -/
 @[simps]
@@ -300,8 +297,7 @@ def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject C) := by
   · erw [← NatTrans.naturality]
     dsimp
     simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
-  · -- Porting note: was `tidy`
-    aesop_cat
+  · aesop_cat
 #align category_theory.differential_object.shift_zero CategoryTheory.DifferentialObject.shiftZero
 
 end
