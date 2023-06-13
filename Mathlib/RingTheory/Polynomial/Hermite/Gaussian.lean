@@ -8,11 +8,11 @@ Authors: Luke Mantle, Jake Levinson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Hermite.Basic
-import Mathbin.Analysis.Calculus.Deriv.Pow
-import Mathbin.Analysis.Calculus.Deriv.Add
-import Mathbin.Analysis.SpecialFunctions.Exp
-import Mathbin.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.RingTheory.Polynomial.Hermite.Basic
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Hermite polynomials and Gaussians
@@ -42,8 +42,7 @@ namespace Polynomial
 /-- `hermite n` is (up to sign) the factor appearing in `deriv^[n]` of a gaussian -/
 theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
     (deriv^[n]) (fun y => Real.exp (-(y ^ 2 / 2))) x =
-      (-1 : ℝ) ^ n * aeval x (hermite n) * Real.exp (-(x ^ 2 / 2)) :=
-  by
+      (-1 : ℝ) ^ n * aeval x (hermite n) * Real.exp (-(x ^ 2 / 2)) := by
   rw [mul_assoc]
   induction' n with n ih generalizing x
   · rw [Function.iterate_zero_apply, pow_zero, one_mul, hermite_zero, C_1, map_one, one_mul]
@@ -71,8 +70,7 @@ theorem hermite_eq_deriv_gaussian (n : ℕ) (x : ℝ) :
 
 theorem hermite_eq_deriv_gaussian' (n : ℕ) (x : ℝ) :
     aeval x (hermite n) =
-      (-1 : ℝ) ^ n * (deriv^[n]) (fun y => Real.exp (-(y ^ 2 / 2))) x * Real.exp (x ^ 2 / 2) :=
-  by
+      (-1 : ℝ) ^ n * (deriv^[n]) (fun y => Real.exp (-(y ^ 2 / 2))) x * Real.exp (x ^ 2 / 2) := by
   rw [hermite_eq_deriv_gaussian, Real.exp_neg]
   field_simp [Real.exp_ne_zero]
 #align polynomial.hermite_eq_deriv_gaussian' Polynomial.hermite_eq_deriv_gaussian'
