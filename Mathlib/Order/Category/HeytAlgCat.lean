@@ -23,29 +23,29 @@ universe u
 open CategoryTheory Opposite Order
 
 /-- The category of Heyting algebras. -/
-def HeytAlg :=
+def HeytAlgCat :=
   Bundled HeytingAlgebra
-#align HeytAlg HeytAlg
+#align HeytAlg HeytAlgCat
 
-namespace HeytAlg
+namespace HeytAlgCat
 
-instance : CoeSort HeytAlg (Type _) :=
+instance : CoeSort HeytAlgCat (Type _) :=
   Bundled.hasCoeToSort
 
-instance (X : HeytAlg) : HeytingAlgebra X :=
+instance (X : HeytAlgCat) : HeytingAlgebra X :=
   X.str
 
-/-- Construct a bundled `HeytAlg` from a `heyting_algebra`. -/
-def of (α : Type _) [HeytingAlgebra α] : HeytAlg :=
+/-- Construct a bundled `HeytAlgCat` from a `heyting_algebra`. -/
+def of (α : Type _) [HeytingAlgebra α] : HeytAlgCat :=
   Bundled.of α
-#align HeytAlg.of HeytAlg.of
+#align HeytAlg.of HeytAlgCat.of
 
 @[simp]
 theorem coe_of (α : Type _) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
-#align HeytAlg.coe_of HeytAlg.coe_of
+#align HeytAlg.coe_of HeytAlgCat.coe_of
 
-instance : Inhabited HeytAlg :=
+instance : Inhabited HeytAlgCat :=
   ⟨of PUnit⟩
 
 instance bundledHom : BundledHom HeytingHom where
@@ -53,24 +53,17 @@ instance bundledHom : BundledHom HeytingHom where
   id := HeytingHom.id
   comp := @HeytingHom.comp
   hom_ext α β [HeytingAlgebra α] [HeytingAlgebra β] := FunLike.coe_injective
-#align HeytAlg.bundled_hom HeytAlg.bundledHom
+#align HeytAlg.bundled_hom HeytAlgCat.bundledHom
 
-deriving instance LargeCategory, ConcreteCategory for HeytAlg
+deriving instance LargeCategory, ConcreteCategory for HeytAlgCat
 
 @[simps]
-instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat
+instance hasForgetToLat : HasForget₂ HeytAlgCat BddDistLatCat
     where forget₂ :=
-    { obj := fun X => BddDistLat.of X
+    { obj := fun X => BddDistLatCat.of X
       map := fun X Y f => (f : BoundedLatticeHom X Y) }
-#align HeytAlg.has_forget_to_Lat HeytAlg.hasForgetToLat
+#align HeytAlg.has_forget_to_Lat HeytAlgCat.hasForgetToLat
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := e
-  inv := e.symm
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
-#align HeytAlg.iso.mk HeytAlg.Iso.mk
-
-end HeytAlg
+def Iso.mk {α β : HeytAlgCat.{u}} (e : α ≃o β) : α ≅ β whereHeytAlg
