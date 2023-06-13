@@ -14,7 +14,7 @@ import Mathlib.Order.Category.DistLatCat
 /-!
 # The category of bounded distributive lattices
 
-This defines `BddDistLat`, the category of bounded distributive lattices.
+This defines `BddDistLatCat`, the category of bounded distributive lattices.
 
 Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab/show/DistLat) when
 being a lattice is understood to entail having a bottom and a top element.
@@ -26,95 +26,95 @@ universe u
 open CategoryTheory
 
 /-- The category of bounded distributive lattices with bounded lattice morphisms. -/
-structure BddDistLat where
-  toDistLat : DistLatCat
-  [isBoundedOrder : BoundedOrder to_DistLat]
-#align BddDistLat BddDistLat
+structure BddDistLatCat where
+  toDistLatCat : DistLatCat
+  [isBoundedOrder : BoundedOrderCat to_DistLat]
+#align BddDistLat BddDistLatCat
 
-namespace BddDistLat
+namespace BddDistLatCat
 
-instance : CoeSort BddDistLat (Type _) :=
+instance : CoeSort BddDistLatCat (Type _) :=
   ⟨fun X => X.toDistLat⟩
 
 instance (X : BddDistLat) : DistribLattice X :=
   X.toDistLat.str
 
-attribute [instance] BddDistLat.isBoundedOrder
+attribute [instance] BddDistLatCat.isBoundedOrder
 
-/-- Construct a bundled `BddDistLat` from a `bounded_order` `distrib_lattice`. -/
+/-- Construct a bundled `BddDistLatCat` from a `bounded_order` `distrib_lattice`. -/
 def of (α : Type _) [DistribLattice α] [BoundedOrder α] : BddDistLat :=
   ⟨⟨α⟩⟩
-#align BddDistLat.of BddDistLat.of
+#align BddDistLat.of BddDistLatCat.of
 
 @[simp]
 theorem coe_of (α : Type _) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
-#align BddDistLat.coe_of BddDistLat.coe_of
+#align BddDistLat.coe_of BddDistLatCat.coe_of
 
-instance : Inhabited BddDistLat :=
+instance : Inhabited BddDistLatCat :=
   ⟨of PUnit⟩
 
-/-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
-def toBddLat (X : BddDistLat) : BddLat :=
-  BddLat.of X
-#align BddDistLat.to_BddLat BddDistLat.toBddLat
+/-- Turn a `BddDistLatCat` into a `BddLatCat` by forgetting it is distributive. -/
+def toBddLat (X : BddDistLatCat) : BddLatCat :=
+  BddLatCat.of X
+#align BddDistLat.to_BddLat BddDistLatCat.toBddLat
 
 @[simp]
-theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
+theorem coe_toBddLat (X : BddDistLatCat) : ↥X.toBddLat = ↥X :=
   rfl
-#align BddDistLat.coe_to_BddLat BddDistLat.coe_toBddLat
+#align BddDistLatCat.coe_to_BddLat BddDistLatCat.coe_toBddLat
 
-instance : LargeCategory.{u} BddDistLat :=
+instance : LargeCategory.{u} BddDistLatCat :=
   InducedCategory.category toBddLat
 
-instance : ConcreteCategory BddDistLat :=
+instance : ConcreteCategory BddDistLatCat :=
   InducedCategory.concreteCategory toBddLat
 
-instance hasForgetToDistLat : HasForget₂ BddDistLat DistLatCat
+instance hasForgetToDistLat : HasForget₂ BddDistLatCat DistLatCat
     where forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun X Y => BoundedLatticeHom.toLatticeHom }
-#align BddDistLat.has_forget_to_DistLat BddDistLat.hasForgetToDistLat
+#align BddDistLat.has_forget_to_DistLat BddDistLatCat.hasForgetToDistLat
 
-instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
+instance hasForgetToBddLat : HasForget₂ BddDistLatCat BddLatCat :=
   InducedCategory.hasForget₂ toBddLat
-#align BddDistLat.has_forget_to_BddLat BddDistLat.hasForgetToBddLat
+#align BddDistLat.has_forget_to_BddLat BddDistLatCat.hasForgetToBddLat
 
 theorem forget_bddLat_latCat_eq_forget_distLatCat_latCat :
-    forget₂ BddDistLat BddLat ⋙ forget₂ BddLat LatCat =
-      forget₂ BddDistLat DistLatCat ⋙ forget₂ DistLatCat LatCat :=
+    forget₂ BddDistLatCat BddLatCat ⋙ forget₂ BddLatCat LatCat =
+      forget₂ BddDistLatCat DistLatCat ⋙ forget₂ DistLatCat LatCat :=
   rfl
-#align BddDistLat.forget_BddLat_Lat_eq_forget_DistLat_Lat BddDistLat.forget_bddLat_latCat_eq_forget_distLatCat_latCat
+#align BddDistLat.forget_BddLat_Lat_eq_forget_DistLat_Lat BddDistLatCat.forget_bddLat_latCat_eq_forget_distLatCat_latCat
 
 /-- Constructs an equivalence between bounded distributive lattices from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
+def Iso.mk {α β : BddDistLatCat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
   inv_hom_id' := by ext; exact e.apply_symm_apply _
-#align BddDistLat.iso.mk BddDistLat.Iso.mk
+#align BddDistLat.iso.mk BddDistLatCat.Iso.mk
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : BddDistLat ⥤ BddDistLat where
+def dual : BddDistLatCat ⥤ BddDistLatCat where
   obj X := of Xᵒᵈ
   map X Y := BoundedLatticeHom.dual
-#align BddDistLat.dual BddDistLat.dual
+#align BddDistLat.dual BddDistLatCat.dual
 
-/-- The equivalence between `BddDistLat` and itself induced by `order_dual` both ways. -/
+/-- The equivalence between `BddDistLatCat` and itself induced by `order_dual` both ways. -/
 @[simps Functor inverse]
-def dualEquiv : BddDistLat ≌ BddDistLat :=
+def dualEquiv : BddDistLatCat ≌ BddDistLatCat :=
   Equivalence.mk dual dual
     (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
     (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-#align BddDistLat.dual_equiv BddDistLat.dualEquiv
+#align BddDistLat.dual_equiv BddDistLatCat.dualEquiv
 
 end BddDistLat
 
 theorem bddDistLat_dual_comp_forget_to_distLatCat :
-    BddDistLat.dual ⋙ forget₂ BddDistLat DistLatCat =
-      forget₂ BddDistLat DistLatCat ⋙ DistLatCat.dual :=
+    BddDistLatCat.dual ⋙ forget₂ BddDistLatCat DistLatCat =
+      forget₂ BddDistLatCat DistLatCat ⋙ DistLatCat.dual :=
   rfl
-#align BddDistLat_dual_comp_forget_to_DistLat bddDistLat_dual_comp_forget_to_distLatCat
+#align BddDistLat_dual_comp_forget_to_DistLat bddDistLatCat_dual_comp_forget_to_distLatCat
