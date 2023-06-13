@@ -17,6 +17,7 @@ import Mathlib.Order.Hom.CompleteLattice
 This file defines `CompleteLatCat`, the category of complete lattices.
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u
 
@@ -30,12 +31,12 @@ def CompleteLatCat :=
 namespace CompleteLatCat
 
 instance : CoeSort CompleteLatCat (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 instance (X : CompleteLatCat) : CompleteLattice X :=
   X.str
 
-/-- Construct a bundled `CompleteLatCat` from a `complete_lattice`. -/
+/-- Construct a bundled `CompleteLatCat` from a `CompleteLattice`. -/
 def of (α : Type _) [CompleteLattice α] : CompleteLatCat :=
   Bundled.of α
 #align CompleteLat.of CompleteLatCat.of
@@ -49,10 +50,10 @@ instance : Inhabited CompleteLatCat :=
   ⟨of PUnit⟩
 
 instance : BundledHom @CompleteLatticeHom where
-  toFun _ _ _ _ := coeFn
+  toFun _ _ f := f.toFun
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
-  hom_ext X Y _ _ := FunLike.coe_injective
+  hom_ext _ _ _ _ h := FunLike.coe_injective h
 
 instance : LargeCategory.{u} CompleteLatCat :=
   BundledHom.category CompleteLatticeHom
@@ -63,37 +64,39 @@ instance : ConcreteCategory CompleteLatCat :=
 instance hasForgetToBddLat : HasForget₂ CompleteLatCat BddLatCat where
   forget₂ :=
     { obj := fun X => BddLatCat.of X
-      map := fun X Y => CompleteLatticeHom.toBoundedLatticeHom }
+      map := fun {X Y} => CompleteLatticeHom.toBoundedLatticeHom }
   forget_comp := rfl
 #align CompleteLat.has_forget_to_BddLat CompleteLatCat.hasForgetToBddLat
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLatCat.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := e
-  inv := e.symm
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom := (e : CompleteLatticeHom _ _) -- Porting note: TODO, wrong?
+  inv := (e.symm : CompleteLatticeHom _ _)
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align CompleteLat.iso.mk CompleteLatCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : CompleteLatCat ⥤ CompleteLatCat where
   obj X := of Xᵒᵈ
-  map X Y := CompleteLatticeHom.dual
+  map {X Y} := CompleteLatticeHom.dual
 #align CompleteLat.dual CompleteLatCat.dual
 
-/-- The equivalence between `CompleteLatCat` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : CompleteLatCat ≌ CompleteLatCat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+/-- The equivalence between `CompleteLatCat` and itself induced by `OrderDual` both ways. -/
+@[simps functor inverse]
+def dualEquiv : CompleteLatCat ≌ CompleteLatCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align CompleteLat.dual_equiv CompleteLatCat.dualEquiv
 
 end CompleteLatCat
 
 theorem completeLatCat_dual_comp_forget_to_bddLatCat :
-    CompleteLatCat.dual ⋙ forget₂ CompleteLatCat BddLatCat = forget₂ CompleteLatCat BddLatCat ⋙ BddLatCat.dual :=
+    CompleteLatCat.dual ⋙ forget₂ CompleteLatCat BddLatCat =
+    forget₂ CompleteLatCat BddLatCat ⋙ BddLatCat.dual :=
   rfl
 #align CompleteLat_dual_comp_forget_to_BddLat completeLatCat_dual_comp_forget_to_bddLatCat

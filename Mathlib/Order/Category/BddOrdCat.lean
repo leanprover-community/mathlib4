@@ -65,6 +65,7 @@ instance largeCategory : LargeCategory.{u} BddOrdCat where
 #align BddOrd.large_category BddOrdCat.largeCategory
 
 -- Porting note: added.
+-- see https://github.com/leanprover-community/mathlib4/issues/5017
 instance instFunLike (X Y : BddOrdCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
 

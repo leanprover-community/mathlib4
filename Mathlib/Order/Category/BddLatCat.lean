@@ -67,6 +67,7 @@ instance : LargeCategory.{u} BddLatCat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
+-- see https://github.com/leanprover-community/mathlib4/issues/5017
 instance instFunLike (X Y : BddLatCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
 
