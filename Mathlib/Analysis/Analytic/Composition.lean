@@ -293,8 +293,8 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
 
 /-- Only `0`-th coefficient of `q.comp p` depends on `q 0`. -/
 theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
-    (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n) : q.removeZero.comp p n = q.comp p n :=
-  by
+    (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n) :
+    q.removeZero.comp p n = q.comp p n := by
   ext v
   simp only [FormalMultilinearSeries.comp, compAlongComposition,
     ContinuousMultilinearMap.compAlongComposition_apply, ContinuousMultilinearMap.sum_apply]
@@ -786,16 +786,17 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     have : y ∈ EMetric.ball (0 : E) δ :=
       (EMetric.ball_subset_ball (le_trans (min_le_left _ _) (min_le_right _ _))) hy
     simpa [edist_eq_coe_nnnorm_sub, edist_eq_coe_nnnorm]
-  /- Now the proof starts. To show that the sum of `q.comp p` at `y` is `g (f (x + y))`, we will
-    write `q.comp p` applied to `y` as a big sum over all compositions. Since the sum is
-    summable, to get its convergence it suffices to get the convergence along some increasing sequence
-    of sets. We will use the sequence of sets `comp_partial_sum_target 0 n n`, along which the sum is
-    exactly the composition of the partial sums of `q` and `p`, by design. To show that it converges
-    to `g (f (x + y))`, pointwise convergence would not be enough, but we have uniform convergence
-    to save the day. -/
+  /- Now the proof starts. To show that the sum of `q.comp p` at `y` is `g (f (x + y))`,
+    we will write `q.comp p` applied to `y` as a big sum over all compositions.
+    Since the sum is summable, to get its convergence it suffices to get
+    the convergence along some increasing sequence of sets.
+    We will use the sequence of sets `comp_partial_sum_target 0 n n`,
+    along which the sum is exactly the composition of the partial sums of `q` and `p`, by design.
+    To show that it converges to `g (f (x + y))`, pointwise convergence would not be enough,
+    but we have uniform convergence to save the day. -/
   -- First step: the partial sum of `p` converges to `f (x + y)`.
-  have A : Tendsto (fun n => ∑ a in Finset.Ico 1 n, p a fun _b => y) atTop (𝓝 (f (x + y) - f x)) :=
-    by
+  have A : Tendsto (fun n => ∑ a in Finset.Ico 1 n, p a fun _b => y)
+      atTop (𝓝 (f (x + y) - f x)) := by
     have L :
       ∀ᶠ n in atTop, (∑ a in Finset.range n, p a fun _b => y) - f x
         = ∑ a in Finset.Ico 1 n, p a fun _b => y := by
@@ -1144,9 +1145,9 @@ def sigmaEquivSigmaPi (n : ℕ) :
     dsimp
     constructor
     · conv_rhs =>
-        rw [← join_splitWrtComposition a.blocks b, ←
-          ofFn_nthLe (splitWrtComposition a.blocks b)]
-      have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by -- length_map (List.sum (α := List ℕ)) (splitWrtComposition a.blocks b)
+        rw [← join_splitWrtComposition a.blocks b, ← ofFn_nthLe (splitWrtComposition a.blocks b)]
+      have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
+        -- length_map (List.sum (α := List ℕ)) (splitWrtComposition a.blocks b)
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
       · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
@@ -1198,8 +1199,8 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     ---simp only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
       --compAlongComposition_apply, ContinuousMultilinearMap.map_sum, Finset.sum_sigma',
       --applyComposition]
-    rw [FormalMultilinearSeries.comp, FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
-      ContinuousMultilinearMap.sum_apply]
+    rw [FormalMultilinearSeries.comp, FormalMultilinearSeries.comp,
+      ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.sum_apply]
     simp only [compAlongComposition_apply, ContinuousMultilinearMap.map_sum, Finset.sum_sigma']
     sorry
   /- Now, we use `composition.sigma_equiv_sigma_pi n` to change
