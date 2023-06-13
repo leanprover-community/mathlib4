@@ -152,7 +152,7 @@ def Iso.mk {α β : BddLatCat.{u}} (e : α ≃o β) : α ≅ β where
 #align BddLat.iso.mk BddLatCat.Iso.mk
 
 /-- `OrderDual` as a functor. -/
---@[simps]
+@[simps]
 def dual : BddLatCat ⥤ BddLatCat where
   obj X := of Xᵒᵈ
   map {X Y} := BoundedLatticeHom.dual
