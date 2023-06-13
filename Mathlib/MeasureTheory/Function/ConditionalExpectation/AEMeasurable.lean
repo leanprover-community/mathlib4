@@ -13,21 +13,21 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 /-! # Functions a.e. measurable with respect to a sub-σ-algebra
 
-A function `f` verifies `ae_strongly_measurable' m f μ` if it is `μ`-a.e. equal to
-an `m`-strongly measurable function. This is similar to `ae_strongly_measurable`, but the
+A function `f` verifies `AEStronglyMeasurable' m f μ` if it is `μ`-a.e. equal to
+an `m`-strongly measurable function. This is similar to `AEStronglyMeasurable`, but the
 `MeasurableSpace` structures used for the measurability statement and for the measure are
 different.
 
-We define `Lp_meas F 𝕜 m p μ`, the subspace of `Lp F p μ` containing functions `f` verifying
-`ae_strongly_measurable' m f μ`, i.e. functions which are `μ`-a.e. equal to an `m`-strongly
+We define `lpMeas F 𝕜 m p μ`, the subspace of `Lp F p μ` containing functions `f` verifying
+`AEStronglyMeasurable' m f μ`, i.e. functions which are `μ`-a.e. equal to an `m`-strongly
 measurable function.
 
 ## Main statements
 
-We define an `IsometryEquiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
-measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of `Lp_meas`.
+We define an `IsometryEquiv` between `lpMeasSubgroup` and the `Lp` space corresponding to the
+measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of `lpMeas`.
 
-`Lp.induction_strongly_measurable` (see also `mem_ℒp.induction_strongly_measurable`):
+`Lp.induction_stronglyMeasurable` (see also `Memℒp.induction_stronglyMeasurable`):
 To prove something for an `Lp` function a.e. strongly measurable with respect to a
 sub-σ-algebra `m` in a normed space, it suffices to show that
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
@@ -45,8 +45,8 @@ open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-/-- A function `f` verifies `ae_strongly_measurable' m f μ` if it is `μ`-a.e. equal to
-an `m`-strongly measurable function. This is similar to `ae_strongly_measurable`, but the
+/-- A function `f` verifies `AEStronglyMeasurable' m f μ` if it is `μ`-a.e. equal to
+an `m`-strongly measurable function. This is similar to `AEStronglyMeasurable`, but the
 `MeasurableSpace` structures used for the measurability statement and for the measure are
 different. -/
 def AEStronglyMeasurable' {α β} [TopologicalSpace β] (m : MeasurableSpace α)
@@ -197,13 +197,13 @@ variable {α E' F F' 𝕜 : Type _} {p : ℝ≥0∞} [IsROrC 𝕜]
 
 section LpMeas
 
-/-! ## The subset `Lp_meas` of `Lp` functions a.e. measurable with respect to a sub-sigma-algebra -/
+/-! ## The subset `lpMeas` of `Lp` functions a.e. measurable with respect to a sub-sigma-algebra -/
 
 
 variable (F)
 
-/-- `Lp_meas_subgroup F m p μ` is the subspace of `Lp F p μ` containing functions `f` verifying
-`ae_strongly_measurable' m f μ`, i.e. functions which are `μ`-a.e. equal to
+/-- `lpMeasSubgroup F m p μ` is the subspace of `Lp F p μ` containing functions `f` verifying
+`AEStronglyMeasurable' m f μ`, i.e. functions which are `μ`-a.e. equal to
 an `m`-strongly measurable function. -/
 def lpMeasSubgroup (m : MeasurableSpace α) [MeasurableSpace α] (p : ℝ≥0∞) (μ : Measure α) :
     AddSubgroup (Lp F p μ) where
@@ -215,8 +215,8 @@ def lpMeasSubgroup (m : MeasurableSpace α) [MeasurableSpace α] (p : ℝ≥0∞
 
 variable (𝕜)
 
-/-- `Lp_meas F 𝕜 m p μ` is the subspace of `Lp F p μ` containing functions `f` verifying
-`ae_strongly_measurable' m f μ`, i.e. functions which are `μ`-a.e. equal to
+/-- `lpMeas F 𝕜 m p μ` is the subspace of `Lp F p μ` containing functions `f` verifying
+`AEStronglyMeasurable' m f μ`, i.e. functions which are `μ`-a.e. equal to
 an `m`-strongly measurable function. -/
 def lpMeas (m : MeasurableSpace α) [MeasurableSpace α] (p : ℝ≥0∞) (μ : Measure α) :
     Submodule 𝕜 (Lp F p μ) where
@@ -267,16 +267,16 @@ theorem mem_lpMeas_indicatorConstLp {m m0 : MeasurableSpace α} (hm : m ≤ m0) 
 
 section CompleteSubspace
 
-/-! ## The subspace `Lp_meas` is complete.
+/-! ## The subspace `lpMeas` is complete.
 
-We define an `IsometryEquiv` between `Lp_meas_subgroup` and the `Lp` space corresponding to the
+We define an `IsometryEquiv` between `lpMeasSubgroup` and the `Lp` space corresponding to the
 measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of
-`Lp_meas_subgroup` (and `Lp_meas`). -/
+`lpMeasSubgroup` (and `lpMeas`). -/
 
 
 variable {ι : Type _} {m m0 : MeasurableSpace α} {μ : Measure α}
 
-/-- If `f` belongs to `Lp_meas_subgroup F m p μ`, then the measurable function it is almost
+/-- If `f` belongs to `lpMeasSubgroup F m p μ`, then the measurable function it is almost
 everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
 theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
     (hf_meas : f ∈ lpMeasSubgroup F m p μ) :
@@ -295,7 +295,7 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
 #align measure_theory.mem_ℒp_trim_of_mem_Lp_meas_subgroup MeasureTheory.memℒp_trim_of_mem_lpMeasSubgroup
 
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
-`Lp_meas_subgroup F m p μ`. -/
+`lpMeasSubgroup F m p μ`. -/
 theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     (memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f ∈ lpMeasSubgroup F m p μ := by
   let hf_mem_ℒp := memℒp_of_memℒp_trim hm (Lp.memℒp f)
@@ -307,7 +307,7 @@ theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)
 
 variable (F p μ)
 
-/-- Map from `Lp_meas_subgroup` to `Lp F p (μ.trim hm)`. -/
+/-- Map from `lpMeasSubgroup` to `Lp F p (μ.trim hm)`. -/
 noncomputable def lpMeasSubgroupToLpTrim (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     Lp F p (μ.trim hm) :=
   Memℒp.toLp (mem_lpMeasSubgroup_iff_aeStronglyMeasurable'.mp f.mem).choose
@@ -317,7 +317,7 @@ noncomputable def lpMeasSubgroupToLpTrim (hm : m ≤ m0) (f : lpMeasSubgroup F m
 
 variable (𝕜)
 
-/-- Map from `Lp_meas` to `Lp F p (μ.trim hm)`. -/
+/-- Map from `lpMeas` to `Lp F p (μ.trim hm)`. -/
 noncomputable def lpMeasToLpTrim (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) : Lp F p (μ.trim hm) :=
   Memℒp.toLp (mem_lpMeas_iff_aeStronglyMeasurable'.mp f.mem).choose
     -- Porting note: had to replace `f` with `f.1` here.
@@ -326,8 +326,8 @@ noncomputable def lpMeasToLpTrim (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) : Lp
 
 variable {𝕜}
 
-/-- Map from `Lp F p (μ.trim hm)` to `Lp_meas_subgroup`, inverse of
-`Lp_meas_subgroup_to_Lp_trim`. -/
+/-- Map from `Lp F p (μ.trim hm)` to `lpMeasSubgroup`, inverse of
+`lpMeasSubgroupToLpTrim`. -/
 noncomputable def lpTrimToLpMeasSubgroup (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpMeasSubgroup F m p μ :=
   ⟨(memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f, mem_lpMeasSubgroup_toLp_of_trim hm f⟩
@@ -335,7 +335,7 @@ noncomputable def lpTrimToLpMeasSubgroup (hm : m ≤ m0) (f : Lp F p (μ.trim hm
 
 variable (𝕜)
 
-/-- Map from `Lp F p (μ.trim hm)` to `Lp_meas`, inverse of `Lp_meas_to_Lp_trim`. -/
+/-- Map from `Lp F p (μ.trim hm)` to `lpMeas`, inverse of `Lp_meas_to_Lp_trim`. -/
 noncomputable def lpTrimToLpMeas (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) : lpMeas F 𝕜 m p μ :=
   ⟨(memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f, mem_lpMeasSubgroup_toLp_of_trim hm f⟩
 #align measure_theory.Lp_trim_to_Lp_meas MeasureTheory.lpTrimToLpMeas
@@ -368,7 +368,7 @@ theorem lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
   Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 #align measure_theory.Lp_trim_to_Lp_meas_ae_eq MeasureTheory.lpTrimToLpMeas_ae_eq
 
-/-- `Lp_trim_to_Lp_meas_subgroup` is a right inverse of `Lp_meas_subgroup_to_Lp_trim`. -/
+/-- `lpTrimToLpMeasSubgroup` is a right inverse of `lpMeasSubgroupToLpTrim`. -/
 theorem lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
     Function.RightInverse (lpTrimToLpMeasSubgroup F p μ hm) (lpMeasSubgroupToLpTrim F p μ hm) := by
   intro f
@@ -378,7 +378,7 @@ theorem lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
   exact (lpMeasSubgroupToLpTrim_ae_eq hm _).trans (lpTrimToLpMeasSubgroup_ae_eq hm _)
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_right_inv MeasureTheory.lpMeasSubgroupToLpTrim_right_inv
 
-/-- `Lp_trim_to_Lp_meas_subgroup` is a left inverse of `Lp_meas_subgroup_to_Lp_trim`. -/
+/-- `lpTrimToLpMeasSubgroup` is a left inverse of `lpMeasSubgroupToLpTrim`. -/
 theorem lpMeasSubgroupToLpTrim_left_inv (hm : m ≤ m0) :
     Function.LeftInverse (lpTrimToLpMeasSubgroup F p μ hm) (lpMeasSubgroupToLpTrim F p μ hm) := by
   intro f
@@ -437,7 +437,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   rw [Pi.smul_apply, Pi.smul_apply, hx]
 #align measure_theory.Lp_meas_to_Lp_trim_smul MeasureTheory.lpMeasToLpTrim_smul
 
-/-- `Lp_meas_subgroup_to_Lp_trim` preserves the norm. -/
+/-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
 theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
   rw [Lp.norm_def, snorm_trim hm (Lp.stronglyMeasurable _),
@@ -454,7 +454,7 @@ theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
 
 variable (F p μ)
 
-/-- `Lp_meas_subgroup` and `Lp F p (μ.trim hm)` are isometric. -/
+/-- `lpMeasSubgroup` and `Lp F p (μ.trim hm)` are isometric. -/
 noncomputable def lpMeasSubgroupToLpTrimIso [Fact (1 ≤ p)] (hm : m ≤ m0) :
     lpMeasSubgroup F m p μ ≃ᵢ Lp F p (μ.trim hm) where
   toFun := lpMeasSubgroupToLpTrim F p μ hm
@@ -466,13 +466,13 @@ noncomputable def lpMeasSubgroupToLpTrimIso [Fact (1 ≤ p)] (hm : m ≤ m0) :
 
 variable (𝕜)
 
-/-- `Lp_meas_subgroup` and `Lp_meas` are isometric. -/
+/-- `lpMeasSubgroup` and `lpMeas` are isometric. -/
 noncomputable def lpMeasSubgroupToLpMeasIso [Fact (1 ≤ p)] :
     lpMeasSubgroup F m p μ ≃ᵢ lpMeas F 𝕜 m p μ :=
   IsometryEquiv.refl (lpMeasSubgroup F m p μ)
 #align measure_theory.Lp_meas_subgroup_to_Lp_meas_iso MeasureTheory.lpMeasSubgroupToLpMeasIso
 
-/-- `Lp_meas` and `Lp F p (μ.trim hm)` are isometric, with a linear equivalence. -/
+/-- `lpMeas` and `Lp F p (μ.trim hm)` are isometric, with a linear equivalence. -/
 noncomputable def lpMeasToLpTrimLie [Fact (1 ≤ p)] (hm : m ≤ m0) :
     lpMeas F 𝕜 m p μ ≃ₗᵢ[𝕜] Lp F p (μ.trim hm) where
   toFun := lpMeasToLpTrim F 𝕜 p μ hm
@@ -562,7 +562,7 @@ section Induction
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedSpace ℝ F]
 
-/-- Auxiliary lemma for `Lp.induction_strongly_measurable`. -/
+/-- Auxiliary lemma for `Lp.induction_stronglyMeasurable`. -/
 @[elab_as_elim]
 theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
@@ -674,7 +674,7 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   exact h_add hf'_Lp hg'_Lp hf'_meas hg'_meas h_disj hPf hPg
 #align measure_theory.Lp.induction_strongly_measurable MeasureTheory.Lp.induction_stronglyMeasurable
 
-/-- To prove something for an arbitrary `mem_ℒp` function a.e. strongly measurable with respect
+/-- To prove something for an arbitrary `Memℒp` function a.e. strongly measurable with respect
 to a sub-σ-algebra `m` in a normed space, it suffices to show that
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
 * is closed under addition;
