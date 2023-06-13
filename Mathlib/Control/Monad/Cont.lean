@@ -10,6 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
+import Mathlib.Init.Control.Lawful
 
 /-!
 # Continuation Monad
@@ -123,10 +124,6 @@ end ContT
 
 variable {m : Type u → Type v} [Monad m]
 
-#eval "TODO: Move this to Init"
-@[simp]
-theorem ExceptT.run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x := rfl
-
 def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (ExceptT ε m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
 #align except_t.mk_label ExceptTₓ.mkLabel
@@ -156,30 +153,13 @@ instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m)
     ext; rfl
   callCC_dummy := by intros; simp [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
 
-#eval "TODO: Move this to Init"
-@[ext]
-theorem OptionT.ext [Monad m] {x y : OptionT m α} (h : x.run = y.run) : x = y := by
-  simpa [run] using h
-
-#eval "TODO: Move this to Init"
-@[simp]
-theorem OptionT.run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x := rfl
-
-#eval "TODO: Move this to Init"
-theorem OptionT.run_bind (x : OptionT m α) (f : α → OptionT m β) :
-    OptionT.run (x >>= f) = OptionT.run x >>= fun
-                                               | some a => OptionT.run (f a)
-                                               | none   => pure none :=
-  rfl
-
 def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
 #align option_t.mk_label OptionTₓ.mkLabel
 
--- Porting note: the def of `monadLift` for `OptionT` is changed so `LawfulMonad m` is required.
 theorem OptionT.goto_mkLabel [LawfulMonad m] {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
-    goto (OptionT.mkLabel x) i = OptionT.mk (some <$> goto x (some i)) := by
-  cases x; simp only [goto, mkLabel, monadLift, MonadLift.monadLift, OptionT.lift, bind_pure_comp]
+    goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
+  rfl
 #align option_t.goto_mk_label OptionTₓ.goto_mkLabel
 
 nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
