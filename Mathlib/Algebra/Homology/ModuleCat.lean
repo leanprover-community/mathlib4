@@ -48,7 +48,8 @@ theorem homology_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f 
   refine' cokernel_funext fun n => _
   -- porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
   -- Gosh it would be nice if `equiv_rw` could directly use an isomorphism, or an enriched `≃`.
-  obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫ ModuleCat.kernelIsoKer g).toLinearEquiv.toEquiv.symm.surjective n
+  obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫
+    ModuleCat.kernelIsoKer g).toLinearEquiv.toEquiv.symm.surjective n
   exact w n
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext ModuleCat.homology_ext
