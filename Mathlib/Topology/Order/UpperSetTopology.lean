@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Tactic.TFAE
 
 /-!
 # UpperSet topology
@@ -178,13 +179,15 @@ lemma coinduced_le {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : To
 
 open Topology
 
-lemma Monotone_iff_Continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
+open List Set in lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
-  Monotone f ↔ Continuous[t₁, t₂] f := by
-  constructor
+    TFAE [ Monotone f,
+           Continuous[t₁, t₂] f ] := by
+  tfae_have 1 → 2
   . intro hf
     rw [continuous_iff_coinduced_le]
     exact coinduced_le hf
+  tfae_have 2 → 1
   . intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
     apply (Continuous.closure_preimage_subset hf {f b})
@@ -192,6 +195,7 @@ lemma Monotone_iff_Continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+  tfae_finish
 
 lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
   [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
@@ -206,10 +210,13 @@ lemma le_induced {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : Topo
   exact (IsUpperSet.preimage ht.1 hf)
 
 -- Proof of le_induced from coinduced_le
+/-
 lemma le_induced' {t₁ : TopologicalSpace α} [UpperSetTopology α] {t₂ : TopologicalSpace β}
   [UpperSetTopology β] {f : α → β} (hf : Monotone f) : t₁ ≤ induced f t₂ := by
-  rw [← continuous_iff_le_induced, ← Monotone_iff_Continuous]
+  rw [← continuous_iff_le_induced]
+  apply ((Monotone_iff_Continuous hf).out 1 2)
   exact hf
+-/
 
 end maps
 
