@@ -185,8 +185,9 @@ theorem eqvGen_of_π_eq
     inferInstance h
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
-    rw [← ι_preservesColimitsIso_hom]
-    simp [h]
+    dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
+    rw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
+    simp
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
@@ -220,19 +221,16 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
-    stop
-    -- TODO: this causes universe errors.
-    rw [←
-      show (sigmaIsoSigma.{u} _).inv _ = x from
-        ConcreteCategory.congr_hom (sigmaIsoSigma.{u} _).hom_inv_id x]
-    generalize (sigmaIsoSigma.{u} D.V).Hom x = x'
+    rw [←show (sigmaIsoSigma.{u, u} _).inv _ = x from
+        ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
+    generalize (sigmaIsoSigma.{u, u} D.V).hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
-    unfold InvImage multispan_index.fst_sigma_map multispan_index.snd_sigma_map
-    simp only [opens.inclusion_apply, TopCat.comp_app, sigma_iso_sigma_inv_apply,
-      CategoryTheory.Limits.colimit.ι_desc_apply, cofan.mk_ι_app, sigma_iso_sigma_hom_ι_apply,
-      ContinuousMap.toFun_eq_coe]
-    erw [sigma_iso_sigma_hom_ι_apply, sigma_iso_sigma_hom_ι_apply]
-    exact Or.inr ⟨y, by dsimp [glue_data.diagram]; simp⟩
+    unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
+    simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
+      Cofan.mk_ι_app]
+    rw [←comp_apply, colimit.ι_desc, ←comp_apply, colimit.ι_desc]
+    erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
+    exact Or.inr ⟨y, by dsimp [GlueData.diagram]; simp only [true_and]; rfl⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
     rfl
     dsimp only at *
@@ -397,10 +395,10 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine Continuous.comp ?_ ?_
     · continuity
     · refine Continuous.comp ?_ ?_
-      · sorry -- exact map_continuous (t h i j)
+      · exact map_continuous (self := ContinuousMap.instContinuousMapClassContinuousMap) (t h i j)
       · continuity
   · refine Continuous.comp ?_ ?_
-    · sorry -- exact map_continuous (t h i j)
+    · exact map_continuous (self := ContinuousMap.instContinuousMapClassContinuousMap) (t h i j)
     · continuity
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
@@ -441,6 +439,8 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     convert congr_arg coe (h.t_inv k i ⟨x, hx'⟩) using 3
     ext
     exact h.cocycle i j k ⟨x, hx⟩ hx'
+  f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
+  f_hasPullback i j k := inferInstance
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk' TopCat.GlueData.mk'
 
@@ -512,7 +512,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   · erw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
-    rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
+    erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
     refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
