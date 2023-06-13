@@ -46,21 +46,14 @@ structure DifferentialObject where
   /-- The differential of a differential object. -/
   d : pt ⟶ pt⟦(1 : ℤ)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared' : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
+  d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object CategoryTheory.DifferentialObject
 
--- Porting note : this resulted in a `INCORRECT DEF/LEMMA` liner error, so `Hom.comm` is
--- made manually
--- restate_axiom DifferentialObject.d_squared'
-
--- attribute [simp] DifferentialObject.d_squared
+attribute [simp] DifferentialObject.d_squared
 
 variable {C}
 
 namespace DifferentialObject
-
-@[simp]
-lemma d_squared (X : DifferentialObject C) : X.d ≫ X.d⟦1⟧' = 0 := X.d_squared'
 
 /-- A morphism of differential objects is a morphism commuting with the differentials. -/
 @[ext] -- Porting note: Removed `nolint has_nonempty_instance`
@@ -77,18 +70,13 @@ structure Hom (X Y : DifferentialObject C) where
      d
   ```
   -/
-  comm' : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat -- Porting note: Originally `by obviously`
+  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat -- Porting note: Originally `by obviously`
 #align category_theory.differential_object.hom CategoryTheory.DifferentialObject.Hom
 
--- Porting note : this resulted in a `INCORRECT DEF/LEMMA` liner error, so `Hom.comm` is
--- made manually
--- restate_axiom Hom.comm'
--- attribute [reassoc (attr := simp)] Hom.comm
+attribute [simp, reassoc (attr := simp)] Hom.comm
 
 namespace Hom
 
-@[simp, reassoc (attr := simp)]
-lemma comm {X Y : DifferentialObject C} (f : Hom X Y) : X.d ≫ f.f⟦1⟧' = f.f ≫ Y.d := f.comm'
 
 /-- The identity morphism of a differential object. -/
 @[simps]
@@ -214,7 +202,7 @@ def mapDifferentialObject (F : C ⥤ D)
   obj X :=
     { pt := F.obj X.pt
       d := F.map X.d ≫ η.app X.pt
-      d_squared' := by
+      d_squared := by
         rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D (1 : ℤ))]
         slice_lhs 2 3 => rw [← η.naturality X.d]
         rw [Functor.comp_map]
@@ -222,7 +210,7 @@ def mapDifferentialObject (F : C ⥤ D)
         rw [zero_comp, zero_comp] }
   map f :=
     { f := F.map f.f
-      comm' := by
+      comm := by
         dsimp
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : ℤ)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
@@ -289,12 +277,12 @@ def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C where
   obj X :=
     { pt := X.pt⟦n⟧
       d := X.d⟦n⟧' ≫ (shiftComm _ _ _).hom
-      d_squared' := by
+      d_squared := by
         rw [Functor.map_comp, Category.assoc, shiftComm_hom_comp_assoc, ← Functor.map_comp_assoc,
           X.d_squared, Functor.map_zero, zero_comp] }
   map f :=
     { f := f.f⟦n⟧'
-      comm' := by
+      comm := by
         dsimp
         erw [Category.assoc, shiftComm_hom_comp, ← Functor.map_comp_assoc, f.comm,
           Functor.map_comp_assoc]
