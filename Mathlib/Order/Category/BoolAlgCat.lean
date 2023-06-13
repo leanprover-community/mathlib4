@@ -16,6 +16,7 @@ import Mathlib.Order.Category.HeytAlgCat
 This defines `BoolAlgCat`, the category of boolean algebras.
 -/
 
+set_option linter.uppercaseLean3 false
 
 open OrderDual Opposite Set
 
@@ -31,7 +32,7 @@ def BoolAlgCat :=
 namespace BoolAlgCat
 
 instance : CoeSort BoolAlgCat (Type _) :=
-  Bundled.hasCoeToSort
+  Bundled.coeSort
 
 instance (X : BoolAlgCat) : BooleanAlgebra X :=
   X.str
@@ -74,10 +75,16 @@ section
 attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
-instance hasForgetToHeytAlgCat : HasForget₂ BoolAlgCat HeytAlgCat
-    where forget₂ :=
-    { obj := fun X => ⟨X⟩
-      map := fun X Y f => show BoundedLatticeHom X Y from f }
+instance hasForgetToHeytAlgCat : HasForget₂ BoolAlgCat HeytAlgCat where
+  forget₂ :=
+    { obj := fun X => {α := X}
+      map := fun {X Y} f => show BoundedLatticeHom X Y from f
+
+      -- Porting note: TODO remove these below once `map` works. only here to divert
+      -- the error message
+      map_id := _
+      map_comp := _
+      }
 #align BoolAlg.has_forget_to_HeytAlg BoolAlgCat.hasForgetToHeytAlgCat
 
 end
@@ -85,30 +92,32 @@ end
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
-  Hom := (e : BoundedLatticeHom α β)
+  hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align BoolAlg.iso.mk BoolAlgCat.Iso.mk
 
 /-- `order_dual` as a functor. -/
 @[simps]
 def dual : BoolAlgCat ⥤ BoolAlgCat where
   obj X := of Xᵒᵈ
-  map X Y := BoundedLatticeHom.dual
+  map {X Y} := BoundedLatticeHom.dual
 #align BoolAlg.dual BoolAlgCat.dual
 
-/-- The equivalence between `BoolAlgCat` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : BoolAlgCat ≌ BoolAlgCat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+/-- The equivalence between `BoolAlgCat` and itself induced by `OrderDual` both ways. -/
+@[simps functor inverse]
+def dualEquiv : BoolAlgCat ≌ BoolAlgCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align BoolAlg.dual_equiv BoolAlgCat.dualEquiv
 
 end BoolAlgCat
 
 theorem boolAlgCat_dual_comp_forget_to_bddDistLatCat :
-    BoolAlgCat.dual ⋙ forget₂ BoolAlgCat BddDistLatCat = forget₂ BoolAlgCat BddDistLatCat ⋙ BddDistLatCat.dual :=
+    BoolAlgCat.dual ⋙ forget₂ BoolAlgCat BddDistLatCat =
+    forget₂ BoolAlgCat BddDistLatCat ⋙ BddDistLatCat.dual :=
   rfl
 #align BoolAlg_dual_comp_forget_to_BddDistLat boolAlgCat_dual_comp_forget_to_bddDistLatCat
