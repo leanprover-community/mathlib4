@@ -2,11 +2,17 @@ import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Tactic.junkAttribute
 import Mathlib.Tactic.RunCmd
 import Std.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 
 namespace Lean.Expr
 
 open Elab Tactic Meta
 
+/-- `getNeg e` takes an expression `e` as input.
+* If `e` is of the form `¬ e'`, then it returns `(false, e')`;
+* if `e` is of the form `a ≠ b`, then it returns `(false, a = b)`;
+* otherwise it returns `(true, e)`.
+-/
 def getNeg (e : Expr) : MetaM (Bool × Expr) := do
   if e.isConst then return (true, e) else
   let we := ← whnf e
@@ -19,35 +25,54 @@ def getNeg (e : Expr) : MetaM (Bool × Expr) := do
       | _ =>
         pure (true, e)
 
-/-- Test that both `≠` and `¬` get interpreted as "negations". -/
-example : (0 ≠ 1) = (¬ 0 = 1)  := by
-  run_tac do
-    if let some (_, lhs, rhs) := (← getMainTarget).eq? then
-    let nelhs := ← lhs.getNeg
-    let nerhs := ← rhs.getNeg
-    guard <| nelhs == nerhs
-    guard <| nelhs.1 == false
-  rfl
+/-- `getProps thm` takes a name `thm`, assuming that it is the name of a declaration.
+It scans the environment looking for `thm`, panicking if it does not exist.
+It then extracts all the hypotheses of the declaration `thm` that are of Type `Prop`.
+-/
+def getProps (thm : Name) : MetaM (Array Expr) := do
+let env := ← getEnv
+let c := env.find? thm |>.get!
+--dbg_trace c.all
+--dbg_trace ← ppExpr c.toConstantVal.type
+--dbg_trace (← whnf c.toConstantVal.type).ctorName
+--dbg_trace c.toConstantVal.type.ctorName
+let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
+let y := ← forallTelescopeReducing cTy fun arr _exp => do
+  let pfs := ← arr.filterM isProof
+  pfs.mapM (inferType ·)
+return y
 
-private def myProp : Prop := ¬ True
+/-- `getPropsNonInst thm` is similar to `getProps thm`, but only returns a list of `Expr`essions
+corresponding to hypotheses of the declaration with name `thm` that are `Prop`s. -/
+def getPropsNonInst (thm : Name) : MetaM (List Expr) := do
+let env := ← getEnv
+let c := env.find? thm |>.get!
+let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
+let f := ← mkFreshExprMVar (some cTy)
+let PropsAndImpls := ← f.mvarId!.withContext do
+  let ctx := (← getLCtx).decls.toList.reduceOption.drop 1
+  pure (ctx.map fun r : LocalDecl => (r.binderInfo, r.toExpr))
+let nonInstProps := ← PropsAndImpls.mapM fun dc =>
+  if dc.1 != .instImplicit then do
+    let typ := ← inferType dc.2
+    if isProp (← inferType typ) then
+      pure (some typ)
+    else pure none
+  else pure none
+return nonInstProps.reduceOption
 
-/-- Test that `const`ants do not get unfolded, when using `getNeg`. -/
-example (q : myProp) : myProp := by
-  run_tac do
-    let (notNot?, exp) := ← getNeg (← getMainTarget)
-    let ft := ← ppExpr exp
-    guard <| ft.pretty == "Lean.Expr.myProp"
-    guard <| notNot? == true
-  assumption
-
-example (q : ¬ myProp) : ¬ myProp := by
-  run_tac do
-    let (notNot?, exp) := ← getNeg (← getMainTarget)
-    let ft := ← ppExpr exp
-    dbg_trace (notNot?, exp)
-    guard <| ft.pretty == "Lean.Expr.myProp"
-    guard <| notNot? == false
-  assumption
+--  consider using `getPropsNonInst` instead of `getProps`.
+def getOneProp (thm : Name) : MetaM Expr := do
+match ← getProps thm with
+  | #[] => throwError "No `Prop` hipotheses found: is this a good `junk`-lemma?"
+  | #[p] => pure p
+  | y => do
+    let str := ← y.mapM fun x => do
+      let xx := (← ppExpr x).pretty
+      (m!"@[junk {xx}]").toString
+    let str := str.toList.intersperse ""
+    throwError (m!"More than one `Prop` hypothesis found.\n" ++
+      m!"Please provide the name of an hypothesis to `junk`, as in \n" ++ m!"{str}")
 
 end Lean.Expr
 
@@ -56,43 +81,156 @@ noncomputable section
 open scoped BigOperators
 open MeasureTheory
 
-open Lean Elab Tactic Meta Parser
-#check IsSymm
-example (q : myProp) : myProp := q
-example {α β} [AddCommMonoid α] [TopologicalSpace α] (f : β → α) : ¬ Summable f := by
-  run_tac (do
-    let g := ← getMainTarget
-    logInfo g.ctorName
-    logInfo m!"{← g.getNeg}"
-  )
-  sorry
+open Lean Expr Elab Tactic Meta Parser
+
+theorem att {α β} [AddCommMonoid α] [TopologicalSpace α] [IsSymm _ r] [IsRefl _ r]
+    (f : β → α) (_sf : ¬ Summable f) (a b : α) (h : a ≠ b) : a ≠ b := h
+
+example {α β} [AddCommMonoid α] [TopologicalSpace α]
+    (f : β → α) (hs : Summable f → (∑' b, f b) = 0) : (∑' b, f b) = 0 := by
+  run_tac do
+    let ft := ← getLocalDeclFromUserName `f
+--    let xone := ← getPropsNonInst `att
+--    dbg_trace ← xone.mapM (ppExpr ·)
+    let xone := ← getOneProp `tsum_eq_zero_of_not_summable
+    let (_notNot, exp) := ← xone.getNeg
+    let sumF := ← mkAppM exp.getAppFn.constName #[ft.toExpr]
+    let sNs := mkOr sumF (mkNot sumF)
+    let j := ← mkAppM `Classical.em #[sumF]
+    liftMetaTactic fun mvarId => do
+      let nm := ← getUnusedUserName `myname
+      let mvarIdNew ← mvarId.assert nm sNs j
+      let (nfvid, mvarIdNew) ← mvarIdNew.intro1P
+      let n12 : Array AltVarNames := #[{ varNames := [`junk] }, { varNames := [`knuj] }]
+      let n12 := if _notNot then n12 else n12.reverse
+      let sgoals := ← mvarIdNew.cases nfvid n12
+      let tgts := (sgoals.map fun x => InductionSubgoal.mvarId x.toInductionSubgoal).toList
+      if _notNot then return tgts else return tgts.reverse
+    focus <| evalTactic (← `(tactic| simp [tsum_eq_zero_of_not_summable, ‹_›]; done))
+  apply hs knuj
 
 
 
-
-#check mul_inv_cancel
-def getProps (thm : Name) : MetaM (Array Expr) := do
-let env := ← getEnv
-let c := env.find? thm |>.get!
-let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
-let y := ← forallTelescopeReducing cTy fun arr _exp => do
-  let pfs := ← arr.filterM isProof
-  pfs.mapM (inferType ·)
-return y
---y.mapM getNot
-
+/-
 #check mkNot
+#check Lean.BinderInfo.instImplicit
 
+--theorem att {α β} [AddCommMonoid α] [TopologicalSpace α] [IsSymm _ r] [IsRefl _ r]
+--    (f : β → α) (sf : ¬ Summable f) (r : α → α → Prop) (a b : α) (h : a ≠ b) : a ≠ b := h
+
+#check LocalContext
 #check Expr.const
 #check Ne
 #check not
 #eval do
-  let xs := ← getProps `tsum_eq_zero_of_not_summable
-  let xs := ← getProps `mp
-  let xs := ← getProps `mul_inv_cancel
-  dbg_trace f!"The array of `Prop`s has size {xs.size}"
-  let x := xs[0]!
-  dbg_trace x
+  --let xs := ← getProps `tsum_eq_zero_of_not_summable
+  --let xs := ← getProps `mul_inv_cancel
+--  let xs := ← getOneProp `att
+  --let xs := ← getProps `att
+  let xone := ← getOneProp `tsum_eq_zero_of_not_summable
+  --dbg_trace f!"The array of `Prop`s has size {xs.size}"
+  --let x := xs[0]!
+  let (_notNot, exp) := ← xone.getNeg
+  let _toprint1 := ← ppExpr exp
+  --let toprint := ← xs.mapM ppExpr
+--  dbg_trace f!"applied: {toprint1}"
+--  logInfo f!"applied: {toprint1}"
+  --  let _ := ← toprint.mapM fun x => dbg_trace f!"{x}"
+  pure ()
+-/
+
+  --pick_goal 2
+  --. simp [tsum_eq_zero_of_not_summable, ‹_›]
+  --. apply hs ‹_›
+
+/-
+#check CasesSubgoal.toInductionSubgoal
+#check inv_zero
+#check em
+-/
+
+
+example {α β} [AddCommMonoid α] [TopologicalSpace α] --[IsSymm _ r] [IsRefl _ r]
+    (f : β → α) (_sf : ¬ Summable f) (_r : α → α → Prop) (a b : α) (h : a ≠ b) : a ≠ b := by
+  run_tac do
+    let ft := ← getLocalDeclFromUserName `f
+--    let xone := ← getOneProp `mul_inv_cancel
+--    let xone := ← getOneProp `GroupWithZero.inv_zero
+    let xone := ← getOneProp `tsum_eq_zero_of_not_summable
+    let (_notNot, exp) := ← xone.getNeg
+--    dbg_trace exp.getAppFn.constName
+    let sumF := ← mkAppM exp.getAppFn.constName #[ft.toExpr]
+    let nSumF := mkNot sumF
+    let sNs := mkOr sumF nSumF
+--    logInfo (← inferType sumF)
+    let j := ← mkAppM `Classical.em #[sumF]
+--    logInfo sumF
+--    logInfo nSumF
+--    logInfo sNs
+--    logInfo (← inferType j)
+--    dbg_trace sumF
+    --let t ← elabTerm t none
+    --let v ← elabTermEnsuringType v t
+    liftMetaTactic fun mvarId => do
+      let mvarIdNew ← mvarId.assert `myname sNs j
+      let (_, mvarIdNew) ← mvarIdNew.intro1P
+
+      return [mvarIdNew]--    let toprint1 := ← ppExpr toprint1
+--    logInfo exp
+  cases myname
+--  have : this ↔ myname := rfl
+  assumption
+  assumption
+  --rcases myname with h | h
+
+
+/-
+#exit
+--set_option maxHeartbeats 0
+--#find _ + _ = _ + _
+--#find Lean.Expr → TermElabM _
+--#find Nat → Nat
+--#check Lean.Expr
+--#check TSyntax
+#check Integrable
+#check Rat.inv
+#check Expr.const
+example {α β} [NormedAddCommGroup α] [TopologicalSpace α] [MeasureSpace β] [IsSymm _ r] [IsRefl _ r]
+    (f : β → α) (sf : ¬ Summable f) (nf : ¬ Integrable f) (r : α → α → Prop) (a b : α) (h : a ≠ b) : a ≠ b := by
+  run_tac (do
+    let xs := ← getProps `tsum_eq_zero_of_not_summable
+    let xs := ← getProps `mul_inv_cancel
+    let xs := ← getProps `att
+    dbg_trace f!"The array of `Prop`s has size {xs.size}"
+    let f := ← getLocalDeclFromUserName `f
+    dbg_trace "ciao"
+    dbg_trace ← ppExpr (f.type)
+    let (_, ex) := ← xs[3]!.getNeg
+    logInfo ex
+    logInfo ex.getAppFn.constName!
+    let mapp := ← mkAppM ex.getAppFn.constName! #[.fvar f.fvarId]
+    logInfo (mapp))
+  sorry
+#exit
+--    let _ := ← xs.mapM (fun x => do
+--      let mapp := ← mkAppM' x #[.fvar f.fvarId]
+--      logInfo (mapp))
+    --let x := xs[0]!
+    --let m := ← x.toSyntax
+    --evalTactic (← `(tactic| by_cases $m))
+    --evalTactic (← `(tactic| by_cases $m))
+    let toprint := ← xs.mapM (ppExpr ·)
+    let toprint := ← xs.mapM (Lean.Expr.getNeg ·)
+    let _ := ← toprint.mapM fun x => logInfo m!"{x}"
+    pure ()
+    )
+--  by_cases 0 = 1
+--  refine  ?_
+
+
+
+#exit
+
 /-
   dbg_trace x.ctorName
   let y := ← match ← whnf x with
@@ -166,7 +304,7 @@ let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
 let x := ← forallTelescopeReducing cTy fun arr _exp => do (
   --dbg_trace f!"in telescope: {← ppExpr _exp}"; dbg_trace (arr);
   arr.filterM isProof) --.mapM ppExpr
---/-
+/-
 let y := ← forallTelescopeReducing cTy fun arr _exp => do
   let pfs := ← arr.filterM isProof
   dbg_trace "prima"
@@ -175,7 +313,7 @@ let y := ← forallTelescopeReducing cTy fun arr _exp => do
   dbg_trace f!"ctorName:  {((pfs.map (ctorName ·)))}"
   dbg_trace f!"inferType: {(← (pfs.mapM (inferType ·)))}"
   let j := ← mkFreshLevelMVars 2
-  dbg_trace (← isDefEq pfs[0]! (.const `Summable j))
+  dbg_trace (← isDefEq pfs[0]! (.const `Summable j)
   dbg_trace "dopo"
   pfs.mapM (inferType ·)
 --/
@@ -390,7 +528,7 @@ example {ι : Type _} [DivisionSemiring α] [TopologicalSpace α]
   --simp
 
 
---/-
+/-
 example {a : ℚ} : 1 / a = 0 ∨ a ≠ 0 := by
   junk_gen a ≠ 0 , [div_zero, not_ne_iff, *]
   simp only [not_ne_iff, not_ne_iff.mp hh]
@@ -499,3 +637,5 @@ example (f : α → E) : (∫ a, f a) = 0 := by
   -/
 
 --  apply integral_undef h
+
+-/
