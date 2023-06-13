@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.BddLat
-import Mathbin.Order.Category.DistLat
+import Mathlib.Order.Category.BddLat
+import Mathlib.Order.Category.DistLat
 
 /-!
 # The category of bounded distributive lattices
@@ -89,8 +89,7 @@ theorem forget_bddLat_latCat_eq_forget_distLatCat_latCat :
 /-- Constructs an equivalence between bounded distributive lattices from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
