@@ -37,6 +37,7 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 
 -/
 
+set_option linter.uppercaseLean3 false
 
 open TopologicalSpace Filter
 
@@ -105,7 +106,7 @@ theorem const_inner {𝕜 β} [IsROrC 𝕜] [NormedAddCommGroup β] [InnerProduc
 #align measure_theory.ae_strongly_measurable'.const_inner MeasureTheory.AEStronglyMeasurable'.const_inner
 
 /-- An `m`-strongly measurable function almost everywhere equal to `f`. -/
-def mk (f : α → β) (hfm : AEStronglyMeasurable' m f μ) : α → β :=
+noncomputable def mk (f : α → β) (hfm : AEStronglyMeasurable' m f μ) : α → β :=
   hfm.choose
 #align measure_theory.ae_strongly_measurable'.mk MeasureTheory.AEStronglyMeasurable'.mk
 
@@ -350,7 +351,8 @@ theorem lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p �
 
 theorem lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeasSubgroup F p μ hm f =ᵐ[μ] f :=
-  Memℒp.coeFn_toLp _
+  -- Porting note: filled in the argument
+  Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 #align measure_theory.Lp_trim_to_Lp_meas_subgroup_ae_eq MeasureTheory.lpTrimToLpMeasSubgroup_ae_eq
 
 theorem lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
@@ -362,7 +364,8 @@ theorem lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
 
 theorem lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeas F 𝕜 p μ hm f =ᵐ[μ] f :=
-  Memℒp.coeFn_toLp _
+  -- Porting note: filled in the argument
+  Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 #align measure_theory.Lp_trim_to_Lp_meas_ae_eq MeasureTheory.lpTrimToLpMeas_ae_eq
 
 /-- `Lp_trim_to_Lp_meas_subgroup` is a right inverse of `Lp_meas_subgroup_to_Lp_trim`. -/
@@ -407,7 +410,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   ext1
   refine' EventuallyEq.trans _ (Lp.coeFn_neg _).symm
   refine' ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
-  · exact @stronglyMeasurable.neg _ _ _ m _ _ _ (Lp.stronglyMeasurable _)
+  · exact @StronglyMeasurable.neg _ _ _ m _ _ _ (Lp.stronglyMeasurable _)
   refine' (lpMeasSubgroupToLpTrim_ae_eq hm _).trans _
   refine' EventuallyEq.trans _ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
   refine' (Lp.coeFn_neg _).trans _
@@ -452,7 +455,7 @@ theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
 variable (F p μ)
 
 /-- `Lp_meas_subgroup` and `Lp F p (μ.trim hm)` are isometric. -/
-noncomputable def lpMeasSubgroupToLpTrimIso [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
+noncomputable def lpMeasSubgroupToLpTrimIso [Fact (1 ≤ p)] (hm : m ≤ m0) :
     lpMeasSubgroup F m p μ ≃ᵢ Lp F p (μ.trim hm) where
   toFun := lpMeasSubgroupToLpTrim F p μ hm
   invFun := lpTrimToLpMeasSubgroup F p μ hm
@@ -464,7 +467,7 @@ noncomputable def lpMeasSubgroupToLpTrimIso [hp : Fact (1 ≤ p)] (hm : m ≤ m0
 variable (𝕜)
 
 /-- `Lp_meas_subgroup` and `Lp_meas` are isometric. -/
-noncomputable def lpMeasSubgroupToLpMeasIso [hp : Fact (1 ≤ p)] :
+noncomputable def lpMeasSubgroupToLpMeasIso [Fact (1 ≤ p)] :
     lpMeasSubgroup F m p μ ≃ᵢ lpMeas F 𝕜 m p μ :=
   IsometryEquiv.refl (lpMeasSubgroup F m p μ)
 #align measure_theory.Lp_meas_subgroup_to_Lp_meas_iso MeasureTheory.lpMeasSubgroupToLpMeasIso
