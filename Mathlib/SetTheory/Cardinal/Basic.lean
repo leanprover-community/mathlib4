@@ -44,7 +44,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommCemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -433,7 +433,7 @@ theorem add_def (α β : Type u) : (#α) + (#β) = (#Sum α β) :=
 -- Porting note: Should this be changed to
 -- `⟨fun n => lift (#(Fin n))⟩` in the future?
 instance : NatCast Cardinal.{u} :=
-⟨Nat.unaryCast⟩
+  ⟨Nat.unaryCast⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : (#Sum α β) = lift.{v, u} (#α) + lift.{u, v} (#β) :=
@@ -1784,7 +1784,7 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 #align cardinal.to_nat_lift Cardinal.toNat_lift
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat (#α) = toNat (#β) := by
--- Porting note: Inserted universe hint below
+  -- Porting note: Inserted universe hint below
   rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
 #align cardinal.to_nat_congr Cardinal.toNat_congr
 

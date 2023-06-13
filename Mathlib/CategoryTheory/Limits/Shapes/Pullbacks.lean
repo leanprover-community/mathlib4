@@ -1032,11 +1032,11 @@ def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) 
 
 /-- This is a helper construction that can be useful when verifying that a category has all
     pushout. Given `F : WalkingSpan ⥤ C`, which is really the same as
-    `span (F.map fst) (F.mal snd)`, and a pushout cocone on `F.map fst` and `F.map snd`,
+    `span (F.map fst) (F.map snd)`, and a pushout cocone on `F.map fst` and `F.map snd`,
     we get a cocone on `F`.
 
     If you're thinking about using this, have a look at `hasPushouts_of_hasColimit_span`, which
-    you may find to be an easiery way of achieving your goal.  -/
+    you may find to be an easier way of achieving your goal. -/
 @[simps]
 def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst) (F.map snd)) :
     Cocone F where

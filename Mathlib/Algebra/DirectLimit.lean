@@ -91,7 +91,7 @@ def DirectLimit : Type max v w :=
   DirectSum ι G ⧸
     (span R <|
       { a |
-        ∃ (i j : _)(H : i ≤ j)(x : _),
+        ∃ (i j : _) (H : i ≤ j) (x : _),
           DirectSum.lof R ι G i x - DirectSum.lof R ι G j (f i j H x) = a })
 #align module.direct_limit Module.DirectLimit
 
@@ -615,7 +615,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
 theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (hix : of G (fun i j h => f' i j h) i x = 0) :
-    ∃ (j : _)(hij : i ≤ j), f' i j hij x = 0 :=
+    ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 :=
   haveI : Nonempty ι := ⟨i⟩
   let ⟨j, s, H, hxs, hx⟩ := of.zero_exact_aux hix
   have hixs : (⟨i, x⟩ : Σi, G i) ∈ s := isSupported_of.1 hxs
