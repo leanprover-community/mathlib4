@@ -34,13 +34,13 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `lie_module.weight_space`
-  * `lie_module.is_weight`
-  * `lie_algebra.root_space`
-  * `lie_algebra.is_root`
-  * `lie_algebra.root_space_weight_space_product`
-  * `lie_algebra.root_space_product`
-  * `lie_algebra.zero_root_subalgebra_eq_iff_is_cartan`
+  * `LieModule.weightSpace`
+  * `LieModule.IsWeight`
+  * `LieAlgebra.rootSpace`
+  * `LieAlgebra.IsRoot`
+  * `LieAlgebra.rootSpaceWeightSpaceProduct`
+  * `LieAlgebra.rootSpaceProduct`
+  * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 
 ## References
 
@@ -76,7 +76,7 @@ open scoped TensorProduct
 map `χ : L → R` is the simultaneous generalized eigenspace of the action of all `x : L` on `M`,
 with eigenvalues `χ x`.
 
-See also `lie_module.weight_space`. -/
+See also `LieModule.weightSpace`. -/
 def preWeightSpace (χ : L → R) : Submodule R M :=
   ⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace (χ x)
 #align lie_module.pre_weight_space LieModule.preWeightSpace
@@ -200,7 +200,7 @@ theorem mem_weightSpace [LieAlgebra.IsNilpotent R L] (χ : L → R) (m : M) :
     m ∈ weightSpace M χ ↔ m ∈ preWeightSpace M χ := Iff.rfl
 #align lie_module.mem_weight_space LieModule.mem_weightSpace
 
-/-- See also the more useful form `lie_module.zero_weight_space_eq_top_of_nilpotent`. -/
+/-- See also the more useful form `LieModule.zero_weightSpace_eq_top_of_nilpotent`. -/
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent' [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
     weightSpace M (0 : L → R) = ⊤ := by
@@ -222,7 +222,7 @@ theorem coe_weightSpace_of_top [LieAlgebra.IsNilpotent R L] (χ : L → R) :
 theorem zero_weightSpace_eq_top_of_nilpotent [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
     weightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
   /- We use `coe_weight_space_of_top` as a trick to circumvent the fact that we don't (yet) know
-      `is_nilpotent R (⊤ : lie_subalgebra R L) M` is equivalent to `is_nilpotent R L M`. -/
+      `IsNilpotent R (⊤ : LieSubalgebra R L) M` is equivalent to `IsNilpotent R L M`. -/
   have h₀ : (0 : L → R) ∘ (⊤ : LieSubalgebra R L).incl = 0 := by ext; rfl
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule, ← h₀,
     coe_weightSpace_of_top, ← iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L M]
@@ -463,7 +463,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
 subalgebra.
 
 When `L` is Noetherian, it follows from Engel's theorem that the converse holds. See
-`lie_algebra.zero_root_subalgebra_eq_iff_is_cartan` -/
+`LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan` -/
 theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
     H.IsCartanSubalgebra :=
   { nilpotent := inferInstance
