@@ -10,6 +10,7 @@ Authors: Sebastian Ullrich
 -/
 
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Basic
 
 universe u v
 
@@ -54,9 +55,7 @@ variable {σ : Type u}
 
 variable {m : Type u → Type v}
 
-variable {α β : Type u}
-
-variable (x : StateT σ m α) (st : σ)
+variable {α : Type u}
 
 /-
 Porting note:
@@ -74,12 +73,10 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 #align state_t.mk StateT.mk
 
 @[simp]
-theorem run_mk (f : σ → m (α × σ)) : StateT.run (StateT.mk f) st = f st :=
+theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
 
 #align state_t.ext StateTₓ.ext
-
-variable [Monad m]
 
 #align state_t.run_pure StateTₓ.run_pure
 
@@ -91,15 +88,8 @@ variable [Monad m]
 
 #align state_t.run_monad_map StateTₓ.run_monadMap
 
-@[simp]
-theorem run_adapt {σ' σ''} (st : σ) (split : σ → σ' × σ'') (join : σ' → σ'' → σ)
-    (x : StateT σ' m α) :
-    (StateT.adapt split join x : StateT σ m α).run st = do
-      let (st, ctx) := split st
-      let (a, st') ← x.run st
-      pure (a, join st' ctx) :=
-  by delta StateT.adapt <;> rfl
-#align state_t.run_adapt StateTₓ.run_adapt
+-- Porting note: `StateT.adapt` is removed.
+#noalign state_t.run_adapt
 
 #align state_t.run_get StateTₓ.run_get
 
@@ -113,60 +103,34 @@ namespace ExceptT
 
 variable {α β ε : Type u} {m : Type u → Type v} (x : ExceptT ε m α)
 
-theorem ext {x x' : ExceptT ε m α} (h : x.run = x'.run) : x = x' := by
-  cases x <;> cases x' <;> simp_all
 #align except_t.ext ExceptTₓ.ext
+
+-- Porting note: This is proven by proj reduction in Lean 3.
+@[simp]
+theorem run_mk (x : m (Except ε α)) : ExceptT.run (ExceptT.mk x) = x :=
+  rfl
 
 variable [Monad m]
 
-@[simp]
-theorem run_pure (a) : (pure a : ExceptT ε m α).run = pure (@Except.ok ε α a) :=
-  rfl
 #align except_t.run_pure ExceptTₓ.run_pure
 
-@[simp]
-theorem run_bind (f : α → ExceptT ε m β) : (x >>= f).run = x.run >>= ExceptT.bindCont f :=
-  rfl
 #align except_t.run_bind ExceptTₓ.run_bind
 
-@[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Except.map f <$> x.run :=
-  by
-  rw [← bind_pure_comp_eq_map _ x.run]
-  change x.run >>= ExceptT.bindCont (pure ∘ f) = _
-  apply bind_ext_congr
-  intro a <;> cases a <;> simp [ExceptT.bindCont, Except.map]
 #align except_t.run_map ExceptTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [HasMonadLiftT n m] (x : n α) :
+theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
     (monadLift x : ExceptT ε m α).run = Except.ok <$> (monadLift x : m α) :=
   rfl
 #align except_t.run_monad_lift ExceptTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {m' n n'} [Monad m'] [MonadFunctorT n n' m m'] (f : ∀ {α}, n α → n' α) :
-    (monadMap (@f) x : ExceptT ε m' α).run = monadMap (@f) x.run :=
+theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+    (monadMap (@f) x : ExceptT ε m α).run = monadMap (@f) x.run :=
   rfl
 #align except_t.run_monad_map ExceptTₓ.run_monadMap
 
 end ExceptT
-
-instance (m : Type u → Type v) [Monad m] [LawfulMonad m] (ε : Type u) : LawfulMonad (ExceptT ε m)
-    where
-  id_map := by
-    intros; apply ExceptT.ext; simp only [ExceptT.run_map]
-    rw [map_ext_congr, id_map]
-    intro a; cases a <;> rfl
-  bind_pure_comp_eq_map := by
-    intros; apply ExceptT.ext; simp only [ExceptT.run_map, ExceptT.run_bind]
-    rw [bind_ext_congr, bind_pure_comp_eq_map]
-    intro a; cases a <;> rfl
-  bind_assoc := by
-    intros; apply ExceptT.ext; simp only [ExceptT.run_bind, bind_assoc]
-    rw [bind_ext_congr]
-    intro a; cases a <;> simp [ExceptT.bindCont]
-  pure_bind := by intros <;> apply ExceptT.ext <;> simp [ExceptT.bindCont]
 
 namespace ReaderT
 
@@ -176,65 +140,57 @@ variable {ρ : Type u}
 
 variable {m : Type u → Type v}
 
-variable {α β : Type u}
+variable {α : Type u}
 
-variable (x : ReaderT ρ m α) (r : ρ)
+/-
+Porting note:
+In Lean 4, `ReaderT` doesn't require a constructor, but it appears confusing to declare the
+following theorem as a simp theorem.
+```lean
+@[simp]
+theorem run_fun (f : σ → m α) : ReaderT.run (fun s => f s) st = f st :=
+  rfl
+```
+So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
+-/
 
-theorem ext {x x' : ReaderT ρ m α} (h : ∀ r, x.run r = x'.run r) : x = x' := by
-  cases x <;> cases x' <;> simp [show x = x' from funext h]
+protected def mk (f : σ → m α) : ReaderT σ m α := f
+#align reader_t.mk ReaderT.mk
+
+@[simp]
+theorem run_mk (f : σ → m α) (r : σ) : ReaderT.run (ReaderT.mk f) r = f r :=
+  rfl
+
 #align reader_t.ext ReaderTₓ.ext
 
-variable [Monad m]
-
-@[simp]
-theorem run_pure (a) : (pure a : ReaderT ρ m α).run r = pure a :=
-  rfl
 #align reader_t.run_pure ReaderTₓ.run_pure
 
-@[simp]
-theorem run_bind (f : α → ReaderT ρ m β) : (x >>= f).run r = x.run r >>= fun a => (f a).run r :=
-  rfl
 #align reader_t.run_bind ReaderTₓ.run_bind
 
-@[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run r = f <$> x.run r := by
-  rw [← bind_pure_comp_eq_map _ (x.run r)] <;> rfl
 #align reader_t.run_map ReaderTₓ.run_map
 
-@[simp]
-theorem run_monadLift {n} [HasMonadLiftT n m] (x : n α) :
-    (monadLift x : ReaderT ρ m α).run r = (monadLift x : m α) :=
-  rfl
 #align reader_t.run_monad_lift ReaderTₓ.run_monadLift
 
-@[simp]
-theorem run_monadMap {m' n n'} [Monad m'] [MonadFunctorT n n' m m'] (f : ∀ {α}, n α → n' α) :
-    (monadMap (@f) x : ReaderT ρ m' α).run r = monadMap (@f) (x.run r) :=
-  rfl
 #align reader_t.run_monad_map ReaderTₓ.run_monadMap
 
-@[simp]
-theorem run_read : (ReaderT.read : ReaderT ρ m ρ).run r = pure r :=
-  rfl
 #align reader_t.run_read ReaderTₓ.run_read
 
 end
 
 end ReaderT
 
-instance (ρ : Type u) (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (ReaderT ρ m)
-    where
-  id_map := by intros <;> apply ReaderT.ext <;> intro <;> simp
-  pure_bind := by intros <;> apply ReaderT.ext <;> intro <;> simp
-  bind_assoc := by intros <;> apply ReaderT.ext <;> intro <;> simp [bind_assoc]
-
 namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' := by
-  cases x <;> cases x' <;> simp_all
+theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+  h
 #align option_t.ext OptionTₓ.ext
+
+-- Porting note: This is proven by proj reduction in Lean 3.
+@[simp]
+theorem run_mk (x : m (Option α)) : OptionT.run (OptionT.mk x) = x :=
+  rfl
 
 variable [Monad m]
 
@@ -244,41 +200,45 @@ theorem run_pure (a) : (pure a : OptionT m α).run = pure (some a) :=
 #align option_t.run_pure OptionTₓ.run_pure
 
 @[simp]
-theorem run_bind (f : α → OptionT m β) : (x >>= f).run = x.run >>= OptionT.bindCont f :=
+theorem run_bind (f : α → OptionT m β) :
+    (x >>= f).run = x.run >>= fun
+                              | some a => OptionT.run (f a)
+                              | none   => pure none :=
   rfl
 #align option_t.run_bind OptionTₓ.run_bind
 
 @[simp]
-theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run :=
-  by
-  rw [← bind_pure_comp_eq_map _ x.run]
-  change x.run >>= OptionT.bindCont (pure ∘ f) = _
-  apply bind_ext_congr
-  intro a <;> cases a <;> simp [OptionT.bindCont, Option.map, Option.bind]
+theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <$> x.run := by
+  rw [← bind_pure_comp _ x.run]
+  change x.run >>= (fun
+                     | some a => OptionT.run (pure (f a))
+                     | none   => pure none) = _
+  apply bind_congr
+  intro a; cases a <;> simp [Option.map, Option.bind]
 #align option_t.run_map OptionTₓ.run_map
 
 @[simp]
-theorem run_monadLift {n} [HasMonadLiftT n m] (x : n α) :
-    (monadLift x : OptionT m α).run = some <$> (monadLift x : m α) :=
+theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
+    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
   rfl
 #align option_t.run_monad_lift OptionTₓ.run_monadLift
 
 @[simp]
-theorem run_monadMap {m' n n'} [Monad m'] [MonadFunctorT n n' m m'] (f : ∀ {α}, n α → n' α) :
-    (monadMap (@f) x : OptionT m' α).run = monadMap (@f) x.run :=
+theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
+    (monadMap (@f) x : OptionT m α).run = monadMap (@f) x.run :=
   rfl
 #align option_t.run_monad_map OptionTₓ.run_monadMap
 
 end OptionT
 
-instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (OptionT m)
-    where
-  id_map := by
-    intros; apply OptionT.ext; simp only [OptionT.run_map]
-    rw [map_ext_congr, id_map]
-    intro a; cases a <;> rfl
-  bind_assoc := by
-    intros; apply OptionT.ext; simp only [OptionT.run_bind, bind_assoc]
-    rw [bind_ext_congr]
-    intro a; cases a <;> simp [OptionT.bindCont]
-  pure_bind := by intros <;> apply OptionT.ext <;> simp [OptionT.bindCont]
+instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (OptionT m) :=
+  LawfulMonad.mk'
+    (id_map := by
+      intros; apply OptionT.ext; simp only [OptionT.run_map]
+      rw [map_congr, id_map]
+      intro a; cases a <;> rfl)
+    (bind_assoc := by
+      intros; apply OptionT.ext; simp only [OptionT.run_bind, bind_assoc]
+      rw [bind_congr]
+      intro a; cases a <;> simp)
+    (pure_bind := by intros; apply OptionT.ext; simp)
