@@ -115,7 +115,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
     intro _ _ _
-    rw [←comp_apply', ←s.π.naturality]
+    rw [←comp_apply', forget_map_eq_coe, ←s.π.naturality, forget_map_eq_coe]
     dsimp
     rw [Category.id_comp]
   · exact

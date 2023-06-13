@@ -106,15 +106,6 @@ def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.funLike
 
-/-
-/-- Usually a bundled hom structure already has a coercion to function
-that works with different universes. So we don't use this as a global instance. -/
-@[reducible]
-def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ⟨fun f => (forget _).map f⟩
-#align category_theory.concrete_category.has_coe_to_fun CategoryTheory.ConcreteCategory.hasCoeToFun
--/
-
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
 @[ext 900] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
@@ -124,8 +115,8 @@ theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x =
   exact w x
 #align category_theory.concrete_category.hom_ext CategoryTheory.ConcreteCategory.hom_ext
 
--- Porting note: `forget_map_eq_coe` becomes a syntactic tautology.
-#noalign category_theory.forget_map_eq_coe
+theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
+#align category_theory.forget_map_eq_coe CategoryTheory.forget_map_eq_coe
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -142,19 +133,16 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) =
   (forget _).map_comp f g
 #align category_theory.coe_comp CategoryTheory.coe_comp
 
--- Porting note: removed @[simp] since simp can prove this
-theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
+@[simp] theorem id_apply {X : C} (x : X) : (𝟙 X : X → X) x = x :=
   congr_fun ((forget _).map_id X) x
 #align category_theory.id_apply CategoryTheory.id_apply
 
--- Porting note: removed @[simp] since simp can prove this
-theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+@[simp] theorem comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   congr_fun ((forget _).map_comp _ _) x
 #align category_theory.comp_apply CategoryTheory.comp_apply
 
 theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) :=
-  congr_fun ((forget _).map_comp _ _) x
+  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
