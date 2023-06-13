@@ -198,8 +198,7 @@ theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c)
 
 variable [CompactSpace X] [T2Space X]
 
--- porting note: added nolint, because of time out
-@[simp, nolint simpNF]
+@[simp]
 theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     idealOfSet 𝕜 (setOfIdeal I) = I.closure := by
   /- Since `idealOfSet 𝕜 (setOfIdeal I)` is closed and contains `I`, it contains `I.closure`.
@@ -345,8 +344,7 @@ variable (X)
 
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
 `λ s, ContinuousMap.idealOfSet ↑s`. -/
--- porting note: added nolint, because of time out
-@[simps, nolint simpNF]
+@[simps]
 def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
     where
   choice I _ := opensOfIdeal I.closure
@@ -395,7 +393,7 @@ theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 
   obtain ⟨x, hx⟩ := setOfIdeal_eq_compl_singleton I
   exact
     ⟨x, by
-      simpa only [idealOfSet_ofIdeal_eq_closure, Ideal.closure_eq_of_isClosed] using
+      simpa only [idealOfSet_ofIdeal_eq_closure, I.closure_eq_of_isClosed hI] using
         congr_arg (idealOfSet 𝕜) hx.symm⟩
 #align continuous_map.ideal_is_maximal_iff ContinuousMap.ideal_isMaximal_iff
 
