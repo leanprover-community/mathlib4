@@ -29,6 +29,7 @@ defined in this file but is introduced in `measure_theory.function.conditional_e
 
 -/
 
+set_option linter.uppercaseLean3 false
 
 open scoped ENNReal MeasureTheory
 
@@ -47,17 +48,20 @@ section UniquenessOfConditionalExpectation
 
 /-! ## Uniqueness of the conditional expectation -/
 
-
 theorem lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
-    (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = 0) : f =ᵐ[μ] 0 := by
-  obtain ⟨g, hg_sm, hfg⟩ := Lp_meas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
+    -- Porting note: needed to add explicit casts in the next two hypotheses
+    (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn (f : Lp E' p μ) s μ)
+    (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, (f : Lp E' p μ) x ∂μ = 0) :
+    f =ᵐ[μ] (0 : α → E') := by
+  obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
   refine' hfg.trans _
-  refine' ae_eq_zero_of_forall_set_integral_eq_of_fin_strongly_measurable_trim hm _ _ hg_sm
+  -- Porting note: added
+  unfold Filter.EventuallyEq at hfg
+  refine' ae_eq_zero_of_forall_set_integral_eq_of_finStronglyMeasurable_trim hm _ _ hg_sm
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
-    rw [integrable_on, integrable_congr hfg_restrict.symm]
+    rw [IntegrableOn, integrable_congr hfg_restrict.symm]
     exact hf_int_finite s hs hμs
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
@@ -73,12 +77,13 @@ theorem Lp.ae_eq_zero_of_forall_set_integral_eq_zero' (hm : m ≤ m0) (f : Lp E'
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, f x ∂μ) = 0)
     (hf_meas : AEStronglyMeasurable' m f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
-  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [coeFn_coe_base', Subtype.coe_mk]
+  -- Porting note: `simp` no longer applies `Filter.EventuallyEq.refl`
+  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [Subtype.coe_mk, Filter.EventuallyEq.refl]
   refine' hf_f_meas.trans _
   refine' lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero hm f_meas hp_ne_zero hp_ne_top _ _
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [integrable_on, integrable_congr hfg_restrict.symm]
+    rw [IntegrableOn, integrable_congr hfg_restrict.symm]
     exact hf_int_finite s hs hμs
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
@@ -124,7 +129,11 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
     by
     intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    rw [IntegrableOn, restrict_trim hm _ hs]
+    -- Porting note: `rw [IntegrableOn]` fails with
+    -- synthesized type class instance is not definitionally equal to expression inferred by typing
+    -- rules, synthesized m0 inferred m
+    unfold IntegrableOn
+    rw [restrict_trim hm _ hs]
     refine' Integrable.trim hm _ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
   have hg_mk_int_finite :
@@ -132,7 +141,11 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
     by
     intro s hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    rw [IntegrableOn, restrict_trim hm _ hs]
+    -- Porting note: `rw [IntegrableOn]` fails with
+    -- synthesized type class instance is not definitionally equal to expression inferred by typing
+    -- rules, synthesized m0 inferred m
+    unfold IntegrableOn
+    rw [restrict_trim hm _ hs]
     refine' Integrable.trim hm _ hgm.stronglyMeasurable_mk
     exact Integrable.congr (hg_int_finite s hs hμs) (ae_restrict_of_ae hgm.ae_eq_mk)
   have hfg_mk_eq :
@@ -151,7 +164,7 @@ theorem ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFi
 
 end UniquenessOfConditionalExpectation
 
-section IntegralNormLe
+section IntegralNormLE
 
 variable {s : Set α}
 
@@ -202,6 +215,6 @@ theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g 
   · exact integral_nonneg fun x => norm_nonneg _
 #align measure_theory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq MeasureTheory.lintegral_nnnorm_le_of_forall_fin_meas_integral_eq
 
-end IntegralNormLe
+end IntegralNormLE
 
 end MeasureTheory
