@@ -27,14 +27,14 @@ product space `E`.
   construction of oriented area should pass through `ω`.)
 
 * `Orientation.rightAngleRotation`: an isometric automorphism `E ≃ₗᵢ[ℝ] E` (usual notation `J`).
-  This automorphism squares to -1.  In a later file, rotations (`Orientation.rotation`) are defined,
+  This automorphism squares to -1. In a later file, rotations (`Orientation.rotation`) are defined,
   in such a way that this automorphism is equal to rotation by 90 degrees.
 
 * `Orientation.basisRightAngleRotation`: for a nonzero vector `x` in `E`, the basis `![x, J x]`
   for `E`.
 
 * `Orientation.kahler`: a complex-valued real-bilinear map `E →ₗ[ℝ] E →ₗ[ℝ] ℂ`. Its real part is the
-  inner product and its imaginary part is `Orientation.areaForm`.  For vectors `x` and `y` in `E`,
+  inner product and its imaginary part is `Orientation.areaForm`. For vectors `x` and `y` in `E`,
   the complex number `o.kahler x y` has modulus `‖x‖ * ‖y‖`. In a later file, oriented angles
   (`Orientation.oangle`) are defined, in such a way that the argument of `o.kahler x y` is the
   oriented angle from `x` to `y`.
@@ -61,7 +61,7 @@ product space `E`.
 
 Notation `ω` for `Orientation.areaForm` and `J` for `Orientation.rightAngleRotation` should be
 defined locally in each file which uses them, since otherwise one would need a more cumbersome
-notation which mentions the orientation explicitly (something like `ω[o]`).  Write
+notation which mentions the orientation explicitly (something like `ω[o]`). Write
 
 ```
 local notation "ω" => o.areaForm
@@ -77,7 +77,9 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+-- Porting note: See issue #2220
+-- While not strictly necessary, this keeps the file closer to mathlib3 in a few places.
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type _} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
@@ -91,7 +93,7 @@ variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (fi
 namespace Orientation
 
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
-notation `ω`).  When evaluated on two vectors, it gives the oriented area of the parallelogram they
+notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
 irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : AlternatingMap ℝ E ℝ (Fin 0) ≃ₗ[ℝ] ℝ :=
@@ -250,7 +252,7 @@ theorem rightAngleRotationAux₁_rightAngleRotationAux₁ (x : E) :
 #align orientation.right_angle_rotation_aux₁_right_angle_rotation_aux₁ Orientation.rightAngleRotationAux₁_rightAngleRotationAux₁
 
 /-- An isometric automorphism of an oriented real inner product space of dimension 2 (usual notation
-`J`). This automorphism squares to -1.  We will define rotations in such a way that this
+`J`). This automorphism squares to -1. We will define rotations in such a way that this
 automorphism is equal to rotation by 90 degrees. -/
 irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
   LinearIsometryEquiv.ofLinearIsometry o.rightAngleRotationAux₂ (-o.rightAngleRotationAux₁)
@@ -639,6 +641,11 @@ local notation "ω" => o.areaForm
 local notation "J" => o.rightAngleRotation
 
 open Complex
+
+-- Porting note: The instance `finrank_real_complex_fact` cannot be found by synthesis for
+-- `areaForm_map`, `rightAngleRotation_map` and `kahler_map` in the three theorems below,
+-- so it has to be provided by unification (i.e. by naming the instance-implicit argument where
+-- it belongs and using `(hF := _)`).
 
 /-- The area form on an oriented real inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
