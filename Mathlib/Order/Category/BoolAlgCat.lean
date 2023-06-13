@@ -13,7 +13,7 @@ import Mathlib.Order.Category.HeytAlgCat
 /-!
 # The category of boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlgCat`, the category of boolean algebras.
 -/
 
 
@@ -24,91 +24,91 @@ universe u
 open CategoryTheory
 
 /-- The category of boolean algebras. -/
-def BoolAlg :=
+def BoolAlgCat :=
   Bundled BooleanAlgebra
-#align BoolAlg BoolAlg
+#align BoolAlg BoolAlgCat
 
-namespace BoolAlg
+namespace BoolAlgCat
 
-instance : CoeSort BoolAlg (Type _) :=
+instance : CoeSort BoolAlgCat (Type _) :=
   Bundled.hasCoeToSort
 
-instance (X : BoolAlg) : BooleanAlgebra X :=
+instance (X : BoolAlgCat) : BooleanAlgebra X :=
   X.str
 
-/-- Construct a bundled `BoolAlg` from a `boolean_algebra`. -/
-def of (α : Type _) [BooleanAlgebra α] : BoolAlg :=
+/-- Construct a bundled `BoolAlgCat` from a `boolean_algebra`. -/
+def of (α : Type _) [BooleanAlgebra α] : BoolAlgCat :=
   Bundled.of α
-#align BoolAlg.of BoolAlg.of
+#align BoolAlg.of BoolAlgCat.of
 
 @[simp]
 theorem coe_of (α : Type _) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
-#align BoolAlg.coe_of BoolAlg.coe_of
+#align BoolAlg.coe_of BoolAlgCat.coe_of
 
-instance : Inhabited BoolAlg :=
+instance : Inhabited BoolAlgCat :=
   ⟨of PUnit⟩
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
-def toBddDistLat (X : BoolAlg) : BddDistLat :=
-  BddDistLat.of X
-#align BoolAlg.to_BddDistLat BoolAlg.toBddDistLat
+def toBddDistLatCat (X : BoolAlgCat) : BddDistLatCat :=
+  BddDistLatCat.of X
+#align BoolAlg.to_BddDistLat BoolAlgCat.toBddDistLatCat
 
 @[simp]
-theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
+theorem coe_toBddDistLatCat (X : BoolAlgCat) : ↥X.toBddDistLatCat = ↥X :=
   rfl
-#align BoolAlg.coe_to_BddDistLat BoolAlg.coe_toBddDistLat
+#align BoolAlg.coe_to_BddDistLat BoolAlgCat.coe_toBddDistLatCat
 
-instance : LargeCategory.{u} BoolAlg :=
-  InducedCategory.category toBddDistLat
+instance : LargeCategory.{u} BoolAlgCat :=
+  InducedCategory.category toBddDistLatCat
 
-instance : ConcreteCategory BoolAlg :=
-  InducedCategory.concreteCategory toBddDistLat
+instance : ConcreteCategory BoolAlgCat :=
+  InducedCategory.concreteCategory toBddDistLatCat
 
-instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat :=
-  InducedCategory.hasForget₂ toBddDistLat
-#align BoolAlg.has_forget_to_BddDistLat BoolAlg.hasForgetToBddDistLat
+instance hasForgetToBddDistLatCat : HasForget₂ BoolAlgCat BddDistLatCat :=
+  InducedCategory.hasForget₂ toBddDistLatCat
+#align BoolAlg.has_forget_to_BddDistLat BoolAlgCat.hasForgetToBddDistLatCat
 
 section
 
 attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
-instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg
+instance hasForgetToHeytAlgCat : HasForget₂ BoolAlgCat HeytAlgCat
     where forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun X Y f => show BoundedLatticeHom X Y from f }
-#align BoolAlg.has_forget_to_HeytAlg BoolAlg.hasForgetToHeytAlg
+#align BoolAlg.has_forget_to_HeytAlg BoolAlgCat.hasForgetToHeytAlgCat
 
 end
 
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
+def Iso.mk {α β : BoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
   inv_hom_id' := by ext; exact e.apply_symm_apply _
-#align BoolAlg.iso.mk BoolAlg.Iso.mk
+#align BoolAlg.iso.mk BoolAlgCat.Iso.mk
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : BoolAlg ⥤ BoolAlg where
+def dual : BoolAlgCat ⥤ BoolAlgCat where
   obj X := of Xᵒᵈ
   map X Y := BoundedLatticeHom.dual
-#align BoolAlg.dual BoolAlg.dual
+#align BoolAlg.dual BoolAlgCat.dual
 
-/-- The equivalence between `BoolAlg` and itself induced by `order_dual` both ways. -/
+/-- The equivalence between `BoolAlgCat` and itself induced by `order_dual` both ways. -/
 @[simps Functor inverse]
-def dualEquiv : BoolAlg ≌ BoolAlg :=
+def dualEquiv : BoolAlgCat ≌ BoolAlgCat :=
   Equivalence.mk dual dual
     (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
     (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-#align BoolAlg.dual_equiv BoolAlg.dualEquiv
+#align BoolAlg.dual_equiv BoolAlgCat.dualEquiv
 
-end BoolAlg
+end BoolAlgCat
 
-theorem boolAlg_dual_comp_forget_to_bddDistLat :
-    BoolAlg.dual ⋙ forget₂ BoolAlg BddDistLat = forget₂ BoolAlg BddDistLat ⋙ BddDistLat.dual :=
+theorem boolAlgCat_dual_comp_forget_to_bddDistLatCat :
+    BoolAlgCat.dual ⋙ forget₂ BoolAlgCat BddDistLatCat = forget₂ BoolAlgCat BddDistLatCat ⋙ BddDistLatCat.dual :=
   rfl
-#align BoolAlg_dual_comp_forget_to_BddDistLat boolAlg_dual_comp_forget_to_bddDistLat
+#align BoolAlg_dual_comp_forget_to_BddDistLat boolAlgCat_dual_comp_forget_to_bddDistLatCat
