@@ -221,7 +221,7 @@ theorem coe_weightSpace_of_top [LieAlgebra.IsNilpotent R L] (χ : L → R) :
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
     weightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
-  /- We use `coe_weight_space_of_top` as a trick to circumvent the fact that we don't (yet) know
+  /- We use `coe_weightSpace_of_top` as a trick to circumvent the fact that we don't (yet) know
       `IsNilpotent R (⊤ : LieSubalgebra R L) M` is equivalent to `IsNilpotent R L M`. -/
   have h₀ : (0 : L → R) ∘ (⊤ : LieSubalgebra R L).incl = 0 := by ext; rfl
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule, ← h₀,
@@ -277,7 +277,7 @@ abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
   weightSpace L χ
 #align lie_algebra.root_space LieAlgebra.rootSpace
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
   zero_weightSpace_eq_top_of_nilpotent L
@@ -325,7 +325,7 @@ theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {
 
 variable (R L H M)
 
-/-- Auxiliary definition for `root_space_weight_space_product`,
+/-- Auxiliary definition for `rootSpaceWeightSpaceProduct`,
 which is close to the deterministic timeout limit.
 -/
 def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + χ₂ = χ₃) :
@@ -494,8 +494,8 @@ variable {H}
 
 /-- A priori, weight spaces are Lie submodules over the Lie subalgebra `H` used to define them.
 However they are naturally Lie submodules over the (in general larger) Lie subalgebra
-`zero_root_subalgebra R L H`. Even though it is often the case that
-`zero_root_subalgebra R L H = H`, it is likely to be useful to have the flexibility not to have
+`zeroRootSubalgebra R L H`. Even though it is often the case that
+`zeroRootSubalgebra R L H = H`, it is likely to be useful to have the flexibility not to have
 to invoke this equality (as well as to work more generally). -/
 def weightSpace' (χ : H → R) : LieSubmodule R (zeroRootSubalgebra R L H) M :=
   { (weightSpace M χ : Submodule R M) with
