@@ -354,7 +354,7 @@ def lift : SplittingField f →ₐ[K] L :=
 
 theorem adjoin_roots : Algebra.adjoin K
     (↑(f.map (algebraMap K <| SplittingField f)).roots.toFinset : Set (SplittingField f)) = ⊤ :=
-  IsSplittingField.adjoin_roots f.SplittingField f
+  IsSplittingField.adjoin_rootSet f.SplittingField f
 #align polynomial.splitting_field.adjoin_roots Polynomial.SplittingField.adjoin_roots
 
 theorem adjoin_rootSet : Algebra.adjoin K (f.rootSet f.SplittingField) = ⊤ :=

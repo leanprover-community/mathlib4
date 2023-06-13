@@ -165,7 +165,7 @@ attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
 set_option maxHeartbeats 210000 in
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · have := hFEp.adjoin_roots
+  · have := hFEp.adjoin_rootSet
     simp only [Polynomial.map_zero, roots_zero, Multiset.toFinset_zero, Finset.coe_empty, rootSet,
       Algebra.adjoin_empty] at this
     exact
@@ -241,7 +241,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   rw [← Finset.image_toFinset, Finset.coe_image]
   apply
     Eq.trans
-      (Algebra.adjoin_res_eq_adjoin_res F E C D hFEp.adjoin_roots AdjoinRoot.adjoinRoot_eq_top)
+      (Algebra.adjoin_res_eq_adjoin_res F E C D hFEp.adjoin_rootSet AdjoinRoot.adjoinRoot_eq_top)
   rw [Set.image_singleton, RingHom.algebraMap_toAlgebra, AdjoinRoot.lift_root]
 #align normal.of_is_splitting_field Normal.of_isSplittingField
 
