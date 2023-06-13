@@ -58,44 +58,37 @@ variable {α β : Type u}
 
 variable (x : StateT σ m α) (st : σ)
 
-theorem ext {x x' : StateT σ m α} (h : ∀ st, x.run st = x'.run st) : x = x' := by
-  cases x <;> cases x' <;> simp [show x = x' from funext h]
+/-
+Porting note:
+In Lean 4, `StateT` doesn't require a constructor, but it appears confusing to declare the
+following theorem as a simp theorem.
+```lean
+@[simp]
+theorem run_fun (f : σ → m (α × σ)) : StateT.run (fun s => f s) st = f st :=
+  rfl
+```
+So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
+-/
+
+protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
+#align state_t.mk StateT.mk
+
+@[simp]
+theorem run_mk (f : σ → m (α × σ)) : StateT.run (StateT.mk f) st = f st :=
+  rfl
+
 #align state_t.ext StateTₓ.ext
 
 variable [Monad m]
 
-@[simp]
-theorem run_pure (a) : (pure a : StateT σ m α).run st = pure (a, st) :=
-  rfl
 #align state_t.run_pure StateTₓ.run_pure
 
-@[simp]
-theorem run_bind (f : α → StateT σ m β) :
-    (x >>= f).run st = x.run st >>= fun p => (f p.1).run p.2 := by
-  apply bind_ext_congr <;> intro a <;> cases a <;> simp [StateT.bind, StateT.run]
 #align state_t.run_bind StateTₓ.run_bind
 
-@[simp]
-theorem run_map (f : α → β) [LawfulMonad m] :
-    (f <$> x).run st = (fun p : α × σ => (f (Prod.fst p), Prod.snd p)) <$> x.run st :=
-  by
-  rw [← bind_pure_comp_eq_map _ (x.run st)]
-  change (x >>= pure ∘ f).run st = _
-  simp
 #align state_t.run_map StateTₓ.run_map
 
-@[simp]
-theorem run_monadLift {n} [HasMonadLiftT n m] (x : n α) :
-    (monadLift x : StateT σ m α).run st = do
-      let a ← (monadLift x : m α)
-      pure (a, st) :=
-  rfl
 #align state_t.run_monad_lift StateTₓ.run_monadLift
 
-@[simp]
-theorem run_monadMap {m' n n'} [Monad m'] [MonadFunctorT n n' m m'] (f : ∀ {α}, n α → n' α) :
-    (monadMap (@f) x : StateT σ m' α).run st = monadMap (@f) (x.run st) :=
-  rfl
 #align state_t.run_monad_map StateTₓ.run_monadMap
 
 @[simp]
@@ -108,25 +101,13 @@ theorem run_adapt {σ' σ''} (st : σ) (split : σ → σ' × σ'') (join : σ' 
   by delta StateT.adapt <;> rfl
 #align state_t.run_adapt StateTₓ.run_adapt
 
-@[simp]
-theorem run_get : (StateT.get : StateT σ m σ).run st = pure (st, st) :=
-  rfl
 #align state_t.run_get StateTₓ.run_get
 
-@[simp]
-theorem run_put (st') : (StateT.put st' : StateT σ m _).run st = pure (PUnit.unit, st') :=
-  rfl
-#align state_t.run_put StateTₓ.run_put
+#align state_t.run_put StateTₓ.run_set
 
 end
 
 end StateT
-
-instance (m : Type u → Type v) [Monad m] [LawfulMonad m] (σ : Type u) : LawfulMonad (StateT σ m)
-    where
-  id_map := by intros <;> apply StateT.ext <;> intro <;> simp <;> erw [id_map]
-  pure_bind := by intros; apply StateT.ext; simp
-  bind_assoc := by intros; apply StateT.ext; simp [bind_assoc]
 
 namespace ExceptT
 
