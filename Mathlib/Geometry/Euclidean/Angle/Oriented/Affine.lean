@@ -8,9 +8,9 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Side
-import Mathbin.Geometry.Euclidean.Angle.Oriented.Rotation
-import Mathbin.Geometry.Euclidean.Angle.Unoriented.Affine
+import Mathlib.Analysis.Convex.Side
+import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Oriented angles.
@@ -53,8 +53,7 @@ scoped notation "∡" => EuclideanGeometry.oangle
 
 /-- Oriented angles are continuous when neither end point equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
-    ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x :=
-  by
+    ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [hx12]
   have hf2 : (f x).2 ≠ 0 := by simp [hx32]
@@ -225,8 +224,7 @@ theorem oangle_eq_pi_iff_oangle_rev_eq_pi {p₁ p₂ p₃ : P} : ∡ p₁ p₂ p
 /-- An oriented angle is not zero or `π` if and only if the three points are affinely
 independent. -/
 theorem oangle_ne_zero_and_ne_pi_iff_affineIndependent {p₁ p₂ p₃ : P} :
-    ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ AffineIndependent ℝ ![p₁, p₂, p₃] :=
-  by
+    ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ AffineIndependent ℝ ![p₁, p₂, p₃] := by
   rw [oangle, o.oangle_ne_zero_and_ne_pi_iff_linearIndependent,
     affineIndependent_iff_linearIndependent_vsub ℝ _ (1 : Fin 3), ←
     linearIndependent_equiv (finSuccAboveEquiv (1 : Fin 3)).toEquiv]
@@ -263,8 +261,7 @@ are equal. -/
 theorem two_zsmul_oangle_of_vectorSpan_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P}
     (h₁₂₄₅ : vectorSpan ℝ ({p₁, p₂} : Set P) = vectorSpan ℝ ({p₄, p₅} : Set P))
     (h₃₂₆₅ : vectorSpan ℝ ({p₃, p₂} : Set P) = vectorSpan ℝ ({p₆, p₅} : Set P)) :
-    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₅ p₆ :=
-  by
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₅ p₆ := by
   simp_rw [vectorSpan_pair] at h₁₂₄₅ h₃₂₆₅ 
   exact o.two_zsmul_oangle_of_span_eq_of_span_eq h₁₂₄₅ h₃₂₆₅
 #align euclidean_geometry.two_zsmul_oangle_of_vector_span_eq EuclideanGeometry.two_zsmul_oangle_of_vectorSpan_eq
@@ -273,8 +270,7 @@ theorem two_zsmul_oangle_of_vectorSpan_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P}
 those angles are equal. -/
 theorem two_zsmul_oangle_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P}
     (h₁₂₄₅ : line[ℝ, p₁, p₂] ∥ line[ℝ, p₄, p₅]) (h₃₂₆₅ : line[ℝ, p₃, p₂] ∥ line[ℝ, p₆, p₅]) :
-    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₅ p₆ :=
-  by
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₅ p₆ := by
   rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq] at h₁₂₄₅ h₃₂₆₅ 
   exact two_zsmul_oangle_of_vector_span_eq h₁₂₄₅ h₃₂₆₅
 #align euclidean_geometry.two_zsmul_oangle_of_parallel EuclideanGeometry.two_zsmul_oangle_of_parallel
@@ -330,8 +326,7 @@ theorem oangle_eq_oangle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = d
 /-- The angle at the apex of an isosceles triangle is `π` minus twice a base angle, oriented
 angle-at-point form. -/
 theorem oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq {p₁ p₂ p₃ : P} (hn : p₂ ≠ p₃)
-    (h : dist p₁ p₂ = dist p₁ p₃) : ∡ p₃ p₁ p₂ = π - (2 : ℤ) • ∡ p₁ p₂ p₃ :=
-  by
+    (h : dist p₁ p₂ = dist p₁ p₃) : ∡ p₃ p₁ p₂ = π - (2 : ℤ) • ∡ p₁ p₂ p₃ := by
   simp_rw [dist_eq_norm_vsub] at h 
   rw [oangle, oangle]
   convert o.oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq _ h using 1
@@ -342,8 +337,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq {p₁ p₂ p₃ : P} (hn : 
 
 /-- A base angle of an isosceles triangle is acute, oriented angle-at-point form. -/
 theorem abs_oangle_right_toReal_lt_pi_div_two_of_dist_eq {p₁ p₂ p₃ : P}
-    (h : dist p₁ p₂ = dist p₁ p₃) : |(∡ p₁ p₂ p₃).toReal| < π / 2 :=
-  by
+    (h : dist p₁ p₂ = dist p₁ p₃) : |(∡ p₁ p₂ p₃).toReal| < π / 2 := by
   simp_rw [dist_eq_norm_vsub] at h 
   rw [oangle, ← vsub_sub_vsub_cancel_left p₃ p₂ p₁]
   exact o.abs_oangle_sub_right_toReal_lt_pi_div_two h
@@ -427,8 +421,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {p₁ p₂ p₃ : P} : ∡ p₁ p₂ p₃ =
 
 /-- If the oriented angle between three points is `π / 2`, so is the unoriented angle. -/
 theorem angle_eq_pi_div_two_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∡ p₁ p₂ p₃ = ↑(π / 2)) :
-    ∠ p₁ p₂ p₃ = π / 2 :=
-  by
+    ∠ p₁ p₂ p₃ = π / 2 := by
   rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
   exact o.inner_eq_zero_of_oangle_eq_pi_div_two h
 #align euclidean_geometry.angle_eq_pi_div_two_of_oangle_eq_pi_div_two EuclideanGeometry.angle_eq_pi_div_two_of_oangle_eq_pi_div_two
@@ -443,8 +436,7 @@ theorem angle_rev_eq_pi_div_two_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h 
 
 /-- If the oriented angle between three points is `-π / 2`, the unoriented angle is `π / 2`. -/
 theorem angle_eq_pi_div_two_of_oangle_eq_neg_pi_div_two {p₁ p₂ p₃ : P}
-    (h : ∡ p₁ p₂ p₃ = ↑(-π / 2)) : ∠ p₁ p₂ p₃ = π / 2 :=
-  by
+    (h : ∡ p₁ p₂ p₃ = ↑(-π / 2)) : ∠ p₁ p₂ p₃ = π / 2 := by
   rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
   exact o.inner_eq_zero_of_oangle_eq_neg_pi_div_two h
 #align euclidean_geometry.angle_eq_pi_div_two_of_oangle_eq_neg_pi_div_two EuclideanGeometry.angle_eq_pi_div_two_of_oangle_eq_neg_pi_div_two
@@ -452,15 +444,13 @@ theorem angle_eq_pi_div_two_of_oangle_eq_neg_pi_div_two {p₁ p₂ p₃ : P}
 /-- If the oriented angle between three points is `-π / 2`, the unoriented angle (reversed) is
 `π / 2`. -/
 theorem angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two {p₁ p₂ p₃ : P}
-    (h : ∡ p₁ p₂ p₃ = ↑(-π / 2)) : ∠ p₃ p₂ p₁ = π / 2 :=
-  by
+    (h : ∡ p₁ p₂ p₃ = ↑(-π / 2)) : ∠ p₃ p₂ p₁ = π / 2 := by
   rw [angle_comm]
   exact angle_eq_pi_div_two_of_oangle_eq_neg_pi_div_two h
 #align euclidean_geometry.angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two EuclideanGeometry.angle_rev_eq_pi_div_two_of_oangle_eq_neg_pi_div_two
 
 /-- Swapping the first and second points in an oriented angle negates the sign of that angle. -/
-theorem oangle_swap₁₂_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₂ p₁ p₃).sign :=
-  by
+theorem oangle_swap₁₂_sign (p₁ p₂ p₃ : P) : -(∡ p₁ p₂ p₃).sign = (∡ p₂ p₁ p₃).sign := by
   rw [eq_comm, oangle, oangle, ← o.oangle_neg_neg, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_left p₁ p₃ p₂, ← neg_vsub_eq_vsub_rev p₃ p₂, sub_eq_add_neg,
     neg_vsub_eq_vsub_rev p₂ p₁, add_comm, ← @neg_one_smul ℝ]
@@ -504,8 +494,7 @@ theorem Sbtw.oangle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ 
 
 /-- If the second of three points is weakly between the other two, the oriented angle at the
 first point is zero. -/
-theorem Wbtw.oangle₂₁₃_eq_zero {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) : ∡ p₂ p₁ p₃ = 0 :=
-  by
+theorem Wbtw.oangle₂₁₃_eq_zero {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) : ∡ p₂ p₁ p₃ = 0 := by
   by_cases hp₂p₁ : p₂ = p₁; · simp [hp₂p₁]
   by_cases hp₃p₁ : p₃ = p₁; · simp [hp₃p₁]
   rw [oangle_eq_zero_iff_angle_eq_zero hp₂p₁ hp₃p₁]
@@ -557,8 +546,7 @@ theorem Sbtw.oangle₁₃₂_eq_zero {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p�
 /-- The oriented angle between three points is zero if and only if one of the first and third
 points is weakly between the other two. -/
 theorem oangle_eq_zero_iff_wbtw {p₁ p₂ p₃ : P} :
-    ∡ p₁ p₂ p₃ = 0 ↔ Wbtw ℝ p₂ p₁ p₃ ∨ Wbtw ℝ p₂ p₃ p₁ :=
-  by
+    ∡ p₁ p₂ p₃ = 0 ↔ Wbtw ℝ p₂ p₁ p₃ ∨ Wbtw ℝ p₂ p₃ p₁ := by
   by_cases hp₁p₂ : p₁ = p₂; · simp [hp₁p₂]
   by_cases hp₃p₂ : p₃ = p₂; · simp [hp₃p₂]
   rw [oangle_eq_zero_iff_angle_eq_zero hp₁p₂ hp₃p₂, angle_eq_zero_iff_ne_and_wbtw]
@@ -595,8 +583,7 @@ theorem Sbtw.oangle_eq_right {p₁ p₂ p₃ p₃' : P} (h : Sbtw ℝ p₂ p₃ 
 /-- An oriented angle is unchanged by replacing the first point with the midpoint of the segment
 between it and the second point. -/
 @[simp]
-theorem oangle_midpoint_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₁ p₂) p₂ p₃ = ∡ p₁ p₂ p₃ :=
-  by
+theorem oangle_midpoint_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₁ p₂) p₂ p₃ = ∡ p₁ p₂ p₃ := by
   by_cases h : p₁ = p₂; · simp [h]
   exact (sbtw_midpoint_of_ne ℝ h).symm.oangle_eq_left
 #align euclidean_geometry.oangle_midpoint_left EuclideanGeometry.oangle_midpoint_left
@@ -611,8 +598,7 @@ theorem oangle_midpoint_rev_left (p₁ p₂ p₃ : P) : ∡ (midpoint ℝ p₂ p
 /-- An oriented angle is unchanged by replacing the third point with the midpoint of the segment
 between it and the second point. -/
 @[simp]
-theorem oangle_midpoint_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₃ p₂) = ∡ p₁ p₂ p₃ :=
-  by
+theorem oangle_midpoint_right (p₁ p₂ p₃ : P) : ∡ p₁ p₂ (midpoint ℝ p₃ p₂) = ∡ p₁ p₂ p₃ := by
   by_cases h : p₃ = p₂; · simp [h]
   exact (sbtw_midpoint_of_ne ℝ h).symm.oangle_eq_right
 #align euclidean_geometry.oangle_midpoint_right EuclideanGeometry.oangle_midpoint_right
@@ -649,8 +635,7 @@ theorem Sbtw.oangle_eq_left_right {p₁ p₁' p₂ p₃ p₃' : P} (h₁ : Sbtw 
 /-- Replacing the first point by one on the same line does not change twice the oriented angle. -/
 theorem Collinear.two_zsmul_oangle_eq_left {p₁ p₁' p₂ p₃ : P}
     (h : Collinear ℝ ({p₁, p₂, p₁'} : Set P)) (hp₁p₂ : p₁ ≠ p₂) (hp₁'p₂ : p₁' ≠ p₂) :
-    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₁' p₂ p₃ :=
-  by
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₁' p₂ p₃ := by
   by_cases hp₃p₂ : p₃ = p₂; · simp [hp₃p₂]
   rcases h.wbtw_or_wbtw_or_wbtw with (hw | hw | hw)
   · have hw' : Sbtw ℝ p₁ p₂ p₁' := ⟨hw, hp₁p₂.symm, hp₁'p₂.symm⟩
@@ -671,11 +656,9 @@ equals some multiple of a `π / 2` rotation of the vector between those points, 
 of those points. -/
 theorem dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint {p₁ p₂ p : P} (h : p₁ ≠ p₂) :
     dist p₁ p = dist p₂ p ↔
-      ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₂ = p :=
-  by
+      ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₂ = p := by
   refine' ⟨fun hd => _, fun hr => _⟩
-  · have hi : ⟪p₂ -ᵥ p₁, p -ᵥ midpoint ℝ p₁ p₂⟫ = 0 :=
-      by
+  · have hi : ⟪p₂ -ᵥ p₁, p -ᵥ midpoint ℝ p₁ p₂⟫ = 0 := by
       rw [@dist_eq_norm_vsub' V, @dist_eq_norm_vsub' V, ←
         mul_self_inj (norm_nonneg _) (norm_nonneg _), ← real_inner_self_eq_norm_mul_norm, ←
         real_inner_self_eq_norm_mul_norm] at hd 
@@ -703,8 +686,7 @@ point, the angles at the fifth point between each of those two pairs of points h
 sign. -/
 theorem Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (p₅ : P) (hp₁p₂ : p₁ ≠ p₂)
     (hp₃p₄ : p₃ ≠ p₄) (hc : Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P))
-    (hr : SameRay ℝ (p₂ -ᵥ p₁) (p₄ -ᵥ p₃)) : (∡ p₁ p₅ p₂).sign = (∡ p₃ p₅ p₄).sign :=
-  by
+    (hr : SameRay ℝ (p₂ -ᵥ p₁) (p₄ -ᵥ p₃)) : (∡ p₁ p₅ p₂).sign = (∡ p₃ p₅ p₄).sign := by
   by_cases hc₅₁₂ : Collinear ℝ ({p₅, p₁, p₂} : Set P)
   · have hc₅₁₂₃₄ : Collinear ℝ ({p₅, p₁, p₂, p₃, p₄} : Set P) :=
       (hc.collinear_insert_iff_of_ne (Set.mem_insert _ _)
@@ -733,8 +715,7 @@ theorem Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (p₅ : 
         (continuous_fst.subtype_coe.prod_mk
             (continuous_const.prod_mk
               (continuous_snd.vadd continuous_fst.subtype_coe))).ContinuousOn
-    have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s :=
-      by
+    have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
       refine' ContinuousAt.continuousOn fun p hp => continuous_at_oangle _ _
       all_goals
         simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_univ, true_and_iff, Prod.ext_iff] at hp 
@@ -751,8 +732,7 @@ theorem Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (p₅ : 
         obtain ⟨r, -, rfl⟩ := hvr
         rw [direction_affineSpan]
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
-    have hsp : ∀ p : P × P × P, p ∈ s → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π :=
-      by
+    have hsp : ∀ p : P × P × P, p ∈ s → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
       intro p hp
       simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
         Prod.ext_iff] at hp 
@@ -772,16 +752,14 @@ theorem Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (p₅ : 
       · refine' vadd_mem_of_mem_direction _ hq
         rw [direction_affineSpan]
         exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
-    have hp₁p₂s : (p₁, p₅, p₂) ∈ s :=
-      by
+    have hp₁p₂s : (p₁, p₅, p₂) ∈ s := by
       simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
         Prod.ext_iff]
       refine'
         ⟨⟨⟨p₁, left_mem_affineSpan_pair _ _ _⟩, p₂ -ᵥ p₁⟩, ⟨SameRay.rfl, vsub_ne_zero.2 hp₁p₂.symm⟩,
           _⟩
       simp
-    have hp₃p₄s : (p₃, p₅, p₄) ∈ s :=
-      by
+    have hp₃p₄s : (p₃, p₅, p₄) ∈ s := by
       simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_setOf, Set.mem_univ, true_and_iff,
         Prod.ext_iff]
       refine'
@@ -839,15 +817,13 @@ theorem Sbtw.oangle_sign_eq_right {p₁ p₂ p₃ : P} (p₄ : P) (h : Sbtw ℝ 
 points on the same side of that subspace have the same sign. -/
 theorem AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P} {p₁ p₂ p₃ p₄ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃p₄ : s.SSameSide p₃ p₄) :
-    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign :=
-  by
+    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
   by_cases h : p₁ = p₂; · simp [h]
   let sp : Set (P × P × P) := (fun p : P => (p₁, p, p₂)) '' {p | s.s_same_side p₃ p}
   have hc : IsConnected sp :=
     (is_connected_set_of_s_same_side hp₃p₄.2.1 hp₃p₄.nonempty).image _
       (continuous_const.prod_mk (Continuous.Prod.mk_left _)).ContinuousOn
-  have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp :=
-    by
+  have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
     refine' ContinuousAt.continuousOn fun p hp => continuous_at_oangle _ _
     all_goals
       simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp 
@@ -856,8 +832,7 @@ theorem AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P} {p₁
       rintro rfl
     · exact hp'.2.2 hp₁
     · exact hp'.2.2 hp₂
-  have hsp : ∀ p : P × P × P, p ∈ sp → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π :=
-    by
+  have hsp : ∀ p : P × P × P, p ∈ sp → ∡ p.1 p.2.1 p.2.2 ≠ 0 ∧ ∡ p.1 p.2.1 p.2.2 ≠ π := by
     intro p hp
     simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp 
     obtain ⟨p', hp', rfl⟩ := hp
@@ -874,8 +849,7 @@ theorem AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P} {p₁
 points on opposite sides of that subspace have opposite signs. -/
 theorem AffineSubspace.SOppSide.oangle_sign_eq_neg {s : AffineSubspace ℝ P} {p₁ p₂ p₃ p₄ : P}
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃p₄ : s.SOppSide p₃ p₄) :
-    (∡ p₁ p₄ p₂).sign = -(∡ p₁ p₃ p₂).sign :=
-  by
+    (∡ p₁ p₄ p₂).sign = -(∡ p₁ p₃ p₂).sign := by
   have hp₁p₃ : p₁ ≠ p₃ := by rintro rfl; exact hp₃p₄.left_not_mem hp₁
   rw [←
     (hp₃p₄.symm.trans (s_opp_side_point_reflection hp₁ hp₃p₄.left_not_mem)).oangle_sign_eq hp₁ hp₂,
