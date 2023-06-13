@@ -145,8 +145,6 @@ def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) 
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  hom_inv_id := by ext; erw [comp_apply, id_apply, e.symm_apply_apply]
-  inv_hom_id := by ext; erw [comp_apply, id_apply, e.apply_symm_apply]
 
 instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
   reflects {X Y} f _ := by
@@ -349,9 +347,6 @@ def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  hom_inv_id := by ext; erw [comp_apply, id_apply, e.symm_apply_apply]
-  inv_hom_id := by ext; erw [comp_apply, id_apply, e.apply_symm_apply]
-
 
 instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
   reflects {X Y} f _ := by
@@ -468,9 +463,6 @@ def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of
     where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  hom_inv_id := by ext; erw [comp_apply, id_apply, e.symm_apply_apply]
-  inv_hom_id := by ext; erw [comp_apply, id_apply, e.apply_symm_apply]
-
 set_option linter.uppercaseLean3 false in
 #align ring_equiv.to_Ring_iso RingEquiv.toRingCatIso
 
@@ -480,9 +472,6 @@ def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) : CommRingCat.of 
     where
   hom := e.toRingHom
   inv := e.symm.toRingHom
-  hom_inv_id := by ext; erw [comp_apply, id_apply, e.symm_apply_apply]
-  inv_hom_id := by ext; erw [comp_apply, id_apply, e.apply_symm_apply]
-
 set_option linter.uppercaseLean3 false in
 #align ring_equiv.to_CommRing_iso RingEquiv.toCommRingCatIso
 

@@ -164,7 +164,7 @@ theorem cokernel_funext {C : Type _} [Category C] [HasZeroMorphisms C] [Concrete
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   apply coequalizer.hom_ext
   apply ConcreteCategory.hom_ext _ _
-  simpa [comp_apply] using w
+  simpa using w
 #align category_theory.limits.cokernel_funext CategoryTheory.Limits.cokernel_funext
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {J : Type v} [SmallCategory J]
@@ -263,7 +263,7 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
   case rel x y hh =>
     obtain ⟨e, he⟩ := hh
     use y.1, e, 𝟙 _
-    simpa [id_apply] using he.symm
+    simpa using he.symm
   case refl x =>
     exact ⟨x.1, 𝟙 _, 𝟙 _, rfl⟩
   case symm x y _ hh =>
