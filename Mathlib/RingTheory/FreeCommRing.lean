@@ -89,6 +89,15 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
     (Multiset.coe_eq_coe.trans List.singleton_perm_singleton).mp
 #align free_comm_ring.of_injective FreeCommRing.of_injective
 
+-- Porting note: added to ease a proof in `Algebra.DirectLimit`
+lemma of_cons (a : α) (m : Multiset α) :
+  (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
+  @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
+    (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
+  dsimp [FreeCommRing]
+  rw [← Multiset.singleton_add, ofAdd_add,
+    of, FreeAbelianGroup.of_mul_of]
+
 @[elab_as_elim]
 protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
@@ -98,10 +107,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
   FreeAbelianGroup.induction_on z (add_left_neg (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
     (fun m => Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
-      dsimp [FreeCommRing]
-      show FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m)) = _
-      rw [← Multiset.singleton_add, ofAdd_add]
-      simp [of]; rfl)
+      apply of_cons)
     (fun m ih => hn _ ih) ha
 #align free_comm_ring.induction_on FreeCommRing.induction_on
 
@@ -130,7 +136,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact F.congr_arg (Multiset.sum_map_singleton x')
 
-/-- Lift a map `α → R` to a additive group homomorphism `FreeCommRing α → R`. -/
+/-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
   Equiv.trans liftToMultiset FreeAbelianGroup.liftMonoid
 #align free_comm_ring.lift FreeCommRing.lift
@@ -157,7 +163,7 @@ end lift
 
 variable {β : Type v} (f : α → β)
 
-/-- A map `f : α → β` produces a ring homomorphism `free_comm_ring α →+* free_comm_ring β`. -/
+/-- A map `f : α → β` produces a ring homomorphism `FreeCommRing α →+* FreeCommRing β`. -/
 def map : FreeCommRing α →+* FreeCommRing β :=
   lift <| of ∘ f
 #align free_comm_ring.map FreeCommRing.map

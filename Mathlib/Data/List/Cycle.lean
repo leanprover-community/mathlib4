@@ -21,7 +21,7 @@ This relation is defined as `IsRotated`.
 Based on this, we define the quotient of lists by the rotation relation, called `Cycle`.
 
 We also define a representation of concrete cycles, available when viewing them in a goal state or
-via `#eval`, when over representatble types. For example, the cycle `(2 1 4 3)` will be shown
+via `#eval`, when over representable types. For example, the cycle `(2 1 4 3)` will be shown
 as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their internal representation
 is different.
 
@@ -110,7 +110,7 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   · exact ih fun _ h => hxs' _ (mem_cons_of_mem _ h)
 #align list.next_or_mem List.nextOr_mem
 
-/-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the next
+/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the next
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
@@ -125,7 +125,7 @@ def next (l : List α) (x : α) (h : x ∈ l) : α :=
   nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
 #align list.next List.next
 
-/-- Given an element `x : α` of `l : list α` such that `x ∈ l`, get the previous
+/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the previous
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
@@ -616,7 +616,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
-  ∃ (x y : α)(_h : x ≠ y), x ∈ s ∧ y ∈ s
+  ∃ (x y : α) (_h : x ≠ y), x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
 
 @[simp]

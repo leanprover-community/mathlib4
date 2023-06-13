@@ -26,7 +26,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
@@ -1487,8 +1487,8 @@ variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
 
 variable [Module R α] [Module R β] [Module R γ]
 
-/-- The `LinearEquiv` between spaces of matrices induced by an `LinearEquiv` between their
-coefficients. This is `Matrix.map` as an `LinearEquiv`. -/
+/-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
+coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₗ[R] β) : Matrix m n α ≃ₗ[R] Matrix m n β :=
   { f.toEquiv.mapMatrix,
@@ -1587,8 +1587,8 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
 
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
-/-- The `AlgHom` between spaces of square matrices induced by a `AlgHom` between their
-coefficients. This is `Matrix.map` as a `AlgHom`. -/
+/-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
+coefficients. This is `Matrix.map` as an `AlgHom`. -/
 @[simps]
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
@@ -1617,8 +1617,8 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
 
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
-/-- The `AlgEquiv` between spaces of square matrices induced by a `AlgEquiv` between their
-coefficients. This is `Matrix.map` as a `AlgEquiv`. -/
+/-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
+coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,

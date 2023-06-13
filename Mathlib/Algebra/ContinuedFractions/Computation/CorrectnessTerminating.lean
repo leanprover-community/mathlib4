@@ -61,7 +61,7 @@ variable {K : Type _} [LinearOrderedField K] {v : K} {n : ℕ}
 - `exact_conts.a / exact_conts.b` where `exact_conts = nextContinuants 1 fr⁻¹ pconts conts`
   otherwise.
 
-This function can be used to compute the exact value approxmated by a continued fraction
+This function can be used to compute the exact value approximated by a continued fraction
 `GeneralizedContinuedFraction.of v` as described in lemma
 `compExactValue_correctness_of_stream_eq_some`.
 -/

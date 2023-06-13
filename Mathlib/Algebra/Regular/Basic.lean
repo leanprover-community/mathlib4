@@ -116,7 +116,7 @@ theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
 /-- If an element `b` becomes left-regular after multiplying it on the left by a left-regular
 element, then `b` is left-regular. -/
 @[to_additive "If an element `b` becomes add-left-regular after adding to it on the left
-a add-left-regular element, then `b` is add-left-regular."]
+an add-left-regular element, then `b` is add-left-regular."]
 theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
   Function.Injective.of_comp (by rwa [comp_mul_left a b])
 #align is_left_regular.of_mul IsLeftRegular.of_mul
@@ -125,7 +125,7 @@ theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
 /-- An element is left-regular if and only if multiplying it on the left by a left-regular element
 is left-regular. -/
 @[to_additive (attr := simp) "An element is add-left-regular if and only if adding to it on the left
-a add-left-regular element is add-left-regular."]
+an add-left-regular element is add-left-regular."]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
   ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩
@@ -135,7 +135,7 @@ theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
 /-- If an element `b` becomes right-regular after multiplying it on the right by a right-regular
 element, then `b` is right-regular. -/
 @[to_additive "If an element `b` becomes add-right-regular after adding to it on the right
-a add-right-regular element, then `b` is add-right-regular."]
+an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
@@ -147,7 +147,7 @@ theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b :
 element is right-regular. -/
 @[to_additive (attr := simp)
 "An element is add-right-regular if and only if adding it on the right to
-a add-right-regular element is add-right-regular."]
+an add-right-regular element is add-right-regular."]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=
   ⟨fun ab => IsRightRegular.of_mul ab, fun ab => IsRightRegular.mul ab ha⟩

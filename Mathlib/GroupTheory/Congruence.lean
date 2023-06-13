@@ -314,7 +314,7 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 #align con.lift_on₂ Con.liftOn₂
 #align add_con.lift_on₂ AddCon.liftOn₂
 
-/-- A version of `quotient.hrec_on₂'` for quotients by `con`. -/
+/-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
 @[to_additive "A version of `quotient.hrec_on₂'` for quotients by `add_con`."]
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort _}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
@@ -343,7 +343,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align con.induction_on Con.induction_on
 #align add_con.induction_on AddCon.induction_on
 
-/-- A version of `con.induction_on` for predicates which take two arguments. -/
+/-- A version of `Con.induction_on` for predicates which take two arguments. -/
 @[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
@@ -1110,12 +1110,12 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
-For a `computable` version, see `con.quotientKerEquivOfRightOnverse`.
+For a `computable` version, see `Con.quotientKerEquivOfRightInverse`.
 -/
 @[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a surjective
 homomorphism.
 
-For a `computable` version, see `add_con.quotient_ker_equiv_of_right_inverse`.
+For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`.
 "]
 noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f) :
     (ker f).Quotient ≃* P :=
@@ -1244,7 +1244,7 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
 /-- The inversion induced on the quotient by a congruence relation on a type with a
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
-with an negation."]
+with a negation."]
 instance hasInv : Inv c.Quotient :=
   ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
 #align con.has_inv Con.hasInv
@@ -1275,7 +1275,7 @@ instance zpowinst : Pow c.Quotient ℤ :=
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
-an `add_group`."]
+an `AddGroup`."]
 instance group : Group c.Quotient :=
   Function.Surjective.group Quotient.mk''
     Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
@@ -1313,8 +1313,8 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
 #align con.lift_on_units Con.liftOnUnits
 #align add_con.lift_on_add_units AddCon.liftOnAddUnits
 
-/-- In order to define a function `(con.quotient c)ˣ → α` on the units of `con.quotient c`,
-where `c : con M` is a multiplicative congruence on a monoid, it suffices to define a function `f`
+/-- In order to define a function `(Con.Quotient c)ˣ → α` on the units of `Con.Quotient c`,
+where `c : Con M` is a multiplicative congruence on a monoid, it suffices to define a function `f`
 that takes elements `x y : M` with proofs of `c (x * y) 1` and `c (y * x) 1`, and returns an element
 of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. -/
 add_decl_doc AddCon.liftOnAddUnits

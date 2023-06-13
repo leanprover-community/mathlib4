@@ -17,10 +17,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Lift
 
 /-!
 # Equivalence between types
@@ -417,7 +413,7 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
   rfl
 #align equiv.empty_sum_apply_inr Equiv.emptySum_apply_inr
 
-/-- `Option α` is equivalent to `α ⊕ punit` -/
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
@@ -475,7 +471,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
 `β` to be types from the same universe, so it cannot by used directly to transfer theorems about
-sigma types to theorems about sum types. In many cases one can use `ulift` to work around this
+sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
   ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
@@ -1032,7 +1028,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
-/-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
+/-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
 def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 #align equiv.nat_sum_punit_equiv_nat Equiv.natSumPUnitEquivNat
@@ -1319,7 +1315,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
+    exacts [dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only

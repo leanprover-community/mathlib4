@@ -48,7 +48,7 @@ For modules over rings satisfying the strong rank condition
 
 * `linearIndependent_le_span`:
   For any linearly independent family `v : ι → M`
-  and any finite spanning set `w : set M`,
+  and any finite spanning set `w : Set M`,
   the cardinality of `ι` is bounded by the cardinality of `w`.
 * `linearIndependent_le_basis`:
   If `b` is a basis for a module `M`,
@@ -589,7 +589,7 @@ the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
 theorem Basis.le_span'' {ι : Type _} [Fintype ι] (b : Basis ι R M) {w : Set M} [Fintype w]
     (s : span R w = ⊤) : Fintype.card ι ≤ Fintype.card w := by
-  -- We construct an surjective linear map `(w → R) →ₗ[R] (ι → R)`,
+  -- We construct a surjective linear map `(w → R) →ₗ[R] (ι → R)`,
   -- by expressing a linear combination in `w` as a linear combination in `ι`.
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
@@ -750,7 +750,7 @@ theorem linearIndependent_le_basis {ι : Type _} (b : Basis ι R M) {κ : Type _
     haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
     rw [Fintype.card_congr (Equiv.ofInjective b b.injective)]
     exact linearIndependent_le_span v i (range b) b.span_eq
-  · -- and otherwise we have `linearIndepedent_le_infinite_basis`.
+  · -- and otherwise we have `linearIndependent_le_infinite_basis`.
     exact linearIndependent_le_infinite_basis b v i
 #align linear_independent_le_basis linearIndependent_le_basis
 

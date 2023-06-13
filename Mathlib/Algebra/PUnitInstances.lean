@@ -108,7 +108,7 @@ theorem lcm_eq : lcm x y = unit :=
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq {x: PUnit} : normUnit x = 1 :=
+theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 

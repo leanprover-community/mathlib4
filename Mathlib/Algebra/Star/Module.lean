@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module algebra.star.module
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
+! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -78,8 +78,8 @@ end SmulLemmas
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
 @[simps]
-def starLinearEquiv (R : Type _) {A : Type _} [CommRing R] [StarRing R] [Semiring A] [StarRing A]
-    [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
+def starLinearEquiv (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid A]
+    [StarAddMonoid A] [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
   { starAddEquiv with
     toFun := star
     map_smul' := star_smul }
@@ -182,11 +182,7 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  -- Porting note: The remaining proof at this point used to be `ext <;> simp`.
-  simp only [LinearMap.comp_coprod, LinearMap.prod_comp, selfAdjointPart_comp_subtype_selfAdjoint,
-    selfAdjointPart_comp_subtype_skewAdjoint, skewAdjointPart_comp_subtype_selfAdjoint,
-    skewAdjointPart_comp_subtype_skewAdjoint, LinearMap.coprod_zero_left,
-    LinearMap.coprod_zero_right, LinearMap.id_comp, LinearMap.pair_fst_snd]
+  ext <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]

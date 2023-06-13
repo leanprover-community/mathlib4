@@ -15,7 +15,7 @@ import Mathlib.Data.Int.Order.Basic
 
 /-! # Image and map operations on finite sets
 
-Thie file provides the finite analog of `Set.image`, along with some other similar functions.
+This file provides the finite analog of `Set.image`, along with some other similar functions.
 
 Note there are two ways to take the image over a finset; via `Finset.image` which applies the
 function then removes duplicates (requiring `DecidableEq`), or via `Finset.map` which exploits
@@ -26,7 +26,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
-* `Finset.subtype`: `s.subtype p` is the the finset of `Subtype p` whose elements belong to `s`.
+* `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
 -/
@@ -652,7 +652,7 @@ end Image
 
 section Subtype
 
-/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `subtype p` whose
+/-- Given a finset `s` and a predicate `p`, `s.subtype p` is the finset of `Subtype p` whose
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map

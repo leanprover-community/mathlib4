@@ -229,7 +229,7 @@ protected structure Injective : Prop where
   onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R
 #align first_order.language.Lhom.injective FirstOrder.Language.LHom.Injective
 
-/-- Pulls a `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
+/-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
@@ -525,7 +525,7 @@ def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
 
 @[simp]
 theorem LHom.map_constants_comp_sumInl {f : α → β} :
-    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext (n f R) <;> rfl
+    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext <;> rfl
 #align first_order.language.Lhom.map_constants_comp_sum_inl FirstOrder.Language.LHom.map_constants_comp_sumInl
 
 end

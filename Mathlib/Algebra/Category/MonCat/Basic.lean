@@ -85,6 +85,10 @@ instance (X : MonCat) : Monoid X := X.str
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
+@[to_additive]
+instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
@@ -136,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.of_hom AddMonCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/
 add_decl_doc AddMonCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -144,6 +148,21 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
   (ofHom f) x = f x := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
+
+---- porting note: added to ease the port of `RepresentationTheory.Action`
+@[to_additive]
+instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
+
+@[to_additive (attr := simp)]
+lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
+
+---- porting note: added to ease the port of `RepresentationTheory.Action`
+@[to_additive (attr := simp)]
+lemma one_of {A : Type _} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
+
+@[to_additive (attr := simp)]
+lemma mul_of {A : Type _} [Monoid A] (a b : A) :
+    @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
 
 @[to_additive]
 instance {G : Type _} [Group G] : Group (MonCat.of G) := by assumption
@@ -186,6 +205,10 @@ instance (X : CommMonCat) : CommMonoid X := X.str
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance Hom_FunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -249,7 +272,7 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
 add_decl_doc AddCommMonCat.ofHom
 
 @[to_additive (attr := simp)]

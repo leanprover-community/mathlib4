@@ -137,7 +137,7 @@ theorem ext_hom (f g : FreeProduct M →* N) (h : ∀ i, f.comp (of : M i →* _
 #align free_product.ext_hom FreeProduct.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
-universal property of the free product, charaterizing it as a categorical coproduct. -/
+universal property of the free product, characterizing it as a categorical coproduct. -/
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (FreeProduct M →* N) where
   toFun fi :=
@@ -484,7 +484,7 @@ variable (M)
 
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
-concatentation, and thus provides a useful induction principle. -/
+concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
@@ -566,8 +566,8 @@ def toWord {i j} (w : NeWord M i j) : Word M
 #align free_product.neword.to_word FreeProduct.NeWord.toWord
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
-theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _)(w' : NeWord M i j), w'.toWord = w := by
-  suffices : ∃ (i j : _)(w' : NeWord M i j), w'.toWord.toList = w.toList
+theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
+  suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
   · rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩
     ext
