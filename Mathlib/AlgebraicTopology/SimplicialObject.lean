@@ -809,7 +809,7 @@ object and back is isomorphic to the given object. -/
 @[simps!]
 def SimplicialObject.Augmented.rightOpLeftOpIso (X : SimplicialObject.Augmented C) :
     X.rightOp.leftOp ≅ X :=
-  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by aesop_cat) (by aesop_cat)
+  Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by aesop_cat)
 #align category_theory.simplicial_object.augmented.right_op_left_op_iso CategoryTheory.SimplicialObject.Augmented.rightOpLeftOpIso
 
 /-- Converting an augmented cosimplicial object to an augmented simplicial
@@ -817,7 +817,7 @@ object and back is isomorphic to the given object. -/
 @[simps!]
 def CosimplicialObject.Augmented.leftOpRightOpIso (X : CosimplicialObject.Augmented Cᵒᵖ) :
     X.leftOp.rightOp ≅ X :=
-  Comma.isoMk (CategoryTheory.eqToIso <| by simp) X.right.leftOpRightOpIso (by aesop_cat)
+  Comma.isoMk (CategoryTheory.eqToIso <| by simp) X.right.leftOpRightOpIso
 #align category_theory.cosimplicial_object.augmented.left_op_right_op_iso CategoryTheory.CosimplicialObject.Augmented.leftOpRightOpIso
 
 variable (C)
@@ -867,7 +867,7 @@ def simplicialCosimplicialAugmentedEquiv :
       simp_rw [← op_comp]
       congr 1
       aesop_cat)
-    ((NatIso.ofComponents fun X => X.leftOpRightOpIso) <| by aesop_cat)
+    (NatIso.ofComponents fun X => X.leftOpRightOpIso)
 #align category_theory.simplicial_cosimplicial_augmented_equiv CategoryTheory.simplicialCosimplicialAugmentedEquiv
 
 end CategoryTheory

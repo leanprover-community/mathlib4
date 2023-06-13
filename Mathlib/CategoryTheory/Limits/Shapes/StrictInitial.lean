@@ -33,7 +33,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 
 ## TODO
 
-* Construct examples of this: `Type*`, `Top`, `Groupoid`, simplicial types, posets.
+* Construct examples of this: `Type _`, `TopCat`, `Groupoid`, simplicial types, posets.
 * Construct the bottom element of the subobject lattice given strict initials.
 * Show cartesian closed categories have strict initials
 
@@ -131,7 +131,7 @@ theorem initial.subsingleton_to {A : C} : Subsingleton (A ⟶ ⊥_ C) :=
 
 /-- The product of `X` with an initial object in a category with strict initial objects is itself
 initial.
-This is the generalisation of the fact that `X × empty ≃ empty` for types (or `n * 0 = 0`).
+This is the generalisation of the fact that `X × Empty ≃ Empty` for types (or `n * 0 = 0`).
 -/
 @[simps! hom]
 noncomputable def mulInitial (X : C) [HasBinaryProduct X (⊥_ C)] : X ⨯ ⊥_ C ≅ ⊥_ C :=
@@ -145,7 +145,7 @@ theorem mulInitial_inv (X : C) [HasBinaryProduct X (⊥_ C)] : (mulInitial X).in
 
 /-- The product of `X` with an initial object in a category with strict initial objects is itself
 initial.
-This is the generalisation of the fact that `empty × X ≃ empty` for types (or `0 * n = 0`).
+This is the generalisation of the fact that `Empty × X ≃ Empty` for types (or `0 * n = 0`).
 -/
 @[simps! hom]
 noncomputable def initialMul (X : C) [HasBinaryProduct (⊥_ C) X] : (⊥_ C) ⨯ X ≅ ⊥_ C :=
@@ -204,7 +204,7 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
-/-- If all but one object in a diagram is strict terminal, the the limit is isomorphic to the
+/-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by

@@ -143,7 +143,7 @@ theorem preimage_const_of_not_mem {b : β} {s : Set β} (h : b ∉ s) : (fun _ :
 theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
     (fun _ : α => b) ⁻¹' s = if b ∈ s then univ else ∅ := by
   split_ifs with hb
-  exacts[preimage_const_of_mem hb, preimage_const_of_not_mem hb]
+  exacts [preimage_const_of_mem hb, preimage_const_of_not_mem hb]
 #align set.preimage_const Set.preimage_const
 
 theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
@@ -204,7 +204,7 @@ variable {f : α → β} {s t : Set α}
 infixl:80 " '' " => image
 
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x : _)(_ : x ∈ s), f x = y :=
+    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
 #align set.mem_image_iff_bex Set.mem_image_iff_bex
 
@@ -308,8 +308,8 @@ lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_su
 
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t :=
   ext fun x =>
-    ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left, right] <;> exact ⟨_, h, rfl⟩, by
-      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left, right] <;> exact h⟩
+    ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left; right] <;> exact ⟨_, h, rfl⟩, by
+      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left; right] <;> exact h⟩
 #align set.image_union Set.image_union
 
 @[simp]
@@ -891,7 +891,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
       exact Sum.noConfusion h)
-    (by rintro (x | y) - <;> [left, right] <;> exact mem_range_self _)
+    (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 #align set.is_compl_range_inl_range_inr Set.isCompl_range_inl_range_inr
 
 @[simp]
@@ -1102,7 +1102,7 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
   eq_univ_of_forall mem_range_self
 #align set.preimage_range Set.preimage_range
 
-/-- The range of a function from a `unique` type contains just the
+/-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
 theorem range_unique [h : Unique ι] : range f = {f default} := by
   ext x
@@ -1362,7 +1362,7 @@ namespace EquivLike
 variable {E : Type _} [EquivLike E ι ι']
 
 @[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
-(EquivLike.surjective _).range_comp _
+  (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
 
 end EquivLike
@@ -1498,7 +1498,7 @@ theorem injective_iff {α β} {f : Option α → β} :
   refine'
     ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, _⟩
   rintro ⟨h_some, h_none⟩ (_ | a) (_ | b) hab
-  exacts[rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
+  exacts [rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
 #align option.injective_iff Option.injective_iff
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=

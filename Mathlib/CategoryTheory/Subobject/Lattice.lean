@@ -105,12 +105,12 @@ theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
 
 /-- The (unique) morphism from `⊥ : MonoOver X` to any other `f : MonoOver X`. -/
 def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
-  homMk (initial.to _) (by simp)
+  homMk (initial.to _)
 #align category_theory.mono_over.bot_le CategoryTheory.MonoOver.botLE
 
 /-- `map f` sends `⊥ : MonoOver X` to `⊥ : MonoOver Y`. -/
 def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
-  iso_of_both_ways (homMk (initial.to _) (by simp)) (homMk (𝟙 _) (by simp))
+  iso_of_both_ways (homMk (initial.to _)) (homMk (𝟙 _))
 #align category_theory.mono_over.map_bot CategoryTheory.MonoOver.mapBot
 
 end Bot
@@ -633,36 +633,36 @@ instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbac
 
 /-- When `[WellPowered C]` and `[HasWidePullbacks C]`, `Subobject A` has arbitrary infimums.
 -/
-def infₛ {A : C} (s : Set (Subobject A)) : Subobject A :=
+def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (widePullbackι s)
-#align category_theory.subobject.Inf CategoryTheory.Subobject.infₛ
+#align category_theory.subobject.Inf CategoryTheory.Subobject.sInf
 
-theorem infₛ_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : infₛ s ≤ f := by
+theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
   fapply le_of_comm
   . exact (underlyingIso _).hom ≫
       Limits.limit.π (wideCospan s)
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
-  · dsimp [infₛ]
+  · dsimp [sInf]
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     aesop_cat
-#align category_theory.subobject.Inf_le CategoryTheory.Subobject.infₛ_le
+#align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
-theorem le_infₛ  {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
-    f ≤ infₛ s := by
+theorem le_sInf  {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+    f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
-  · dsimp [infₛ]
+  · dsimp [sInf]
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
 #align category_theory.subobject.le_Inf CategoryTheory.Subobject.le_inf
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
-  infₛ := infₛ
-  infₛ_le := infₛ_le
-  le_infₛ := le_infₛ
+  sInf := sInf
+  sInf_le := sInf_le
+  le_sInf := le_sInf
 
 end Inf
 
@@ -670,7 +670,7 @@ section Sup
 
 variable [WellPowered C] [HasCoproducts.{v₁} C]
 
-/-- The univesal morphism out of the coproduct of a set of subobjects,
+/-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=
@@ -681,17 +681,17 @@ variable [HasImages C]
 
 /-- When `[WellPowered C] [HasImages C] [HasCoproducts C]`,
 `Subobject A` has arbitrary supremums. -/
-def supₛ {A : C} (s : Set (Subobject A)) : Subobject A :=
+def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
   Subobject.mk (image.ι (smallCoproductDesc s))
 #align category_theory.subobject.Sup CategoryTheory.Subobject.sup
 
-theorem le_supₛ {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ supₛ s := by
+theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
   · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
-  · simp [supₛ, smallCoproductDesc]
-#align category_theory.subobject.le_Sup CategoryTheory.Subobject.le_supₛ
+  · simp [sSup, smallCoproductDesc]
+#align category_theory.subobject.le_Sup CategoryTheory.Subobject.le_sSup
 
 theorem symm_apply_mem_iff_mem_image {α β : Type _} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
@@ -700,8 +700,8 @@ theorem symm_apply_mem_iff_mem_image {α β : Type _} (e : α ≃ β) (s : Set �
     simpa using m⟩
 #align category_theory.subobject.symm_apply_mem_iff_mem_image CategoryTheory.Subobject.symm_apply_mem_iff_mem_image
 
-theorem supₛ_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
-    supₛ s ≤ f := by
+theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
+    sSup s ≤ f := by
   fapply le_of_comm
   . refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
     · refine' Sigma.desc _
@@ -711,14 +711,14 @@ theorem supₛ_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g �
     · ext
       dsimp [smallCoproductDesc]
       simp
-  . dsimp [supₛ]
+  . dsimp [sSup]
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
-#align category_theory.subobject.Sup_le CategoryTheory.Subobject.supₛ_le
+#align category_theory.subobject.Sup_le CategoryTheory.Subobject.sSup_le
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
-  supₛ := supₛ
-  le_supₛ := le_supₛ
-  supₛ_le := supₛ_le
+  sSup := sSup
+  le_sSup := le_sSup
+  sSup_le := sSup_le
 
 end Sup
 

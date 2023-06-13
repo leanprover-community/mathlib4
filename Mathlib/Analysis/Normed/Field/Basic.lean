@@ -286,7 +286,6 @@ section SeminormedRing
 
 variable [SeminormedRing α]
 
-set_option synthInstance.etaExperiment true in
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the norm.
 
 See note [implicit instance arguments]. -/
@@ -634,9 +633,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
           mul_assoc _ e, inv_mul_cancel r0, mul_inv_cancel e0, one_mul, mul_one]
       -- porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
-      _ ≤ ‖r - e‖ / ‖r‖ / ε :=
-        div_le_div_of_le_left (div_nonneg (norm_nonneg _) (norm_nonneg _)) ε0 he.le
-
+      _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
   refine' (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
   simp
@@ -651,7 +648,7 @@ instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : Topol
 theorem norm_map_one_of_pow_eq_one [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
     ‖φ x‖ = 1 := by
   rw [← pow_left_inj, ← norm_pow, ← map_pow, h, map_one, norm_one, one_pow]
-  exacts[norm_nonneg _, zero_le_one, k.pos]
+  exacts [norm_nonneg _, zero_le_one, k.pos]
 #align norm_map_one_of_pow_eq_one norm_map_one_of_pow_eq_one
 
 theorem norm_one_of_pow_eq_one {x : α} {k : ℕ+} (h : x ^ (k : ℕ) = 1) : ‖x‖ = 1 :=
@@ -678,7 +675,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
-normed; in particular, the `padic`s exhibit this fact. -/
+normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
@@ -996,7 +993,6 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
-set_option synthInstance.etaExperiment true in
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
@@ -1013,12 +1009,10 @@ namespace SubringClass
 
 variable {S R : Type _} [SetLike S R]
 
-set_option synthInstance.etaExperiment true in
 instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
-set_option synthInstance.etaExperiment true in
 instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing
@@ -1034,8 +1028,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- porting note: add this back in once `assert_not_exists` is ported
-/-
 -- Guard again import creep.
 assert_not_exists RestrictScalars
--/

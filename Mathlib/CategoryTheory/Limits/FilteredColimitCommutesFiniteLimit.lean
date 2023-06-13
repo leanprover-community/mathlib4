@@ -96,12 +96,12 @@ theorem colimitLimitToLimitColimit_injective :
     have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       (Finset.univ.image fun j : J =>
           ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
         Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
-    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inl
@@ -110,7 +110,8 @@ theorem colimitLimitToLimitColimit_injective :
               Finset.mem_image, heq_iff_eq]
             refine' ⟨j, _⟩
             simp only [heq_iff_eq] ))
-    have gH : ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have gH : 
+      ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inr
@@ -217,24 +218,24 @@ theorem colimitLimitToLimitColimit_surjective :
     -- the morphisms `gf f : k' ⟶ kh f` and `hf f : k' ⟶ kf f`.
     -- At this point we're relying on there being only finitely morphisms in `J`.
     let O :=
-      (Finset.univ.bunionᵢ fun j => Finset.univ.bunionᵢ fun j' => Finset.univ.image
+      (Finset.univ.biUnion fun j => Finset.univ.biUnion fun j' => Finset.univ.image
         (@kf j j')) ∪ {k'}
     have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f =>
       Finset.mem_union.mpr
         (Or.inl
           (by
-            rw [Finset.mem_bunionᵢ]
+            rw [Finset.mem_biUnion]
             refine' ⟨j, Finset.mem_univ j, _⟩
-            rw [Finset.mem_bunionᵢ]
+            rw [Finset.mem_biUnion]
             refine' ⟨j', Finset.mem_univ j', _⟩
             rw [Finset.mem_image]
             refine' ⟨f, Finset.mem_univ _, _⟩
             rfl))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
-      Finset.univ.bunionᵢ fun j : J =>
-        Finset.univ.bunionᵢ fun j' : J =>
-          Finset.univ.bunionᵢ fun f : j ⟶ j' =>
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
+      Finset.univ.biUnion fun j : J =>
+        Finset.univ.biUnion fun j' : J =>
+          Finset.univ.biUnion fun f : j ⟶ j' =>
             {⟨k', kf f, k'O, kfO f, gf f⟩, ⟨k', kf f, k'O, kfO f, hf f⟩}
     obtain ⟨k'', i', s'⟩ := IsFiltered.sup_exists O H
     -- We then restate this slightly more conveniently, as a family of morphism `i f : kf f ⟶ k''`,
@@ -246,18 +247,18 @@ theorem colimitLimitToLimitColimit_surjective :
       -- porting note: the three goals here in Lean 3 were in a different order
       exact k'O
       swap
-      · rw [Finset.mem_bunionᵢ]
+      · rw [Finset.mem_biUnion]
         refine' ⟨j₁, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨j₂, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨f, Finset.mem_univ _, _⟩
         simp only [true_or_iff, eq_self_iff_true, and_self_iff, Finset.mem_insert, heq_iff_eq]
-      · rw [Finset.mem_bunionᵢ]
+      · rw [Finset.mem_biUnion]
         refine' ⟨j₃, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨j₄, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨f', Finset.mem_univ _, _⟩
         simp only [eq_self_iff_true, or_true_iff, and_self_iff, Finset.mem_insert,
           Finset.mem_singleton, heq_iff_eq]

@@ -168,7 +168,7 @@ end MulEquivClass
 "Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
 def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
-{ (f : α ≃ β), (f : α →ₙ* β) with }
+  { (f : α ≃ β), (f : α →ₙ* β) with }
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
@@ -191,6 +191,10 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     congr
     apply Equiv.coe_fn_injective h₁
   map_mul := map_mul'
+
+@[to_additive] -- shortcut instance that doesn't generate any subgoals
+instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+  coe f := f
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 

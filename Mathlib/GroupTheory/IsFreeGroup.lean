@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.FreeGroup
 # Free groups structures on arbitrary types
 
 This file defines a type class for type that are free groups, together with the usual operations.
-The type class can be instantiated by providing an isomorphim to the canonical free group, or by
+The type class can be instantiated by providing an isomorphism to the canonical free group, or by
 proving that the universal property holds.
 
 For the explicit construction of free groups, see `GroupTheory/FreeGroup`.

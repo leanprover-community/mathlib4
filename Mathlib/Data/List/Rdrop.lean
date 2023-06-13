@@ -16,7 +16,7 @@ import Mathlib.Data.List.Infix
 
 Taking or removing element from the tail end of a list
 
-## Main defintions
+## Main definitions
 
 - `rdrop n`: drop `n : ℕ` elements from the tail
 - `rtake n`: take `n : ℕ` elements from the tail

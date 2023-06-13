@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.Tactic.ScopedNS
 
 /-! # The simplex category
 
@@ -30,7 +29,7 @@ We provide the following functions to work with these objects:
 1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
   Use the notation `[n]` in the `Simplicial` locale.
 2. `SimplexCategory.len` gives the "length" of an object of `SimplexCategory`, as a natural.
-3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `fin`'s.
+3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
@@ -55,7 +54,7 @@ section
 
 
 -- porting note: the definition of `SimplexCategory` is made irreducible below
-/-- Interpet a natural number as an object of the simplex category. -/
+/-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
 #align simplex_category.mk SimplexCategory.mk
@@ -175,7 +174,7 @@ theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
 #align simplex_category.const_comp SimplexCategory.const_comp
 
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
-This is useful for constructing morphisms beetween `[n]` directly
+This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
 -/
 @[simp]
@@ -464,7 +463,7 @@ end Truncated
 section Concrete
 
 instance : ConcreteCategory.{0} SimplexCategory where
-  Forget :=
+  forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
   forget_faithful := ⟨fun h => by ext : 2 ; exact h⟩
@@ -583,8 +582,12 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext1; ext1
-  exact congr_arg (fun φ => OrderEmbedding.toOrderHom φ) (eq₁.trans eq₂.symm)
+  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
+  -- It could be investigated again to see if the original can be restored.
+  ext x
+  replace eq₁ := congr_arg (· x) eq₁
+  replace eq₂ := congr_arg (· x) eq₂.symm
+  simp_all
 #align simplex_category.iso_eq_iso_refl SimplexCategory.iso_eq_iso_refl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
@@ -634,7 +637,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1))(θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -701,7 +704,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
   cases' not_forall.mp hθ with i hi
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)

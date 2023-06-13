@@ -13,7 +13,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.Replace
+import Mathlib.Util.AssertExists
 
 /-!
 # Order homomorphisms
@@ -48,8 +48,8 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
-* `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
-* `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
+* `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
+* `OrderHom.snd`: projection `Prod.snd : α × β → β` as a bundled monotone map;
 * `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
@@ -81,7 +81,7 @@ variable {F α β γ δ : Type _}
 
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
-  /-- The underlying funcrion of an `OrderHom`. -/
+  /-- The underlying function of an `OrderHom`. -/
   toFun : α → β
   /-- The underlying function of an `OrderHom` is monotone. -/
   monotone' : Monotone toFun
@@ -136,7 +136,7 @@ attribute [simp] map_le_map_iff
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
 def OrderIsoClass.toOrderIso [LE α] [LE β] [OrderIsoClass F α β] (f : F) : α ≃o β :=
-{ EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
+  { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
@@ -1389,6 +1389,5 @@ end BoundedOrder
 
 end LatticeIsos
 
--- Developments relating order homs and sets belong in `order.hom.set` or later.
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists set.range
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range

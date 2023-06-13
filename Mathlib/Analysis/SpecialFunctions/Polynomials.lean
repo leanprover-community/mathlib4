@@ -34,7 +34,6 @@ namespace Polynomial
 
 variable {𝕜 : Type _} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
 
-set_option synthInstance.etaExperiment true in -- Porting note: needed to synthesize `IsDomain 𝕜`
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 #align polynomial.eventually_no_roots Polynomial.eventually_no_roots

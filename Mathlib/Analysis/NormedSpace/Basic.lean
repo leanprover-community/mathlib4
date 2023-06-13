@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit f9dd3204df14a0749cd456fac1e6849dfe7d2b88
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
 
@@ -24,7 +25,7 @@ about these definitions.
 
 variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
-open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity Pointwise
+open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
@@ -53,48 +54,17 @@ end Prio
 
 variable [NormedField α] [SeminormedAddCommGroup β]
 
--- note: while these are currently strictly weaker than the versions without `le`, they will cease
--- to be if we eventually generalize `NormedSpace` from `NormedField α` to `NormedRing α`.
-section LE
-
-theorem norm_smul_le [NormedSpace α β] (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ :=
-  NormedSpace.norm_smul_le _ _
-#align norm_smul_le norm_smul_le
-
-theorem nnnorm_smul_le [NormedSpace α β] (s : α) (x : β) : ‖s • x‖₊ ≤ ‖s‖₊ * ‖x‖₊ :=
-  norm_smul_le s x
-#align nnnorm_smul_le nnnorm_smul_le
-
-theorem dist_smul_le [NormedSpace α β] (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y :=
-  by simpa only [dist_eq_norm, ← smul_sub] using norm_smul_le _ _
-#align dist_smul_le dist_smul_le
-
-theorem nndist_smul_le [NormedSpace α β] (s : α) (x y : β) :
-    nndist (s • x) (s • y) ≤ ‖s‖₊ * nndist x y :=
-  dist_smul_le s x y
-#align nndist_smul_le nndist_smul_le
-
-end LE
-
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : BoundedSMul α β where
-  dist_smul_pair' x y₁ y₂ := by simpa [dist_eq_norm, smul_sub] using norm_smul_le x (y₁ - y₂)
-  dist_pair_smul' x₁ x₂ y := by simpa [dist_eq_norm, sub_smul] using norm_smul_le (x₁ - x₂) y
+instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : BoundedSMul α β :=
+  BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-set_option synthInstance.etaExperiment true in
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
-theorem norm_smul [NormedSpace α β] (s : α) (x : β) : ‖s • x‖ = ‖s‖ * ‖x‖ := by
-  by_cases h : s = 0
-  · simp [h]
-  · refine' le_antisymm (norm_smul_le s x) _
-    calc
-      ‖s‖ * ‖x‖ = ‖s‖ * ‖s⁻¹ • s • x‖ := by rw [inv_smul_smul₀ h]
-      _ ≤ ‖s‖ * (‖s⁻¹‖ * ‖s • x‖) := (mul_le_mul_of_nonneg_left (norm_smul_le _ _) (norm_nonneg _))
-      _ = ‖s • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
-#align norm_smul norm_smul
+-- shortcut instance
+instance NormedField.to_boundedSMul : BoundedSMul α α :=
+  NormedSpace.boundedSMul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
@@ -109,23 +79,6 @@ theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
     div_self_le_one]
 #align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_closed_unit_ball
-
-theorem dist_smul₀ [NormedSpace α β] (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by
-  simp only [dist_eq_norm, (norm_smul _ _).symm, smul_sub]
-#align dist_smul₀ dist_smul₀
-
-theorem nnnorm_smul [NormedSpace α β] (s : α) (x : β) : ‖s • x‖₊ = ‖s‖₊ * ‖x‖₊ :=
-  NNReal.eq <| norm_smul s x
-#align nnnorm_smul nnnorm_smul
-
-theorem nndist_smul₀ [NormedSpace α β] (s : α) (x y : β) :
-    nndist (s • x) (s • y) = ‖s‖₊ * nndist x y :=
-  NNReal.eq <| dist_smul₀ s x y
-#align nndist_smul₀ nndist_smul₀
-
-theorem lipschitzWith_smul [NormedSpace α β] (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : β → β) :=
-  lipschitzWith_iff_dist_le_mul.2 fun x y => by rw [dist_smul₀, coe_nnnorm]
-#align lipschitz_with_smul lipschitzWith_smul
 
 theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : β) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
@@ -292,7 +245,7 @@ instance Pi.normedSpace {E : ι → Type _} [Fintype ι] [∀ i, SeminormedAddCo
   norm_smul_le a f := by
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
-    exact Finset.sup_mono_fun fun _ _ => norm_smul_le _ _
+    exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
@@ -382,7 +335,7 @@ Specifically, the following instance cannot be found without this `NormedSpace.t
 example
   (𝕜 ι : Type*) (E : ι → Type*)
   [NormedField 𝕜] [Π i, NormedAddCommGroup (E i)] [Π i, NormedSpace 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by apply_instance
+  Π i, Module 𝕜 (E i) := by infer_instance
 ```
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
@@ -537,7 +490,7 @@ Specifically, the following instance cannot be found without this `NormedSpace.t
 example
   (𝕜 ι : Type*) (E : ι → Type*)
   [NormedField 𝕜] [Π i, NormedRing (E i)] [Π i, NormedAlgebra 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by apply_instance
+  Π i, Module 𝕜 (E i) := by infer_instance
 ```
 
 See `NormedSpace.toModule'` for a similar situation. -/
@@ -593,7 +546,6 @@ instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
 #align normed_algebra.id NormedAlgebra.id
 
 -- Porting note: cannot synth scalar tower ℚ ℝ k
-set_option synthInstance.etaExperiment true in
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -634,7 +586,6 @@ instance MulOpposite.normedAlgebra {E : Type _} [SeminormedRing E] [NormedAlgebr
 
 end NormedAlgebra
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A non-unital algebra homomorphism from an `Algebra` to a `NormedAlgebra` induces a
 `NormedAlgebra` structure on the domain, using the `SeminormedRing.induced` norm.
 
@@ -652,7 +603,6 @@ def NormedAlgebra.induced {F : Type _} (α β γ : Type _) [NormedField α] [Rin
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
-set_option synthInstance.etaExperiment true in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type _} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val

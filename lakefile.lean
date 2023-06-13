@@ -2,13 +2,17 @@ import Lake
 
 open Lake DSL
 
-def moreLeanArgs := #[
-  "-DwarningAsError=true",
+def moreServerArgs := #[
   "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
 ]
 
+-- These settings only apply during `lake build`, but not in VSCode editor.
+def moreLeanArgs := #[
+  "-DwarningAsError=true"
+] ++ moreServerArgs
+
 package mathlib where
-  moreServerArgs := moreLeanArgs
+  moreServerArgs := moreServerArgs
 
 @[default_target]
 lean_lib Mathlib where
@@ -25,6 +29,8 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
+
+require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.11"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs

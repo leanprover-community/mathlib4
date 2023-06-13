@@ -69,13 +69,13 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type _} (s : Finset ι
       have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
         refine' Subgroup.noncommProd_mem _ _ _
         intro x hx
-        have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_supᵢ₂ (f := fun i _ => K i) x hx
+        have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
       intro heq1
       rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hnmem] at heq1
       have hnmem' : i ∉ (s : Set ι) := by simpa
       obtain ⟨heq1i : f i = 1, heq1S : s.noncommProd f _ = 1⟩ :=
-        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_bsupᵢ hnmem') hmem.1 hmem_bsupr heq1
+        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnmem') hmem.1 hmem_bsupr heq1
       intro i h
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
@@ -171,10 +171,10 @@ theorem noncommPiCoprod_mrange :
     apply le_antisymm
     · rintro x ⟨f, rfl⟩
       refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
-      apply Submonoid.mem_supₛ_of_mem
+      apply Submonoid.mem_sSup_of_mem
       · use i
       simp
-    · refine' supᵢ_le _
+    · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
       refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
@@ -209,10 +209,10 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
     · rintro x ⟨f, rfl⟩
       refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm _ _ h _ _) ?_
       intro i _hi
-      apply Subgroup.mem_supₛ_of_mem
+      apply Subgroup.mem_sSup_of_mem
       · use i
       simp
-    · refine' supᵢ_le _
+    · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
       refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range
@@ -247,7 +247,7 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     rw [disjoint_iff_inf_le]
     rintro f ⟨hxi, hxp⟩
     dsimp at hxi hxp
-    rw [supᵢ_subtype', ← noncommPiCoprod_range] at hxp
+    rw [iSup_subtype', ← noncommPiCoprod_range] at hxp
     rotate_left
     · intro _ _ hj
       apply hcomm

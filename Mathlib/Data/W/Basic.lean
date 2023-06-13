@@ -136,7 +136,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 #align W_type.depth_pos WType.depth_pos
 
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
-  Nat.lt_succ_of_le (Finset.le_sup (f:=(depth <| f ·)) (Finset.mem_univ i))
+  Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 #align W_type.depth_lt_depth_mk WType.depth_lt_depth_mk
 
 /-
@@ -186,7 +186,7 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.recC encodable_zero encodable_succ n
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl

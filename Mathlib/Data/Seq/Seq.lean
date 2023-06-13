@@ -166,7 +166,7 @@ instance : Membership α (Seq α) :=
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   cases' s with f al
   induction' h with n _ IH
-  exacts[id, fun h2 => al (IH h2)]
+  exacts [id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
 /-- If a sequence terminated at position `n`, it also terminated at `m ≥ n `. -/
@@ -201,7 +201,7 @@ theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → 
 
 @[simp]
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
-  ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons, exact mem_cons_of_mem _ m]⟩
+  ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 #align stream.seq.mem_cons_iff Stream'.Seq.mem_cons_iff
 
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
@@ -216,7 +216,7 @@ theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   · apply Subtype.eq
     funext n
     induction' n with n IH
-    exacts[f0, s.2 IH]
+    exacts [f0, s.2 IH]
   · contradiction
 #align stream.seq.destruct_eq_nil Stream'.Seq.destruct_eq_nil
 
@@ -244,7 +244,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
-    apply Subtype.eq; dsimp [tail]; rw [Stream'.tail_cons]
+    apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
 -- porting note: needed universe annotation to avoid universe issues
@@ -272,7 +272,6 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
   cases' s with f al
   apply Subtype.eq
   dsimp [tail, cons]
-  rw [Stream'.tail_cons]
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
@@ -375,7 +374,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
 
 attribute [simp] BisimO
 
-/-- a relation is bisimiar if it meets the `BisimO` test-/
+/-- a relation is bisimilar if it meets the `BisimO` test-/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 #align stream.seq.is_bisimulation Stream'.Seq.IsBisimulation
@@ -710,13 +709,12 @@ theorem map_id : ∀ s : Seq α, map id s = s
 
 @[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map] ; rw [Stream'.map_tail]
+  | ⟨s, al⟩ => by apply Subtype.eq ; dsimp [tail, map]
 #align stream.seq.map_tail Stream'.Seq.map_tail
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
     apply Subtype.eq ; dsimp [map]
-    rw [Stream'.map_map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 #align stream.seq.map_comp Stream'.Seq.map_comp

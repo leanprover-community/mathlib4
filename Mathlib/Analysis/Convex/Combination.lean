@@ -111,7 +111,7 @@ theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
   trans ∑ j in t, if i = j then z i else 0
   · congr with i
     split_ifs with h
-    exacts[h ▸ one_smul _ _, zero_smul _ _]
+    exacts [h ▸ one_smul _ _, zero_smul _ _]
   · rw [sum_ite_eq, if_pos hi]
   · rw [sum_ite_eq, if_pos hi]
 #align finset.center_mass_ite_eq Finset.centerMass_ite_eq
@@ -332,7 +332,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     refine' ⟨_, _, _, Finset.centerMass_ite_eq _ _ _ hx⟩
     · intros
       split_ifs
-      exacts[zero_le_one, le_refl 0]
+      exacts [zero_le_one, le_refl 0]
     · rw [Finset.sum_ite_eq, if_pos hx]
   · rintro x ⟨wx, hwx₀, hwx₁, rfl⟩ y ⟨wy, hwy₀, hwy₁, rfl⟩ a b ha hb hab
     rw [Finset.centerMass_segment _ _ _ _ hwx₁ hwy₁ _ _ hab]
@@ -364,14 +364,14 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · rw [_root_.convexHull_eq]
     -- Porting note: We have to specify the universe of `ι`
     rintro x ⟨ι : Type u_1, t, w, z, hw₀, hw₁, hz, rfl⟩
-    simp only [mem_unionᵢ]
+    simp only [mem_iUnion]
     refine' ⟨t.image z, _, _⟩
     · rw [coe_image, Set.image_subset_iff]
       exact hz
     · apply t.centerMass_mem_convexHull hw₀
       · simp only [hw₁, zero_lt_one]
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
-  · exact unionᵢ_subset fun i => unionᵢ_subset convexHull_mono
+  · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 #align convex_hull_eq_union_convex_hull_finite_subsets convexHull_eq_union_convexHull_finite_subsets
 
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
@@ -380,8 +380,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
   -- Porting note: We have to specify the universe of `ι` and `κ`
   obtain ⟨ι : Type u_1, a, w, S, hw, hw', hS, hSp⟩ := hx
   obtain ⟨κ : Type u_1, b, v, T, hv, hv', hT, hTp⟩ := hy
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
-  have h_sum : (∑ i : ι × κ in a ×ᶠ b, w i.fst * v i.snd) = 1 := by
+  have h_sum : (∑ i : ι × κ in a ×ˢ b, w i.fst * v i.snd) = 1 := by
     rw [Finset.sum_product, ← hw']
     congr
     ext i
@@ -391,9 +390,8 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
       simp [mul_comm]
     rw [this, ← Finset.sum_mul, hv']
     simp
-  -- Porting note: Changed `×ˢ` to `×ᶠ`
   refine'
-    ⟨ι × κ, a ×ᶠ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
+    ⟨ι × κ, a ×ˢ b, fun p => w p.1 * v p.2, fun p => (S p.1, T p.2), fun p hp => _, h_sum,
       fun p hp => _, _⟩
   · rw [mem_product] at hp
     exact mul_nonneg (hw p.1 hp.1) (hv p.2 hp.2)

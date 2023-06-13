@@ -52,16 +52,16 @@ protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
 @[to_additive IsUpperSet.cthickening]
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
-  rw [cthickening_eq_interᵢ_thickening'']
-  exact isUpperSet_interᵢ₂ fun δ _ => hs.thickening' _
+  rw [cthickening_eq_iInter_thickening'']
+  exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
 #align is_upper_set.cthickening' IsUpperSet.cthickening'
 #align is_upper_set.cthickening IsUpperSet.cthickening
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
-  rw [cthickening_eq_interᵢ_thickening'']
-  exact isLowerSet_interᵢ₂ fun δ _ => hs.thickening' _
+  rw [cthickening_eq_iInter_thickening'']
+  exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
 #align is_lower_set.cthickening' IsLowerSet.cthickening'
 #align is_lower_set.cthickening IsLowerSet.cthickening
 

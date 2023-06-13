@@ -843,10 +843,10 @@ theorem map_sup (f : F) : map f (p ⊔ p') = map f p ⊔ map f p' :=
 #align submodule.map_sup Submodule.map_sup
 
 @[simp]
-theorem map_supᵢ {ι : Sort _} (f : F) (p : ι → Submodule R M) :
+theorem map_iSup {ι : Sort _} (f : F) (p : ι → Submodule R M) :
     map f (⨆ i, p i) = ⨆ i, map f (p i) :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_supᵢ
-#align submodule.map_supr Submodule.map_supᵢ
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
+#align submodule.map_supr Submodule.map_iSup
 
 end
 
@@ -861,10 +861,10 @@ theorem comap_inf (f : F) : comap f (q ⊓ q') = comap f q ⊓ comap f q' :=
 #align submodule.comap_inf Submodule.comap_inf
 
 @[simp]
-theorem comap_infᵢ [RingHomSurjective σ₁₂] {ι : Sort _} (f : F) (p : ι → Submodule R₂ M₂) :
+theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort _} (f : F) (p : ι → Submodule R₂ M₂) :
     comap f (⨅ i, p i) = ⨅ i, comap f (p i) :=
-  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_infᵢ
-#align submodule.comap_infi Submodule.comap_infᵢ
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
+#align submodule.comap_infi Submodule.comap_iInf
 
 @[simp]
 theorem comap_zero : comap (0 : M →ₛₗ[σ₁₂] M₂) q = ⊤ :=
@@ -911,20 +911,20 @@ theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
   (giMapComap hf).l_sup_u _ _
 #align submodule.map_sup_comap_of_surjective Submodule.map_sup_comap_of_surjective
 
-theorem map_supᵢ_comap_of_sujective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
-    (⨆ i, (S i).comap f).map f = supᵢ S :=
-  (giMapComap hf).l_supᵢ_u _
-#align submodule.map_supr_comap_of_sujective Submodule.map_supᵢ_comap_of_sujective
+theorem map_iSup_comap_of_sujective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
+    (⨆ i, (S i).comap f).map f = iSup S :=
+  (giMapComap hf).l_iSup_u _
+#align submodule.map_supr_comap_of_sujective Submodule.map_iSup_comap_of_sujective
 
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=
   (giMapComap hf).l_inf_u _ _
 #align submodule.map_inf_comap_of_surjective Submodule.map_inf_comap_of_surjective
 
-theorem map_infᵢ_comap_of_surjective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
-    (⨅ i, (S i).comap f).map f = infᵢ S :=
-  (giMapComap hf).l_infᵢ_u _
-#align submodule.map_infi_comap_of_surjective Submodule.map_infᵢ_comap_of_surjective
+theorem map_iInf_comap_of_surjective {ι : Sort _} (S : ι → Submodule R₂ M₂) :
+    (⨅ i, (S i).comap f).map f = iInf S :=
+  (giMapComap hf).l_iInf_u _
+#align submodule.map_infi_comap_of_surjective Submodule.map_iInf_comap_of_surjective
 
 theorem comap_le_comap_iff_of_surjective (p q : Submodule R₂ M₂) : p.comap f ≤ q.comap f ↔ p ≤ q :=
   (giMapComap hf).u_le_u_iff
@@ -965,19 +965,19 @@ theorem comap_inf_map_of_injective (p q : Submodule R M) : (p.map f ⊓ q.map f)
   (gciMapComap hf).u_inf_l _ _
 #align submodule.comap_inf_map_of_injective Submodule.comap_inf_map_of_injective
 
-theorem comap_infᵢ_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
-    (⨅ i, (S i).map f).comap f = infᵢ S :=
-  (gciMapComap hf).u_infᵢ_l _
-#align submodule.comap_infi_map_of_injective Submodule.comap_infᵢ_map_of_injective
+theorem comap_iInf_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
+    (⨅ i, (S i).map f).comap f = iInf S :=
+  (gciMapComap hf).u_iInf_l _
+#align submodule.comap_infi_map_of_injective Submodule.comap_iInf_map_of_injective
 
 theorem comap_sup_map_of_injective (p q : Submodule R M) : (p.map f ⊔ q.map f).comap f = p ⊔ q :=
   (gciMapComap hf).u_sup_l _ _
 #align submodule.comap_sup_map_of_injective Submodule.comap_sup_map_of_injective
 
-theorem comap_supᵢ_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
-    (⨆ i, (S i).map f).comap f = supᵢ S :=
-  (gciMapComap hf).u_supᵢ_l _
-#align submodule.comap_supr_map_of_injective Submodule.comap_supᵢ_map_of_injective
+theorem comap_iSup_map_of_injective {ι : Sort _} (S : ι → Submodule R M) :
+    (⨆ i, (S i).map f).comap f = iSup S :=
+  (gciMapComap hf).u_iSup_l _
+#align submodule.comap_supr_map_of_injective Submodule.comap_iSup_map_of_injective
 
 theorem map_le_map_iff_of_injective (p q : Submodule R M) : p.map f ≤ q.map f ↔ p ≤ q :=
   (gciMapComap hf).l_le_l_iff
@@ -1027,15 +1027,15 @@ theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
-theorem _root_.LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _}
+theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _}
     (f : M →ₛₗ[σ] M) {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) :
-    ∀ v ∈ infᵢ p, f v ∈ infᵢ p := by
+    ∀ v ∈ iInf p, f v ∈ iInf p := by
   have : ∀ i, (p i).map f ≤ p i := by
     rintro i - ⟨v, hv, rfl⟩
     exact hf i v hv
-  suffices (infᵢ p).map f ≤ infᵢ p by exact fun v hv => this ⟨v, hv, rfl⟩
-  exact le_infᵢ fun i => (Submodule.map_mono (infᵢ_le p i)).trans (this i)
-#align linear_map.infi_invariant LinearMap.infᵢ_invariant
+  suffices (iInf p).map f ≤ iInf p by exact fun v hv => this ⟨v, hv, rfl⟩
+  exact le_iInf fun i => (Submodule.map_mono (iInf_le p i)).trans (this i)
+#align linear_map.infi_invariant LinearMap.iInf_invariant
 
 end AddCommMonoid
 section AddCommGroup
@@ -1081,15 +1081,15 @@ theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0
 #align submodule.map_smul Submodule.map_smul
 
 -- Porting note: `⨅ h : a ≠ 0, p.comap f` gets a `unusedVariables` lint, but
--- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => p.comap f)`.
+-- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `iInf (fun _ : a ≠ 0 => p.comap f)`.
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
-    p.comap (a • f) = infᵢ (fun _ : a ≠ 0 => p.comap f) := by
+    p.comap (a • f) = iInf (fun _ : a ≠ 0 => p.comap f) := by
   classical by_cases h : a = 0 <;> simp [h, comap_smul]
 #align submodule.comap_smul' Submodule.comap_smul'
 
 -- Porting note: Idem.
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
-    p.map (a • f) = supᵢ (fun _ : a ≠ 0 => p.map f) := by
+    p.map (a • f) = iSup (fun _ : a ≠ 0 => p.map f) := by
   classical by_cases h : a = 0 <;> simp [h, map_smul]
 #align submodule.map_smul' Submodule.map_smul'
 
@@ -1545,7 +1545,7 @@ theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = 
   Submodule.comap_smul f _ a h
 #align linear_map.ker_smul LinearMap.ker_smul
 
-theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _h : a ≠ 0, ker f :=
+theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _ : a ≠ 0, ker f :=
   Submodule.comap_smul' f _ a
 #align linear_map.ker_smul' LinearMap.ker_smul'
 
@@ -1554,7 +1554,7 @@ theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f
 #align linear_map.range_smul LinearMap.range_smul
 
 theorem range_smul' (f : V →ₗ[K] V₂) (a : K) :
-    range (a • f) = ⨆ _h : a ≠ 0, range f := by
+    range (a • f) = ⨆ _ : a ≠ 0, range f := by
   simpa only [range_eq_map] using Submodule.map_smul' f _ a
 #align linear_map.range_smul' LinearMap.range_smul'
 
@@ -1744,7 +1744,7 @@ theorem mem_submoduleImage {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : S
 
 theorem mem_submoduleImage_of_le {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _)(yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
   refine' mem_submoduleImage.trans ⟨_, _⟩
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨y, yN, h⟩
@@ -2426,7 +2426,7 @@ section Module
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given `p` a submodule of the module `M` and `q` a submodule of `p`, `p.equivSubtypeMap q`
-is the natural `linear_equiv` between `q` and `q.map p.subtype`. -/
+is the natural `LinearEquiv` between `q` and `q.map p.subtype`. -/
 def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map p.subtype :=
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by

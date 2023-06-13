@@ -95,7 +95,7 @@ to standard `aesop`:
 - We instruct Aesop to fail if it can't fully solve the goal. This allows us to
   use `aesop_graph` for auto-params.
 -/
-macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (options := { introsTransparency? := some .default, terminal := true })
@@ -106,7 +106,7 @@ A variant of `aesop_graph` which does not fail if it is unable to solve the
 goal. Use this only for exploration! Nonterminal Aesop is even worse than
 nonterminal `simp`.
 -/
-macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (options := { introsTransparency? := some .default, warnOnNonterminal := false })
@@ -292,7 +292,7 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
 instance supSet : SupSet (SimpleGraph V) where
-  supₛ s :=
+  sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
       symm := fun a b => Exists.imp $ fun _ => And.imp_right Adj.symm
       loopless := by
@@ -300,42 +300,42 @@ instance supSet : SupSet (SimpleGraph V) where
         exact ha.ne rfl }
 
 instance infSet : InfSet (SimpleGraph V) where
-  infₛ s :=
+  sInf s :=
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
       loopless := fun _ h => h.2 rfl }
 
 @[simp]
-theorem supₛ_adj {s : Set (SimpleGraph V)} {a b : V} : (supₛ s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
+theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
   Iff.rfl
-#align simple_graph.Sup_adj SimpleGraph.supₛ_adj
+#align simple_graph.Sup_adj SimpleGraph.sSup_adj
 
 @[simp]
-theorem infₛ_adj {s : Set (SimpleGraph V)} : (infₛ s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
+theorem sInf_adj {s : Set (SimpleGraph V)} : (sInf s).Adj a b ↔ (∀ G ∈ s, Adj G a b) ∧ a ≠ b :=
   Iff.rfl
-#align simple_graph.Inf_adj SimpleGraph.infₛ_adj
+#align simple_graph.Inf_adj SimpleGraph.sInf_adj
 
 @[simp]
-theorem supᵢ_adj {f : ι → SimpleGraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [supᵢ]
-#align simple_graph.supr_adj SimpleGraph.supᵢ_adj
+theorem iSup_adj {f : ι → SimpleGraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [iSup]
+#align simple_graph.supr_adj SimpleGraph.iSup_adj
 
 @[simp]
-theorem infᵢ_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ a ≠ b := by
-  simp [infᵢ]
-#align simple_graph.infi_adj SimpleGraph.infᵢ_adj
+theorem iInf_adj {f : ι → SimpleGraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) ∧ a ≠ b := by
+  simp [iInf]
+#align simple_graph.infi_adj SimpleGraph.iInf_adj
 
-theorem infₛ_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
-    (infₛ s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
-  infₛ_adj.trans <|
+theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
+    (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
+  sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
       exact fun h => (h _ hG).ne
-#align simple_graph.Inf_adj_of_nonempty SimpleGraph.infₛ_adj_of_nonempty
+#align simple_graph.Inf_adj_of_nonempty SimpleGraph.sInf_adj_of_nonempty
 
-theorem infᵢ_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
+theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
-  rw [infᵢ, infₛ_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
-#align simple_graph.infi_adj_of_nonempty SimpleGraph.infᵢ_adj_of_nonempty
+  rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
+#align simple_graph.infi_adj_of_nonempty SimpleGraph.iInf_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (SimpleGraph V) :=
@@ -364,16 +364,16 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
       by_cases G.Adj v w
       · exact Or.inl h
       · exact Or.inr ⟨hvw, h⟩
-    supₛ := supₛ
-    le_supₛ := fun s G hG a b hab => ⟨G, hG, hab⟩
-    supₛ_le := fun s G hG a b => by
+    sSup := sSup
+    le_sSup := fun s G hG a b hab => ⟨G, hG, hab⟩
+    sSup_le := fun s G hG a b => by
       rintro ⟨H, hH, hab⟩
       exact hG _ hH hab
-    infₛ := infₛ
-    infₛ_le := fun s G hG a b hab => hab.1 hG
-    le_infₛ := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
-    inf_supₛ_le_supᵢ_inf := fun G s a b hab => by simpa using hab
-    infᵢ_sup_le_sup_infₛ := fun G s a b hab => by
+    sInf := sInf
+    sInf_le := fun s G hG a b hab => hab.1 hG
+    le_sInf := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
+    inf_sSup_le_iSup_inf := fun G s a b hab => by simpa using hab
+    iInf_sup_le_sup_sInf := fun G s a b hab => by
       simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
 
 @[simp]
@@ -1731,7 +1731,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   apply Sym2.map.injective hinj
 #align simple_graph.hom.map_edge_set.injective SimpleGraph.Hom.mapEdgeSet.injective
 
-/-- Every graph homomomorphism from a complete graph is injective. -/
+/-- Every graph homomorphism from a complete graph is injective. -/
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
   contrapose! h

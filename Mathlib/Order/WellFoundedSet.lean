@@ -350,7 +350,7 @@ theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrdere
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq r f
   · refine' ⟨g, fun m n hle => _⟩
     obtain hlt | rfl := hle.lt_or_eq
-    exacts[h1 m n hlt, refl_of r _]
+    exacts [h1 m n hlt, refl_of r _]
   · exfalso
     obtain ⟨m, n, hlt, hle⟩ := h (f ∘ g) fun n => hf _
     exact h2 m n hlt hle
@@ -564,12 +564,12 @@ protected theorem wellFoundedOn [IsStrictOrder α r] (s : Finset α) :
 
 theorem wellFoundedOn_sup [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bunionᵢ, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
 #align finset.well_founded_on_sup Finset.wellFoundedOn_sup
 
 theorem partiallyWellOrderedOn_sup (s : Finset ι) {f : ι → Set α} :
     (s.sup f).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r :=
-  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_bunionᵢ, hs]
+  Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
 #align finset.partially_well_ordered_on_sup Finset.partiallyWellOrderedOn_sup
 
 theorem isWf_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
@@ -585,13 +585,13 @@ theorem isPwo_sup [Preorder α] (s : Finset ι) {f : ι → Set α} :
 @[simp]
 theorem wellFoundedOn_bUnion [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (⋃ i ∈ s, f i).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r := by
-  simpa only [Finset.sup_eq_supᵢ] using s.wellFoundedOn_sup
+  simpa only [Finset.sup_eq_iSup] using s.wellFoundedOn_sup
 #align finset.well_founded_on_bUnion Finset.wellFoundedOn_bUnion
 
 @[simp]
 theorem partiallyWellOrderedOn_bUnion (s : Finset ι) {f : ι → Set α} :
     (⋃ i ∈ s, f i).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r := by
-  simpa only [Finset.sup_eq_supᵢ] using s.partiallyWellOrderedOn_sup
+  simpa only [Finset.sup_eq_iSup] using s.partiallyWellOrderedOn_sup
 #align finset.partially_well_ordered_on_bUnion Finset.partiallyWellOrderedOn_bUnion
 
 @[simp]
@@ -697,7 +697,7 @@ noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (
     (hf : IsBadSeq r s f) :
     { g : ℕ → α // (∀ m : ℕ, m < n → f m = g m) ∧ IsBadSeq r s g ∧ IsMinBadSeq r rk s n g } := by
   classical
-    have h : ∃ (k : ℕ)(g : ℕ → α), (∀ m, m < n → f m = g m) ∧ IsBadSeq r s g ∧ rk (g n) = k :=
+    have h : ∃ (k : ℕ) (g : ℕ → α), (∀ m, m < n → f m = g m) ∧ IsBadSeq r s g ∧ rk (g n) = k :=
       ⟨_, f, fun _ _ => rfl, hf, rfl⟩
     obtain ⟨h1, h2, h3⟩ := Classical.choose_spec (Nat.find_spec h)
     refine' ⟨Classical.choose (Nat.find_spec h), h1, by convert h2, fun g hg1 hg2 con => _⟩

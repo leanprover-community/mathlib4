@@ -188,19 +188,19 @@ theorem map_map_left : ((map f).map g).left = g.left :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g :Z ⟶  Y := Over.homMk (inv ((forget X).map f))
+    let g : Z ⟶  Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
@@ -273,12 +273,8 @@ def iteratedSliceEquiv : Over f ≌ Over f.left
     where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
-  unitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)
-      (by aesop_cat)) (by aesop_cat)) fun g => by ext; dsimp; simp
-  counitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _) (by aesop_cat)) fun g =>
-      by ext; dsimp; simp
+  unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _))
 #align category_theory.over.iterated_slice_equiv CategoryTheory.Over.iteratedSliceEquiv
 
 theorem iteratedSliceForward_forget :
@@ -373,7 +369,8 @@ attribute [-simp, nolint simpNF] homMk_left_down_down
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-def isoMk {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) : f ≅ g :=
+def isoMk {f g : Under X} (hr : f.right ≅ g.right)
+    (hw : f.hom ≫ hr.hom = g.hom := by aesop_cat) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 #align category_theory.under.iso_mk CategoryTheory.Under.isoMk
 
@@ -443,12 +440,12 @@ theorem map_map_right : ((map f).map g).right = g.right :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
 end

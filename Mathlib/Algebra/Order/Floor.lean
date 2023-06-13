@@ -795,7 +795,7 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a�
 
 -- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
 @[simp]
-theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m:α) (m + 1) :=
+theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m : α) (m + 1) :=
   ext fun _ => floor_eq_iff
 #align int.preimage_floor_singleton Int.preimage_floor_singleton
 
@@ -876,7 +876,7 @@ theorem fract_nonneg (a : α) : 0 ≤ fract a :=
 
 /-- The fractional part of `a` is positive if and only if `a ≠ ⌊a⌋`. -/
 lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
-(fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
+  (fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
 theorem fract_lt_one (a : α) : fract a < 1 :=
@@ -991,7 +991,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
 theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
-  simp only [mem_preimage, mem_unionᵢ, mem_inter_iff]
+  simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine' ⟨fun h => ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, _⟩
   rintro ⟨m, hms, hm0, hm1⟩
   obtain rfl : ⌊x⌋ = m := floor_eq_iff.2 ⟨sub_nonneg.1 hm0, sub_lt_iff_lt_add'.1 hm1⟩
@@ -1000,7 +1000,7 @@ theorem preimage_fract (s : Set α) :
 
 theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - m) '' s ∩ Ico 0 1 := by
   ext x
-  simp only [mem_image, mem_inter_iff, mem_unionᵢ]; constructor
+  simp only [mem_image, mem_inter_iff, mem_iUnion]; constructor
   · rintro ⟨y, hy, rfl⟩
     exact ⟨⌊y⌋, ⟨y, hy, rfl⟩, fract_nonneg y, fract_lt_one y⟩
   · rintro ⟨m, ⟨y, hys, rfl⟩, h0, h1⟩
@@ -1228,9 +1228,9 @@ theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 #align int.floor_lt_ceil_of_lt Int.floor_lt_ceil_of_lt
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
+-- Porting note: in mathlib3 there was no need for the type annotation in  `(m : α)`
 @[simp]
-theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc ((m:α) - 1) m :=
+theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc ((m : α) - 1) m :=
   ext fun _ => ceil_eq_iff
 #align int.preimage_ceil_singleton Int.preimage_ceil_singleton
 
@@ -1410,7 +1410,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left, right]
+  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]
@@ -1531,17 +1531,14 @@ theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
 #align int.ceil_congr Int.ceil_congr
 
-set_option synthInstance.etaExperiment true in
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋ = ⌊a⌋ :=
   floor_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_floor Int.map_floor
 
-set_option synthInstance.etaExperiment true in
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉ = ⌈a⌉ :=
   ceil_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
 #align int.map_ceil Int.map_ceil
 
-set_option synthInstance.etaExperiment true in
 theorem map_fract (f : F) (hf : StrictMono f) (a : α) : fract (f a) = f (fract a) := by
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]
 #align int.map_fract Int.map_fract

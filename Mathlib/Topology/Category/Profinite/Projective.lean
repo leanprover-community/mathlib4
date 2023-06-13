@@ -47,13 +47,12 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
     apply Faithful.map_injective (F := forget Profinite)
-    simp only [forget_map_eq_coe, ContinuousMap.coe_mk, coe_comp]
+    simp only [ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
     rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
-    rfl
 #align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/

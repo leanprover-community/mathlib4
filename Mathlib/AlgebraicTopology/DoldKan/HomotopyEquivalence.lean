@@ -73,10 +73,20 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
     rcases n with _|n
     . simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
-    · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
-        HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1),
-        homotopyPToId_eventually_constant X (lt_add_one (n + 1))] using
-        (homotopyPToId X (n + 2)).comm (n + 1)
+    · -- Porting note: this branch had been:
+      -- simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
+      --   HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1),
+      --   homotopyPToId_eventually_constant X (lt_add_one (n + 1))] using
+      --   (homotopyPToId X (n + 2)).comm (n + 1)
+      -- which fails on leanprover/lean4:nightly-2023-05-16 due to
+      -- https://github.com/leanprover/lean4/pull/2146
+      -- The `erw` below clunkily works around this.
+      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex, PInfty_f,
+        ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1)]
+      erw [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
+      have := (homotopyPToId X (n + 2)).comm (n + 1)
+      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex] at this
+      exact this
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_infty_to_id AlgebraicTopology.DoldKan.homotopyPInftyToId
 

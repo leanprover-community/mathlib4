@@ -220,7 +220,7 @@ theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
 open Lean TSyntax.Compat in
-macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
+macro "∃!" xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
