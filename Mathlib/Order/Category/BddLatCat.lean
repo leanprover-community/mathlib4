@@ -9,9 +9,9 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.Order.Category.BddOrd
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Category.Semilat
+import Mathlib.Order.Category.BddOrdCat
+import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.SemilatCat
 
 /-!
 # The category of bounded lattices
@@ -218,4 +218,3 @@ def latToBddLatCompDualIsoDualCompLatToBddLat :
   Adjunction.leftAdjointUniq (latToBddLatForgetAdjunction.comp BddLat.dualEquiv.toAdjunction)
     (LatCat.dualEquiv.toAdjunction.comp latToBddLatForgetAdjunction)
 #align Lat_to_BddLat_comp_dual_iso_dual_comp_Lat_to_BddLat latToBddLatCompDualIsoDualCompLatToBddLat
-
