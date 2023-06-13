@@ -43,8 +43,10 @@ attribute [-instance] Matrix.GeneralLinearGroup.instCoeFun
 
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 -- TODO: these don't seem to work yet
-local notation:1024 "↑ₘ" A:1024 => ((A : GL(2, ℝ)⁺) : Matrix (Fin 2) (Fin 2) _)
-local notation:1024 "↑ₘ[" R "]" A:1024 => (A : Matrix (Fin 2) (Fin 2) R)
+local notation:1024 "↑ₘ" A:1024 =>
+  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
+local notation:1024 "↑ₘ[" R "]" A:1024 =>
+  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
 
 /-- The open upper half plane -/
 def UpperHalfPlane :=
@@ -172,12 +174,11 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   have hz := z.prop
   simp only [GeneralLinearGroup.det_apply_val] at DET
   have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa using congr_arg Complex.im H
-  cases H1
-  · simp only [H1, Complex.ofReal_zero, denom, coe_fn_eq_coe, MulZeroClass.zero_mul, zero_add,
+  cases' H1 with H1
+  · simp only [H1, Complex.ofReal_zero, denom, MulZeroClass.zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
-    rw [← coe_coe, Matrix.det_fin_two (↑g : Matrix (Fin 2) (Fin 2) ℝ)] at DET
-    simp only [coe_coe, H, H1, MulZeroClass.mul_zero, sub_zero, lt_self_iff_false] at DET
-    exact DET
+    rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET
+    simp only [H, H1, MulZeroClass.mul_zero, sub_zero, lt_self_iff_false] at DET
   · change z.im > 0 at hz
     linarith
 #align upper_half_plane.denom_ne_zero UpperHalfPlane.denom_ne_zero
@@ -197,11 +198,12 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
 
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
-  rw [smul_aux', Complex.div_im]
-  set NsqBot := (denom g z).normSq
+  rw [smulAux', Complex.div_im]
+  set NsqBot := Complex.normSq (denom g z)
   have : NsqBot ≠ 0 := by simp only [denom_ne_zero g z, map_eq_zero, Ne.def, not_false_iff]
-  field_simp [smul_aux', -coe_coe]
-  rw [Matrix.det_fin_two ↑ₘg]
+  field_simp [smulAux']
+  -- porting note: the local notation still didn't work here
+  rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
   ring
 #align upper_half_plane.smul_aux'_im UpperHalfPlane.smulAux'_im
 
@@ -209,16 +211,16 @@ theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
 def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
   ⟨smulAux' g z, by
     rw [smulAux'_im]
-    convert mul_pos ((mem_GL_pos _).1 g.prop)
-        (div_pos z.im_pos (complex.norm_sq_pos.mpr (denom_ne_zero g z)))
-    simp only [general_linear_group.coe_det_apply, coe_coe]
+    convert mul_pos ((mem_glpos _).1 g.prop)
+        (div_pos z.im_pos (Complex.normSq_pos.mpr (denom_ne_zero g z))) using 1
+    simp only [GeneralLinearGroup.det_apply_val]
     ring⟩
 #align upper_half_plane.smul_aux UpperHalfPlane.smulAux
 
 theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero, -denom, -Num]
+  field_simp [denom_ne_zero, -denom, -num]
   simp only [Matrix.mul, dot_product, Fin.sum_univ_succ, denom, Num, coe_coe, Subgroup.coe_mul,
     general_linear_group.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
