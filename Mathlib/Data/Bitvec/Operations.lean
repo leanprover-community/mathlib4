@@ -70,12 +70,8 @@ section Constants
   /-- The all-ones bit pattern is also spelled `-1` -/
   @[simp]
   theorem get_minus_one : get (-1 : Bitvec width) i = true := by
-    simp[OfNat.ofNat, Neg.neg, Bitvec.neg, One.one]
-    sorry
+    rw[neg_one]; apply get_ones_eq_true
 
-  @[simp]
-  theorem minus_one_eq_ones : (-1 : Bitvec width) = ones := by
-    ext i; rw[get_ones_eq_true]; exact get_minus_one
 
 end Constants
 
