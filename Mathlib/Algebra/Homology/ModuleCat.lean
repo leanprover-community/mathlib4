@@ -9,14 +9,15 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Category.Module.Abelian
-import Mathlib.Algebra.Category.Module.Subobject
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 /-!
 # Complexes of modules
 
-We provide some additional API to work with homological complexes in `Module R`.
+We provide some additional API to work with homological complexes in
+`ModuleCat R`.
 -/
 
 
