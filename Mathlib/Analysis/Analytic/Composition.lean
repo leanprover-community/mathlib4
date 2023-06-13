@@ -1168,6 +1168,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     dsimp
     -- Porting FIXME: I can't work out how to reproduce the behaviour of the `congr`
     -- that appears at this point in mathlib3, and so the proof goes off track here.
+    save
     congr! 2
     · ext1
       dsimp [Composition.gather]
@@ -1175,10 +1176,18 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp only [map_ofFn]
       rfl
     · congr
-    · ext1
-      dsimp [Composition.gather, sigmaCompositionAux]
-      simp [get_splitWrtComposition]
-      sorry
+    · dsimp [Composition.gather, sigmaCompositionAux]
+      save
+      rename_i x y h
+      rw [get_of_eq (splitWrtComposition_join _ _ _)]
+      · simp only [get_ofFn]
+        simp
+        congr! 2
+        · simp only [Fin.ext_iff, Fin.cast_mk]
+          exact h.rec rfl
+        · simp only [Fin.ext_iff, Fin.cast_mk]
+          exact h.rec rfl
+      · simp only [map_ofFn, Function.comp]
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
