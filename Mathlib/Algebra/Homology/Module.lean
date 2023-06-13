@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Homotopy
-import Mathbin.Algebra.Category.Module.Abelian
-import Mathbin.Algebra.Category.Module.Subobject
-import Mathbin.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Category.Module.Abelian
+import Mathlib.Algebra.Category.Module.Subobject
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 /-!
 # Complexes of modules
@@ -58,8 +58,7 @@ abbrev toCycles {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
 
 @[ext]
 theorem cycles_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι} {x y : C.cycles i}
-    (w : (C.cycles i).arrow x = (C.cycles i).arrow y) : x = y :=
-  by
+    (w : (C.cycles i).arrow x = (C.cycles i).arrow y) : x = y := by
   apply_fun (C.cycles i).arrow using (ModuleCat.mono_iff_injective _).mp (cycles C i).arrow_mono
   exact w
 #align Module.cycles_ext ModuleCat.cycles_ext
