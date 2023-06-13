@@ -454,57 +454,57 @@ theorem get_map₂ : get (Vector.map₂ f v₁ v₂) i = f (get v₁ i) (get v�
   simp only [get, Vector.get_map₂]
 
 @[simp]
-  theorem get_replicate_val_eq_val : get (Vector.replicate n val) i = val := by
-    induction n
-    case zero =>
-      exact Fin.elim0 i
-    case succ n ih =>
-      cases i using Fin.cases
-      case H0 => rfl
-      case Hs => apply ih
+theorem get_replicate_val_eq_val : get (Vector.replicate n val) i = val := by
+  induction n
+  case zero =>
+    exact Fin.elim0 i
+  case succ n ih =>
+    cases i using Fin.cases
+    case H0 => rfl
+    case Hs => apply ih
 
-  /-- Every bit in `zero` is `0`/`false` -/
+/-- Every bit in `zero` is `0`/`false` -/
+@[simp]
+theorem get_zeroes_eq_false : get (Bitvec.zero n) i = false :=
+  get_replicate_val_eq_val
+
+@[simp]
+theorem get_zero_eq_false : get 0 i = false :=
+  get_replicate_val_eq_val
+
+/-- Every bit in `ones` is `1`/`true` -/
+@[simp]
+theorem get_ones_eq_true : get (allOnes n) i = true :=
+  get_replicate_val_eq_val
+
+/-- The all-ones bit pattern is also spelled `-1` -/
+@[simp]
+theorem get_minus_one : get (-1 : Bitvec n) i = true := by
+  rw[neg_one]; apply get_ones_eq_true
+
+
+/-!
+  Show how the bitwise operations reduce to Boolean operation on individual bits
+-/
+section Bitwise
+  variable (x y : Bitvec n)
+
   @[simp]
-  theorem get_zeroes_eq_false : get (Bitvec.zero n) i = false :=
-    get_replicate_val_eq_val
+  theorem get_or : get (x.or y) i = (get x i || get y i) := by
+    simp only [Bitvec.or, get_map₂]
 
   @[simp]
-  theorem get_zero_eq_false : get 0 i = false :=
-    get_replicate_val_eq_val
+  theorem get_and : get (x.and y) i = (get x i && get y i) := by
+    simp only [Bitvec.and, get_map₂]
 
-  /-- Every bit in `ones` is `1`/`true` -/
   @[simp]
-  theorem get_ones_eq_true : get (allOnes n) i = true :=
-    get_replicate_val_eq_val
+  theorem get_xor : get (x.xor y) i = xor (get x i) (get y i) := by
+    simp only [Bitvec.xor, get_map₂]
 
-  /-- The all-ones bit pattern is also spelled `-1` -/
   @[simp]
-  theorem get_minus_one : get (-1 : Bitvec n) i = true := by
-    rw[neg_one]; apply get_ones_eq_true
-
-
-  /-!
-    Show how the bitwise operations reduce to Boolean operation on individual bits
-  -/
-  section Bitwise
-    variable (x y : Bitvec n)
-
-    @[simp]
-    theorem get_or : get (x.or y) i = (get x i || get y i) := by
-      simp only [Bitvec.or, get_map₂]
-
-    @[simp]
-    theorem get_and : get (x.and y) i = (get x i && get y i) := by
-      simp only [Bitvec.and, get_map₂]
-
-    @[simp]
-    theorem get_xor : get (x.xor y) i = xor (get x i) (get y i) := by
-      simp only [Bitvec.xor, get_map₂]
-
-    @[simp]
-    theorem get_compl : get (x.compl) i = not (get x i) := by
-      simp only [Bitvec.compl, get_map]
-  end Bitwise
+  theorem get_compl : get (x.compl) i = not (get x i) := by
+    simp only [Bitvec.compl, get_map]
+end Bitwise
 
 
 
