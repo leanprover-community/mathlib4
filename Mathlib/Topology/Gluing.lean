@@ -24,32 +24,32 @@ provided.
 
 ## Main definitions
 
-* `Top.glue_data`: A structure containing the family of gluing data.
-* `category_theory.glue_data.glued`: The glued topological space.
+* `TopCat.GlueData`: A structure containing the family of gluing data.
+* `CategoryTheory.GlueData.glued`: The glued topological space.
     This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
     can be used.
-* `category_theory.glue_data.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
-* `Top.glue_data.rel`: A relation on `Σ i, D.U i` defined by `⟨i, x⟩ ~ ⟨j, y⟩` iff
-    `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `Top.glue_data.ι_eq_iff_rel`.
+* `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
+* `TopCat.GlueData.Rel`: A relation on `Σ i, D.U i` defined by `⟨i, x⟩ ~ ⟨j, y⟩` iff
+    `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `TopCat.GlueData.ι_eq_iff_rel`.
 * `Top.glue_data.mk`: A constructor of `glue_data` whose conditions are stated in terms of
   elements rather than subobjects and pullbacks.
-* `Top.glue_data.of_open_subsets`: Given a family of open sets, we may glue them into a new
+* `TopCat.GlueData.ofOpenSubsets`: Given a family of open sets, we may glue them into a new
   topological space. This new space embeds into the original space, and is homeomorphic to it if
-  the given family is an open cover (`Top.glue_data.open_cover_glue_homeo`).
+  the given family is an open cover (`TopCat.GlueData.openCoverGlueHomeo`).
 
 ## Main results
 
-* `Top.glue_data.is_open_iff`: A set in `glued` is open iff its preimage along each `ι i` is
+* `TopCat.GlueData.isOpen_iff`: A set in `glued` is open iff its preimage along each `ι i` is
     open.
-* `Top.glue_data.ι_jointly_surjective`: The `ι i`s are jointly surjective.
-* `Top.glue_data.rel_equiv`: `rel` is an equivalence relation.
-* `Top.glue_data.ι_eq_iff_rel`: `ι i x = ι j y ↔ ⟨i, x⟩ ~ ⟨j, y⟩`.
-* `Top.glue_data.image_inter`: The intersection of the images of `U i` and `U j` in `glued` is
+* `TopCat.GlueData.ι_jointly_surjective`: The `ι i`s are jointly surjective.
+* `TopCat.GlueData.rel_equiv`: `Rel` is an equivalence relation.
+* `TopCat.GlueData.ι_eq_iff_rel`: `ι i x = ι j y ↔ ⟨i, x⟩ ~ ⟨j, y⟩`.
+* `TopCat.GlueData.image_inter`: The intersection of the images of `U i` and `U j` in `glued` is
     `V i j`.
-* `Top.glue_data.preimage_range`: The preimage of the image of `U i` in `U j` is `V i j`.
+* `TopCat.GlueData.preimage_range`: The preimage of the image of `U i` in `U j` is `V i j`.
 * `Top.glue_data.preimage_image_eq_preimage_f`: The preimage of the image of some `U ⊆ U i` is
     given by the preimage along `f j i`.
-* `Top.glue_data.ι_open_embedding`: Each of the `ι i`s are open embeddings.
+* `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
 set_option autoImplicit false
@@ -69,7 +69,7 @@ namespace TopCat
 1. An index type `J`
 2. An object `U i` for each `i : J`.
 3. An object `V i j` for each `i j : J`.
-  (Note that this is `J × J → Top` rather than `J → J → Top` to connect to the
+  (Note that this is `J × J → TopCat` rather than `J → J → TopCat` to connect to the
   limits library easier.)
 4. An open embedding `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
@@ -127,7 +127,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_jointly_surjective TopCat.GlueData.ι_jointly_surjective
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
-See `Top.glue_data.ι_eq_iff_rel`.
+See `TopCat.GlueData.ι_eq_iff_rel`.
 -/
 def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   a = b ∨ ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
@@ -395,8 +395,8 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
 
-/-- This is a constructor of `Top.glue_data` whose arguments are in terms of elements and
-intersections rather than subobjects and pullbacks. Please refer to `Top.glue_data.mk_core` for
+/-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
+intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
 details. -/
 def mk' (h : MkCore.{u}) : TopCat.GlueData where
   J := h.J
@@ -462,7 +462,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`from_open_subsets_glue_open_embedding`),
-and its range is `⋃ i, (U i : set α)` (`range_from_open_subsets_glue`).
+and its range is `⋃ i, (U i : Set α)` (`range_from_open_subsets_glue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun x => Opens.inclusion _) (by rintro ⟨i, j⟩; ext x; rfl)
