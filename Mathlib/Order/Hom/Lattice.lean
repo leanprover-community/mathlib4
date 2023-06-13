@@ -1597,7 +1597,8 @@ variable [SemilatticeSup α] [SemilatticeSup β] [SemilatticeSup γ]
 /-- Adjoins a `⊤` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withTop (f : SupHom α β) : SupHom (WithTop α) (WithTop β) where
-  toFun := Option.map f
+  -- porting note: this was `Option.map f`
+  toFun := WithTop.map f
   map_sup' a b :=
     match a, b with
     | ⊤, ⊤ => rfl
@@ -1758,7 +1759,7 @@ protected def withTop (f : LatticeHom α β) : LatticeHom (WithTop α) (WithTop 
 
 -- porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withTop (f : LatticeHom α β) : ⇑f.withTop = Option.map f := rfl
+lemma coe_withTop (f : LatticeHom α β) : ⇑f.withTop = WithTop.map f := rfl
 
 lemma withTop_apply (f : LatticeHom α β) (a : WithTop α) : f.withTop a = a.map f := rfl
 
