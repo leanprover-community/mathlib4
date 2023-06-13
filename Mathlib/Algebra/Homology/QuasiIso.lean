@@ -79,7 +79,7 @@ theorem toQuasiIso {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : Quas
     refine' ⟨⟨(homologyFunctor W c i).map e.inv, _⟩⟩
     simp only [← Functor.map_comp, ← (homologyFunctor W c i).map_id]
     constructor <;> apply homology_map_eq_of_homotopy
-    exacts[e.homotopyHomInvId, e.homotopyInvHomId]⟩
+    exacts [e.homotopyHomInvId, e.homotopyInvHomId]⟩
 #align homotopy_equiv.to_quasi_iso HomotopyEquiv.toQuasiIso
 
 theorem toQuasiIso_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :

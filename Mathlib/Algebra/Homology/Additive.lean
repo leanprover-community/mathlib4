@@ -134,7 +134,7 @@ instance boundaries_additive : (boundariesFunctor V c i).Additive where
 variable [HasEqualizers V] [HasCokernels V]
 
 instance homology_additive : (homologyFunctor V c i).Additive where
-  map_add {_ _ f g}:= by
+  map_add {_ _ f g} := by
     dsimp [homologyFunctor]
     ext
     simp only [homology.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
@@ -176,8 +176,7 @@ isomorphic to the identity functor. -/
 @[simps!]
 def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
     (𝟭 V).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun K => Hom.isoOfComponents (fun i => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
 #align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
 
 variable {V}

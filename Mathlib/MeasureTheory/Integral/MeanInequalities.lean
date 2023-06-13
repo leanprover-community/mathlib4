@@ -35,7 +35,7 @@ we prove `(∫ (f + g)^p ∂μ) ^ (1/p) ≤ (∫ f^p ∂μ) ^ (1/p) + (∫ g^p �
 section LIntegral
 
 /-!
-### Hölder's inequality for the Lebesgue integral of ℝ≥0∞ and nnreal functions
+### Hölder's inequality for the Lebesgue integral of ℝ≥0∞ and ℝ≥0 functions
 
 We prove `∫ (f * g) ∂μ ≤ (∫ f^p ∂μ) ^ (1/p) * (∫ g^q ∂μ) ^ (1/q)` for `p`, `q`
 conjugate real exponents and `α → (E)NNReal` functions in several cases, the first two being useful
@@ -45,15 +45,13 @@ only to prove the more general results:
 * `ENNReal.lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top` : ℝ≥0∞ functions for which the
     integrals on the right are neither ⊤ nor 0,
 * `ENNReal.lintegral_mul_le_Lp_mul_Lq` : ℝ≥0∞ functions,
-* `NNReal.lintegral_mul_le_Lp_mul_Lq`  : nnreal functions.
+* `NNReal.lintegral_mul_le_Lp_mul_Lq`  : ℝ≥0 functions.
 -/
 
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal
-
-open MeasureTheory
+open Classical BigOperators NNReal ENNReal MeasureTheory
 
 set_option linter.uppercaseLean3 false
 

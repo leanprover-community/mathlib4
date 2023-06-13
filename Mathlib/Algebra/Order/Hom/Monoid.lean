@@ -140,7 +140,7 @@ variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneCla
   "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
   `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
-{ (f : α →* β) with monotone' := monotone f }
+  { (f : α →* β) with monotone' := monotone f }
 
 -- See note [lower instance priority]
 @[to_additive]

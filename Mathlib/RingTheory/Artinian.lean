@@ -304,24 +304,6 @@ end IsArtinian
 
 end CommRing
 
--- TODO: Prove this for artinian modules
--- /--
--- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--- -/
--- universe w
--- variables {N : Type w} [add_comm_group N] [module R N]
--- noncomputable def is_noetherian.equiv_punit_of_prod_injective [is_noetherian R M]
---   (f : M × N →ₗ[R] M) (i : injective f) : N ≃ₗ[R] punit.{w+1} :=
--- begin
---   apply nonempty.some,
---   obtain ⟨n, w⟩ := is_noetherian.disjoint_partial_sups_eventually_bot (f.tailing i)
---     (f.tailings_disjoint_tailing i),
---   specialize w n (le_refl n),
---   apply nonempty.intro,
---   refine (f.tailing_linear_equiv i n).symm.trans _,
---   rw w,
---   exact submodule.bot_equiv_punit,
--- end
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for

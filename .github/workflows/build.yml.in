@@ -72,7 +72,7 @@ jobs:
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: BuildJOB_NAME
-    runs-on: ubuntu-latest
+    runs-on: RUNS_ON
     steps:
       - name: cleanup
         run: |
@@ -94,7 +94,9 @@ jobs:
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: get cache
-        run: lake exe cache get
+        run: |
+          lake exe cache clean
+          lake exe cache get
 
       - name: build mathlib
         uses: liskin/gh-problem-matcher-wrap@v2
