@@ -28,7 +28,7 @@ Classes of kernels:
   if for all `a : α`, `k a` is a probability measure.
 * `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
   exists `C : ℝ≥0∞` such that `C < ∞` and for all `a : α`, `κ a univ ≤ C`. This implies in
-  particular that all measures in the image of `κ` are finite, but is stronger since it requires an
+  particular that all measures in the image of `κ` are finite, but is stronger since it requires a
   uniform bound. This stronger condition is necessary to ensure that the composition of two finite
   kernels is finite.
 * `ProbabilityTheory.IsSFiniteKernel κ`: a kernel is called s-finite if it is a countable

@@ -575,7 +575,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 
 -- Note : this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
-/-- An orthonormal basis is an Hilbert basis. -/
+/-- An orthonormal basis is a Hilbert basis. -/
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by

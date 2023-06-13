@@ -454,7 +454,7 @@ variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 instance partialOrder : PartialOrder (Interval α) :=
   WithBot.partialOrder
 
-/-- Consider a interval `[a, b]` as the set `[a, b]`. -/
+/-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff
     (fun s =>

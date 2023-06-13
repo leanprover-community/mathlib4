@@ -191,8 +191,8 @@ def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
 /-- The expression `λ g m, g (f m)` as a `MonoidHom`.
 Equivalently, `(λ g, MonoidHom.comp g f)` as a `MonoidHom`. -/
 @[to_additive (attr := simps!)
-      "The expression `λ g m, g (f m)` as a `AddMonoidHom`.
-      Equivalently, `(λ g, AddMonoidHom.comp g f)` as a `AddMonoidHom`.
+      "The expression `λ g m, g (f m)` as an `AddMonoidHom`.
+      Equivalently, `(λ g, AddMonoidHom.comp g f)` as an `AddMonoidHom`.
 
       This also exists in a `LinearMap` version, `LinearMap.lcomp`."]
 def compHom' [MulOneClass M] [MulOneClass N] [CommMonoid P] (f : M →* N) : (N →* P) →* M →* P :=

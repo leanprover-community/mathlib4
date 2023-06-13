@@ -136,7 +136,7 @@ instance toOrderedSemiring {R} [OrderedSemiring R] [SetLike S R] [SubsemiringCla
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_semiring SubsemiringClass.toOrderedSemiring
 
-/-- A subsemiring of an `StrictOrderedSemiring` is an `StrictOrderedSemiring`. -/
+/-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
 instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedSemiring s :=
   Subtype.coe_injective.strictOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -150,7 +150,7 @@ instance toOrderedCommSemiring {R} [OrderedCommSemiring R] [SetLike S R] [Subsem
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_ordered_comm_semiring SubsemiringClass.toOrderedCommSemiring
 
-/-- A subsemiring of an `StrictOrderedCommSemiring` is an `StrictOrderedCommSemiring`. -/
+/-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
 instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedCommSemiring s :=
   Subtype.coe_injective.strictOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -354,7 +354,7 @@ protected theorem prod_mem {R : Type _} [CommSemiring R] (s : Subsemiring R) {ι
   prod_mem h
 #align subsemiring.prod_mem Subsemiring.prod_mem
 
-/-- Sum of elements in an `Subsemiring` of an `Semiring` indexed by a `Finset`
+/-- Sum of elements in a `Subsemiring` of a `Semiring` indexed by a `Finset`
 is in the `add_subsemiring`. -/
 protected theorem sum_mem (s : Subsemiring R) {ι : Type _} {t : Finset ι} {f : ι → R}
     (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=

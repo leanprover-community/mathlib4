@@ -1734,6 +1734,7 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
+import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Conformal
@@ -2091,6 +2092,7 @@ import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 import Mathlib.MeasureTheory.Function.Egorov
@@ -2256,6 +2258,7 @@ import Mathlib.Order.Category.LinOrdCat
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Category.PreordCat
+import Mathlib.Order.Category.SemilatCat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
@@ -2478,6 +2481,7 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
+import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
 import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.Quotient
@@ -2494,6 +2498,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.RootsOfUnity.Basic
