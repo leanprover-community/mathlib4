@@ -60,7 +60,7 @@ variable (β)
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
 
 Note that `Dfinsupp.support` is the preferred API for accessing the support of the function,
-`Dfinsupp.support'` is a implementation detail that aids computability; see the implementation
+`Dfinsupp.support'` is an implementation detail that aids computability; see the implementation
 notes in this file for more information. -/
 structure Dfinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   /-- The underlying function of a dependent function with finite support (aka `Dfinsupp`). -/

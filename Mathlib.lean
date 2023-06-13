@@ -2258,6 +2258,7 @@ import Mathlib.Order.Category.LinOrdCat
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.Order.Category.PartOrdCat
 import Mathlib.Order.Category.PreordCat
+import Mathlib.Order.Category.SemilatCat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure

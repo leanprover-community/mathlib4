@@ -1161,7 +1161,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [StrictOrderedSemiring Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -1297,7 +1297,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [StrictOrderedSemiring Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`
+/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=

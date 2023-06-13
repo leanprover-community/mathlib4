@@ -404,7 +404,7 @@ variable [CompleteSpace E]
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
-This is `f.coprod G.subtypeL` as an `ContinuousLinearEquiv`. -/
+This is `f.coprod G.subtypeL` as a `ContinuousLinearEquiv`. -/
 noncomputable def coprodSubtypeLEquivOfIsCompl (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl (LinearMap.range f) G) [CompleteSpace G] (hker : ker f = ⊥) : (E × G) ≃L[𝕜] F :=
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)

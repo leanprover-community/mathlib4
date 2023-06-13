@@ -1920,7 +1920,7 @@ This has the following advantages
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `Continuous.neg`.
+As an example for a unary operation, we have `Continuous.neg`.
 ```
 Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
 ```

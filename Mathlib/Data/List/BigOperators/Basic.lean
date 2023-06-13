@@ -428,7 +428,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
 set_option linter.deprecated false in
 /-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
 @[to_additive (attr := simp)
-  "Counterpart to `List.sum_take_succ` when we have an negation operation"]
+  "Counterpart to `List.sum_take_succ` when we have a negation operation"]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p), (L.drop (i + 1)).prod = (L.nthLe i p)⁻¹ * (L.drop i).prod
   | [], i, p => False.elim (Nat.not_lt_zero _ p)
