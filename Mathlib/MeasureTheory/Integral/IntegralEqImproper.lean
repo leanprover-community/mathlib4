@@ -41,7 +41,7 @@ in φ i, f x ∂μ` as `i` tends to `l`.
 When using this definition with a measure restricted to a set `s`, which happens fairly often, one
 should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
 more complicated than necessary. See for example the proof of
-`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)` as an
+`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)` as a
 `MeasureTheory.AECover` w.r.t. `μ.restrict (Iic b)`, instead of using `(λ x, Ioc x b)`.
 
 ## Main statements
