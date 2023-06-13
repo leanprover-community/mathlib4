@@ -567,8 +567,8 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedS
 theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)
     (h_ind : ∀ (c : F) {s : Set α} (hs : MeasurableSet[m] s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p (hm s hs) hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ hfm : AEStronglyMeasurable' m f μ,
-      ∀ hgm : AEStronglyMeasurable' m g μ, Disjoint (Function.support f) (Function.support g) →
+    (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, ∀ _ : AEStronglyMeasurable' m f μ,
+      ∀ _ : AEStronglyMeasurable' m g μ, Disjoint (Function.support f) (Function.support g) →
         P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
     (h_closed : IsClosed {f : lpMeas F ℝ m p μ | P f}) :
     ∀ f : Lp F p μ, AEStronglyMeasurable' m f μ → P f := by
@@ -583,7 +583,10 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
     @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) _ _ _ g
   · intro b t ht hμt
-    rw [Lp.simpleFunc.coe_indicatorConst, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]
+    -- Porting note: needed to pass `m` to `Lp.simpleFunc.coe_indicatorConst` to avoid
+    -- synthesized type class instance is not definitionally equal to expression inferred by typing
+    -- rules, synthesized m0 inferred m
+    rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]
     have hμt' : μ t < ∞ := (le_trim hm).trans_lt hμt
     specialize h_ind b ht hμt'
     rwa [Lp.simpleFunc.coe_indicatorConst] at h_ind
