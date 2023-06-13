@@ -18,7 +18,7 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 ## Main definitions
 
-* `orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
+* `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
 
 -/
 
@@ -129,7 +129,9 @@ theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearM
 @[simp]
 theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
-  Units.ext <| o.det_rotation θ
+  Units.ext <| by
+    -- porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
+    simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 #align orientation.linear_equiv_det_rotation Orientation.linearEquiv_det_rotation
 
 /-- The inverse of `rotation` is rotation by the negation of the angle. -/
@@ -182,9 +184,12 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
+  -- porting note: this needed the `Complex.conj_ofReal` instead of `IsROrC.conj_ofReal`;
+  -- I believe this is because the respective coercions are no longer defeq, and
+  -- `Real.Angle.coe_expMapCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
-    Real.Angle.coe_expMapCircle, IsROrC.conj_ofReal, conj_I]
+    Real.Angle.coe_expMapCircle, Complex.conj_ofReal, conj_I]
   ring
 #align orientation.kahler_rotation_left Orientation.kahler_rotation_left
 
@@ -349,8 +354,8 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero {x y : V} (hx : x ≠ 0) (
 is the first rotated by `θ` and scaled by the ratio of the norms, or `θ` and at least one of the
 vectors are zero. -/
 theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle) :
-    o.oangle x y = θ ↔ x ≠ 0 ∧ y ≠ 0 ∧ y = (‖y‖ / ‖x‖) • o.rotation θ x ∨ θ = 0 ∧ (x = 0 ∨ y = 0) :=
-  by
+    o.oangle x y = θ ↔
+      x ≠ 0 ∧ y ≠ 0 ∧ y = (‖y‖ / ‖x‖) • o.rotation θ x ∨ θ = 0 ∧ (x = 0 ∨ y = 0) := by
   by_cases hx : x = 0
   · simp [hx, eq_comm]
   · by_cases hy : y = 0
