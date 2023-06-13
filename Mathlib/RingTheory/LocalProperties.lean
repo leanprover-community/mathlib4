@@ -497,8 +497,8 @@ then `t • x ∈ adjoin R s` for some `t : M`.-/
 theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Algebra.adjoin R' s) : ∃ t : M, t • x ∈ Algebra.adjoin R s := by
-  change ∃ t : M, t • x ∈ (Algebra.adjoin R s).toSubmodule
-  change x ∈ (Algebra.adjoin R' s).toSubmodule at hx
+  change ∃ t : M, t • x ∈ Subalgebra.toSubmodule (Algebra.adjoin R s)
+  change x ∈ Subalgebra.toSubmodule (Algebra.adjoin R' s) at hx
   simp_rw [Algebra.adjoin_eq_span] at hx ⊢
   exact multiple_mem_span_of_mem_localization_span M R' _ _ hx
 #align multiple_mem_adjoin_of_mem_localization_adjoin multiple_mem_adjoin_of_mem_localization_adjoin
@@ -507,8 +507,7 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- We first setup the instances
-  skip
-  letI := f.to_algebra
+  letI := f.toAlgebra
   letI := fun r : s => (Localization.awayMap f r).toAlgebra
   have :
     ∀ r : s,
@@ -554,11 +553,10 @@ section FiniteType
 theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteType := by
   introv R hf
   -- mirrors the proof of `localization_map_finite`
-  skip
-  letI := f.to_algebra
+  letI := f.toAlgebra
   letI := ((algebraMap S S').comp f).toAlgebra
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
-  letI := f'.to_algebra
+  letI := f'.toAlgebra
   haveI : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
   let fₐ : S →ₐ[R] S' := AlgHom.mk' (algebraMap S S') fun c x => RingHom.map_mul _ _ _
   obtain ⟨T, hT⟩ := id hf
@@ -588,7 +586,7 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
-  localization_finiteType.Away r hf
+  localization_finiteType.away r hf
 #align localization_away_map_finite_type localization_away_map_finiteType
 
 variable {S'}
@@ -605,7 +603,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
     ∃ m : M, m • x ∈ A := by
   let g : S →ₐ[R] S' := IsScalarTower.toAlgHom R S S'
   let y := IsLocalization.commonDenomOfFinset M s
-  have hx₁ : (y : S) • ↑s = g '' _ := (IsLocalization.finsetIntegerMultiple_image _ s).symm
+  have hx₁ : (y : S) • (s : Set S') = g '' _ := (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨n, hn⟩ :=
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
       (by rw [hx₁]; exact Set.image_subset _ hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
@@ -613,7 +611,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
   rw [Algebra.smul_def, ← _root_.map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
   use a * y ^ n
-  convert A.mul_mem hx' (hA₂ a.prop)
+  convert A.mul_mem hx' (hA₂ a.prop) using 1
   rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, Submonoid.coe_pow, mul_assoc, ← ha₂,
     mul_comm]
 #align is_localization.exists_smul_mem_of_mem_adjoin IsLocalization.exists_smul_mem_of_mem_adjoin
@@ -641,8 +639,7 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- mirrors the proof of `finite_of_localization_span`
-  skip
-  letI := f.to_algebra
+  letI := f.toAlgebra
   letI := fun r : s => (Localization.awayMap f r).toAlgebra
   have :
     ∀ r : s,
