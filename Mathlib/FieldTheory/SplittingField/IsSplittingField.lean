@@ -49,7 +49,7 @@ variable [Field K] [Field L] [Field F] [Algebra K L]
 /-- Typeclass characterising splitting fields. -/
 class IsSplittingField (f : K[X]) : Prop where
   splits' : Splits (algebraMap K L) f
-  adjoin_roots' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
+  adjoin_rootSet' : Algebra.adjoin K (f.rootSet L : Set L) = ⊤
 #align polynomial.is_splitting_field Polynomial.IsSplittingField
 
 namespace IsSplittingField
