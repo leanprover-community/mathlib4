@@ -18,10 +18,10 @@ is strongly measurable.
 
 ## Main statements
 
-* `measurable.lintegral_kernel_prod_right`: the function `a ↦ ∫⁻ b, f a b ∂(κ a)` is measurable,
+* `Measurable.lintegral_kernel_prod_right`: the function `a ↦ ∫⁻ b, f a b ∂(κ a)` is measurable,
   for an s-finite kernel `κ : kernel α β` and a function `f : α → β → ℝ≥0∞` such that `uncurry f`
   is measurable.
-* `measure_theory.strongly_measurable.integral_kernel_prod_right`: the function
+* `MeasureTheory.StronglyMeasurable.integral_kernel_prod_right`: the function
   `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : kernel α β` and a function
   `f : α → β → E` such that `uncurry f` is measurable.
 
@@ -132,7 +132,7 @@ section Lintegral
 
 variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
-/-- Auxiliary lemma for `measurable.lintegral_kernel_prod_right`. -/
+/-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
 theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
   simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]
@@ -145,7 +145,7 @@ theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : M
 #align probability_theory.kernel.measurable_lintegral_indicator_const ProbabilityTheory.Kernel.measurable_lintegral_indicator_const
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
-map from `α × β` (hypothesis `measurable (uncurry f)`), the integral `a ↦ ∫⁻ b, f a b ∂(κ a)` is
+map from `α × β` (hypothesis `Measurable (uncurry f)`), the integral `a ↦ ∫⁻ b, f a b ∂(κ a)` is
 measurable. -/
 theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0∞} (hf : Measurable (uncurry f)) :
     Measurable fun a => ∫⁻ b, f a b ∂κ a := by
