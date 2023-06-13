@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.RingHomProperties
+import Mathlib.RingTheory.RingHomProperties
 
 /-!
 
@@ -27,15 +27,13 @@ theorem finite_stableUnderComposition : StableUnderComposition @Finite := by int
   exact hg.comp hf
 #align ring_hom.finite_stable_under_composition RingHom.finite_stableUnderComposition
 
-theorem finite_respectsIso : RespectsIso @Finite :=
-  by
+theorem finite_respectsIso : RespectsIso @Finite := by
   apply finite_stable_under_composition.respects_iso
   intros
   exact Finite.of_surjective _ e.to_equiv.surjective
 #align ring_hom.finite_respects_iso RingHom.finite_respectsIso
 
-theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite :=
-  by
+theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
   refine' stable_under_base_change.mk _ finite_respects_iso _
   classical
   introv h
