@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Basic
-import Mathbin.CategoryTheory.Shift.Basic
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Differential objects in a category.
@@ -81,8 +81,7 @@ def comp {X Y Z : DifferentialObject C} (f : Hom X Y) (g : Hom Y Z) : Hom X Z wh
 
 end Hom
 
-instance categoryOfDifferentialObjects : Category (DifferentialObject C)
-    where
+instance categoryOfDifferentialObjects : Category (DifferentialObject C) where
   Hom := Hom
   id := Hom.id
   comp X Y Z f g := Hom.comp f g
@@ -180,13 +179,11 @@ can be lifted to a functor `differential_object C ⥤ differential_object D`.
 @[simps]
 def mapDifferentialObject (F : C ⥤ D)
     (η : (shiftFunctor C (1 : ℤ)).comp F ⟶ F.comp (shiftFunctor D (1 : ℤ)))
-    (hF : ∀ c c', F.map (0 : c ⟶ c') = 0) : DifferentialObject C ⥤ DifferentialObject D
-    where
+    (hF : ∀ c c', F.map (0 : c ⟶ c') = 0) : DifferentialObject C ⥤ DifferentialObject D where
   obj X :=
     { pt := F.obj X.pt
       d := F.map X.d ≫ η.app X.pt
-      d_squared' :=
-        by
+      d_squared' := by
         rw [functor.map_comp, ← functor.comp_map F (shift_functor D (1 : ℤ))]
         slice_lhs 2 3 => rw [← η.naturality X.d]
         rw [functor.comp_map]
@@ -249,8 +246,7 @@ noncomputable section
 
 /-- The shift functor on `differential_object C`. -/
 @[simps]
-def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C
-    where
+def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C where
   obj X :=
     { pt := X.pt⟦n⟧
       d := X.d⟦n⟧' ≫ (shiftComm _ _ _).Hom
@@ -270,8 +266,7 @@ def shiftFunctor (n : ℤ) : DifferentialObject C ⥤ DifferentialObject C
 
 /-- The shift functor on `differential_object C` is additive. -/
 @[simps]
-def shiftFunctorAdd (m n : ℤ) : shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n :=
-  by
+def shiftFunctorAdd (m n : ℤ) : shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
   refine' nat_iso.of_components (fun X => mk_iso (shift_add X.pt _ _) _) _
   · dsimp
     rw [← cancel_epi ((shift_functor_add C m n).inv.app X.X)]
@@ -288,8 +283,7 @@ section
 
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps]
-def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject C) :=
-  by
+def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject C) := by
   refine' nat_iso.of_components (fun X => mk_iso ((shift_functor_zero C ℤ).app X.pt) _) _
   · erw [← nat_trans.naturality]
     dsimp
