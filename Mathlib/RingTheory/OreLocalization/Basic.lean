@@ -122,7 +122,7 @@ protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
   refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
-/-- A fraction is equal to its expansion by an factor from s. -/
+/-- A fraction is equal to its expansion by a factor from s. -/
 protected theorem expand' (r : R) (s s' : S) : r /ₒ s = r * s' /ₒ (s * s') :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
 #align ore_localization.expand' OreLocalization.expand'
