@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.BddLat
-import Mathbin.Order.Hom.CompleteLattice
+import Mathlib.Order.Category.BddLat
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # The category of complete lattices
@@ -48,8 +48,7 @@ theorem coe_of (α : Type _) [CompleteLattice α] : ↥(of α) = α :=
 instance : Inhabited CompleteLat :=
   ⟨of PUnit⟩
 
-instance : BundledHom @CompleteLatticeHom
-    where
+instance : BundledHom @CompleteLatticeHom where
   toFun _ _ _ _ := coeFn
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
@@ -61,8 +60,7 @@ instance : LargeCategory.{u} CompleteLat :=
 instance : ConcreteCategory CompleteLat :=
   BundledHom.concreteCategory CompleteLatticeHom
 
-instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat
-    where
+instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
   forget₂ :=
     { obj := fun X => BddLat.of X
       map := fun X Y => CompleteLatticeHom.toBoundedLatticeHom }
@@ -71,8 +69,7 @@ instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
