@@ -389,17 +389,11 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
   -- Porting note: was `continuity`
-  refine Continuous.subtype_mk ?_ ?_
-  refine Continuous.prod_mk ?_ ?_
-  · refine Continuous.subtype_mk ?_ ?_
-    refine Continuous.comp ?_ ?_
-    · continuity
-    · refine Continuous.comp ?_ ?_
-      · exact map_continuous (self := ContinuousMap.instContinuousMapClassContinuousMap) (t h i j)
-      · continuity
-  · refine Continuous.comp ?_ ?_
-    · exact map_continuous (self := ContinuousMap.instContinuousMapClassContinuousMap) (t h i j)
-    · continuity
+  have : Continuous (t h i j) :=
+    map_continuous (self := ContinuousMap.instContinuousMapClassContinuousMap) (t h i j)
+  exact Continuous.subtype_mk
+    (Continuous.prod_mk (Continuous.subtype_mk (by continuity) _) (by continuity)) _
+
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
 
