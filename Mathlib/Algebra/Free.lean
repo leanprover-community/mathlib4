@@ -444,9 +444,9 @@ end Magma
 
 /-- Free additive semigroup over a given alphabet. -/
 structure FreeAddSemigroup (α : Type u) where
-/-- The head of the element -/
+  /-- The head of the element -/
   head : α
-/-- The tail of the element -/
+  /-- The tail of the element -/
   tail : List α
 #align free_add_semigroup FreeAddSemigroup
 compile_inductive% FreeAddSemigroup
@@ -454,9 +454,9 @@ compile_inductive% FreeAddSemigroup
 /-- Free semigroup over a given alphabet. -/
 @[to_additive (attr := ext)]
 structure FreeSemigroup (α : Type u) where
-/-- The head of the element -/
+  /-- The head of the element -/
   head : α
-/-- The tail of the element -/
+  /-- The tail of the element -/
   tail : List α
 #align free_semigroup FreeSemigroup
 compile_inductive% FreeSemigroup

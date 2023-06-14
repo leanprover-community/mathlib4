@@ -327,7 +327,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
   | pos a, 0 => to_nat_pos _
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]; cases PosNum.cmp a b
-    exacts[id, congr_arg pos, id]
+    exacts [id, congr_arg pos, id]
 #align num.cmp_to_nat Num.cmp_to_nat
 
 @[norm_cast]
@@ -933,7 +933,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
 
 @[simp, norm_cast]
 theorem lor'_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor' m n := by
-  -- Porting note: An name of an implicit local hypothesis is not available so
+  -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
   apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;>
    intros <;> (try cases_type* Bool) <;> rfl

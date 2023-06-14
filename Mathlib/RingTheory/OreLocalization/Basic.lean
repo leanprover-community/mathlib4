@@ -11,6 +11,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.Tactic.NoncommRing
 
 /-!
 
@@ -25,7 +26,7 @@ localization at `R - {0}` results in a division ring.
 ## Notations
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
-subset `S`. Also defines a new heterogeneos division notation `r /ₒ s` for a numerator `r : R` and
+subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
 a denominator `s : S`.
 
 ## References
@@ -110,7 +111,7 @@ protected theorem ind {β : R[S⁻¹] → Prop} (c : ∀ (r : R) (s : S), β (r 
 #align ore_localization.ind OreLocalization.ind
 
 theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
-    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S)(v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
+    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
   Quotient.eq''
 #align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 
@@ -121,7 +122,7 @@ protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
   refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
-/-- A fraction is equal to its expansion by an factor from s. -/
+/-- A fraction is equal to its expansion by a factor from s. -/
 protected theorem expand' (r : R) (s s' : S) : r /ₒ s = r * s' /ₒ (s * s') :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
 #align ore_localization.expand' OreLocalization.expand'
@@ -521,11 +522,11 @@ private theorem add''_char (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) (rb : R) 
   use sc * sd
   use rc * sd
   constructor <;> simp only [Submonoid.coe_mul]
-  · simp only [right_distrib, mul_assoc]
+  · noncomm_ring
     rw [← mul_assoc (a := rb), hd, ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
   · rw [mul_assoc (a := (s₁ : R)), ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
 
 attribute [local instance] OreLocalization.oreEqv
 

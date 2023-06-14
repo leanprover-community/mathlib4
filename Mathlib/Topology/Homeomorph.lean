@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 
 ! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit 3b267e70a936eebb21ab546f49a8df34dd300b25
+! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -389,7 +389,7 @@ theorem comap_nhds_eq (h : α ≃ₜ β) (y : β) : comap h (𝓝 y) = 𝓝 (h.s
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 #align homeomorph.comap_nhds_eq Homeomorph.comap_nhds_eq
 
-/-- If an bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
+/-- If a bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : α ≃ β) (h₁ : Continuous e) (h₂ : IsOpenMap e) : α ≃ₜ β where
   continuous_toFun := h₁
   continuous_invFun := by
@@ -671,6 +671,8 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
       subst h
       exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
+
+variable (β)
 
 /-- A product of copies of a topological space can be split as the binary product of one copy and
   the product of all the remaining copies. -/

@@ -21,8 +21,8 @@ This typeclass is primarily for use by homomorphisms like `MonoidHom` and `Linea
 A typical type of morphisms should be declared as:
 ```
 structure MyHom (A B : Type _) [MyClass A] [MyClass B] :=
-(toFun : A → B)
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+  (toFun : A → B)
+  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyHom
 
@@ -30,7 +30,7 @@ variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
 instance : FunLike (MyHom A B) A (λ _, B) :=
-{ coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
+  { coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply
 `FunLike.coe` directly. -/
@@ -41,8 +41,8 @@ instance : CoeFun (MyHom A B) (λ _, A → B) := ⟨MyHom.toFun⟩
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B :=
-{ toFun := f',
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyHom
 ```
@@ -70,9 +70,9 @@ MyHomClass.map_op
 
 -- You can replace `MyHom.FunLike` with the below instance:
 instance : MyHomClass (MyHom A B) A B :=
-{ coe := MyHom.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := MyHom.map_op' }
+  { coe := MyHom.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := MyHom.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -95,10 +95,10 @@ MyHomClass.map_op
 
 -- You can also replace `MyHom.FunLike` with the below instance:
 instance : CoolerHomClass (CoolHom A B) A B :=
-{ coe := CoolHom.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := CoolHom.map_op',
-  map_cool := CoolHom.map_cool' }
+  { coe := CoolHom.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := CoolHom.map_op',
+    map_cool := CoolHom.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -198,7 +198,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
 #align fun_like.subsingleton_cod FunLike.subsingleton_cod
 
 end FunLike

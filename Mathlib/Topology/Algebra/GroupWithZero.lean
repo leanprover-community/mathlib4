@@ -98,7 +98,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
 /-!
 ### Continuity of `fun x ↦ x⁻¹` at a non-zero point
 
-We define `HasContinuousinv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
+We define `HasContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
 `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
 -/

@@ -358,7 +358,7 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
 #align split_by_characteristic split_by_characteristic
 
 /--
-In a `IsDomain R`, split any `Prop` over `R` into the three cases:
+In an `IsDomain R`, split any `Prop` over `R` into the three cases:
 - *prime* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.

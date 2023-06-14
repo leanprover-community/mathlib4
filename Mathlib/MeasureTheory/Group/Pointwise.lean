@@ -44,5 +44,5 @@ theorem MeasurableSet.const_smul₀ {G₀ α : Type _} [GroupWithZero G₀] [Zer
     [MeasurableSingletonClass α] {s : Set α} (hs : MeasurableSet s) (a : G₀) :
     MeasurableSet (a • s) := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  exacts[(subsingleton_zero_smul_set s).measurableSet, hs.const_smul_of_ne_zero ha]
+  exacts [(subsingleton_zero_smul_set s).measurableSet, hs.const_smul_of_ne_zero ha]
 #align measurable_set.const_smul₀ MeasurableSet.const_smul₀

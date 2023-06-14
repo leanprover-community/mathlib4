@@ -870,7 +870,7 @@ protected theorem iSup_nonneg {ι : Sort _} {f : ι → ℝ} (hf : ∀ i, 0 ≤ 
 
 /--
 As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
-suffices to show that all elements of `S` are bounded by a nonnagative number to show that `sSup S`
+suffices to show that all elements of `S` are bounded by a nonnegative number to show that `sSup S`
 is bounded by this number.
 -/
 protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by
@@ -895,7 +895,7 @@ bounded below by `0` to show that `0 ≤ sInf S`.
 -/
 theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sInf S := by
   rcases S.eq_empty_or_nonempty with (rfl | hS₂)
-  exacts[sInf_empty.ge, le_csInf hS₂ hS]
+  exacts [sInf_empty.ge, le_csInf hS₂ hS]
 #align real.Inf_nonneg Real.sInf_nonneg
 
 /-- As `0` is the default value for `Real.sInf` of the empty set, it suffices to show that `f i` is

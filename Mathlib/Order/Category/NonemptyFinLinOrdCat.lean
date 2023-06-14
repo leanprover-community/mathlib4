@@ -133,8 +133,8 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : NonemptyFinLinOrdCat ≌ NonemptyFinLinOrdCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrdCat.dualEquiv
 
@@ -195,8 +195,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [coe_of, FunctorToTypes.map_comp_apply]
-      simp only [forget_map_apply]
+      simp only [coe_of, comp_apply]
+      change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
       · exfalso

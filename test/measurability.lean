@@ -19,7 +19,7 @@ example (hf : Measurable f) : Measurable f := by measurability
 
 example : Measurable f → Measurable f := by measurability
 
--- Test the use of apply_assumption to get (h i) from an hypothesis (h : ∀ i, ...).
+-- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
 example  {F : ℕ → α → β} (hF : ∀ i, Measurable (F i)) : Measurable (F 0) := by measurability
 

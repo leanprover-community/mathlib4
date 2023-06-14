@@ -371,7 +371,7 @@ theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) :=
   · obtain ⟨r, s, rfl⟩ : ∃ r s, r * x + s * y = d := by
       rw [← Ideal.mem_span_pair, hd, Ideal.mem_span_singleton]
     apply dvd_add <;> apply dvd_mul_of_dvd_right
-    exacts[gcd_dvd_left x y, gcd_dvd_right x y]
+    exacts [gcd_dvd_left x y, gcd_dvd_right x y]
 #align span_gcd span_gcd
 
 theorem gcd_dvd_iff_exists (a b : R) {z} : gcd a b ∣ z ↔ ∃ x y, z = a * x + b * y := by

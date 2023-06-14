@@ -144,7 +144,7 @@ in `C`.
 -/
 class HasSplitCoequalizer : Prop where
   /-- There is some split coequalizer -/
-  splittable : ∃ (Z : C)(h : Y ⟶ Z), Nonempty (IsSplitCoequalizer f g h)
+  splittable : ∃ (Z : C) (h : Y ⟶ Z), Nonempty (IsSplitCoequalizer f g h)
 #align category_theory.has_split_coequalizer CategoryTheory.HasSplitCoequalizer
 
 /--

@@ -83,11 +83,11 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 
 -- Porting note : can't derive `CommRingCat`
 instance CommRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
-show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 -- Porting note : can't derive `LocalRing`
 instance LocalRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
@@ -255,7 +255,7 @@ with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
-  NatIso.ofComponents (fun U => Iso.refl _) (fun i => by aesop)
+  NatIso.ofComponents fun U => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_comp_forget AlgebraicGeometry.structurePresheafCompForget
 
@@ -530,7 +530,7 @@ formed by gluing the `open_to_localization` maps. -/
 def stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
     (structureSheaf R).presheaf.stalk x ⟶ CommRingCat.of (Localization.AtPrime x.asIdeal) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (structureSheaf R).1)
-    { pt:= _
+    { pt := _
       ι := { app := fun U =>
         openToLocalization R ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom
@@ -557,14 +557,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk
@@ -581,7 +581,7 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       ext s
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
         CommRingCat.coe_of, Category.comp_id]
-      rw [stalkToFiberRingHom_germ']
+      rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
       obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
         exists_const _ _ s x hxU
       erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
@@ -684,7 +684,7 @@ Every section can locally be represented on basic opens `basic_opens g` as a fra
 -/
 theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (x : U) :
-    ∃ (f g : R)(i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
+    ∃ (f g : R) (i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
       (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) =
       (structureSheaf R).1.map i.op s := by
   -- First, any section `s` can be represented as a fraction `f/g` on some open neighborhood of `x`
@@ -735,7 +735,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
       ∀ i : ι,
         (const R (a i) (h i) (PrimeSpectrum.basicOpen (h i)) fun y hy => hy) =
           (structureSheaf R).1.map (iDh i).op s) :
-    ∃ (a' h' : ι → R)(iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
+    ∃ (a' h' : ι → R) (iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
       (U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h' i)) ∧
         (∀ (i) (_ : i ∈ t) (j) (_ : j ∈ t), a' i * h' j = h' i * a' j) ∧
           ∀ i ∈ t,
@@ -764,7 +764,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     all_goals rw [res_const]; apply const_ext; ring
     -- The remaining two goals were generated during the rewrite of `res_const`
     -- These can be solved immediately
-    exacts[PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
+    exacts [PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
   -- From the equality in the localization, we obtain for each `(i,j)` some power `(h i * h j) ^ n`
   -- which equalizes `a i * h j` and `h i * a j`
   have exists_power :
