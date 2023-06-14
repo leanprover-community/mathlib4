@@ -21,9 +21,9 @@ differentiable in a suitable vertical strip.
 
 - `mellin` : the Mellin transform `∫ (t : ℝ) in Ioi 0, t ^ (s - 1) • f t`,
   where `s` is a complex number.
-- `has_mellin`: shorthand asserting that the Mellin transform exists and has a given value
-  (analogous to `has_sum`).
-- `mellin_differentiable_at_of_is_O_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
+- `HasMellin`: shorthand asserting that the Mellin transform exists and has a given value
+  (analogous to `HasSum`).
+- `mellin_differentiableAt_of_isBigO_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
   `O(x ^ (-b))` at 0, then `mellin f` is holomorphic on the domain `b < re s < a`.
 
 -/
