@@ -135,7 +135,8 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
   ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
     adjoin_rootSet L f ▸ FG_adjoin_of_finite (Finset.finite_toSet _) fun y hy =>
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
-      else isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
+      else
+        isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
           (mem_roots <| map_ne_zero hf).1 (Multiset.mem_toFinset.mp hy)⟩⟩
 #align polynomial.is_splitting_field.finite_dimensional Polynomial.IsSplittingField.finiteDimensional
 
