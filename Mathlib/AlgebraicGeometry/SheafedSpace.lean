@@ -21,13 +21,10 @@ We further describe how to apply functors and natural transformations to the val
 presheaves.
 -/
 
-
-universe v u
-
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type u) [Category.{v} C]
+variable (C : Type _) [Category C]
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
@@ -39,7 +36,7 @@ variable (C : Type u) [Category.{v} C]
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
-structure SheafedSpace extends PresheafedSpace.{_, _, v} C where
+structure SheafedSpace extends PresheafedSpace C where
   /-- A sheafed space is presheafed space which happens to be sheaf. -/
   IsSheaf : presheaf.IsSheaf
 set_option linter.uppercaseLean3 false in
@@ -90,11 +87,11 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
   ⟨unit (TopCat.of PEmpty)⟩
 
 instance : Category (SheafedSpace C) :=
-  show Category (InducedCategory (PresheafedSpace.{_, _, v} C) SheafedSpace.toPresheafedSpace) by
+  show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
-def forgetToPresheafedSpace : SheafedSpace.{v} C ⥤ PresheafedSpace.{_, _, v} C :=
+def forgetToPresheafedSpace : SheafedSpace.{v} C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
@@ -165,7 +162,7 @@ variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
-  obj X := (X : TopCat.{v})
+  obj X := (X : TopCat)
   map {X Y} f := f.base
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget AlgebraicGeometry.SheafedSpace.forget
