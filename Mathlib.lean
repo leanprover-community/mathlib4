@@ -1386,6 +1386,7 @@ import Mathlib.Data.ListM.Basic
 import Mathlib.Data.ListM.BestFirst
 import Mathlib.Data.ListM.DepthFirst
 import Mathlib.Data.ListM.Heartbeats
+import Mathlib.Data.ListM.IO
 import Mathlib.Data.ListM.Split
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
@@ -1908,6 +1909,7 @@ import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.SMap
+import Mathlib.Lean.System.IO
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
