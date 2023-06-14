@@ -146,14 +146,17 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesColimitsForget.{u} _ _
 
-@[simp]
+/- Porting note: linter informs me the LHS simplifies to... itself.
+But fwiw I also can't get simp to use this lemma. -/
+@[simp, nolint simpNF]
 theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_category.braiding_hom_apply Rep.MonoidalCategory.braiding_hom_apply
 
-@[simp]
+/- Porting note: same note as above. -/
+@[simp, nolint simpNF]
 theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
   rfl
@@ -180,10 +183,10 @@ theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_obj_ρ Rep.linearization_obj_ρ
 
-@[simp]
 theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
-    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k)) = Finsupp.single (X.ρ g x) (1 : k) :=
-  by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
+      = Finsupp.single (X.ρ g x) (1 : k) := by
+  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of Rep.linearization_of
 
@@ -381,11 +384,12 @@ dsimp only [monoidal_category.tensor_left_obj, ModuleCat.comp_def, LinearMap.com
   tensor_rho, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
 simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
   hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
+/- Porting note: the linter simplifies some of the LHSs of the `simps` lemmas to themselves. -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-@[simps]
+@[simps, nolint simpNF]
 protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
