@@ -1210,6 +1210,40 @@ lemma d_ι :
   ext D
   apply d_ι_app
 
+@[reassoc]
+lemma π_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ : ι} (f₁ : x₀ ⟶ x₁)
+    (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) :
+    (X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅) ≫
+      (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₁ f₂ f₃ f₄ f₅) =
+    ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk (f₁ ≫ f₂) (f₃ ≫ f₄))) ≫
+      (X.HπE n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃) := by
+  rw [← cancel_mono ((X.EιH n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃)), assoc, assoc,
+    π_d_ι_app', HπE_EιH_app]
+  let φ : Arrow₂.mk (f₁ ≫ f₂) (f₃ ≫ f₄) ⟶ Arrow₂.mk (f₂ ≫ f₃) (f₄ ≫ f₅) :=
+    { τ₀ := f₁
+      τ₁ := f₃
+      τ₂ := f₅
+      commf := by simp
+      commg := by simp }
+  exact (X.δ n₁ n₂ hn₂).naturality φ
+
+@[reassoc]
+lemma π_d_app (D : Arrow₅ ι) :
+    (X.HπE n₀ n₁ n₂ hn₁ hn₂).app ((Arrow₅.δ₀ ⋙ Arrow₄.δ₀).obj D) ≫
+      (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app D =
+      (X.δ n₁ n₂ hn₂).app ((Arrow₅.δ₅ ⋙ Arrow₄.δ₁ ⋙ Arrow₃.δ₂).obj D) ≫
+      (X.HπE n₁ n₂ n₃ hn₂ hn₃).app ((Arrow₅.δ₅ ⋙ Arrow₄.δ₄).obj D) := by
+  apply π_d_app'
+
+@[reassoc]
+lemma π_d  :
+    whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₀) (X.HπE n₀ n₁ n₂ hn₁ hn₂) ≫
+      X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ =
+    (whiskerLeft (Arrow₅.δ₅ ⋙ Arrow₄.δ₁ ⋙ Arrow₃.δ₂) (X.δ n₁ n₂ hn₂)) ≫
+      whiskerLeft (Arrow₅.δ₅ ⋙ Arrow₄.δ₄) (X.HπE n₁ n₂ n₃ hn₂ hn₃) := by
+  ext D
+  apply π_d_app
+
 lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ ⟶ x₁)
     (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) (f₆ : x₅ ⟶ x₆) (f₇ : x₆ ⟶ x₇) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₃ f₄ f₅ f₆ f₇) ≫
@@ -1237,7 +1271,7 @@ noncomputable def kernelSequenceE' : ShortComplex C where
   X₁ := (X.E n₀ n₁ n₂ hn₁ hn₂).obj (Arrow₃.mk f₁ f₂ f₃)
   X₂ := (X.H n₁).obj (Arrow.mk (f₂ ≫ f₃))
   X₃ := (X.H n₁).obj (Arrow.mk f₃) ⊞ (X.H n₂).obj (Arrow.mk f₁)
-  f := (X.EιH  n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₁ f₂ f₃)
+  f := (X.EιH n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₁ f₂ f₃)
   g := biprod.lift ((X.H n₁).map (Arrow₂.δ₁Toδ₀.app (Arrow₂.mk f₂ f₃)))
       ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk f₁ (f₂ ≫ f₃)))
   zero := by
@@ -1274,6 +1308,31 @@ lemma kernelSequenceE'_exact :
   rw [assoc, hy₁, reassoc_of% hy₂]
   rfl
 
+@[simps]
+noncomputable def cokernelSequenceE' : ShortComplex C where
+  X₁ := (X.H n₁).obj (Arrow.mk f₁) ⊞ (X.H n₀).obj (Arrow.mk f₃)
+  X₂ := (X.H n₁).obj (Arrow.mk (f₁ ≫ f₂))
+  X₃ := (X.E n₀ n₁ n₂ hn₁ hn₂).obj (Arrow₃.mk f₁ f₂ f₃)
+  f := biprod.desc ((X.H n₁).map (Arrow₂.δ₂Toδ₁.app (Arrow₂.mk f₁ f₂)))
+    ((X.δ n₀ n₁ hn₁).app (Arrow₂.mk (f₁ ≫ f₂) f₃))
+  g := (X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₁ f₂ f₃)
+  zero := by
+    ext
+    . dsimp [HπE]
+      erw [biprod.inl_desc_assoc, comp_zero,
+        X.Hδ₂Toδ₁_Hδ₁ToCycles_app_assoc n₁ n₂ hn₂, zero_comp]
+    . dsimp [HπE]
+      erw [biprod.inr_desc_assoc, comp_zero, ← assoc]
+      exact (X.cokernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ (Arrow₃.mk f₁ f₂ f₃)).zero
+
+instance : Epi (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g := by
+  dsimp [cokernelSequenceE']
+  infer_instance
+
+lemma cokernelSequenceE'_exact :
+    (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact := by
+  sorry
+
 end
 
 noncomputable def kernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
@@ -1304,7 +1363,34 @@ instance : Mono (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := b
     erw [Functor.map_id]
     infer_instance
 
-lemma kernelSequenceD_exact : (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := sorry
+lemma kernelSequenceD_exact : (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := by
+  rw [exact_iff_exact_evaluation]
+  rintro ⟨f₁, f₂, f₃, f₄, f₅⟩
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A₀ y₀ hy₀
+  dsimp [Arrow₄.δ₀, kernelSequenceD] at y₀ hy₀
+  have hy₀₁ := y₀ ≫= (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅).zero =≫ biprod.fst
+  dsimp at hy₀₁
+  rw [← cancel_mono ((X.EιH n₁ n₂ n₃ hn₂ hn₃).app (Arrow₃.mk f₁ f₂ f₃)), zero_comp, assoc,
+    X.d_ι_app'] at hy₀
+  simp only [assoc, biprod.lift_fst, zero_comp, comp_zero] at hy₀₁
+  obtain ⟨y₁, hy₁⟩ :=
+    (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ (f₂ ≫ f₃) f₄ f₅).lift'
+      (y₀ ≫ (X.EιH n₀ n₁ n₂ hn₁ hn₂).app _) (by
+      dsimp
+      ext
+      . simp only [assoc, biprod.lift_fst, zero_comp]
+        exact hy₀₁
+      . simp only [assoc, biprod.lift_snd, zero_comp]
+        exact hy₀)
+  dsimp at y₁ hy₁
+  refine' ⟨A₀, 𝟙 _, inferInstance, y₁, _⟩
+  rw [id_comp, ← cancel_mono ((X.EιH n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₃ f₄ f₅)), ← hy₁, assoc]
+  congr 1
+  refine' (((X.EιH n₀ n₁ n₂ hn₁ hn₂).naturality
+    (Arrow₄.δ₁Toδ₀.app (Arrow₄.mk f₂ f₃ f₄ f₅))).trans _).symm
+  erw [Functor.map_id, comp_id]
+  rfl
 
 noncomputable def cokernelSequenceD : ShortComplex (Arrow₅ ι ⥤ C) where
   X₁ := Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂

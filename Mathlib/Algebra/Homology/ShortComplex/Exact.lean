@@ -662,6 +662,10 @@ lemma lift_f {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     hS.lift k hk ≫ S.f = k :=
   Fork.IsLimit.lift_ι _
 
+lemma lift' {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    ∃ (l : A ⟶ S.X₁), l ≫ S.f = k :=
+  ⟨hS.lift k hk, by simp⟩
+
 noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.X₃ ⟶ A := hS.gIsCokernel.desc (CokernelCofork.ofπ k hk)
 
@@ -669,6 +673,10 @@ noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g]
 lemma g_desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.g ≫ hS.desc k hk = k :=
   Cofork.IsColimit.π_desc (hS.gIsCokernel)
+
+lemma desc' {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    ∃ (l : S.X₃ ⟶ A), S.g ≫ l = k :=
+  ⟨hS.desc k hk, by simp⟩
 
 end Exact
 
