@@ -68,7 +68,7 @@ open scoped ENNReal
 
 namespace ProbabilityTheory
 
-namespace Kernel
+namespace kernel
 
 variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -95,7 +95,7 @@ noncomputable def compProdFun (κ : kernel α β) (η : kernel (α × β) γ) (a
 
 theorem compProdFun_empty (κ : kernel α β) (η : kernel (α × β) γ) (a : α) :
     compProdFun κ η a ∅ = 0 := by
-  simp only [comp_prod_fun, Set.mem_empty_iff_false, Set.setOf_false, measure_empty,
+  simp only [compProdFun, Set.mem_empty_iff_false, Set.setOf_false, measure_empty,
     MeasureTheory.lintegral_const, MulZeroClass.zero_mul]
 #align probability_theory.kernel.comp_prod_fun_empty ProbabilityTheory.kernel.compProdFun_empty
 
@@ -109,65 +109,66 @@ theorem compProdFun_iUnion (κ : kernel α β) (η : kernel (α × β) γ) [IsSF
     ext1 b
     congr with c
     simp only [Set.mem_iUnion, Set.iSup_eq_iUnion, Set.mem_setOf_eq]
-    rfl
-  rw [comp_prod_fun, h_Union]
+  rw [compProdFun, h_Union]
   have h_tsum :
     (fun b => η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i})) = fun b =>
       ∑' i, η (a, b) {c : γ | (b, c) ∈ f i} := by
     ext1 b
-    rw [measure_Union]
+    rw [measure_iUnion]
     · intro i j hij s hsi hsj c hcs
       have hbci : {(b, c)} ⊆ f i := by rw [Set.singleton_subset_iff]; exact hsi hcs
       have hbcj : {(b, c)} ⊆ f j := by rw [Set.singleton_subset_iff]; exact hsj hcs
       simpa only [Set.bot_eq_empty, Set.le_eq_subset, Set.singleton_subset_iff,
         Set.mem_empty_iff_false] using hf_disj hij hbci hbcj
-    · exact fun i => (@measurable_prod_mk_left β γ _ _ b) _ (hf_meas i)
+    · -- Porting note: behavior of `@` changed relative to lean 3, was
+      -- exact fun i => (@measurable_prod_mk_left β γ _ _ b) _ (hf_meas i)
+      exact fun i => (@measurable_prod_mk_left β γ _ _ b) (hf_meas i)
   rw [h_tsum, lintegral_tsum]
   · rfl
   · intro i
     have hm : MeasurableSet {p : (α × β) × γ | (p.1.2, p.2) ∈ f i} :=
       measurable_fst.snd.prod_mk measurable_snd (hf_meas i)
-    exact ((measurable_kernel_prod_mk_left hm).comp measurable_prod_mk_left).AEMeasurable
+    exact ((measurable_kernel_prod_mk_left hm).comp measurable_prod_mk_left).aemeasurable
 #align probability_theory.kernel.comp_prod_fun_Union ProbabilityTheory.kernel.compProdFun_iUnion
 
 theorem compProdFun_tsum_right (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel η] (a : α)
     (hs : MeasurableSet s) : compProdFun κ η a s = ∑' n, compProdFun κ (seq η n) a s := by
-  simp_rw [comp_prod_fun, (measure_sum_seq η _).symm]
+  simp_rw [compProdFun, (measure_sum_seq η _).symm]
   have :
-    ∫⁻ b, measure.sum (fun n => seq η n (a, b)) {c : γ | (b, c) ∈ s} ∂κ a =
+    ∫⁻ b, Measure.sum (fun n => seq η n (a, b)) {c : γ | (b, c) ∈ s} ∂κ a =
       ∫⁻ b, ∑' n, seq η n (a, b) {c : γ | (b, c) ∈ s} ∂κ a := by
     congr
     ext1 b
-    rw [measure.sum_apply]
+    rw [Measure.sum_apply]
     exact measurable_prod_mk_left hs
   rw [this, lintegral_tsum fun n : ℕ => _]
   exact
     ((measurable_kernel_prod_mk_left ((measurable_fst.snd.prod_mk measurable_snd) hs)).comp
-        measurable_prod_mk_left).AEMeasurable
+        measurable_prod_mk_left).aemeasurable
 #align probability_theory.kernel.comp_prod_fun_tsum_right ProbabilityTheory.kernel.compProdFun_tsum_right
 
 theorem compProdFun_tsum_left (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel κ] (a : α)
     (s : Set (β × γ)) : compProdFun κ η a s = ∑' n, compProdFun (seq κ n) η a s := by
-  simp_rw [comp_prod_fun, (measure_sum_seq κ _).symm, lintegral_sum_measure]
+  simp_rw [compProdFun, (measure_sum_seq κ _).symm, lintegral_sum_measure]
 #align probability_theory.kernel.comp_prod_fun_tsum_left ProbabilityTheory.kernel.compProdFun_tsum_left
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (n m) -/
 theorem compProdFun_eq_tsum (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
     compProdFun κ η a s = ∑' (n) (m), compProdFun (seq κ n) (seq η m) a s := by
-  simp_rw [comp_prod_fun_tsum_left κ η a s, comp_prod_fun_tsum_right _ η a hs]
+  simp_rw [compProdFun_tsum_left κ η a s, compProdFun_tsum_right _ η a hs]
 #align probability_theory.kernel.comp_prod_fun_eq_tsum ProbabilityTheory.kernel.compProdFun_eq_tsum
 
 /-- Auxiliary lemma for `measurable_comp_prod_fun`. -/
 theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ] (η : kernel (α × β) γ)
     [IsFiniteKernel η] (hs : MeasurableSet s) : Measurable fun a => compProdFun κ η a s := by
-  simp only [comp_prod_fun]
+  simp only [compProdFun]
   have h_meas : Measurable (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s}) := by
     have :
       (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         η p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := prod.mk.eta.symm
+      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
       rw [hp_eq_mk, Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
@@ -176,15 +177,15 @@ theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ]
 
 theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (hs : MeasurableSet s) : Measurable fun a => compProdFun κ η a s := by
-  simp_rw [comp_prod_fun_tsum_right κ η _ hs]
+  simp_rw [compProdFun_tsum_right κ η _ hs]
   refine' Measurable.ennreal_tsum fun n => _
-  simp only [comp_prod_fun]
+  simp only [compProdFun]
   have h_meas : Measurable (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) := by
     have :
       (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         seq η n p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := prod.mk.eta.symm
+      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
       rw [hp_eq_mk, Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
@@ -200,27 +201,27 @@ noncomputable def compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
     Measure.ofMeasurable (fun s hs => compProdFun κ η a s) (compProdFun_empty κ η a)
       (compProdFun_iUnion κ η a)
   property := by
-    refine' measure.measurable_of_measurable_coe _ fun s hs => _
+    refine' Measure.measurable_of_measurable_coe _ fun s hs => _
     have :
       (fun a =>
-          measure.of_measurable (fun s hs => comp_prod_fun κ η a s) (comp_prod_fun_empty κ η a)
-            (comp_prod_fun_Union κ η a) s) =
-        fun a => comp_prod_fun κ η a s :=
-      by ext1 a; rwa [measure.of_measurable_apply]
+          Measure.ofMeasurable (fun s hs => compProdFun κ η a s) (compProdFun_empty κ η a)
+            (compProdFun_iUnion κ η a) s) =
+        fun a => compProdFun κ η a s :=
+      by ext1 a; rwa [Measure.ofMeasurable_apply]
     rw [this]
-    exact measurable_comp_prod_fun κ η hs
+    exact measurable_compProdFun κ η hs
 #align probability_theory.kernel.comp_prod ProbabilityTheory.kernel.compProd
 
 scoped[ProbabilityTheory] infixl:100 " ⊗ₖ " => ProbabilityTheory.kernel.compProd
 
 theorem compProd_apply_eq_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) : (κ ⊗ₖ η) a s = compProdFun κ η a s := by
-  rw [comp_prod]
+  rw [compProd]
   change
-    measure.of_measurable (fun s hs => comp_prod_fun κ η a s) (comp_prod_fun_empty κ η a)
-        (comp_prod_fun_Union κ η a) s =
+    Measure.ofMeasurable (fun s hs => compProdFun κ η a s) (compProdFun_empty κ η a)
+        (compProdFun_iUnion κ η a) s =
       ∫⁻ b, η (a, b) {c | (b, c) ∈ s} ∂κ a
-  rw [measure.of_measurable_apply _ hs]
+  rw [Measure.ofMeasurable_apply _ hs]
   rfl
 #align probability_theory.kernel.comp_prod_apply_eq_comp_prod_fun ProbabilityTheory.kernel.compProd_apply_eq_compProdFun
 
@@ -251,13 +252,13 @@ variable {κ : kernel α β} [IsSFiniteKernel κ] {η : kernel (α × β) γ} [I
 
 theorem ae_kernel_lt_top (a : α) (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
     ∀ᵐ b ∂κ a, η (a, b) (Prod.mk b ⁻¹' s) < ∞ := by
-  let t := to_measurable ((κ ⊗ₖ η) a) s
+  let t := toMeasurable ((κ ⊗ₖ η) a) s
   have : ∀ b : β, η (a, b) (Prod.mk b ⁻¹' s) ≤ η (a, b) (Prod.mk b ⁻¹' t) := fun b =>
-    measure_mono (Set.preimage_mono (subset_to_measurable _ _))
-  have ht : MeasurableSet t := measurable_set_to_measurable _ _
-  have h2t : (κ ⊗ₖ η) a t ≠ ∞ := by rwa [measure_to_measurable]
+    measure_mono (Set.preimage_mono (subset_toMeasurable _ _))
+  have ht : MeasurableSet t := measurableSet_toMeasurable _ _
+  have h2t : (κ ⊗ₖ η) a t ≠ ∞ := by rwa [measure_toMeasurable]
   have ht_lt_top : ∀ᵐ b ∂κ a, η (a, b) (Prod.mk b ⁻¹' t) < ∞ := by
-    rw [kernel.comp_prod_apply _ _ _ ht] at h2t 
+    rw [kernel.compProd_apply _ _ _ ht] at h2t
     exact ae_lt_top (kernel.measurable_kernel_prod_mk_left' ht a) h2t
   filter_upwards [ht_lt_top] with b hb
   exact (this b).trans_lt hb
@@ -265,7 +266,7 @@ theorem ae_kernel_lt_top (a : α) (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
 
 theorem compProd_null (a : α) (hs : MeasurableSet s) :
     (κ ⊗ₖ η) a s = 0 ↔ (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
-  rw [kernel.comp_prod_apply _ _ _ hs, lintegral_eq_zero_iff]
+  rw [kernel.compProd_apply _ _ _ hs, lintegral_eq_zero_iff]
   · rfl
   · exact kernel.measurable_kernel_prod_mk_left' hs a
 #align probability_theory.kernel.comp_prod_null ProbabilityTheory.kernel.compProd_null
@@ -273,7 +274,7 @@ theorem compProd_null (a : α) (hs : MeasurableSet s) :
 theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
     (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
   obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
-  simp_rw [comp_prod_null a mt] at ht 
+  simp_rw [compProd_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
   exact
     ⟨Filter.EventuallyLE.trans_eq
@@ -293,11 +294,14 @@ section Restrict
 variable {κ : kernel α β} [IsSFiniteKernel κ] {η : kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
 
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    kernel.restrict κ hs ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (hs.Prod ht) := by
-  ext (a u hu) : 2
-  rw [comp_prod_apply _ _ _ hu, restrict_apply' _ _ _ hu,
-    comp_prod_apply _ _ _ (hu.inter (hs.prod ht))]
-  simp only [kernel.restrict_apply, measure.restrict_apply' ht, Set.mem_inter_iff,
+    kernel.restrict κ hs ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
+  -- Porting note: was
+  -- ext (a u hu) : 2
+  ext (a u) : 2
+  intro hu
+  rw [compProd_apply _ _ _ hu, restrict_apply' _ _ _ hu,
+    compProd_apply _ _ _ (hu.inter (hs.prod ht))]
+  simp only [kernel.restrict_apply, Measure.restrict_apply' ht, Set.mem_inter_iff,
     Set.prod_mk_mem_set_prod_eq]
   have :
     ∀ b,
@@ -315,13 +319,13 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 #align probability_theory.kernel.comp_prod_restrict ProbabilityTheory.kernel.compProd_restrict
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
-    kernel.restrict κ hs ⊗ₖ η = kernel.restrict (κ ⊗ₖ η) (hs.Prod MeasurableSet.univ) := by
-  rw [← comp_prod_restrict]; congr; exact kernel.restrict_univ.symm
+    kernel.restrict κ hs ⊗ₖ η = kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
+  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_left ProbabilityTheory.kernel.compProd_restrict_left
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
-    κ ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.Prod ht) := by
-  rw [← comp_prod_restrict]; congr; exact kernel.restrict_univ.symm
+    κ ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
+  rw [← compProd_restrict]; congr; exact kernel.restrict_univ.symm
 #align probability_theory.kernel.comp_prod_restrict_right ProbabilityTheory.kernel.compProd_restrict_right
 
 end Restrict
@@ -338,7 +342,7 @@ theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kern
   let F : ℕ → simple_func (β × γ) ℝ≥0∞ := simple_func.eapprox (Function.uncurry f)
   have h : ∀ a, (⨆ n, F n a) = Function.uncurry f a :=
     simple_func.supr_eapprox_apply (Function.uncurry f) hf
-  simp only [Prod.forall, Function.uncurry_apply_pair] at h 
+  simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h, Prod.mk.eta]
   have h_mono : Monotone F := fun i j hij b =>
     simple_func.monotone_eapprox (Function.uncurry f) hij _
@@ -890,4 +894,3 @@ end Prod
 end Kernel
 
 end ProbabilityTheory
-
