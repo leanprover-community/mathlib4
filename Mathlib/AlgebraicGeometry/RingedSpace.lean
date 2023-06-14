@@ -24,6 +24,9 @@ make use of the locality of stalks. See for instance <https://stacks.math.columb
 
 -/
 
+
+universe v
+
 open CategoryTheory
 
 open TopologicalSpace
@@ -46,7 +49,7 @@ namespace RingedSpace
 
 open SheafedSpace
 
-variable (X : RingedSpace)
+variable (X : RingedSpace.{v})
 
 -- Porting note : this was not necessary in mathlib3
 instance : CoeSort RingedSpace (Type _) where
