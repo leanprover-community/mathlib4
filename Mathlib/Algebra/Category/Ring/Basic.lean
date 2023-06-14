@@ -60,6 +60,7 @@ deriving instance LargeCategory for SemiRingCat
 
 --Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 
 instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
@@ -168,6 +169,7 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 
 -- Porting note: Another place where mathlib had derived a concrete category
 -- but this does not work here, so we add the instance manually.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for RingCat
 
 instance : ConcreteCategory RingCat := by
@@ -260,6 +262,7 @@ instance : BundledHom.ParentProjection @CommSemiring.toSemiring :=
   ⟨⟩
 
 -- Porting note: again, deriving fails for concrete category instances.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommSemiRingCat
 
 instance : ConcreteCategory CommSemiRingCat := by
@@ -369,6 +372,7 @@ instance : BundledHom.ParentProjection @CommRing.toRing :=
   ⟨⟩
 
 -- Porting note: deriving fails for concrete category.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommRingCat
 
 instance : ConcreteCategory CommRingCat := by
