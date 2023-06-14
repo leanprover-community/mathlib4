@@ -569,7 +569,7 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
 #align category_theory.limits.types.pullback_limit_cone CategoryTheory.Limits.Types.pullbackLimitCone
 
 /-- The pullback cone given by the instance `HasPullbacks (Type u)` is isomorphic to the
-explicit pullback cone given by `pullbacklimitCone`.
+explicit pullback cone given by `pullbackLimitCone`.
 -/
 noncomputable def pullbackConeIsoPullback : limit.cone (cospan f g) ≅ pullbackCone f g :=
   (limit.isLimit _).uniqueUpToIso (pullbackLimitCone f g).isLimit

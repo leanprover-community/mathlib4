@@ -845,7 +845,7 @@ attribute [to_additive existing zmultiplesHom] zpowersHom
 variable {M G A}
 
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
-    powersHom M x n = x ^ (Multiplicative.toAdd n):=
+    powersHom M x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align powers_hom_apply powersHom_apply
 

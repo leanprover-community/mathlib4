@@ -100,7 +100,7 @@ protected theorem Multiset.forall_coe (p : m → Prop) :
 
 @[simp]
 protected theorem Multiset.exists_coe (p : m → Prop) :
-    (∃ x : m, p x) ↔ ∃ (x : α)(i : Fin (m.count x)), p ⟨x, i⟩ :=
+    (∃ x : m, p x) ↔ ∃ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.exists
 #align multiset.exists_coe Multiset.exists_coe
 

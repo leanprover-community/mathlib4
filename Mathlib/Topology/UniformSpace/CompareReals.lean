@@ -70,16 +70,16 @@ theorem Rat.uniformSpace_eq :
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
 def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
-@AbstractCompletion.mk
-  (space := ℝ)
-  (coe := ((↑) : ℚ → ℝ))
-  (uniformStruct := by infer_instance)
-  (complete := by infer_instance)
-  (separation := by infer_instance)
-  (uniformInducing := by
-    rw [Rat.uniformSpace_eq]
-    exact Rat.uniformEmbedding_coe_real.toUniformInducing)
-  (dense := Rat.denseEmbedding_coe_real.dense)
+  @AbstractCompletion.mk
+    (space := ℝ)
+    (coe := ((↑) : ℚ → ℝ))
+    (uniformStruct := by infer_instance)
+    (complete := by infer_instance)
+    (separation := by infer_instance)
+    (uniformInducing := by
+      rw [Rat.uniformSpace_eq]
+      exact Rat.uniformEmbedding_coe_real.toUniformInducing)
+    (dense := Rat.denseEmbedding_coe_real.dense)
 #align rational_cau_seq_pkg rationalCauSeqPkg
 
 namespace CompareReals

@@ -35,7 +35,7 @@ variable (R : Type _)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
-/-- The requirement that the ring homomorphism is its own inverse -/
+  /-- The requirement that the ring homomorphism is its own inverse -/
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
 
