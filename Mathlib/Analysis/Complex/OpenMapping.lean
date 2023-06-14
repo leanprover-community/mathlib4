@@ -25,13 +25,13 @@ The proof of the local version on `ℂ` goes through two main steps: first, assu
 is not constant around `z₀`, use the isolated zero principle to show that `‖f z‖` is bounded below
 on a small `sphere z₀ r` around `z₀`, and then use the maximum principle applied to the auxiliary
 function `(λ z, ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`. That
-second step is implemented in `diff_cont_on_cl.ball_subset_image_closed_ball`.
+second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 
 ## Main results
 
-* `analytic_at.eventually_constant_or_nhds_le_map_nhds` is the local version of the open mapping
+* `AnalyticAt.eventually_constant_or_nhds_le_map_nhds` is the local version of the open mapping
   theorem around a point;
-* `analytic_on.is_constant_or_is_open` is the open mapping theorem on a connected open set.
+* `AnalyticOn.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
 
 
@@ -48,9 +48,9 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
     (hf : ∀ z ∈ sphere z₀ r, ε ≤ ‖f z - f z₀‖) (hz₀ : ∃ᶠ z in 𝓝 z₀, f z ≠ f z₀) :
     ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r := by
   /- This is a direct application of the maximum principle. Pick `v` close to `f z₀`, and look at
-    the function `λ z, ‖f z - v‖`: it is bounded below on the circle, and takes a small value at `z₀`
-    so it is not constant on the disk, which implies that its infimum is equal to `0` and hence that
-    `v` is in the range of `f`. -/
+    the function `λ z, ‖f z - v‖`: it is bounded below on the circle, and takes a small value
+    at `z₀` so it is not constant on the disk, which implies that its infimum is equal to `0` and
+    hence that `v` is in the range of `f`. -/
   rintro v hv
   have h1 : DiffContOnCl ℂ (fun z => f z - v) (ball z₀ r) := h.sub_const v
   have h2 : ContinuousOn (fun z => ‖f z - v‖) (closedBall z₀ r) :=
@@ -75,13 +75,13 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
 
 /-- A function `f : ℂ → ℂ` which is analytic at a point `z₀` is either constant in a neighborhood
 of `z₀`, or behaves locally like an open function (in the sense that the image of every neighborhood
-of `z₀` is a neighborhood of `f z₀`, as in `is_open_map_iff_nhds_le`). For a function `f : E → ℂ`
-the same result holds, see `analytic_at.eventually_constant_or_nhds_le_map_nhds`. -/
+of `z₀` is a neighborhood of `f z₀`, as in `isOpenMap_iff_nhds_le`). For a function `f : E → ℂ`
+the same result holds, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds`. -/
 theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt ℂ f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = f z₀) ∨ 𝓝 (f z₀) ≤ map f (𝓝 z₀) := by
   /- The function `f` is analytic in a neighborhood of `z₀`; by the isolated zeros principle, if `f`
     is not constant in a neighborhood of `z₀`, then it is nonzero, and therefore bounded below, on
-    every small enough circle around `z₀` and then `diff_cont_on_cl.ball_subset_image_closed_ball`
+    every small enough circle around `z₀` and then `DiffContOnCl.ball_subset_image_closedBall`
     provides an explicit ball centered at `f z₀` contained in the range of `f`. -/
   refine or_iff_not_imp_left.mpr fun h => ?_
   refine (nhds_basis_ball.le_basis_iff (nhds_basis_closedBall.map f)).mpr fun R hR => ?_
@@ -112,14 +112,14 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
 neighborhood of `z₀` to a neighborhood of `z₀`. For the particular case of a holomorphic function on
-`ℂ`, see `analytic_at.eventually_constant_or_nhds_le_map_nhds_aux`. -/
+`ℂ`, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux`. -/
 theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : AnalyticAt ℂ g z₀) :
     (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨ 𝓝 (g z₀) ≤ map g (𝓝 z₀) := by
   /- The idea of the proof is to use the one-dimensional version applied to the restriction of `g`
     to lines going through `z₀` (indexed by `sphere (0 : E) 1`). If the restriction is eventually
-    constant along each of these lines, then the identity theorem implies that `g` is constant on any
-    ball centered at `z₀` on which it is analytic, and in particular `g` is eventually constant. If on
-    the other hand there is one line along which `g` is not eventually constant, then the
+    constant along each of these lines, then the identity theorem implies that `g` is constant on
+    any ball centered at `z₀` on which it is analytic, and in particular `g` is eventually constant.
+    If on the other hand there is one line along which `g` is not eventually constant, then the
     one-dimensional version of the open mapping theorem can be used to conclude. -/
   let ray : E → ℂ → E := fun z t => z₀ + t • z
   let gray : E → ℂ → ℂ := fun z => g ∘ ray z
@@ -160,7 +160,6 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     simpa using h10.tendsto 0
 #align analytic_at.eventually_constant_or_nhds_le_map_nhds AnalyticAt.eventually_constant_or_nhds_le_map_nhds
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (s «expr ⊆ » U) -/
 /-- The *open mapping theorem* for holomorphic functions, global version: if a function `g : E → ℂ`
 is analytic on a connected set `U`, then either it is constant on `U`, or it is open on `U` (in the
 sense that it maps any open set contained in `U` to an open set in `ℂ`). -/
