@@ -165,7 +165,7 @@ open UniformSpace
 open CpltSepUniformSpace
 
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
-noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
+@[simps obj map] noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := CpltSepUniformSpace.of (Completion X)
   map f := ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
   map_id _ := Subtype.eq Completion.map_id
@@ -192,6 +192,9 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   property := Completion.uniformContinuous_extension
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
+instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
+  show UniformSpace X from inferInstance
+
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
@@ -207,6 +210,8 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   exact congr_fun (Completion.extension_comp_coe f.property) x
 #align UniformSpace.extension_comp_coe UniformSpaceCat.extension_comp_coe
 
+unif_hint test (Y : CpltSepUniformSpace) where ⊢
+  (forget UniformSpaceCat).obj ((forget₂ CpltSepUniformSpace UniformSpaceCat).obj Y) ≟ Y
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv
@@ -218,22 +223,25 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.separatedSpace _)
               ‹_› _ }
-      homEquiv_naturality_left_symm := fun f g => by
+      homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp
-        erw [coe_comp, ← Completion.extension_map]
-        rfl; exact g.property; exact f.property }
+        erw [coe_comp]
+        have := (Completion.extension_map (γ := Y) (f := g) g.2 f.2)
+        simp only [forget_map_eq_coe] at this ⊢
+        erw [this]
+        rfl }
 #align UniformSpace.adj UniformSpaceCat.adj
 
 noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
   ⟨completionFunctor, adj⟩
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
+  preimage {X Y} f := f
 
 open CategoryTheory.Limits
 
 -- TODO Once someone defines `has_limits UniformSpace`, turn this into an instance.
 example [HasLimits.{u} UniformSpaceCat.{u}] : HasLimits.{u} CpltSepUniformSpace.{u} :=
-  has_limits_of_reflective <| forget₂ CpltSepUniformSpace UniformSpaceCat.{u}
+  hasLimits_of_reflective <| forget₂ CpltSepUniformSpace UniformSpaceCat.{u}
 
 end UniformSpaceCat
-
