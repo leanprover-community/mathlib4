@@ -56,7 +56,7 @@ elab_rules : tactic
       evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $(← delab ty)) := rfl))
+      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $(← ppTerm ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have%$tk $h : ($val : $(← delab ty)) = $a := rfl))
+      evalTactic (← `(tactic| have%$tk $h : ($val : $(← ppTerm ty)) = $a := rfl))
     | _, _ => pure ()
