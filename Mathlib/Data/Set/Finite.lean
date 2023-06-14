@@ -236,13 +236,12 @@ alias Finite.toFinset_ssubset_toFinset ↔ _ toFinset_strictMono
 -- Porting note: attribute [protected] doesn't work
 -- attribute [protected] toFinset_mono toFinset_strictMono
 
-@[simp]
+-- porting note: `simp` can simplify LHS but then it simplifies something
+-- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
+@[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
     (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
-  ext
-  -- porting note: next line wasn't needed in Lean 3
-  letI := h.fintype
-  simp
+  simp only [toFinite_toFinset, Set.toFinset_setOf]
 #align set.finite.to_finset_set_of Set.Finite.toFinset_setOf
 
 @[simp]
@@ -281,10 +280,9 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
-@[simp]
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
-  ext
-  simp
+-- porting note: was `@[simp]`, now `simp` can prove it
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
+  toFinite_toFinset _
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
@@ -309,7 +307,7 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   simp
 #align set.finite.to_finset_image Set.Finite.toFinset_image
 
-@[simp]
+-- porting note: now `simp` can prove it but it needs an instance from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -321,8 +319,7 @@ end Finite
 /-! ### Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
- -/
-
+-/
 
 section FintypeInstances
 
@@ -549,10 +546,9 @@ theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 #align finset.finite_to_set Finset.finite_toSet
 
-@[simp]
+-- porting note: was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
-  ext
-  rw [Set.Finite.mem_toFinset, mem_coe]
+  rw [toFinite_toFinset, toFinset_coe]
 #align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
 end Finset
@@ -1064,10 +1060,10 @@ theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (
   ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
 #align set.univ_finite_iff_nonempty_fintype Set.univ_finite_iff_nonempty_fintype
 
-@[simp]
+-- porting note: moved `@[simp]` to `Set.toFinset_singleton` because `simp` can now simplify LHS
 theorem Finite.toFinset_singleton {a : α} (ha : ({a} : Set α).Finite := finite_singleton _) :
     ha.toFinset = {a} :=
-  Finset.ext <| by simp
+  Set.toFinite_toFinset _
 #align set.finite.to_finset_singleton Set.Finite.toFinset_singleton
 
 @[simp]
