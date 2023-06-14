@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Ring.Basic
-import Mathbin.Algebra.Ring.BooleanRing
-import Mathbin.Order.Category.BoolAlg
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Ring.BooleanRing
+import Mathlib.Order.Category.BoolAlg
 
 /-!
 # The category of Boolean rings
@@ -65,8 +65,7 @@ instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
 
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β
-    where
+def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
   Hom := e
   inv := e.symm
   hom_inv_id' := by ext; exact e.symm_apply_apply _
