@@ -193,12 +193,16 @@ theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
   rfl
 #align Rep.linearization_μ_hom Rep.linearization_μ_hom
 
+-- Porting note: broken proof was
+/-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
+  apply IsIso.inv_eq_of_hom_inv_id _
+  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
-  simp_rw [← Action.forget_map, functor.map_inv, Action.forget_map, linearization_μ_hom]
-  apply is_iso.inv_eq_of_hom_inv_id _
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _
+  rw [← Action.forget_map, Functor.map_inv]
+  apply IsIso.inv_eq_of_hom_inv_id
+  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
 #align Rep.linearization_μ_inv_hom Rep.linearization_μ_inv_hom
 
 @[simp]
@@ -222,8 +226,6 @@ noncomputable def linearizationTrivialIso (X : Type u) :
   Action.mkIso (Iso.refl _) fun _ => Finsupp.lhom_ext' (fun _ => LinearMap.ext
     (fun _ => linearization_single ..))
 #align Rep.linearization_trivial_iso Rep.linearizationTrivialIso
-
-variable (k G)
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
@@ -250,6 +252,11 @@ noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
 
 variable {k G}
 
+/- Porting note: broken proof was
+   refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
+      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
+      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
@@ -257,9 +264,10 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
     refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
-    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
-      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
-      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul]
+    simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
+    erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
+    simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
+    rfl
 #align Rep.left_regular_hom Rep.leftRegularHom
 
 theorem leftRegularHom_apply {A : Rep k G} (x : A) :
@@ -269,6 +277,10 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
   · rw [zero_smul]
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
+/- Porting note: in the proof of `left_inv`, the lines after `have : ... := ...` used to just be
+    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
+      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
+      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
@@ -280,12 +292,15 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
   left_inv f := by
     refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
     have :
-      f.hom ((of_mul_action k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
+      f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
       LinearMap.ext_iff.1 (f.comm x) (Finsupp.single 1 1)
-    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
-      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
-      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one]
+    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
+    erw [Finsupp.lift_apply]
+    rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
+    simp only [one_smul, smul_eq_mul, mul_one]
+    · rw [zero_smul]
   right_inv x := leftRegularHom_apply x
 #align Rep.left_regular_hom_equiv Rep.leftRegularHomEquiv
 
@@ -301,8 +316,7 @@ end Linearization
 end
 
 section MonoidalClosed
-
-open Action
+open MonoidalCategory Action
 
 variable [Group G] (A B C : Rep k G)
 
@@ -384,8 +398,6 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
 theorem ihom_coev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.coev A).app B) = (TensorProduct.mk _ _ _).flip := by ext <;> rfl
 #align Rep.ihom_coev_app_hom Rep.ihom_coev_app_hom
-
-variable (A B C)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
@@ -500,15 +512,15 @@ def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
 /-- Functorially convert a representation of `G` into a module over `monoid_algebra k G`. -/
 def toModuleMonoidAlgebra : Rep k G ⥤ ModuleCat.{u} (MonoidAlgebra k G) where
   obj V := ModuleCat.of _ V.ρ.asModule
-  map V W f := toModuleMonoidAlgebraMap f
+  map f := toModuleMonoidAlgebraMap f
 #align Rep.to_Module_monoid_algebra Rep.toModuleMonoidAlgebra
 
 /-- Functorially convert a module over `monoid_algebra k G` into a representation of `G`. -/
 def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
-  obj M := Rep.of (Representation.ofModule k G M)
-  map M N f :=
+  obj M := Rep.of (Representation.ofModule M)
+  map f :=
     { hom := { f with map_smul' := fun r x => f.map_smul (algebraMap k _ r) x }
-      comm' := fun g => by ext; apply f.map_smul }
+      comm := fun g => by ext; apply f.map_smul }
 #align Rep.of_Module_monoid_algebra Rep.ofModuleMonoidAlgebra
 
 theorem ofModuleMonoidAlgebra_obj_coe (M : ModuleCat.{u} (MonoidAlgebra k G)) :
@@ -517,62 +529,71 @@ theorem ofModuleMonoidAlgebra_obj_coe (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 #align Rep.of_Module_monoid_algebra_obj_coe Rep.ofModuleMonoidAlgebra_obj_coe
 
 theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
-    (ofModuleMonoidAlgebra.obj M).ρ = Representation.ofModule k G M :=
+    (ofModuleMonoidAlgebra.obj M).ρ = Representation.ofModule M :=
   rfl
 #align Rep.of_Module_monoid_algebra_obj_ρ Rep.ofModuleMonoidAlgebra_obj_ρ
 
 /-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
-  dsimp [of_Module_monoid_algebra, to_Module_monoid_algebra]
-  refine' (Representation.ofModule k G ↥M).asModuleEquiv.trans (RestrictScalars.addEquiv _ _ _)
+  dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  refine' (Representation.ofModule M).asModuleEquiv.trans
+    (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv
 
 /-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
-  dsimp [of_Module_monoid_algebra, to_Module_monoid_algebra]
-  refine' V.ρ.as_module_equiv.symm.trans _
+  dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  refine' V.ρ.asModuleEquiv.symm.trans _
   exact (RestrictScalars.addEquiv _ _ _).symm
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
-/-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
+/- Porting note: in the proof of `map_smul'`, the lines after `dsimp` used to just be one `simp`. -/
+/-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
   LinearEquiv.toModuleIso'
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
-        dsimp [counit_iso_add_equiv]
-        simp }
+        dsimp [counitIsoAddEquiv]
+        rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
+        erw [Representation.ofModule_asAlgebraHom_apply_apply]
+        exact AddEquiv.symm_apply_apply _ _}
 #align Rep.counit_iso Rep.counitIso
 
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
-    unitIsoAddEquiv ((V.ρ g).toFun x) =
-      ((ofModuleMonoidAlgebra.obj (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) :=
-  by
-  dsimp [unit_iso_add_equiv, of_Module_monoid_algebra, to_Module_monoid_algebra]
-  simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
-    Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act]
+    unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
+      (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) := by
+  dsimp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+  erw [Representation.asModuleEquiv_symm_map_rho]
+  rfl
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
-/-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
+/- Porting note: in the proof of `map_smul'`, the lines after `dsimp [unitIsoAddEquiv]` were
+originally just
+simp only [Representation.asModuleEquiv_symm_map_smul,
+  RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
+/-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
     (LinearEquiv.toModuleIso'
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
-          dsimp [unit_iso_add_equiv]
-          simp only [Representation.asModuleEquiv_symm_map_smul,
-            RestrictScalars.addEquiv_symm_map_algebraMap_smul] })
+          dsimp [unitIsoAddEquiv]
+          rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
+            Representation.asModuleEquiv_symm_map_smul,
+            RestrictScalars.addEquiv_symm_map_algebraMap_smul]
+          rfl })
     fun g => by ext; apply unit_iso_comm
 #align Rep.unit_iso Rep.unitIso
 
 /-- The categorical equivalence `Rep k G ≌ Module (monoid_algebra k G)`. -/
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
-  Functor := toModuleMonoidAlgebra
+  functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
-  unitIso := NatIso.ofComponents (fun V => unitIso V) (by tidy)
-  counitIso := NatIso.ofComponents (fun M => counitIso M) (by tidy)
+  unitIso := NatIso.ofComponents (fun V => unitIso V) (by aesop_cat)
+  counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
 #align Rep.equivalence_Module_monoid_algebra Rep.equivalenceModuleMonoidAlgebra
 
 -- TODO Verify that the equivalence with `Module (monoid_algebra k G)` is a monoidal functor.
-end Rep
+end
