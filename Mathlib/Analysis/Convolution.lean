@@ -94,17 +94,11 @@ The following notations are localized in the locale `convolution`:
 * Use `@[to_additive]` everywhere
 -/
 
-
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ContinuousLinearMap Metric
 
 open scoped Pointwise Topology NNReal Filter
-
-
-example  (G: Type) [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G] (μ : MeasureTheory.Measure G) [SigmaFinite μ] (K : Set G) (hK : IsCompact K) : MeasurableSet K := hK.measurableSet
-
-
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
@@ -1217,8 +1211,6 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
 -- · exact K'.indicator fun t => ‖L'‖ * ‖f t‖ * ⨆ x, ‖fderiv 𝕜 g x‖
 #align has_compact_support.has_fderiv_at_convolution_right HasCompactSupport.hasFDerivAt_convolution_right
 
-
-
 theorem HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
     (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 1 f) (hg : LocallyIntegrable g μ) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((fderiv 𝕜 f ⋆[L.precompL G, μ] g) x₀) x₀ := by
@@ -1231,7 +1223,6 @@ end IsROrC
 section Real
 
 /-! The one-variable case -/
-
 
 variable [IsROrC 𝕜]
 
