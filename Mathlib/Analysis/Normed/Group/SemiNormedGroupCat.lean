@@ -20,6 +20,7 @@ We define `SemiNormedGroupCat`, the category of seminormed groups and normed gro
 them, as well as `SemiNormedGroupCat₁`, the subcategory of norm non-increasing morphisms.
 -/
 
+set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -30,8 +31,6 @@ open CategoryTheory
 /-- The category of seminormed abelian groups and bounded group homomorphisms. -/
 def SemiNormedGroupCat : Type (u + 1) :=
   Bundled SeminormedAddCommGroup
-
-set_option linter.uppercaseLean3 false --in [linter.uppercaseLean3]
 #align SemiNormedGroup SemiNormedGroupCat
 
 namespace SemiNormedGroupCat
@@ -40,7 +39,6 @@ instance bundledHom : BundledHom @NormedAddGroupHom where
   toFun := @NormedAddGroupHom.toFun
   id := @NormedAddGroupHom.id
   comp := @NormedAddGroupHom.comp
-
 #align SemiNormedGroup.bundled_hom SemiNormedGroupCat.bundledHom
 
 deriving instance LargeCategory for SemiNormedGroupCat
@@ -140,11 +138,8 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 
   apply AddMonoidHomClass.isometry_of_norm i.hom
   intro v
   apply le_antisymm (h1 v)
-  have h3 : v = i.inv (i.hom v) := by
-    change v = (forget _).map i.inv ((forget _).map i.hom v)
-    simp only [FunctorToTypes.map_inv_map_hom_apply]
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← h3]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
 #align SemiNormedGroup.iso_isometry_of_norm_noninc SemiNormedGroupCat.iso_isometry_of_normNoninc
 
@@ -226,16 +221,12 @@ def mkIso {M N : SemiNormedGroupCat} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : 
     SemiNormedGroupCat₁.of M ≅ SemiNormedGroupCat₁.of N where
   hom := mkHom f.hom i
   inv := mkHom f.inv i'
-  hom_inv_id := by
-    apply Subtype.eq
-    exact f.hom_inv_id
-  inv_hom_id := by
-    apply Subtype.eq
-    exact f.inv_hom_id
+  hom_inv_id := by apply Subtype.eq; exact f.hom_inv_id
+  inv_hom_id := by apply Subtype.eq; exact f.inv_hom_id
 #align SemiNormedGroup₁.mk_iso SemiNormedGroupCat₁.mkIso
 
-instance : HasForget₂ SemiNormedGroupCat₁ SemiNormedGroupCat
-    where forget₂ :=
+instance : HasForget₂ SemiNormedGroupCat₁ SemiNormedGroupCat where
+  forget₂ :=
     { obj := fun X => X
       map := fun f => f.1 }
 
@@ -255,7 +246,7 @@ theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroupCat₁.coe_comp
 
-/--Porting Note: Added to make `coe_comp'` work -- might cause double coercions-/
+-- Porting note: Added to make `coe_comp'` work -- might cause double coercions
 instance coeToNormedAddGroupHom {M N : SemiNormedGroupCat₁} :
     Coe (M ⟶ N) (NormedAddGroupHom M N) :=
   ⟨fun f => f.1⟩
@@ -276,30 +267,28 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup₁.of_unique SemiNormedGroupCat₁.ofUnique
 
-instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
-  Zero X Y := { zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩ }
-  comp_zero {X Y} f Z := by
-    ext
-    rfl
-  zero_comp X {Y Z} f := by
-    ext x
-    --porting note: used to be `simp [coe_fn_coe_base']` in mathlib3, added the below instead
-    simp only [coe_comp', NormedAddGroupHom.comp_apply]
-    change f ((0: X → Y) x) = (0: X → Z) x
-    simp only [Pi.zero_apply, map_zero]
+-- Porting note: extracted from `Limits.HasZeroMorphisms` instance below.
+instance (X Y : SemiNormedGroupCat₁) : Zero (X ⟶ Y) where
+  zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup₁.zero_apply SemiNormedGroupCat₁.zero_apply
 
+instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
+  comp_zero {X Y} f Z := by ext; rfl
+  zero_comp X {Y Z} f := by
+    ext x
+    -- Porting note: used to be `simp [coe_fn_coe_base']` in mathlib3, added the below instead
+    rw [comp_apply, zero_apply]
+    change f ((0 : X → Y) x) = 0
+    rw [Pi.zero_apply, map_zero]
+
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext x
-    have : x = 0 := Subsingleton.elim _ _
-    simp only [this, map_zero]
-  · ext
-    apply Subsingleton.elim
+  · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+  · ext; apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroupCat₁.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
@@ -307,15 +296,14 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
-  --porting note: was `change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)`
+  -- Porting note: was `change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)`
   dsimp only [FunLike.coe]
   dsimp [NormedAddGroupHom.toFun]
   refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    ‖v‖ = ‖ (i.hom ≫ i.inv) v‖ := by rw [Iso.hom_inv_id]; rfl
-    _ = ‖i.inv (i.hom v)‖ := rfl
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 #align SemiNormedGroup₁.iso_isometry SemiNormedGroupCat₁.iso_isometry
 
