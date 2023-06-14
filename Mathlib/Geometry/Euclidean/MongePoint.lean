@@ -742,7 +742,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
     (hps : Set.range p ⊆ s) (hpi : Function.Injective p) :
     affineSpan ℝ (Set.range p) = affineSpan ℝ s := by
   have ha := ho.affineIndependent hps hpi
-  rcases ho with ⟨t, hto, hts⟩
+  rcases ho with ⟨t, _, hts⟩
   have hs : affineSpan ℝ s = affineSpan ℝ (Set.range t.points) := by
     rw [hts, affineSpan_insert_eq_affineSpan ℝ t.orthocenter_mem_affineSpan]
   refine'
@@ -751,8 +751,8 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
   haveI := hfd
   refine' eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) _
-  rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vector_span (Fintype.card_fin _),
-    t.independent.finrank_vector_span (Fintype.card_fin _)]
+  rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
+    t.Independent.finrank_vectorSpan (Fintype.card_fin _)]
 #align euclidean_geometry.affine_span_of_orthocentric_system EuclideanGeometry.affineSpan_of_orthocentricSystem
 
 /-- All triangles in an orthocentric system have the same circumradius. -/
