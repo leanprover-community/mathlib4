@@ -77,7 +77,7 @@ instance hasForgetToDistLat : HasForget₂ BddDistLatCat DistLatCat where
   forget₂ :=
     -- Porting note: was `⟨X⟩`
     -- see https://github.com/leanprover-community/mathlib4/issues/4998
-    { obj := fun X => { α := X}
+    { obj := fun X => { α := X }
       map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
 #align BddDistLat.has_forget_to_DistLat BddDistLatCat.hasForgetToDistLat
 

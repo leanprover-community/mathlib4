@@ -71,6 +71,7 @@ instance : LargeCategory.{u} SemilatSupCat where
   assoc _ _ _ := SupBotHom.comp_assoc _ _ _
 
 -- Porting note: added
+-- see https://github.com/leanprover-community/mathlib4/issues/5017
 instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
 
