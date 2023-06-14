@@ -510,8 +510,7 @@ Dual to `rightAdjointOfEquiv`. -/
 def leftAdjointOfEquiv : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
-  map_comp := fun f f' =>
-    by
+  map_comp := fun f f' => by
     rw [Equiv.symm_apply_eq, he, Equiv.apply_symm_apply]
     conv =>
       rhs
@@ -591,8 +590,8 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
     where
   functor := F
   inverse := G
-  unitIso := NatIso.ofComponents (fun X => asIso (adj.unit.app X)) (by simp)
-  counitIso := NatIso.ofComponents (fun Y => asIso (adj.counit.app Y)) (by simp)
+  unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
+  counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 #align category_theory.adjunction.to_equivalence CategoryTheory.Adjunction.toEquivalence
 
 /--

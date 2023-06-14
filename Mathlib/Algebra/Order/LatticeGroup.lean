@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 
 ! This file was ported from Lean 3 source module algebra.order.lattice_group
-! leanprover-community/mathlib commit 474656fdf40ae1741dfffcdd7c685a0f198da61a
+! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Tactic.NthRewrite
+import Mathlib.Order.Closure
+
 /-!
 # Lattice ordered groups
 
@@ -66,16 +67,6 @@ lattice, ordered, group
 -- Needed for squares
 universe u
 
--- A linearly ordered additive commutative group is a lattice ordered commutative group
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_covariantClass (α : Type u)
-    [LinearOrderedCommGroup α] :
-    CovariantClass α α (· * ·)
-      (· ≤ ·) where elim a _ _ bc := OrderedCommGroup.mul_le_mul_left _ _ bc a
-#align linear_ordered_comm_group.to_covariant_class LinearOrderedCommGroup.to_covariantClass
-#align linear_ordered_add_comm_group.to_covariant_class LinearOrderedAddCommGroup.to_covariantClass
-
 variable {α : Type u} [Lattice α] [CommGroup α]
 
 -- Special case of Bourbaki A.VI.9 (1)
@@ -129,7 +120,6 @@ theorem inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a
       rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
     _ = (a ⊓ b) * (a * b * (a ⊓ b)⁻¹) := by rw [inv_inf_eq_sup_inv, sup_comm]
     _ = a * b := by rw [mul_comm, inv_mul_cancel_right]
-
 #align inf_mul_sup inf_mul_sup
 #align inf_add_sup inf_add_sup
 
@@ -319,7 +309,6 @@ theorem sup_eq_mul_pos_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
     a ⊔ b = b * (a / b) ⊔ b * 1 :=
       by rw [mul_one b, div_eq_mul_inv, mul_comm a, mul_inv_cancel_left]
     _ = b * (a / b ⊔ 1) := by rw [← mul_sup (a / b) 1 b]
-
 #align lattice_ordered_comm_group.sup_eq_mul_pos_div LatticeOrderedCommGroup.sup_eq_mul_pos_div
 #align lattice_ordered_comm_group.sup_eq_add_pos_sub LatticeOrderedCommGroup.sup_eq_add_pos_sub
 
@@ -332,14 +321,12 @@ theorem inf_eq_div_pos_div [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
       by rw [mul_one a, div_eq_mul_inv, mul_comm b, mul_inv_cancel_left]
     _ = a * (1 ⊓ b / a) := by rw [← mul_inf 1 (b / a) a]
     _ = a * (b / a ⊓ 1) := by rw [inf_comm]
-    _ = a * ((a / b)⁻¹ ⊓ 1) :=
-      by
-        rw [div_eq_mul_inv]
-        nth_rw 1 [← inv_inv b]
-        rw [← mul_inv, mul_comm b⁻¹, ← div_eq_mul_inv]
+    _ = a * ((a / b)⁻¹ ⊓ 1) := by
+      rw [div_eq_mul_inv]
+      nth_rw 1 [← inv_inv b]
+      rw [← mul_inv, mul_comm b⁻¹, ← div_eq_mul_inv]
     _ = a * ((a / b)⁻¹ ⊓ 1⁻¹) := by rw [inv_one]
     _ = a / (a / b ⊔ 1) := by rw [← inv_sup_eq_inv_inf_inv, ← div_eq_mul_inv]
-
 #align lattice_ordered_comm_group.inf_eq_div_pos_div LatticeOrderedCommGroup.inf_eq_div_pos_div
 #align lattice_ordered_comm_group.inf_eq_sub_pos_sub LatticeOrderedCommGroup.inf_eq_sub_pos_sub
 
@@ -470,7 +457,6 @@ theorem abs_div_sup_mul_abs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
     _ = (b ⊔ a) / (b ⊓ a) :=
       by rw [div_eq_mul_inv, mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← div_eq_mul_inv]
     _ = |a / b| := by rw [sup_div_inf_eq_abs_div]
-
 #align lattice_ordered_comm_group.abs_div_sup_mul_abs_div_inf LatticeOrderedCommGroup.abs_div_sup_mul_abs_div_inf
 #align lattice_ordered_comm_group.abs_sub_sup_add_abs_sub_inf LatticeOrderedCommGroup.abs_sub_sup_add_abs_sub_inf
 
@@ -610,3 +596,30 @@ theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
 #align lattice_ordered_comm_group.abs_abs_sub_abs_le LatticeOrderedCommGroup.abs_abs_sub_abs_le
 
 end LatticeOrderedCommGroup
+
+namespace LatticeOrderedAddCommGroup
+
+variable {β : Type u} [Lattice β] [AddCommGroup β]
+
+section solid
+
+/-- A subset `s ⊆ β`, with `β` an `AddCommGroup` with a `Lattice` structure, is solid if for
+all `x ∈ s` and all `y ∈ β` such that `|y| ≤ |x|`, then `y ∈ s`. -/
+def IsSolid (s : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
+#align lattice_ordered_add_comm_group.is_solid LatticeOrderedAddCommGroup.IsSolid
+
+/-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/
+def solidClosure (s : Set β) : Set β := { y | ∃ x ∈ s, |y| ≤ |x| }
+#align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
+
+theorem isSolid_solidClosure (s : Set β) : IsSolid (solidClosure s) :=
+  fun _ ⟨y, hy, hxy⟩ _ hzx => ⟨y, hy, hzx.trans hxy⟩
+#align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
+
+theorem solidClosure_min (s t : Set β) (h1 : s ⊆ t) (h2 : IsSolid t) : solidClosure s ⊆ t :=
+  fun _ ⟨_, hy, hxy⟩ => h2 (h1 hy) hxy
+#align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
+
+end solid
+
+end LatticeOrderedAddCommGroup

@@ -133,7 +133,7 @@ theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :
   exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
 
-theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_h : a ≠ 0), 𝓟 (Iio a) :=
+theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 #align nnreal.nhds_zero NNReal.nhds_zero
 
@@ -225,10 +225,10 @@ theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
-theorem infᵢ_real_pos_eq_infᵢ_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
-    (⨅ (n : ℝ) (_h : 0 < n), f n) = ⨅ (n : ℝ≥0) (_h : 0 < n), f n :=
-  le_antisymm (infᵢ_mono' fun r => ⟨r, le_rfl⟩) (infᵢ₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
-#align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.infᵢ_real_pos_eq_infᵢ_nnreal_pos
+theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
+    (⨅ (n : ℝ) (_ : 0 < n), f n) = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
+  le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
+#align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.iInf_real_pos_eq_iInf_nnreal_pos
 
 end coe
 

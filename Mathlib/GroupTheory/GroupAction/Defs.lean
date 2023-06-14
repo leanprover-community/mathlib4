@@ -283,8 +283,9 @@ class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop wh
 
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
-    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
-  MulOpposite.rec (fun _ => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
+    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
+  induction m using MulOpposite.rec'
+  exact (IsCentralScalar.op_smul_eq_smul _ a).symm
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 #align is_central_vadd.unop_vadd_eq_vadd IsCentralVAdd.unop_vadd_eq_vadd
 
@@ -388,7 +389,7 @@ theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
 are still metavariables.
 -/
 @[to_additive
-      "This cannot be an instance because it can cause infinite loops wheneverthe `VAdd` arguments
+      "This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
        are still metavariables."]
 theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
@@ -1155,7 +1156,7 @@ def MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α 
   MulAction.compHom α f
 #align mul_action.of_End_hom MulAction.ofEndHom
 
-/-! ### `additive`, `multiplicative` -/
+/-! ### `Additive`, `Multiplicative` -/
 
 section
 

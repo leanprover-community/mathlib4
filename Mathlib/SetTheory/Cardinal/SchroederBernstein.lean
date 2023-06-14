@@ -55,7 +55,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
-  -- Porting note: dot dotation `F.lfp` doesn't work here
+  -- Porting note: dot notation `F.lfp` doesn't work here
   set s : Set α := OrderHom.lfp F
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
   have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])
@@ -64,8 +64,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
   set h : α → β := s.piecewise f g'
   have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
-  have : Injective h :=
-    by
+  have : Injective h := by
     refine' (injective_piecewise_iff _).2 ⟨hf.injOn _, _, _⟩
     · intro x hx y hy hxy
       obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
@@ -108,7 +107,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
         ⟨⋃₀c, fun x ⟨p, hpc, hxp⟩ y ⟨q, hqc, hyq⟩ i hi =>
           (hcc.total hpc hqc).elim (fun h => hc hqc x (h hxp) y hyq i hi) fun h =>
             hc hpc x hxp y (h hyq) i hi,
-          fun _ => subset_unionₛ_of_mem⟩
+          fun _ => subset_sUnion_of_mem⟩
   let ⟨i, e⟩ :=
     show ∃ i, ∀ y, ∃ x ∈ s, (x : ∀ i, β i) i = y from
       Classical.by_contradiction fun h =>

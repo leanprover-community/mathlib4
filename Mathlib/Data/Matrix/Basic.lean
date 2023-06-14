@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 
 ! This file was ported from Lean 3 source module data.matrix.basic
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
+! leanprover-community/mathlib commit eba5bb3155cab51d80af00e8d7d69fa271b1302b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -26,7 +26,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
@@ -214,9 +214,13 @@ theorem row_apply (v : n → α) (i j) : row v i j = v j :=
 #align matrix.row_apply Matrix.row_apply
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
+  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
+  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
--- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
--- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
+
+-- porting note: new, Lean3 found this automatically
+instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
+  Fintype.decidablePiFintype
 
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
@@ -378,7 +382,7 @@ theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n 
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  Pi.IsSMulRegular.pi fun _ => Pi.IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
 #align is_smul_regular.matrix IsSMulRegular.matrix
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
@@ -725,6 +729,18 @@ theorem dotProduct_pUnit [AddCommMonoid α] [Mul α] (v w : PUnit → α) : v �
   simp [dotProduct]
 #align matrix.dot_product_punit Matrix.dotProduct_pUnit
 
+section MulOneClass
+
+variable [MulOneClass α] [AddCommMonoid α]
+
+theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.dot_product_one Matrix.dotProduct_one
+
+theorem one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.one_dot_product Matrix.one_dotProduct
+
+end MulOneClass
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] (u v w : m → α) (x y : n → α)
@@ -761,6 +777,26 @@ theorem dotProduct_add : u ⬝ᵥ (v + w) = u ⬝ᵥ v + u ⬝ᵥ w := by
 theorem sum_elim_dotProduct_sum_elim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ v + x ⬝ᵥ y := by
   simp [dotProduct]
 #align matrix.sum_elim_dot_product_sum_elim Matrix.sum_elim_dotProduct_sum_elim
+
+/-- Permuting a vector on the left of a dot product can be transferred to the right. -/
+@[simp]
+theorem comp_equiv_symm_dotProduct (e : m ≃ n) : u ∘ e.symm ⬝ᵥ x = u ⬝ᵥ x ∘ e :=
+  (e.sum_comp _).symm.trans <|
+    Finset.sum_congr rfl fun _ _ => by simp only [Function.comp, Equiv.symm_apply_apply]
+#align matrix.comp_equiv_symm_dot_product Matrix.comp_equiv_symm_dotProduct
+
+/-- Permuting a vector on the right of a dot product can be transferred to the left. -/
+@[simp]
+theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘ e ⬝ᵥ x := by
+  simpa only [Equiv.symm_symm] using (comp_equiv_symm_dotProduct u x e.symm).symm
+#align matrix.dot_product_comp_equiv_symm Matrix.dotProduct_comp_equiv_symm
+
+/-- Permuting vectors on both sides of a dot product is a no-op. -/
+@[simp]
+theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
+  -- Porting note: was `simp only` with all three lemmas
+  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp, Equiv.apply_symm_apply]
+#align matrix.comp_equiv_dot_product_comp_equiv Matrix.comp_equiv_dotProduct_comp_equiv
 
 end NonUnitalNonAssocSemiring
 
@@ -806,6 +842,17 @@ theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x :=
 #align matrix.dot_product_single Matrix.dotProduct_single
 
 end NonUnitalNonAssocSemiringDecidable
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring α]
+
+@[simp]
+theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
+  simp [dotProduct, Fintype.card]
+#align matrix.one_dot_product_one Matrix.one_dotProduct_one
+
+end NonAssocSemiring
 
 section NonUnitalNonAssocRing
 
@@ -1816,7 +1863,17 @@ end NonUnitalSemiring
 
 section NonAssocSemiring
 
-variable [Fintype m] [DecidableEq m] [NonAssocSemiring α]
+variable [NonAssocSemiring α]
+
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : mulVec A 1 = fun i => ∑ j, A i j := by
+  ext; simp [mulVec, dotProduct]
+#align matrix.mul_vec_one Matrix.mulVec_one
+
+theorem vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i, A i j := by
+  ext; simp [vecMul, dotProduct]
+#align matrix.vec_one_mul Matrix.vec_one_mul
+
+variable [Fintype m] [Fintype n] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : mulVec 1 v = v := by
@@ -2446,9 +2503,22 @@ theorem submatrix_mul_equiv [Fintype n] [Fintype o] [AddCommMonoid α] [Mul α] 
   (submatrix_mul M N e₁ e₂ e₃ e₂.bijective).symm
 #align matrix.submatrix_mul_equiv Matrix.submatrix_mul_equiv
 
-theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
+theorem submatrix_mulVec_equiv [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α]
+    (M : Matrix m n α) (v : o → α) (e₁ : l → m) (e₂ : o ≃ n) :
+    (M.submatrix e₁ e₂).mulVec v = M.mulVec (v ∘ e₂.symm) ∘ e₁ :=
+  funext fun _ => Eq.symm (dotProduct_comp_equiv_symm _ _ _)
+#align matrix.submatrix_mul_vec_equiv Matrix.submatrix_mulVec_equiv
+
+theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
+    (M : Matrix m n α) (v : l → α) (e₁ : l ≃ m) (e₂ : o → n) :
+    vecMul v (M.submatrix e₁ e₂) = vecMul (v ∘ e₁.symm) M ∘ e₂ :=
+  funext fun _ => Eq.symm (comp_equiv_symm_dotProduct _ _ _)
+#align matrix.submatrix_vec_mul_equiv Matrix.submatrix_vecMul_equiv
+
+theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
     (e₂ : l → o) (M : Matrix m n α) :
     M ⬝ (1 : Matrix o o α).submatrix e₁ e₂ = submatrix M id (e₁.symm ∘ e₂) := by
+  cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
@@ -2457,9 +2527,10 @@ theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [Decidab
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
-theorem one_submatrix_mul [Fintype m] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
+theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
     (e₂ : m ≃ o) (M : Matrix m n α) :
     ((1 : Matrix o o α).submatrix e₁ e₂).mul M = submatrix M (e₂.symm ∘ e₁) id := by
+  cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
@@ -2664,12 +2735,12 @@ section Update
 
 /-- Update, i.e. replace the `i`th row of matrix `A` with the values in `b`. -/
 def updateRow [DecidableEq m] (M : Matrix m n α) (i : m) (b : n → α) : Matrix m n α :=
-  Function.update M i b
+  of <| Function.update M i b
 #align matrix.update_row Matrix.updateRow
 
 /-- Update, i.e. replace the `j`th column of matrix `A` with the values in `b`. -/
-def updateColumn [DecidableEq n] (M : Matrix m n α) (j : n) (b : m → α) : Matrix m n α := fun i =>
-  Function.update (M i) j (b i)
+def updateColumn [DecidableEq n] (M : Matrix m n α) (j : n) (b : m → α) : Matrix m n α :=
+  of fun i => Function.update (M i) j (b i)
 #align matrix.update_column Matrix.updateColumn
 
 variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
@@ -2796,6 +2867,62 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
     (diagonal v).updateRow i (Pi.single i x) = diagonal (Function.update v i x) := by
   rw [← diagonal_transpose, updateRow_transpose, diagonal_updateColumn_single, diagonal_transpose]
 #align matrix.diagonal_update_row_single Matrix.diagonal_updateRow_single
+
+/-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
+
+
+theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
+    (r : o → α) (e : l ≃ m) (f : o ≃ n) :
+    updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
+  ext (i' j)
+  simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
+#align matrix.update_row_submatrix_equiv Matrix.updateRow_submatrix_equiv
+
+theorem submatrix_updateRow_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : m)
+    (r : n → α) (e : l ≃ m) (f : o ≃ n) :
+    (A.updateRow i r).submatrix e f = updateRow (A.submatrix e f) (e.symm i) fun i => r (f i) :=
+  Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateRow_submatrix_equiv A _ _ e f).symm
+#align matrix.submatrix_update_row_equiv Matrix.submatrix_updateRow_equiv
+
+theorem updateColumn_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o)
+    (c : l → α) (e : l ≃ m) (f : o ≃ n) : updateColumn (A.submatrix e f) j c =
+    (A.updateColumn (f j) fun i => c (e.symm i)).submatrix e f := by
+  simpa only [← transpose_submatrix, updateRow_transpose] using
+    congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
+#align matrix.update_column_submatrix_equiv Matrix.updateColumn_submatrix_equiv
+
+theorem submatrix_updateColumn_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)
+    (c : m → α) (e : l ≃ m) (f : o ≃ n) : (A.updateColumn j c).submatrix e f =
+    updateColumn (A.submatrix e f) (f.symm j) fun i => c (e i) :=
+  Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateColumn_submatrix_equiv A _ _ e f).symm
+#align matrix.submatrix_update_column_equiv Matrix.submatrix_updateColumn_equiv
+
+/-! `reindex` versions of the above `submatrix` lemmas for convenience. -/
+
+
+theorem updateRow_reindex [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l) (r : o → α)
+    (e : m ≃ l) (f : n ≃ o) :
+    updateRow (reindex e f A) i r = reindex e f (A.updateRow (e.symm i) fun j => r (f j)) :=
+  updateRow_submatrix_equiv _ _ _ _ _
+#align matrix.update_row_reindex Matrix.updateRow_reindex
+
+theorem reindex_updateRow [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : m) (r : n → α)
+    (e : m ≃ l) (f : n ≃ o) :
+    reindex e f (A.updateRow i r) = updateRow (reindex e f A) (e i) fun i => r (f.symm i) :=
+  submatrix_updateRow_equiv _ _ _ _ _
+#align matrix.reindex_update_row Matrix.reindex_updateRow
+
+theorem updateColumn_reindex [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o) (c : l → α)
+    (e : m ≃ l) (f : n ≃ o) :
+    updateColumn (reindex e f A) j c = reindex e f (A.updateColumn (f.symm j) fun i => c (e i)) :=
+  updateColumn_submatrix_equiv _ _ _ _ _
+#align matrix.update_column_reindex Matrix.updateColumn_reindex
+
+theorem reindex_updateColumn [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n) (c : m → α)
+    (e : m ≃ l) (f : n ≃ o) :
+    reindex e f (A.updateColumn j c) = updateColumn (reindex e f A) (f j) fun i => c (e.symm i) :=
+  submatrix_updateColumn_equiv _ _ _ _ _
+#align matrix.reindex_update_column Matrix.reindex_updateColumn
 
 end Update
 

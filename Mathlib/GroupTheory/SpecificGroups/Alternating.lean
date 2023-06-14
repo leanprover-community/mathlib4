@@ -262,8 +262,8 @@ theorem normalClosure_swap_mul_swap_five :
       ⊤ := by
   let g1 := (⟨swap 0 2 * swap 0 1, mem_alternatingGroup.2 (by decide)⟩ : alternatingGroup (Fin 5))
   let g2 := (⟨swap 0 4 * swap 1 3, mem_alternatingGroup.2 (by decide)⟩ : alternatingGroup (Fin 5))
-  have h5 : g1 * g2 * g1⁻¹ * g2⁻¹ = ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ :=
-    by
+  have h5 : g1 * g2 * g1⁻¹ * g2⁻¹ =
+      ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ := by
     rw [Subtype.ext_iff]
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
   rw [eq_top_iff, ← normalClosure_finRotate_five]

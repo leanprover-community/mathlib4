@@ -5,13 +5,14 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module algebra.ring.equiv
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Util.AssertExists
 
 /-!
 # (Semi)ring equivs
@@ -367,7 +368,7 @@ section Opposite
 open MulOpposite
 
 /-- A ring iso `α ≃+* β` can equivalently be viewed as a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. -/
-@[simps!]
+@[simps! symm_apply_apply symm_apply_symm_apply apply_apply apply_symm_apply]
 protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
@@ -582,6 +583,10 @@ variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 #align ring_equiv.map_neg_one RingEquiv.map_neg_one
+
+theorem map_eq_neg_one_iff {x : R} : f x = -1 ↔ x = -1 := by
+  rw [← neg_eq_iff_eq_neg, ← neg_eq_iff_eq_neg, ← map_neg, RingEquiv.map_eq_one_iff]
+#align ring_equiv.map_eq_neg_one_iff RingEquiv.map_eq_neg_one_iff
 
 end Ring
 
@@ -876,5 +881,4 @@ protected theorem isDomain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain
 end RingEquiv
 
 -- guard against import creep
--- Porting note: not implemented yet
--- assert_not_exists fintype
+assert_not_exists Fintype

@@ -55,8 +55,8 @@ theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
   simp [zpow_sub₀ hx.ne]
 #align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
 
-theorem tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : 𝕜 => x ^ n) atTop atTop :=
-  by
+theorem tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) :
+    Tendsto (fun x : 𝕜 => x ^ n) atTop atTop := by
   lift n to ℕ using hn.le
   simp only [zpow_ofNat]
   exact tendsto_pow_atTop (Nat.cast_pos.mp hn).ne'
@@ -127,15 +127,13 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type _} [NormedAddCommGroup α] {f
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in Ico N n, ε / 2 * g i :=
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in range n, ε / 2 * g i := by
-      refine' add_le_add le_rfl _
+      gcongr
       apply sum_le_sum_of_subset_of_nonneg
       · rw [range_eq_Ico]
         exact Ico_subset_Ico (zero_le _) le_rfl
       · intro i _ _
         exact mul_nonneg (half_pos εpos).le (hg i)
-    _ ≤ ε / 2 * ‖∑ i in range n, g i‖ + ε / 2 * ∑ i in range n, g i := by
-      rw [← mul_sum]
-      exact add_le_add hn (mul_le_mul_of_nonneg_left le_rfl (half_pos εpos).le)
+    _ ≤ ε / 2 * ‖∑ i in range n, g i‖ + ε / 2 * ∑ i in range n, g i := by rw [← mul_sum]; gcongr
     _ = ε * ‖∑ i in range n, g i‖ := by
       simp only [B]
       ring

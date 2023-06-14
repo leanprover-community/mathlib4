@@ -50,7 +50,7 @@ def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z
 #align pythagorean_triple PythagoreanTriple
 
-/-- Pythagorean triples are interchangable, i.e `x * x + y * y = y * y + x * x = z * z`.
+/-- Pythagorean triples are interchangeable, i.e `x * x + y * y = y * y + x * x = z * z`.
 This comes from additive commutativity. -/
 theorem pythagoreanTriple_comm {x y z : ℤ} : PythagoreanTriple x y z ↔ PythagoreanTriple y x z := by
   delta PythagoreanTriple
@@ -81,7 +81,6 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
     k * x * (k * x) + k * y * (k * y) = k ^ 2 * (x * x + y * y) := by ring
     _ = k ^ 2 * (z * z) := by rw [h.eq]
     _ = k * z * (k * z) := by ring
-
 #align pythagorean_triple.mul PythagoreanTriple.mul
 
 /-- `(k*x, k*y, k*z)` is a Pythagorean triple if and only if
@@ -107,7 +106,7 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
       Int.gcd m n = 1
 #align pythagorean_triple.is_classified PythagoreanTriple.IsClassified
 
-/-- A primitive pythogorean triple `x, y, z` is a pythagorean triple with `x` and `y` coprime.
+/-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
  Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
  * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
  * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
@@ -175,7 +174,7 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
         or_self_iff] using h
     simp only [hz, dvd_zero]
   obtain ⟨k, x0, y0, _, h2, rfl, rfl⟩ :
-    ∃ (k : ℕ)(x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
+    ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
   rw [← Int.pow_dvd_pow_iff zero_lt_two, sq z, ← h.eq]
@@ -198,7 +197,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
     exact zero
   rcases h.gcd_dvd with ⟨z0, rfl⟩
   obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :
-    ∃ (k : ℕ)(x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
+    ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   have hk : (k : ℤ) ≠ 0 := by
     norm_cast

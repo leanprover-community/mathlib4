@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem _root_.Finset.prod_X_add_C_coeff {σ} (s : Finset σ) (r : σ → R) {k : ℕ} (h : k ≤ s.card) :
     (∏ i in s, (X + C (r i))).coeff k = ∑ t in s.powersetLen (s.card - k), ∏ i in t, r i := by
-  rw [Finset.prod, prod_X_add_C_coeff' _ r h, Multiset.Finset.esymm_map_val]
+  rw [Finset.prod, prod_X_add_C_coeff' _ r h, Finset.esymm_map_val]
   rfl
 set_option linter.uppercaseLean3 false in
 #align finset.prod_X_add_C_coeff Finset.prod_X_add_C_coeff

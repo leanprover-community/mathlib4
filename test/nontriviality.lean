@@ -90,3 +90,11 @@ class Foo (α : Type) : Prop
 instance : Foo α := {}
 
 example (α : Type) : Foo α := by nontriviality α; infer_instance
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : CommRing (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p = p := by
+  nontriviality
+  sorry

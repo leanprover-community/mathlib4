@@ -38,7 +38,6 @@ namespace WType
 
 open Cardinal
 
-open Cardinal
 -- porting note: `W` is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
@@ -47,7 +46,7 @@ theorem cardinal_mk_eq_sum : (#WType β) = sum (fun a : α => (#WType β) ^ (#β
   exact mk_congr (equivSigma β)
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
-/-- `#(WType β)` is the least cardinal `κ` such that `Sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
+/-- `#(WType β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
 theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ (#β a)) ≤ κ) :
     (#WType β) ≤ κ := by
   induction' κ using Cardinal.inductionOn with γ
@@ -68,22 +67,21 @@ theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : (#WType β)
     let m := max (#α) ℵ₀
     cardinal_mk_le_of_le <|
       calc
-        (Cardinal.sum fun a => m ^ (#β a)) ≤ (#α) * ⨆ a, m ^ (#β a) := Cardinal.sum_le_supᵢ _
+        (Cardinal.sum fun a => m ^ (#β a)) ≤ (#α) * ⨆ a, m ^ (#β a) := Cardinal.sum_le_iSup _
         _ ≤ m * ⨆ a, m ^ (#β a) := mul_le_mul' (le_max_left _ _) le_rfl
         _ = m :=
           mul_eq_left.{u} (le_max_right _ _)
-              (csupᵢ_le' fun i => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
+              (ciSup_le' fun i => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
             pos_iff_ne_zero.1 <|
               Order.succ_le_iff.1
                 (by
                   rw [succ_zero]
-                  obtain ⟨a⟩ : Nonempty α; exact hn
-                  refine' le_trans _ (le_csupᵢ (bddAbove_range.{u, u} _) a)
+                  obtain ⟨a⟩ : Nonempty α := hn
+                  refine' le_trans _ (le_ciSup (bddAbove_range.{u, u} _) a)
                   rw [← power_zero]
                   exact
                     power_le_power_left
                       (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) (zero_le _))
-
 #align W_type.cardinal_mk_le_max_aleph_0_of_finite WType.cardinal_mk_le_max_aleph0_of_finite
 
 end WType

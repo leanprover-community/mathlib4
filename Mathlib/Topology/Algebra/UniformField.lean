@@ -72,8 +72,8 @@ def hatInv : hat K → hat K :=
   denseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 #align uniform_space.completion.hat_inv UniformSpace.Completion.hatInv
 
-theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) : ContinuousAt hatInv x :=
-  by
+theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
+    ContinuousAt hatInv x := by
   haveI : T3Space (hat K) := Completion.t3Space K
   refine' denseInducing_coe.continuousAt_extend _
   apply mem_of_superset (compl_singleton_mem_nhds h)
@@ -132,14 +132,12 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
-  have cont : ContinuousAt f x :=
-    by
+  have cont : ContinuousAt f x := by
     letI : TopologicalSpace (hat K × hat K) := instTopologicalSpaceProd
     have : ContinuousAt (fun y : hat K => ((y, hatInv y) : hat K × hat K)) x :=
       continuous_id.continuousAt.prod (continuous_hatInv x_ne)
     exact (_root_.continuous_mul.continuousAt.comp this : _)
-  have clo : x ∈ closure (c '' {0}ᶜ) :=
-    by
+  have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := denseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,
       image_union] at this
@@ -192,11 +190,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K :
       let i : K →+* L := K.subtype
       have hi : UniformInducing i := uniformEmbedding_subtype_val.toUniformInducing
       rw [← hi.cauchy_map_iff] at F_cau⊢
-      rw [map_comm
-          (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i
-            by
-            ext
-            rfl)]
+      rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
       apply CompletableTopField.nice _ F_cau
       rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot] }
 #align subfield.completable_top_field Subfield.completableTopField

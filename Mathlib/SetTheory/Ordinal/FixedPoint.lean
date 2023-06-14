@@ -238,7 +238,7 @@ theorem derivFamily_eq_enumOrd (H : ∀ i, IsNormal (f i)) :
   · rintro a S ⟨i, hi⟩
     rw [← hi]
     exact derivFamily_fp (H i) a
-  rw [Set.mem_interᵢ] at ha
+  rw [Set.mem_iInter] at ha
   rwa [← fp_iff_derivFamily H]
 #align ordinal.deriv_family_eq_enum_ord Ordinal.derivFamily_eq_enumOrd
 
@@ -253,7 +253,7 @@ variable {o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{max u v} → Ordinal.{max u 
 
 /-- The next common fixed point, at least `a`, for a family of normal functions indexed by ordinals.
 
-This is defined as `ordinal.nfp_family` of the type-indexed family associated to `f`. -/
+This is defined as `Ordinal.nfpFamily` of the type-indexed family associated to `f`. -/
 def nfpBFamily (o : Ordinal) (f : ∀ b < o, Ordinal → Ordinal) : Ordinal → Ordinal :=
   nfpFamily (familyOfBFamily o f)
 #align ordinal.nfp_bfamily Ordinal.nfpBFamily
@@ -345,7 +345,7 @@ theorem nfpBFamily_eq_self {a} (h : ∀ i hi, f i hi a = a) : nfpBFamily.{u, v} 
 theorem fp_bfamily_unbounded (H : ∀ i hi, IsNormal (f i hi)) :
     (⋂ (i) (hi), Function.fixedPoints (f i hi)).Unbounded (· < ·) := fun a =>
   ⟨nfpBFamily.{u, v} _ f a, by
-    rw [Set.mem_interᵢ₂]
+    rw [Set.mem_iInter₂]
     exact fun i hi => nfpBFamily_fp (H i hi) _, (le_nfpBFamily f a).not_lt⟩
 #align ordinal.fp_bfamily_unbounded Ordinal.fp_bfamily_unbounded
 
@@ -392,14 +392,14 @@ theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
   exact h i hi
 #align ordinal.fp_iff_deriv_bfamily Ordinal.fp_iff_derivBFamily
 
-/-- For a family of normal functions, `ordinal.deriv_bfamily` enumerates the common fixed points. -/
+/-- For a family of normal functions, `Ordinal.derivBFamily` enumerates the common fixed points. -/
 theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
     derivBFamily.{u, v} o f = enumOrd (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
   rw [← eq_enumOrd _ (fp_bfamily_unbounded.{u, v} H)]
   use (derivBFamily_isNormal f).strictMono
   rw [Set.range_eq_iff]
-  refine' ⟨fun a => Set.mem_interᵢ₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => _⟩
-  rw [Set.mem_interᵢ₂] at ha
+  refine' ⟨fun a => Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => _⟩
+  rw [Set.mem_iInter₂] at ha
   rwa [← fp_iff_derivBFamily H]
 #align ordinal.deriv_bfamily_eq_enum_ord Ordinal.derivBFamily_eq_enumOrd
 
@@ -499,7 +499,7 @@ theorem nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
 fixed points. -/
 theorem fp_unbounded (H : IsNormal f) : (Function.fixedPoints f).Unbounded (· < ·) := by
   convert fp_family_unbounded fun _ : Unit => H
-  exact (Set.interᵢ_const _).symm
+  exact (Set.iInter_const _).symm
 #align ordinal.fp_unbounded Ordinal.fp_unbounded
 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.
@@ -549,10 +549,10 @@ theorem IsNormal.fp_iff_deriv {f} (H : IsNormal f) {a} : f a = a ↔ ∃ o, deri
   rw [← H.le_iff_eq, H.le_iff_deriv]
 #align ordinal.is_normal.fp_iff_deriv Ordinal.IsNormal.fp_iff_deriv
 
-/-- `ordinal.deriv` enumerates the fixed points of a normal function. -/
+/-- `Ordinal.deriv` enumerates the fixed points of a normal function. -/
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
   convert derivFamily_eq_enumOrd fun _ : Unit => H
-  exact (Set.interᵢ_const _).symm
+  exact (Set.iInter_const _).symm
 #align ordinal.deriv_eq_enum_ord Ordinal.deriv_eq_enumOrd
 
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
@@ -691,8 +691,8 @@ theorem mul_eq_right_iff_opow_omega_dvd {a b : Ordinal} : a * b = b ↔ (a^omega
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega]
 #align ordinal.mul_eq_right_iff_opow_omega_dvd Ordinal.mul_eq_right_iff_opow_omega_dvd
 
-theorem mul_le_right_iff_opow_omega_dvd {a b : Ordinal} (ha : 0 < a) : a * b ≤ b ↔ (a^omega) ∣ b :=
-  by
+theorem mul_le_right_iff_opow_omega_dvd {a b : Ordinal} (ha : 0 < a) :
+    a * b ≤ b ↔ (a^omega) ∣ b := by
   rw [← mul_eq_right_iff_opow_omega_dvd]
   exact (mul_isNormal ha).le_iff_eq
 #align ordinal.mul_le_right_iff_opow_omega_dvd Ordinal.mul_le_right_iff_opow_omega_dvd

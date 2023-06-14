@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Tim Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
+import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic
@@ -90,7 +91,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
-        let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
+        let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
         let c ← mkCache sα
         let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
@@ -192,7 +193,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? : tactic => do
+elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -200,7 +201,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
     fun _ ↦ throwError "ring_nf failed"
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
+@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| ring_nf ! $(cfg)? $(loc)?)
 
 @[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? (config)? : conv

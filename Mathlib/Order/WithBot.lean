@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -44,7 +43,8 @@ instance [Repr α] : Repr (WithBot α) :=
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
-instance coeTC : CoeTC α (WithBot α) :=
+-- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
+instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
 instance bot : Bot (WithBot α) :=
@@ -96,8 +96,8 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort _} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
-| none => bot
-| Option.some a => coe a
+  | none => bot
+  | Option.some a => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
@@ -451,6 +451,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
+-- porting note: added, previously this was found via unfolding `WithBot`
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
+
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
   | Option.some x, Option.some y =>
@@ -611,8 +614,8 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : WithTop α → Sort _} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-| none => top
-| Option.some a => coe a
+  | none => top
+  | Option.some a => coe a
 #align with_top.rec_top_coe WithTop.recTopCoe
 
 @[simp]
@@ -1209,6 +1212,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
       | (a₁ : α), ⊤, (a₃ : α) => le_rfl
       | (a₁ : α), (a₂ : α), ⊤ => le_rfl
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
+
+-- porting note: added, previously this was found via unfolding `WithTop`
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>

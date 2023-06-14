@@ -324,7 +324,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.M.mk
 
 /-- `Agree' n` relates two trees of type `M F` that
-are the same up to dept `n` -/
+are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :
@@ -346,8 +346,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
   cases' h : x.approx (succ n) with _ hd ch
-  have h' : hd = head' (x.approx 1) :=
-    by
+  have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
   revert ch
@@ -668,7 +667,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
     (R s₁ s₂) →
       IsPath ps s₁ ∨ IsPath ps s₂ →
         iselect ps s₁ = iselect ps s₂ ∧
-          ∃ (a : _)(f f' : F.B a → M F),
+          ∃ (a : _) (f f' : F.B a → M F),
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
               isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh

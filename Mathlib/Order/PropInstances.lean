@@ -83,7 +83,6 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     · exact bot_le
   · intro h x hf hg i
     apply h i (hf i) (hg i)
-
 #align pi.disjoint_iff Pi.disjoint_iff
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :

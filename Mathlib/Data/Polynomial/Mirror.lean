@@ -180,8 +180,8 @@ theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree := by
   rw [natDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natDegree, two_mul]
 #align polynomial.nat_degree_mul_mirror Polynomial.natDegree_mul_mirror
 
-theorem natTrailingDegree_mul_mirror : (p * p.mirror).natTrailingDegree = 2 * p.natTrailingDegree :=
-  by
+theorem natTrailingDegree_mul_mirror :
+    (p * p.mirror).natTrailingDegree = 2 * p.natTrailingDegree := by
   by_cases hp : p = 0
   · rw [hp, MulZeroClass.zero_mul, natTrailingDegree_zero, MulZeroClass.mul_zero]
   rw [natTrailingDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natTrailingDegree, two_mul]

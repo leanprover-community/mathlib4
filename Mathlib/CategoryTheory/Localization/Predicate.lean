@@ -60,10 +60,8 @@ class IsLocalization : Prop where
 instance q_isLocalization : W.Q.IsLocalization W
     where
   inverts := W.Q_inverts
-  nonempty_isEquivalence :=
-    by
-    suffices Localization.Construction.lift W.Q W.Q_inverts = 𝟭 _
-      by
+  nonempty_isEquivalence := by
+    suffices Localization.Construction.lift W.Q W.Q_inverts = 𝟭 _ by
       apply Nonempty.intro
       rw [this]
       infer_instance

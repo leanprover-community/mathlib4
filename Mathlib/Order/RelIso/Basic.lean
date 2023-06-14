@@ -232,13 +232,14 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
+--Porting note: removed
 -- see Note [function coercion]
-instance : CoeFun (r ↪r s) fun _ => α → β :=
-  ⟨fun o => o.toEmbedding⟩
+-- instance : CoeFun (r ↪r s) fun _ => α → β :=
+--   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun x => x
+  coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
@@ -254,6 +255,15 @@ def Simps.apply (h : r ↪r s) : α → β :=
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
+@[simp]
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+  rfl
+#align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
+
+@[simp]
+theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+  rfl
+
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
@@ -266,8 +276,10 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
-#noalign coe_fn_mk
-#noalign coe_fn_to_embedding
+@[simp]
+theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+  rfl
+#align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
@@ -408,7 +420,7 @@ instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
   (Subtype.relEmbedding (· > ·) p).isWellFounded
 #align subtype.well_founded_gt Subtype.wellFoundedGT
 
-/-- `quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
+/-- `Quotient.mk'` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
 def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
@@ -430,7 +442,7 @@ noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
-  { Quotient.outRelEmbedding _ with toFun := Quotient.out' }
+  { Quotient.outRelEmbedding H with toFun := Quotient.out' }
 #align rel_embedding.quotient.out'_rel_embedding Quotient.out'RelEmbedding
 
 @[simp]
@@ -450,7 +462,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
 @[simp]
 theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
     Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
-  acc_lift₂_iff
+  acc_lift₂_iff (H := H)
 #align acc_lift_on₂'_iff acc_liftOn₂'_iff
 
 /-- A relation is well founded iff its lift to a quotient is. -/
@@ -472,7 +484,7 @@ alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.qu
 @[simp]
 theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
     (WellFounded fun x y : Quotient s => Quotient.liftOn₂' x y r H) ↔ WellFounded r :=
-  wellFounded_lift₂_iff
+  wellFounded_lift₂_iff (H := H)
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
 alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
@@ -600,7 +612,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -631,15 +643,32 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨fun f => f⟩
+-- Porting note: moved to after `RelHomClass` instance and redefined as `FunLike.coe`
+-- instance : CoeFun (r ≃r s) fun _ => α → β :=
+--   ⟨fun f => f⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
+--Porting note: helper instance
+-- see Note [function coercion]
+instance : CoeFun (r ≃r s) fun _ => α → β :=
+  ⟨FunLike.coe⟩
+
+@[simp]
+theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+  rfl
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
@@ -822,7 +851,8 @@ lexicographic orders on the product.
 -/
 def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Prod.Lex r₁ r₂ ≃r Prod.Lex s₁ s₂ :=
-  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff]⟩
+  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff,
+    e₁.injective.eq_iff]⟩
 #align rel_iso.prod_lex_congr RelIso.prodLexCongr
 
 /-- Two relations on empty types are isomorphic. -/

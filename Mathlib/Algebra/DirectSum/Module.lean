@@ -190,7 +190,7 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
 
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def lid (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
-    (⨁ _i : ι, M) ≃ₗ[R] M :=
+    (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 #align direct_sum.lid DirectSum.lid
 
@@ -320,17 +320,17 @@ def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
--- Porting note: spelled out arguments. (I don't know how this works.)
-toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+  -- Porting note: spelled out arguments. (I don't know how this works.)
+  toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
 variable {A}
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
-theorem IsInternal.submodule_supᵢ_eq_top (h : IsInternal A) : supᵢ A = ⊤ := by
-  rw [Submodule.supᵢ_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
+theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
+  rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
   exact Function.Bijective.surjective h
-#align direct_sum.is_internal.submodule_supr_eq_top DirectSum.IsInternal.submodule_supᵢ_eq_top
+#align direct_sum.is_internal.submodule_supr_eq_top DirectSum.IsInternal.submodule_iSup_eq_top
 
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
 theorem IsInternal.submodule_independent (h : IsInternal A) : CompleteLattice.Independent A :=
@@ -381,8 +381,8 @@ the two submodules are complementary. Over a `Ring R`, this is true as an iff, a
 theorem IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) (hi : IsInternal A) : IsCompl (A i) (A j) :=
   ⟨hi.submodule_independent.pairwiseDisjoint hij,
-    codisjoint_iff.mpr <| Eq.symm <| hi.submodule_supᵢ_eq_top.symm.trans <| by
-      rw [← supₛ_pair, supᵢ, ← Set.image_univ, h, Set.image_insert_eq, Set.image_singleton]⟩
+    codisjoint_iff.mpr <| Eq.symm <| hi.submodule_iSup_eq_top.symm.trans <| by
+      rw [← sSup_pair, iSup, ← Set.image_univ, h, Set.image_insert_eq, Set.image_singleton]⟩
 #align direct_sum.is_internal.is_compl DirectSum.IsInternal.isCompl
 
 end Semiring
@@ -397,27 +397,27 @@ variable {M : Type _} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
 `CompleteLattice.Independent.dfinsupp_lsum_injective` for details. -/
-theorem isInternal_submodule_of_independent_of_supᵢ_eq_top {A : ι → Submodule R M}
-    (hi : CompleteLattice.Independent A) (hs : supᵢ A = ⊤) : IsInternal A :=
+theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
+    (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
-    LinearMap.range_eq_top.1 <| (Submodule.supᵢ_eq_range_dfinsupp_lsum _).symm.trans hs⟩
-#align direct_sum.is_internal_submodule_of_independent_of_supr_eq_top DirectSum.isInternal_submodule_of_independent_of_supᵢ_eq_top
+    LinearMap.range_eq_top.1 <| (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
+#align direct_sum.is_internal_submodule_of_independent_of_supr_eq_top DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
 
-/-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_supᵢ_eq_top`,
-`DirectSum.IsInternal.submodule_independent`, and `DirectSum.IsInternal.submodule_supᵢ_eq_top`. -/
-theorem isInternal_submodule_iff_independent_and_supᵢ_eq_top (A : ι → Submodule R M) :
-    IsInternal A ↔ CompleteLattice.Independent A ∧ supᵢ A = ⊤ :=
-  ⟨fun i ↦ ⟨i.submodule_independent, i.submodule_supᵢ_eq_top⟩,
-    And.rec isInternal_submodule_of_independent_of_supᵢ_eq_top⟩
-#align direct_sum.is_internal_submodule_iff_independent_and_supr_eq_top DirectSum.isInternal_submodule_iff_independent_and_supᵢ_eq_top
+/-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,
+`DirectSum.IsInternal.submodule_independent`, and `DirectSum.IsInternal.submodule_iSup_eq_top`. -/
+theorem isInternal_submodule_iff_independent_and_iSup_eq_top (A : ι → Submodule R M) :
+    IsInternal A ↔ CompleteLattice.Independent A ∧ iSup A = ⊤ :=
+  ⟨fun i ↦ ⟨i.submodule_independent, i.submodule_iSup_eq_top⟩,
+    And.rec isInternal_submodule_of_independent_of_iSup_eq_top⟩
+#align direct_sum.is_internal_submodule_iff_independent_and_supr_eq_top DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top
 
 /-- If a collection of submodules has just two indices, `i` and `j`, then
 `DirectSum.IsInternal` is equivalent to `isCompl`. -/
 theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
   have : ∀ k, k = i ∨ k = j := fun k ↦ by simpa using Set.ext_iff.mp h k
-  rw [isInternal_submodule_iff_independent_and_supᵢ_eq_top, supᵢ, ← Set.image_univ, h,
-    Set.image_insert_eq, Set.image_singleton, supₛ_pair, CompleteLattice.independent_pair hij this]
+  rw [isInternal_submodule_iff_independent_and_iSup_eq_top, iSup, ← Set.image_univ, h,
+    Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
 

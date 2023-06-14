@@ -502,7 +502,6 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
       rw [eval_eq_sum]
       exact
         Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow (Nat.pos_of_ne_zero hb)]) (by simp)
-
 #align polynomial.coeff_zero_eq_eval_zero Polynomial.coeff_zero_eq_eval_zero
 
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
@@ -664,8 +663,8 @@ theorem comp_assoc {R : Type _} [CommSemiring R] (φ ψ χ : R[X]) :
 #align polynomial.comp_assoc Polynomial.comp_assoc
 
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
-    coeff (p.comp q) (natDegree p * natDegree q) = leadingCoeff p * leadingCoeff q ^ natDegree p :=
-  by
+    coeff (p.comp q) (natDegree p * natDegree q) =
+    leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
   -- Porting note: `convert` → `refine`
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
@@ -756,7 +755,7 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
 #align polynomial.coe_map_ring_hom Polynomial.coe_mapRingHom
 
--- This is protected to not clash with the global `map_nat_cast`.
+-- This is protected to not clash with the global `map_natCast`.
 @[simp]
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
@@ -1182,7 +1181,7 @@ theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) 
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
     (hf : Function.Injective f) : (map f p).support = p.support := by
-  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff, iff_self_iff,
+  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff,
     forall_const]
 #align polynomial.support_map_of_injective Polynomial.support_map_of_injective
 

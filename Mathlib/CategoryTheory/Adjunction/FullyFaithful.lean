@@ -53,17 +53,13 @@ See
 instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
     @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
-      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f),
-          naturality := fun X Y f => by
-            funext x -- porting note: `aesop_cat` is not able to do `funext` automatically
-            aesop_cat },
+      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
           ⟨by
             ext x
-            funext f
             apply L.map_injective
-            aesop_cat, by
+            aesop_cat,
+           by
             ext x
-            funext f
             dsimp
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
             rw [← h.unit_naturality]
@@ -79,17 +75,13 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
     @isIso_of_op _ _ _ _ _ <|
       @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
-        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f),
-            naturality := fun X Y f => by
-              funext x
-              aesop_cat },
+        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f) },
             ⟨by
               ext x
-              funext f
               apply R.map_injective
-              simp, by
+              simp,
+             by
               ext x
-              funext f
               dsimp
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
               rw [← h.counit_naturality]
@@ -149,10 +141,9 @@ set_option linter.uppercaseLean3 false in
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
 theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
-  ⟨fun {X Y f g} H =>
-      by
-      rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
-      simpa using inv (h.counit.app X) ≫= H⟩
+  ⟨fun {X Y f g} H => by
+    rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
+    simpa using inv (h.counit.app X) ≫= H⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 

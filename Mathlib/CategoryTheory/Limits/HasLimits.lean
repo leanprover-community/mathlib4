@@ -174,7 +174,7 @@ theorem limit.w (F : J ⥤ C) [HasLimit F] {j j' : J} (f : j ⟶ j') :
   (limit.cone F).w f
 #align category_theory.limits.limit.w CategoryTheory.Limits.limit.w
 
-/-- Evidence that the arbitrary choice of cone provied by `limit.cone F` is a limit cone. -/
+/-- Evidence that the arbitrary choice of cone provided by `limit.cone F` is a limit cone. -/
 def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (limit.cone F) :=
   (getLimitCone F).isLimit
 #align category_theory.limits.limit.is_limit CategoryTheory.Limits.limit.isLimit
@@ -319,8 +319,7 @@ theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit :=
         { lift := fun s => limit.lift F ((Cones.postcompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cones.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, ← Category.assoc,
               limit.lift_π]
             simp
@@ -396,8 +395,8 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
 @[simp]
 theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C} [HasLimit G]
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
-    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j = limit.π G (e.functor.obj j) ≫ w.hom.app j :=
-  by
+    (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
+    limit.π G (e.functor.obj j) ≫ w.hom.app j := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
   dsimp
   simp
@@ -536,16 +535,11 @@ def lim : (J ⥤ C) ⥤ C where
     apply Limits.limit.hom_ext; intro j
     erw [assoc, IsLimit.fac, IsLimit.fac, ← assoc, IsLimit.fac, assoc]; rfl
 #align category_theory.limits.lim CategoryTheory.Limits.lim
+#align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.lim_map
 
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
-
--- We generate this manually since `simps` gives it a weird name.
--- @[simp]
--- theorem limMap_eq_limMap : lim.map α = limMap α :=
---   rfl
--- #align category_theory.limits.lim_map_eq_lim_map CategoryTheory.Limits.limMap_eq_limMap
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
@@ -577,8 +571,7 @@ is natural in `F`.
 -/
 def limYoneda :
     lim ⋙ yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ≅ CategoryTheory.cones J C :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => limit.homIso F (unop W))
-    <| by intros ; funext ; aesop_cat) <| by intros ; ext ; funext ; aesop_cat
+  NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 #align category_theory.limits.lim_yoneda CategoryTheory.Limits.limYoneda
 
 /-- The constant functor and limit functor are adjoint to each other-/
@@ -586,20 +579,11 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
   homEquiv c g :=
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
-        { app := fun j => f ≫ limit.π _ _
-          naturality := by aesop_cat }
-      left_inv := fun _ => NatTrans.ext _ _ <| funext fun j => limit.lift_π _ _
-      right_inv := fun α => limit.hom_ext fun j => limit.lift_π _ _ }
-  unit :=
-    { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩
-      naturality := fun _ _ _ => by aesop_cat }
-  counit :=
-    { app := fun g =>
-        { app := limit.π _
-          naturality := by aesop_cat }
-      naturality := fun _ _ _ => by aesop_cat }
-  homEquiv_unit := fun {c} {f} {g} => limit.hom_ext <| fun j => by simp
-  homEquiv_counit {c} {g} {f} := NatTrans.ext _ _ <| funext fun j => rfl
+        { app := fun j => f ≫ limit.π _ _ }
+      left_inv := by aesop_cat
+      right_inv := by aesop_cat }
+  unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
+  counit := { app := fun g => { app := limit.π _ } }
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
@@ -899,8 +883,7 @@ theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColim
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit :=
         { desc := fun s => colimit.desc F ((Cocones.precompose α.inv).obj s)
-          fac := fun s j =>
-            by
+          fac := fun s j => by
             rw [Cocones.precompose_obj_ι, NatTrans.comp_app, colimit.cocone_ι]
             rw [Category.assoc, colimit.ι_desc, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
           uniq := fun s m w => by
@@ -1042,8 +1025,8 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 #align category_theory.limits.colimit.post CategoryTheory.Limits.colimit.post
 
 @[reassoc (attr := simp)]
-theorem colimit.ι_post (j : J) : colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) :=
-  by
+theorem colimit.ι_post (j : J) :
+    colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
   erw [IsColimit.fac]
   rfl
 #align category_theory.limits.colimit.ι_post CategoryTheory.Limits.colimit.ι_post
@@ -1111,8 +1094,6 @@ section
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
-  map_id F := by aesop_cat
-  map_comp α β := by aesop_cat
 #align category_theory.limits.colim CategoryTheory.Limits.colim
 
 end
@@ -1167,8 +1148,7 @@ is natural in `F`.
 -/
 def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁}
     ≅ CategoryTheory.cocones J C :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun W => colimit.homIso (unop F) (op W))
-    <| by intros ; funext ; aesop_cat) <| by intros ; ext ; funext ; aesop_cat
+  NatIso.ofComponents fun F => NatIso.ofComponents fun W => colimit.homIso (unop F) W
 #align category_theory.limits.colim_coyoneda CategoryTheory.Limits.colimCoyoneda
 
 /-- The colimit functor and constant functor are adjoint to each other
@@ -1176,21 +1156,12 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
 def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
   homEquiv f c :=
     { toFun := fun g =>
-        { app := fun _ => colimit.ι _ _ ≫ g
-          naturality := by aesop_cat }
+        { app := fun _ => colimit.ι _ _ ≫ g }
       invFun := fun g => colimit.desc _ ⟨_, g⟩
-      left_inv := fun _ => colimit.hom_ext fun j => colimit.ι_desc _ _
-      right_inv := fun _ => NatTrans.ext _ _ <| funext fun j => colimit.ι_desc _ _ }
-  unit :=
-    { app := fun g =>
-        { app := colimit.ι _
-          naturality := by aesop_cat }
-      naturality := by aesop_cat }
-  counit :=
-    { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩
-      naturality := by aesop_cat }
-  homEquiv_unit := fun {c} {f} {g} => NatTrans.ext _ _ <| funext fun _ => rfl
-  homEquiv_counit {c} {f} {g} := colimit.hom_ext <| fun _ => by simp
+      left_inv := by aesop_cat
+      right_inv := by aesop_cat }
+  unit := { app := fun g => { app := colimit.ι _ } }
+  counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ }
 #align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
@@ -1303,14 +1274,14 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
 -/
 def isLimitEquivIsColimitOp {t : Cone F} : IsLimit t ≃ IsColimit t.op :=
   equivOfSubsingletonOfSubsingleton IsLimit.op fun P =>
-    P.unop.ofIsoLimit (Cones.ext (Iso.refl _) (by aesop_cat))
+    P.unop.ofIsoLimit (Cones.ext (Iso.refl _))
 #align category_theory.limits.is_limit_equiv_is_colimit_op CategoryTheory.Limits.isLimitEquivIsColimitOp
 
 /-- `t : Cocone F` is a colimit cocone if and only is `t.op : Cone F.op` is a limit cone.
 -/
 def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
   equivOfSubsingletonOfSubsingleton IsColimit.op fun P =>
-    P.unop.ofIsoColimit (Cocones.ext (Iso.refl _) (by aesop_cat))
+    P.unop.ofIsoColimit (Cocones.ext (Iso.refl _))
 #align category_theory.limits.is_colimit_equiv_is_limit_op CategoryTheory.Limits.isColimitEquivIsLimitOp
 
 end Opposite

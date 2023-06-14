@@ -29,10 +29,10 @@ namespace ENat
 
 variable {ι : Sort _} {f : ι → ℕ}
 
-lemma supᵢ_coe_lt_top : (⨆ x, ↑(f x) : ℕ∞) < ⊤ ↔ BddAbove (Set.range f) :=
-  WithTop.supr_coe_lt_top f
+lemma iSup_coe_lt_top : (⨆ x, ↑(f x) : ℕ∞) < ⊤ ↔ BddAbove (Set.range f) :=
+  WithTop.iSup_coe_lt_top f
 
-theorem coe_supᵢ (h : BddAbove (Set.range f)) : ↑(⨆ i, f i) = (⨆ i, f i : ℕ∞) :=
-  WithTop.coe_supᵢ _ h
+theorem coe_iSup (h : BddAbove (Set.range f)) : ↑(⨆ i, f i) = (⨆ i, f i : ℕ∞) :=
+  WithTop.coe_iSup _ h
 
 end ENat

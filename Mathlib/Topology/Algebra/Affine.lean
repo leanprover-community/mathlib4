@@ -64,8 +64,7 @@ variable [CommRing R] [Module R F] [ContinuousConstSMul R F]
 
 @[continuity]
 theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
-  suffices ⇑(homothety x t) = fun y => t • (y - x) + x
-    by
+  suffices ⇑(homothety x t) = fun y => t • (y - x) + x by
     rw [this]
     exact ((continuous_id.sub continuous_const).const_smul _).add continuous_const
     -- Porting note: proof was `by continuity`

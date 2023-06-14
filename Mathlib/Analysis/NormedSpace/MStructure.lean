@@ -10,6 +10,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # M-structure
@@ -93,7 +94,7 @@ variable {X}
 
 namespace IsLprojection
 
---porting note: The liturature always uses uppercase 'L' for L-projections
+--porting note: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
   ⟨h.proj.one_sub, fun x => by
     rw [add_comm, sub_sub_cancel]
@@ -112,23 +113,18 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
         calc
-          ‖R • x‖ =
-              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-                (‖(R * R) • x - R • P • R • x‖ + ‖(1 - R) • (1 - P) • R • x‖) :=
-            by
+          ‖R • x‖ = ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+              (‖(R * R) • x - R • P • R • x‖ + ‖(1 - R) • (1 - P) • R • x‖) := by
             rw [h₁.Lnorm, h₃.Lnorm, h₃.Lnorm ((1 - P) • R • x), sub_smul 1 P, one_smul, smul_sub,
               mul_smul]
-          _ =
-              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-                (‖R • x - R • P • R • x‖ + ‖((1 - R) * R) • x - (1 - R) • P • R • x‖) :=
-            by rw [h₃.proj.eq, sub_smul 1 P, one_smul, smul_sub, mul_smul]
-          _ =
-              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-                (‖R • x - R • P • R • x‖ + ‖(1 - R) • P • R • x‖) :=
-            by rw [sub_mul, h₃.proj.eq, one_mul, sub_self, zero_smul, zero_sub, norm_neg]
+          _ = ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+              (‖R • x - R • P • R • x‖ + ‖((1 - R) * R) • x - (1 - R) • P • R • x‖) := by
+            rw [h₃.proj.eq, sub_smul 1 P, one_smul, smul_sub, mul_smul]
+          _ = ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+              (‖R • x - R • P • R • x‖ + ‖(1 - R) • P • R • x‖) := by
+            rw [sub_mul, h₃.proj.eq, one_mul, sub_self, zero_smul, zero_sub, norm_neg]
           _ = ‖R • P • R • x‖ + ‖R • x - R • P • R • x‖ + 2 • ‖(1 - R) • P • R • x‖ := by abel
-          _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
-            by
+          _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ := by
             rw [GE.ge]
             have :=
               add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
@@ -141,17 +137,11 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       rw [le_antisymm_iff]
       refine' ⟨_, norm_nonneg _⟩
       rwa [← MulZeroClass.mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
-  have QP_eq_QPQ : Q * P = Q * P * Q :=
-    by
+  have QP_eq_QPQ : Q * P = Q * P * Q := by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
       calc
         P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
-
-        --porting note: noncomm_ring tactic not yet ported, so complete proof with rewrites for now
-        _ = 1 * (P * (1 - Q)) - Q * (P * (1 - Q)) := by rw [mul_assoc, sub_mul]
-        _ = P * (1 - Q) - Q * (P * (1 - Q)) := by rw [one_mul]
-        _ = P * (1 - Q) - Q * (P - P * Q) := by rw [mul_sub, mul_one]
-        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by rw [mul_sub Q, mul_assoc]
+        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
   · rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
@@ -166,7 +156,6 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
       ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel'_right ((P * Q) • x) x]
       _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by rw [sub_smul, one_smul]
-
   · calc
       ‖x‖ = ‖P • Q • x‖ + (‖Q • x - P • Q • x‖ + ‖x - Q • x‖) := by
         rw [h₂.Lnorm x, h₁.Lnorm (Q • x), sub_smul, one_smul, sub_smul, one_smul, add_assoc]
@@ -174,14 +163,12 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
         ((add_le_add_iff_left ‖P • Q • x‖).mpr (norm_add_le (Q • x - P • Q • x) (x - Q • x)))
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by
         rw [sub_add_sub_cancel', sub_smul, one_smul, mul_smul]
-
 #align is_Lprojection.mul IsLprojection.mul
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
-  --porting note: noncomm_ring tactic not yet ported, so complete proof with rewrites for now
-  rw [sub_mul, one_mul, sub_sub, sub_sub_self, mul_sub, mul_one, add_sub, add_comm]
+  noncomm_ring
 #align is_Lprojection.join IsLprojection.join
 
 --porting note: Advice is to explicitly name instances

@@ -100,26 +100,26 @@ theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s
   ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
 #align set.ord_connected_dual Set.ordConnected_dual
 
-theorem ordConnected_interₛ {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
+theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
-  ⟨fun _ hx _ hy => subset_interₛ fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
-#align set.ord_connected_sInter Set.ordConnected_interₛ
+  ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
+#align set.ord_connected_sInter Set.ordConnected_sInter
 
-theorem ordConnected_interᵢ {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
+theorem ordConnected_iInter {ι : Sort _} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_interₛ <| forall_range_iff.2 hs
-#align set.ord_connected_Inter Set.ordConnected_interᵢ
+  ordConnected_sInter <| forall_range_iff.2 hs
+#align set.ord_connected_Inter Set.ordConnected_iInter
 
-instance ordConnected_interᵢ' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
+instance ordConnected_iInter' {ι : Sort _} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_interᵢ ‹_›
-#align set.ord_connected_Inter' Set.ordConnected_interᵢ'
+  ordConnected_iInter ‹_›
+#align set.ord_connected_Inter' Set.ordConnected_iInter'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem ordConnected_binterᵢ  {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
+theorem ordConnected_biInter  {ι : Sort _} {p : ι → Prop} {s : ∀ (i : ι) (_ : p i), Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
-  ordConnected_interᵢ fun i => ordConnected_interᵢ <| hs i
-#align set.ord_connected_bInter Set.ordConnected_binterᵢ
+  ordConnected_iInter fun i => ordConnected_iInter <| hs i
+#align set.ord_connected_bInter Set.ordConnected_biInter
 
 theorem ordConnected_pi {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (h : ∀ i ∈ s, OrdConnected (t i)) : OrdConnected (s.pi t) :=

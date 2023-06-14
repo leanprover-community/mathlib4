@@ -49,8 +49,7 @@ def powAddExpansion {R : Type _} [CommSemiring R] (x y : R) :
     calc
       (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
       _ = (x + y) * (x ^ (n + 1) + ↑(n + 1) * x ^ (n + 1 - 1) * y + z * y ^ 2) := by rw [hz]
-      _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 :=
-        by
+      _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 := by
         push_cast
         ring!
 #align polynomial.pow_add_expansion Polynomial.powAddExpansion
@@ -110,7 +109,7 @@ def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x
   delta eval;  rw [eval₂_eq_sum, eval₂_eq_sum];
   simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp
-  congr with (i r)
+  congr with i
   rw [mul_assoc, ← (powSubPowFactor x y _).prop, mul_sub]
 #align polynomial.eval_sub_factor Polynomial.evalSubFactor
 

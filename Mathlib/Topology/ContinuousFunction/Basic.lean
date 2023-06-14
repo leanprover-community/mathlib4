@@ -29,12 +29,11 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
---@[protect_proj] -- Porting note: missing attribute?
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
   /-- The function `α → β` -/
-  toFun : α → β
+  protected toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun := by continuity
+  protected continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
@@ -212,6 +211,11 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 #align continuous_map.coe_const ContinuousMap.coe_const
 
+/-- `Function.const α b` as a bundled continuous function of `b`. -/
+@[simps (config := .asFn)]
+def constPi : C(β, α → β) where
+  toFun b := Function.const α b
+
 instance [Inhabited β] : Inhabited C(α, β) :=
   ⟨const α default⟩
 
@@ -287,6 +291,16 @@ section Prod
 variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
   [TopologicalSpace β₂]
 
+/-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
+@[simps (config := .asFn)]
+def fst : C(α × β, α) where
+  toFun := Prod.fst
+
+/-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
+@[simps (config := .asFn)]
+def snd : C(α × β, β) where
+  toFun := Prod.snd
+
 /-- Given two continuous maps `f` and `g`, this is the continuous map `x ↦ (f x, g x)`. -/
 def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂) where
   toFun x := (f x, g x)
@@ -305,11 +319,16 @@ theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) 
   rfl
 #align continuous_map.prod_eval ContinuousMap.prod_eval
 
+/-- `Prod.swap` bundled as a `ContinuousMap`. -/
+@[simps!]
+def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
+
 end Prod
 
 section Pi
 
-variable {I A : Type _} {X : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
+variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
+  [∀ i, TopologicalSpace (Y i)]
 
 /-- Abbreviation for product of continuous maps, which is continuous -/
 def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
@@ -320,6 +339,17 @@ def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
 theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a :=
   rfl
 #align continuous_map.pi_eval ContinuousMap.pi_eval
+
+/-- Evaluation at point as a bundled continuous map. -/
+@[simps (config := .asFn)]
+def eval (i : I) : C(∀ j, X j, X i) where
+  toFun := Function.eval i
+
+/-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
+`C(∀ i, X i, ∀ i, Y i)`. -/
+@[simps!]
+def piMap (f : ∀ i, C(X i, Y i)) : C((i : I) → X i, (i : I) → Y i) :=
+  .pi fun i ↦ (f i).comp (eval i)
 
 end Pi
 
@@ -367,7 +397,7 @@ of each point in `α` and the functions `φ i` agree pairwise on intersections, 
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
   haveI H : (⋃ i, S i) = Set.univ :=
-    Set.unionᵢ_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
+    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
     simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous

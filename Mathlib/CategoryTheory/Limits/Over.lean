@@ -18,22 +18,22 @@ import Mathlib.CategoryTheory.Limits.Comma
 /-!
 # Limits and colimits in the over and under categories
 
-Show that the forgetful functor `forget X : over X ⥤ C` creates colimits, and hence `over X` has
-any colimits that `C` has (as well as the dual that `forget X : under X ⟶ C` creates limits).
+Show that the forgetful functor `forget X : Over X ⥤ C` creates colimits, and hence `Over X` has
+any colimits that `C` has (as well as the dual that `forget X : Under X ⟶ C` creates limits).
 
-Note that the folder `category_theory.limits.shapes.constructions.over` further shows that
-`forget X : over X ⥤ C` creates connected limits (so `over X` has connected limits), and that
-`over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
+Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further shows that
+`forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
+`Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
 
-TODO: If `C` has binary products, then `forget X : over X ⥤ C` has a right adjoint.
+TODO: If `C` has binary products, then `forget X : Over X ⥤ C` has a right adjoint.
 -/
 
 
 noncomputable section
 
+-- morphism levels before object levels. See note [category_theory universes].
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type v} [SmallCategory J]
@@ -79,21 +79,19 @@ variable [HasPullbacks C]
 
 open Tactic
 
-/-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `over Y ⥤ over X`,
+/-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps]
 def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
-      (by aesop_cat)
 #align category_theory.over.pullback CategoryTheory.Over.pullback
 
-/-- `over.map f` is left adjoint to `over.pullback f`. -/
+/-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun g h =>
+    { homEquiv := fun g h =>
         { toFun := fun X =>
             Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
           invFun := fun Y => by
@@ -169,14 +167,13 @@ section
 
 variable [HasPushouts C]
 
-/-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `under X ⥤ under Y`,
+/-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
 def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
     Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
-      (by aesop_cat)
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module ring_theory.mv_polynomial.basic
-! leanprover-community/mathlib commit 019ead10c09bb91f49b1b7005d442960b1e0485f
+! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -40,8 +40,6 @@ Generalise to noncommutative (semi)rings
 
 
 noncomputable section
-
-open Classical
 
 open Set LinearMap Submodule
 
@@ -101,9 +99,9 @@ theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
-theorem mem_restrictDegree_iff_sup (p : MvPolynomial σ R) (n : ℕ) :
+theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
-  simp only [mem_restrictDegree, degrees, Multiset.count_finset_sup, Finsupp.count_toMultiset,
+  simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
   exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
 #align mv_polynomial.mem_restrict_degree_iff_sup MvPolynomial.mem_restrictDegree_iff_sup

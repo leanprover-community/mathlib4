@@ -19,9 +19,9 @@ import Mathlib.Order.PFilter
 Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
 
-- `Order.Ideal.PrimePair`: A pair of an `ideal` and a `pfilter` which form a partition of `P`.
-  This is useful as giving the data of a prime ideal is the same as giving the data of a prime
-  filter.
+- `Order.Ideal.PrimePair`: A pair of an `Order.Ideal` and a `Order.PFilter` which form a partition
+  of `P`.  This is useful as giving the data of a prime ideal is the same as giving the data of a
+  prime filter.
 - `Order.Ideal.IsPrime`: a predicate for prime ideals. Dual to the notion of a prime filter.
 - `Order.PFilter.IsPrime`: a predicate for prime filters. Dual to the notion of a prime ideal.
 
@@ -44,7 +44,7 @@ variable {P : Type _}
 
 namespace Ideal
 
-/-- A pair of an `ideal` and a `pfilter` which form a partition of `P`.
+/-- A pair of an `Order.Ideal` and a `Order.PFilter` which form a partition of `P`.
 -/
 -- porting note: no attr @[nolint has_nonempty_instance]
 structure PrimePair (P : Type _) [Preorder P] where
@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false in
 #align order.ideal.prime_pair.I_is_proper Order.Ideal.PrimePair.I_isProper
 
 protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
-  IF.isCompl_I_F.Disjoint
+  IF.isCompl_I_F.disjoint
 #align order.ideal.prime_pair.disjoint Order.Ideal.PrimePair.disjoint
 
 theorem I_union_F : (IF.I : Set P) ∪ IF.F = Set.univ :=
@@ -242,4 +242,3 @@ set_option linter.uppercaseLean3 false in
 end PFilter
 
 end Order
-

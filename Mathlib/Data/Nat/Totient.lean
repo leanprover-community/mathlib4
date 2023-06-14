@@ -97,10 +97,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
-    (filter a.coprime (Ico k (k + n % a + a * i + a))).card =
-        (filter a.coprime
-            (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card :=
-      by
+    (filter a.coprime (Ico k (k + n % a + a * i + a))).card = (filter a.coprime
+        (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
       rw [add_assoc]
@@ -110,7 +108,6 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
     _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
-
 #align nat.Ico_filter_coprime_le Nat.Ico_filter_coprime_le
 
 open ZMod
@@ -219,7 +216,6 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         exact (mul_lt_mul_right hp.pos).2 h
       rw [card_sdiff h2, card_image_of_injOn (h1.injOn _), card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
-
 #align nat.totient_prime_pow_succ Nat.totient_prime_pow_succ
 
 /-- When `p` is prime, then the totient of `p ^ n` is `p ^ (n - 1) * (p - 1)` -/
@@ -260,7 +256,7 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
-    -- the subst created an non-defeq but subsingleton instance diamond; resolve it
+    -- the subst created a non-defeq but subsingleton instance diamond; resolve it
     suffices Fintype.card ℤˣ ≠ 0 by convert this
     simp
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]

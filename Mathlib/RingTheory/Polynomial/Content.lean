@@ -112,8 +112,7 @@ theorem content_one : content (1 : R[X]) = 1 := by rw [← C_1, content_C, norma
 theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   rw [content, content, Finset.gcd_def, Finset.gcd_def]
   refine' congr rfl _
-  have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ :=
-    by
+  have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne.def, mem_support_iff]
     cases' a with a
@@ -415,8 +414,8 @@ theorem IsPrimitive.mul {p q : R[X]} (hp : p.IsPrimitive) (hq : q.IsPrimitive) :
 #align polynomial.is_primitive.mul Polynomial.IsPrimitive.mul
 
 @[simp]
-theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) : (p * q).primPart = p.primPart * q.primPart :=
-  by
+theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
+    (p * q).primPart = p.primPart * q.primPart := by
   rw [Ne.def, ← content_eq_zero_iff, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0
   conv_lhs =>
@@ -437,7 +436,7 @@ theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq :
 theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (hq : q.IsPrimitive) :
     ∃ r : R[X], r.IsPrimitive ∧ ∀ s : R[X], p ∣ s ∧ q ∣ s ↔ r ∣ s := by
   classical
-    have h : ∃ (n : ℕ)(r : R[X]), r.natDegree = n ∧ r.IsPrimitive ∧ p ∣ r ∧ q ∣ r :=
+    have h : ∃ (n : ℕ) (r : R[X]), r.natDegree = n ∧ r.IsPrimitive ∧ p ∣ r ∧ q ∣ r :=
       ⟨(p * q).natDegree, p * q, rfl, hp.mul hq, dvd_mul_right _ _, dvd_mul_left _ _⟩
     rcases Nat.find_spec h with ⟨r, rdeg, rprim, pr, qr⟩
     refine' ⟨r, rprim, fun s => ⟨_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
@@ -488,8 +487,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
 #align polynomial.dvd_iff_content_dvd_content_and_prim_part_dvd_prim_part Polynomial.dvd_iff_content_dvd_content_and_primPart_dvd_primPart
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
-  normalizedGCDMonoidOfExistsLCM fun p q =>
-    by
+  normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
       ⟨r, rprim, hr⟩

@@ -92,7 +92,7 @@ pulling back a grading along the identity function,
 and the identity functor. -/
 @[simps]
 def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
-  hom := { app := fun X => 𝟙 X, naturality := by simp only [comap]; aesop_cat}
+  hom := { app := fun X => 𝟙 X, naturality := by simp only [comap]; aesop_cat }
   inv := { app := fun X => 𝟙 X }
 #align category_theory.pi.comap_id CategoryTheory.Pi.comapId
 
@@ -108,14 +108,12 @@ pulling back along their composition
 -/
 @[simps!]
 def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ comap C (g ∘ f) where
-  hom := {
-    app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
-    }
-  inv := {
-    app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
-    }
+  hom :=
+  { app := fun X b => 𝟙 (X (g (f b)))
+    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+  inv :=
+  { app := fun X b => 𝟙 (X (g (f b)))
+    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
   hom_inv_id := by
     simp only [comap]
     ext Y
@@ -195,8 +193,7 @@ pair of corresponding components. -/
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
   ⟨f.hom i, f.inv i, by
     dsimp
-    rw [← comp_apply, Iso.hom_inv_id, id_apply],
-    by
+    rw [← comp_apply, Iso.hom_inv_id, id_apply], by
     dsimp
     rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp

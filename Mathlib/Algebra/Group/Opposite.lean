@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.group.opposite
-! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
+! leanprover-community/mathlib commit 0372d31fb681ef40a687506bc5870fd55ebc8bb9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -278,7 +278,6 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 
 @[simp]
 theorem opAddEquiv_toEquiv [Add α] : ((opAddEquiv : α ≃+ αᵐᵒᵖ) : α ≃ αᵐᵒᵖ) = opEquiv := rfl
-
 #align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
 end MulOpposite
@@ -443,7 +442,7 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
   invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
   map_mul' x y := unop_injective <| Units.ext <| rfl
   left_inv x := Units.ext <| by simp
-  right_inv x := unop_injective <| Units.ext <| rfl
+  right_inv x := unop_injective <| Units.ext <| by rfl
 #align units.op_equiv Units.opEquiv
 #align add_units.op_equiv AddUnits.opEquiv
 
@@ -460,6 +459,32 @@ theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
   rfl
 #align units.coe_op_equiv_symm Units.coe_opEquiv_symm
 #align add_units.coe_op_equiv_symm AddUnits.coe_opEquiv_symm
+
+@[to_additive]
+nonrec theorem IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (op m) :=
+  let ⟨u, hu⟩ := h
+  hu ▸ ⟨Units.opEquiv.symm (op u), rfl⟩
+#align is_unit.op IsUnit.op
+#align is_add_unit.op IsAddUnit.op
+
+@[to_additive]
+nonrec theorem IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (unop m) :=
+  let ⟨u, hu⟩ := h
+  hu ▸ ⟨unop (Units.opEquiv u), rfl⟩
+#align is_unit.unop IsUnit.unop
+#align is_add_unit.unop IsAddUnit.unop
+
+@[to_additive (attr := simp)]
+theorem isUnit_op {M} [Monoid M] {m : M} : IsUnit (op m) ↔ IsUnit m :=
+  ⟨IsUnit.unop, IsUnit.op⟩
+#align is_unit_op isUnit_op
+#align is_add_unit_op isAddUnit_op
+
+@[to_additive (attr := simp)]
+theorem isUnit_unop {M} [Monoid M] {m : Mᵐᵒᵖ} : IsUnit (unop m) ↔ IsUnit m :=
+  ⟨IsUnit.op, IsUnit.unop⟩
+#align is_unit_unop isUnit_unop
+#align is_add_unit_unop isAddUnit_unop
 
 /-- A semigroup homomorphism `M →ₙ* N` can equivalently be viewed as a semigroup homomorphism
 `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
@@ -635,7 +660,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec fun x => (FunLike.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec' fun x => (FunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

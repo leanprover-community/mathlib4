@@ -25,7 +25,7 @@ that for every `b : V` there is a unique path from `root` to `b`.
 - `arborescenceMk`: a convenient way of proving that a quiver is an arborescence
 - `RootedConnected r`: a typeclass asserting that there is at least one path from `r` to `b` for
 every `b`.
-- `geodesicSubtree r`: given `[RootedConntected r]`, this is a subquiver of `V` which contains
+- `geodesicSubtree r`: given `[RootedConnected r]`, this is a subquiver of `V` which contains
 just enough edges to include a shortest path from `r` to `b` for every `b`.
 - `geodesicArborescence : Arborescence (geodesicSubtree r)`: an instance saying that the geodesic
 subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
@@ -68,16 +68,14 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
     Arborescence V where
   root := r
   uniquePath b :=
-    ⟨Classical.inhabited_of_nonempty
-        (by
-          rcases show ∃ n, height b < n from ⟨_, Nat.lt.base _⟩ with ⟨n, hn⟩
-          induction' n with n ih generalizing b
-          · exact False.elim (Nat.not_lt_zero _ hn)
-          rcases root_or_arrow b with (⟨⟨⟩⟩ | ⟨a, ⟨e⟩⟩)
-          · exact ⟨Path.nil⟩
-          · rcases ih a (lt_of_lt_of_le (height_lt e) (Nat.lt_succ_iff.mp hn)) with ⟨p⟩
-            exact ⟨p.cons e⟩),
-      by
+    ⟨Classical.inhabited_of_nonempty (by
+      rcases show ∃ n, height b < n from ⟨_, Nat.lt.base _⟩ with ⟨n, hn⟩
+      induction' n with n ih generalizing b
+      · exact False.elim (Nat.not_lt_zero _ hn)
+      rcases root_or_arrow b with (⟨⟨⟩⟩ | ⟨a, ⟨e⟩⟩)
+      · exact ⟨Path.nil⟩
+      · rcases ih a (lt_of_lt_of_le (height_lt e) (Nat.lt_succ_iff.mp hn)) with ⟨p⟩
+        exact ⟨p.cons e⟩), by
       have height_le : ∀ {a b}, Path a b → height a ≤ height b := by
         intro a b p
         induction' p with b c _ e ih

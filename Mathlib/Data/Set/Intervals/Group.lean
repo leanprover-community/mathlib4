@@ -186,13 +186,11 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
-    Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) :=
-  by
+    Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
   simp_rw [Function.onFun, Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
-  have hb : 1 < b :=
-    by
+  have hb : 1 < b := by
     have : a * b ^ m < a * b ^ (m + 1) := hx.1.1.trans_lt hx.1.2
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_lt hx.2.2

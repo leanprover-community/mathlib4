@@ -34,7 +34,7 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-attribute [instance] IsConnected.is_nonempty
+attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 
@@ -160,7 +160,7 @@ instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 instance : IsEquivalence (decomposedTo J) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
--- portint note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
+-- porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

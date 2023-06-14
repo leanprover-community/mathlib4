@@ -82,9 +82,9 @@ theorem StrongMono.mk' {f : P ⟶ Q} [Mono f]
   rlp := fun {X Y} z hz => ⟨fun {u v} sq => hf X Y z hz u v sq⟩
 #align category_theory.strong_mono.mk' CategoryTheory.StrongMono.mk'
 
-attribute [instance] StrongEpi.llp
+attribute [instance 100] StrongEpi.llp
 
-attribute [instance] StrongMono.rlp
+attribute [instance 100] StrongMono.rlp
 
 instance (priority := 100) epi_of_strongEpi (f : P ⟶ Q) [StrongEpi f] : Epi f :=
   StrongEpi.epi
@@ -246,4 +246,3 @@ instance (priority := 100) balanced_of_strongMonoCategory [StrongMonoCategory C]
 end
 
 end CategoryTheory
-

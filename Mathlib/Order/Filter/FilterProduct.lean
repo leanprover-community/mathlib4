@@ -32,7 +32,7 @@ open Classical
 
 namespace Filter
 
-local notation3"∀* "(...)", "r:(scoped p => Filter.Eventually p φ) => r
+local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
 
 namespace Germ
 
@@ -79,7 +79,7 @@ theorem const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
 #align filter.germ.const_lt_iff Filter.Germ.const_lt_iff
 
 theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· < ·) := by
-  ext (⟨f⟩⟨g⟩)
+  ext ⟨f⟩ ⟨g⟩
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 

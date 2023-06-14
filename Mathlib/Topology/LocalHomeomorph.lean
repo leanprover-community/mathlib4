@@ -426,8 +426,8 @@ theorem eventually_nhdsWithin' (e : LocalHomeomorph α β) {x : α} (p : α → 
   of `e` and some other neighborhood of `f x` (which will be the source of a chart on `γ`).  -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph α β} {s : Set α}
     {t : Set γ} {x : α} {f : α → γ} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
-    (ht : t ∈ 𝓝 (f x)) : e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) :=
-  by
+    (ht : t ∈ 𝓝 (f x)) :
+    e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) := by
   rw [eventuallyEq_set, e.eventually_nhds _ hxe]
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
@@ -1222,7 +1222,7 @@ def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source
     continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 #align local_homeomorph.homeomorph_of_image_subset_source LocalHomeomorph.homeomorphOfImageSubsetSource
 
-/-- A local homeomrphism defines a homeomorphism between its source and target. -/
+/-- A local homeomorphism defines a homeomorphism between its source and target. -/
 @[simps!] -- porting note: new `simps`
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target

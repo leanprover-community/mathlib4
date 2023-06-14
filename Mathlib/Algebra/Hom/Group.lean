@@ -301,7 +301,7 @@ class MulHomClass (F : Type _) (M N : outParam (Type _)) [Mul M] [Mul N]
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
 
-/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+/-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
 instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   coe := MulHom.toFun
@@ -325,7 +325,7 @@ def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
   toFun := f
   map_mul' := map_mul f
 
-/-- Any type satisfying `MulHomCLass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
+/-- Any type satisfying `MulHomClass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
 @[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
 `AddHomClass.toAddHom`."]
 instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
@@ -395,7 +395,7 @@ attribute [to_additive existing] MonoidHomClass.toOneHomClass
 "Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
 actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`."]
 def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
-{ (f : M →ₙ* N), (f : OneHom M N) with }
+  { (f : M →ₙ* N), (f : OneHom M N) with }
 
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
 `MonoidHomClass.toMonoidHom`. -/
@@ -444,7 +444,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[to_additive (attr := simp) (reorder := 8)]
+@[to_additive (attr := simp) (reorder := 8 9)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -461,7 +461,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8)
+@[to_additive (attr := simp) (reorder := 8 9)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -520,7 +520,7 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
 `MonoidWithZeroHom`. This is declared as the default coercion from `F` to `M →*₀ N`. -/
 @[coe]
 def MonoidWithZeroHomClass.toMonoidWithZeroHom [MonoidWithZeroHomClass F M N] (f : F) : M →*₀ N :=
-{ (f : M →* N), (f : ZeroHom M N) with }
+  { (f : M →* N), (f : ZeroHom M N) with }
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
@@ -1617,7 +1617,6 @@ def ofMapMulInv {H : Type _} [Group H] (f : G → H)
       _ = f x * f y := by
         { simp only [map_div]
           simp only [mul_right_inv, one_mul, inv_inv] }
-
 #align monoid_hom.of_map_mul_inv MonoidHom.ofMapMulInv
 #align add_monoid_hom.of_map_add_neg AddMonoidHom.ofMapAddNeg
 

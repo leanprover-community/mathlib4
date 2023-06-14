@@ -18,8 +18,8 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
 
-We define `lucasLehmerResidue : Π p : ℕ, zmod (2^p - 1)`, and
-prove `lucasLehmerResidue p = 0 → prime (mersenne p)`.
+We define `lucasLehmerResidue : Π p : ℕ, ZMod (2^p - 1)`, and
+prove `lucasLehmerResidue p = 0 → Prime (mersenne p)`.
 
 Porting note: the tactics have not been ported yet.
 
@@ -72,7 +72,7 @@ open Nat
 We now define three(!) different versions of the recurrence
 `s (i+1) = (s i)^2 - 2`.
 
-These versions take values either in `ℤ`, in `zmod (2^p - 1)`, or
+These versions take values either in `ℤ`, in `ZMod (2^p - 1)`, or
 in `ℤ` but applying `% (2^p - 1)` at each step.
 
 They are each useful at different points in the proof,
@@ -85,7 +85,7 @@ def s : ℕ → ℤ
   | i + 1 => s i ^ 2 - 2
 #align lucas_lehmer.s LucasLehmer.s
 
-/-- The recurrence `s (i+1) = (s i)^2 - 2` in `zmod (2^p - 1)`. -/
+/-- The recurrence `s (i+1) = (s i)^2 - 2` in `ZMod (2^p - 1)`. -/
 def sZMod (p : ℕ) : ℕ → ZMod (2 ^ p - 1)
   | 0 => 4
   | i + 1 => sZMod p i ^ 2 - 2
@@ -141,7 +141,7 @@ theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p 
   induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
 #align lucas_lehmer.s_zmod_eq_s_mod LucasLehmer.sZMod_eq_sMod
 
-/-- The Lucas-Lehmer residue is `s p (p-2)` in `zmod (2^p - 1)`. -/
+/-- The Lucas-Lehmer residue is `s p (p-2)` in `ZMod (2^p - 1)`. -/
 def lucasLehmerResidue (p : ℕ) : ZMod (2 ^ p - 1) :=
   sZMod p (p - 2)
 #align lucas_lehmer.lucas_lehmer_residue LucasLehmer.lucasLehmerResidue
@@ -156,8 +156,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     intro h
     simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
-    apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
-    exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
+    · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
+    · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
   · intro h
     rw [h]
     simp
@@ -286,7 +286,7 @@ set_option linter.uppercaseLean3 false in
 
 instance : AddGroupWithOne (X q) :=
   { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (NatCast (X q))with
+      inferInstanceAs (NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
     intCast := fun n => ⟨n, 0⟩

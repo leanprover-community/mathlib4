@@ -166,7 +166,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).add
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_add, extension_coe hf, extension_coe hf, extension_coe hf, f.map_add]
+        simp_rw [← coe_add, extension_coe hf, f.map_add]
     map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
     map_mul' := fun a b =>
       Completion.induction_on₂ a b
@@ -174,7 +174,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).mul
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_mul, extension_coe hf, extension_coe hf, extension_coe hf, f.map_mul] }
+        simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 #align uniform_space.completion.extension_hom UniformSpace.Completion.extensionHom
 
 instance topologicalRing : TopologicalRing (Completion α) where
@@ -291,7 +291,7 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
   toFun := (ue.denseInducing dr).extend f
   map_one' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 1
-    exacts[i.map_one.symm, f.map_one.symm]
+    exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]

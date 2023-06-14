@@ -96,7 +96,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toLocalEquiv = e'.toLocal
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toLocalEquiv.symm x = e'.toLocalEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
-  ext1 <;> [ext1, exact h₃]
+  ext1 <;> [ext1; exact h₃]
   · apply h₁
   · apply h₂
   · rw [e.source_eq, e'.source_eq, h₃]

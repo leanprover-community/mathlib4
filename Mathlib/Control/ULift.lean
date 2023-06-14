@@ -87,7 +87,6 @@ instance : LawfulMonad PLift where
 @[simp]
 theorem rec.constant {α : Sort u} {β : Type v} (b : β) :
     (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
-
 #align plift.rec.constant PLift.rec.constant
 
 end PLift
@@ -160,7 +159,6 @@ instance : LawfulMonad ULift where
 @[simp]
 theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
      (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
-
 #align ulift.rec.constant ULift.rec.constant
 
 end ULift

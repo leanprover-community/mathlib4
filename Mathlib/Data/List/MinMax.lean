@@ -235,13 +235,13 @@ theorem mem_argmax_iff :
       m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
   ⟨fun hm => ⟨argmax_mem hm, fun a ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
-    rintro ⟨hml, ham, hma⟩
-    cases' harg : argmax f l with n
-    · simp_all
-    · have :=
-        _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
-          (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-      rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+      rintro ⟨hml, ham, hma⟩
+      cases' harg : argmax f l with n
+      · simp_all
+      · have :=
+          _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
+            (index_of_argmax harg hml (ham _ (argmax_mem harg)))
+        rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 #align list.mem_argmax_iff List.mem_argmax_iff
 
 theorem argmax_eq_some_iff :

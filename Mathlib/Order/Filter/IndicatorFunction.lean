@@ -67,8 +67,8 @@ theorem Monotone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
   by_cases h : ∃ i, a ∈ s i
   · rcases h with ⟨i, hi⟩
     refine' tendsto_pure.2 ((eventually_ge_atTop i).mono fun n hn => _)
-    rw [indicator_of_mem (hs hn hi) _, indicator_of_mem ((subset_unionᵢ _ _) hi) _]
-  · have h' : a ∉ ⋃ i, s i := mt mem_unionᵢ.1 h
+    rw [indicator_of_mem (hs hn hi) _, indicator_of_mem ((subset_iUnion _ _) hi) _]
+  · have h' : a ∉ ⋃ i, s i := mt mem_iUnion.1 h
     rw [not_exists] at h
     simpa only [indicator_of_not_mem, *] using tendsto_const_pure
 #align monotone.tendsto_indicator Monotone.tendsto_indicator
@@ -80,22 +80,22 @@ theorem Antitone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
   · rcases h with ⟨i, hi⟩
     refine' tendsto_pure.2 ((eventually_ge_atTop i).mono fun n hn => _)
     rw [indicator_of_not_mem _ _, indicator_of_not_mem _ _]
-    · simp only [mem_interᵢ, not_forall]
+    · simp only [mem_iInter, not_forall]
       exact ⟨i, hi⟩
     · intro h
       have := hs hn h
       contradiction
   · push_neg  at h
-    simp only [indicator_of_mem, h, mem_interᵢ.2 h, tendsto_const_pure]
+    simp only [indicator_of_mem, h, mem_iInter.2 h, tendsto_const_pure]
 #align antitone.tendsto_indicator Antitone.tendsto_indicator
 
-theorem tendsto_indicator_bunionᵢ_finset {ι} [Zero β] (s : ι → Set α) (f : α → β) (a : α) :
+theorem tendsto_indicator_biUnion_finset {ι} [Zero β] (s : ι → Set α) (f : α → β) (a : α) :
     Tendsto (fun n : Finset ι => indicator (⋃ i ∈ n, s i) f a) atTop
-      (pure <| indicator (unionᵢ s) f a) := by
-  rw [unionᵢ_eq_unionᵢ_finset s]
+      (pure <| indicator (iUnion s) f a) := by
+  rw [iUnion_eq_iUnion_finset s]
   refine' Monotone.tendsto_indicator (fun n : Finset ι => ⋃ i ∈ n, s i) _ f a
-  exact fun t₁ t₂ => bunionᵢ_subset_bunionᵢ_left
-#align tendsto_indicator_bUnion_finset tendsto_indicator_bunionᵢ_finset
+  exact fun t₁ t₂ => biUnion_subset_biUnion_left
+#align tendsto_indicator_bUnion_finset tendsto_indicator_biUnion_finset
 
 theorem Filter.EventuallyEq.support [Zero β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) :
     Function.support f =ᶠ[l] Function.support g := by

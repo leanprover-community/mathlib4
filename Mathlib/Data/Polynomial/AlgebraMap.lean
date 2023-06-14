@@ -44,14 +44,12 @@ variable [Semiring A] [Algebra R A]
 instance algebraOfAlgebra : Algebra R A[X]
     where
   smul_def' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
       exact Algebra.smul_def' _ _
   commutes' r p :=
-    toFinsupp_injective <|
-      by
+    toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
@@ -64,8 +62,7 @@ theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
 
 @[simp]
 theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
-  show toFinsupp (C (algebraMap _ _ r)) = _
-    by
+  show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 #align polynomial.to_finsupp_algebra_map Polynomial.toFinsupp_algebraMap
@@ -84,7 +81,7 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
--- porting note: removed `variable` because of redunant binder update annotation
+-- porting note: removed `variable` because of redundant binder update annotation
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
@@ -435,7 +432,7 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
-  ext s p
+  ext s
   simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 
@@ -512,10 +509,6 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.not_is_unit_X_sub_C Polynomial.not_isUnit_X_sub_C
 
 end Ring
-
--- porting note: workaround lean4#2074, this declaration works with
--- `set_option synthInstance.etaExperiment true`
-attribute [-instance] Ring.toNonAssocRing
 
 theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by

@@ -12,7 +12,7 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Common
 
 /-!
 # Option of a type
@@ -59,7 +59,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-fun _ _ _=> mem_unique
+  fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
@@ -281,7 +281,6 @@ theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases
 
 @[simp]
 theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
-
 #align option.orelse_none' Option.orElse_none'
 
 #align option.orelse_none Option.orElse_none
@@ -334,7 +333,7 @@ theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a 
 
 #align option.lift_or_get_some_some Option.liftOrGet_some_some
 
-/-- Given an element of `a : option α`, a default element `b : β` and a function `α → β`, apply this
+/-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
 def casesOn' : Option α → β → (α → β) → β
   | none, n, _ => n
@@ -363,24 +362,7 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
 -- porting note: workaround for leanprover/lean4#2049
-section recursor_workarounds
-
-/-- A computable version of `Option.rec`. Workaround until Lean has native support for this. -/
-def recC.{u_1, u} {α : Type u} {motive : Option α → Sort u_1} (none : motive none)
-  (some : (val : α) →  motive (some val)) :
-    (t : Option α) → motive t
-| Option.none => none
-| Option.some a => some a
-
-@[csimp]
-lemma rec_eq_recC : @Option.rec = @Option.recC := by
-  ext α motive none some o
-  induction o with
-  | none => rfl
-  | some a =>
-    rw [Option.recC]
-    
-end recursor_workarounds
+compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by

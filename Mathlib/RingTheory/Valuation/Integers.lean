@@ -74,8 +74,7 @@ variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
 
 theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
-  le_antisymm (hv.2 _) <|
-    by
+  le_antisymm (hv.2 _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
     exact mul_le_mul_left' (hv.2 (u⁻¹ : Units O)) _
@@ -120,8 +119,7 @@ theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) 
           (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
-    have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 :=
-      by
+    have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel hy, v.map_mul, v.map_mul]
       exact mul_le_mul_left' h _
     let ⟨z, hz⟩ := hv.3 this

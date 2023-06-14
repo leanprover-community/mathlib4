@@ -132,7 +132,7 @@ instance : Inhabited (Part α) :=
 theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
 #align part.not_mem_none Part.not_mem_none
 
-/-- The `some a` value in `Part` has a `true` domain and the
+/-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
   ⟨True, fun _ => a⟩
@@ -262,7 +262,7 @@ instance someDecidable (a : α) : Decidable (some a).Dom :=
   instDecidableTrue
 #align part.some_decidable Part.someDecidable
 
-/-- Retrieves the value of `a : part α` if it exists, and return the provided default value
+/-- Retrieves the value of `a : Part α` if it exists, and return the provided default value
 otherwise. -/
 def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
   if ha : a.Dom then a.get ha else d
@@ -322,6 +322,7 @@ theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) 
 #align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `Option α` into a `Part α`. -/
+@[coe]
 def ofOption : Option α → Part α
   | Option.none => none
   | Option.some a => some a

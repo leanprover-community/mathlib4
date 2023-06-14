@@ -274,17 +274,17 @@ section CompleteLattice
 variable [CompleteLattice α] (c : ClosureOperator α)
 
 @[simp]
-theorem closure_supᵢ_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
-  le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ_le fun i => c.monotone <| le_supᵢ f i) <|
-    c.monotone <| supᵢ_mono fun _ => c.le_closure _
-#align closure_operator.closure_supr_closure ClosureOperator.closure_supᵢ_closure
+theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
+  le_antisymm ((c.le_closure_iff _ _).1 <| iSup_le fun i => c.monotone <| le_iSup f i) <|
+    c.monotone <| iSup_mono fun _ => c.le_closure _
+#align closure_operator.closure_supr_closure ClosureOperator.closure_iSup_closure
 
 @[simp]
-theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
+theorem closure_iSup₂_closure (f : ∀ i, κ i → α) :
     c (⨆ (i) (j), c (f i j)) = c (⨆ (i) (j), f i j) :=
-  le_antisymm ((c.le_closure_iff _ _).1 <| supᵢ₂_le fun i j => c.monotone <| le_supᵢ₂ i j) <|
-    c.monotone <| supᵢ₂_mono fun _ _ => c.le_closure _
-#align closure_operator.closure_supr₂_closure ClosureOperator.closure_supᵢ₂_closure
+  le_antisymm ((c.le_closure_iff _ _).1 <| iSup₂_le fun i j => c.monotone <| le_iSup₂ i j) <|
+    c.monotone <| iSup₂_mono fun _ _ => c.le_closure _
+#align closure_operator.closure_supr₂_closure ClosureOperator.closure_iSup₂_closure
 
 end CompleteLattice
 
@@ -461,18 +461,18 @@ section CompleteLattice
 
 variable [CompleteLattice α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-theorem closure_supᵢ_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
-  l.closureOperator.closure_supᵢ_closure _
-#align lower_adjoint.closure_supr_closure LowerAdjoint.closure_supᵢ_closure
+theorem closure_iSup_closure (f : ι → α) : u (l (⨆ i, u (l (f i)))) = u (l (⨆ i, f i)) :=
+  l.closureOperator.closure_iSup_closure _
+#align lower_adjoint.closure_supr_closure LowerAdjoint.closure_iSup_closure
 
-theorem closure_supᵢ₂_closure (f : ∀ i, κ i → α) :
+theorem closure_iSup₂_closure (f : ∀ i, κ i → α) :
     u (l <| ⨆ (i) (j), u (l <| f i j)) = u (l <| ⨆ (i) (j), f i j) :=
-  l.closureOperator.closure_supᵢ₂_closure _
-#align lower_adjoint.closure_supr₂_closure LowerAdjoint.closure_supᵢ₂_closure
+  l.closureOperator.closure_iSup₂_closure _
+#align lower_adjoint.closure_supr₂_closure LowerAdjoint.closure_iSup₂_closure
 
 end CompleteLattice
 
--- Lemmas for `LowerAdjoint ((↑) : α → set β)`, where `SetLike α β`
+-- Lemmas for `LowerAdjoint ((↑) : α → Set β)`, where `SetLike α β`
 section CoeToSet
 
 variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
@@ -517,17 +517,17 @@ theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
 #align lower_adjoint.closure_union_closure LowerAdjoint.closure_union_closure
 
 @[simp]
-theorem closure_unionᵢ_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
-  SetLike.coe_injective <| l.closure_supᵢ_closure _
-#align lower_adjoint.closure_Union_closure LowerAdjoint.closure_unionᵢ_closure
+theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
+  SetLike.coe_injective <| l.closure_iSup_closure _
+#align lower_adjoint.closure_Union_closure LowerAdjoint.closure_iUnion_closure
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
-theorem closure_unionᵢ₂_closure (f : ∀ i, κ i → α) :
+theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=
-  SetLike.coe_injective <| l.closure_supᵢ₂_closure _
-#align lower_adjoint.closure_Union₂_closure LowerAdjoint.closure_unionᵢ₂_closure
+  SetLike.coe_injective <| l.closure_iSup₂_closure _
+#align lower_adjoint.closure_Union₂_closure LowerAdjoint.closure_iUnion₂_closure
 
 end CoeToSet
 

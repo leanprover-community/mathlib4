@@ -40,20 +40,16 @@ variable {C}
 
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/
 @[simps!]
-def pUnitExt (F G : C ⥤ Discrete PUnit) : F ≅ G := by
-  refine NatIso.ofComponents (fun X => eqToIso ?_) fun {X} {Y} f => ?_
-  · simp only [eq_iff_true_of_subsingleton]
-  · aesop_cat
+def pUnitExt (F G : C ⥤ Discrete PUnit) : F ≅ G :=
+  NatIso.ofComponents fun X => eqToIso (by simp only [eq_iff_true_of_subsingleton])
 #align category_theory.functor.punit_ext CategoryTheory.Functor.pUnitExt
 -- Porting note: simp does indeed fire for these despite the linter warning
 attribute [nolint simpNF] pUnitExt_hom_app_down_down pUnitExt_inv_app_down_down
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `pUnitExt` instead of this. -/
-theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G := by
-  refine Functor.ext (fun X => ?_) fun {X} {Y} f => ?_
-  · simp only [eq_iff_true_of_subsingleton]
-  · aesop_cat
+theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G :=
+  Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.pUnit_ext'
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
@@ -68,22 +64,10 @@ def equiv : Discrete PUnit ⥤ C ≌ C where
     { obj := fun F => F.obj ⟨⟨⟩⟩
       map := fun θ => θ.app ⟨⟨⟩⟩ }
   inverse := Functor.const _
-  unitIso := by
-    apply NatIso.ofComponents _ _
-    intro X
-    apply Discrete.natIso
-    rintro ⟨⟨⟩⟩
-    apply Iso.refl _
-    intros
-    ext ⟨⟨⟩⟩
-    simp
-  counitIso := by
-    refine' NatIso.ofComponents Iso.refl _
-    intro X Y f
-    dsimp; simp
+  unitIso := NatIso.ofComponents fun X => Discrete.natIso fun i => Iso.refl _
+  counitIso := NatIso.ofComponents Iso.refl
 #align category_theory.functor.equiv CategoryTheory.Functor.equiv
 
--- See note [dsimp, simp].
 end Functor
 
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
@@ -116,11 +100,9 @@ theorem equiv_pUnit_iff_unique :
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)
           ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.pUnitExt))
     exact
-      NatIso.ofComponents
-        (fun _ =>
-          { hom := default
-            inv := default })
-        fun {X} {Y} f => by aesop_cat
+      NatIso.ofComponents fun _ =>
+        { hom := default
+          inv := default }
 #align category_theory.equiv_punit_iff_unique CategoryTheory.equiv_pUnit_iff_unique
 
 end CategoryTheory

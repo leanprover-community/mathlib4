@@ -90,9 +90,7 @@ instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) 
 instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
-    -- Porting note: TODO this used to be a simple `simp [smul_add]` but that timeouts
-    simp only [smul_down, add_down]
-    rw [smul_add]
+    simp [smul_add]
 #align ulift.distrib_smul' ULift.distribSmul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
@@ -116,11 +114,9 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
   { ULift.mulAction' with
     smul_one := fun _ => by
       ext
-      dsimp only [smul_down, one_down]  -- Porting note: TODO this wasn't necessary
       simp [smul_one]
     smul_mul := fun _ _ _ => by
       ext
-      dsimp only [smul_down, mul_down] -- Porting note: TODO this wasn't necessary
       simp [smul_mul'] }
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'
 

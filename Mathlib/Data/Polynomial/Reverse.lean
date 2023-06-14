@@ -65,7 +65,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt
 
-/-- We prefer to use the bundled `revAt` over unbundled `revAtfun`. -/
+/-- We prefer to use the bundled `revAt` over unbundled `revAtFun`. -/
 @[simp]
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl
@@ -119,7 +119,6 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
     Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
       rw [revAt_invol]
     _ = f (revAt N i) := Finsupp.embDomain_apply _ _ _
-
 #align polynomial.coeff_reflect Polynomial.coeff_reflect
 
 @[simp]

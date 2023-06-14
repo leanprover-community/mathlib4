@@ -13,7 +13,7 @@ These classes are part of an incomplete refactor described
 However a subset of them are widely used in mathlib3,
 and it has been tricky to clean this up as this file was in core Lean 3.
 
-By themselves, these classes are not good replacements for the `monoid` / `group` etc structures
+By themselves, these classes are not good replacements for the `Monoid` / `Group` etc structures
 provided by mathlib, as they are not discoverable by `simp` unlike the current lemmas due to there
 being little to index on.
 
@@ -140,11 +140,11 @@ instance [IsIdempotent α op] : Lean.IsIdempotent op where
 /-
 -- The following type class doesn't seem very useful, a regular simp lemma should work for this.
 class is_inv (α : Type u) (β : Type v) (f : α → β) (g : out β → α) : Prop :=
-(inv : ∀ a, g (f a) = a)
+  (inv : ∀ a, g (f a) = a)
 
 -- The following one can also be handled using a regular simp lemma
 class is_idempotent (α : Type u) (f : α → α) : Prop :=
-(idempotent : ∀ a, f (f a) = f a)
+  (idempotent : ∀ a, f (f a) = f a)
 -/
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -324,7 +324,7 @@ end ExplicitRelationVariants
 
 end
 
--- Porting note: the `StrictWeakOrder` section has been ommitted.
+-- Porting note: the `StrictWeakOrder` section has been omitted.
 
 -- namespace StrictWeakOrder
 

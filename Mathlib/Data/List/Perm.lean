@@ -392,7 +392,7 @@ section Subperm
   a permutation of `l₂`. This is an analogue of `l₁ ⊆ l₂` which respects
   multiplicities of elements, and is used for the `≤` relation on multisets. -/
 def Subperm (l₁ l₂ : List α) : Prop :=
-  ∃ (l : _)(_ : l ~ l₁), l <+ l₂
+  ∃ (l : _) (_ : l ~ l₁), l <+ l₂
 #align list.subperm List.Subperm
 
 /-- `Subperm l₁ l₂`, denoted `l₁ <+~ l₂`, means that `l₁` is a sublist of
@@ -730,7 +730,6 @@ theorem Subperm.exists_of_length_lt {l₁ l₂ : List α} :
       · exact ⟨a, s.eq_of_length h ▸ Subperm.refl _⟩
     · exact (IH <| Nat.lt_of_succ_lt_succ h).imp fun a s =>
           (swap _ _ _).subperm_right.1 <| (subperm_cons _).2 s
-
 #align list.subperm.exists_of_length_lt List.Subperm.exists_of_length_lt
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ := by
@@ -1162,7 +1161,6 @@ theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : �
   exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
-
 #align list.perm.take_inter List.Perm.take_inter
 
 theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
@@ -1238,15 +1236,15 @@ theorem length_permutations (l : List α) : length (permutations l) = (length l)
 #align list.length_permutations List.length_permutations
 
 theorem mem_permutations_of_perm_lemma {is l : List α}
-    (H : l ~ [] ++ is → (∃ (ts' : _)(_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
+    (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
 #align list.mem_permutations_of_perm_lemma List.mem_permutations_of_perm_lemma
 
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
-      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
+      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
   show ∀ (ts is l : List α),
-      l ~ is ++ ts → (∃ (is' : _)(_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
+      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]
@@ -1272,8 +1270,8 @@ private theorem DecEq_eq {α : Type _} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
-    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (instBEqList),
-      @beq_iff_eq _ (@instBEq (List α) instDecidableEqList)]
+    show (l₁ == l₂) = _
+    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).bind (permutations'Aux b) ~

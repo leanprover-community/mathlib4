@@ -131,8 +131,7 @@ instance : EssSurj (functor r)
 
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
     (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
-    ∀ {a b : Quotient r} (f : a ⟶ b), P f :=
-  by
+    ∀ {a b : Quotient r} (f : a ⟶ b), P f := by
   rintro ⟨x⟩ ⟨y⟩ ⟨f⟩
   exact h f
 #align category_theory.quotient.induction CategoryTheory.Quotient.induction
@@ -143,8 +142,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
-    (functor r).map f = (functor r).map f' ↔ r f f' :=
-  by
+    (functor r).map f = (functor r).map f' ↔ r f f' := by
   constructor
   · erw [Quot.eq]
     intro h
@@ -180,8 +178,7 @@ def lift : Quotient r ⥤ D where
     exact F.map_comp f g
 #align category_theory.quotient.lift CategoryTheory.Quotient.lift
 
-theorem lift_spec : functor r ⋙ lift r F H = F :=
-  by
+theorem lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left
   · rintro X
     rfl
@@ -189,8 +186,7 @@ theorem lift_spec : functor r ⋙ lift r F H = F :=
     simp
 #align category_theory.quotient.lift_spec CategoryTheory.Quotient.lift_spec
 
-theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H :=
-  by
+theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
   · rintro X
@@ -205,7 +201,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents (fun X ↦ Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X ↦ Iso.refl _
 #align category_theory.quotient.lift.is_lift CategoryTheory.Quotient.lift.isLift
 
 @[simp]
@@ -219,8 +215,7 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
 #align category_theory.quotient.lift.is_lift_inv CategoryTheory.Quotient.lift.isLift_inv
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f :=
-  by
+    (lift r F H).map ((functor r).map f) = F.map f := by
   rw [← NatIso.naturality_1 (lift.isLift r F H)]
   dsimp
   simp

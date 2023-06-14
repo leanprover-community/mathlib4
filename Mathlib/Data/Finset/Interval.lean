@@ -77,7 +77,7 @@ variable {s t}
 
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
   ext u
-  simp_rw [mem_Icc, mem_image, exists_prop, mem_powerset]
+  simp_rw [mem_Icc, mem_image, mem_powerset]
   constructor
   · rintro ⟨hs, ht⟩
     exact ⟨u \ s, sdiff_le_sdiff_right ht, sup_sdiff_cancel_right hs⟩
@@ -87,7 +87,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
 
 theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
   ext u
-  simp_rw [mem_Ico, mem_image, exists_prop, mem_ssubsets]
+  simp_rw [mem_Ico, mem_image, mem_ssubsets]
   constructor
   · rintro ⟨hs, ht⟩
     exact ⟨u \ s, sdiff_lt_sdiff_right ht hs, sup_sdiff_cancel_right hs⟩

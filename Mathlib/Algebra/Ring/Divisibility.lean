@@ -12,7 +12,6 @@ Ported by: Matej Penciak
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
 
 /-!
 # Lemmas about divisibility in rings
@@ -58,7 +57,7 @@ variable [Semigroup α] [HasDistribNeg α] {a b c : α}
 `b` iff `a` divides `b`. -/
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
--- porting note: `simpa` doesn't close the goal with `rfl` anymore
+  -- porting note: `simpa` doesn't close the goal with `rfl` anymore
   (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
 #align dvd_neg dvd_neg
 
@@ -66,7 +65,7 @@ theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
 element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
--- porting note: `simpa` doesn't close the goal with `rfl` anymore
+  -- porting note: `simpa` doesn't close the goal with `rfl` anymore
   (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
 #align neg_dvd neg_dvd
 
@@ -105,14 +104,14 @@ theorem dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm
 /-- If an element `a` divides another element `c` in a ring, `a` divides the difference of another
 element `b` with `c` iff `a` divides `b`. -/
 theorem dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
---porting note: Needed to give `α` explicitly
+  --porting note: Needed to give `α` explicitly
   simpa only [← sub_eq_add_neg] using dvd_add_left ((dvd_neg (α := α)).2 h)
 #align dvd_sub_left dvd_sub_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the difference of `b` and
 another element `c` iff `a` divides `c`. -/
 theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
---porting note: Needed to give `α` explicitly
+  --porting note: Needed to give `α` explicitly
   rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
 #align dvd_sub_right dvd_sub_right
 

@@ -124,8 +124,7 @@ def isColimitMapCoconeCoforkEquiv :
         (Cofork.ofπ (G.map h) (by simp only [← G.map_comp, w]) : Cofork (G.map f) (G.map g)) :=
   (IsColimit.precomposeInvEquiv (diagramIsoParallelPair _) _).symm.trans <|
     IsColimit.equivIsoColimit <|
-      Cofork.ext (Iso.refl _) <|
-        by
+      Cofork.ext (Iso.refl _) <| by
         dsimp only [Cofork.π, Cofork.ofπ_ι_app]
         dsimp; rw [Category.comp_id, Category.id_comp]
 #align category_theory.limits.is_colimit_map_cocone_cofork_equiv CategoryTheory.Limits.isColimitMapCoconeCoforkEquiv

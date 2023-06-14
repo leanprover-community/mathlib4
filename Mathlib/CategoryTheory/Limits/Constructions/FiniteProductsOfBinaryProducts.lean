@@ -241,8 +241,7 @@ This is a helper lemma for `hasCofiniteProductsOfHasBinaryAndTerminal`, which is
 than this.
 -/
 private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct f
-  | 0 => fun f =>
-    by
+  | 0 => fun f => by
     letI : HasColimitsOfShape (Discrete (Fin 0)) C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence.{0} finZeroEquiv'.symm)
     infer_instance
