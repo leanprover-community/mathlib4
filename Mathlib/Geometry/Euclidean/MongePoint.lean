@@ -509,17 +509,24 @@ theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} : t.orthoce
 altitudes. -/
 theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : Fin 3} {p : P}
     (h₁₂ : i₁ ≠ i₂) (h₁ : p ∈ t.altitude i₁) (h₂ : p ∈ t.altitude i₂) : p = t.orthocenter := by
-  obtain ⟨i₃, h₂₃, h₁₃⟩ : ∃ i₃, i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by clear h₁ h₂; decide!
-  rw [t.altitude_eq_monge_plane h₁₃ h₁₂ h₂₃.symm] at h₁
-  rw [t.altitude_eq_monge_plane h₂₃ h₁₂.symm h₁₃.symm] at h₂
-  rw [orthocenter_eq_monge_point]
-  have ha : ∀ i, i₃ ≠ i → p ∈ t.monge_plane i₃ i := by
+  obtain ⟨i₃, h₂₃, h₁₃⟩ : ∃ i₃, i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by
+    clear h₁ h₂
+    -- porting note: was `decide!`
+    fin_cases i₁ <;> fin_cases i₂ <;> decide
+  rw [t.altitude_eq_mongePlane h₁₃ h₁₂ h₂₃.symm] at h₁
+  rw [t.altitude_eq_mongePlane h₂₃ h₁₂.symm h₁₃.symm] at h₂
+  rw [orthocenter_eq_mongePoint]
+  have ha : ∀ i, i₃ ≠ i → p ∈ t.mongePlane i₃ i := by
     intro i hi
-    have hi₁₂ : i₁ = i ∨ i₂ = i := by clear h₁ h₂; decide!
-    cases hi₁₂
+    have hi₁₂ : i₁ = i ∨ i₂ = i := by
+      clear h₁ h₂
+      -- porting note: was `decide!`
+      fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> fin_cases i <;>
+      simp at h₁₂ h₁₃ h₂₃ hi ⊢
+    cases' hi₁₂ with hi₁₂ hi₁₂
     · exact hi₁₂ ▸ h₂
     · exact hi₁₂ ▸ h₁
-  exact eq_monge_point_of_forall_mem_monge_plane ha
+  exact eq_mongePoint_of_forall_mem_mongePlane ha
 #align affine.triangle.eq_orthocenter_of_forall_mem_altitude Affine.Triangle.eq_orthocenter_of_forall_mem_altitude
 
 /-- The distance from the orthocenter to the reflection of the
