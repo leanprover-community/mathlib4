@@ -7,32 +7,32 @@ import Lean
 import Std.Tactic.TryThis
 
 /-!
-# The `variable!` command
+# The `variable?` command
 
 This defines a command like `variable` that automatically adds all missing typeclass
-arguments. For example, `variable! [Module R M]` is the same as
-`variable [Semiring R] [AddCommMonoid M] [Module R M]`. If any of these three instance arguments
-can be inferred from previous variables then they will be omitted.
+arguments. For example, `variable? [Module R M]` is the same as
+`variable [Semiring R] [AddCommMonoid M] [Module R M]`, though if any of these three instance
+arguments can be inferred from previous variables then they will be omitted.
 
 An inherent limitation with this command is that variables are recorded in the scope as
-*syntax*. This means that `variable!` needs to pretty print the expressions we get
+*syntax*. This means that `variable?` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
 -/
 
 namespace Mathlib.Command
 open Lean Elab Command Parser.Term Meta
 
-initialize registerTraceClass `variable!
+initialize registerTraceClass `variable?
 
-register_option variable!.maxSteps : Nat :=
+register_option variable?.maxSteps : Nat :=
   { defValue := 15
-    group := "variable!"
+    group := "variable?"
     descr :=
-      "The maximum number of instance arguments `variable!` will try to insert before giving up" }
+      "The maximum number of instance arguments `variable?` will try to insert before giving up" }
 
-register_option variable!.checkRedundant : Bool :=
+register_option variable?.checkRedundant : Bool :=
   { defValue := true
-    group := "variable!"
+    group := "variable?"
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
 /-- Get the type out of a bracketed binder. -/
@@ -43,24 +43,38 @@ private def bracketedBinderType : Syntax → Option Term
   | `(bracketedBinderF|[$[$_ :]? $ty])               => some ty
   | _                                                => none
 
-/-- The basic `variable!` command has the same syntax as `variable`, but it will auto-insert
+/-- The `variable?` command has the same syntax as `variable`, but it will auto-insert
 missing instance arguments wherever they are needed.
-Warning: the command does not check that earlier variables aren't implied by later ones.
+It does not add variables that can already be deduced from others in the current context.
+By default the command checks that variables aren't implied by earlier ones, but it does *not*
+check that earlier variables aren't implied by later ones.
 
-The `variable! binders => binders'` command is the same as `variable binders'`. The `binders'`
-are meant to be the completed list of `binders` without any missing instances.
-When the `=> binders'` clause is not present, then `variable!` suggests a completion.
-The purpose of this is to cache the sometimes slow computation.
+Unlike `variable`, the `variable?` command does not support changing variable binder types.
 
-The `variable!?` variant checks that the `binders'` clause is exactly what was inferred.
-It can also be used to recompute the cache. -/
-syntax (name := «variable!») "variable!" "?"? (ppSpace bracketedBinder)*
-  (" => " ppLine (ppSpace bracketedBinder)*)? : command
+The core algorithm is to try elaborating binders one at a time, and whenever there is a
+typeclass instance inference failure, it synthesizes binder syntax for it and adds it to
+the list of binders and tries again, recursively. There are no guarantees that this
+process gives the "correct" list of binders.
 
-macro "variable!?" binders:bracketedBinder* : command => `(command| variable! ? $binders*)
+Structures tagged with the `variable_alias` attribute can serve as aliases for a collection
+of typeclasses. For example, given
+```lean
+@[variable_alias]
+structure VectorSpace (k V : Type _) [Field k] [AddCommGroup V] [Module k V]
+```
+then `variable? [VectorSpace k V]` is
+equivalent to `variable {k V : Type _} [Field k] [AddCommGroup V] [Module k V]`, assuming
+that there are no pre-existing instances on `k` and `V`.
+Note that this is not a simple replacement: it only adds instances not inferrable
+from others in the current scope.
+
+A word of warning: the core algorithm depends on pretty printing, so if terms that appear
+in binders do not round trip, this algorithm can fail. That said, it has some support
+for quantified binders such as `[∀ i, F i]`. -/
+syntax (name := «variable?») "variable?" (ppSpace bracketedBinder)* : command
 
 /--
-Attribute to record aliases for the `variable!` command. It should be placed on a structure.
+Attribute to record aliases for the `variable?` command. It should be placed on a structure.
 
 Example:
 ```
@@ -68,14 +82,14 @@ Example:
 structure VectorSpace (k V : Type _)
   [Field k] [AddCommGroup V] [Module k V]
 ```
-Then `variable! [VectorSpace k V]` ensures that these three typeclasses are present in
+Then `variable? [VectorSpace k V]` ensures that these three typeclasses are present in
 the current scope.
 
-Notice that `VectorSpace` is not a class, but `variable!` allows non-classes with the
+Notice that `VectorSpace` is not a class; the `variable?` command allows non-classes with the
 `variable_alias` attribute to use instance binders.
 -/
 initialize variableAliasAttr : TagAttribute ←
-  registerTagAttribute `variable_alias "Attribute to record aliases for the `variable!` command."
+  registerTagAttribute `variable_alias "Attribute to record aliases for the `variable?` command."
 
 /-- Find a synthetic typeclass metavariable with no expr metavariables in its type. -/
 private def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
@@ -107,15 +121,15 @@ private partial def getSubproblem
       Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
       let fvarIds := (← getLCtx).getFVarIds
       if let some mvarId ← pendingActionableSynthMVar binder then
-        trace[«variable!»] "Actionable mvar:{mvarId}"
-        -- TODO alter goal based on configuration, for example Semiring -> CommRing
-        -- Find the new fvars that this instance problem depends on
+        trace[«variable?»] "Actionable mvar:{mvarId}"
+        -- TODO alter goal based on configuration, for example Semiring -> CommRing.
+        -- 1. Find the new fvars that this instance problem depends on:
         let fvarIds' := (← mvarId.getDecl).lctx.getFVarIds.filter
                           (fun fvar => !(fvarIds.contains fvar))
-        -- Abstract the instance problem with respect to these fvars
+        -- 2. Abstract the instance problem with respect to these fvars
         let goal ← mvarId.withContext do instantiateMVars <|
                     (← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
-        -- Note: this is not guaranteed to round-trip, but it's what we can do.
+        -- Note: pretty printing is not guaranteed to round-trip, but it's what we can do.
         let ty' ← PrettyPrinter.delab goal
         let binder' ← withRef binder `(bracketedBinderF| [$ty'])
         return some (← addMessageContext m!"{mvarId}", binder')
@@ -129,19 +143,20 @@ private partial def getSubproblem
 `i` is the index of the next binder that needs to be checked.
 
 The `toOmit` array keeps track of which binders should be removed at the end,
-in particular the `variable_alias` binders. -/
+in particular the `variable_alias` binders and any redundant binders. -/
 private partial def completeBinders (maxSteps : Nat) (gas : Nat)
+    (checkRedundant : Bool)
     (binders : TSyntaxArray `Lean.Parser.Term.bracketedBinder)
     (toOmit : Array Bool) (i : Nat) :
     TermElabM (TSyntaxArray `Lean.Parser.Term.bracketedBinder × Array Bool) := do
   if 0 < gas && i < binders.size then
     let binder := binders[i]!
-    trace[«variable!»]
+    trace[«variable?»]
       "Have {(← getLCtx).getFVarIds.size} fvars and {(← getLocalInstances).size} local instances{
       ""}. Looking at{indentD binder}"
     let sub? ← getSubproblem binder (bracketedBinderType binder).get!
     if let some (goalMsg, binder') := sub? then
-      trace[«variable!»] m!"new subproblem:{indentD binder'}"
+      trace[«variable?»] m!"new subproblem:{indentD binder'}"
       if binders.any (stop := i) (· == binder') then
         let binders' := binders.extract 0 i
         throwErrorAt binder
@@ -152,7 +167,7 @@ private partial def completeBinders (maxSteps : Nat) (gas : Nat)
           ""}Current variable command:{indentD (← `(command| variable $binders'*))}\n\n{
           ""}Local context for the unsatisfied dependency:{goalMsg}"
       let binders := binders.insertAt! i binder'
-      completeBinders maxSteps (gas - 1) binders toOmit i
+      completeBinders maxSteps (gas - 1) checkRedundant binders toOmit i
     else
       let lctx ← getLCtx
       let linst ← getLocalInstances
@@ -160,7 +175,7 @@ private partial def completeBinders (maxSteps : Nat) (gas : Nat)
       Term.withAutoBoundImplicit <|
       Term.elabBinders #[binder] fun bindersElab => do
         let types : Array Expr ← bindersElab.mapM (inferType ·)
-        trace[«variable!»] m!"elaborated binder types array = {types}"
+        trace[«variable?»] m!"elaborated binder types array = {types}"
         Term.synthesizeSyntheticMVarsNoPostponing -- checkpoint for withAutoBoundImplicit
         Term.withoutAutoBoundImplicit do
         let (binders, toOmit) := ← do
@@ -176,20 +191,22 @@ private partial def completeBinders (maxSteps : Nat) (gas : Nat)
               let binder' ← withRef binder `(bracketedBinderF|{_ : $ty})
               return (binders.set! i binder', toOmit.push true)
             -- Check that this wasn't already an instance
-            if variable!.checkRedundant.get (← getOptions) then
-              let res ← try withLCtx lctx linst <| trySynthInstance type catch _ => pure .none
-              if let .some _ := res then
+            let res ← try withLCtx lctx linst <| trySynthInstance type catch _ => pure .none
+            if let .some _ := res then
+              if checkRedundant then
                 let mvar ← mkFreshExprMVarAt lctx linst type
                 logWarningAt binder
-                  m!"Instance argument can be inferred from earlier arguments.{mvar.mvarId!}"
-            return (binders, toOmit.push false)
+                  m!"Instance argument can be inferred from earlier arguments.\n{mvar.mvarId!}"
+              return (binders, toOmit.push true)
+            else
+              return (binders, toOmit.push false)
           | _ => return (binders, toOmit.push false)
-        completeBinders maxSteps gas binders toOmit (i + 1)
+        completeBinders maxSteps gas checkRedundant binders toOmit (i + 1)
   else
     if gas == 0 && i < binders.size then
       let binders' := binders.extract 0 i
       logErrorAt binders[i]! m!"Maximum recursion depth for variables! reached. This might be a {
-        ""}bug, or you can try adjusting `set_option variable!.maxSteps {maxSteps}`{
+        ""}bug, or you can try adjusting `set_option variable?.maxSteps {maxSteps}`{
         ""}\n\nCurrent variable command:{indentD (← `(command| variable $binders'*))}"
     return (binders, toOmit)
 where
@@ -208,55 +225,44 @@ def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
     binders' := binders'.push <| ⟨binder.raw.unsetTrailing⟩
   return binders'
 
-/--
-Like `variable` but inserts missing instances automatically as extra variables.
-It does not add variables that can already be deduced from others in the current context.
-Use `variable!?` to see an equivalent `variable` command.
-
-Structures tagged with the `variable_alias` attribute can serve as aliases for a collection
-of typeclasses. For example, given
-```lean
-@[variable_alias]
-structure VectorSpace (k V : Type _)
-  [Field k] [AddCommGroup V] [Module k V]
-```
-then `variable!? [VectorSpace k V]` is
-equivalent to `variable {k V : Type _} [Field k] [AddCommGroup V] [Module k V]`.
-Note that this is not a simple replacement: it will only add new instances given the
-current scope.
-
-Unlike `variable`, the `variable!` command does not support changing variable binder types.
--/
-@[command_elab «variable!»] def elabVariables : CommandElab := fun stx =>
+@[command_elab «variable?», inherit_doc «variable?»]
+def elabVariables : CommandElab := fun stx =>
   match stx with
-  | `(variable! $_* => $binders*) => do
-    elabCommand <| ← `(variable $binders*)
-  | `(variable! $[?%$info]? $binders*) => do
-    let maxSteps := variable!.maxSteps.get (← getOptions)
-    trace[«variable!»] "variable!.maxSteps = {maxSteps}"
+  | `(variable? $binders*) => do
+    let checkRedundant := variable?.checkRedundant.get (← getOptions)
+    process stx checkRedundant true binders
+  | _ => throwUnsupportedSyntax
+where
+  extendScope (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
+    for binder in binders do
+      let varUIds ← getBracketedBinderIds binder |>.mapM
+        (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
+      modifyScope fun scope =>
+        { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }
+  process (stx : Syntax) (checkRedundant : Bool) (suggest : Bool)
+      (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
     let binders := cleanBinders binders
+    let maxSteps := variable?.maxSteps.get (← getOptions)
+    trace[«variable?»] "variable?.maxSteps = {maxSteps}"
     for binder in binders do
       if (bracketedBinderType binder).isNone then
-        throwErrorAt binder "variable! cannot update pre-existing variables"
-    let (binders, toOmit) ← runTermElabM fun _ => completeBinders maxSteps maxSteps binders #[] 0
+        throwErrorAt binder "variable? cannot update pre-existing variables"
+    let (binders, toOmit) ← runTermElabM fun _ =>
+      completeBinders maxSteps maxSteps checkRedundant binders #[] 0
     -- Elaborate the binders again, which also adds the infotrees.
     -- This also makes sure the list works with auto-bound implicits at the front.
     runTermElabM fun _ => Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
     -- Filter out omitted binders and then add the remaining binders to the scope
     let binders' := (binders.zip toOmit).filterMap (fun (b, omit) => if omit then none else some b)
-    let varComm ← `(command| variable! $binders* => $binders'*)
-    trace[«variable!»] "derived{indentD varComm}"
-    liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
-    for binder in binders' do
-      let varUIds ← getBracketedBinderIds binder |>.mapM
-        (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
-      modifyScope fun scope =>
-        { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }
-  | _ => throwUnsupportedSyntax
+    let varComm ← `(command| variable $binders'*)
+    trace[«variable?»] "derived{indentD varComm}"
+    if suggest then
+      liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
+    extendScope binders'
 
 end Mathlib.Command
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
-def ignoreVariable! : Lean.Linter.IgnoreFunction := fun _ stack _ =>
-  stack.matches [`null, none, `null, `Mathlib.Command.variable!]
+def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
+  stack.matches [`null, none, `null, `Mathlib.Command.variable?]
