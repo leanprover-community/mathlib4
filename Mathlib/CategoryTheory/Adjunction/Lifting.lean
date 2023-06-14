@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.Monad.Coequalizer
 
 This file gives two constructions for building left adjoints: the adjoint triangle theorem and the
 adjoint lifting theorem.
-The adjoint triangle theorem says that given a functor `U : B ⥤ C` with a left adjoint `F` such
+The adjoint triangle theorem concerns a functor `U : B ⥤ C` with a left adjoint `F` such
 that `ε_X : FUX ⟶ X` is a regular epi. Then for any category `A` with coequalizers of reflexive
 pairs, a functor `R : A ⥤ B` has a left adjoint if (and only if) the composite `R ⋙ U` does.
 Note that the condition on `U` regarding `ε_X` is automatically satisfied in the case when `U` is
