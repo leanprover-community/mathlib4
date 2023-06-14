@@ -95,7 +95,7 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _)
 #align category_theory.limits.evaluate_combined_cones CategoryTheory.Limits.evaluateCombinedCones
 
 /-- Stitching together limiting cones gives a limiting cone. -/
@@ -156,7 +156,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCocone  (combineCocones F c) ≅ (c k).cocone :=
-  Cocones.ext (Iso.refl _) (by aesop_cat)
+  Cocones.ext (Iso.refl _)
 #align category_theory.limits.evaluate_combined_cocones CategoryTheory.Limits.evaluateCombinedCocones
 
 /-- Stitching together colimiting cocones gives a colimiting cocone. -/
@@ -405,7 +405,7 @@ open CategoryTheory.prod
 the individual limits on objects. -/
 @[simps!]
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
-  NatIso.ofComponents (limitObjIsoLimitCompEvaluation F) <| by aesop_cat
+  NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 #align category_theory.limits.limit_iso_flip_comp_lim CategoryTheory.Limits.limitIsoFlipCompLim
 
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
@@ -413,7 +413,7 @@ def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
   let f := fun k =>
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
-  NatIso.ofComponents f <| by aesop_cat
+  NatIso.ofComponents f
 #align category_theory.limits.limit_flip_iso_comp_lim CategoryTheory.Limits.limitFlipIsoCompLim
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its limit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ lim`.
@@ -429,7 +429,7 @@ def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 the individual colimits on objects. -/
 @[simps!]
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
-  NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F) <| by aesop_cat
+  NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 #align category_theory.limits.colimit_iso_flip_comp_colim CategoryTheory.Limits.colimitIsoFlipCompColim
 
 /-- A variant of `colimit_iso_flip_comp_colim` where the arguments of `F` are flipped. -/
@@ -437,7 +437,7 @@ def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colim
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
   let f := fun k =>
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
-  NatIso.ofComponents f <| by aesop_cat
+  NatIso.ofComponents f
 #align category_theory.limits.colimit_flip_iso_comp_colim CategoryTheory.Limits.colimitFlipIsoCompColim
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its colimit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ colim`.

@@ -118,12 +118,9 @@ We use this in combination with `fullyFaithfulCancelRight` to show left adjoints
 -/
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
-  NatIso.ofComponents
-    (fun X =>
-      NatIso.ofComponents
-        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso)
-          (fun {X' Y} f => by funext ; simp))
-    (fun {X Y} f => by ext ; funext ; dsimp ; simp)
+  NatIso.ofComponents fun X =>
+    NatIso.ofComponents fun Y =>
+      ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 #align category_theory.adjunction.left_adjoints_coyoneda_equiv CategoryTheory.Adjunction.leftAdjointsCoyonedaEquiv
 
 /-- If `F` and `F'` are both left adjoint to `G`, then they are naturally isomorphic. -/

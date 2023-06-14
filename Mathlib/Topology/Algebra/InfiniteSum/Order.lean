@@ -265,9 +265,9 @@ alias summable_abs_iff ↔ Summable.of_abs Summable.abs
 theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :
     Finite ι := by
-  have H : ∀ s : Finset ι, s.card • b ≤ ∑' _i : ι, b := fun s => by
+  have H : ∀ s : Finset ι, s.card • b ≤ ∑' _ : ι, b := fun s => by
     simpa using sum_le_hasSum s (fun a _ => hb.le) hf.hasSum
-  obtain ⟨n, hn⟩ := Archimedean.arch (∑' _i : ι, b) hb
+  obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
   have : ∀ s : Finset ι, s.card ≤ n := fun s => by
     simpa [nsmul_le_nsmul_iff hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this

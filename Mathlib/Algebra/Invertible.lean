@@ -189,6 +189,7 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
   val_inv := by simp
   inv_val := by simp
 #align unit_of_invertible unitOfInvertible
+#align coe_unit_of_invertible unitOfInvertible_val
 
 theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩

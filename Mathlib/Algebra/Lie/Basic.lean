@@ -722,9 +722,9 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
       by cases x; cases y; simp at h; simp [h]  }
 
 @[simp, norm_cast]
-theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
+theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
-#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_to_linearMap
+#align lie_module_hom.coe_to_linear_map LieModuleHom.coe_toLinearMap
 
 @[simp]
 theorem map_smul (f : M →ₗ⁅R,L⁆ N) (c : R) (x : M) : f (c • x) = c • f x :=
@@ -950,7 +950,7 @@ end LieModuleHom
 /-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
 Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
-/-- The inverse function of an equivalence of Lie modules -/
+  /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M
   /-- The inverse function of an equivalence of Lie modules is a left inverse of the underlying
   function. -/
@@ -1058,7 +1058,7 @@ theorem refl_apply (m : M) : (refl : M ≃ₗ⁅R,L⁆ M) m = m :=
   rfl
 #align lie_module_equiv.refl_apply LieModuleEquiv.refl_apply
 
-/-- Lie module equivalences are syemmtric. -/
+/-- Lie module equivalences are symmetric. -/
 @[symm]
 def symm (e : M ≃ₗ⁅R,L⁆ N) : N ≃ₗ⁅R,L⁆ M :=
   { LieModuleHom.inverse e.toLieModuleHom e.invFun e.left_inv e.right_inv,

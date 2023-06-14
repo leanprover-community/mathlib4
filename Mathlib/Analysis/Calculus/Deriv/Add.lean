@@ -83,6 +83,11 @@ theorem deriv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g
   (hf.hasDerivAt.add hg.hasDerivAt).deriv
 #align deriv_add deriv_add
 
+-- porting note: new theorem
+theorem HasStrictDerivAt.add_const (c : F) (hf : HasStrictDerivAt f f' x) :
+    HasStrictDerivAt (fun y ↦ f y + c) f' x :=
+  add_zero f' ▸ hf.add (hasStrictDerivAt_const x c)
+
 theorem HasDerivAtFilter.add_const (hf : HasDerivAtFilter f f' x L) (c : F) :
     HasDerivAtFilter (fun y => f y + c) f' x L :=
   add_zero f' ▸ hf.add (hasDerivAtFilter_const x L c)
@@ -111,6 +116,11 @@ theorem deriv_add_const (c : F) : deriv (fun y => f y + c) x = deriv f x := by
 theorem deriv_add_const' (c : F) : (deriv fun y => f y + c) = deriv f :=
   funext fun _ => deriv_add_const c
 #align deriv_add_const' deriv_add_const'
+
+-- porting note: new theorem
+theorem HasStrictDerivAt.const_add (c : F) (hf : HasStrictDerivAt f f' x) :
+    HasStrictDerivAt (fun y ↦ c + f y) f' x :=
+  zero_add f' ▸ (hasStrictDerivAt_const x c).add hf
 
 theorem HasDerivAtFilter.const_add (c : F) (hf : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun y => c + f y) f' x L :=

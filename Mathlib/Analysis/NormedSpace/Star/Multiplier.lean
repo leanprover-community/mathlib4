@@ -71,7 +71,7 @@ If `x : 𝓜(𝕜, A)`, then `x.fst` and `x.snd` are what is usually referred to
 structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] extends
     (A →L[𝕜] A) × (A →L[𝕜] A) where
-  /-- The centrality codnition that the maps linear maps intertwine one another. -/
+  /-- The centrality condition that the maps linear maps intertwine one another. -/
   central : ∀ x y : A, snd x * y = x * fst y
 #align double_centralizer DoubleCentralizer
 
@@ -80,7 +80,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- porting note: `ext` was generating the wrong extensionality lemma; it deconstucted the `×`.
+-- porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -511,7 +511,6 @@ theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, �
   simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
     flip_apply, one_mul] <;>
   simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
-  exact mul_comm _ _
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -545,7 +544,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 `‖a‖ = ‖a.fst‖ = ‖a.snd‖`. -/
 
 
-/-- The normed group structure is inherited as the pullback under the ring monomoprhism
+/-- The normed group structure is inherited as the pullback under the ring monomorphism
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
 noncomputable instance : NormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)

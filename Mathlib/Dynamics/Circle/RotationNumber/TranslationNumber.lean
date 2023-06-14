@@ -876,8 +876,7 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=
   calc
     f x < x + ⌊τ f⌋ + 1 := f.map_lt_add_floor_translationNumber_add_one x
-    _ ≤ x + τ f + 1 := add_le_add_right (add_le_add_left (floor_le _) _) _
-    -- porting note: this ^ used to be `by mono; apply floor_le`
+    _ ≤ x + τ f + 1 := by gcongr; apply floor_le
 #align circle_deg1_lift.map_lt_add_translation_number_add_one CircleDeg1Lift.map_lt_add_translationNumber_add_one
 
 theorem lt_map_of_int_lt_translationNumber {n : ℤ} (h : ↑n < τ f) (x : ℝ) : x + n < f x :=

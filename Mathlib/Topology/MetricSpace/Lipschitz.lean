@@ -13,6 +13,7 @@ import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Bornology.Hom
+import Mathlib.Tactic.GCongr
 
 /-!
 # Lipschitz continuous functions
@@ -37,7 +38,7 @@ uniformly continuous.
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
@@ -312,7 +313,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ] {K
 protected theorem of_dist_le' {K : ℝ} (h : ∀ x y, dist (f x) (f y) ≤ K * dist x y) :
     LipschitzWith (Real.toNNReal K) f :=
   of_dist_le_mul fun x y =>
-    le_trans (h x y) <| mul_le_mul_of_nonneg_right (Real.le_coe_toNNReal K) dist_nonneg
+    le_trans (h x y) <| by gcongr; apply Real.le_coe_toNNReal
 #align lipschitz_with.of_dist_le' LipschitzWith.of_dist_le'
 
 protected theorem mk_one (h : ∀ x y, dist (f x) (f y) ≤ dist x y) : LipschitzWith 1 f :=
@@ -352,7 +353,7 @@ theorem nndist_le (hf : LipschitzWith K f) (x y : α) : nndist (f x) (f y) ≤ K
 #align lipschitz_with.nndist_le LipschitzWith.nndist_le
 
 theorem dist_le_mul_of_le (hf : LipschitzWith K f) (hr : dist x y ≤ r) : dist (f x) (f y) ≤ K * r :=
-  (hf.dist_le_mul x y).trans <| mul_le_mul_of_nonneg_left hr K.coe_nonneg
+  (hf.dist_le_mul x y).trans <| by gcongr
 #align lipschitz_with.dist_le_mul_of_le LipschitzWith.dist_le_mul_of_le
 
 theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
@@ -532,7 +533,7 @@ variable {K : ℝ≥0} {s : Set α} {f : α → β}
 protected theorem of_dist_le' {K : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y) :
     LipschitzOnWith (Real.toNNReal K) f s :=
   of_dist_le_mul fun x hx y hy =>
-    le_trans (h x hx y hy) <| mul_le_mul_of_nonneg_right (Real.le_coe_toNNReal K) dist_nonneg
+    le_trans (h x hx y hy) <| by gcongr; apply Real.le_coe_toNNReal
 #align lipschitz_on_with.of_dist_le' LipschitzOnWith.of_dist_le'
 
 protected theorem mk_one (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ dist x y) :
@@ -651,8 +652,7 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
     calc
       f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
-      _ ≤ f t + K * (dist y z + dist y t) :=
-        add_le_add_left (mul_le_mul_of_nonneg_left (dist_triangle_left _ _ _) K.2) _
+      _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
     refine' le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) _
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
@@ -664,7 +664,8 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
     g x ≤ f z + K * dist x z := ciInf_le (B x) _
     _ ≤ f z + K * dist y z + K * dist x y := by
       rw [add_assoc, ← mul_add, add_comm (dist y z)]
-      exact add_le_add_left (mul_le_mul_of_nonneg_left (dist_triangle _ _ _) K.2) _
+      gcongr
+      apply dist_triangle
 #align lipschitz_on_with.extend_real LipschitzOnWith.extend_real
 
 /-- A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz

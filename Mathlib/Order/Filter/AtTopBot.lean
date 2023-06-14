@@ -241,6 +241,18 @@ protected theorem Tendsto.eventually_ne_atBot [Preorder β] [NoMinOrder β] {f :
   hf.eventually (eventually_ne_atBot c)
 #align filter.tendsto.eventually_ne_at_bot Filter.Tendsto.eventually_ne_atBot
 
+theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
+    (∀ᶠ x in atTop, ∀ y, x ≤ y → p y) ↔ ∀ᶠ x in atTop, p x := by
+  refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
+  rcases (hasBasis_iInf_principal_finite _).eventually_iff.1 h with ⟨S, hSf, hS⟩
+  refine mem_iInf_of_iInter hSf (V := fun x ↦ Ici x.1) (fun _ ↦ Subset.rfl) fun x hx y hy ↦ ?_
+  simp only [mem_iInter] at hS hx
+  exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
+
+theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
+    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
+  eventually_forall_ge_atTop (α := αᵒᵈ)
+
 theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
     (@atTop α _).HasBasis (fun _ => True) Ioi :=
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
@@ -1001,7 +1013,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to infinity
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
@@ -1010,7 +1022,7 @@ theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
   exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
 #align filter.tendsto_const_mul_at_top_iff_pos Filter.tendsto_const_mul_atTop_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to infinity
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r := by
@@ -1133,42 +1145,42 @@ theorem tendsto_mul_const_atBot_iff [NeBot l] :
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff]
 #align filter.tendsto_mul_const_at_bot_iff Filter.tendsto_mul_const_atBot_iff
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
 infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atTop ↔ r < 0 := by
   simp [tendsto_const_mul_atTop_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_top_iff_neg Filter.tendsto_const_mul_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
 infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop ↔ r < 0 := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_neg h]
 #align filter.tendsto_mul_const_at_top_iff_neg Filter.tendsto_mul_const_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
 negative infinity if and only if `0 < r. `-/
 theorem tendsto_const_mul_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atBot ↔ 0 < r := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_bot_iff_pos Filter.tendsto_const_mul_atBot_iff_pos
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
 negative infinity if and only if `0 < r. `-/
 theorem tendsto_mul_const_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff_pos h]
 #align filter.tendsto_mul_const_at_bot_iff_pos Filter.tendsto_mul_const_atBot_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, r * f x` tends to negative
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to negative
 infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atBot ↔ r < 0 := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atTop_atBot]
 #align filter.tendsto_const_mul_at_bot_iff_neg Filter.tendsto_const_mul_atBot_iff_neg
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `λ x, f x * r` tends to negative
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to negative
 infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot ↔ r < 0 := by
@@ -1486,7 +1498,7 @@ theorem eventually_atBot_curry [SemilatticeInf α] [SemilatticeInf β] {p : α �
 
 /-- A function `f` maps upwards closed sets (atTop sets) to upwards closed sets when it is a
 Galois insertion. The Galois "insertion" and "connection" is weakened to only require it to be an
-insertion and a connetion above `b'`. -/
+insertion and a connection above `b'`. -/
 theorem map_atTop_eq_of_gc [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (g : β → α) (b' : β)
     (hf : Monotone f) (gc : ∀ a, ∀ b ≥ b', f a ≤ b ↔ a ≤ g b) (hgi : ∀ b ≥ b', b ≤ f (g b)) :
     map f atTop = atTop := by
@@ -1728,12 +1740,12 @@ theorem tendsto_atBot_of_monotone_of_subseq [Preorder ι] [Preorder α] {u : ι 
 #align filter.tendsto_at_bot_of_monotone_of_subseq Filter.tendsto_atBot_of_monotone_of_subseq
 
 /-- Let `f` and `g` be two maps to the same commutative monoid. This lemma gives a sufficient
-condition for comparison of the filter `atTop.map (λ s, ∏ b in s, f b)` with
-`atTop.map (λ s, ∏ b in s, g b)`. This is useful to compare the set of limit points of
+condition for comparison of the filter `atTop.map (fun s ↦ ∏ b in s, f b)` with
+`atTop.map (fun s ↦ ∏ b in s, g b)`. This is useful to compare the set of limit points of
 `Π b in s, f b` as `s → atTop` with the similar set for `g`. -/
 @[to_additive "Let `f` and `g` be two maps to the same commutative additive monoid. This lemma gives
-a sufficient condition for comparison of the filter `atTop.map (λ s, ∑ b in s, f b)` with
-`atTop.map (λ s, ∑ b in s, g b)`. This is useful to compare the set of limit points of
+a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b in s, f b)` with
+`atTop.map (fun s ↦ ∑ b in s, g b)`. This is useful to compare the set of limit points of
 `∑ b in s, f b` as `s → atTop` with the similar set for `g`."]
 theorem map_atTop_finset_prod_le_of_prod_eq [CommMonoid α] {f : β → α} {g : γ → α}
     (h_eq : ∀ u : Finset γ,
@@ -1937,7 +1949,7 @@ end
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
-`atTop.map (λ s, ∏ i in s, f (g i))` and `atTop.map (λ s, ∏ i in s, f i)` coincide.
+`atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
 
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions.-/
@@ -1963,7 +1975,7 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to an additive commutative monoid. Suppose that `f x = 0` outside of the range of `g`. Then the
-filters `atTop.map (λ s, ∑ i in s, f (g i))` and `atTop.map (λ s, ∑ i in s, f i)` coincide.
+filters `atTop.map (fun s ↦ ∑ i in s, f (g i))` and `atTop.map (fun s ↦ ∑ i in s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions.-/

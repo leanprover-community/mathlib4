@@ -23,7 +23,7 @@ GITHUB_TOKEN_FILE = 'port-repos/github-token'
 github_token = open(GITHUB_TOKEN_FILE).read().strip()
 
 mathlib3_root = 'port-repos/mathlib/src'
-mathlib4_root = 'Mathlib/'
+mathlib4_root = './'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
@@ -75,8 +75,8 @@ def get_mathlib4_module_commit_info(contents):
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
 data = dict()
 for path4 in Path(mathlib4_root).glob('**/*.lean'):
-    if path4.relative_to(mathlib4_root).parts[0] in \
-       ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
+    # we definitely do not want to look in `port-repos` here!
+    if path4.relative_to(mathlib4_root).parts[0] not in ('Mathlib', 'Archive', 'Counterexamples'):
         continue
     module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
@@ -96,7 +96,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         mathlib4_pr = None
 
     data[module] = {
-        'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
+        'mathlib4_file': str(path4.relative_to(mathlib4_root)),
         'mathlib4_pr': mathlib4_pr,
         'source': dict(repo=repo, commit=commit)
     }

@@ -69,7 +69,7 @@ Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 
 universe u
 
-/-- A `EuclideanDomain` is an non-trivial commutative ring with a division and a remainder,
+/-- A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder,
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well founded relation

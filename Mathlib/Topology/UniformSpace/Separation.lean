@@ -185,7 +185,7 @@ theorem separationRel_comap {f : α → β}
 #align separation_rel_comap separationRel_comap
 
 protected theorem Filter.HasBasis.separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
-    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_hi : p i), s i := by
+    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_ : p i), s i := by
   unfold separationRel
   rw [h.sInter_sets]
 #align filter.has_basis.separation_rel Filter.HasBasis.separationRel
@@ -367,7 +367,7 @@ instance [Inhabited α] : Inhabited (SeparationQuotient α) :=
   inferInstanceAs (Inhabited (Quotient (separationSetoid α)))
 
 lemma mk_eq_mk {x y : α} : (⟦x⟧ : SeparationQuotient α) = ⟦y⟧ ↔ Inseparable x y :=
-Quotient.eq'.trans separationRel_iff_inseparable
+  Quotient.eq'.trans separationRel_iff_inseparable
 #align uniform_space.separation_quotient.mk_eq_mk UniformSpace.SeparationQuotient.mk_eq_mk
 
 /-- Factoring functions to a separated space through the separation quotient. -/

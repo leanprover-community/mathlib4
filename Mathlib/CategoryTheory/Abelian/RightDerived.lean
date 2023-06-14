@@ -22,7 +22,7 @@ out of a category with injective resolutions.
 
 The definition is
 ```
-injective_resolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homologyFunctor D _ n
+injectiveResolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homologyFunctor D _ n
 ```
 that is, we pick an injective resolution (thought of as an object of the homotopy category),
 we apply `F` objectwise, and compute `n`-th homology.
@@ -191,7 +191,7 @@ open CategoryTheory.Preadditive
 variable [Abelian C] [Abelian D] [Additive F]
 
 /-- If `PreservesFiniteLimits F` and `Mono f`, then `Exact (F.map f) (F.map g)` if
-`exact f g`. -/
+`Exact f g`. -/
 theorem preserves_exact_of_preservesFiniteLimits_of_mono [PreservesFiniteLimits F] [Mono f]
     (ex : Exact f g) : Exact (F.map f) (F.map g) :=
   Abelian.exact_of_is_kernel _ _ (by simp [← Functor.map_comp, ex.w]) <|
@@ -332,4 +332,3 @@ def rightDerivedZeroIsoSelf [EnoughInjectives C] [PreservesFiniteLimits F] : F.r
 #align category_theory.abelian.functor.right_derived_zero_iso_self CategoryTheory.Abelian.Functor.rightDerivedZeroIsoSelf
 
 end CategoryTheory.Abelian.Functor
-

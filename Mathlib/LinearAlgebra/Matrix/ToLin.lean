@@ -248,8 +248,7 @@ variable [Fintype n]
 @[simp]
 theorem Matrix.mulVecLin_one [DecidableEq n] :
     Matrix.mulVecLin (1 : Matrix n n R) = LinearMap.id := by
-  ext
-  simp [LinearMap.one_apply, stdBasis_apply]
+  ext; simp [Matrix.one_apply, Pi.single_apply]
 #align matrix.mul_vec_lin_one Matrix.mulVecLin_one
 
 @[simp]
@@ -858,7 +857,7 @@ theorem toMatrix_lsmul (x : R) :
   toMatrix_distrib_mul_action_toLinearMap b x
 #align algebra.to_matrix_lsmul Algebra.toMatrix_lsmul
 
-/-- `leftMulMatrix b x` is the matrix corresponding to the linear map `λ y, x * y`.
+/-- `leftMulMatrix b x` is the matrix corresponding to the linear map `fun y ↦ x * y`.
 
 `leftMulMatrix_eq_repr_mul` gives a formula for the entries of `leftMulMatrix`.
 

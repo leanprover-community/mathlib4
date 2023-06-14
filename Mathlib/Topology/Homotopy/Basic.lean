@@ -154,7 +154,7 @@ theorem coe_toContinuousMap (F : Homotopy f₀ f₁) : ⇑F.toContinuousMap = F 
   rfl
 #align continuous_map.homotopy.coe_to_continuous_map ContinuousMap.Homotopy.coe_toContinuousMap
 
-/-- Currying a homotopy to a continuous function fron `I` to `C(X, Y)`.
+/-- Currying a homotopy to a continuous function from `I` to `C(X, Y)`.
 -/
 def curry (F : Homotopy f₀ f₁) : C(I, C(X, Y)) :=
   F.toContinuousMap.curry

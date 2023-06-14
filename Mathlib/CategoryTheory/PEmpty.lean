@@ -25,33 +25,21 @@ namespace CategoryTheory
 namespace Functor
 
 variable (C : Type u) [Category.{v} C]
-/- Porting note: `aesop_cat` could not close any of the goals `tidy` did.
-Switched to more explicit construction -/
+
 /-- Equivalence between two empty categories. -/
 def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty where
   functor :=
     { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim
-      map_comp := fun {X} _ _ _ _ => X.as.elim }
+      map := fun {X} _ _ => X.as.elim }
   inverse :=
     { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim
-      map_comp := fun {X} _ _ _ _ => X.as.elim }
+      map := fun {X} _ _ => X.as.elim }
   unitIso :=
-    { hom :=
-        { app := fun X => X.as.elim
-          naturality := fun {X} _ _ => X.as.elim }
-      inv :=
-        { app := fun X => X.as.elim
-          naturality := fun {X} _ _ => X.as.elim } }
+    { hom := { app := fun X => X.as.elim }
+      inv := { app := fun X => X.as.elim } }
   counitIso :=
-    { hom :=
-        { app := fun X => X.as.elim
-          naturality := fun {X} _ _ => X.as.elim }
-      inv :=
-        { app := fun X => X.as.elim
-          naturality := fun {X} _ _ => X.as.elim } }
-  functor_unitIso_comp := fun X => X.as.elim
+    { hom := { app := fun X => X.as.elim }
+      inv := { app := fun X => X.as.elim } }
 #align category_theory.functor.empty_equivalence CategoryTheory.Functor.emptyEquivalence
 
 /-- The canonical functor out of the empty category. -/

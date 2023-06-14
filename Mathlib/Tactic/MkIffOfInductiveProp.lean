@@ -385,7 +385,7 @@ For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 See also the `mk_iff` user attribute.
 -/
-syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
+syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace ident : command
 
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>

@@ -12,6 +12,7 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.GCongr
 
 /-!
 # Edge density
@@ -220,7 +221,8 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
     |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ - δ ^ 2 := by
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
-    exact mul_le_mul_of_nonneg_right (hδ₁.le.trans (by norm_num)) hδ₀
+    gcongr
+    exact hδ₁.le.trans (by norm_num)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂
@@ -236,10 +238,11 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
-  refine' sub_le_sub_left (mul_le_mul ((le_div_iff _).2 hs₂) ((le_div_iff _).2 ht₂) hδ₁.le _) _
-  · exact_mod_cast h₁.card_pos
-  · exact_mod_cast h₂.card_pos
-  · apply div_nonneg <;> exact_mod_cast Nat.zero_le _
+  gcongr
+  · refine' (le_div_iff _).2 hs₂
+    exact_mod_cast h₁.card_pos
+  · refine' (le_div_iff _).2 ht₂
+    exact_mod_cast h₂.card_pos
 #align rel.abs_edge_density_sub_edge_density_le_two_mul_sub_sq Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq
 
 /-- If `s₂ ⊆ s₁`, `t₂ ⊆ t₁` and they take up all but a `δ`-proportion, then the difference in edge

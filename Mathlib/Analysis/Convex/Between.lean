@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 
 ! This file was ported from Lean 3 source module analysis.convex.between
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
+! leanprover-community/mathlib commit 571e13cacbed7bf042fd3058ce27157101433842
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -68,6 +68,15 @@ theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
 theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
   ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
 #align right_mem_affine_segment right_mem_affineSegment
+
+@[simp]
+theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
+  -- porting note: added as this doesn't do anything in `simp_rw` any more
+  rw [affineSegment]
+  -- porting note: added `_ _` and `Function.const`
+  simp_rw [lineMap_same, AffineMap.coe_const _ _, Function.const,
+    (Set.nonempty_Icc.mpr zero_le_one).image_const]
+#align affine_segment_same affineSegment_same
 
 variable {R}
 

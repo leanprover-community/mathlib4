@@ -218,7 +218,8 @@ and checking naturality only in the forward direction.
 -/
 @[simps]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
-    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f) :
+    (naturality : ∀ {X Y : C} (f : X ⟶ Y),
+      F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by aesop_cat) :
     F ≅ G where
   hom := { app := fun X => (app X).hom }
   inv :=

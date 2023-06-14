@@ -70,7 +70,7 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
 #align pre_ergodic.measure_self_or_compl_eq_zero PreErgodic.measure_self_or_compl_eq_zero
 
 /-- On a probability space, the (pre)ergodicity condition is a zero one law. -/
-theorem prob_eq_zero_or_one [ProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
+theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
   simpa [hs] using hf.measure_self_or_compl_eq_zero hs hs'
 #align pre_ergodic.prob_eq_zero_or_one PreErgodic.prob_eq_zero_or_one
@@ -162,7 +162,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet
 
 section IsFiniteMeasure
 
-variable [FiniteMeasure μ]
+variable [IsFiniteMeasure μ]
 
 theorem ae_empty_or_univ_of_preimage_ae_le (hf : Ergodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s ≤ᵐ[μ] s) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=

@@ -1028,7 +1028,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
-/-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
+/-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
 def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 #align equiv.nat_sum_punit_equiv_nat Equiv.natSumPUnitEquivNat
@@ -1315,7 +1315,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
+    exacts [dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only

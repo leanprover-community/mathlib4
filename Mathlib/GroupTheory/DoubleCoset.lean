@@ -18,7 +18,7 @@ import Mathlib.Data.Set.Basic
 # Double cosets
 
 This file defines double cosets for two subgroups `H K` of a group `G` and the quotient of `G` by
-the double coset relation, i.e. `H \ G / K`. We also prove that `G` can be writen as a disjoint
+the double coset relation, i.e. `H \ G / K`. We also prove that `G` can be written as a disjoint
 union of the double cosets and that if one of `H` or `K` is the trivial group (i.e. `⊥` ) then
 this is the usual left or right quotient of a group by a subgroup.
 

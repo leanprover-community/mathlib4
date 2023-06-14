@@ -140,11 +140,11 @@ instance [IsIdempotent α op] : Lean.IsIdempotent op where
 /-
 -- The following type class doesn't seem very useful, a regular simp lemma should work for this.
 class is_inv (α : Type u) (β : Type v) (f : α → β) (g : out β → α) : Prop :=
-(inv : ∀ a, g (f a) = a)
+  (inv : ∀ a, g (f a) = a)
 
 -- The following one can also be handled using a regular simp lemma
 class is_idempotent (α : Type u) (f : α → α) : Prop :=
-(idempotent : ∀ a, f (f a) = f a)
+  (idempotent : ∀ a, f (f a) = f a)
 -/
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -222,7 +222,7 @@ class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, Is
 class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
-`λ a b, ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+`fun a b ↦ ¬ lt a b ∧ ¬ lt b a` is transitive. -/
 class IsIncompTrans (α : Type u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
@@ -324,7 +324,7 @@ end ExplicitRelationVariants
 
 end
 
--- Porting note: the `StrictWeakOrder` section has been ommitted.
+-- Porting note: the `StrictWeakOrder` section has been omitted.
 
 -- namespace StrictWeakOrder
 

@@ -792,7 +792,7 @@ protected theorem mk_uniformity_basis_le {β : Type _} {p : β → Prop} {f : β
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_setOf.2 hx.le)⟩
 #align metric.mk_uniformity_basis_le Metric.mk_uniformity_basis_le
 
-/-- Contant size closed neighborhoods of the diagonal form a basis
+/-- Constant size closed neighborhoods of the diagonal form a basis
 of the uniformity filter. -/
 theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=
@@ -863,7 +863,7 @@ theorem totallyBounded_iff {s : Set α} :
 space from finitely many data. -/
 theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
-        ∃ (β : Type u)(_ : Fintype β)(F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
+        ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
   cases' s.eq_empty_or_nonempty with hs hs
   · rw [hs]
@@ -1509,8 +1509,8 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 #align metric.cauchy_seq_iff' Metric.cauchySeq_iff'
 
 -- see Note [nolint_ge]
-/-- In a pseudometric space, unifom Cauchy sequences are characterized by the fact that, eventually,
-the distance between all its elements is uniformly, arbitrarily small -/
+/-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
+eventually, the distance between all its elements is uniformly, arbitrarily small -/
 -- porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type _} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),

@@ -1199,7 +1199,7 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
 end Induce
 
 /-- Given a subgraph and a set of vertices, delete all the vertices from the subgraph,
-if present. Any edges indicent to the deleted vertices are deleted as well. -/
+if present. Any edges incident to the deleted vertices are deleted as well. -/
 @[reducible]
 def deleteVerts (G' : G.Subgraph) (s : Set V) : G.Subgraph :=
   G'.induce (G'.verts \ s)

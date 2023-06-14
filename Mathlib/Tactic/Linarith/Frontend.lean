@@ -58,8 +58,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us

@@ -23,7 +23,7 @@ classes and allows to transfer order instances.
 * `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
   `IsTotal α (≤)`.
 
-### Transfering orders
+### Transferring orders
 
 - `Order.Preimage`, `Preorder.lift`: Transfers a (pre)order on `β` to an order on `α`
   using a function `f : α → β`.

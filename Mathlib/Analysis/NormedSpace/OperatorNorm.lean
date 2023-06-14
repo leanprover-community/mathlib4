@@ -355,7 +355,7 @@ protected theorem tmp_closedBall_div_subset {a b : ℝ} (ha : 0 < a) (hb : 0 < b
   rw [mem_closedBall_zero_iff] at hf hx⊢
   calc
     ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-    _ ≤ a / b * b := (mul_le_mul hf hx (norm_nonneg _) (div_pos ha hb).le)
+    _ ≤ a / b * b := by gcongr
     _ = a := div_mul_cancel a hb.ne.symm
 #align continuous_linear_map.tmp_closed_ball_div_subset ContinuousLinearMap.tmp_closedBall_div_subset
 
