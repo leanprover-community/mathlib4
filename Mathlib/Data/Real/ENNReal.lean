@@ -4,20 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit c1686dff26eaecf4efd4edd141ebf78de309ae80
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Extended non-negative reals
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
-and of the extended distance `edist` in a `EMetricSpace`.
+and of the extended distance `edist` in an `EMetricSpace`.
 In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
 and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
 
@@ -164,7 +165,7 @@ protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
-/-- `of_real x` returns `x` if it is nonnegative, `0` otherwise. -/
+/-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
 protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 #align ennreal.of_real ENNReal.ofReal
 
@@ -430,7 +431,7 @@ theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : (⨅ x : { x // x ≠
 #align ennreal.cinfi_ne_top ENNReal.cinfi_ne_top
 
 theorem iInf_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨅ (x) (_h : x ≠ ∞), f x) = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
+    (⨅ (x) (_ : x ≠ ∞), f x) = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
 #align ennreal.infi_ne_top ENNReal.iInf_ne_top
 
 theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : (⨆ x : { x // x ≠ ∞ }, f x) = ⨆ x : ℝ≥0, f x :=
@@ -438,7 +439,7 @@ theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : (⨆ x : { x // x ≠
 #align ennreal.csupr_ne_top ENNReal.csupr_ne_top
 
 theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    (⨆ (x) (_h : x ≠ ∞), f x) = ⨆ x : ℝ≥0, f x :=
+    (⨆ (x) (_ : x ≠ ∞), f x) = ⨆ x : ℝ≥0, f x :=
   @iInf_ne_top αᵒᵈ _ _
 #align ennreal.supr_ne_top ENNReal.iSup_ne_top
 
@@ -464,6 +465,7 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
 #align ennreal.coe_of_nnreal_hom ENNReal.coe_ofNNRealHom
 
+-- TODO: generalize some of these (and subsequent lemmas about `smul`) to `WithTop α`
 section Actions
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
@@ -559,6 +561,15 @@ theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
+-- porting note: added missing `DecidableEq R`
+theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
+    c • ∞ = if c = 0 then 0 else ∞ := by
+  rw [← smul_one_mul, mul_top']
+  -- porting note: need the primed version of `one_ne_zero` now
+  simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
+#align ennreal.smul_top ENNReal.smul_top
+
 -- porting note: todo: assume `n ≠ 0` instead of `0 < n`
 -- porting note: todo: generalize to `WithTop`
 theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
@@ -590,7 +601,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
     rw [← or_assoc, or_iff_not_imp_right, or_iff_not_imp_right]
     intro hb ha
     exact ⟨lt_top_of_mul_ne_top_left h.ne hb, lt_top_of_mul_ne_top_right h.ne ha⟩
-  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne, simp, simp]
+  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne; simp; simp]
 #align ennreal.mul_lt_top_iff ENNReal.mul_lt_top_iff
 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
@@ -751,11 +762,11 @@ protected theorem le_of_add_le_add_right : a ≠ ∞ → b + a ≤ c + a → b �
   WithTop.le_of_add_le_add_right
 #align ennreal.le_of_add_le_add_right ENNReal.le_of_add_le_add_right
 
-protected theorem add_lt_add_left : a ≠ ∞ → b < c → a + b < a + c :=
+@[gcongr] protected theorem add_lt_add_left : a ≠ ∞ → b < c → a + b < a + c :=
   WithTop.add_lt_add_left
 #align ennreal.add_lt_add_left ENNReal.add_lt_add_left
 
-protected theorem add_lt_add_right : a ≠ ∞ → b < c → b + a < c + a :=
+@[gcongr] protected theorem add_lt_add_right : a ≠ ∞ → b < c → b + a < c + a :=
   WithTop.add_lt_add_right
 #align ennreal.add_lt_add_right ENNReal.add_lt_add_right
 
@@ -889,7 +900,7 @@ theorem iInter_Ioi_coe_nat : (⋂ n : ℕ, Ioi (n : ℝ≥0∞)) = {∞} := by
 #align ennreal.Inter_Ioi_coe_nat ENNReal.iInter_Ioi_coe_nat
 
 -- porting note: todo: generalize to `WithTop`
-theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
+@[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
@@ -947,7 +958,7 @@ end CompleteLattice
 section Mul
 
 -- porting note: todo: generalize to `WithTop`
-@[mono]
+@[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
   rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
   lift a to ℝ≥0 using ne_top_of_lt aa'
@@ -975,6 +986,10 @@ theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0�
   | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
+@[gcongr] protected theorem pow_lt_pow_of_lt_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
+    a ^ n < b ^ n :=
+  ENNReal.pow_strictMono hn h
+
 theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 #align ennreal.max_mul ENNReal.max_mul
 
@@ -990,6 +1005,14 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
     using mul_le_mul_left' h (↑a⁻¹)
 #align ennreal.mul_left_strict_mono ENNReal.mul_left_strictMono
+
+@[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    a * b < a * c :=
+  ENNReal.mul_left_strictMono h0 hinf bc
+
+@[gcongr] protected theorem mul_lt_mul_right' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
+    b * a < c * a :=
+  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
 -- porting note: todo: generalize to `WithTop`
 theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
@@ -1477,6 +1500,11 @@ theorem le_inv_iff_le_inv : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
   simpa only [inv_inv] using @ENNReal.inv_le_inv a⁻¹ b
 #align ennreal.le_inv_iff_le_inv ENNReal.le_inv_iff_le_inv
 
+@[gcongr] protected theorem inv_le_inv' (h : a ≤ b) : b⁻¹ ≤ a⁻¹ :=
+  ENNReal.inv_strictAnti.antitone h
+
+@[gcongr] protected theorem inv_lt_inv' (h : a < b) : b⁻¹ < a⁻¹ := ENNReal.inv_strictAnti h
+
 @[simp]
 protected theorem inv_le_one : a⁻¹ ≤ 1 ↔ 1 ≤ a := by rw [inv_le_iff_inv_le, inv_one]
 #align ennreal.inv_le_one ENNReal.inv_le_one
@@ -1596,7 +1624,7 @@ theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
-  exacts[or_not_of_imp h₁, not_or_of_imp h₂]
+  exacts [or_not_of_imp h₁, not_or_of_imp h₂]
 #align ennreal.inv_le_iff_le_mul ENNReal.inv_le_iff_le_mul
 
 @[simp 900]
@@ -1606,15 +1634,15 @@ theorem le_inv_iff_mul_le : a ≤ b⁻¹ ↔ a * b ≤ 1 := by
       simp
 #align ennreal.le_inv_iff_mul_le ENNReal.le_inv_iff_mul_le
 
-protected theorem div_le_div (hab : a ≤ b) (hdc : d ≤ c) : a / c ≤ b / d :=
+@[gcongr] protected theorem div_le_div (hab : a ≤ b) (hdc : d ≤ c) : a / c ≤ b / d :=
   div_eq_mul_inv b d ▸ div_eq_mul_inv a c ▸ mul_le_mul' hab (ENNReal.inv_le_inv.mpr hdc)
 #align ennreal.div_le_div ENNReal.div_le_div
 
-protected theorem div_le_div_left (h : a ≤ b) (c : ℝ≥0∞) : c / b ≤ c / a :=
+@[gcongr] protected theorem div_le_div_left (h : a ≤ b) (c : ℝ≥0∞) : c / b ≤ c / a :=
   ENNReal.div_le_div le_rfl h
 #align ennreal.div_le_div_left ENNReal.div_le_div_left
 
-protected theorem div_le_div_right (h : a ≤ b) (c : ℝ≥0∞) : a / c ≤ b / c :=
+@[gcongr] protected theorem div_le_div_right (h : a ≤ b) (c : ℝ≥0∞) : a / c ≤ b / c :=
   ENNReal.div_le_div h le_rfl
 #align ennreal.div_le_div_right ENNReal.div_le_div_right
 
@@ -1629,6 +1657,16 @@ theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ 
   rw [← @ENNReal.mul_le_mul_left _ a _ hr₀ hr₁, ← mul_assoc, ENNReal.mul_inv_cancel hr₀ hr₁,
     one_mul]
 #align ennreal.mul_le_iff_le_inv ENNReal.mul_le_iff_le_inv
+
+/-- A variant of `le_inv_smul_iff` that holds for `ENNReal`. -/
+protected theorem le_inv_smul_iff {a b : ℝ≥0∞} {r : ℝ≥0} (hr₀ : r ≠ 0) : a ≤ r⁻¹ • b ↔ r • a ≤ b :=
+  by simpa [hr₀, ENNReal.smul_def] using (mul_le_iff_le_inv (coe_ne_zero.mpr hr₀) coe_ne_top).symm
+#align ennreal.le_inv_smul_iff ENNReal.le_inv_smul_iff
+
+/-- A variant of `inv_smul_le_iff` that holds for `ENNReal`. -/
+protected theorem inv_smul_le_iff {a b : ℝ≥0∞} {r : ℝ≥0} (hr₀ : r ≠ 0) : r⁻¹ • a ≤ b ↔ a ≤ r • b :=
+  by simpa only [inv_inv] using (ENNReal.le_inv_smul_iff (inv_ne_zero hr₀)).symm
+#align ennreal.inv_smul_le_iff ENNReal.inv_smul_le_iff
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
   refine' le_of_forall_ge_of_dense fun r hr => _
@@ -1714,7 +1752,7 @@ protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
   rw [coe_ne_zero] at hz
   rw [← coe_two, ← coe_div, coe_lt_coe]
-  exacts[NNReal.half_lt_self hz, two_ne_zero' _]
+  exacts [NNReal.half_lt_self hz, two_ne_zero' _]
 #align ennreal.half_lt_self ENNReal.half_lt_self
 
 protected theorem half_le_self : a / 2 ≤ a :=
@@ -1874,6 +1912,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
       exact ENNReal.zpow_lt_top (zero_lt_one.trans hy).ne' h'y _
 #align ennreal.Ioo_zero_top_eq_Union_Ico_zpow ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow
 
+@[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
   · simp only [Int.ofNat_eq_coe, zpow_ofNat]
@@ -2333,7 +2372,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: `← sSnf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
   -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 #align ennreal.to_nnreal_Sup ENNReal.toNNReal_sSup
@@ -2442,7 +2481,7 @@ theorem iSup_eq_zero {ι : Sort _} {f : ι → ℝ≥0∞} : (⨆ i, f i) = 0 �
 #align ennreal.supr_eq_zero ENNReal.iSup_eq_zero
 
 @[simp]
-theorem iSup_zero_eq_zero {ι : Sort _} : (⨆ _i : ι, (0 : ℝ≥0∞)) = 0 := by simp
+theorem iSup_zero_eq_zero {ι : Sort _} : (⨆ _ : ι, (0 : ℝ≥0∞)) = 0 := by simp
 #align ennreal.supr_zero_eq_zero ENNReal.iSup_zero_eq_zero
 
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
@@ -2510,19 +2549,19 @@ end Set
 --       fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ≥0∞)` for `r : ℝ≥0`"
 -- #align tactic.positivity_coe_nnreal_ennreal tactic.positivity_coe_nnreal_ennreal
 
--- private theorem ennreal_of_real_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
+-- private theorem ennreal_ofReal_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
 --   ENNReal.ofReal_pos.2
--- #align tactic.ennreal_of_real_pos tactic.ennreal_of_real_pos
+-- #align tactic.ennreal_ofReal_pos tactic.ennreal_ofReal_pos
 
 -- /-- Extension for the `positivity` tactic: `ENNReal.ofReal` is positive if its input is. -/
 -- @[positivity]
--- unsafe def positivity_ennreal_of_real : expr → tactic strictness
+-- unsafe def positivity_ennreal_ofReal : expr → tactic strictness
 --   | q(ENNReal.ofReal $(r)) => do
 --     let positive p ← core r
---     positive <$> mk_app `` ennreal_of_real_pos [p]
+--     positive <$> mk_app `` ennreal_ofReal_pos [p]
 --   |-- This case is handled by `tactic.positivity_canon`
 --     e =>
 --     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `ENNReal.ofReal r`"
--- #align tactic.positivity_ennreal_of_real tactic.positivity_ennreal_of_real
+-- #align tactic.positivity_ennreal_ofReal tactic.positivity_ennreal_ofReal
 
 -- end Tactic

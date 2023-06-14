@@ -35,6 +35,11 @@ def SemiRingCat : Type (u + 1) :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing SemiRingCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `Semiring.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
+
 namespace SemiRingCat
 
 /-- `RingHom` doesn't actually assume associativity. This alias is needed to make the category
@@ -93,6 +98,12 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
@@ -125,6 +136,22 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
+
+/--
+Ring equivalence are isomorphisms in category of semirings
+-/
+@[simps]
+def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+    SemiRingCat.of X ≅ SemiRingCat.of Y where
+  hom := e.toRingHom
+  inv := e.symm.toRingHom
+
+instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget SemiRingCat).map f)
+    let ff : X →+* Y := f
+    let e : X ≃+* Y := { ff, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
 
 end SemiRingCat
 
@@ -199,6 +226,12 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
@@ -221,7 +254,7 @@ def CommSemiRingCat : Type (u + 1) :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing CommSemiRingCat
 
-namespace CommSemiRing
+namespace CommSemiRingCat
 
 instance : BundledHom.ParentProjection @CommSemiring.toSemiring :=
   ⟨⟩
@@ -258,13 +291,20 @@ lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f
 def of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.of CommSemiRing.of
+#align CommSemiRing.of CommSemiRingCat.of
 
 /-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
 def ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.of_hom CommSemiRing.ofHom
+#align CommSemiRing.of_hom CommSemiRingCat.ofHom
+
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
+      (fun _ => (forget CommSemiRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -281,15 +321,15 @@ instance (R : CommSemiRingCat) : CommSemiring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRing.of R : Type u) = R :=
+theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.coe_of CommSemiRing.coe_of
+#align CommSemiRing.coe_of CommSemiRingCat.coe_of
 
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_forget_to_SemiRing CommSemiRing.hasForgetToSemiRingCat
+#align CommSemiRing.has_forget_to_SemiRing CommSemiRingCat.hasForgetToSemiRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
@@ -297,9 +337,25 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_forget_to_CommMon CommSemiRing.hasForgetToCommMonCat
+#align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
-end CommSemiRing
+/--
+Ring equivalence are isomorphisms in category of commutative semirings
+-/
+@[simps]
+def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+    SemiRingCat.of X ≅ SemiRingCat.of Y where
+  hom := e.toRingHom
+  inv := e.symm.toRingHom
+
+instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget CommSemiRingCat).map f)
+    let ff : X →+* Y := f
+    let e : X ≃+* Y := { ff, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+
+end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 def CommRingCat : Type (u + 1) :=
@@ -352,6 +408,12 @@ def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of
 set_option linter.uppercaseLean3 false in
 #align CommRing.of_hom CommRingCat.ofHom
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+    (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 -- Porting note: I think this is now redundant.
 -- @[simp]
 -- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
@@ -379,7 +441,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
-  HasForget₂.mk' (fun R : CommRingCat => CommSemiRing.of R) (fun R => rfl)
+  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
     (fun {R₁ R₂} f => f) (by rfl)
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
@@ -443,7 +505,8 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
   ext
@@ -451,7 +514,8 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext

@@ -1033,7 +1033,7 @@ instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α 
       intro a b hab
       refine' Decidable.or_iff_not_and_not.2 fun h => _; revert hab
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
-      exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
+      exacts [(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
 #align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
@@ -1175,7 +1175,7 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
     exact h.false
   · intro h
     cases' h.lt_or_lt with h h
-    exacts[mul_pos_of_neg_of_neg h h, mul_pos h h]
+    exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 #align mul_self_pos mul_self_pos
 
 theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=

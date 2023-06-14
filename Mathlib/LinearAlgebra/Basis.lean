@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 
 ! This file was ported from Lean 3 source module linear_algebra.basis
-! leanprover-community/mathlib commit 04cdee31e196e30f507e8e9eb2d06e02c9ff6310
+! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -73,9 +73,6 @@ universe u
 open Function Set Submodule
 
 open BigOperators
-
--- Porting note: TODO: workaround for lean4#2074
--- attribute [-instance] Ring.toNonAssocRing
 
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
@@ -390,7 +387,7 @@ def mapCoeffs : Basis ι R' M := by
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically infered from the definition of
+    -- Porting note: in Lean 3, these were automatically inferred from the definition of
     -- `mapCoeffs`.
     letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
     haveI : IsScalarTower R' R M :=
@@ -834,7 +831,7 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
 
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
@@ -983,6 +980,12 @@ theorem Basis.ofEquivFun_equivFun (v : Basis ι R M) : Basis.ofEquivFun v.equivF
     simp only [Finset.mem_univ, if_true, Pi.zero_apply, one_smul, Finset.sum_ite_eq', zero_smul]
 #align basis.of_equiv_fun_equiv_fun Basis.ofEquivFun_equivFun
 
+@[simp]
+theorem Basis.equivFun_ofEquivFun (e : M ≃ₗ[R] ι → R) : (Basis.ofEquivFun e).equivFun = e := by
+  ext j
+  simp_rw [Basis.equivFun_apply, Basis.ofEquivFun_repr_apply]
+#align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
+
 variable (S : Type _) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
@@ -996,7 +999,7 @@ theorem Basis.constr_apply_fintype (f : ι → M') (x : M) :
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_submodule_iff' {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • b i :=
+    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
   b.mem_submodule_iff.trans <|
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
       exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
@@ -1434,7 +1437,7 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 The specific value of this definition should be considered an implementation detail.
 -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+  LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
@@ -1555,9 +1558,6 @@ instance : IsAtomistic (Submodule K V) where
     exact nonzero_span_atom w hw
 
 end AtomsOfSubmoduleLattice
-
--- Porting note: TODO: workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 variable {K V}
 

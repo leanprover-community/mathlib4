@@ -29,12 +29,11 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
---@[protect_proj] -- Porting note: missing attribute?
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
   /-- The function `α → β` -/
-  toFun : α → β
+  protected toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun := by continuity
+  protected continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
@@ -212,6 +211,11 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 #align continuous_map.coe_const ContinuousMap.coe_const
 
+/-- `Function.const α b` as a bundled continuous function of `b`. -/
+@[simps (config := .asFn)]
+def constPi : C(β, α → β) where
+  toFun b := Function.const α b
+
 instance [Inhabited β] : Inhabited C(α, β) :=
   ⟨const α default⟩
 
@@ -314,6 +318,10 @@ def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α�
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=
   rfl
 #align continuous_map.prod_eval ContinuousMap.prod_eval
+
+/-- `Prod.swap` bundled as a `ContinuousMap`. -/
+@[simps!]
+def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
@@ -457,6 +465,7 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
   ⟨e, e.continuous_toFun⟩
 #align homeomorph.to_continuous_map Homeomorph.toContinuousMap
+#align homeomorph.to_continuous_map_apply Homeomorph.toContinuousMap_apply
 
 /-- `Homeomorph.toContinuousMap` as a coercion. -/
 instance : Coe (α ≃ₜ β) C(α, β) :=

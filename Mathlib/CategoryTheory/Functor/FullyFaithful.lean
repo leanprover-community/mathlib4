@@ -10,7 +10,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Choose
 
 /-!
 # Full and faithful functors

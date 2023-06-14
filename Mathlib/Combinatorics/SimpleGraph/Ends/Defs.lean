@@ -118,7 +118,7 @@ protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
 #align simple_graph.component_compl.nonempty SimpleGraph.ComponentCompl.nonempty
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
-    ∃ (v : _)(h : v ∉ K), G.componentComplMk h = C :=
+    ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 #align simple_graph.component_compl.exists_eq_mk SimpleGraph.ComponentCompl.exists_eq_mk
 
@@ -282,7 +282,7 @@ theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentCom
     Set.mem_range, componentComplFunctor_map]
   exact
     ⟨fun h Lop KL => h Lop.unop (le_of_op_hom KL), fun h L KL =>
-      h (Opposite.op L) (opHomOfLe KL)⟩
+      h (Opposite.op L) (opHomOfLE KL)⟩
 #align simple_graph.infinite_iff_in_eventual_range SimpleGraph.infinite_iff_in_eventualRange
 
 end Ends

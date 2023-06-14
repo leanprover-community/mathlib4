@@ -39,8 +39,7 @@ The above types have corresponding classes:
 
 -/
 
---Porting note: assert_not_exists is not yet implemented
---assert_not_exists Submonoid
+assert_not_exists Submonoid
 
 variable (M' : Type _)
 variable (X : Type _) [SMul M' X]
@@ -265,7 +264,7 @@ instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
-theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
+theorem toFun_eq_coe (f : A →+[M] B) : f.toFun = f := rfl
 #align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.toFun_eq_coe
 
 @[norm_cast]

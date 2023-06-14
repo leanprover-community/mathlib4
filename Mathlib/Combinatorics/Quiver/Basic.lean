@@ -10,7 +10,6 @@ Ported by: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Tactic.ProjectionNotation
 
 /-!
 # Quivers
@@ -70,6 +69,13 @@ pp_extended_field_notation Prefunctor.obj
 pp_extended_field_notation Prefunctor.map
 
 namespace Prefunctor
+
+-- Porting note: added during port.
+-- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- Nevertheless they are sometimes useful when building functors.
+lemma mk_obj [Quiver V] {obj : V → V} {map} {X : V} : (Prefunctor.mk obj map).obj X = obj X := rfl
+lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+    (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
 theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F G : Prefunctor V W}

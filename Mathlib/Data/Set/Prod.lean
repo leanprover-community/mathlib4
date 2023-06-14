@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SProd
 
 /-!
 # Sets in product and pi types
@@ -37,14 +38,14 @@ section Prod
 
 variable {α β γ δ : Type _} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
-/-- The cartesian product `prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-infixr:82 " ×ˢ " => Set.prod
+@[default_instance]
+instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+  sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
   rfl
@@ -477,7 +478,7 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
@@ -631,7 +632,7 @@ section Pi
 
 variable {ι : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
 
-/-- Given an index set `ι` and a family of sets `t : Π i, set (α i)`, `pi s t`
+/-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
 whenever `a ∈ s`. -/
 def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=

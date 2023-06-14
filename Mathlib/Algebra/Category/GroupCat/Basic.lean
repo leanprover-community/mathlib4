@@ -65,6 +65,10 @@ instance (X : GroupCat) : Group X := X.str
 instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
+@[to_additive]
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_id {X : GroupCat} : (𝟙 X : X → X) = id := rfl
@@ -136,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom AddGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -206,6 +210,10 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
+
+@[to_additive]
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -303,7 +311,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.of_hom AddCommGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGroup`. -/
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -389,7 +397,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv.to_AddCommGroup_iso AddEquiv.toAddCommGroupCatIso
 
-/-- Build an isomorphism in the category `AddCommGroupCat` from a `AddEquiv`
+/-- Build an isomorphism in the category `AddCommGroupCat` from an `AddEquiv`
 between `AddCommGroup`s. -/
 add_decl_doc AddEquiv.toAddCommGroupCatIso
 
@@ -416,7 +424,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.AddCommGroup_iso_to_add_equiv CategoryTheory.Iso.addCommGroupIsoToAddEquiv
 
-/-- Build an `AddEquiv` from an isomorphism\nin the category `AddCommGroup`. -/
+/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/
 add_decl_doc addCommGroupIsoToAddEquiv
 
 end CategoryTheory.Iso

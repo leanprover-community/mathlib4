@@ -43,14 +43,14 @@ consider `P` as a direct factor of `X` and up to unique isomorphism, it is deter
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
 one may define a formal direct factor of an object `X : C` : it consists of an idempotent
 `p : X ⟶ X` which is thought as the "formal image" of `p`. The type `Karoubi C` shall be the
-type of the objects of the karoubi enveloppe of `C`. It makes sense for any category `C`. -/
+type of the objects of the karoubi envelope of `C`. It makes sense for any category `C`. -/
 structure Karoubi where
   /-- an object of the underlying category -/
   X : C
   /-- an endomorphism of the object -/
   p : X ⟶ X
   /-- the condition that the given endomorphism is an idempotent -/
-  idem : p ≫ p = p
+  idem : p ≫ p = p := by aesop_cat
 #align category_theory.idempotents.karoubi CategoryTheory.Idempotents.Karoubi
 
 namespace Karoubi
@@ -78,7 +78,7 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : f = P.p ≫ f ≫ Q.p
+  comm : f = P.p ≫ f ≫ Q.p := by aesop_cat
 #align category_theory.idempotents.karoubi.hom CategoryTheory.Idempotents.Karoubi.Hom
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
@@ -92,7 +92,6 @@ theorem p_comp {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f := by rw [f.c
 theorem comp_p {P Q : Karoubi C} (f : Hom P Q) : f.f ≫ Q.p = f.f := by
   rw [f.comm, assoc, assoc, Q.idem]
 #align category_theory.idempotents.karoubi.comp_p CategoryTheory.Idempotents.Karoubi.comp_p
-
 
 @[reassoc]
 theorem p_comm {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f ≫ Q.p := by rw [p_comp, comp_p]
@@ -215,16 +214,6 @@ end Karoubi
 /-- The category `Karoubi C` is preadditive if `C` is. -/
 instance [Preadditive C] : Preadditive (Karoubi C) where
   homGroup P Q := by infer_instance
-  add_comp := by
-    intros
-    ext
-    dsimp
-    simp
-  comp_add := by
-    intros
-    ext
-    dsimp
-    simp
 
 instance [Preadditive C] : Functor.Additive (toKaroubi C) where
 

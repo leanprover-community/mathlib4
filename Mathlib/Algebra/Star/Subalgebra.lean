@@ -60,9 +60,6 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
--- porting note: work around lean4#2074
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
-
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
@@ -237,7 +234,7 @@ theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set
   rfl
 #align star_subalgebra.coe_map StarSubalgebra.coe_map
 
-/-- Preimage of a star subalgebra under an star algebra homomorphism. -/
+/-- Preimage of a star subalgebra under a star algebra homomorphism. -/
 def comap (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) : StarSubalgebra R A :=
   { S.toSubalgebra.comap f.toAlgHom with
     star_mem' := @fun a ha => show f (star a) ∈ S from (map_star f a).symm ▸ star_mem ha }
@@ -537,7 +534,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
     apply adjoin_induction hb
-    exacts[fun x hx => ⟨subset_adjoin R s hx, Hs x hx⟩, fun r =>
+    exacts [fun x hx => ⟨subset_adjoin R s hx, Hs x hx⟩, fun r =>
       ⟨StarSubalgebra.algebraMap_mem _ r, Halg r⟩, fun x y hx hy =>
       Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', Hadd _ _ hx hy⟩,
       fun x y hx hy =>
@@ -570,9 +567,6 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
             · simpa only [star_mul, star_star] using congr_arg star (hcomm _ hb _ ha))
       exact congr_arg Subtype.val (mul_comm (⟨x, hx⟩ : Algebra.adjoin R (s ∪ star s)) ⟨y, hy⟩) }
 #align star_subalgebra.adjoin_comm_semiring_of_comm StarSubalgebra.adjoinCommSemiringOfComm
-
--- porting note: work around lean4#2074
-attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
 /-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
 `star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/

@@ -96,7 +96,7 @@ alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
 #align nat.modeq.dvd Nat.ModEq.dvd
 #align nat.modeq_of_dvd Nat.modEq_of_dvd
 
-/-- A variant of `modEq_iff_dvd` with `nat` divisibility -/
+/-- A variant of `modEq_iff_dvd` with `Nat` divisibility -/
 theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
   rw [modEq_iff_dvd, ← Int.coe_nat_dvd, Int.ofNat_sub h]
 #align nat.modeq_iff_dvd' Nat.modEq_iff_dvd'
@@ -267,9 +267,9 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
 #align nat.modeq.eq_of_abs_lt Nat.ModEq.eq_of_abs_lt
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-h.eq_of_abs_lt $ abs_sub_lt_iff.2
-  ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
-   (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
+  h.eq_of_abs_lt $ abs_sub_lt_iff.2
+    ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
+    (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
 #align nat.modeq.eq_of_lt_of_lt Nat.ModEq.eq_of_lt_of_lt
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -318,7 +318,7 @@ lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) :
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
 lemma cancel_right_of_coprime (hmc : gcd m c = 1) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m] :=
-cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
+  cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
 #align nat.modeq.cancel_right_of_coprime Nat.ModEq.cancel_right_of_coprime
 
 end ModEq

@@ -59,7 +59,7 @@ involved compute the underlying `List` for the `Finset` as `l₁ ++ (l₂ ++ (�
 right associativity.
 
 Note that an alternative design could be that instead of using `Sum` we could create a
-function `C : Fin n → Type _` with `C i = ulift Cᵢ` and then use `(i : Fin n) × C i` for
+function `C : Fin n → Type _` with `C i = ULift Cᵢ` and then use `(i : Fin n) × C i` for
 the proxy type, which would save us from the nested `Sum` constructors.
 
 This implementation takes some inspiration from the one by Mario Carneiro for Mathlib 3.
@@ -79,7 +79,7 @@ needs an extra `DecidableEq` instance. It works only if `α` is an inductive
 type that `proxy_equiv% α` can handle. The elaborator makes use of the
 expected type, so `(derive_fintype% _ : Fintype α)` works.
 
-This uses `prox_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in
+This uses `proxy_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in
 the namespace associated to the inductive type `α`.
 -/
 macro "derive_fintype% " t:term : term => `(term| Fintype.ofEquiv _ (proxy_equiv% $t))

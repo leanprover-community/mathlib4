@@ -420,7 +420,7 @@ instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
   (Subtype.relEmbedding (· > ·) p).isWellFounded
 #align subtype.well_founded_gt Subtype.wellFoundedGT
 
-/-- `quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
+/-- `Quotient.mk'` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
 def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
@@ -493,7 +493,7 @@ alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFoun
 
 namespace RelEmbedding
 
-/-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
+/-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
 def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
@@ -629,7 +629,7 @@ infixl:25 " ≃r " => RelIso
 
 namespace RelIso
 
-/-- Convert an `RelIso` to a `RelEmbedding`. This function is also available as a coercion
+/-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=

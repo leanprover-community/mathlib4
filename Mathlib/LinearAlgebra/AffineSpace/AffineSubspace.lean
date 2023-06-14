@@ -35,7 +35,7 @@ This file defines affine subspaces (over modules) and the affine span of a set o
 
 ## Implementation notes
 
-`outParam` is used in the definiton of `AddTorsor V P` to make `V` an implicit argument (deduced
+`outParam` is used in the definition of `AddTorsor V P` to make `V` an implicit argument (deduced
 from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
 `V`.
 
@@ -1456,7 +1456,7 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : 
 `s` with `p2` added if and only if it is a multiple of `p2 -ᵥ p1` added to a point in `s`. -/
 theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
     p ∈ affineSpan k (insert p2 (s : Set P)) ↔
-      ∃ (r : k)(p0 : P)(_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
+      ∃ (r : k) (p0 : P) (_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
   rw [← mem_coe] at hp1
   rw [← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_insert_of_mem _ hp1)),
     direction_affineSpan_insert hp1, Submodule.mem_sup]

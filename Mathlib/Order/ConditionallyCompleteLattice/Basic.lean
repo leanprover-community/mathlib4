@@ -205,20 +205,20 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
-{ ‹ConditionallyCompleteLinearOrder α› with
-  max := Sup.sup, min := Inf.inf,
-  min_def := fun a b ↦ by
-    by_cases hab : a = b
-    · simp [hab]
-    · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-      · simp [h₁]
-      · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
-  max_def := fun a b ↦ by
-    by_cases hab : a = b
-    · simp [hab]
-    · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-      · simp [h₁]
-      · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
+  { ‹ConditionallyCompleteLinearOrder α› with
+    max := Sup.sup, min := Inf.inf,
+    min_def := fun a b ↦ by
+      by_cases hab : a = b
+      · simp [hab]
+      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
+        · simp [h₁]
+        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
+    max_def := fun a b ↦ by
+      by_cases hab : a = b
+      · simp [hab]
+      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
+        · simp [h₁]
+        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
@@ -312,12 +312,12 @@ should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sInf
-  ..conditionallyCompleteLatticeOfsSup my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sInf
+    ..conditionallyCompleteLatticeOfsSup my_T _ }
 ```
 -/
 def conditionallyCompleteLatticeOfsSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
@@ -364,12 +364,12 @@ should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
 instance : ConditionallyCompleteLattice my_T :=
-{ inf := better_inf,
-  le_inf := ...,
-  inf_le_right := ...,
-  inf_le_left := ...
-  -- don't care to fix sup, sSup
-  ..conditionallyCompleteLatticeOfsInf my_T _ }
+  { inf := better_inf,
+    le_inf := ...,
+    inf_le_right := ...,
+    inf_le_left := ...
+    -- don't care to fix sup, sSup
+    ..conditionallyCompleteLatticeOfsInf my_T _ }
 ```
 -/
 def conditionallyCompleteLatticeOfsInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
@@ -828,12 +828,12 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
 #align cinfi_set_le ciInf_set_le
 
 @[simp]
-theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _b : ι, a) = a := by
+theorem ciSup_const [hι : Nonempty ι] {a : α} : (⨆ _ : ι, a) = a := by
   rw [iSup, range_const, csSup_singleton]
 #align csupr_const ciSup_const
 
 @[simp]
-theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _b : ι, a) = a :=
+theorem ciInf_const [Nonempty ι] {a : α} : (⨅ _ : ι, a) = a :=
   @ciSup_const αᵒᵈ _ _ _ _
 #align cinfi_const ciInf_const
 
@@ -1474,7 +1474,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type _}
     le_csInf := (@WithTop.conditionallyCompleteLattice αᵒᵈ _).csSup_le }
 #align with_bot.conditionally_complete_lattice WithBot.conditionallyCompleteLattice
 
--- Poting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
+-- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with
@@ -1549,5 +1549,4 @@ theorem WithTop.iSup_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyComple
 end WithTopBot
 
 -- Guard against import creep
--- Porting note: `assert_not_exists` has not been ported yet.
---assert_not_exists multiset
+assert_not_exists Multiset

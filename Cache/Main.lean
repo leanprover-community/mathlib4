@@ -10,7 +10,7 @@ def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
 Commands:
-  # No priviledge required
+  # No privilege required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
   get- [ARGS]  Download linked files missing to the local cache, but do no compress

@@ -14,7 +14,6 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Periodic points

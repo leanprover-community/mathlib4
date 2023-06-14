@@ -18,7 +18,7 @@ import Mathlib.Algebra.Hom.Units
 In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`. We also prove
 trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
-* `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `prod.fst` and `prod.snd`
+* `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `Prod.fst` and `Prod.snd`
   as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
@@ -592,7 +592,7 @@ variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneCl
   (f : M →* M') (g : N →* N')
 
 /-- `prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddHonoidHom`"]
+@[to_additive prodMap "`prod.map` as an `AddMonoidHom`."]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align monoid_hom.prod_map MonoidHom.prodMap

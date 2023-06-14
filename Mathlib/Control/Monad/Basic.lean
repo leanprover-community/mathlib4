@@ -8,8 +8,10 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Control.SimpSet
+import Mathlib.Tactic.Common
 
 /-!
 # Monad
@@ -40,7 +42,7 @@ functor, applicative, monad, simp
 
 -/
 
-attribute [ext] ReaderT.ext StateT.ext ExceptT.ext Option.ext
+attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 
 attribute [functor_norm] bind_assoc pure_bind bind_pure
 

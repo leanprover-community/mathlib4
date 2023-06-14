@@ -26,7 +26,7 @@ family as a basis of neighborhoods of zero. In particular the given subgroups be
 (`RingSubgroupsBasis.nonarchimedean`).
 
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-sub-modules in a commutative algebra. This important example gives rises to the adic topology
+sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
 
@@ -186,11 +186,9 @@ theorem hasBasis_nhds (a : A) :
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
   -- Porting note: failed to synthesize instance `TopologicalSpace A`
-  -- Check again during lean4#2210 cleanup.
   let _ := hB.topology
   { B i with
     isOpen' := by
-      letI := hB.topology
       rw [isOpen_iff_mem_nhds]
       intro a a_in
       rw [(hB.hasBasis_nhds a).mem_iff]
@@ -356,8 +354,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `measure_theory.ae_eq_fun.add_monoid ` or `topological_add_group.to_has_continuous_add`)
-cause the search for `@topological_add_group β ?m1 ?m2`, i.e. a search for a topological group where
+(such as `MeasureTheory.AEEqFun.instAddMonoid ` or `topological_add_group.to_has_continuous_add`)
+cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
 
@@ -366,7 +364,7 @@ end SubmodulesBasis
 section
 
 /-
-In this section, we check that in a `R`-algebra `A` over a ring equipped with a topology,
+In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
 view definitionaly gives the same topology on `A`.
@@ -385,7 +383,7 @@ example [Nonempty ι] : hB.topology = (hB.toSubmodulesBasis hsmul).topology :=
 end
 
 /-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
-on a family of submodules of a `R`-module `M`. This compatibility condition allows to get
+on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
 a topological module structure. -/
 structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
     Prop where

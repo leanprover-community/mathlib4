@@ -32,7 +32,7 @@ open Classical
 
 namespace Filter
 
-local notation3"∀* "(...)", "r:(scoped p => Filter.Eventually p φ) => r
+local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
 
 namespace Germ
 

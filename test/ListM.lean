@@ -9,13 +9,13 @@ import Mathlib.Control.Basic
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
-fun s => some ((), x :: s)
+  fun s => some ((), x :: s)
 
 def F : Nat → S Nat
-| 0 => failure
-| (n+1) => do
-    append (n+1)
-    pure n
+  | 0 => failure
+  | (n+1) => do
+      append (n+1)
+      pure n
 
 open Lean
 

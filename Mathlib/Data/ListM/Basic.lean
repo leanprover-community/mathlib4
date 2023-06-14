@@ -14,7 +14,7 @@ import Mathlib.Control.Basic
 
 /-! # Monadic lazy lists.
 
-Lazy lists with "lazyness" controlled by an arbitrary monad.
+Lazy lists with "laziness" controlled by an arbitrary monad.
 -/
 
 section UnsafeWrapper

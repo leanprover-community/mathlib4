@@ -18,7 +18,7 @@ This defines `Pointed`, the category of pointed types.
 ## TODO
 
 * Monoidal structure
-* Upgrade `Type_to_Pointed` to an equivalence
+* Upgrade `typeToPointed` to an equivalence
 -/
 
 
@@ -111,7 +111,7 @@ instance concreteCategory : ConcreteCategory Pointed where
 set_option linter.uppercaseLean3 false in
 #align Pointed.concrete_category Pointed.concreteCategory
 
-/-- Constructs a isomorphism between pointed types from an equivalence that preserves the point
+/-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
 @[simps]
 def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
@@ -134,7 +134,7 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 set_option linter.uppercaseLean3 false in
 #align Type_to_Pointed typeToPointed
 
-/-- `Type_to_Pointed` is the free functor. -/
+/-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>

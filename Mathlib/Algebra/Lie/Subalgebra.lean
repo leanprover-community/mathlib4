@@ -42,7 +42,7 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
 structure LieSubalgebra extends Submodule R L where
-  /-- An Lie subalgebra is closed under Lie bracket. -/
+  /-- A Lie subalgebra is closed under Lie bracket. -/
   lie_mem' : ∀ {x y}, x ∈ carrier → y ∈ carrier → ⁅x, y⁆ ∈ carrier
 #align lie_subalgebra LieSubalgebra
 
@@ -76,7 +76,7 @@ instance : AddSubgroupClass (LieSubalgebra R L) L
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance (L' : LieSubalgebra R L) : LieRing L'
+instance lieRing (L' : LieSubalgebra R L) : LieRing L'
     where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
@@ -119,7 +119,7 @@ instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance (L' : LieSubalgebra R L) : LieAlgebra R L'
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L'
     where lie_smul := by
     { intros
       apply SetCoe.ext
@@ -237,7 +237,7 @@ variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieM
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance : LieRingModule L' M where
+instance lieRingModule : LieRingModule L' M where
   bracket x m := ⁅(x : L), m⁆
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
@@ -252,13 +252,10 @@ variable [Module R M] [LieModule R L M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance : LieModule R L' M
+instance lieModule : LieModule R L' M
     where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
 `L' ⊆ L`. -/
@@ -302,9 +299,6 @@ variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 variable (f : L →ₗ⁅R⁆ L₂)
 
 namespace LieHom
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The range of a morphism of Lie algebras is a Lie subalgebra. -/
 def range : LieSubalgebra R L₂ :=
@@ -382,9 +376,6 @@ theorem incl_range : K.incl.range = K := by
   rw [← coe_to_submodule_eq_iff]
   exact (K : Submodule R L).range_subtype
 #align lie_subalgebra.incl_range LieSubalgebra.incl_range
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
 codomain. -/
@@ -770,9 +761,6 @@ namespace LieEquiv
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
 
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=
