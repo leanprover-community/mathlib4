@@ -201,13 +201,6 @@ def unitIso :
         (MonoidalNatIso.ofComponents
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
           (by rintro ⟨⟩ ⟨⟩ f ; aesop_cat) (by aesop_cat) (by aesop_cat)))
-    (by
-      -- porting note: here we need to apply directly the lemma `MonoidalNatTrans.ext`
-      -- which applies to morphisms in `LaxMonoidalFunctor`, and also to morphisms in
-      -- the full subcategory `LaxBraidedFunctor`
-      intros
-      apply MonoidalNatTrans.ext
-      aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPunit.unitIso
 
@@ -218,7 +211,6 @@ def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMo
     (fun F =>
       { hom := { hom := 𝟙 _ }
         inv := { hom := 𝟙 _ } })
-    (by aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.counit_iso CommMon_.EquivLaxBraidedFunctorPunit.counitIso
 
