@@ -98,7 +98,6 @@ namespace GlueData
 
 variable (D : GlueData.{u})
 
--- mathport name: «expr𝖣»
 local notation "𝖣" => D.toGlueData
 
 theorem π_surjective : Function.Surjective 𝖣.π :=
@@ -143,6 +142,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
     have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
       -- Porting note: was `simp`
+      -- See https://github.com/leanprover-community/mathlib4/issues/5026
       rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply, Subtype.coe_mk]
       erw [CategoryTheory.GlueData.t_inv_apply]
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
@@ -199,6 +199,7 @@ theorem eqvGen_of_π_eq
   -- Porting note: was
   -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
   --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
     colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
     types_id_apply] at this
@@ -264,6 +265,7 @@ theorem image_inter (i j : D.J) :
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
         -- Porting note: was `simp [eq₁]`
+        -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app]
         erw [CategoryTheory.IsIso.inv_hom_id_apply]
         rw [eq₁]⟩
@@ -388,7 +390,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  -- Porting note: was `continuity`
+  -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
   have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
   exact ((Continuous.subtype_mk (by continuity) _).prod_mk (by continuity)).subtype_mk _
 
@@ -436,8 +438,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
--- porting note: removed `include U`
-
 /-- We may construct a glue data from a family of open sets. -/
 @[simps! toGlueData_J toGlueData_U toGlueData_V toGlueData_t toGlueData_f]
 def ofOpenSubsets : TopCat.GlueData.{u} :=
@@ -446,7 +446,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
-        -- Porting note: was `continuity`.
+        -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
         refine Continuous.subtype_mk ?_ ?_
         continuity⟩
