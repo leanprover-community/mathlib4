@@ -52,14 +52,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
-def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat.{v}) :=
+def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.sheaf AlgebraicGeometry.SheafedSpace.sheaf
 
 -- Porting note : this is a syntactic tautology, so removed
 -- @[simp]
--- theorem as_coe (X : SheafedSpace.{v} C) : X.carrier = (X : TopCat.{v}) :=
+-- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.SheafedSpace.as_coe
@@ -69,12 +69,12 @@ set_option linter.uppercaseLean3 false in
 theorem mk_coe (carrier) (presheaf) (h) :
   (({ carrier
       presheaf
-      IsSheaf := h } : SheafedSpace.{v} C) : TopCat.{v}) = carrier :=
+      IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe
 
-instance (X : SheafedSpace.{v} C) : TopologicalSpace X :=
+instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
 /-- The trivial `unit` valued sheaf on any topological space. -/
@@ -91,7 +91,7 @@ instance : Category (SheafedSpace C) :=
     infer_instance
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
-def forgetToPresheafedSpace : SheafedSpace.{v} C ⥤ PresheafedSpace C :=
+def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
@@ -103,7 +103,7 @@ instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C)
 -- Porting note : can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
 
-instance is_presheafedSpace_iso {X Y : SheafedSpace.{v} C} (f : X ⟶ Y) [IsIso f] :
+instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
   SheafedSpace.forgetToPresheafedSpace.map_isIso f
 set_option linter.uppercaseLean3 false in
@@ -114,7 +114,7 @@ section
 attribute [local simp] id comp
 
 @[simp]
-theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat.{v}) :=
+theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_base AlgebraicGeometry.SheafedSpace.id_base
@@ -173,7 +173,7 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : OpenEmbedding f) :
     SheafedSpace C :=
   { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
 set_option linter.uppercaseLean3 false in
