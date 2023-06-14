@@ -109,7 +109,7 @@ theorem comp_val {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).val = 
   rfl
 #align algebraic_geometry.Scheme.comp_val AlgebraicGeometry.Scheme.comp_val
 
-@[reassoc (attr := simp)]
+@[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val.base = f.val.base ≫ g.val.base :=
   rfl
@@ -122,7 +122,7 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
 
-@[reassoc (attr := simp)]
+@[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
   rfl
@@ -204,7 +204,6 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
-@[simps]
 def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
@@ -283,7 +282,7 @@ theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V
 #align algebraic_geometry.Scheme.basic_open_res AlgebraicGeometry.Scheme.basicOpen_res
 
 -- This should fire before `basicOpen_res`.
-@[simp]
+@[simp 1100]
 theorem basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
     X.basicOpen (X.presheaf.map i f) = X.basicOpen f :=
   RingedSpace.basicOpen_res_eq _ i f
