@@ -271,7 +271,7 @@ class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends Lawful
 #align is_lawful_traversable IsLawfulTraversable
 
 instance : Traversable Id :=
-⟨id⟩
+  ⟨id⟩
 
 instance : IsLawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 
@@ -312,7 +312,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.traverseₓ'. -/
 
 /-- Defines a `traverse` function on the second component of a sum type.
-This is used to give a `traversable` instance for the functor `σ ⊕ -`. -/
+This is used to give a `Traversable` instance for the functor `σ ⊕ -`. -/
 protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
   | Sum.inl x => pure (Sum.inl x)
   | Sum.inr x => Sum.inr <$> f x

@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -121,6 +122,22 @@ or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i in s, f i ≤ ∑ i in s, g i`. -/
 add_decl_doc sum_le_sum
 
+/-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
+equal to the corresponding factor `g i` of another finite product, then `s.prod f ≤ s.prod g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod'`, convenient
+for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_le_sum]
+theorem _root_.GCongr.prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : s.prod f ≤ s.prod g :=
+  s.prod_le_prod' h
+
+/-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
+or equal to the corresponding summand `g i` of another finite sum, then `s.sum f ≤ s.sum g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.sum_le_sum`, convenient
+for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_le_sum
+
 @[to_additive sum_nonneg]
 theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i in s, f i :=
   le_trans (by rw [prod_const_one]) (prod_le_prod' h)
@@ -210,10 +227,10 @@ theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
 #align finset.pow_card_le_prod Finset.pow_card_le_prod
 #align finset.card_nsmul_le_sum Finset.card_nsmul_le_sum
 
-theorem card_bunionᵢ_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
-    (h : ∀ a ∈ s, (f a).card ≤ n) : (s.bunionᵢ f).card ≤ s.card * n :=
-  card_bunionᵢ_le.trans <| sum_le_card_nsmul _ _ _ h
-#align finset.card_bUnion_le_card_mul Finset.card_bunionᵢ_le_card_mul
+theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
+    (h : ∀ a ∈ s, (f a).card ≤ n) : (s.biUnion f).card ≤ s.card * n :=
+  card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
+#align finset.card_bUnion_le_card_mul Finset.card_biUnion_le_card_mul
 
 variable {ι' : Type _} [DecidableEq ι']
 
@@ -349,30 +366,30 @@ theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) 
   simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 #align finset.sum_card Finset.sum_card
 
-theorem card_le_card_bunionᵢ {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
-    (hf : ∀ i ∈ s, (f i).Nonempty) : s.card ≤ (s.bunionᵢ f).card := by
-  rw [card_bunionᵢ hs, card_eq_sum_ones]
+theorem card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : Set ι).PairwiseDisjoint f)
+    (hf : ∀ i ∈ s, (f i).Nonempty) : s.card ≤ (s.biUnion f).card := by
+  rw [card_biUnion hs, card_eq_sum_ones]
   exact sum_le_sum fun i hi ↦ (hf i hi).card_pos
-#align finset.card_le_card_bUnion Finset.card_le_card_bunionᵢ
+#align finset.card_le_card_bUnion Finset.card_le_card_biUnion
 
-theorem card_le_card_bunionᵢ_add_card_fiber {s : Finset ι} {f : ι → Finset α}
+theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) :
-    s.card ≤ (s.bunionᵢ f).card + (s.filter fun i ↦ f i = ∅).card := by
+    s.card ≤ (s.biUnion f).card + (s.filter fun i ↦ f i = ∅).card := by
   rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
   exact
     add_le_add_right
-      ((card_le_card_bunionᵢ (hs.subset <| filter_subset _ _) fun i hi ↦
+      ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
             nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_of_subset <| bunionᵢ_subset_bunionᵢ_of_subset_left _ <| filter_subset _ _)
+        card_le_of_subset <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
       _
-#align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_bunionᵢ_add_card_fiber
+#align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_biUnion_add_card_fiber
 
-theorem card_le_card_bunionᵢ_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
-    (hs : (s : Set ι).PairwiseDisjoint f) : s.card ≤ (s.bunionᵢ f).card + 1 :=
-  (card_le_card_bunionᵢ_add_card_fiber hs).trans <|
+theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
+    (hs : (s : Set ι).PairwiseDisjoint f) : s.card ≤ (s.biUnion f).card + 1 :=
+  (card_le_card_biUnion_add_card_fiber hs).trans <|
     add_le_add_left
       (card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm) _
-#align finset.card_le_card_bUnion_add_one Finset.card_le_card_bunionᵢ_add_one
+#align finset.card_le_card_bUnion_add_one Finset.card_le_card_biUnion_add_one
 
 end DoubleCounting
 
@@ -380,7 +397,7 @@ section CanonicallyOrderedMonoid
 
 variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
 
-@[to_additive (attr:=simp) sum_eq_zero_iff]
+@[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : (∏ x in s, f x) = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
@@ -439,6 +456,25 @@ theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g 
   exact ⟨i, hi, Hlt i hi⟩
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
+
+/-- In an ordered commutative monoid, if each factor `f i` of one nontrivial finite product is
+strictly less than the corresponding factor `g i` of another nontrivial finite product, then
+`s.prod f < s.prod g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_lt_prod_of_nonempty'`,
+convenient for the `gcongr` tactic. -/
+@[to_additive (attr := gcongr) GCongr.sum_lt_sum_of_nonempty]
+theorem _root_.GCongr.prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
+    s.prod f < s.prod g :=
+  s.prod_lt_prod_of_nonempty' hs Hlt
+
+/-- In an ordered additive commutative monoid, if each summand `f i` of one nontrivial finite sum is
+strictly less than the corresponding summand `g i` of another nontrivial finite sum, then
+`s.sum f < s.sum g`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_sum_of_nonempty`,
+convenient for the `gcongr` tactic. -/
+add_decl_doc GCongr.sum_lt_sum_of_nonempty
 
 -- Porting note: TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
@@ -548,7 +584,7 @@ variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
 open Classical
 
--- this is also true for a ordered commutative multiplicative monoid with zero
+-- this is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
 #align finset.prod_nonneg Finset.prod_nonneg
@@ -568,8 +604,18 @@ theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g 
     · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
 
+/-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
+product of `f i` is less than or equal to the product of `g i`.
+
+This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod`, convenient
+for the `gcongr` tactic. -/
+@[gcongr]
+theorem _root_.GCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
+    s.prod f ≤ s.prod g :=
+  s.prod_le_prod h0 h1
+
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
-See also `finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
+See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 := by
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one
@@ -601,7 +647,7 @@ section StrictOrderedCommSemiring
 
 variable [StrictOrderedCommSemiring R] [Nontrivial R] {f : ι → R} {s : Finset ι}
 
--- This is also true for a ordered commutative multiplicative monoid with zero
+-- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos

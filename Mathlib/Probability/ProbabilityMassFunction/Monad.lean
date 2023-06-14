@@ -127,7 +127,7 @@ theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :
 
 theorem mem_support_bind_iff (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
-  simp only [support_bind, Set.mem_unionᵢ, Set.mem_setOf_eq, exists_prop]
+  simp only [support_bind, Set.mem_iUnion, Set.mem_setOf_eq, exists_prop]
 #align pmf.mem_support_bind_iff Pmf.mem_support_bind_iff
 
 @[simp]
@@ -228,7 +228,7 @@ theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   refine' Set.ext fun b => _
   simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def, not_forall,
-    mul_eq_zero, Set.mem_unionᵢ]
+    mul_eq_zero, Set.mem_iUnion]
   exact
     ⟨fun hb =>
       let ⟨a, ⟨ha, ha'⟩⟩ := hb
@@ -240,14 +240,14 @@ theorem support_bindOnSupport :
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
-  simp only [support_bindOnSupport, Set.mem_setOf_eq, Set.mem_unionᵢ]
+  simp only [support_bindOnSupport, Set.mem_setOf_eq, Set.mem_iUnion]
 #align pmf.mem_support_bind_on_support_iff Pmf.mem_support_bindOnSupport_iff
 
 /-- `bindOnSupport` reduces to `bind` if `f` doesn't depend on the additional hypothesis. -/
 @[simp]
 theorem bindOnSupport_eq_bind (p : Pmf α) (f : α → Pmf β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
-  ext (b x)
+  ext b
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
     fun a => ite_eq_right_iff.2 fun h => h.symm ▸ symm (MulZeroClass.zero_mul <| f a b)
   simp only [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,

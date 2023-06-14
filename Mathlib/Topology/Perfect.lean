@@ -171,12 +171,12 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [unionᵢ_inter, mem_sep_iff]
-    apply Countable.bunionᵢ
+    simp only [iUnion_inter, mem_sep_iff]
+    apply Countable.biUnion
     · exact Countable.mono (inter_subset_left _ _) bct
     · exact inter_subset_right _ _
   refine' ⟨V ∩ C, D, Vct, ⟨_, _⟩, _⟩
-  · refine' hclosed.sdiff (isOpen_bunionᵢ fun _ ↦ _)
+  · refine' hclosed.sdiff (isOpen_biUnion fun _ ↦ _)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
   · rw [preperfect_iff_nhds]
     intro x xD E xE
@@ -193,7 +193,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
         exact Countable.union h Vct
       have : U ∈ v := ⟨hUb, hU_cnt⟩
       apply xD.2
-      exact mem_bunionᵢ this xU
+      exact mem_biUnion this xU
     by_contra h
     -- Porting note: `push_neg` somehow didn't work. Add a `rw` to make `push_neg` work.
     rw [not_exists] at h

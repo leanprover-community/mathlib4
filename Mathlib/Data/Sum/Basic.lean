@@ -9,7 +9,6 @@ Authors: Mario Carneiro, Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Mathport.Rename
 
 /-!
 # Disjoint union of types
@@ -253,23 +252,24 @@ theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β �
 #align sum.elim_comp_map Sum.elim_comp_map
 
 @[simp]
-theorem isLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isLeft (x.map f g) = isLeft x :=
-by cases x <;> rfl
+theorem isLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isLeft (x.map f g) = isLeft x := by
+  cases x <;> rfl
 #align sum.is_left_map Sum.isLeft_map
 
 @[simp]
-theorem isRight_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isRight (x.map f g) = isRight x :=
-by cases x <;> rfl
+theorem isRight_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isRight (x.map f g) = isRight x := by
+  cases x <;> rfl
 #align sum.is_right_map Sum.isRight_map
 
 @[simp]
-theorem getLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : (x.map f g).getLeft = x.getLeft.map f :=
-by cases x <;> rfl
+theorem getLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) :
+    (x.map f g).getLeft = x.getLeft.map f := by
+  cases x <;> rfl
 #align sum.get_left_map Sum.getLeft_map
 
 @[simp]
 theorem getRight_map (f : α → β) (g : γ → δ) (x : α ⊕ γ) :
-  (x.map f g).getRight = x.getRight.map g := by cases x <;> rfl
+    (x.map f g).getRight = x.getRight.map g := by cases x <;> rfl
 #align sum.get_right_map Sum.getRight_map
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
@@ -387,8 +387,8 @@ section LiftRel
 /-- Lifts pointwise two relations between `α` and `γ` and between `β` and `δ` to a relation between
 `α ⊕ β` and `γ ⊕ δ`. -/
 inductive LiftRel (r : α → γ → Prop) (s : β → δ → Prop) : Sum α β → Sum γ δ → Prop
-| protected inl {a c} : r a c → LiftRel r s (inl a) (inl c)
-| protected inr {b d} : s b d → LiftRel r s (inr b) (inr d)
+  | protected inl {a c} : r a c → LiftRel r s (inl a) (inl c)
+  | protected inr {b d} : s b d → LiftRel r s (inr b) (inr d)
 #align sum.lift_rel Sum.LiftRel
 
 variable {r r₁ r₂ : α → γ → Prop} {s s₁ s₂ : β → δ → Prop} {a : α} {b : β} {c : γ} {d : δ}

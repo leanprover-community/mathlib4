@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.star.chsh
-! leanprover-community/mathlib commit 468b141b14016d54b479eb7a0fff1e360b7e3cf6
+! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -119,7 +119,6 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 
-set_option synthInstance.etaExperiment true in
 /-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
@@ -144,7 +143,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       arg 2
       arg 1
       rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg : 0 ≤ star P * P) _
+    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg P) _
     · simp
     · norm_num
   apply le_of_sub_nonneg
@@ -187,7 +186,6 @@ end TsirelsonInequality
 
 open TsirelsonInequality
 
-set_option synthInstance.etaExperiment true in
 /-- In a noncommutative ordered `*`-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
@@ -237,7 +235,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         skip
         congr
         rw [← P_sa]
-      convert(star_mul_self_nonneg : 0 ≤ star P * P)
+      convert (star_mul_self_nonneg P)
     have Q2_nonneg : 0 ≤ Q ^ 2 := by
       rw [sq]
       conv =>
@@ -245,7 +243,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         skip
         congr
         rw [← Q_sa]
-      convert(star_mul_self_nonneg : 0 ≤ star Q * Q)
+      convert (star_mul_self_nonneg Q)
     convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
         (le_of_lt (show 0 < √2⁻¹ by norm_num))
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`

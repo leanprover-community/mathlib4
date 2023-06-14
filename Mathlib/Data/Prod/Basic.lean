@@ -12,12 +12,12 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Common
 
 /-!
-# Extra facts about `prod`
+# Extra facts about `Prod`
 
-This file defines `prod.swap : α × β → β × α` and proves various simple lemmas about `prod`.
+This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
 -/
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
@@ -257,7 +257,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :

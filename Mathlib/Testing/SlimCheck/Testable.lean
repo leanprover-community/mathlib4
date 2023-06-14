@@ -3,8 +3,6 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-
-import Mathlib.Data.Array.Basic
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
@@ -145,40 +143,40 @@ def NamedBinder (_n : String) (p : Prop) : Prop := p
 namespace TestResult
 
 def toString : TestResult p → String
-| success (PSum.inl _) => "success (no proof)"
-| success (PSum.inr _) => "success (proof)"
-| gaveUp n => s!"gave {n} times"
-| failure _ counters _ => s!"failed {counters}"
+  | success (PSum.inl _) => "success (no proof)"
+  | success (PSum.inr _) => "success (proof)"
+  | gaveUp n => s!"gave {n} times"
+  | failure _ counters _ => s!"failed {counters}"
 
 instance : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
-| PSum.inr f, PSum.inr proof => PSum.inr $ f proof
-| _, _ => PSum.inl ()
+  | PSum.inr f, PSum.inr proof => PSum.inr $ f proof
+  | _, _ => PSum.inl ()
 
 /-- Combine the test result for properties `p` and `q` to create a test for their conjunction. -/
 def and : TestResult p → TestResult q → TestResult (p ∧ q)
-| failure h xs n, _ => failure (λ h2 => h h2.left) xs n
-| _, failure h xs n => failure (λ h2 => h h2.right) xs n
-| success h1, success h2 => success $ combine (combine (PSum.inr And.intro) h1) h2
-| gaveUp n, gaveUp m => gaveUp $ n + m
-| gaveUp n, _ => gaveUp n
-| _, gaveUp n => gaveUp n
+  | failure h xs n, _ => failure (λ h2 => h h2.left) xs n
+  | _, failure h xs n => failure (λ h2 => h h2.right) xs n
+  | success h1, success h2 => success $ combine (combine (PSum.inr And.intro) h1) h2
+  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | gaveUp n, _ => gaveUp n
+  | _, gaveUp n => gaveUp n
 
 /-- Combine the test result for properties `p` and `q` to create a test for their disjunction. -/
 def or : TestResult p → TestResult q → TestResult (p ∨ q)
-| failure h1 xs n, failure h2 ys m =>
-  let h3 := λ h =>
-    match h with
-    | Or.inl h3 => h1 h3
-    | Or.inr h3 => h2 h3
-  failure h3 (xs ++ ys) (n + m)
-| success h, _ => success $ combine (PSum.inr Or.inl) h
-| _, success h => success $ combine (PSum.inr Or.inr) h
-| gaveUp n, gaveUp m => gaveUp $ n + m
-| gaveUp n, _ => gaveUp n
-| _, gaveUp n => gaveUp n
+  | failure h1 xs n, failure h2 ys m =>
+    let h3 := λ h =>
+      match h with
+      | Or.inl h3 => h1 h3
+      | Or.inr h3 => h2 h3
+    failure h3 (xs ++ ys) (n + m)
+  | success h, _ => success $ combine (PSum.inr Or.inl) h
+  | _, success h => success $ combine (PSum.inr Or.inr) h
+  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | gaveUp n, _ => gaveUp n
+  | _, gaveUp n => gaveUp n
 
 /-- If `q → p`, then `¬ p → ¬ q` which means that testing `p` can allow us
 to find counter-examples to `q`. -/
@@ -209,8 +207,8 @@ def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
-| failure _ _ _ => true
-| _ => false
+  | failure _ _ _ => true
+  | _ => false
 
 end TestResult
 
@@ -295,8 +293,8 @@ def formatFailure (s : String) (xs : List String) (n : Nat) : String :=
 Increase the number of shrinking steps in a test result.
 -/
 def addShrinks (n : Nat) : TestResult p → TestResult p
-| TestResult.failure p xs m => TestResult.failure p xs (m + n)
-| p => p
+  | TestResult.failure p xs m => TestResult.failure p xs (m + n)
+  | p => p
 
 instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
 
@@ -430,20 +428,20 @@ open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
 def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
-| 0 => pure $ TestResult.gaveUp 1
-| n+1 => do
-  let r ← cmd
-  match r with
-  | success hp => pure $ success hp
-  | TestResult.failure h xs n => pure $ failure h xs n
-  | gaveUp _ => retry cmd n
+  | 0 => pure $ TestResult.gaveUp 1
+  | n+1 => do
+    let r ← cmd
+    match r with
+    | success hp => pure $ success hp
+    | TestResult.failure h xs n => pure $ failure h xs n
+    | gaveUp _ => retry cmd n
 
 /-- Count the number of times the test procedure gave up. -/
 def giveUp (x : Nat) : TestResult p → TestResult p
-| success (PSum.inl ()) => gaveUp x
-| success (PSum.inr p) => success $ (PSum.inr p)
-| gaveUp n => gaveUp $ n + x
-| TestResult.failure h xs n => failure h xs n
+  | success (PSum.inl ()) => gaveUp x
+  | success (PSum.inr p) => success $ (PSum.inr p)
+  | gaveUp n => gaveUp $ n + x
+  | TestResult.failure h xs n => failure h xs n
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :

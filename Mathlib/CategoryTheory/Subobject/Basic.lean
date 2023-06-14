@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Subobjects
@@ -28,7 +28,7 @@ There is a coercion from `Subobject X` back to the ambient category `C`
 `P.arrow : (P : C) ⟶ X` is the inclusion morphism.
 
 We provide
-* `def pullback [HasPpullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
+* `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
 and prove their basic properties and relationships.
@@ -262,7 +262,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
-    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) (by aesop_cat) ≪≫ e⟩
+    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _)  ≪≫ e⟩
 #align category_theory.subobject.mk_arrow CategoryTheory.Subobject.mk_arrow
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :

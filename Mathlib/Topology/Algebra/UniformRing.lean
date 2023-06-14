@@ -239,7 +239,6 @@ namespace UniformSpace
 
 variable {α : Type _}
 
-set_option synthInstance.etaExperiment true in
 theorem ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     separationSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
@@ -252,7 +251,6 @@ theorem ring_sep_quot (α : Type u) [r : CommRing α] [UniformSpace α] [Uniform
   rfl
 #align uniform_space.ring_sep_quot UniformSpace.ring_sep_quot
 
-set_option synthInstance.etaExperiment true in
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
@@ -293,7 +291,7 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
   toFun := (ue.denseInducing dr).extend f
   map_one' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 1
-    exacts[i.map_one.symm, f.map_one.symm]
+    exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]

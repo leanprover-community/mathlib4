@@ -39,7 +39,6 @@ def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One 
     hf.semifield f zero one add mul inv div nsmul npow zpow nat_cast with }
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
-set_option maxHeartbeats 3000000
 
 -- See note [reducible non-instances]
 /-- Pullback a `LinearOrderedField` under an injective map. -/

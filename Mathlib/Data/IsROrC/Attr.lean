@@ -7,7 +7,7 @@ Authors: Yury Kudryashov
 import Lean
 
 /-!
-# Declare a `isROrC_simps` simp attribute.
+# Declare an `isROrC_simps` simp attribute.
 
 Has to be in a separate file from `Data.IsROrC.Basic`, since simp attributes cannot be used directly
 in the file that declares them.

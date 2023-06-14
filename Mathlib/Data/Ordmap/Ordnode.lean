@@ -78,6 +78,9 @@ inductive Ordnode (α : Type u) : Type u
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
 #align ordnode Ordnode
 
+-- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
+compile_inductive% Ordnode
+
 namespace Ordnode
 
 variable {α : Type _}
@@ -130,11 +133,19 @@ instance : Singleton α (Ordnode α) :=
 /-- O(1). Get the size of the set.
 
      size {2, 1, 1, 4} = 3  -/
-@[inline, simp]
+@[inline]
 def size : Ordnode α → ℕ
   | nil => 0
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
+
+theorem size_nil : size (nil : Ordnode α) = 0 :=
+  rfl
+theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
+  rfl
+
+attribute [eqns size_nil size_node] size
+attribute [simp] size
 
 /-- O(1). Is the set empty?
 
@@ -168,7 +179,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o: Ordnode α) (n: ℕ) : Std.Format :=
+def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
@@ -324,11 +335,11 @@ def All (P : α → Prop) : Ordnode α → Prop
 #align ordnode.all Ordnode.All
 
 instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
-| nil => decidableTrue
-| node _ l _ r =>
-  have : Decidable (All P l) := All.decidable l
-  have : Decidable (All P r) := All.decidable r
-  And.decidable
+  | nil => decidableTrue
+  | node _ l _ r =>
+    have : Decidable (All P l) := All.decidable l
+    have : Decidable (All P r) := All.decidable r
+    And.decidable
 #align ordnode.all.decidable Ordnode.All.decidable
 
 /-- O(n). Does any element of the map satisfy property `P`?
@@ -341,11 +352,11 @@ def Any (P : α → Prop) : Ordnode α → Prop
 #align ordnode.any Ordnode.Any
 
 instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
-| nil => decidableFalse
-| node _ l _ r =>
-  have : Decidable (Any P l) := Any.decidable l
-  have : Decidable (Any P r) := Any.decidable r
-  Or.decidable
+  | nil => decidableFalse
+  | node _ l _ r =>
+    have : Decidable (Any P l) := Any.decidable l
+    have : Decidable (Any P r) := Any.decidable r
+    Or.decidable
 #align ordnode.any.decidable Ordnode.Any.decidable
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
@@ -431,7 +442,7 @@ def findMax : Ordnode α → Option α
 def eraseMin : Ordnode α → Ordnode α
   | nil => nil
   | node _ nil _ r => r
-  | node _ l x r => balanceR (eraseMin l) x r
+  | node _ (node sz l' y r') x r => balanceR (eraseMin (node sz l' y r')) x r
 #align ordnode.erase_min Ordnode.eraseMin
 
 /-- O(log n). Remove the maximum element from the tree, or do nothing if it is already empty.
@@ -441,7 +452,7 @@ def eraseMin : Ordnode α → Ordnode α
 def eraseMax : Ordnode α → Ordnode α
   | nil => nil
   | node _ l _ nil => l
-  | node _ l x r => balanceL l x (eraseMax r)
+  | node _ l x (node sz l' y r') => balanceL l x (eraseMax (node sz l' y r'))
 #align ordnode.erase_max Ordnode.eraseMax
 
 /-- **Internal use only**, because it requires a balancing constraint on the inputs.
@@ -502,24 +513,14 @@ def glue : Ordnode α → Ordnode α → Ordnode α
      merge {1, 2} {3, 4} = {1, 2, 3, 4}
      merge {3, 4} {1, 2} = precondition violation -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
-  -- Porting note: Previous code was:
-  -- (Ordnode.recOn l fun r => r) fun ls ll lx lr IHll IHlr r =>
-  --   (Ordnode.recOn r (node ls ll lx lr)) fun rs rl rx rr IHrl IHrr =>
-  --     if delta * ls < rs then balanceL IHrl rx rr
-  --     else
-  --       if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
-  --       else glue (node ls ll lx lr) (node rs rl rx rr)
-  --
-  -- failed to elaborate eliminator, expected type is not available
-  match l with
-  | nil => fun x ↦ x
-  | node ls ll lx lr => fun r ↦
-    match r with
-    | nil => node ls ll lx lr
-    | node rs rl rx rr =>
-      if delta * ls < rs then balanceL (merge ll r) rx rr
-      else if delta * rs < ls then balanceR ll lx (merge lr <| node rs rl rx rr)
-      else glue (node ls ll lx lr) (node rs rl rx rr)
+  (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r => r)
+    fun ls ll lx lr _ IHlr r =>
+      (Ordnode.recOn (motive := fun _ => Ordnode α) r (node ls ll lx lr))
+        fun rs rl rx rr IHrl _ =>
+          if delta * ls < rs then balanceL IHrl rx rr
+          else
+            if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
+            else glue (node ls ll lx lr) (node rs rl rx rr)
 #align ordnode.merge Ordnode.merge
 
 /-- O(log n). Insert an element above all the others, without any comparisons.
@@ -969,7 +970,7 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     insertWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 def insertWith (f : α → α) (x : α) : Ordnode α → Ordnode α
   | nil => ι x
-  | _t@(node sz l y r) =>
+  | node sz l y r =>
     match cmpLE x y with
     | Ordering.lt => balanceL (insertWith f x l) y r
     | Ordering.eq => node sz l (f y) r

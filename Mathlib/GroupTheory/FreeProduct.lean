@@ -137,7 +137,7 @@ theorem ext_hom (f g : FreeProduct M →* N) (h : ∀ i, f.comp (of : M i →* _
 #align free_product.ext_hom FreeProduct.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
-universal property of the free product, charaterizing it as a categorical coproduct. -/
+universal property of the free product, characterizing it as a categorical coproduct. -/
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (FreeProduct M →* N) where
   toFun fi :=
@@ -203,13 +203,13 @@ theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N}
     exact s.mul_mem hx hy
 #align free_product.lift_mrange_le FreeProduct.lift_mrange_le
 
-theorem mrange_eq_supᵢ {N} [Monoid N] (f : ∀ i, M i →* N) :
+theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
-  apply le_antisymm (lift_mrange_le f fun i => le_supᵢ (fun i => MonoidHom.mrange (f i)) i)
-  apply supᵢ_le _
+  apply le_antisymm (lift_mrange_le f fun i => le_iSup (fun i => MonoidHom.mrange (f i)) i)
+  apply iSup_le _
   rintro i _ ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
-#align free_product.mrange_eq_supr FreeProduct.mrange_eq_supᵢ
+#align free_product.mrange_eq_supr FreeProduct.mrange_eq_iSup
 
 section Group
 
@@ -251,12 +251,12 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     exact s.mul_mem hx hy
 #align free_product.lift_range_le FreeProduct.lift_range_le
 
-theorem range_eq_supᵢ {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
-  apply le_antisymm (lift_range_le _ f fun i => le_supᵢ (fun i => MonoidHom.range (f i)) i)
-  apply supᵢ_le _
+theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
+  apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
+  apply iSup_le _
   rintro i _ ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
-#align free_product.range_eq_supr FreeProduct.range_eq_supᵢ
+#align free_product.range_eq_supr FreeProduct.range_eq_iSup
 
 end Group
 
@@ -484,7 +484,7 @@ variable (M)
 
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
-concatentation, and thus provides a useful induction principle. -/
+concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
@@ -566,8 +566,8 @@ def toWord {i j} (w : NeWord M i j) : Word M
 #align free_product.neword.to_word FreeProduct.NeWord.toWord
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
-theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _)(w' : NeWord M i j), w'.toWord = w := by
-  suffices : ∃ (i j : _)(w' : NeWord M i j), w'.toWord.toList = w.toList
+theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
+  suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
   · rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩
     ext
