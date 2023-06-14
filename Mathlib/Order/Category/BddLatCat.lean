@@ -71,8 +71,8 @@ instance instFunLike (X Y : BddLatCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory BddLatCat where
-  forget := {
-    obj := (↑)
+  forget :=
+  { obj := (↑)
     map := FunLike.coe }
   forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 
