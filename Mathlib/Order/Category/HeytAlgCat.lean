@@ -60,8 +60,9 @@ deriving instance LargeCategory for HeytAlgCat
 
 -- Porting note: deriving failed.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory HeytAlgCat :=
-  BundledHom.concreteCategory _
+instance : ConcreteCategory HeytAlgCat := by
+  dsimp [HeytAlgCat]
+  infer_instance
 
 -- Porting note: No idea why it does not find this instance...
 instance {X Y : HeytAlgCat.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
