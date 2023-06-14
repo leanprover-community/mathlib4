@@ -57,7 +57,7 @@ variable {P : Type _} [MetricSpace P] [NormedAddTorsor V P]
 theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapc : ∠ a p c = π) (hbpd : ∠ b p d = π) :
     dist a b * dist c d + dist b c * dist d a = dist a c * dist b d := by
-  have h' : cospherical ({a, c, b, d} : Set P) := by rwa [Set.insert_comm c b {d}]
+  have h' : Cospherical ({a, c, b, d} : Set P) := by rwa [Set.insert_comm c b {d}]
   have hmul := mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi h' hapc hbpd
   have hbp := left_dist_ne_zero_of_angle_eq_pi hbpd
   have h₁ : dist c d = dist c p / dist b p * dist a b := by
@@ -75,4 +75,3 @@ theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
 #align euclidean_geometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical
 
 end EuclideanGeometry
-
