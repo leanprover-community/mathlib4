@@ -1331,7 +1331,26 @@ instance : Epi (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).
 
 lemma cokernelSequenceE'_exact :
     (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact := by
-  sorry
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A₀ y₀ hy₀
+  dsimp at y₀ hy₀
+  obtain ⟨y₁, hy₁⟩ : ∃ y₁, y₁ = y₀ ≫ (X.Hδ₁ToCycles n₁ n₂ hn₂).app (Arrow₂.mk f₁ f₂) := ⟨_, rfl⟩
+  obtain ⟨A₁, π₁, hπ₁, y₂, hy₂⟩ :=
+    (X.cokernelSequenceEObj_exact n₀ n₁ n₂ hn₁ hn₂
+      (Arrow₃.mk f₁ f₂ f₃)).exact_up_to_refinements y₁ (by
+        rw [hy₁, assoc]
+        exact hy₀)
+  dsimp at y₂ hy₂
+  obtain ⟨A₂, π₂, hπ₂, y₃, hy₃⟩ := (X.cokernelSequenceCyclesObj_exact n₁ n₂ hn₂ (Arrow₂.mk f₁ f₂)).exact_up_to_refinements
+    (π₁ ≫ y₀ - by exact y₂ ≫ (X.δ n₀ n₁ hn₁).app (Arrow₂.mk (f₁ ≫ f₂) f₃)) (by
+      dsimp
+      erw [sub_comp, assoc, ← hy₁, hy₂, assoc, sub_eq_zero]
+      rfl)
+  dsimp at y₃ hy₃
+  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, biprod.lift y₃ (π₂ ≫ y₂), _⟩
+  rw [comp_sub, sub_eq_iff_eq_add ] at hy₃
+  dsimp
+  rw [assoc, hy₃, biprod.lift_desc, assoc]
 
 end
 
