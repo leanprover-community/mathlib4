@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Category.HeytAlg
+import Mathlib.Order.Category.HeytAlg
 
 /-!
 # The category of boolean algebras
@@ -84,8 +84,7 @@ end
 
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
   Hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
