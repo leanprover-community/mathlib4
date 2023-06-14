@@ -22,7 +22,10 @@ This file defines `FinBoolAlgCat`, the category of finite boolean algebras.
 
 Birkhoff's representation for finite Boolean algebras.
 
-`FintypeCat_to_FinBoolAlgCat_op.left_op ⋙ FinBoolAlgCat.dual ≅ FintypeCat_to_FinBoolAlgCat_op.left_op`
+```
+FintypeCat_to_FinBoolAlgCat_op.left_op ⋙ FinBoolAlgCat.dual ≅
+FintypeCat_to_FinBoolAlgCat_op.left_op
+```
 
 `FinBoolAlgCat` is essentially small.
 -/
