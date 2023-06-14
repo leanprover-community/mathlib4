@@ -139,7 +139,8 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
         f.val.c.app (op V) ≫
           X.presheaf.map (eqToHom (congr_arg (Opens.map f.val.base).obj e)).op := by
   rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.val.c.naturality, Presheaf.pushforwardObj_map]
-  congr
+  cases e
+  rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
 instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
@@ -200,12 +201,12 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
 @[simps]
-def spec : CommRingCatᵒᵖ ⥤ Scheme where
+def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
-  map_id R := by rw [unop_id, Spec_map_id]
-  map_comp f g := by rw [unop_comp, Spec_map_comp]
-#align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.spec
+  map_id R := by simp
+  map_comp f g := by simp [specMap_comp]
+#align algebraic_geometry.Scheme.Spec AlgebraicGeometry.Scheme.Spec
 
 /-- The empty scheme.
 -/
@@ -316,7 +317,7 @@ end BasicOpen
 end Scheme
 
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
-    (Scheme.spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
+    (Scheme.Spec.obj <| op R).basicOpen ((SpecΓIdentity.app R).inv f) =
       PrimeSpectrum.basicOpen f := by
   ext x
   erw [Scheme.mem_basicOpen_top]
@@ -332,10 +333,10 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat}
     (f : (Spec.toSheafedSpace.obj (op R)).presheaf.obj (op ⊤)) :
-    (Scheme.spec.obj <| op R).basicOpen f = PrimeSpectrum.basicOpen ((SpecΓIdentity.app R).hom f) :=
-  by
+    (Scheme.Spec.obj <| op R).basicOpen f =
+      PrimeSpectrum.basicOpen ((SpecΓIdentity.app R).hom f) := by
   convert basicOpen_eq_of_affine ((SpecΓIdentity.app R).hom f)
-  exact (Iso.hom_inv_id_apply _ _).symm
+  exact (Iso.hom_inv_id_apply (SpecΓIdentity.app R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
 end AlgebraicGeometry
