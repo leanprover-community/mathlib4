@@ -152,7 +152,6 @@ theorem compProdFun_tsum_left (κ : kernel α β) (η : kernel (α × β) γ) [I
   simp_rw [compProdFun, (measure_sum_seq κ _).symm, lintegral_sum_measure]
 #align probability_theory.kernel.comp_prod_fun_tsum_left ProbabilityTheory.kernel.compProdFun_tsum_left
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (n m) -/
 theorem compProdFun_eq_tsum (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
     compProdFun κ η a s = ∑' (n) (m), compProdFun (seq κ n) (seq η m) a s := by
@@ -339,22 +338,22 @@ section Lintegral
 theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
-  let F : ℕ → simple_func (β × γ) ℝ≥0∞ := simple_func.eapprox (Function.uncurry f)
+  let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
   have h : ∀ a, (⨆ n, F n a) = Function.uncurry f a :=
-    simple_func.supr_eapprox_apply (Function.uncurry f) hf
+    SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h, Prod.mk.eta]
   have h_mono : Monotone F := fun i j hij b =>
-    simple_func.monotone_eapprox (Function.uncurry f) hij _
-  rw [lintegral_supr (fun n => (F n).Measurable) h_mono]
+    SimpleFunc.monotone_eapprox (Function.uncurry f) hij _
+  rw [lintegral_iSup (fun n => (F n).measurable) h_mono]
   have : ∀ b, ∫⁻ c, ⨆ n, F n (b, c) ∂η (a, b) = ⨆ n, ∫⁻ c, F n (b, c) ∂η (a, b) := by
     intro a
-    rw [lintegral_supr]
-    · exact fun n => (F n).Measurable.comp measurable_prod_mk_left
+    rw [lintegral_iSup]
+    · exact fun n => (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => h_mono hij _
   simp_rw [this]
   have h_some_meas_integral :
-    ∀ f' : simple_func (β × γ) ℝ≥0∞, Measurable fun b => ∫⁻ c, f' (b, c) ∂η (a, b) := by
+    ∀ f' : SimpleFunc (β × γ) ℝ≥0∞, Measurable fun b => ∫⁻ c, f' (b, c) ∂η (a, b) := by
     intro f'
     have :
       (fun b => ∫⁻ c, f' (b, c) ∂η (a, b)) =
@@ -364,18 +363,18 @@ theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kern
     refine' Measurable.comp _ measurable_prod_mk_left
     exact
       Measurable.lintegral_kernel_prod_right
-        ((simple_func.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
-  rw [lintegral_supr]
+        ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
+  rw [lintegral_iSup]
   rotate_left
   · exact fun n => h_some_meas_integral (F n)
   · exact fun i j hij b => lintegral_mono fun c => h_mono hij _
   congr
   ext1 n
-  refine' simple_func.induction _ _ (F n)
+  refine' SimpleFunc.induction _ _ (F n)
   · intro c s hs
-    simp only [simple_func.const_zero, simple_func.coe_piecewise, simple_func.coe_const,
-      simple_func.coe_zero, Set.piecewise_eq_indicator, lintegral_indicator_const hs]
-    rw [comp_prod_apply κ η _ hs, ← lintegral_const_mul c _]
+    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
+      SimpleFunc.coe_zero, Set.piecewise_eq_indicator, lintegral_indicator_const hs]
+    rw [compProd_apply κ η _ hs, ← lintegral_const_mul c _]
     swap;
     ·
       exact
@@ -386,14 +385,14 @@ theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kern
     rw [lintegral_indicator_const_comp measurable_prod_mk_left hs]
     rfl
   · intro f f' h_disj hf_eq hf'_eq
-    simp_rw [simple_func.coe_add, Pi.add_apply]
+    simp_rw [SimpleFunc.coe_add, Pi.add_apply]
     change
       ∫⁻ x, (f : β × γ → ℝ≥0∞) x + f' x ∂(κ ⊗ₖ η) a =
         ∫⁻ b, ∫⁻ c : γ, f (b, c) + f' (b, c) ∂η (a, b) ∂κ a
-    rw [lintegral_add_left (simple_func.measurable _), hf_eq, hf'_eq, ← lintegral_add_left]
+    rw [lintegral_add_left (SimpleFunc.measurable _), hf_eq, hf'_eq, ← lintegral_add_left]
     swap; · exact h_some_meas_integral f
     congr with b
-    rw [← lintegral_add_left ((simple_func.measurable _).comp measurable_prod_mk_left)]
+    rw [← lintegral_add_left ((SimpleFunc.measurable _).comp measurable_prod_mk_left)]
 #align probability_theory.kernel.lintegral_comp_prod' ProbabilityTheory.kernel.lintegral_comp_prod'
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
@@ -403,73 +402,72 @@ theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
   let g := Function.curry f
   change ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, g b c ∂η (a, b) ∂κ a
   rw [← lintegral_comp_prod']
-  · simp_rw [g, Function.curry_apply, Prod.mk.eta]
-  · simp_rw [g, Function.uncurry_curry]; exact hf
+  · simp_rw [Function.curry_apply]
+  · simp_rw [Function.uncurry_curry]; exact hf
 #align probability_theory.kernel.lintegral_comp_prod ProbabilityTheory.kernel.lintegral_compProd
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
-theorem lintegral_comp_prod₀ (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
+theorem lintegral_compProd₀ (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : AEMeasurable f ((κ ⊗ₖ η) a)) :
     ∫⁻ z, f z ∂(κ ⊗ₖ η) a = ∫⁻ x, ∫⁻ y, f (x, y) ∂η (a, x) ∂κ a := by
   have A : ∫⁻ z, f z ∂(κ ⊗ₖ η) a = ∫⁻ z, hf.mk f z ∂(κ ⊗ₖ η) a := lintegral_congr_ae hf.ae_eq_mk
   have B : ∫⁻ x, ∫⁻ y, f (x, y) ∂η (a, x) ∂κ a = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂η (a, x) ∂κ a := by
     apply lintegral_congr_ae
-    filter_upwards [ae_ae_of_ae_comp_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
-  rw [A, B, lintegral_comp_prod]
+    filter_upwards [ae_ae_of_ae_compProd hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
+  rw [A, B, lintegral_compProd]
   exact hf.measurable_mk
-#align probability_theory.kernel.lintegral_comp_prod₀ ProbabilityTheory.kernel.lintegral_comp_prod₀
+#align probability_theory.kernel.lintegral_comp_prod₀ ProbabilityTheory.kernel.lintegral_compProd₀
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem set_lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f) {s : Set β} {t : Set γ}
     (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫⁻ z in s ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  simp_rw [← kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← comp_prod_restrict,
-    lintegral_comp_prod _ _ _ hf, kernel.restrict_apply]
+  simp_rw [← kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict,
+    lintegral_compProd _ _ _ hf, kernel.restrict_apply]
 #align probability_theory.kernel.set_lintegral_comp_prod ProbabilityTheory.kernel.set_lintegral_compProd
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem set_lintegral_compProd_univ_right (κ : kernel α β) [IsSFiniteKernel κ]
     (η : kernel (α × β) γ) [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f)
     {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ z in s ×ˢ Set.univ, f z ∂(κ ⊗ₖ η) a = ∫⁻ x in s, ∫⁻ y, f (x, y) ∂η (a, x) ∂κ a := by
-  simp_rw [set_lintegral_comp_prod κ η a hf hs MeasurableSet.univ, measure.restrict_univ]
+  simp_rw [set_lintegral_compProd κ η a hf hs MeasurableSet.univ, Measure.restrict_univ]
 #align probability_theory.kernel.set_lintegral_comp_prod_univ_right ProbabilityTheory.kernel.set_lintegral_compProd_univ_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem set_lintegral_compProd_univ_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f) {t : Set γ}
     (ht : MeasurableSet t) :
     ∫⁻ z in Set.univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫⁻ x, ∫⁻ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  simp_rw [set_lintegral_comp_prod κ η a hf MeasurableSet.univ ht, measure.restrict_univ]
+  simp_rw [set_lintegral_compProd κ η a hf MeasurableSet.univ ht, Measure.restrict_univ]
 #align probability_theory.kernel.set_lintegral_comp_prod_univ_left ProbabilityTheory.kernel.set_lintegral_compProd_univ_left
 
 end Lintegral
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (n m) -/
 theorem compProd_eq_tsum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
     (κ ⊗ₖ η) a s = ∑' (n : ℕ) (m : ℕ), (seq κ n ⊗ₖ seq η m) a s := by
-  simp_rw [comp_prod_apply_eq_comp_prod_fun _ _ _ hs]; exact comp_prod_fun_eq_tsum κ η a hs
+  simp_rw [compProd_apply_eq_compProdFun _ _ _ hs]; exact compProdFun_eq_tsum κ η a hs
 #align probability_theory.kernel.comp_prod_eq_tsum_comp_prod ProbabilityTheory.kernel.compProd_eq_tsum_compProd
 
 theorem compProd_eq_sum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => kernel.sum fun m => seq κ n ⊗ₖ seq η m := by
-  ext (a s hs) : 2; simp_rw [kernel.sum_apply' _ a hs]; rw [comp_prod_eq_tsum_comp_prod κ η a hs]
+  ext (a s hs) : 2; simp_rw [kernel.sum_apply' _ a hs]; rw [compProd_eq_tsum_compProd κ η a hs]
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod ProbabilityTheory.kernel.compProd_eq_sum_compProd
 
 theorem compProd_eq_sum_compProd_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
-  rw [comp_prod_eq_sum_comp_prod]
-  congr with (n a s hs)
-  simp_rw [kernel.sum_apply' _ _ hs, comp_prod_apply_eq_comp_prod_fun _ _ _ hs,
-    comp_prod_fun_tsum_right _ η a hs]
+  rw [compProd_eq_sum_compProd]
+  -- Porting note: was
+  -- congr with (n a s hs)
+  congr with (n a s)
+  intro hs
+  simp_rw [kernel.sum_apply' _ _ hs, compProd_apply_eq_compProdFun _ _ _ hs,
+    compProdFun_tsum_right _ η a hs]
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod_left ProbabilityTheory.kernel.compProd_eq_sum_compProd_left
 
 theorem compProd_eq_sum_compProd_right (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => κ ⊗ₖ seq η n := by
-  rw [comp_prod_eq_sum_comp_prod]
-  simp_rw [comp_prod_eq_sum_comp_prod_left κ _]
+  rw [compProd_eq_sum_compProd]
+  simp_rw [compProd_eq_sum_compProd_left κ _]
   rw [kernel.sum_comm]
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod_right ProbabilityTheory.kernel.compProd_eq_sum_compProd_right
 
@@ -477,15 +475,15 @@ instance IsMarkovKernel.compProd (κ : kernel α β) [IsMarkovKernel κ] (η : k
     [IsMarkovKernel η] : IsMarkovKernel (κ ⊗ₖ η) :=
   ⟨fun a =>
     ⟨by
-      rw [comp_prod_apply κ η a MeasurableSet.univ]
+      rw [compProd_apply κ η a MeasurableSet.univ]
       simp only [Set.mem_univ, Set.setOf_true, measure_univ, lintegral_one]⟩⟩
 #align probability_theory.kernel.is_markov_kernel.comp_prod ProbabilityTheory.kernel.IsMarkovKernel.compProd
 
 theorem compProd_apply_univ_le (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsFiniteKernel η] (a : α) : (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
-  rw [comp_prod_apply κ η a MeasurableSet.univ]
+  rw [compProd_apply κ η a MeasurableSet.univ]
   simp only [Set.mem_univ, Set.setOf_true]
-  let Cη := is_finite_kernel.bound η
+  let Cη := IsFiniteKernel.bound η
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ b, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
@@ -505,8 +503,8 @@ instance IsFiniteKernel.compProd (κ : kernel α β) [IsFiniteKernel κ] (η : k
 
 instance IsSFiniteKernel.compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : IsSFiniteKernel (κ ⊗ₖ η) := by
-  rw [comp_prod_eq_sum_comp_prod]
-  exact kernel.is_s_finite_kernel_sum fun n => kernel.is_s_finite_kernel_sum inferInstance
+  rw [compProd_eq_sum_compProd]
+  exact kernel.isSFiniteKernel_sum fun n => kernel.isSFiniteKernel_sum inferInstance
 #align probability_theory.kernel.is_s_finite_kernel.comp_prod ProbabilityTheory.kernel.IsSFiniteKernel.compProd
 
 end CompositionProduct
@@ -532,19 +530,22 @@ theorem map_apply (κ : kernel α β) (hf : Measurable f) (a : α) : map κ f hf
 #align probability_theory.kernel.map_apply ProbabilityTheory.kernel.map_apply
 
 theorem map_apply' (κ : kernel α β) (hf : Measurable f) (a : α) {s : Set γ} (hs : MeasurableSet s) :
-    map κ f hf a s = κ a (f ⁻¹' s) := by rw [map_apply, measure.map_apply hf hs]
+    map κ f hf a s = κ a (f ⁻¹' s) := by rw [map_apply, Measure.map_apply hf hs]
 #align probability_theory.kernel.map_apply' ProbabilityTheory.kernel.map_apply'
 
-theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
+nonrec theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f hf a = ∫⁻ a, g' (f a) ∂κ a := by
   rw [map_apply _ hf, lintegral_map hg hf]
 #align probability_theory.kernel.lintegral_map ProbabilityTheory.kernel.lintegral_map
 
 theorem sum_map_seq (κ : kernel α β) [IsSFiniteKernel κ] (hf : Measurable f) :
     (kernel.sum fun n => map (seq κ n) f hf) = map κ f hf := by
-  ext (a s hs) : 2
-  rw [kernel.sum_apply, map_apply' κ hf a hs, measure.sum_apply _ hs, ← measure_sum_seq κ,
-    measure.sum_apply _ (hf hs)]
+  -- Porting note: was
+  -- ext (a s hs) : 2
+  ext (a s) : 2
+  intro hs
+  rw [kernel.sum_apply, map_apply' κ hf a hs, Measure.sum_apply _ hs, ← measure_sum_seq κ,
+    Measure.sum_apply _ (hf hs)]
   simp_rw [map_apply' _ hf _ hs]
 #align probability_theory.kernel.sum_map_seq ProbabilityTheory.kernel.sum_map_seq
 
