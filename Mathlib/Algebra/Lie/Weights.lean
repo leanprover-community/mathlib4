@@ -408,6 +408,7 @@ theorem mem_zeroRootSubalgebra (x : L) :
     x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEndomorphism R H L y ^ k) x = 0 := by
   rw [zeroRootSubalgebra]
   -- Porting note: added the following `change` otherwise the `simp` fails
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   change x ∈ rootSpace H 0 ↔ _
   simp only [mem_weightSpace, mem_preWeightSpace, Pi.zero_apply, zero_smul, sub_zero]
 #align lie_algebra.mem_zero_root_subalgebra LieAlgebra.mem_zeroRootSubalgebra
