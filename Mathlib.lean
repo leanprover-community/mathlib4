@@ -31,7 +31,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
-import Mathlib.Algebra.Category.BoolRing
+import Mathlib.Algebra.Category.BoolRingCat
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts

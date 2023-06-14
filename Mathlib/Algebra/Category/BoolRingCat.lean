@@ -10,7 +10,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Ring.BooleanRing
-import Mathlib.Order.Category.BoolAlg
+import Mathlib.Order.Category.BoolAlgCat
 
 /-!
 # The category of Boolean rings
@@ -100,4 +100,3 @@ def boolRingEquivBoolAlg : BoolRing ≌ BoolAlg :=
     (NatIso.ofComponents (fun X => BoolAlg.Iso.mk <| OrderIso.asBoolAlgAsBoolRing X) fun X Y f =>
       rfl)
 #align BoolRing_equiv_BoolAlg boolRingEquivBoolAlg
-
