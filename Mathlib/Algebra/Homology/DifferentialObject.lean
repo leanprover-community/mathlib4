@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.HomologicalComplex
-import Mathbin.CategoryTheory.DifferentialObject
+import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.CategoryTheory.DifferentialObject
 
 /-!
 # Homological complexes are differential graded objects.
@@ -72,8 +72,7 @@ attribute [local reducible] graded_object.has_shift
 -/
 @[simps]
 def dgoToHomologicalComplex :
-    DifferentialObject (GradedObjectWithShift b V) ⥤ HomologicalComplex V (ComplexShape.up' b)
-    where
+    DifferentialObject (GradedObjectWithShift b V) ⥤ HomologicalComplex V (ComplexShape.up' b) where
   obj X :=
     { pt := fun i => X.pt i
       d := fun i j =>
@@ -99,8 +98,7 @@ def dgoToHomologicalComplex :
 -/
 @[simps]
 def homologicalComplexToDgo :
-    HomologicalComplex V (ComplexShape.up' b) ⥤ DifferentialObject (GradedObjectWithShift b V)
-    where
+    HomologicalComplex V (ComplexShape.up' b) ⥤ DifferentialObject (GradedObjectWithShift b V) where
   obj X :=
     { pt := fun i => X.pt i
       d := fun i => X.d i (i + 1 • b)
@@ -151,8 +149,7 @@ to the category of homological complexes in `V`.
 -/
 @[simps]
 def dgoEquivHomologicalComplex :
-    DifferentialObject (GradedObjectWithShift b V) ≌ HomologicalComplex V (ComplexShape.up' b)
-    where
+    DifferentialObject (GradedObjectWithShift b V) ≌ HomologicalComplex V (ComplexShape.up' b) where
   Functor := dgoToHomologicalComplex b V
   inverse := homologicalComplexToDgo b V
   unitIso := dgoEquivHomologicalComplexUnitIso b V
