@@ -214,7 +214,7 @@ def mkHom {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) :
   ⟨f, i⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroupCat₁.mkHom
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
 theorem mkHom_apply {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) (x) :
     mkHom f i x = f x :=
   rfl
