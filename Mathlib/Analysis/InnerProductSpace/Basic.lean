@@ -1822,7 +1822,7 @@ variable {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 set_option maxHeartbeats 500000 in
 set_option synthInstance.maxHeartbeats 100000 in
-/-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `λ x y, ⟪x, A y⟫`, given
+/-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   (ContinuousLinearMap.flipₗᵢ' E E' 𝕜 (starRingEnd 𝕜) (RingHom.id 𝕜)).toContinuousLinearEquiv ∘L
@@ -2107,7 +2107,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum (f : ∀ i, G i) (s₁ s₂ : Finset �
 #align orthogonal_family.norm_sq_diff_sum OrthogonalFamily.norm_sq_diff_sum
 
 /-- A family `f` of mutually-orthogonal elements of `E` is summable, if and only if
-`(λ i, ‖f i‖ ^ 2)` is summable. -/
+`(fun i ↦ ‖f i‖ ^ 2)` is summable. -/
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
     (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
   classical

@@ -26,7 +26,7 @@ Note, when `A` is a *unital* `R`-algebra, then `Unitization R A` constructs a ne
 identity different from the old one, and so in general `Unitization R A` and `A` will not be
 isomorphic even in the unital case. This approach actually has nice functorial properties.
 
-There is a natural coercion from `A` to `Unitization R A` given by `λ a, (0, a)`, the image
+There is a natural coercion from `A` to `Unitization R A` given by `fun a ↦ (0, a)`, the image
 of which is a proper ideal (TODO), and when `R` is a field this ideal is maximal. Moreover,
 this ideal is always an essential ideal (it has nontrivial intersection with every other nontrivial
 ideal).

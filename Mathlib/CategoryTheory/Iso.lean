@@ -384,7 +384,7 @@ instance inv_isIso [IsIso f] : IsIso (inv f) :=
 /- The following instance has lower priority for the following reason:
 Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
 Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
-because `f.hom` is defeq to `(λ x, x) ≫ f.hom`, triggering a loop. -/
+because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   IsIso.of_iso <| asIso f ≪≫ asIso h
 #align category_theory.is_iso.comp_is_iso CategoryTheory.IsIso.comp_isIso

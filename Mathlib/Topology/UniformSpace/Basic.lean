@@ -40,7 +40,7 @@ Each uniform structure on `X` induces a topology on `X` characterized by
 
 > `nhds_eq_comap_uniformity : ∀ {x : X}, 𝓝 x = comap (prod.mk x) (𝓤 X)`
 
-where `prod.mk x : X → X × X := (λ y, (x, y))` is the partial evaluation of the product
+where `prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation of the product
 constructor.
 
 The dictionary with metric spaces includes:
@@ -490,13 +490,13 @@ theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β →
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 #align filter.tendsto.uniformity_trans Filter.Tendsto.uniformity_trans
 
-/-- Relation `λ f g, tendsto (λ x, (f x, g x)) l (𝓤 α)` is symmetric -/
+/-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is symmetric. -/
 theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : Tendsto f l (𝓤 α)) :
     Tendsto (fun x => ((f x).2, (f x).1)) l (𝓤 α) :=
   tendsto_swap_uniformity.comp h
 #align filter.tendsto.uniformity_symm Filter.Tendsto.uniformity_symm
 
-/-- Relation `λ f g, tendsto (λ x, (f x, g x)) l (𝓤 α)` is reflexive. -/
+/-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is reflexive. -/
 theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
     Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs

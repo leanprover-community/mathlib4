@@ -1003,7 +1003,7 @@ section sequence
 
 variable [Zero β] [TopologicalSpace β] (hf : FinStronglyMeasurable f μ)
 
-/-- A sequence of simple functions such that `∀ x, Tendsto (λ n, hf.approx n x) atTop (𝓝 (f x))`
+/-- A sequence of simple functions such that `∀ x, Tendsto (fun n ↦ hf.approx n x) atTop (𝓝 (f x))`
 and `∀ n, μ (support (hf.approx n)) < ∞`. These properties are given by
 `FinStronglyMeasurable.tendsto_approx` and `FinStronglyMeasurable.fin_support_approx`. -/
 protected noncomputable def approx : ℕ → α →ₛ β :=

@@ -222,7 +222,7 @@ class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, Is
 class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
-`λ a b, ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+`fun a b ↦ ¬ lt a b ∧ ¬ lt b a` is transitive. -/
 class IsIncompTrans (α : Type u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 

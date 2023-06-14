@@ -77,7 +77,7 @@ variable [NormedSpace ℝ E]
 /-- A variant of Urysohn's lemma, `ℒ^p` version, for an outer regular measure `μ`:
 consider two sets `s ⊆ u` which are respectively closed and open with `μ s < ∞`, and a vector `c`.
 Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
-bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (λ y, c)` is
+bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
 arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
 theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞) {s u : Set α}
     (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E) {ε : ℝ≥0∞}

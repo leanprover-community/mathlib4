@@ -1073,9 +1073,9 @@ variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
 /-- Continuity of interval integral with respect to a parameter, at a point within a set.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
   neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
-  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(λ x, F x t)`
+  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
   is continuous at `x₀` within `s` for almost every `t` in `[a, b]`
-  then the same holds for `(λ x, ∫ t in a..b, F x t ∂μ) s x₀`. -/
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
 theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}
     {s : Set X} (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
     (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)
@@ -1088,9 +1088,9 @@ theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X
 /-- Continuity of interval integral with respect to a parameter at a point.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
   neighborhood of `x₀`, and assume it is bounded by a function integrable on
-  `[a, b]` independent of `x` in a neighborhood of `x₀`. If `(λ x, F x t)`
+  `[a, b]` independent of `x` in a neighborhood of `x₀`. If `(fun x ↦ F x t)`
   is continuous at `x₀` for almost every `t` in `[a, b]`
-  then the same holds for `(λ x, ∫ t in a..b, F x t ∂μ) s x₀`. -/
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
 theorem continuousAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)
@@ -1103,8 +1103,8 @@ theorem continuousAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bou
 /-- Continuity of interval integral with respect to a parameter.
   Given `F : X → ℝ → E`, assume each `F x` is ae-measurable on `[a, b]`,
   and assume it is bounded by a function integrable on `[a, b]` independent of `x`.
-  If `(λ x, F x t)` is continuous for almost every `t` in `[a, b]`
-  then the same holds for `(λ x, ∫ t in a..b, F x t ∂μ) s x₀`. -/
+  If `(fun x ↦ F x t)` is continuous for almost every `t` in `[a, b]`
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
 theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → ℝ} {a b : ℝ}
     (hF_meas : ∀ x, AEStronglyMeasurable (F x) <| μ.restrict <| Ι a b)
     (h_bound : ∀ x, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)

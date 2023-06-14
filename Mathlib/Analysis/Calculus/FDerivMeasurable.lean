@@ -20,7 +20,7 @@ function. Namely, we prove:
 
 * `measurable_set_of_differentiable_at`: the set `{x | differentiable_at 𝕜 f x}` is measurable;
 * `measurable_fderiv`: the function `fderiv 𝕜 f` is measurable;
-* `measurable_fderiv_apply_const`: for a fixed vector `y`, the function `λ x, fderiv 𝕜 f x y`
+* `measurable_fderiv_apply_const`: for a fixed vector `y`, the function `fun x ↦ fderiv 𝕜 f x y`
   is measurable;
 * `measurable_deriv`: the function `deriv f` is measurable (for `f : 𝕜 → F`).
 

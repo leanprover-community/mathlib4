@@ -71,7 +71,7 @@ and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
 ```lean
-example (x : ℝ) : deriv (λ x, cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
+example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
 by { simp, ring }
 ```
 

@@ -1520,7 +1520,7 @@ protected theorem inv_lt_one : a⁻¹ < 1 ↔ 1 < a := by rw [inv_lt_iff_inv_lt,
 protected theorem one_lt_inv : 1 < a⁻¹ ↔ a < 1 := by rw [lt_inv_iff_lt_inv, inv_one]
 #align ennreal.one_lt_inv ENNReal.one_lt_inv
 
-/-- The inverse map `λ x, x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
+/-- The inverse map `fun x ↦ x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
 @[simps! apply]
 def _root_.OrderIso.invENNReal : ℝ≥0∞ ≃o ℝ≥0∞ᵒᵈ where
   map_rel_iff' := ENNReal.inv_le_inv

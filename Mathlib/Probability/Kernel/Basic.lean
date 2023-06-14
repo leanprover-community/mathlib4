@@ -59,7 +59,7 @@ namespace ProbabilityTheory
 /-- A kernel from a measurable space `α` to another measurable space `β` is a measurable function
 `κ : α → measure β`. The measurable space structure on `MeasureTheory.Measure β` is given by
 `MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → MeasureTheory.Measure β` is measurable
-iff `∀ s : Set β, MeasurableSet s → Measurable (λ a, κ a s)`. -/
+iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 noncomputable def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] :
     AddSubmonoid (α → Measure β) where
   carrier := Measurable

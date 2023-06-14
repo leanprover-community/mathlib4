@@ -34,7 +34,7 @@ noncomputable section
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
   [UniformSpace Y]
 
-/-- An additive action such that for all `c`, the map `λ x, c +ᵥ x` is uniformly continuous. -/
+/-- An additive action such that for all `c`, the map `fun x ↦ c +ᵥ x` is uniformly continuous. -/
 class UniformContinuousConstVAdd [VAdd M X] : Prop where
   uniformContinuous_const_vadd : ∀ c : M, UniformContinuous ((· +ᵥ ·) c : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd

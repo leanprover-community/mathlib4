@@ -456,7 +456,7 @@ end Prod
 /-! ### Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`λ x, (x, x)`.
+`fun x ↦ (x, x)`.
 -/
 
 

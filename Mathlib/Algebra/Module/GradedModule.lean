@@ -126,13 +126,13 @@ private theorem one_smul' [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i,
 private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁ i, A i)
     (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
   suffices
-    (-- `λ a b c, (a * b) • c` as a bundled hom
+    (-- `fun a b c ↦ (a * b) • c` as a bundled hom
               smulAddMonoidHom
               A M).compHom.comp
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `λ a b c, a • (b • c)` as a bundled hom
+    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
       FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext (ai ax bi bx ci cx) : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]

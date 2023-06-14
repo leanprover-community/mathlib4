@@ -589,7 +589,7 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
 #align rel_embedding.sum_lex_map_apply RelEmbedding.sumLexMap_apply
 
-/-- `λ b, Prod.mk a b` as a relation embedding. -/
+/-- `fun b ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
@@ -598,7 +598,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
 #align rel_embedding.prod_lex_mk_left_apply RelEmbedding.prodLexMkLeft_apply
 
-/-- `λ a, Prod.mk a b` as a relation embedding. -/
+/-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)

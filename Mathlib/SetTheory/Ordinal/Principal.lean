@@ -26,7 +26,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 
 ### Todo
 * Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
-  of `λ x, ω ^ x`.
+  of `fun x ↦ ω ^ x`.
 -/
 
 universe u v w

@@ -30,7 +30,7 @@ In namespace `VectorFourier`, we define the Fourier integral in the following co
 With these definitions, we define `fourierIntegral` to be the map from functions `V → E` to
 functions `W → E` that sends `f` to
 
-`λ w, ∫ v in V, e [-L v w] • f v ∂μ`,
+`fun w ↦ ∫ v in V, e [-L v w] • f v ∂μ`,
 
 where `e [x]` is notational sugar for `(e (Multiplicative.ofAdd x) : ℂ)` (available in locale
 `fourier_transform`). This includes the cases `W` is the dual of `V` and `L` is the canonical
@@ -40,7 +40,7 @@ In namespace `fourier`, we consider the more familiar special case when `V = W =
 multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped with a measure).
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
-`e` is `Real.fourierChar`, i.e. the character `λ x, exp ((2 * π * x) * I)`. The Fourier integral
+`e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)`. The Fourier integral
 in this case is defined as `Real.fourierIntegral`.
 
 ## Main results
@@ -233,7 +233,7 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `λ x, exp (2 * π * x * I)`. -/
+/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
 def fourierChar : Multiplicative ℝ →* 𝕊 where
   toFun z := expMapCircle (2 * π * Multiplicative.toAdd z)
   map_one' := by simp only; rw [toAdd_one, MulZeroClass.mul_zero, expMapCircle_zero]
