@@ -2283,6 +2283,7 @@ import Mathlib.Order.Category.BoolAlgCat
 import Mathlib.Order.Category.CompleteLatCat
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinBddDistLatCat
+import Mathlib.Order.Category.FinBoolAlg
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
 import Mathlib.Order.Category.HeytAlgCat

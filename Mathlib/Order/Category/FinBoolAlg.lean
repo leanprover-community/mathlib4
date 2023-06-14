@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Powerset
-import Mathbin.Order.Category.BoolAlg
-import Mathbin.Order.Category.FinBddDistLat
-import Mathbin.Order.Hom.CompleteLattice
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.Category.BoolAlg
+import Mathlib.Order.Category.FinBddDistLat
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # The category of finite boolean algebras
@@ -78,8 +78,7 @@ instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 #align FinBoolAlg.has_forget_to_BoolAlg FinBoolAlg.hasForgetToBoolAlg
 
-instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat
-    where
+instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂ :=
     { obj := fun X => FinBddDistLat.of X
       map := fun X Y f => f }
@@ -110,8 +109,7 @@ instance forget_to_finPartOrd_faithful : Faithful (forget₂ FinBoolAlg FinPartO
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
 @[simps]
-def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
@@ -143,8 +141,7 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 
 /-- The powerset functor. `set` as a functor. -/
 @[simps]
-def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ
-    where
+def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| FinBoolAlg.of (Set X)
   map X Y f :=
     Quiver.Hom.op <| (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
