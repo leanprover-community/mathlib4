@@ -223,12 +223,17 @@ theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
--- porting note: TODO: attribute [local tidy] tactic.op_induction'
+-- Porting note:
+-- the proof below could be `by aesop_cat` if
+-- https://github.com/JLimperg/aesop/issues/59
+-- can be resolved, and we add:
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
-  -- was `tidy`
-  induction' U with U
+  -- was `tidy`, see porting note above.
+  induction U
   apply id_hom_app'
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app

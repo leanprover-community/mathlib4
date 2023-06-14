@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 76f9c990d4b7c3dd26b87c4c4b51759e249d9e66
+! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1046,6 +1046,10 @@ instance Pi.compactSpace [∀ i, CompactSpace (π i)] : CompactSpace (∀ i, π 
   ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i => isCompact_univ⟩
 #align pi.compact_space Pi.compactSpace
 
+instance Function.compactSpace [CompactSpace β] : CompactSpace (ι → β) :=
+  Pi.compactSpace
+#align function.compact_space Function.compactSpace
+
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, κ d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `κ d`. -/
 theorem Filter.coprodᵢ_cocompact {δ : Type _} {κ : δ → Type _} [∀ d, TopologicalSpace (κ d)] :
@@ -1103,12 +1107,12 @@ theorem locallyCompactSpace_of_hasBasis {ι : α → Type _} {p : ∀ x, ι x �
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 #align locally_compact_space_of_has_basis locallyCompactSpace_of_hasBasis
 
-instance LocallyCompactSpace.prod (α : Type _) (β : Type _) [TopologicalSpace α]
+instance Prod.locallyCompactSpace (α : Type _) (β : Type _) [TopologicalSpace α]
     [TopologicalSpace β] [LocallyCompactSpace α] [LocallyCompactSpace β] :
     LocallyCompactSpace (α × β) :=
   have := fun x : α × β => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
   locallyCompactSpace_of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
-#align locally_compact_space.prod LocallyCompactSpace.prod
+#align locally_compact_space.prod Prod.locallyCompactSpace
 
 section Pi
 
@@ -1116,7 +1120,7 @@ variable [∀ i, TopologicalSpace (π i)] [∀ i, LocallyCompactSpace (π i)]
 
 /-- In general it suffices that all but finitely many of the spaces are compact,
   but that's not straightforward to state and use. -/
-instance LocallyCompactSpace.pi_finite [Finite ι] : LocallyCompactSpace (∀ i, π i) :=
+instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, π i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, -, n', hn', hsub⟩ := hn
@@ -1125,10 +1129,10 @@ instance LocallyCompactSpace.pi_finite [Finite ι] : LocallyCompactSpace (∀ i,
     refine' ⟨(Set.univ : Set ι).pi n'', _, subset_trans (fun _ h => _) hsub, isCompact_univ_pi hc⟩
     · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
     · exact fun i _ => hsub' i (h i trivial)⟩
-#align locally_compact_space.pi_finite LocallyCompactSpace.pi_finite
+#align locally_compact_space.pi_finite Pi.locallyCompactSpace_of_finite
 
 /-- For spaces that are not Hausdorff. -/
-instance LocallyCompactSpace.pi [∀ i, CompactSpace (π i)] : LocallyCompactSpace (∀ i, π i) :=
+instance Pi.locallyCompactSpace [∀ i, CompactSpace (π i)] : LocallyCompactSpace (∀ i, π i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
@@ -1144,7 +1148,17 @@ instance LocallyCompactSpace.pi [∀ i, CompactSpace (π i)] : LocallyCompactSpa
         exact hc i
       · rw [if_neg h]
         exact CompactSpace.isCompact_univ⟩
-#align locally_compact_space.pi LocallyCompactSpace.pi
+#align locally_compact_space.pi Pi.locallyCompactSpace
+
+instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace β] :
+    LocallyCompactSpace (ι → β) :=
+  Pi.locallyCompactSpace_of_finite
+#align function.locally_compact_space_of_finite Function.locallyCompactSpace_of_finite
+
+instance Function.locallyCompactSpace [LocallyCompactSpace β] [CompactSpace β] :
+    LocallyCompactSpace (ι → β) :=
+  Pi.locallyCompactSpace
+#align function.locally_compact_space Function.locallyCompactSpace
 
 end Pi
 
