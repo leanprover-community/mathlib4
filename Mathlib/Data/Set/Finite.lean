@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 5bb9fffd23f9f65b367f5d451da18cc60bf47335
+! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -111,6 +111,19 @@ protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype
 protected noncomputable def Finite.toFinset {s : Set α} (h : s.Finite) : Finset α :=
   @Set.toFinset _ _ h.fintype
 #align set.finite.to_finset Set.Finite.toFinset
+
+theorem Finite.toFinset_eq_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
+    h.toFinset = s.toFinset := by
+  -- porting note: was `rw [Finite.toFinset]; congr`
+  -- in Lean 4, a goal is left after `congr`
+  have : h.fintype = ‹_› := Subsingleton.elim _ _
+  rw [Finite.toFinset, this]
+#align set.finite.to_finset_eq_to_finset Set.Finite.toFinset_eq_toFinset
+
+@[simp]
+theorem toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toFinset :=
+  s.toFinite.toFinset_eq_toFinset
+#align set.to_finite_to_finset Set.toFinite_toFinset
 
 theorem Finite.exists_finset {s : Set α} (h : s.Finite) :
     ∃ s' : Finset α, ∀ a : α, a ∈ s' ↔ a ∈ s := by
