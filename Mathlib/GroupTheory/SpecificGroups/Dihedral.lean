@@ -52,7 +52,7 @@ private def one : DihedralGroup n :=
 instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
-/-- The inverse of a an element of the dihedral group.
+/-- The inverse of an element of the dihedral group.
 -/
 private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)

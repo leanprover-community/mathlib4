@@ -39,7 +39,7 @@ theorem IsCoatomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderTop 
   exact hyz.ne' (hy' z ⟨hxy.trans hyz.le, hz⟩ hyz.le)
 #align is_coatomic.of_is_chain_bounded IsCoatomic.of_isChain_bounded
 
-/-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has an lower
+/-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has a lower
 bound not equal to `⊥`. -/
 theorem IsAtomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderBot α]
     (h :

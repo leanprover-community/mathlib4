@@ -1211,25 +1211,25 @@ end Antitone
 
 namespace AntitoneOn
 
-/-- Pointwise supremum of two antitone functions is a antitone function. -/
+/-- Pointwise supremum of two antitone functions is an antitone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s :=
   fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align antitone_on.sup AntitoneOn.sup
 
-/-- Pointwise infimum of two antitone functions is a antitone function. -/
+/-- Pointwise infimum of two antitone functions is an antitone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : Set α}
     (hf : AntitoneOn f s) (hg : AntitoneOn g s) : AntitoneOn (f ⊓ g) s :=
   (hf.dual.sup hg.dual).dual
 #align antitone_on.inf AntitoneOn.inf
 
-/-- Pointwise maximum of two antitone functions is a antitone function. -/
+/-- Pointwise maximum of two antitone functions is an antitone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => max (f x) (g x)) s :=
   hf.sup hg
 #align antitone_on.max AntitoneOn.max
 
-/-- Pointwise minimum of two antitone functions is a antitone function. -/
+/-- Pointwise minimum of two antitone functions is an antitone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
     (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
   hf.inf hg

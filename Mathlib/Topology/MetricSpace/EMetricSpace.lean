@@ -1065,7 +1065,7 @@ def EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace 
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 #align emetric_space.replace_uniformity EMetricSpace.replaceUniformity
 
-/-- The extended metric induced by an injective function taking values in a emetric space. -/
+/-- The extended metric induced by an injective function taking values in an emetric space. -/
 def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with

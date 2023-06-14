@@ -18,7 +18,7 @@ import Mathlib.Tactic.GCongr.Core
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
-and of the extended distance `edist` in a `EMetricSpace`.
+and of the extended distance `edist` in an `EMetricSpace`.
 In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
 and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
 

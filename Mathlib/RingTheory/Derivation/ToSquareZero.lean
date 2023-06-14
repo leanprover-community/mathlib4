@@ -49,7 +49,7 @@ theorem diffToIdealOfQuotientCompEq_apply (f₁ f₂ : A →ₐ[R] B)
 variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`, each lift `A →ₐ[R] B`
-of the canonical map `A →ₐ[R] B ⧸ I` corresponds to a `R`-derivation from `A` to `I`. -/
+of the canonical map `A →ₐ[R] B ⧸ I` corresponds to an `R`-derivation from `A` to `I`. -/
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
     Derivation R A I := by
