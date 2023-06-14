@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.Linear
-import Mathbin.Analysis.Analytic.Composition
-import Mathbin.Analysis.NormedSpace.Completion
+import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.NormedSpace.Completion
 
 /-!
 # Uniqueness principle for analytic functions
@@ -34,8 +34,7 @@ a connected set. Superseded by `eq_on_zero_of_preconnected_of_locally_zero` whic
 completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
     (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
-    EqOn f 0 U :=
-  by
+    EqOn f 0 U := by
   /- Let `u` be the set of points around which `f` vanishes. It is clearly open. We have to show
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
     by connectedness. -/
@@ -55,8 +54,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2
   exact EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.change_origin (y - x)
-  have has_series : HasFPowerSeriesOnBall f q y (r / 2) :=
-    by
+  have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
     have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy 
     have := hp.change_origin (A.trans_le ENNReal.half_le_self)
     simp only [add_sub_cancel'_right] at this 
@@ -67,8 +65,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   have M : EMetric.ball y (r / 2) ∈ 𝓝 x := emetric.is_open_ball.mem_nhds hxy
   filter_upwards [M] with z hz
   have A : HasSum (fun n : ℕ => q n fun i : Fin n => z - y) (f z) := has_series.has_sum_sub hz
-  have B : HasSum (fun n : ℕ => q n fun i : Fin n => z - y) 0 :=
-    by
+  have B : HasSum (fun n : ℕ => q n fun i : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.has_fpower_series_at.congr yu
     convert hasSum_zero
     ext n
@@ -86,8 +83,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
   let F' := UniformSpace.Completion F
   set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL
   have : AnalyticOn 𝕜 (e ∘ f) U := fun x hx => (e.analytic_at _).comp (hf x hx)
-  have A : eq_on (e ∘ f) 0 U :=
-    by
+  have A : eq_on (e ∘ f) 0 U := by
     apply eq_on_zero_of_preconnected_of_eventually_eq_zero_aux this hU h₀
     filter_upwards [hfz₀] with x hx
     simp only [hx, Function.comp_apply, Pi.zero_apply, map_zero]
