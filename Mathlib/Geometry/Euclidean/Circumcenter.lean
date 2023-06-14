@@ -470,10 +470,12 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
   change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
-  conv at hr =>
-    congr
-    ext
-    rw [← Set.forall_range_iff]
+  have hr : ∃ (r : ℝ), ∀ (a : P),
+      a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
+    cases' hr with r hr
+    use r
+    refine' Set.forall_range_iff.mpr _
+    exact hr
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   cases' hr with r hr
   exact
