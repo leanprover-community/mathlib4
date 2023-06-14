@@ -16,23 +16,23 @@ import Mathlib.Order.OrderIsoNat
 # The `n`th Number Satisfying a Predicate
 
 This file defines a function for "what is the `n`th number that satisifies a given predicate `p`",
-and provides lemmas that deal with this function and its connection to `nat.count`.
+and provides lemmas that deal with this function and its connection to `Nat.count`.
 
 ## Main definitions
 
-* `nat.nth p n`: The `n`-th natural `k` (zero-indexed) such that `p k`. If there is no
-  such natural (that is, `p` is true for at most `n` naturals), then `nat.nth p n = 0`.
+* `Nat.nth p n`: The `n`-th natural `k` (zero-indexed) such that `p k`. If there is no
+  such natural (that is, `p` is true for at most `n` naturals), then `Nat.nth p n = 0`.
 
 ## Main results
 
 * `nat.nth_set_card`: For a fintely-often true `p`, gives the cardinality of the set of numbers
   satisfying `p` above particular values of `nth p`
-* `nat.count_nth_gc`: Establishes a Galois connection between `nat.nth p` and `nat.count p`.
-* `nat.nth_eq_order_iso_of_nat`: For an infinitely-ofter true predicate, `nth` agrees with the
+* `nat.count_nth_gc`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
+* `Nat.nth_eq_orderIsoOfNat`: For an infinitely-ofter true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
 There has been some discussion on the subject of whether both of `nth` and
-`nat.subtype.order_iso_of_nat` should exist. See discussion
+`Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
 
@@ -57,7 +57,7 @@ noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
 variable {p}
 
 /-!
-### Lemmas about `nat.nth` on a finite set
+### Lemmas about `Nat.nth` on a finite set
 -/
 
 
@@ -132,15 +132,15 @@ theorem exists_lt_card_finite_nth_eq (hf : (setOf p).Finite) {x} (h : p x) :
 #align nat.exists_lt_card_finite_nth_eq Nat.exists_lt_card_finite_nth_eq
 
 /-!
-### Lemmas about `nat.nth` on an infinite set
+### Lemmas about `Nat.nth` on an infinite set
 -/
 
-/-- When `s` is an infinite set, `nth` agrees with `nat.subtype.order_iso_of_nat`. -/
+/-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_apply_eq_orderIsoOfNat (hf : (setOf p).Infinite) (n : ℕ) :
     nth p n = @Nat.Subtype.orderIsoOfNat (setOf p) hf.to_subtype n := by rw [nth, dif_neg hf]
 #align nat.nth_apply_eq_order_iso_of_nat Nat.nth_apply_eq_orderIsoOfNat
 
-/-- When `s` is an infinite set, `nth` agrees with `nat.subtype.order_iso_of_nat`. -/
+/-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
 theorem nth_eq_orderIsoOfNat (hf : (setOf p).Infinite) :
     nth p = (↑) ∘ @Nat.Subtype.orderIsoOfNat (setOf p) hf.to_subtype :=
   funext <| nth_apply_eq_orderIsoOfNat hf
@@ -243,9 +243,9 @@ theorem isLeast_nth_of_infinite (hf : (setOf p).Infinite) (n : ℕ) :
   isLeast_nth fun h => absurd h hf
 #align nat.is_least_nth_of_infinite Nat.isLeast_nth_of_infinite
 
-/-- An alternative recursive definition of `nat.nth`: `nat.nth s n` is the infimum of `x ∈ s` such
-that `nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assume that the set is
-nonempty because we use the same "garbage value" `0` both for `Inf` on `ℕ` and for `nat.nth s n` for
+/-- An alternative recursive definition of `Nat.nth`: `Nat.nth s n` is the infimum of `x ∈ s` such
+that `Nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assume that the set is
+nonempty because we use the same "garbage value" `0` both for `Inf` on `ℕ` and for `Nat.nth s n` for
 `n ≥ card s`. -/
 theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ ∀ k < n, nth p k < x} := by
   by_cases hn : ∀ hf : (setOf p).Finite, n < hf.toFinset.card
@@ -396,8 +396,8 @@ theorem le_nth_count (hp : (setOf p).Infinite) (n : ℕ) : n ≤ nth p (count p 
   le_nth_count' ⟨m, hp, hn.le⟩
 #align nat.le_nth_count Nat.le_nth_count
 
-/-- If a predicate `p : ℕ → Prop` is true for infinitely many numbers, then `nat.count p` and
-`nat.nth p` form a Galois insertion. -/
+/-- If a predicate `p : ℕ → Prop` is true for infinitely many numbers, then `Nat.count p` and
+`Nat.nth p` form a Galois insertion. -/
 noncomputable def giCountNth (hp : (setOf p).Infinite) : GaloisInsertion (count p) (nth p) :=
   GaloisInsertion.monotoneIntro (nth_monotone hp) (count_monotone p) (le_nth_count hp)
     (count_nth_of_infinite hp)
