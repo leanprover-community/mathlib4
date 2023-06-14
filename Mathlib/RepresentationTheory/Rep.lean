@@ -10,10 +10,10 @@ Authors: Scott Morrison
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Action
-import Mathlib.Algebra.Category.Module.Abelian
-import Mathlib.Algebra.Category.Module.Colimits
-import Mathlib.Algebra.Category.Module.Monoidal.Closed
-import Mathlib.Algebra.Category.Module.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 
 /-!
@@ -59,13 +59,14 @@ instance : CoeSort (Rep k G) (Type u) :=
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
 
-instance (V : Rep k G) : Module k V := by change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V);
+instance (V : Rep k G) : Module k V := by
+  change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
 /-- Specialize the existing `Action.ρ`, changing the type to `representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
-  V.ρ
+  Action.ρ V
 #align Rep.ρ Rep.ρ
 
 /-- Lift an unbundled representation to `Rep`. -/
@@ -169,6 +170,11 @@ theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
   by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 #align Rep.linearization_of Rep.linearization_of
 
+-- Porting note: helps fixing `linearizationTrivialIso` since change in behaviour of ext
+theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
+    ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r :=
+  by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+
 variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
 
 @[simp]
@@ -177,8 +183,8 @@ theorem linearization_map_hom : ((linearization k G).map f).hom = Finsupp.lmapDo
 #align Rep.linearization_map_hom Rep.linearization_map_hom
 
 theorem linearization_map_hom_single (x : X.V) (r : k) :
-    ((linearization k G).map f).hom (Finsupp.single x r) = Finsupp.single (f.hom x) r := by
-  rw [linearization_map_hom, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+    ((linearization k G).map f).hom (Finsupp.single x r) = Finsupp.single (f.hom x) r :=
+  Finsupp.mapDomain_single
 #align Rep.linearization_map_hom_single Rep.linearization_map_hom_single
 
 @[simp]
@@ -202,20 +208,19 @@ theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUni
 
 @[simp]
 theorem linearization_ε_inv_hom_apply (r : k) :
-    (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r := by
-  simp_rw [← Action.forget_map, functor.map_inv, Action.forget_map]
-  rw [← Finsupp.lsingle_apply PUnit.unit r]
-  apply is_iso.hom_inv_id_apply _ _
+    (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
+  IsIso.hom_inv_id_apply (linearization k G).ε r
 #align Rep.linearization_ε_inv_hom_apply Rep.linearization_ε_inv_hom_apply
 
 variable (k G)
 
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
-@[simps]
+@[simps!]
 noncomputable def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
-  Action.mkIso (Iso.refl _) fun g => by ext1; ext1; exact linearization_of _ _ _
+  Action.mkIso (Iso.refl _) fun _ => Finsupp.lhom_ext' (fun _ => LinearMap.ext
+    (fun _ => linearization_single ..))
 #align Rep.linearization_trivial_iso Rep.linearizationTrivialIso
 
 variable (k G)
@@ -250,7 +255,7 @@ variable {k G}
 @[simps]
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
-  comm' g := by
+  comm g := by
     refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
@@ -259,8 +264,9 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
 
 theorem leftRegularHom_apply {A : Rep k G} (x : A) :
     (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
-  simpa only [left_regular_hom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
-    A.ρ.map_one, zero_smul]
+  rw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
+    A.ρ.map_one, LinearMap.one_apply]
+  · rw [zero_smul]
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
@@ -285,8 +291,9 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
-  simp only [left_regular_hom_equiv_symm_apply, left_regular_hom_hom, Finsupp.lift_apply,
-    Finsupp.sum_single_index, zero_smul, one_smul]
+  rw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
+    Finsupp.sum_single_index, one_smul]
+  · rw [zero_smul]
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
 end Linearization
@@ -384,11 +391,9 @@ variable (A B C)
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
 def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
-  {
-    (ihom.adjunction A).homEquiv _
-      _ with
-    map_add' := fun f g => rfl
-    map_smul' := fun r f => rfl }
+  { (ihom.adjunction A).homEquiv _ _ with
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 #align Rep.monoidal_closed.linear_hom_equiv Rep.MonoidalClosed.linearHomEquiv
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
