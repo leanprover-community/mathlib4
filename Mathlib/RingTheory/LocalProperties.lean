@@ -210,7 +210,6 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply hP.OfLocalizationSpanTarget _ _ hs
   rintro ⟨_, r, hr, rfl⟩
-  have := hs' ⟨r, hr⟩
   convert
     hP.StableUnderComposition _ _ (hP.HoldsForLocalizationAway (Localization.Away r) r)
       (hs' ⟨r, hr⟩) using
@@ -631,9 +630,9 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S] [Alge
           (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
     IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
-      Algebra.subset_adjoin _ hx
-  · exact ⟨⟨a, ha⟩, by simpa [Submonoid.smul_def] using e⟩
-  · rintro _ ⟨a, ha, rfl⟩; exact Subalgebra.algebraMap_mem _ a
+      Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
+  refine' ⟨⟨a, ha⟩, _⟩
+  simpa only [Submonoid.smul_def, algebraMap_smul] using e
 #align is_localization.lift_mem_adjoin_finset_integer_multiple IsLocalization.lift_mem_adjoin_finsetIntegerMultiple
 
 theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.FiniteType := by
