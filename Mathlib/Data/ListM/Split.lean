@@ -11,6 +11,9 @@ import Mathlib.Data.ULift
 -/
 
 namespace ListM
+
+variable {α β : Type u} {m : Type u → Type u} [Monad m]
+
 /--
 Extract the prefix of a lazy list consisting of elements up to and including
 the first element satisfying a monadic predicate.
