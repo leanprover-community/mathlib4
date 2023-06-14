@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Matrix.Spectrum
-import Mathbin.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-! # Positive Definite Matrices
 This file defines positive (semi)definite matrices and connects the notion to positive definiteness
@@ -44,8 +44,7 @@ def PosSemidef (M : Matrix n n 𝕜) :=
   M.IsHermitian ∧ ∀ x : n → 𝕜, 0 ≤ IsROrC.re (dotProduct (star x) (M.mulVec x))
 #align matrix.pos_semidef Matrix.PosSemidef
 
-theorem PosDef.posSemidef {M : Matrix n n 𝕜} (hM : M.PosDef) : M.PosSemidef :=
-  by
+theorem PosDef.posSemidef {M : Matrix n n 𝕜} (hM : M.PosDef) : M.PosSemidef := by
   refine' ⟨hM.1, _⟩
   intro x
   by_cases hx : x = 0
@@ -54,11 +53,9 @@ theorem PosDef.posSemidef {M : Matrix n n 𝕜} (hM : M.PosDef) : M.PosSemidef :
 #align matrix.pos_def.pos_semidef Matrix.PosDef.posSemidef
 
 theorem PosSemidef.submatrix {M : Matrix n n 𝕜} (hM : M.PosSemidef) (e : m ≃ n) :
-    (M.submatrix e e).PosSemidef :=
-  by
+    (M.submatrix e e).PosSemidef := by
   refine' ⟨hM.1.submatrix e, fun x => _⟩
-  have : (M.submatrix (⇑e) ⇑e).mulVec x = (M.mul_vec fun i : n => x (e.symm i)) ∘ e :=
-    by
+  have : (M.submatrix (⇑e) ⇑e).mulVec x = (M.mul_vec fun i : n => x (e.symm i)) ∘ e := by
     ext i
     dsimp only [(· ∘ ·), mul_vec, dot_product]
     rw [Finset.sum_bij' (fun i _ => e i) _ _ fun i _ => e.symm i] <;>
@@ -78,16 +75,14 @@ theorem posSemidef_submatrix_equiv {M : Matrix n n 𝕜} (e : m ≃ n) :
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 #align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
 
-theorem PosDef.transpose {M : Matrix n n 𝕜} (hM : M.PosDef) : Mᵀ.PosDef :=
-  by
+theorem PosDef.transpose {M : Matrix n n 𝕜} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine' ⟨is_hermitian.transpose hM.1, fun x hx => _⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 2
   rw [mul_vec_transpose, Matrix.dotProduct_mulVec, star_star, dot_product_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
 theorem posDef_of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef :=
-  by
+    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine' ⟨hM, fun x hx => _⟩
   simp only [to_quadratic_form', QuadraticForm.PosDef, BilinForm.toQuadraticForm_apply,
     Matrix.toBilin'_apply'] at hMq 
@@ -105,8 +100,7 @@ namespace PosDef
 
 variable {M : Matrix n n ℝ} (hM : M.PosDef)
 
-theorem det_pos [DecidableEq n] : 0 < det M :=
-  by
+theorem det_pos [DecidableEq n] : 0 < det M := by
   rw [hM.is_hermitian.det_eq_prod_eigenvalues]
   apply Finset.prod_pos
   intro i _
@@ -127,15 +121,13 @@ namespace QuadraticForm
 variable {n : Type _} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
-    (hQ : Q.toMatrix'.PosDef) : Q.PosDef :=
-  by
+    (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
   rw [← to_quadratic_form_associated ℝ Q, ← bilin_form.to_matrix'.left_inv ((associated_hom _) Q)]
   apply Matrix.posDef_toQuadraticForm' hQ
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
-    Q.toMatrix'.PosDef :=
-  by
+    Q.toMatrix'.PosDef := by
   rw [← to_quadratic_form_associated ℝ Q, ←
     bilin_form.to_matrix'.left_inv ((associated_hom _) Q)] at hQ 
   apply Matrix.posDef_of_toQuadraticForm' (is_symm_to_matrix' Q) hQ
@@ -161,8 +153,7 @@ noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosD
         by_cases h : x = 0
         · simp [h]
         · exact le_of_lt (hM.2 x h)
-      definite := fun x (hx : dotProduct _ _ = 0) =>
-        by
+      definite := fun x (hx : dotProduct _ _ = 0) => by
         by_contra' h
         simpa [hx, lt_irrefl] using hM.2 x h
       add_left := by simp only [star_add, add_dot_product, eq_self_iff_true, forall_const]
