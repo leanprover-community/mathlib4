@@ -378,6 +378,10 @@ instance : ConcreteCategory CommRingCat := by
 instance : CoeSort CommRingCat (Type _) where
   coe X := X.α
 
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
+  (forget CommRingCat).obj R ≟ R
+
 instance commRing (X : CommRingCat) : CommRing X := X.str
 
 instance commRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
