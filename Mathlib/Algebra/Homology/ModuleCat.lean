@@ -96,6 +96,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology_ext'
 
 -- porting note: `erw` had to be used instead of `simp`
+-- see https://github.com/leanprover-community/mathlib4/issues/5026
 /-- We give an alternative proof of `homology_map_eq_of_homotopy`,
 specialized to the setting of `V = Module R`,
 to demonstrate the use of extensionality lemmas for homology in `Module R`. -/
