@@ -172,7 +172,7 @@ open Topology
 lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
     List.TFAE [ Monotone f,
-           Continuous[t₁, t₂] f,
+           Continuous f,
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
