@@ -315,13 +315,19 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 #align category_theory.as_iso CategoryTheory.asIso
 
+-- Porting note: the `IsIso f` argument had been instance implicit,
+-- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
+theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
   rfl
 #align category_theory.as_iso_hom CategoryTheory.asIso_hom
 
+-- Porting note: the `IsIso f` argument had been instance implicit,
+-- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
+theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
   rfl
 #align category_theory.as_iso_inv CategoryTheory.asIso_inv
 

@@ -92,7 +92,7 @@ theorem expComparison_ev (A B : C) :
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
-  simp
+  simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
 
 theorem coev_expComparison (A B : C) :
@@ -140,13 +140,17 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   ext B : 2
   dsimp [frobeniusMorphism, transferNatTransSelf, transferNatTrans, Adjunction.comp]
   simp only [id_comp, comp_id]
-  rw [← L.map_comp_assoc, prod.map_id_comp, assoc, expComparison_ev, prod.map_id_comp, assoc, ←
-    F.map_id, ← prod_comparison_inv_natural_assoc, ← F.map_comp, exp.ev_coev,
-    F.map_id (A ⨯ L.obj B), comp_id]
+  rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
+  -- Porting note: need to use `erw` here.
+  erw [expComparison_ev]
+  rw [prod.map_id_comp, assoc, ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
+  -- Porting note: need to use `erw` here.
+  erw [exp.ev_coev]
+  rw [F.map_id (A ⨯ L.obj B), comp_id]
   apply prod.hom_ext
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prod_comparison_map_fst]
+  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
     simp
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prod_comparison_map_snd]
+  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]
     simp
 #align category_theory.frobenius_morphism_mate CategoryTheory.frobeniusMorphism_mate
 
