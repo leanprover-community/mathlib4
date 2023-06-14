@@ -357,11 +357,10 @@ structure MkCore where
   t : ∀ i j, (Opens.toTopCat _).obj (V i j) ⟶ (Opens.toTopCat _).obj (V j i)
   V_id : ∀ i, V i i = ⊤
   t_id : ∀ i, ⇑(t i i) = id
-  -- porting note: was vv `@coe (V j i) (U j) _ (t i j x) ∈ V j k`
   t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      -- porting note: this v underscore was `↑(t i j x)`, but Lean type-mismatched
+      -- porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
       (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
