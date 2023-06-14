@@ -10,10 +10,10 @@ Authors: Scott Morrison
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Action
-import Mathlib.Algebra.Category.Module.Abelian
-import Mathlib.Algebra.Category.Module.Colimits
-import Mathlib.Algebra.Category.Module.Monoidal.Closed
-import Mathlib.Algebra.Category.Module.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 
 /-!
