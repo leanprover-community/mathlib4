@@ -126,10 +126,12 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
   rfl
 #align Rep.trivial_def Rep.trivial_def
 
--- Verify that limits are calculated correctly.
-noncomputable example : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) := by infer_instance
+-- Porting note: the two following instances were found automatically in mathlib3
+noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+  Action.instPreservesLimitsForget.{u} _ _
 
-noncomputable example : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) := by infer_instance
+noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+  Action.instPreservesColimitsForget.{u} _ _
 
 @[simp]
 theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
@@ -569,4 +571,3 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k 
 
 -- TODO Verify that the equivalence with `Module (monoid_algebra k G)` is a monoidal functor.
 end Rep
-
