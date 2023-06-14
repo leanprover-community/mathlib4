@@ -587,7 +587,12 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
       ext_of_direction_eq _
         ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
     refine' eq_of_le_of_finrank_eq (direction_le (span_points_subset_coe_of_subset_coe _)) _
-    · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by clear h₁ h₂ h₃; decide!
+    · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
+        clear h₁ h₂ h₃
+        -- porting note: was `decide!`
+        fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
+        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
+        simp at h₁ h₂ h₃ ⊢
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
