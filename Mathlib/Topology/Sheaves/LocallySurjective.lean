@@ -96,8 +96,10 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
     use ℱ.germ ⟨x, hxV⟩ s
-    convert stalkFunctor_map_germ_apply V ⟨x, hxV⟩ T s
-    simpa [h_eq] using germ_res_apply 𝒢 ι ⟨x, hxV⟩ t
+    -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
+    -- to lean 3.
+    convert stalkFunctor_map_germ_apply V ⟨x, hxV⟩ T s using 1
+    simpa [h_eq] using (germ_res_apply 𝒢 ι ⟨x, hxV⟩ t).symm
   · /- human proof:
         Let U be an open set, t ∈ Γ ℱ U a section, x ∈ U a point.
         By surjectivity on stalks, the germ of t is the image of
