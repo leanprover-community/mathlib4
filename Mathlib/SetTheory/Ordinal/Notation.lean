@@ -1092,7 +1092,8 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
         coe_coe, eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero,
         Nat.cast_succ, Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
         true_and_iff, _root_.zero_add, zero_def]
-    · infer_instance
+    · -- porting note: was `infer_instance`
+      aesop
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos _ omega_pos
       refine'
