@@ -78,6 +78,14 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
   MonoidalClosed C
 #align category_theory.cartesian_closed CategoryTheory.CartesianClosed
 
+-- porting note: added to ease the port of `CategoryTheory.Closed.Types`
+/-- Constructor for `CartesianClosed C`. -/
+def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
+    (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
+      (monoidalOfHasFiniteProducts C) X)) :
+    CartesianClosed C :=
+  ⟨fun X => ⟨h X⟩⟩
+
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
 
 variable [HasFiniteProducts C] [Exponentiable A]

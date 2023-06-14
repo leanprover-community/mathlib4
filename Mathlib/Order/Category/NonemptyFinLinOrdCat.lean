@@ -195,8 +195,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [coe_of, FunctorToTypes.map_comp_apply]
-      simp only [forget_map_apply]
+      simp only [coe_of, comp_apply]
+      change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
       · exfalso

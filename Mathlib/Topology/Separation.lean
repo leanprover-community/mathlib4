@@ -485,7 +485,7 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
   tfae_have 1 → 4
   · simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
-    exacts[isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
+    exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
   tfae_have 4 → 2
   · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
   tfae_have 2 ↔ 10
@@ -1803,7 +1803,7 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
     cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
-    exacts[⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
+    exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable normalSpaceOfT3SecondCountable
 
 end Normality
@@ -1858,7 +1858,7 @@ instance [T5Space α] : T5Space (SeparationQuotient α) where
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply T5Space.completely_normal <;> rw [← preimage_mk_closure]
-    exacts[hd₁.preimage mk, hd₂.preimage mk]
+    exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
 

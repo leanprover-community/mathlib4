@@ -513,7 +513,7 @@ section SemilatticeSup
 
 variable [HasImages C] [HasBinaryCoproducts C]
 
-/-- The functorial supremum on `MonoOver A` descends to an supremum on `Subobject A`. -/
+/-- The functorial supremum on `MonoOver A` descends to a supremum on `Subobject A`. -/
 def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup
@@ -670,7 +670,7 @@ section Sup
 
 variable [WellPowered C] [HasCoproducts.{v₁} C]
 
-/-- The univesal morphism out of the coproduct of a set of subobjects,
+/-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=

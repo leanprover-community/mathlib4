@@ -494,7 +494,7 @@ theorem norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', N
   · refine' op_norm_le_bound _ (norm_nonneg f) fun m => _
     dsimp
     rw [pi_norm_le_iff_of_nonneg]
-    exacts[fun i => (f i).le_of_op_norm_le m (norm_le_pi_norm f i),
+    exacts [fun i => (f i).le_of_op_norm_le m (norm_le_pi_norm f i),
       mul_nonneg (norm_nonneg f) (prod_nonneg fun _ _ => norm_nonneg _)]
   · refine' (pi_norm_le_iff_of_nonneg (norm_nonneg _)).2 fun i => _
     refine' op_norm_le_bound _ (norm_nonneg _) fun m => _

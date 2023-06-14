@@ -407,7 +407,7 @@ def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace �
 instance {α : Type _} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
-/-- The extended psuedodistance on a subset of a pseudoemetric space is the restriction of
+/-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
 the original pseudodistance, by definition -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
 #align subtype.edist_eq Subtype.edist_eq
@@ -1065,7 +1065,7 @@ def EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace 
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 #align emetric_space.replace_uniformity EMetricSpace.replaceUniformity
 
-/-- The extended metric induced by an injective function taking values in a emetric space. -/
+/-- The extended metric induced by an injective function taking values in an emetric space. -/
 def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
@@ -1158,18 +1158,18 @@ instance [PseudoEMetricSpace X] : EDist (UniformSpace.SeparationQuotient X) wher
 #align uniform_space.separation_quotient.edist_mk UniformSpace.SeparationQuotient.edist_mk
 
 instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient X) :=
-@EMetricSpace.ofT0PseudoEMetricSpace (UniformSpace.SeparationQuotient X)
-  { edist_self := fun x => Quotient.inductionOn' x edist_self,
-    edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
-    edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
-    toUniformSpace := inferInstance,
-    uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr $ fun ε =>
-      iInf_congr $ fun _ => congr_arg 𝓟 <| by
-        ext ⟨⟨x⟩, ⟨y⟩⟩
-        refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
-        rintro ⟨⟨x', y'⟩, h', h⟩
-        simp only [Prod.ext_iff] at h
-        rwa [← h.1, ← h.2] } _
+  @EMetricSpace.ofT0PseudoEMetricSpace (UniformSpace.SeparationQuotient X)
+    { edist_self := fun x => Quotient.inductionOn' x edist_self,
+      edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
+      edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
+      toUniformSpace := inferInstance,
+      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr $ fun ε =>
+        iInf_congr $ fun _ => congr_arg 𝓟 <| by
+          ext ⟨⟨x⟩, ⟨y⟩⟩
+          refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
+          rintro ⟨⟨x', y'⟩, h', h⟩
+          simp only [Prod.ext_iff] at h
+          rwa [← h.1, ← h.2] } _
 
 /-!
 ### `Additive`, `Multiplicative`

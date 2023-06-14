@@ -44,11 +44,11 @@ namespace Path
 variable {V : Type u} [Quiver V] {a b c d : V}
 
 lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.nil_ne_cons Quiver.Path.nil_ne_cons
 
 lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.cons_ne_nil Quiver.Path.cons_ne_nil
 
 lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}

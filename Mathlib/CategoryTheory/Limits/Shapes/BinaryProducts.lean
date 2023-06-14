@@ -359,7 +359,7 @@ def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : 
   { lift := lift
     fac := fun s j => by
       rcases j with ⟨⟨⟩⟩
-      exacts[fac_left s, fac_right s]
+      exacts [fac_left s, fac_right s]
     uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 #align category_theory.limits.binary_fan.is_limit_mk CategoryTheory.Limits.BinaryFan.isLimitMk
 
@@ -377,7 +377,7 @@ def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
   { desc := desc
     fac := fun s j => by
       rcases j with ⟨⟨⟩⟩
-      exacts[fac_left s, fac_right s]
+      exacts [fac_left s, fac_right s]
     uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 #align category_theory.limits.binary_cofan.is_colimit_mk CategoryTheory.Limits.BinaryCofan.isColimitMk
 
@@ -552,7 +552,7 @@ abbrev prod.fst {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ X :=
   limit.π (pair X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.prod.fst CategoryTheory.Limits.prod.fst
 
-/-- The projecton map to the second component of the product. -/
+/-- The projection map to the second component of the product. -/
 abbrev prod.snd {X Y : C} [HasBinaryProduct X Y] : X ⨯ Y ⟶ Y :=
   limit.π (pair X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.prod.snd CategoryTheory.Limits.prod.snd
@@ -905,7 +905,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
 #align category_theory.limits.coprod.map_id_comp CategoryTheory.Limits.coprod.map_id_comp
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-   `g : W ≅ Z` induces a isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
+   `g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where

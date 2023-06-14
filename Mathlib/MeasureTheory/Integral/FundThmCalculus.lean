@@ -597,7 +597,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 -/
 
 
-/-- **Fundamental theorem of calculus-1**, strict diferentiability in both endpoints.
+/-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
 
 If `f : ℝ → E` is integrable on `a..b` and `f x` has finite limits `ca` and `cb` almost surely as
 `x` tends to `a` and `b`, respectively, then
@@ -874,7 +874,7 @@ macro "uniqueDiffWithinAt_Ici_Iic_univ" : tactic =>
 
 /-- Let `f` be a measurable function integrable on `a..b`. Choose `s ∈ {Iic a, Ici a, univ}`
 and `t ∈ {Iic b, Ici b, univ}`. Suppose that `f` tends to `ca` and `cb` almost surely at the filters
-`la` and `lb` from the table below. Then `fderivWithin ℝ (λ p, ∫ x in p.1..p.2, f x) (s ×ˢ t)`
+`la` and `lb` from the table below. Then `fderivWithin ℝ (fun p ↦ ∫ x in p.1..p.2, f x) (s ×ˢ t)`
 is equal to `(u, v) ↦ u • cb - v • ca`.
 
 | `s`     | `la`     | `t`     | `lb`     |

@@ -362,7 +362,7 @@ variable [CommRing R]
 inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
 `Mathlib.Data.Polynomial.Div` After some discussion on [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced  `Polynomial.rootMultipulicity_eq_nat_find_of_nonzero` to contain the issue
+introduced  `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
 -/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
   `(X - a) ^ n` divides `p`. -/
@@ -1112,7 +1112,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     rw [monic_prod_multiset_X_sub_C.natDegree_mul' hq, natDegree_multiset_prod_X_sub_C_eq_card]
   · replace he := congr_arg roots he.symm
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
-    exacts[add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
+    exacts [add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
 set_option linter.uppercaseLean3 false in
 #align polynomial.exists_prod_multiset_X_sub_C_mul Polynomial.exists_prod_multiset_X_sub_C_mul
 

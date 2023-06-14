@@ -80,7 +80,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   · rintro ⟨h, h'⟩
     apply hIs
     rw [← toIcoMod_sub_zsmul, (toIcoMod_eq_self _).2]
-    exacts[⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
+    exacts [⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
 #align continuous_right_to_Ico_mod continuous_right_toIcoMod
 
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
@@ -473,7 +473,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
           refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
-          exacts[m₁.2.1, m₂.2.1]
+          exacts [m₁.2.1, m₂.2.1]
         obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
         exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 #align add_circle.set_add_order_of_equiv AddCircle.setAddOrderOfEquiv

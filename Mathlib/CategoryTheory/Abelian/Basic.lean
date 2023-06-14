@@ -543,7 +543,7 @@ namespace PullbackToBiproductIsKernel
 variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-! This section contains a slightly technical result about pullbacks and biproducts.
-    We will need it in the proof that the pullback of an epimorphism is an epimorpism. -/
+    We will need it in the proof that the pullback of an epimorphism is an epimorphism. -/
 
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/

@@ -111,7 +111,7 @@ theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
   trans ∑ j in t, if i = j then z i else 0
   · congr with i
     split_ifs with h
-    exacts[h ▸ one_smul _ _, zero_smul _ _]
+    exacts [h ▸ one_smul _ _, zero_smul _ _]
   · rw [sum_ite_eq, if_pos hi]
   · rw [sum_ite_eq, if_pos hi]
 #align finset.center_mass_ite_eq Finset.centerMass_ite_eq
@@ -332,7 +332,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     refine' ⟨_, _, _, Finset.centerMass_ite_eq _ _ _ hx⟩
     · intros
       split_ifs
-      exacts[zero_le_one, le_refl 0]
+      exacts [zero_le_one, le_refl 0]
     · rw [Finset.sum_ite_eq, if_pos hx]
   · rintro x ⟨wx, hwx₀, hwx₁, rfl⟩ y ⟨wy, hwy₀, hwy₁, rfl⟩ a b ha hb hab
     rw [Finset.centerMass_segment _ _ _ _ hwx₁ hwy₁ _ _ hab]

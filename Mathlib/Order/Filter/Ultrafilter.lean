@@ -19,7 +19,7 @@ In this file we define
 
 * `Ultrafilter.of`: an ultrafilter that is less than or equal to a given filter;
 * `Ultrafilter`: subtype of ultrafilters;
-* `pure x : Ultrafilter α`: `pure x` as an `ultrafiler`;
+* `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/

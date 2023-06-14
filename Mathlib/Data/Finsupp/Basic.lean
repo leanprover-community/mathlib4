@@ -179,7 +179,7 @@ section ZeroHom
 
 variable [Zero M] [Zero N] [Zero P]
 
-/-- Composition with a fixed zero-preserving homomorphism is itself an zero-preserving homomorphism
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
 def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N)

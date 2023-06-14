@@ -256,7 +256,7 @@ partial def _root_.Lean.MVarId.gcongr
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
     -- and also build a array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in the
-    -- template (these will be used in recursive calls later), and a array of booleans according to
+    -- template (these will be used in recursive calls later), and an array of booleans according to
     -- which of these contain `?_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
@@ -271,7 +271,7 @@ partial def _root_.Lean.MVarId.gcongr
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
       -- (if not, stop and report the existing goal)
       return (false, names, #[g])
-    -- and also build a array of booleans according to which arguments `_ ... _` to the head
+    -- and also build an array of booleans according to which arguments `_ ... _` to the head
     -- function differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
       return (none, !(← isDefEq lhsArg rhsArg))

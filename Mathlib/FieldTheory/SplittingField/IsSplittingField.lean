@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module field_theory.splitting_field.is_splitting_field
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
+! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -134,8 +134,9 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L :=
   ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
     adjoin_rootSet L f ▸ FG_adjoin_of_finite (Finset.finite_toSet _) fun y hy =>
-      if hf : f = 0 then by rw [hf, rootSet_def, Polynomial.map_zero, roots_zero] at hy; cases hy
-      else isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
+      if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
+      else
+        isAlgebraic_iff_isIntegral.1 ⟨f, hf, (eval₂_eq_eval_map _).trans <|
           (mem_roots <| map_ne_zero hf).1 (Multiset.mem_toFinset.mp hy)⟩⟩
 #align polynomial.is_splitting_field.finite_dimensional Polynomial.IsSplittingField.finiteDimensional
 
