@@ -198,7 +198,6 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) (r : R)
     [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] (hf : P f) :
     P (IsLocalization.Away.map R' S' f r) := by
-  skip
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 #align ring_hom.localization_preserves.away RingHom.LocalizationPreserves.away
@@ -210,10 +209,8 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply hP.OfLocalizationSpanTarget _ _ hs
   rintro ⟨_, r, hr, rfl⟩
-  convert
-    hP.StableUnderComposition _ _ (hP.HoldsForLocalizationAway (Localization.Away r) r)
-      (hs' ⟨r, hr⟩) using
-    1
+  convert hP.StableUnderComposition
+    _ _ (hP.HoldsForLocalizationAway (Localization.Away r) r) (hs' ⟨r, hr⟩) using 1
   exact (IsLocalization.map_comp _).symm
 #align ring_hom.property_is_local.of_localization_span RingHom.PropertyIsLocal.ofLocalizationSpan
 
@@ -228,17 +225,15 @@ open scoped nonZeroDivisors
 /-- Let `I J : ideal R`. If the localization of `I` at each maximal ideal `P` is included in
 the localization of `J` at `P`, then `I ≤ J`. -/
 theorem Ideal.le_of_localization_maximal {I J : Ideal R}
-    (h :
-      ∀ (P : Ideal R) (hP : P.IsMaximal),
-        Ideal.map (algebraMap R (Localization.AtPrime P)) I ≤
-          Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
+    (h : ∀ (P : Ideal R) (hP : P.IsMaximal),
+      Ideal.map (algebraMap R (Localization.AtPrime P)) I ≤
+        Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I ≤ J := by
   intro x hx
   suffices J.colon (Ideal.span {x}) = ⊤ by
-    simpa using
-      Submodule.mem_colon.mp
-        (show (1 : R) ∈ J.colon (Ideal.span {x}) from this.symm ▸ Submodule.mem_top) x
-        (Ideal.mem_span_singleton_self x)
+    simpa using Submodule.mem_colon.mp
+      (show (1 : R) ∈ J.colon (Ideal.span {x}) from this.symm ▸ Submodule.mem_top) x
+      (Ideal.mem_span_singleton_self x)
   refine' Not.imp_symm (J.colon (Ideal.span {x})).exists_le_maximal _
   push_neg
   intro P hP le
@@ -254,10 +249,9 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
 /-- Let `I J : ideal R`. If the localization of `I` at each maximal ideal `P` is equal to
 the localization of `J` at `P`, then `I = J`. -/
 theorem Ideal.eq_of_localization_maximal {I J : Ideal R}
-    (h :
-      ∀ (P : Ideal R) (_ : P.IsMaximal),
-        Ideal.map (algebraMap R (Localization.AtPrime P)) I =
-          Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
+    (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
+      Ideal.map (algebraMap R (Localization.AtPrime P)) I =
+        Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I = J :=
   le_antisymm (Ideal.le_of_localization_maximal fun P hP => (h P hP).le)
     (Ideal.le_of_localization_maximal fun P hP => (h P hP).ge)
@@ -265,8 +259,8 @@ theorem Ideal.eq_of_localization_maximal {I J : Ideal R}
 
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization' (I : Ideal R)
-    (h :
-      ∀ (J : Ideal R) (hJ : J.IsMaximal), Ideal.map (algebraMap R (Localization.AtPrime J)) I = ⊥) :
+    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal),
+      Ideal.map (algebraMap R (Localization.AtPrime J)) I = ⊥) :
     I = ⊥ :=
   Ideal.eq_of_localization_maximal fun P hP => by simpa using h P hP
 #align ideal_eq_bot_of_localization' ideal_eq_bot_of_localization'
@@ -275,9 +269,8 @@ theorem ideal_eq_bot_of_localization' (I : Ideal R)
 -- localized modules.
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization (I : Ideal R)
-    (h :
-      ∀ (J : Ideal R) (hJ : J.IsMaximal),
-        IsLocalization.coeSubmodule (Localization.AtPrime J) I = ⊥) :
+    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal),
+      IsLocalization.coeSubmodule (Localization.AtPrime J) I = ⊥) :
     I = ⊥ :=
   ideal_eq_bot_of_localization' _ fun P hP =>
     (Ideal.map_eq_bot_iff_le_ker _).mpr fun x hx => by
@@ -286,8 +279,8 @@ theorem ideal_eq_bot_of_localization (I : Ideal R)
 #align ideal_eq_bot_of_localization ideal_eq_bot_of_localization
 
 theorem eq_zero_of_localization (r : R)
-    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) : r = 0 :=
-  by
+    (h : ∀ (J : Ideal R) (hJ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
+    r = 0 := by
   rw [← Ideal.span_singleton_eq_bot]
   apply ideal_eq_bot_of_localization
   intro J hJ
@@ -304,7 +297,6 @@ section Reduced
 
 theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R := by
   introv R _ _
-  skip
   constructor
   rintro x ⟨_ | n, e⟩
   · simpa using congr_arg (· * x) e
@@ -335,7 +327,6 @@ theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R hR => IsRe
   apply eq_zero_of_localization
   intro J hJ
   specialize h J hJ
-  skip
   exact (hx.map <| algebraMap R <| Localization.AtPrime J).eq_zero
 #align is_reduced_of_localization_maximal isReduced_ofLocalizationMaximal
 
@@ -400,15 +391,12 @@ theorem localization_finite : RingHom.LocalizationPreserves @RingHom.Finite := b
   replace hy : algebraMap S S' y ∈ Submodule.map fₐ.toLinearMap (Submodule.span R (T : Set S)) :=
     Submodule.mem_map_of_mem hy
   rw [Submodule.map_span fₐ.toLinearMap T] at hy
-  have H :
-    Submodule.span R (algebraMap S S' '' T) ≤
-      (Submodule.span R' (algebraMap S S' '' T)).restrictScalars R :=
-    by rw [Submodule.span_le]; exact Submodule.subset_span
+  have H : Submodule.span R (algebraMap S S' '' T) ≤
+      (Submodule.span R' (algebraMap S S' '' T)).restrictScalars R := by
+    rw [Submodule.span_le]; exact Submodule.subset_span
   -- Now, since `y ∈ span T`, and `(f r)⁻¹ ∈ R'`, `x / (f r)` is in `span T` as well.
-  convert
-    (Submodule.span R' (algebraMap S S' '' T)).smul_mem (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩)
-      (H hy) using
-    1
+  convert (Submodule.span R' (algebraMap S S' '' T)).smul_mem
+    (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) (H hy) using 1
   rw [Algebra.smul_def]
   erw [IsLocalization.map_mk' M.le_comap_map]
   rw [map_one]
@@ -427,10 +415,9 @@ span of `finset_integer_multiple _ s` over `R`.
 theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebra R S']
     [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S)) S'] (x : S) (s : Finset S')
     (hx : algebraMap S S' x ∈ Submodule.span R (s : Set S')) :
-    ∃ m : M,
-      m • x ∈
-        Submodule.span R
-          (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
+    ∃ m : M, m • x ∈
+      Submodule.span R
+        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   let g : S →ₐ[R] S' :=
     AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
   -- We first obtain the `y' ∈ M` such that `s' = y' • s` is falls in the image of `S` in `S'`.
@@ -453,12 +440,9 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
-  convert
-    (Submodule.span R
-          (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
-            Set S)).smul_mem
-      a hx' using
-    1
+  convert (Submodule.span R
+    (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s : Set S)).smul_mem
+      a hx' using 1
   convert ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
@@ -470,7 +454,6 @@ then `t • x ∈ span R s` for some `t : M`.-/
 theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Submodule.span R' s) : ∃ t : M, t • x ∈ Submodule.span R s := by
-  classical
   obtain ⟨s', hss', hs'⟩ := Submodule.mem_span_finite_of_mem_span hx
   rsuffices ⟨t, ht⟩ : ∃ t : M, t • x ∈ Submodule.span R (s' : Set S)
   · exact ⟨t, Submodule.span_mono hss' ht⟩
@@ -508,8 +491,7 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
   -- We first setup the instances
   letI := f.toAlgebra
   letI := fun r : s => (Localization.awayMap f r).toAlgebra
-  have :
-    ∀ r : s,
+  have : ∀ r : s,
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
@@ -570,14 +552,11 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
   replace hy : algebraMap S S' y ∈ (Algebra.adjoin R (T : Set S)).map fₐ :=
     Subalgebra.mem_map.mpr ⟨_, hy, rfl⟩
   rw [fₐ.map_adjoin T] at hy
-  have H :
-    Algebra.adjoin R (algebraMap S S' '' T) ≤
-      (Algebra.adjoin R' (algebraMap S S' '' T)).restrictScalars R :=
-    by rw [Algebra.adjoin_le_iff]; exact Algebra.subset_adjoin
-  convert
-    (Algebra.adjoin R' (algebraMap S S' '' T)).smul_mem (H hy)
-      (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using
-    1
+  have H : Algebra.adjoin R (algebraMap S S' '' T) ≤
+      (Algebra.adjoin R' (algebraMap S S' '' T)).restrictScalars R := by
+    rw [Algebra.adjoin_le_iff]; exact Algebra.subset_adjoin
+  convert (Algebra.adjoin R' (algebraMap S S' '' T)).smul_mem (H hy)
+    (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using 1
   rw [Algebra.smul_def]
   erw [IsLocalization.map_mk' M.le_comap_map]
   rw [map_one]
@@ -603,7 +582,8 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
     ∃ m : M, m • x ∈ A := by
   let g : S →ₐ[R] S' := IsScalarTower.toAlgHom R S S'
   let y := IsLocalization.commonDenomOfFinset M s
-  have hx₁ : (y : S) • (s : Set S') = g '' _ := (IsLocalization.finsetIntegerMultiple_image _ s).symm
+  have hx₁ : (y : S) • (s : Set S') = g '' _ :=
+    (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨n, hn⟩ :=
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
       (by rw [hx₁]; exact Set.image_subset _ hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
@@ -624,10 +604,9 @@ adjoin of `finset_integer_multiple _ s` over `R`.
 theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S] [Algebra R S']
     [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S)) S'] (x : S) (s : Finset S')
     (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
-    ∃ m : M,
-      m • x ∈
-        Algebra.adjoin R
-          (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
+    ∃ m : M, m • x ∈
+      Algebra.adjoin R
+        (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
     IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
       Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
@@ -641,8 +620,7 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
   -- mirrors the proof of `finite_of_localization_span`
   letI := f.toAlgebra
   letI := fun r : s => (Localization.awayMap f r).toAlgebra
-  have :
-    ∀ r : s,
+  have : ∀ r : s,
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
@@ -656,9 +634,8 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
   convert (Algebra.adjoin_attach_biUnion (R := R) sf).trans _
   rw [eq_top_iff]
   rintro x -
-  apply
-    (⨆ x : s, Algebra.adjoin R (sf x : Set S)).toSubmodule.mem_of_span_eq_top_of_smul_pow_mem _ hs _
-      _
+  apply (⨆ x : s, Algebra.adjoin R (sf x : Set S)).toSubmodule.mem_of_span_eq_top_of_smul_pow_mem
+    _ hs _ _
   intro r
   obtain ⟨⟨_, n₁, rfl⟩, hn₁⟩ :=
     multiple_mem_adjoin_of_mem_localization_adjoin (Submonoid.powers (r : R))
