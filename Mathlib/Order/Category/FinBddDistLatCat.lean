@@ -19,6 +19,7 @@ This file defines `FinBddDistLatCat`, the category of finite distributive lattic
 bounded lattice homomorphisms.
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u
 
@@ -27,7 +28,7 @@ open CategoryTheory
 /-- The category of finite distributive lattices with bounded lattice morphisms. -/
 structure FinBddDistLatCat where
   toBddDistLatCat : BddDistLatCat
-  [isFintype : Fintype to_BddDistLat]
+  [isFintype : Fintype toBddDistLatCat]
 #align FinBddDistLat FinBddDistLatCat
 
 namespace FinBddDistLatCat
@@ -43,15 +44,19 @@ instance (X : FinBddDistLatCat) : BoundedOrder X :=
 
 attribute [instance] FinBddDistLatCat.isFintype
 
-/-- Construct a bundled `FinBddDistLatCat` from a `nonempty` `bounded_order` `distrib_lattice`. -/
+/-- Construct a bundled `FinBddDistLatCat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
 def of (α : Type _) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLatCat :=
-  ⟨⟨⟨α⟩⟩⟩
+  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
+  -- see https://github.com/leanprover-community/mathlib4/issues/4998
+  ⟨⟨{α := α}⟩⟩
 #align FinBddDistLat.of FinBddDistLatCat.of
 
-/-- Construct a bundled `FinBddDistLatCat` from a `nonempty` `bounded_order` `distrib_lattice`. -/
+/-- Construct a bundled `FinBddDistLatCat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
 def of' (α : Type _) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLatCat :=
   haveI := Fintype.toBoundedOrder α
-  ⟨⟨⟨α⟩⟩⟩
+  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
+  -- see https://github.com/leanprover-community/mathlib4/issues/4998
+  ⟨⟨{α := α}⟩⟩
 #align FinBddDistLat.of' FinBddDistLatCat.of'
 
 instance : Inhabited FinBddDistLatCat :=
@@ -72,7 +77,7 @@ instance hasForgetToBddDistLatCat : HasForget₂ FinBddDistLatCat BddDistLatCat 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLatCat FinPartOrd
     where forget₂ :=
     { obj := fun X => FinPartOrd.of X
-      map := fun X Y f => (show BoundedLatticeHom X Y from f : X →o Y) }
+      map := fun {X Y} f => (show BoundedLatticeHom X Y from f : X →o Y) }
 #align FinBddDistLat.has_forget_to_FinPartOrd FinBddDistLatCat.hasForgetToFinPartOrd
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
@@ -81,29 +86,30 @@ between them. -/
 def Iso.mk {α β : FinBddDistLatCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
-  hom_inv_id' := by ext; exact e.symm_apply_apply _
-  inv_hom_id' := by ext; exact e.apply_symm_apply _
+  hom_inv_id := by ext; exact e.symm_apply_apply _
+  inv_hom_id := by ext; exact e.apply_symm_apply _
 #align FinBddDistLat.iso.mk FinBddDistLatCat.Iso.mk
 
 example {X Y : FinBddDistLatCat} : (X ⟶ Y) = BoundedLatticeHom X Y :=
   rfl
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : FinBddDistLatCat ⥤ FinBddDistLatCat where
   obj X := of Xᵒᵈ
-  map X Y := BoundedLatticeHom.dual
+  map {X Y} := BoundedLatticeHom.dual
 #align FinBddDistLat.dual FinBddDistLatCat.dual
 
-/-- The equivalence between `FinBddDistLatCat` and itself induced by `order_dual` both ways. -/
-@[simps Functor inverse]
-def dualEquiv : FinBddDistLatCat ≌ FinBddDistLatCat :=
-  Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun X Y f => rfl)
+/-- The equivalence between `FinBddDistLatCat` and itself induced by `OrderDual` both ways. -/
+@[simps functor inverse]
+def dualEquiv : FinBddDistLatCat ≌ FinBddDistLatCat where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align FinBddDistLat.dual_equiv FinBddDistLatCat.dualEquiv
 
-end FinBddDistLat
+end FinBddDistLatCat
 
 theorem finBddDistLatCat_dual_comp_forget_to_bddDistLatCat :
     FinBddDistLatCat.dual ⋙ forget₂ FinBddDistLatCat BddDistLatCat =
