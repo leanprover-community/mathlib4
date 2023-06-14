@@ -223,8 +223,8 @@ on `k[X]`. -/
 @[simps!]
 noncomputable def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
-  Action.mkIso (Iso.refl _) fun _ => Finsupp.lhom_ext' (fun _ => LinearMap.ext
-    (fun _ => linearization_single ..))
+  Action.mkIso (Iso.refl _) fun _ => Finsupp.lhom_ext' fun _ => LinearMap.ext
+    fun _ => linearization_single ..
 #align Rep.linearization_trivial_iso Rep.linearizationTrivialIso
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
@@ -319,7 +319,7 @@ section MonoidalClosed
 open MonoidalCategory Action
 
 variable [Group G] (A B C : Rep k G)
-set_option profiler true
+
 /-- Given a `k`-linear `G`-representation `(A, ρ₁)`, this is the 'internal Hom' functor sending
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
@@ -328,9 +328,9 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom),
-      comm := fun g => LinearMap.ext (fun x => LinearMap.ext (fun y => by
+      comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
-        simp only [hom_comm_apply]; rfl)) }
+        simp only [hom_comm_apply]; rfl }
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 #align Rep.ihom Rep.ihom
@@ -356,7 +356,7 @@ protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
-        refine' LinearMap.ext (fun x => LinearMap.ext (fun y => _))
+        refine' LinearMap.ext fun x => LinearMap.ext fun y => _
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
         rw [←hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
@@ -364,12 +364,12 @@ protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
         rfl }
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
-      comm := fun g => TensorProduct.ext' (fun x y => by
+      comm := fun g => TensorProduct.ext' fun x y => by
         change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
           C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
         rw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply, Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply, ρ_inv_self_apply]
-        rfl)}
+        rfl}
   left_inv f := Action.Hom.ext _ _ (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 #align Rep.hom_equiv Rep.homEquiv
@@ -381,9 +381,9 @@ instance : MonoidalClosed (Rep k G) where
       adj := Adjunction.mkOfHomEquiv (
       { homEquiv := Rep.homEquiv A,
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext _ _
-          (TensorProduct.ext' (fun _ _ => rfl))
+          (TensorProduct.ext' fun _ _ => rfl)
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext _ _ (LinearMap.ext
-          (fun _ => LinearMap.ext (fun _ => rfl))) }) } }
+          fun _ => LinearMap.ext fun _ => rfl) })}}
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=
