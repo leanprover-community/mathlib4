@@ -55,10 +55,7 @@ variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R 
 
 instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
-  coe_injective' f g h := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
@@ -143,7 +140,7 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
 @[simp]
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
-#align absolute_value.map_zero map_zero
+#align absolute_value.map_zero AbsoluteValue.map_zero
 
 end Semiring
 
@@ -209,7 +206,7 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
 @[simp]
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
-#align absolute_value.map_pow map_pow
+#align absolute_value.map_pow AbsoluteValue.map_pow
 
 end IsDomain
 
