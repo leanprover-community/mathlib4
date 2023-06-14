@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.algebra.module.basic
-! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
+! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1153,6 +1153,19 @@ theorem range_coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] 
     (f₂ : M₂ →L[R₁] M₃) : range (f₁.coprod f₂) = range f₁ ⊔ range f₂ :=
   LinearMap.range_coprod _ _
 #align continuous_linear_map.range_coprod ContinuousLinearMap.range_coprod
+
+theorem comp_fst_add_comp_snd [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f : M₁ →L[R₁] M₃)
+    (g : M₂ →L[R₁] M₃) :
+    f.comp (ContinuousLinearMap.fst R₁ M₁ M₂) + g.comp (ContinuousLinearMap.snd R₁ M₁ M₂) =
+      f.coprod g :=
+  rfl
+#align continuous_linear_map.comp_fst_add_comp_snd ContinuousLinearMap.comp_fst_add_comp_snd
+
+theorem coprod_inl_inr [ContinuousAdd M₁] [ContinuousAdd M'₁] :
+    (ContinuousLinearMap.inl R₁ M₁ M'₁).coprod (ContinuousLinearMap.inr R₁ M₁ M'₁) =
+      ContinuousLinearMap.id R₁ (M₁ × M'₁) :=
+  by apply coe_injective; apply LinearMap.coprod_inl_inr
+#align continuous_linear_map.coprod_inl_inr ContinuousLinearMap.coprod_inl_inr
 
 section
 
