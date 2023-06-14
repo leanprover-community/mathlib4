@@ -543,7 +543,7 @@ variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
 
 /-- Tensoring on the left, as a functor from `C` into endofunctors of `C`.
 
-TODO: show this is a op-monoidal functor.
+TODO: show this is an op-monoidal functor.
 -/
 @[simps]
 def tensoringLeft : C ⥤ C ⥤ C where
