@@ -8,8 +8,8 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Euclidean.Angle.Oriented.RightAngle
-import Mathbin.Geometry.Euclidean.Circumcenter
+import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+import Mathlib.Geometry.Euclidean.Circumcenter
 
 /-!
 # Angles in circles and sphere.
@@ -34,8 +34,7 @@ variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 /-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
 form. -/
 theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
-    (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) :=
-  by
+    (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) := by
   have hy : y ≠ 0 := by
     rintro rfl
     rw [norm_zero, norm_eq_zero] at hxy 
@@ -86,8 +85,7 @@ namespace Sphere
 /-- Angle at center of a circle equals twice angle at circumference, oriented angle version. -/
 theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃) :
-    ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ :=
-  by
+    ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃ 
   rw [oangle, oangle, o.oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real _ _ hp₂ hp₁ hp₃] <;>
     simp [hp₂p₁, hp₂p₃]
@@ -98,8 +96,7 @@ cyclic quadrilateral add to π", for oriented angles mod π (for which those are
 represented here as equality of twice the angles. -/
 theorem two_zsmul_oangle_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
     (hp₃ : p₃ ∈ s) (hp₄ : p₄ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄) (hp₃p₁ : p₃ ≠ p₁)
-    (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ :=
-  by
+    (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃ hp₄ 
   rw [oangle, oangle, ← vsub_sub_vsub_cancel_right p₁ p₂ s.center, ←
       vsub_sub_vsub_cancel_right p₄ p₂ s.center,
@@ -114,8 +111,7 @@ cyclic quadrilateral add to π", for oriented angles mod π (for which those are
 represented here as equality of twice the angles. -/
 theorem Cospherical.two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : Cospherical ({p₁, p₂, p₃, p₄} : Set P)) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₄ : p₂ ≠ p₄)
-    (hp₃p₁ : p₃ ≠ p₁) (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ :=
-  by
+    (hp₃p₁ : p₃ ≠ p₁) (hp₃p₄ : p₃ ≠ p₄) : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄ := by
   obtain ⟨s, hs⟩ := cospherical_iff_exists_sphere.1 h
   simp_rw [Set.insert_subset, Set.singleton_subset_iff, sphere.mem_coe] at hs 
   exact sphere.two_zsmul_oangle_eq hs.1 hs.2.1 hs.2.2.1 hs.2.2.2 hp₂p₁ hp₂p₄ hp₃p₁ hp₃p₄
@@ -170,8 +166,7 @@ theorem tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (h : p₁ ≠ p₂) :
     (Real.Angle.tan (∡ p₂ p₁ s.center) / 2) • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ
         midpoint ℝ p₁ p₂ =
-      s.center :=
-  by
+      s.center := by
   obtain ⟨r, hr⟩ :=
     (dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint h).1
       (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
@@ -189,8 +184,7 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sp
     {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃)
     (hp₂p₃ : p₂ ≠ p₃) :
     ((Real.Angle.tan (∡ p₁ p₂ p₃))⁻¹ / 2) • o.rotation (π / 2 : ℝ) (p₃ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₃ =
-      s.center :=
-  by
+      s.center := by
   convert tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center hp₁ hp₃ hp₁p₃
   convert (Real.Angle.tan_eq_inv_of_two_zsmul_add_two_zsmul_eq_pi _).symm
   rw [add_comm,
@@ -236,8 +230,7 @@ the distance between two of those points divided by the absolute value of the si
 at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₁p₂ : p₁ ≠ p₂) (hp₁p₃ : p₁ ≠ p₃) (hp₂p₃ : p₂ ≠ p₃) :
-    dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| / 2 = s.radius :=
-  by
+    dist p₁ p₃ / |Real.Angle.sin (∡ p₁ p₂ p₃)| / 2 = s.radius := by
   convert dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
   rw [←
     Real.Angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi
@@ -337,8 +330,7 @@ theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t�
     (h₂ :
       (2 : ℤ) • ∡ (t₁.points i₁) (t₁.points i₂) (t₁.points i₃) =
         (2 : ℤ) • ∡ (t₂.points i₁) (t₂.points i₂) (t₂.points i₃)) :
-    t₁.circumsphere = t₂.circumsphere :=
-  by
+    t₁.circumsphere = t₂.circumsphere := by
   rw [t₁.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
     t₂.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃]
   trace
@@ -358,14 +350,12 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
     (h :
       (2 : ℤ) • ∡ (t.points i₁) p (t.points i₃) =
         (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃)) :
-    p ∈ t.circumsphere :=
-  by
+    p ∈ t.circumsphere := by
   let t'p : Fin 3 → P := Function.update t.points i₂ p
   have h₁ : t'p i₁ = t.points i₁ := by simp [t'p, h₁₂]
   have h₂ : t'p i₂ = p := by simp [t'p]
   have h₃ : t'p i₃ = t.points i₃ := by simp [t'p, h₂₃.symm]
-  have ha : AffineIndependent ℝ t'p :=
-    by
+  have ha : AffineIndependent ℝ t'p := by
     rw [affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃, h₁, h₂, h₃,
       collinear_iff_of_two_zsmul_oangle_eq h, ←
       affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃]
@@ -398,8 +388,7 @@ local notation "o" => Module.Oriented.positiveOrientation
 add to π", for oriented angles mod π. -/
 theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) (hn : ¬Collinear ℝ ({p₁, p₂, p₄} : Set P)) :
-    Cospherical ({p₁, p₂, p₃, p₄} : Set P) :=
-  by
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
   have hn' : ¬Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
     rwa [← collinear_iff_of_two_zsmul_oangle_eq h]
   let t₁ : Affine.Triangle ℝ P := ⟨![p₁, p₂, p₄], affineIndependent_iff_not_collinear_set.2 hn⟩
@@ -426,8 +415,7 @@ theorem concyclic_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ :
 add to π", for oriented angles mod π, with a "cospherical or collinear" conclusion. -/
 theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
-    Cospherical ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) :=
-  by
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   by_cases hc : Collinear ℝ ({p₁, p₂, p₄} : Set P)
   · by_cases he : p₁ = p₄
     · rw [he,
@@ -454,8 +442,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
 add to π", for oriented angles mod π, with a "concyclic or collinear" conclusion. -/
 theorem concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
     (h : (2 : ℤ) • ∡ p₁ p₂ p₄ = (2 : ℤ) • ∡ p₁ p₃ p₄) :
-    Concyclic ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) :=
-  by
+    Concyclic ({p₁, p₂, p₃, p₄} : Set P) ∨ Collinear ℝ ({p₁, p₂, p₃, p₄} : Set P) := by
   rcases cospherical_or_collinear_of_two_zsmul_oangle_eq h with (hc | hc)
   · exact Or.inl ⟨hc, coplanar_of_fact_finrank_eq_two _⟩
   · exact Or.inr hc
