@@ -389,7 +389,7 @@ simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-@[simps, nolint simpNF]
+@[simps]
 protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
@@ -412,6 +412,8 @@ protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
   right_inv f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv Rep.homEquiv
+
+attribute [nolint simpNF] Rep.homEquiv_apply_hom Rep.homEquiv_symm_apply_hom
 
 instance : MonoidalClosed (Rep k G) where
   closed := fun A =>
