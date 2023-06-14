@@ -226,9 +226,14 @@ def latToBddLatCatForgetAdjunction : latToBddLatCat.{u} ⊣ forget₂ BddLatCat 
       homEquiv_naturality_right := fun f g => LatticeHom.ext fun a => rfl }
 #align Lat_to_BddLat_forget_adjunction latToBddLatCatForgetAdjunction
 
-
 /-- `latToBddLatCat` and `OrderDual` commute. -/
-@[simps!]
+-- Porting note: added `nolint simpNF`
+-- It seems like it is simplifying for example the first type
+-- `(↑(BddLatCat.dualEquiv.functor.obj (latToBddLatCat.obj X.op.unop)).toLat)`
+-- to
+-- `(↑(latToBddLatCat.obj X).toLat)ᵒᵈ`
+-- Interestingly, the linter is silent, if the proof is `sorry`-ed out
+@[simps!, nolint simpNF]
 def latToBddLatCatCompDualIsoDualCompLatToBddLatCat :
     latToBddLatCat.{u} ⋙ BddLatCat.dual ≅ LatCat.dual ⋙ latToBddLatCat :=
   Adjunction.leftAdjointUniq (latToBddLatCatForgetAdjunction.comp BddLatCat.dualEquiv.toAdjunction)
