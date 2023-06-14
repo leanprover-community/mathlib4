@@ -8,8 +8,8 @@ Authors: Alexander Bentkamp
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Spectrum
-import Mathbin.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-! # Spectral theory of hermitian matrices
 
@@ -86,8 +86,7 @@ theorem eigenvectorMatrixInv_apply (i j : n) :
     EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
-theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix :=
-  by
+theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
   ext (i j)
   rw [conj_transpose_apply, eigenvector_matrix_inv_apply, eigenvector_matrix_apply, star_star]
 #align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
@@ -101,8 +100,7 @@ diagonalized by a change of basis.
 
 For the spectral theorem on linear maps, see `diagonalization_basis_apply_self_apply`. -/
 theorem spectral_theorem :
-    hA.eigenvectorMatrixInv ⬝ A = diagonal (coe ∘ hA.Eigenvalues) ⬝ hA.eigenvectorMatrixInv :=
-  by
+    hA.eigenvectorMatrixInv ⬝ A = diagonal (coe ∘ hA.Eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
   rw [eigenvector_matrix_inv, PiLp.basis_toMatrix_basisFun_mul]
   ext (i j)
   have := is_hermitian_iff_is_symmetric.1 hA
@@ -122,8 +120,7 @@ theorem spectral_theorem :
 
 theorem eigenvalues_eq (i : n) :
     hA.Eigenvalues i =
-      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A.mulVec (hA.eigenvectorMatrixᵀ i)) :=
-  by
+      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A.mulVec (hA.eigenvectorMatrixᵀ i)) := by
   have := hA.spectral_theorem
   rw [← Matrix.mul_inv_eq_iff_eq_mul_of_invertible] at this 
   have := congr_arg IsROrC.re (congr_fun (congr_fun this i) i)
@@ -133,8 +130,7 @@ theorem eigenvalues_eq (i : n) :
 #align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
-theorem det_eq_prod_eigenvalues : det A = ∏ i, hA.Eigenvalues i :=
-  by
+theorem det_eq_prod_eigenvalues : det A = ∏ i, hA.Eigenvalues i := by
   apply mul_left_cancel₀ (det_ne_zero_of_left_inverse (eigenvector_matrix_mul_inv hA))
   rw [← det_mul, spectral_theorem, det_mul, mul_comm, det_diagonal]
 #align matrix.is_hermitian.det_eq_prod_eigenvalues Matrix.IsHermitian.det_eq_prod_eigenvalues

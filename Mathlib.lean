@@ -2008,6 +2008,7 @@ import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
