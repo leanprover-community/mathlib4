@@ -33,7 +33,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type _) (R : Type u) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R where
+  [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 #align non_unital_subsemiring_class NonUnitalSubsemiringClass
 
@@ -500,7 +500,8 @@ theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
 
 /-- The center is commutative. -/
-instance {R} [NonUnitalSemiring R] : NonUnitalCommSemiring (center R) :=
+instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
+    NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
 
