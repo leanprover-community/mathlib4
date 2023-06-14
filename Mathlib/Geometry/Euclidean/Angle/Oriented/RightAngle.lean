@@ -522,8 +522,8 @@ theorem oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ
 /-- An angle in a right-angled triangle expressed using `arctan`, where one side is a multiple
 of a rotation of another by `π / 2`. -/
 theorem oangle_add_left_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ) :
-    o.oangle (x + r • o.rotation (π / 2 : ℝ) x) (r • o.rotation (π / 2 : ℝ) x) = Real.arctan r⁻¹ :=
-  by
+    o.oangle (x + r • o.rotation (π / 2 : ℝ) x) (r • o.rotation (π / 2 : ℝ) x)
+      = Real.arctan r⁻¹ := by
   by_cases hr : r = 0; · simp [hr]
   rw [← neg_inj, oangle_rev, ← oangle_neg_orientation_eq_neg, neg_inj, ←
     neg_neg ((π / 2 : ℝ) : Real.Angle), ← rotation_neg_orientation_eq_neg, add_comm]
@@ -551,8 +551,8 @@ theorem tan_oangle_add_left_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : 
 /-- An angle in a right-angled triangle expressed using `arctan`, where one side is a multiple
 of a rotation of another by `π / 2`, version subtracting vectors. -/
 theorem oangle_sub_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ) :
-    o.oangle (r • o.rotation (π / 2 : ℝ) x) (r • o.rotation (π / 2 : ℝ) x - x) = Real.arctan r⁻¹ :=
-  by
+    o.oangle (r • o.rotation (π / 2 : ℝ) x) (r • o.rotation (π / 2 : ℝ) x - x)
+      = Real.arctan r⁻¹ := by
   by_cases hr : r = 0; · simp [hr]
   have hx : -x = r⁻¹ • o.rotation (π / 2 : ℝ) (r • o.rotation (π / 2 : ℝ) x) := by
     simp [hr, ← Real.Angle.coe_add]
