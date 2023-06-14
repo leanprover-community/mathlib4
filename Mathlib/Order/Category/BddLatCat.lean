@@ -67,13 +67,12 @@ instance : LargeCategory.{u} BddLatCat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
--- see https://github.com/leanprover-community/mathlib4/issues/5017
 instance instFunLike (X Y : BddLatCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
 
 instance : ConcreteCategory BddLatCat where
-  forget := {
-    obj := (↑)
+  forget :=
+  { obj := (↑)
     map := FunLike.coe }
   forget_faithful := ⟨(FunLike.coe_injective ·)⟩
 
@@ -227,11 +226,16 @@ def latToBddLatCatForgetAdjunction : latToBddLatCat.{u} ⊣ forget₂ BddLatCat 
       homEquiv_naturality_right := fun f g => LatticeHom.ext fun a => rfl }
 #align Lat_to_BddLat_forget_adjunction latToBddLatCatForgetAdjunction
 
-
 /-- `latToBddLatCat` and `OrderDual` commute. -/
--- Porting note: There is a warning plus `simpNF` linter complaining which I don't feel like
--- debugging at the moment.
--- @[simps]
+-- Porting note: the `simpNF` linter is not happy as it simplifies something that does not
+-- have prettyprinting effects.
+-- It seems like it is simplifying for example the first type
+-- `(↑(BddLatCat.dualEquiv.functor.obj (latToBddLatCat.obj X.op.unop)).toLat)`
+-- to
+-- `(↑(latToBddLatCat.obj X).toLat)ᵒᵈ`
+-- Interestingly, the linter is silent, if the proof is `sorry`-ed out...
+-- see https://github.com/leanprover-community/mathlib4/issues/5049
+-- @[simps!]
 def latToBddLatCatCompDualIsoDualCompLatToBddLatCat :
     latToBddLatCat.{u} ⋙ BddLatCat.dual ≅ LatCat.dual ⋙ latToBddLatCat :=
   Adjunction.leftAdjointUniq (latToBddLatCatForgetAdjunction.comp BddLatCat.dualEquiv.toAdjunction)

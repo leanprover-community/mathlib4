@@ -260,8 +260,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 
-/- N -/ syntax (name := opInduction) "op_induction" (ppSpace colGt term)? : tactic
-
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace colGt term)?
   (" with" (ppSpace binderIdent)+)? : tactic
 
