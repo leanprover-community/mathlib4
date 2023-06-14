@@ -317,7 +317,7 @@ section Sigma
 
 variable {α α' : Type _} {β : α → Type _} {β' : α' → Type _}
 
-/-- `Sigma.mk` as an `Function.Embedding`. -/
+/-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
 def sigmaMk (a : α) : β a ↪ Σx, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩

@@ -21,7 +21,7 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
   `f a = f b`, it returns whichever of `a` or `b` comes first in the list.
   `argmax f []` = none`
 
-`minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+`minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
 
@@ -270,13 +270,13 @@ section Preorder
 
 variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
-/-- `maximum l` returns an `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
+/-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 #align list.maximum List.maximum
 
-/-- `minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+/-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`  -/
 def minimum (l : List α) : WithTop α :=
   argmin id l

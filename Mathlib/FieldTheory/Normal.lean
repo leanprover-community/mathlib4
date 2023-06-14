@@ -369,7 +369,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 #align alg_equiv.restrict_normal_trans AlgEquiv.restrictNormal_trans
 
-/-- Restriction to an normal subfield as a group homomorphism -/
+/-- Restriction to a normal subfield as a group homomorphism -/
 def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃ₐ[F] E :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 #align alg_equiv.restrict_normal_hom AlgEquiv.restrictNormalHom

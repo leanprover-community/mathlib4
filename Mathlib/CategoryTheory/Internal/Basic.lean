@@ -66,9 +66,16 @@ lemma Internal.forget_app {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ) :
     (forget A).map (f.app T) = X.iso.inv.app T ≫
       (yoneda.map ((Internal.objFunctor A C).map f)).app T ≫ Y.iso.hom.app T := by simp
 
+attribute [local instance] ConcreteCategory.funLike
+
+lemma Internal.app_apply {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ)
+  (x : (forget A).obj (X.presheaf.obj T)) :
+    f.app T x = Y.iso.hom.app T (X.iso.inv.app T x ≫ (Internal.objFunctor A C).map f) :=
+  congr_fun (Internal.forget_app f T) x
+
 instance : Faithful (Internal.objFunctor A C) := ⟨fun {_ _ f g h} => by
   ext : 2
-  simp only [Internal.forget_app, h]⟩
+  simp only [Internal.app_apply, h]⟩
 
 @[simps]
 def Internal.mkIso {X Y : Internal A C} (e : X.presheaf ≅ Y.presheaf) : X ≅ Y where

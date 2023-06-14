@@ -1330,7 +1330,7 @@ theorem iSup_and' {p q : Prop} {s : p → q → α} :
   Eq.symm iSup_and
 #align supr_and' iSup_and'
 
-/-- The symmetric case of `iInf_and`, useful for rewriting into a infimum over a conjunction -/
+/-- The symmetric case of `iInf_and`, useful for rewriting into an infimum over a conjunction -/
 theorem iInf_and' {p q : Prop} {s : p → q → α} :
     (⨅ (h₁ : p) (h₂ : q), s h₁ h₂) = ⨅ h : p ∧ q, s h.1 h.2 :=
   Eq.symm iInf_and

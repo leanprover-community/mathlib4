@@ -493,7 +493,7 @@ alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFoun
 
 namespace RelEmbedding
 
-/-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
+/-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
 def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
@@ -629,7 +629,7 @@ infixl:25 " ≃r " => RelIso
 
 namespace RelIso
 
-/-- Convert an `RelIso` to a `RelEmbedding`. This function is also available as a coercion
+/-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=

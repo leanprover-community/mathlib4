@@ -522,13 +522,13 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 #align function.surjective_to_subsingleton Function.surjective_to_subsingleton
 
-/-- Composition by an surjective function on the left is itself surjective. -/
+/-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f ↦
   ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
-/-- Composition by an bijective function on the left is itself bijective. -/
+/-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
     Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
   ⟨hg.injective.comp_left, hg.surjective.comp_left⟩
@@ -824,7 +824,7 @@ def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
   f (g a) (h b)
 #align function.bicompl Function.bicompl
 
-/-- Compose an unary function `f` with a binary function `g`. -/
+/-- Compose a unary function `f` with a binary function `g`. -/
 def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
   f (g a b)
 #align function.bicompr Function.bicompr

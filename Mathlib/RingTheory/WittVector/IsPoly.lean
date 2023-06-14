@@ -15,17 +15,17 @@ import Mathlib.RingTheory.WittVector.WittAttributes
 /-!
 # The `is_poly` predicate
 
-`witt_vector.is_poly` is a (type-valued) predicate on functions `f : Π R, 𝕎 R → 𝕎 R`.
-It asserts that there is a family of polynomials `φ : ℕ → mv_polynomial ℕ ℤ`,
+`WittVector.IsPoly` is a (type-valued) predicate on functions `f : Π R, 𝕎 R → 𝕎 R`.
+It asserts that there is a family of polynomials `φ : ℕ → MvPolynomial ℕ ℤ`,
 such that the `n`th coefficient of `f x` is equal to `φ n` evaluated on the coefficients of `x`.
 Many operations on Witt vectors satisfy this predicate (or an analogue for higher arity functions).
 We say that such a function `f` is a *polynomial function*.
 
-The power of satisfying this predicate comes from `is_poly.ext`.
+The power of satisfying this predicate comes from `WittVector.IsPoly.ext`.
 It shows that if `φ` and `ψ` witness that `f` and `g` are polynomial functions,
 then `f = g` not merely when `φ = ψ`, but in fact it suffices to prove
 ```
-∀ n, bind₁ φ (witt_polynomial p _ n) = bind₁ ψ (witt_polynomial p _ n)
+∀ n, bind₁ φ (wittPolynomial p _ n) = bind₁ ψ (wittPolynomial p _ n)
 ```
 (in other words, when evaluating the Witt polynomials on `φ` and `ψ`, we get the same values)
 which will then imply `φ = ψ` and hence `f = g`.
@@ -34,28 +34,28 @@ Even though this sufficient condition looks somewhat intimidating,
 it is rather pleasant to check in practice;
 more so than direct checking of `φ = ψ`.
 
-In practice, we apply this technique to show that the composition of `witt_vector.frobenius`
-and `witt_vector.verschiebung` is equal to multiplication by `p`.
+In practice, we apply this technique to show that the composition of `WittVector.frobenius`
+and `WittVector.verschiebung` is equal to multiplication by `p`.
 
 ## Main declarations
 
-* `witt_vector.is_poly`, `witt_vector.is_poly₂`:
+* `WittVector.IsPoly`, `WittVector.IsPoly₂`:
   two predicates that assert that a unary/binary function on Witt vectors
   is polynomial in the coefficients of the input values.
-* `witt_vector.is_poly.ext`, `witt_vector.is_poly₂.ext`:
+* `WittVector.IsPoly.ext`, `WittVector.IsPoly₂.ext`:
   two polynomial functions are equal if their families of polynomials are equal
   after evaluating the Witt polynomials on them.
-* `witt_vector.is_poly.comp` (+ many variants) show that unary/binary compositions
+* `WittVector.IsPoly.comp` (+ many variants) show that unary/binary compositions
   of polynomial functions are polynomial.
-* `witt_vector.id_is_poly`, `witt_vector.neg_is_poly`,
-  `witt_vector.add_is_poly₂`, `witt_vector.mul_is_poly₂`:
+* `WittVector.idIsPoly`, `WittVector.negIsPoly`,
+  `WittVector.addIsPoly₂`, `WittVector.mulIsPoly₂`:
   several well-known operations are polynomial functions
   (for Verschiebung, Frobenius, and multiplication by `p`, see their respective files).
 
 ## On higher arity analogues
 
-Ideally, there should be a predicate `is_polyₙ` for functions of higher arity,
-together with `is_polyₙ.comp` that shows how such functions compose.
+Ideally, there should be a predicate `IsPolyₙ` for functions of higher arity,
+together with `IsPolyₙ.comp` that shows how such functions compose.
 Since mathlib does not have a library on composition of higher arity functions,
 we have only implemented the unary and binary variants so far.
 Nullary functions (a.k.a. constants) are treated
@@ -67,15 +67,15 @@ There are important metaprograms defined in this file:
 the tactics `ghost_simp` and `ghost_calc` and the attributes `@[is_poly]` and `@[ghost_simps]`.
 These are used in combination to discharge proofs of identities between polynomial functions.
 
-Any atomic proof of `is_poly` or `is_poly₂` (i.e. not taking additional `is_poly` arguments)
+Any atomic proof of `IsPoly` or `IsPoly₂` (i.e. not taking additional `IsPoly` arguments)
 should be tagged as `@[is_poly]`.
 
 Any lemma doing "ring equation rewriting" with polynomial functions should be tagged
 `@[ghost_simps]`, e.g.
 ```lean
 @[ghost_simps]
-lemma bind₁_frobenius_poly_witt_polynomial (n : ℕ) :
-  bind₁ (frobenius_poly p) (witt_polynomial p ℤ n) = (witt_polynomial p ℤ (n+1))
+lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
+  bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
 ```
 
 Proofs of identities between polynomial functions will often follow the pattern
@@ -166,7 +166,6 @@ universe u
 
 variable {p : ℕ} {R S : Type u} {σ idx : Type _} [CommRing R] [CommRing S]
 
--- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
 
 -- type as `\bbW`
@@ -179,7 +178,7 @@ variable (p)
 noncomputable section
 
 /-!
-### The `is_poly` predicate
+### The `IsPoly` predicate
 -/
 
 
@@ -212,12 +211,12 @@ A function `f : Π R, 𝕎 R → 𝕎 R` that maps Witt vectors to Witt vectors 
 is said to be *polynomial* if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
 coefficient of `f x` is given by evaluating `φₙ` at the coefficients of `x`.
 
-See also `witt_vector.is_poly₂` for the binary variant.
+See also `WittVector.IsPoly₂` for the binary variant.
 
-The `ghost_calc` tactic treats `is_poly` as a type class,
+The `ghost_calc` tactic treats `IsPoly` as a type class,
 and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `is_poly f`.
-For the most part, users are not expected to treat `is_poly` as a class.
+for declarations of type `IsPoly f`.
+For the most part, users are not expected to treat `IsPoly` as a class.
 -/
 class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
@@ -285,12 +284,12 @@ end IsPoly
 is said to be *polynomial* if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
 coefficient of `f x y` is given by evaluating `φₙ` at the coefficients of `x` and `y`.
 
-See also `witt_vector.is_poly` for the unary variant.
+See also `WittVector.IsPoly` for the unary variant.
 
-The `ghost_calc` tactic treats `is_poly₂` as a type class,
+The `ghost_calc` tactic treats `IsPoly₂` as a type class,
 and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `is_poly₂ f`.
-For the most part, users are not expected to treat `is_poly₂` as a class.
+for declarations of type `IsPoly₂ f`.
+For the most part, users are not expected to treat `IsPoly₂` as a class.
 -/
 class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
@@ -365,10 +364,10 @@ namespace Tactic
 ### The `@[is_poly]` attribute
 
 This attribute is used to derive specialized composition instances
-for `is_poly` and `is_poly₂` declarations.
+for `IsPoly` and `IsPoly₂` declarations.
 -/
 
-/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly p _`,
+/-- If `n` is the name of a lemma with opened type `∀ vars, IsPoly p _`,
 `mk_poly_comp_lemmas n vars p` adds composition instances to the environment
 `n.comp_i` and `n.comp₂_i`.
 -/
@@ -393,7 +392,7 @@ unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic
   set_attribute `instance nm
 #align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
 
-/-- If `n` is the name of a lemma with opened type `∀ vars, is_poly₂ p _`,
+/-- If `n` is the name of a lemma with opened type `∀ vars, IsPoly₂ p _`,
 `mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
 `n.comp₂_i` and `n.comp_diag`.
 -/
@@ -429,43 +428,43 @@ unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
   match tp with
     | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
     | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
-    | _ => fail "@[is_poly] should only be applied to terms of type `is_poly _ _` or `is_poly₂ _ _`"
+    | _ => fail "@[is_poly] should only be applied to terms of type `IsPoly _ _` or `IsPoly₂ _ _`"
 #align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
 
-/-- `@[is_poly]` is applied to lemmas of the form `is_poly f φ` or `is_poly₂ f φ`.
-These lemmas should *not* be tagged as instances, and only atomic `is_poly` defs should be tagged:
-composition lemmas should not. Roughly speaking, lemmas that take `is_poly` proofs as arguments
+/-- `@[is_poly]` is applied to lemmas of the form `IsPoly f φ` or `IsPoly₂ f φ`.
+These lemmas should *not* be tagged as instances, and only atomic `IsPoly` defs should be tagged:
+composition lemmas should not. Roughly speaking, lemmas that take `IsPoly` proofs as arguments
 should not be tagged.
 
 Type class inference struggles with function composition, and the higher order unification problems
-involved in inferring `is_poly` proofs are complex. The standard style writing these proofs by hand
+involved in inferring `IsPoly` proofs are complex. The standard style writing these proofs by hand
 doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
 limited forms of composition.
 
 Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
-proof of `is_poly f φ`, the instances added have the form
+proof of `IsPoly f φ`, the instances added have the form
 ```lean
-∀ g ψ, [is_poly g ψ] → is_poly (f ∘ g) _
+∀ g ψ, [IsPoly g ψ] → IsPoly (f ∘ g) _
 ```
 Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
-applied. Composition lemmas relating `is_poly` with `is_poly₂` are also added.
-`id_is_poly` is an atomic instance.
+applied. Composition lemmas relating `IsPoly` with `IsPoly₂` are also added.
+`idIsPoly` is an atomic instance.
 
 The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
 "as normal" if the tactic fails.
 -/
 @[user_attribute]
-unsafe def is_poly_attr : user_attribute where
-  Name := `is_poly
+unsafe def isPolyAttr : user_attribute where
+  Name := `IsPoly
   descr := "Lemmas with this attribute describe the polynomial structure of functions"
   after_set := some fun n _ _ => mk_comp_lemmas n
-#align witt_vector.tactic.is_poly_attr witt_vector.tactic.is_poly_attr
+#align witt_vector.tactic.is_poly_attr WittVector.Tactic.isPolyAttr
 
 end Tactic
 -/
 
 /-!
-### `is_poly` instances
+### `IsPoly` instances
 
 These are not declared as instances at the top level,
 but the `@[is_poly]` attribute adds instances based on each one.
@@ -508,8 +507,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   ext  -- porting note: `ext` was not in the mathport output.
   rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
-  ·
-    simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
+  · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
     simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero,
@@ -555,7 +553,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
     map g (f x) = f (map g x) := by
   -- this could be turned into a tactic “macro” (taking `hf` as parameter)
   -- so that applications do not have to worry about the universe issue
-  -- see `is_poly₂.map` for a slightly more general proof strategy
+  -- see `IsPoly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
   ext n
   simp only [map_coeff, hf, map_aeval]
