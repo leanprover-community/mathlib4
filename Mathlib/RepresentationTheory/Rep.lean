@@ -20,13 +20,13 @@ import Mathlib.CategoryTheory.Closed.FunctorCategory
 # `Rep k G` is the category of `k`-linear representations of `G`.
 
 If `V : Rep k G`, there is a coercion that allows you to treat `V` as a type,
-and this type comes equipped with a `module k V` instance.
+and this type comes equipped with a `Module k V` instance.
 Also `V.ρ` gives the homomorphism `G →* (V →ₗ[k] V)`.
 
 Conversely, given a homomorphism `ρ : G →* (V →ₗ[k] V)`,
 you can construct the bundled representation as `Rep.of ρ`.
 
-We construct the categorical equivalence `Rep k G ≌ Module (monoid_algebra k G)`.
+We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`.
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
 
@@ -63,7 +63,7 @@ instance (V : Rep k G) : Module k V := by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
-/-- Specialize the existing `Action.ρ`, changing the type to `representation k G V`.
+/-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
   Action.ρ V
@@ -90,7 +90,7 @@ theorem Action_ρ_eq_ρ {A : Rep k G} : Action.ρ A = A.ρ :=
 #align Rep.Action_ρ_eq_ρ Rep.Action_ρ_eq_ρ
 
 /-- Allows us to apply lemmas about the underlying `ρ`, which would take an element `g : G` rather
-than `g : Mon.of G` as an argument. -/
+than `g : MonCat.of G` as an argument. -/
 theorem of_ρ_apply {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
     (g : MonCat.of G) : (Rep.of ρ).ρ g = ρ (g : G) :=
   rfl
@@ -480,7 +480,7 @@ theorem repOfTprodIso_inv_apply (x : TensorProduct k V W) : (repOfTprodIso ρ τ
 end Representation
 
 /-!
-# The categorical equivalence `Rep k G ≌ Module.{u} (monoid_algebra k G)`.
+# The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
 -/
 
 
@@ -520,13 +520,13 @@ def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
     map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ f.hom f.comm r x }
 #align Rep.to_Module_monoid_algebra_map Rep.toModuleMonoidAlgebraMap
 
-/-- Functorially convert a representation of `G` into a module over `monoid_algebra k G`. -/
+/-- Functorially convert a representation of `G` into a module over `MonoidAlgebra k G`. -/
 def toModuleMonoidAlgebra : Rep k G ⥤ ModuleCat.{u} (MonoidAlgebra k G) where
   obj V := ModuleCat.of _ V.ρ.asModule
   map f := toModuleMonoidAlgebraMap f
 #align Rep.to_Module_monoid_algebra Rep.toModuleMonoidAlgebra
 
-/-- Functorially convert a module over `monoid_algebra k G` into a representation of `G`. -/
+/-- Functorially convert a module over `MonoidAlgebra k G` into a representation of `G`. -/
 def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
   obj M := Rep.of (Representation.ofModule M)
   map f :=
@@ -598,7 +598,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
     fun g => by ext; apply unit_iso_comm
 #align Rep.unit_iso Rep.unitIso
 
-/-- The categorical equivalence `Rep k G ≌ Module (monoid_algebra k G)`. -/
+/-- The categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`. -/
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
@@ -606,5 +606,5 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k 
   counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
 #align Rep.equivalence_Module_monoid_algebra Rep.equivalenceModuleMonoidAlgebra
 
--- TODO Verify that the equivalence with `Module (monoid_algebra k G)` is a monoidal functor.
+-- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
