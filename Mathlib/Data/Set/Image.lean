@@ -1402,7 +1402,7 @@ theorem range_val {s : Set α} : range (Subtype.val : s → α) = s :=
 
 /-- We make this the simp lemma instead of `range_coe`. The reason is that if we write
   for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are
-  `↑α (λ x, x ∈ s)`. -/
+  `↑α (fun x ↦ x ∈ s)`. -/
 @[simp]
 theorem range_coe_subtype {p : α → Prop} : range ((↑) : Subtype p → α) = { x | p x } :=
   range_coe

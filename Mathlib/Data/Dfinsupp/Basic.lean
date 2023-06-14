@@ -24,7 +24,7 @@ For a non-dependent version see `data/finsupp.lean`.
 
 This file introduces the notation `Π₀ a, β a` as notation for `Dfinsupp β`, mirroring the `α →₀ β`
 notation used for `Finsupp`. This works for nested binders too, with `Π₀ a b, γ a b` as notation
-for `Dfinsupp (λ a, Dfinsupp (γ a))`.
+for `Dfinsupp (fun a ↦ Dfinsupp (γ a))`.
 
 ## Implementation notes
 
