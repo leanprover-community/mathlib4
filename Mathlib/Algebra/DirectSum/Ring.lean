@@ -490,7 +490,7 @@ def ofZeroRingHom : A 0 →+* ⨁ i, A i :=
     map_mul' := of_zero_mul A }
 #align direct_sum.of_zero_ring_hom DirectSum.ofZeroRingHom
 
-/-- Each grade `A i` derives a `A 0`-module structure from `GSemiring A`. Note that this results
+/-- Each grade `A i` derives an `A 0`-module structure from `GSemiring A`. Note that this results
 in an overall `Module (A 0) (⨁ i, A i)` structure via `DirectSum.module`.
 -/
 instance GradeZero.module {i} : Module (A 0) (A i) :=

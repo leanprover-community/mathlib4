@@ -337,7 +337,7 @@ def mkZeroMonoidHom : A 0 →* GradedMonoid A
   map_mul' := mk_zero_smul
 #align graded_monoid.mk_zero_monoid_hom GradedMonoid.mkZeroMonoidHom
 
-/-- Each grade `A i` derives a `A 0`-action structure from `GMonoid A`. -/
+/-- Each grade `A i` derives an `A 0`-action structure from `GMonoid A`. -/
 instance GradeZero.mulAction {i} : MulAction (A 0) (A i) :=
   letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
   Function.Injective.mulAction (mk i) sigma_mk_injective mk_zero_smul

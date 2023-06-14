@@ -246,7 +246,7 @@ theorem coe_orderMonoidWithZeroHom_apply (f : α →+*o β) (a : α) : (f : α �
   rfl
 #align order_ring_hom.coe_order_monoid_with_zero_hom_apply OrderRingHom.coe_orderMonoidWithZeroHom_apply
 
-/-- Copy of a `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of an `OrderRingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : α →+*o β) (f' : α → β) (h : f' = f) : α →+*o β :=
   { f.toRingHom.copy f' h, f.toOrderAddMonoidHom.copy f' h with }

@@ -431,7 +431,7 @@ inductive ProjectionRule where
     which is used to declare hover information. -/
   | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
       ProjectionRule
-  /-- A adding rule `+fieldName` -/
+  /-- An adding rule `+fieldName` -/
   | add : Name → Syntax → ProjectionRule
   /-- A hiding rule `-fieldName` -/
   | erase : Name → Syntax → ProjectionRule

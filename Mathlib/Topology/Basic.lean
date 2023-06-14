@@ -1920,7 +1920,7 @@ This has the following advantages
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `Continuous.neg`.
+As an example for a unary operation, we have `Continuous.neg`.
 ```
 Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
 ```
@@ -1990,14 +1990,14 @@ Another better solution is to reformulate composition lemmas to have the followi
 `ContinuousAt g y → ContinuousAt f x → f x = y → ContinuousAt (g ∘ f) x`.
 This is even useful if the proof of `f x = y` is `rfl`.
 The reason that this works better is because the type of `hg` doesn't mention `f`.
-Only after elaborating the two `continuous_at` arguments, Lean will try to unify `f x` with `y`,
+Only after elaborating the two `ContinuousAt` arguments, Lean will try to unify `f x` with `y`,
 which is often easy after having chosen the correct functions for `f` and `g`.
 Here is an example that shows the difference:
 ```
 example [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
     (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
     ContinuousAt (fun x ↦ f x x) x₀ :=
-  -- hf.comp x₀ (continuousAt_id.prod continuousAt_id) -- type mismatch
+  -- hf.comp (continuousAt_id.prod continuousAt_id) -- type mismatch
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/

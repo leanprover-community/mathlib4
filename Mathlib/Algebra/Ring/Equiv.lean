@@ -718,7 +718,7 @@ theorem toAddMonoidMom_commutes (f : R ≃+* S) :
   rfl
 #align ring_equiv.to_add_monoid_hom_commutes RingEquiv.toAddMonoidMom_commutes
 
-/-- The two paths coercion can take to an `MonoidHom` are equivalent -/
+/-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl

@@ -161,7 +161,7 @@ def Subpresheaf.sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) wher
     exact G.map _ hi
 #align category_theory.grothendieck_topology.subpresheaf.sieve_of_section CategoryTheory.GrothendieckTopology.Subpresheaf.sieveOfSection
 
-/-- Given a `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
+/-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
 `G` consisting of the restrictions of `s` -/
 def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
     (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩

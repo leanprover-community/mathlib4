@@ -933,7 +933,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
 
 @[simp, norm_cast]
 theorem lor'_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor' m n := by
-  -- Porting note: An name of an implicit local hypothesis is not available so
+  -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
   apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;> intros <;> cases_type* Bool <;> rfl
 #align num.lor_to_nat Num.lor'_to_nat

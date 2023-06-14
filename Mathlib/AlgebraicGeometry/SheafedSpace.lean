@@ -33,7 +33,8 @@ variable (C : Type u) [Category.{v} C]
 -- local attribute [tidy] tactic.op_induction'
 -- as it isn't needed here. If it is useful elsewhere
 -- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
--- should suffice.
+-- should suffice, but may need
+-- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
 

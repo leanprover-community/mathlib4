@@ -702,7 +702,7 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
 
 /-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
-this automatically gives a `IsSimpleModule K` instance. -/
+this automatically gives an `IsSimpleModule K` instance. -/
 instance isSimpleOrder : IsSimpleOrder (Ideal K) :=
   ⟨eq_bot_or_top⟩
 #align ideal.is_simple_order Ideal.isSimpleOrder

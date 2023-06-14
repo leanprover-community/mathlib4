@@ -513,7 +513,7 @@ section SemilatticeSup
 
 variable [HasImages C] [HasBinaryCoproducts C]
 
-/-- The functorial supremum on `MonoOver A` descends to an supremum on `Subobject A`. -/
+/-- The functorial supremum on `MonoOver A` descends to a supremum on `Subobject A`. -/
 def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup
