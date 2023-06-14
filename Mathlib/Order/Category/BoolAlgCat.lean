@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Order.Category.HeytAlg
+import Mathlib.Order.Category.HeytAlgCat
 
 /-!
 # The category of boolean algebras
@@ -112,4 +112,3 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
     BoolAlg.dual ⋙ forget₂ BoolAlg BddDistLat = forget₂ BoolAlg BddDistLat ⋙ BddDistLat.dual :=
   rfl
 #align BoolAlg_dual_comp_forget_to_BddDistLat boolAlg_dual_comp_forget_to_bddDistLat
-
