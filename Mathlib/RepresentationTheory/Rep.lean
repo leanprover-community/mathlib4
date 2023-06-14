@@ -359,7 +359,7 @@ variable [Group G] (A B C : Rep k G)
 protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
-    { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom),
+    { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom)
       comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
@@ -414,7 +414,7 @@ instance : MonoidalClosed (Rep k G) where
   { isAdj :=
     { right := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv (
-      { homEquiv := Rep.homEquiv A,
+      { homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext _ _
           (TensorProduct.ext' fun _ _ => rfl)
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext _ _ (LinearMap.ext
@@ -434,9 +434,9 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem ihom_ev_app_hom (A B : Rep k G) :
-  Action.Hom.hom ((ihom.ev A).app B)
-    = TensorProduct.uncurry k A (A →ₗ[k] B) B LinearMap.id.flip :=
-by ext; rfl
+    Action.Hom.hom ((ihom.ev A).app B)
+      = TensorProduct.uncurry k A (A →ₗ[k] B) B LinearMap.id.flip := by
+  ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
