@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Spec
-import Mathbin.Algebra.Category.Ring.Constructions
+import Mathlib.AlgebraicGeometry.Spec
+import Mathlib.Algebra.Category.Ring.Constructions
 
 /-!
 # The category of schemes
@@ -148,8 +148,7 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
       X.Presheaf.map
           (eqToHom <| by rw [is_iso.hom_inv_id]; ext1; rfl :
               (Opens.map (f ≫ inv f).1.base).obj U ⟶ U).op ≫
-        inv (f.val.c.app (op <| (Opens.map _).obj U)) :=
-  by
+        inv (f.val.c.app (op <| (Opens.map _).obj U)) := by
   rw [is_iso.eq_comp_inv]
   erw [← Scheme.comp_val_c_app]
   rw [Scheme.congr_app (is_iso.hom_inv_id f), Scheme.id_app, ← functor.map_comp, eq_to_hom_trans,
@@ -166,8 +165,7 @@ abbrev Hom.appLe {X Y : Scheme} (f : X ⟶ Y) {V : Opens X.carrier} {U : Opens Y
 
 /-- The spectrum of a commutative ring, as a scheme.
 -/
-def specObj (R : CommRingCat) : Scheme
-    where
+def specObj (R : CommRingCat) : Scheme where
   local_affine x := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 #align algebraic_geometry.Scheme.Spec_obj AlgebraicGeometry.Scheme.specObj
