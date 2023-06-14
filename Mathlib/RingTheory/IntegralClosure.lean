@@ -266,7 +266,8 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
       rw [← hy]
       exact subset_span hp
   -- Now `S` is a subalgebra so the product of two elements of `y` is also in `S`.
-  have : ∀ jk : (y ×ᶠ y : Set (A × A)), jk.1.1 * jk.1.2 ∈ (Subalgebra.toSubmodule S) := fun jk =>
+  have : ∀ jk : (y ×ˢ y : Finset (A × A)),
+      jk.1.1 * jk.1.2 ∈ (Subalgebra.toSubmodule S) := fun jk =>
     S.mul_mem (hyS (Finset.mem_product.1 jk.2).1) (hyS (Finset.mem_product.1 jk.2).2)
   rw [← hy, ← Set.image_id (y : Set A)] at this
   simp only [Finsupp.mem_span_image_iff_total] at this
@@ -435,16 +436,18 @@ theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.Fin
         -- Porting note: was `ext`
         refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra _ fun r x => ?_
         exact (Algebra.smul_def _ _).symm)
-  -- porting note: the rest of the proof was
-  -- `delta RingHom.Finite at this; convert this; ext; exact Algebra.smul_def _ _`
-  rw [RingHom.Finite] at this; convert this; ext; rfl
+  rw [RingHom.Finite] at this
+  convert this
+  ext
+  exact Algebra.smul_def _ _
 #align algebra.is_integral.finite Algebra.IsIntegral.finite
 
 theorem Algebra.IsIntegral.of_finite [h : Module.Finite R A] : Algebra.IsIntegral R A := by
   apply RingHom.Finite.to_isIntegral
-  -- porting note: the rest of the proof was
-  -- `delta RingHom.Finite; convert h; ext; exact (Algebra.smul_def _ _).symm`
-  rw [RingHom.Finite]; convert h; ext; rfl
+  rw [RingHom.Finite]
+  convert h
+  ext
+  exact (Algebra.smul_def _ _).symm
 #align algebra.is_integral.of_finite Algebra.IsIntegral.of_finite
 
 /-- finite = integral + finite type -/

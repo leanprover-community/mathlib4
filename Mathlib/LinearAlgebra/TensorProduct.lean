@@ -162,7 +162,7 @@ variable (R R' M N)
 
 /-- A typeclass for `SMul` structures which can be moved across a tensor product.
 
-This typeclass is generated automatically from a `IsScalarTower` instance, but exists so that
+This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
 `R` does not support negation.
 

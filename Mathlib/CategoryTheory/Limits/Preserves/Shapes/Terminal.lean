@@ -161,7 +161,7 @@ def preservesColimitsOfShapePemptyOfPreservesInitial [PreservesColimit (Functor.
 
 variable [HasInitial C]
 
-/-- If `G` preserves the initial object and `C` has a initial object, then the image of the initial
+/-- If `G` preserves the initial object and `C` has an initial object, then the image of the initial
 object is initial.
 -/
 def isColimitOfHasInitialOfPreservesColimit [PreservesColimit (Functor.empty.{0} C) G] :
@@ -169,7 +169,7 @@ def isColimitOfHasInitialOfPreservesColimit [PreservesColimit (Functor.empty.{0}
   initialIsInitial.isInitialObj G (⊥_ C)
 #align category_theory.limits.is_colimit_of_has_initial_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasInitialOfPreservesColimit
 
-/-- If `C` has a initial object and `G` preserves initial objects, then `D` has a initial object
+/-- If `C` has an initial object and `G` preserves initial objects, then `D` has an initial object
 also.
 Note this property is somewhat unique to colimits of the empty diagram: for general `J`, if `C`
 has colimits of shape `J` and `G` preserves them, then `D` does not necessarily have colimits of

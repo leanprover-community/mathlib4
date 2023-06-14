@@ -61,7 +61,7 @@ structure with an isomorphic one; one way around this is to isolate a predicate 
 a structure up to isomorphism, and reason about things that satisfy the predicate.
 
 A previous version of this file used a fully bundled type of ring localization maps,
-then used a type synonym `f.codomain` for `f : :ocalizationMap M S` to instantiate the
+then used a type synonym `f.codomain` for `f : LocalizationMap M S` to instantiate the
 `R`-algebra structure on `S`. This results in defining ad-hoc copies for everything already
 defined on `S`. By making `IsLocalization` a predicate on the `algebraMap R S`,
 we can ensure the localization map commutes nicely with other `algebraMap`s.
@@ -100,7 +100,7 @@ variable [Algebra R S] {P : Type _} [CommSemiring P]
 /-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
---Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
+  --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
   /-- the `algebraMap` is surjective -/
@@ -298,7 +298,7 @@ theorem mk'_add_eq_iff_add_mul_eq_mul {x} {y : M} {z₁ z₂} :
 
 variable (M)
 
-theorem mk'_surjective (z : S) : ∃ (x : _)(y : M), mk' S x y = z :=
+theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
   let ⟨r, hr⟩ := IsLocalization.surj _ z
   ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 #align is_localization.mk'_surjective IsLocalization.mk'_surjective
@@ -893,7 +893,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 #align localization.add_mk_self Localization.add_mk_self
 
-local macro "localization_tac": tactic =>
+local macro "localization_tac" : tactic =>
   `(tactic|
    { intros
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]

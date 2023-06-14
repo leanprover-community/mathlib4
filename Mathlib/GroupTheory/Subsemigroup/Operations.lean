@@ -90,7 +90,7 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
       mul_mem' := S.add_mem' }
   left_inv _ := rfl
   right_inv _ := rfl
-  map_rel_iff':= Iff.rfl
+  map_rel_iff' := Iff.rfl
 #align subsemigroup.to_add_subsemigroup Subsemigroup.toAddSubsemigroup
 #align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symm_apply_coe
 #align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_coe
@@ -643,7 +643,8 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
 #align add_subsemigroup.prod AddSubsemigroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align subsemigroup.coe_prod Subsemigroup.coe_prod
 #align add_subsemigroup.coe_prod AddSubsemigroup.coe_prod

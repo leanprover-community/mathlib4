@@ -30,9 +30,7 @@ properties about separable polynomials here.
 
 universe u v w
 
-open Classical BigOperators Polynomial
-
-open Finset
+open Classical BigOperators Polynomial Finset
 
 namespace Polynomial
 
@@ -164,10 +162,7 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
 
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   rw [multiplicity.squarefree_iff_multiplicity_le_one p]
-  intro f
-  by_cases hunit : IsUnit f
-  · exact Or.inr hunit
-  exact Or.inl (multiplicity_le_one_of_separable hunit hsep)
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
 #align polynomial.separable.squarefree Polynomial.Separable.squarefree
 
 end CommSemiring
@@ -338,7 +333,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 #align polynomial.separable_or Polynomial.separable_or
 
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
-    ∃ (n : ℕ)(g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
+    ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
   induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
@@ -491,9 +486,9 @@ variable (F K : Type _) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
--- Note that right now a Galois extension (class `is_galois`) is defined to be an extension which
+-- Note that right now a Galois extension (class `IsGalois`) is defined to be an extension which
 -- is separable and normal, so if the definition of separable changes here at some point
--- to allow non-algebraic extensions, then the definition of `is_galois` must also be changed.
+-- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable.
 
@@ -501,14 +496,14 @@ We define this for general (commutative) rings and only assume `F` and `K` are f
 is needed for a proof.
 -/
 class IsSeparable : Prop where
-  is_integral' (x : K) : IsIntegral F x
+  isIntegral' (x : K) : IsIntegral F x
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
 variable (F : Type _) {K : Type _} [CommRing F] [Ring K] [Algebra F K]
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
-  IsSeparable.is_integral'
+  IsSeparable.isIntegral'
 #align is_separable.is_integral IsSeparable.isIntegral
 
 theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separable :=
@@ -525,7 +520,8 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
 end CommRing
 
 instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
-  ⟨fun x => isIntegral_algebraMap, fun x => by
+  ⟨fun x => isIntegral_algebraMap,
+   fun x => by
     rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩
 #align is_separable_self isSeparable_self

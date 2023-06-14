@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
+! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -23,7 +23,7 @@ open BigOperators
 
 open Set Function
 
-/-! ### Definition and basic arithmmetic -/
+/-! ### Definition and basic arithmetic -/
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
@@ -367,25 +367,25 @@ instance : Nontrivial ℂ :=
 
 -- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ :=
-{ zero := (0 : ℂ)
-  add := (· + ·)
-  neg := Neg.neg
-  sub := Sub.sub
-  nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul_zero':= by intros; ext <;> simp
-  nsmul_zero := by intros; ext <;> simp
-  nsmul_succ := by
-    intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
-  zsmul_succ' := by
-    intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
-  zsmul_neg' := by
-    intros; ext <;> simp [zsmul_neg', add_mul]
-  add_assoc := by intros; ext <;> simp [add_assoc]
-  zero_add := by intros; ext <;> simp
-  add_zero := by intros; ext <;> simp
-  add_comm := by intros; ext <;> simp [add_comm]
-  add_left_neg := by intros; ext <;> simp }
+  { zero := (0 : ℂ)
+    add := (· + ·)
+    neg := Neg.neg
+    sub := Sub.sub
+    nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+    zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+    zsmul_zero' := by intros; ext <;> simp
+    nsmul_zero := by intros; ext <;> simp
+    nsmul_succ := by
+      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
+    zsmul_succ' := by
+      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
+    zsmul_neg' := by
+      intros; ext <;> simp [zsmul_neg', add_mul]
+    add_assoc := by intros; ext <;> simp [add_assoc]
+    zero_add := by intros; ext <;> simp
+    add_zero := by intros; ext <;> simp
+    add_comm := by intros; ext <;> simp [add_comm]
+    add_left_neg := by intros; ext <;> simp }
 
 
 instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
@@ -1197,11 +1197,11 @@ theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re :=
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a strictly ordered ring.
 -/
 protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
-{ zero_le_one := ⟨zero_le_one, rfl⟩
-  add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
-  mul_pos := fun z w hz hw => by
-    simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; ext <;> ring_nf }
+  { zero_le_one := ⟨zero_le_one, rfl⟩
+    add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
+    mul_pos := fun z w hz hw => by
+      simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
+    mul_comm := by intros; ext <;> ring_nf }
 #align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
 
 scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
@@ -1210,7 +1210,7 @@ scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 -/
 protected def starOrderedRing : StarOrderedRing ℂ :=
-{ nonneg_iff := fun r => by
+  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
     · have h₁ : 0 ≤ r.re := by
         rw [le_def] at hr
@@ -1219,13 +1219,12 @@ protected def starOrderedRing : StarOrderedRing ℂ :=
         rw [le_def] at hr
         exact hr.2.symm
       ext
-      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero, ←
-          Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
+      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero,
+          ← Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
       · simp only [h₂, add_zero, ofReal_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
           neg_zero]
     · obtain ⟨s, rfl⟩ := h
       simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
-  add_le_add_left := by intros; simp [le_def] at *; assumption }
 #align complex.star_ordered_ring Complex.starOrderedRing
 
 scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing
@@ -1281,7 +1280,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance : CauSeq.IsComplete ℂ Complex.abs :=
+instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq

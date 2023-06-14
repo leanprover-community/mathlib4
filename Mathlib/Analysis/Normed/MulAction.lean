@@ -95,7 +95,7 @@ theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   · refine' le_antisymm (norm_smul_le r x) _
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
-      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := (mul_le_mul_of_nonneg_left (norm_smul_le _ _) (norm_nonneg _))
+      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le
       _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
 #align norm_smul norm_smul
 

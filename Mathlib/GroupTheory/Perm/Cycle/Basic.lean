@@ -1952,7 +1952,7 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
 The diagonals are given by the cycle `f`.
 -/
 theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
-    s ×ᶠ s =
+    s ×ˢ s =
       (range s.card).disjiUnion
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
         (product_self_eq_disj_Union_perm_aux hf) := by

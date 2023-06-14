@@ -37,18 +37,16 @@ initialize registerTraceClass `Tactic.librarySearch.lemmas
 /--
 A "modifier" for a declaration.
 * `none` indicates the original declaration,
-* `symm` indicates that (possibly after binders) the declaration is an `=`,
-  and we want to consider the symmetric version,
-* `mp` indicates that (possibly after binders) the declaration is an `iff`,
+* `mp` indicates that (possibly after binders) the declaration is an `↔`,
   and we want to consider the forward direction,
 * `mpr` similarly, but for the backward direction.
 -/
 inductive DeclMod
-| none | symm | mp | mpr
+  | none | mp | mpr
 deriving DecidableEq, Ord
 
 instance : ToString DeclMod where
-  toString m := match m with | .none => "" | .symm => "symm" | .mp => "mp" | .mpr => "mpr"
+  toString m := match m with | .none => "" | .mp => "mp" | .mpr => "mpr"
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -60,13 +58,9 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let keys ← DiscrTree.mkPath type
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
-    | (``Eq, #[_, lhs, rhs]) => do
-      let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
-      return r.push (keys_symm, (name, .symm))
     | (``Iff, #[lhs, rhs]) => do
-      let keys_mp ← DiscrTree.mkPath rhs
-      let keys_mpr ← DiscrTree.mkPath lhs
-      return r.push (keys_mp, (name, .mp)) |>.push (keys_mpr, (name, .mpr))
+      return r.push (← DiscrTree.mkPath rhs, (name, .mp))
+        |>.push (← DiscrTree.mkPath lhs, (name, .mpr))
     | _ => return r
 
 /-- Insert a lemma into the discrimination tree. -/
@@ -124,7 +118,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
 /--
-Try applying the given lemma (with symmetry modifer) to the goal,
+Try applying the given lemma (with symmetry modifier) to the goal,
 then try to close subsequent goals using `solveByElim`.
 If `solveByElim` succeeds, we return `[]` as the list of new subgoals,
 otherwise the full list of subgoals.
@@ -140,7 +134,6 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     let lem ← mkConstWithFreshMVarLevels lem
     let lem ← match mod with
     | .none => pure lem
-    | .symm => mapForallTelescope (fun e => mkAppM ``Eq.symm #[e]) lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
     let newGoals ← goal.apply lem
@@ -162,6 +155,18 @@ def librarySearchCore (goal : MVarId)
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (ListM.ofList lemmas).filterMapM fun (lem, mod) =>
       try? <| librarySearchLemma lem mod required solveByElimDepth goal
+
+/--
+Run `librarySearchCore` on both the goal and `symm` applied to the goal.
+-/
+def librarySearchSymm (goal : MVarId)
+    (required : List Expr) (solveByElimDepth := 6) :
+    ListM MetaM (MetavarContext × List MVarId) :=
+  .append (librarySearchCore goal required solveByElimDepth) <| .squash do
+    if let some symm ← try? goal.symm then
+      return librarySearchCore symm required solveByElimDepth
+    else
+      return .nil
 
 /-- A type synonym for our subgoal ranking algorithm. -/
 def subgoalRankType : Type := Bool × Nat × Int
@@ -210,7 +215,8 @@ unless the goal was completely solved.)
 this is not currently tracked.)
 -/
 def librarySearch (goal : MVarId) (required : List Expr)
-    (solveByElimDepth := 6) : MetaM (Option (Array (MetavarContext × List MVarId))) := do
+    (solveByElimDepth := 6) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (Option (Array (MetavarContext × List MVarId))) := do
   let librarySearchEmoji := fun
     | .error _ => bombEmoji
     | .ok (some _) => crossEmoji
@@ -221,9 +227,9 @@ def librarySearch (goal : MVarId) (required : List Expr)
     _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return none) <|>
   (do
-    let results ← librarySearchCore goal required solveByElimDepth
+    let results ← librarySearchSymm goal required solveByElimDepth
       -- Don't use too many heartbeats.
-      |>.whileAtLeastHeartbeatsPercent 10
+      |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
       -- Stop if we find something that closes the goal
       |>.takeUpToFirst (·.2.isEmpty)
       |>.asArray
@@ -247,7 +253,7 @@ syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?) => do
+elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required],*]?) => do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
@@ -286,7 +292,8 @@ If `hp` is omitted, then the placeholder `this` is used.
 
 The variant `observe? hp : p` will emit a trace message of the form `have hp : p := proof_term`.
 This may be particularly useful to speed up proofs. -/
-syntax (name := observe) "observe" "?"? (ident)? ":" term (" using " (colGt term),+)? : tactic
+syntax (name := observe) "observe" "?"? (ppSpace ident)? " : " term
+  (" using " (colGt term),+)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
@@ -308,9 +315,9 @@ elab_rules : tactic |
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
-@[inherit_doc observe] macro "observe?" h:(ident)? ":" t:term : tactic =>
+@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
 @[inherit_doc observe]
-macro "observe?" h:(ident)? ":" t:term " using " terms:(colGt term),+ : tactic =>
+macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)

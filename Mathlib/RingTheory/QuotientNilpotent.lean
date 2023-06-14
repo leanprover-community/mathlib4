@@ -32,8 +32,6 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     (h₂ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I J : Ideal S, I ≤ J → P I →
       P (J.map (Ideal.Quotient.mk I)) → P J) :
     P I := by
--- Porting note: linarith misbehaving below
-  have bound (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
   induction' n using Nat.strong_induction_on with n H generalizing S
   by_cases hI' : I = ⊥
@@ -51,12 +49,9 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
     · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
-      -- Porting note: linarith wants AddGroup (Ideal S) to solve (n:ℕ)+1+1 ≤ 2*(n+1)
-      apply Ideal.pow_le_pow <| bound n
+      apply Ideal.pow_le_pow (by linarith)
     · exact n.succ.lt_succ_self
   · apply h₁
-    -- Porting note: used to be by linarith?
-    -- Investigate this issue again after during lean4#2210 cleanup.
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
 

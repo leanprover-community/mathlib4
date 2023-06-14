@@ -404,13 +404,13 @@ theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) 
 #align list.append_right_cancel List.append_right_cancel
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
-fun _ _ ↦ append_left_cancel
+  fun _ _ ↦ append_left_cancel
 #align list.append_right_injective List.append_right_injective
 
 #align list.append_right_inj List.append_right_inj
 
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
-fun _ _ ↦ append_right_cancel
+  fun _ _ ↦ append_right_cancel
 #align list.append_left_injective List.append_left_injective
 
 #align list.append_left_inj List.append_left_inj
@@ -2853,7 +2853,7 @@ theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
 section SplitAtOn
 
 /- Porting note: the new version of `splitOnP` uses a `Bool`-valued predicate instead of a
-  `Prop`-valued one. All downstream defintions have been updated to match. -/
+  `Prop`-valued one. All downstream definitions have been updated to match. -/
 
 variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
 
@@ -3031,7 +3031,7 @@ end SplitAtOn
 
 section ModifyLast
 
-theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α):
+theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Array α) :
     modifyLast.go f (tl ++ [a]) r = (r.toListAppend <| modifyLast.go f (tl ++ [a]) #[]) := by
   cases tl with
   | nil =>
@@ -3073,20 +3073,7 @@ end ModifyLast
 
 /-! ### map for partial functions -/
 
-/-- Partial map. If `f : Π a, p a → β` is a partial function defined on
-  `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
-  but is defined only when all members of `l` satisfy `p`, using the proof
-  to apply `f`. -/
-@[simp]
-def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
-  | [], _ => []
-  | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
 #align list.pmap List.pmap
-
-/-- "Attach" the proof that the elements of `l` are in `l` to produce a new list
-  with the same elements but in the type `{x // x ∈ l}`. -/
-def attach (l : List α) : List { x // x ∈ l } :=
-  pmap Subtype.mk l fun _ => id
 #align list.attach List.attach
 
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
@@ -3152,7 +3139,7 @@ theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
 
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
-    b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
+    b ∈ pmap f l H ↔ ∃ (a : _) (h : a ∈ l), f a (H a h) = b := by
   simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and_iff, Subtype.exists, eq_comm]
 #align list.mem_pmap List.mem_pmap
 

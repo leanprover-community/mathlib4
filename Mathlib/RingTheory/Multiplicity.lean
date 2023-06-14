@@ -34,7 +34,7 @@ open Nat Part
 open BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
-  `a ^ n ∣ b`, as an `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
+  `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
   then it returns `⊤`-/
 def multiplicity [Monoid α] [DecidableRel ((· ∣ ·) : α → α → Prop)] (a b : α) : PartENat :=
   PartENat.find fun n => ¬a ^ (n + 1) ∣ b
@@ -475,7 +475,7 @@ variable [CancelCommMonoidWithZero α]
 
 /- Porting note: removed previous wf recursion hints and added termination_by
 Also pulled a b intro parameters since Lean parses that more easily -/
-theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α}:
+theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>
     have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩

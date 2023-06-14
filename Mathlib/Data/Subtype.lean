@@ -104,7 +104,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
 #align subtype.coe_mk Subtype.coe_mk
 
 -- Porting note: comment out `@[simp, nolint simp_nf]`
--- Porting note: not clear if "build-in reduction doesn't always work" is still relevant
+-- Porting note: not clear if "built-in reduction doesn't always work" is still relevant
 -- built-in reduction doesn't always work
 -- @[simp, nolint simp_nf]
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
@@ -177,7 +177,7 @@ theorem surjective_restrict {α} {β : α → Type _} [ne : ∀ a, Nonempty (β 
   exact dif_pos hx
 #align subtype.surjective_restrict Subtype.surjective_restrict
 
-/-- Defining a map into a subtype, this can be seen as an "coinduction principle" of `Subtype`-/
+/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
 @[simps]
 def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
 #align subtype.coind Subtype.coind

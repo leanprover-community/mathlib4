@@ -84,7 +84,7 @@ theorem gen_empty_right {s : Set α} (h : s.Nonempty) : CompactOpen.gen s (∅ :
 -- The compact-open topology on the space of continuous maps α → β.
 instance compactOpen : TopologicalSpace C(α, β) :=
   TopologicalSpace.generateFrom
-    { m | ∃ (s : Set α)(_ : IsCompact s)(u : Set β)(_ : IsOpen u), m = CompactOpen.gen s u }
+    { m | ∃ (s : Set α) (_ : IsCompact s) (u : Set β) (_ : IsOpen u), m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :
@@ -230,7 +230,7 @@ on `C(s, β)` for `s` a compact subset of `α`.  The key point of the proof is t
 compact subsets of `α` is equal to the union of compact subsets of the compact subsets of `α`. -/
 theorem compactOpen_eq_sInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
-      ⨅ (s : Set α) (_hs : IsCompact s),
+      ⨅ (s : Set α) (_ : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
   · refine' le_iInf₂ _

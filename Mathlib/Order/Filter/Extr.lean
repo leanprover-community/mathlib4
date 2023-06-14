@@ -12,7 +12,7 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-# Minimum and maximum w.r.t. a filter and on a aet
+# Minimum and maximum w.r.t. a filter and on a set
 
 ## Main Definitions
 
@@ -32,7 +32,7 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
 * `is*Filter.filter_mono` : replace the filter with a smaller one;
 * `is*Filter.filter_inf` : replace a filter `l` with `l ⊓ l'`;
 * `is*On.on_subset` : restrict to a smaller set;
-* `is*Pn.inter` : replace a set `s` wtih `s ∩ t`.
+* `is*Pn.inter` : replace a set `s` with `s ∩ t`.
 
 ### Composition
 

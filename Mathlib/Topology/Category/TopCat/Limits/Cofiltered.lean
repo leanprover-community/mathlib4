@@ -47,7 +47,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     (inter : ∀ (i) (U1 U2 : Set (F.obj i)), U1 ∈ T i → U2 ∈ T i → U1 ∩ U2 ∈ T i)
     (compat : ∀ (i j : J) (f : i ⟶ j) (V : Set (F.obj j)) (_ : V ∈ T j), F.map f ⁻¹' V ∈ T i) :
     IsTopologicalBasis
-      { U : Set C.pt | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V } := by
+      { U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V } := by
   classical
     -- The limit cone for `F` whose topology is defined as an infimum.
     let D := limitConeInfi F
@@ -57,7 +57,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     -- Reduce to the assertion of the theorem with `D` instead of `C`.
     suffices
       IsTopologicalBasis
-        { U : Set D.pt | ∃ (j : _)(V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
+        { U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V } by
       convert this.inducing hE
       ext U0
       constructor
@@ -89,13 +89,13 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
       let g : ∀ (e) (_he : e ∈ G), j ⟶ e := fun _ he => (hj he).some
       let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
+      let V : Set (F.obj j) := ⋂ (e : J) (_ : e ∈ G), Vs e
       refine' ⟨j, V, _, _⟩
       · -- An intermediate claim used to apply induction along `G : Finset J` later on.
         have :
           ∀ (S : Set (Set (F.obj j))) (E : Finset J) (P : J → Set (F.obj j)) (_ : Set.univ ∈ S)
             (_ : ∀ A B : Set (F.obj j), A ∈ S → B ∈ S → A ∩ B ∈ S)
-            (_ : ∀ (e : J) (_ : e ∈ E), P e ∈ S), (⋂ (e) (_he : e ∈ E), P e) ∈ S := by
+            (_ : ∀ (e : J) (_ : e ∈ E), P e ∈ S), (⋂ (e) (_ : e ∈ E), P e) ∈ S := by
           intro S E
           induction' E using Finset.induction_on with a E _ hh1
           · intro P he _
@@ -113,7 +113,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         exact compat j e (g e he) (U e) (h1 e he)
       · -- conclude...
         rw [h2]
-        change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_he : e ∈ G), Vs e
+        change _ = (D.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
         rw [Set.preimage_iInter]
         apply congrArg
         ext1 e
@@ -121,12 +121,13 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
         apply congrArg
         ext1 he
         -- Porting note: needed more hand holding here
-        change (forget TopCat).map (D.π.app e)⁻¹' U e =
-          (forget TopCat).map (D.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+        change (D.π.app e)⁻¹' U e =
+          (D.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
         rw [dif_pos he, ← Set.preimage_comp]
         apply congrFun
         apply congrArg
         rw [←coe_comp, D.w]
+        rfl
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 
 end CofilteredLimit

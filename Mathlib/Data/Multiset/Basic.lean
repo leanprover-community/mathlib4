@@ -1549,7 +1549,7 @@ theorem mem_attach (s : Multiset α) : ∀ x, x ∈ s.attach :=
 
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {s H b} :
-    b ∈ pmap f s H ↔ ∃ (a : _)(h : a ∈ s), f a (H a h) = b :=
+    b ∈ pmap f s H ↔ ∃ (a : _) (h : a ∈ s), f a (H a h) = b :=
   Quot.inductionOn s (fun _l _H => List.mem_pmap) H
 #align multiset.mem_pmap Multiset.mem_pmap
 
@@ -1608,7 +1608,7 @@ protected def decidableExistsMultiset {p : α → Prop} [DecidablePred p] : Deci
 #align multiset.decidable_exists_multiset Multiset.decidableExistsMultiset
 
 instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
-    Decidable (∃ (a : _)(h : a ∈ m), p a h) :=
+    Decidable (∃ (a : _) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
     (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ => ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ =>
       ⟨⟨a, ha₁⟩, mem_attach _ _, ha₂⟩)
@@ -2651,7 +2651,7 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
 section Rel
 
 /-- `Rel r s t` -- lift the relation `r` between two elements to a relation between `s` and `t`,
-s.t. there is a one-to-one mapping betweem elements in `s` and `t` following `r`. -/
+s.t. there is a one-to-one mapping between elements in `s` and `t` following `r`. -/
 @[mk_iff]
 inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0

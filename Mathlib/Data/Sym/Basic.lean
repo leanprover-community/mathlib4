@@ -45,7 +45,7 @@ def Sym (α : Type _) (n : ℕ) :=
 #align sym Sym
 
 --Porting note: new definition
-/-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
+/-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
@@ -299,7 +299,7 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
-theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' := by
+theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
@@ -625,7 +625,7 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
 #align sym_option_succ_equiv.encode_of_not_none_mem SymOptionSuccEquiv.encode_of_not_none_mem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
--- @[simp] Porting note: not a nice simp lemma, applies too often in LEan4
+-- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
 def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some

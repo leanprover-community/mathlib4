@@ -128,7 +128,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     classical
       refine' ⟨(f.erase b).cons (b * u), fun a ha => _, _, Multiset.cons_ne_zero⟩
       · obtain rfl | ha := Multiset.mem_cons.1 ha
-        exacts[Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
+        exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨f, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
@@ -979,7 +979,7 @@ See also `count_normalizedFactors_eq` which expands the definition of `multiplic
 to produce a specification for `count (normalizedFactors _) _`..
 -/
 theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : Irreducible a)
-(hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
+    (hb : b ≠ 0) : multiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
     rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
@@ -1203,7 +1203,7 @@ variable [CancelCommMonoidWithZero α]
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
 multisets in `FactorSet α` are unique by equality and restricted to irreducible elements. This
 gives us a representation of each element as a unique multisets (or the added ⊤ for 0), which has a
-complete lattice struture. Infimum is the greatest common divisor and supremum is the least common
+complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
 @[reducible]
@@ -1973,7 +1973,7 @@ noncomputable def fintypeSubtypeDvd {M : Type _} [CancelCommMonoidWithZero M]
   -- and has image exactly the divisors of `y`.
   refine'
     Fintype.ofFinset
-      (((normalizedFactors y).powerset.toFinset.product (Finset.univ : Finset Mˣ)).image fun s =>
+      (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => _
   simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,

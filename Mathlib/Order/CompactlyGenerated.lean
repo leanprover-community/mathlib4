@@ -411,7 +411,7 @@ protected theorem Directed.disjoint_iSup_left (h : Directed (· ≤ ·) f) :
 
 /-- This property is equivalent to `α` being upper continuous. -/
 theorem inf_sSup_eq_iSup_inf_sup_finset :
-    a ⊓ sSup s = ⨆ (t : Finset α) (_H : ↑t ⊆ s), a ⊓ t.sup id :=
+    a ⊓ sSup s = ⨆ (t : Finset α) (_ : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
       rw [le_iff_compact_le_imp]

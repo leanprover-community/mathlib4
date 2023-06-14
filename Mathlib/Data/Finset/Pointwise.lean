@@ -309,13 +309,13 @@ protected def mul : Mul (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.mul Finset.add
 
 @[to_additive]
-theorem mul_def : s * t = (s ×ᶠ t).image fun p : α × α => p.1 * p.2 :=
+theorem mul_def : s * t = (s ×ˢ t).image fun p : α × α => p.1 * p.2 :=
   rfl
 #align finset.mul_def Finset.mul_def
 #align finset.add_def Finset.add_def
 
 @[to_additive]
-theorem image_mul_product : ((s ×ᶠ t).image fun x : α × α => x.fst * x.snd) = s * t :=
+theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd) = s * t :=
   rfl
 #align finset.image_mul_product Finset.image_mul_product
 #align finset.image_add_product Finset.image_add_product
@@ -524,7 +524,7 @@ section Div
 
 variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
-/-- The pointwise division of sfinets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
+/-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
       "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
@@ -537,13 +537,13 @@ protected def div : Div (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.div Finset.sub
 
 @[to_additive]
-theorem div_def : s / t = (s ×ᶠ t).image fun p : α × α => p.1 / p.2 :=
+theorem div_def : s / t = (s ×ˢ t).image fun p : α × α => p.1 / p.2 :=
   rfl
 #align finset.div_def Finset.div_def
 #align finset.sub_def Finset.sub_def
 
 @[to_additive add_image_prod]
-theorem image_div_prod : ((s ×ᶠ t).image fun x : α × α => x.fst / x.snd) = s / t :=
+theorem image_div_prod : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd) = s / t :=
   rfl
 #align finset.image_div_prod Finset.image_div_prod
 #align finset.add_image_prod Finset.add_image_prod
@@ -857,7 +857,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -992,7 +992,7 @@ section DivisionMonoid
 variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
-theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s: Set α) ^ n
+theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
     refine' (coe_inv _).trans _
@@ -1265,13 +1265,13 @@ protected def smul : SMul (Finset α) (Finset β) :=
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
 
 @[to_additive]
-theorem smul_def : s • t = (s ×ᶠ t).image fun p : α × β => p.1 • p.2 :=
+theorem smul_def : s • t = (s ×ˢ t).image fun p : α × β => p.1 • p.2 :=
   rfl
 #align finset.smul_def Finset.smul_def
 #align finset.vadd_def Finset.vadd_def
 
 @[to_additive]
-theorem image_smul_product : ((s ×ᶠ t).image fun x : α × β => x.fst • x.snd) = s • t :=
+theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.snd) = s • t :=
   rfl
 #align finset.image_smul_product Finset.image_smul_product
 #align finset.image_vadd_product Finset.image_vadd_product
@@ -1420,7 +1420,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       "If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
-    ↑u ⊆ s • t → ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
+    ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_image₂
 #align finset.subset_smul Finset.subset_smul
 #align finset.subset_vadd Finset.subset_vadd

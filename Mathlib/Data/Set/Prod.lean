@@ -9,6 +9,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SProd
 
 /-!
 # Sets in product and pi types
@@ -42,9 +43,9 @@ def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-infixr:82 " ×ˢ " => Set.prod
+@[default_instance]
+instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+  sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
   rfl
@@ -477,7 +478,7 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=

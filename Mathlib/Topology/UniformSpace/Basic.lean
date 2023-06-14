@@ -264,7 +264,7 @@ def UniformSpace.Core.mk' {α : Type u} (U : Filter (α × α)) (refl : ∀ r �
     mem_of_superset (mem_lift' hs) hsr⟩
 #align uniform_space.core.mk' UniformSpace.Core.mk'
 
-/-- Defining an `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
+/-- Defining a `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
 def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     (refl : ∀ r ∈ B, ∀ (x), (x, x) ∈ r) (symm : ∀ r ∈ B, ∃ t ∈ B, t ⊆ Prod.swap ⁻¹' r)
     (comp : ∀ r ∈ B, ∃ t ∈ B, t ○ t ⊆ r) : UniformSpace.Core α
@@ -877,10 +877,10 @@ theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
 #align lift_nhds_right lift_nhds_right
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
-    𝓝 a ×ᶠ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
+    𝓝 a ×ˢ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
       (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
   rw [nhds_eq_uniformity', nhds_eq_uniformity, prod_lift'_lift']
-  exacts[rfl, monotone_preimage, monotone_preimage]
+  exacts [rfl, monotone_preimage, monotone_preimage]
 #align nhds_nhds_eq_uniformity_uniformity_prod nhds_nhds_eq_uniformity_uniformity_prod
 
 theorem nhds_eq_uniformity_prod {a b : α} :
@@ -971,7 +971,7 @@ theorem uniformity_hasBasis_closure : HasBasis (𝓤 α) (fun V : Set (α × α)
 
 theorem closure_eq_inter_uniformity {t : Set (α × α)} : closure t = ⋂ d ∈ 𝓤 α, d ○ (t ○ d) :=
   calc
-    closure t = ⋂ (V) (_hV : V ∈ 𝓤 α ∧ SymmetricRel V), V ○ t ○ V := closure_eq_uniformity t
+    closure t = ⋂ (V) (_ : V ∈ 𝓤 α ∧ SymmetricRel V), V ○ t ○ V := closure_eq_uniformity t
     _ = ⋂ V ∈ 𝓤 α, V ○ t ○ V :=
       Eq.symm <|
         UniformSpace.hasBasis_symmetric.biInter_mem fun V₁ V₂ hV =>
@@ -1074,7 +1074,7 @@ end
 
 theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → Set (α × α)}
     (h : HasBasis (𝓤 α) p U) (s : Set α) :
-    (⋂ (i) (_hi : p i), ⋃ x ∈ s, ball x (U i)) = closure s := by
+    (⋂ (i) (_ : p i), ⋃ x ∈ s, ball x (U i)) = closure s := by
   ext x
   simp [mem_closure_iff_nhds_basis (nhds_basis_uniformity h), ball]
 #align filter.has_basis.bInter_bUnion_ball Filter.HasBasis.biInter_biUnion_ball
@@ -1572,12 +1572,14 @@ theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
 #align uniformity_prod uniformity_prod
 
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
-    𝓤 (α × β) = comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ᶠ 𝓤 β) :=
-  by rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
+    𝓤 (α × β) =
+      comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
+  dsimp [SProd.sprod]
+  rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
 #align uniformity_prod_eq_comap_prod uniformity_prod_eq_comap_prod
 
 theorem uniformity_prod_eq_prod [UniformSpace α] [UniformSpace β] :
-    𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ᶠ 𝓤 β) := by
+    𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
   rw [map_swap4_eq_comap, uniformity_prod_eq_comap_prod]
 #align uniformity_prod_eq_prod uniformity_prod_eq_prod
 

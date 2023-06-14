@@ -275,7 +275,7 @@ theorem ContinuousOn.exists_isMinOn' {s : Set β} {f : β → α} (hf : Continuo
     ((hK.inter_right hsc).insert x₀).exists_forall_le (insert_nonempty _ _) (hf.mono hsub)
   refine' ⟨x, hsub hx, fun y hy => _⟩
   by_cases hyK : y ∈ K
-  exacts[hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
+  exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 larger than a value in its image away from compact sets, then it has a minimum on this set. -/
@@ -370,7 +370,7 @@ conditionally complete linear order, and `K : Set β` is a compact set, then
 Porting note: todo: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
-    (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ᶠ 𝓝[K] y) (𝓝 (g y)))
+    (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
     Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```

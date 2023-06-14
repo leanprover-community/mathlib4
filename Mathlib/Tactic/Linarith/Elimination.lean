@@ -47,9 +47,9 @@ Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
  -/
 inductive CompSource : Type
-| assump : Nat → CompSource
-| add : CompSource → CompSource → CompSource
-| scale : Nat → CompSource → CompSource
+  | assump : Nat → CompSource
+  | add : CompSource → CompSource → CompSource
+  | scale : Nat → CompSource → CompSource
 deriving Inhabited
 
 /--
@@ -61,16 +61,16 @@ and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
  -/
 def CompSource.flatten : CompSource → HashMap Nat Nat
-| (CompSource.assump n) => HashMap.empty.insert n 1
-| (CompSource.add c1 c2) =>
-    (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
-| (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
+  | (CompSource.assump n) => HashMap.empty.insert n 1
+  | (CompSource.add c1 c2) =>
+      (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
+  | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
 
 /-- Formats a `CompSource` for printing. -/
 def CompSource.toString : CompSource → String
-| (CompSource.assump e) => ToString.toString e
-| (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
-| (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
+  | (CompSource.assump e) => ToString.toString e
+  | (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
+  | (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
 
 instance : ToFormat CompSource :=
   ⟨fun a => CompSource.toString a⟩
@@ -249,7 +249,7 @@ in decreasing order.
 structure LinarithData : Type where
   /-- The largest variable index that has not been (officially) eliminated. -/
   maxVar : ℕ
-  /-- The set of comparisions. -/
+  /-- The set of comparisons. -/
   comps : PCompSet
 
 /--

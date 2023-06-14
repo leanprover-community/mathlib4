@@ -1347,7 +1347,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
   iterate 3 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
-  case branch p q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
+  case branch p q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts [hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
 #align turing.TM1.stmts₁_supports_stmt_mono Turing.TM1.stmts₁_supportsStmt_mono
@@ -1527,9 +1527,8 @@ variable [Fintype σ]
 
 /-- Given a finite set of accessible `Λ` machine states, there is a finite set of accessible
 machine states in the target (even though the type `Λ'` is infinite). -/
--- Porting note: Unfolded `×ˢ` to `Finset.product`.
 noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
-  Finset.product (TM1.stmts M S) Finset.univ
+  (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
 open Classical
@@ -1921,7 +1920,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
       have :=
         this _ (ss.2 _ hl) fun q' hq ↦ Finset.mem_biUnion.2 ⟨_, hl, Finset.mem_insert_of_mem hq⟩
       rcases Finset.mem_insert.1 h with (rfl | h)
-      exacts[this.1, this.2 _ h]
+      exacts [this.1, this.2 _ h]
     intro q hs hw
     induction q
     case move d q IH =>
@@ -1966,7 +1965,7 @@ end TM1to1
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head
 and local state, while TM1 doesn't (in order to have more programming language-like semantics).
-So we use a computed `goto` to go to a state that performes the desired action and then returns to
+So we use a computed `goto` to go to a state that performs the desired action and then returns to
 normal execution.
 
 One issue with this is that the `halt` instruction is supposed to halt immediately, not take a step
@@ -2218,7 +2217,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₂} (h : q�
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
   iterate 4 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
-  case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
+  case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts [hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
 #align turing.TM2.stmts₁_supports_stmt_mono Turing.TM2.stmts₁_supportsStmt_mono
@@ -2755,7 +2754,7 @@ theorem tr_eval_dom (k) (L : List (Γ k)) :
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
     (H₂ : L₂ ∈ TM2.eval M k L) :
-    ∃ (S : ∀ k, List (Γ k))(L' : ListBlank (∀ k, Option (Γ k))),
+    ∃ (S : ∀ k, List (Γ k)) (L' : ListBlank (∀ k, Option (Γ k))),
       addBottom L' = L₁ ∧
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
