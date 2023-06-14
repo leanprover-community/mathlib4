@@ -556,7 +556,7 @@ instance IsMarkovKernel.map (κ : kernel α β) [IsMarkovKernel κ] (hf : Measur
 
 instance IsFiniteKernel.map (κ : kernel α β) [IsFiniteKernel κ] (hf : Measurable f) :
     IsFiniteKernel (map κ f hf) := by
-  refine' ⟨⟨is_finite_kernel.bound κ, is_finite_kernel.bound_lt_top κ, fun a => _⟩⟩
+  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [map_apply' κ hf a MeasurableSet.univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.map ProbabilityTheory.kernel.IsFiniteKernel.map
@@ -591,9 +591,12 @@ theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : �
 
 theorem sum_comap_seq (κ : kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
     (kernel.sum fun n => comap (seq κ n) g hg) = comap κ g hg := by
-  ext (a s hs) : 2
-  rw [kernel.sum_apply, comap_apply' κ hg a s, measure.sum_apply _ hs, ← measure_sum_seq κ,
-    measure.sum_apply _ hs]
+  -- Porting note: was
+  -- ext (a s hs) : 2
+  ext (a s) : 2
+  intro hs
+  rw [kernel.sum_apply, comap_apply' κ hg a s, Measure.sum_apply _ hs, ← measure_sum_seq κ,
+    Measure.sum_apply _ hs]
   simp_rw [comap_apply' _ hg _ s]
 #align probability_theory.kernel.sum_comap_seq ProbabilityTheory.kernel.sum_comap_seq
 
@@ -604,7 +607,7 @@ instance IsMarkovKernel.comap (κ : kernel α β) [IsMarkovKernel κ] (hg : Meas
 
 instance IsFiniteKernel.comap (κ : kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine' ⟨⟨is_finite_kernel.bound κ, is_finite_kernel.bound_lt_top κ, fun a => _⟩⟩
+  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 #align probability_theory.kernel.is_finite_kernel.comap ProbabilityTheory.kernel.IsFiniteKernel.comap
