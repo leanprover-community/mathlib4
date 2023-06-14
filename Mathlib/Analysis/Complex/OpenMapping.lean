@@ -8,9 +8,9 @@ Authors: Vincent Beffara
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.IsolatedZeros
-import Mathbin.Analysis.Complex.CauchyIntegral
-import Mathbin.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Complex.AbsMax
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -46,8 +46,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {U : Set E} {f 
 contains a disk of radius `ε / 2`. -/
 theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball z₀ r)) (hr : 0 < r)
     (hf : ∀ z ∈ sphere z₀ r, ε ≤ ‖f z - f z₀‖) (hz₀ : ∃ᶠ z in 𝓝 z₀, f z ≠ f z₀) :
-    ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r :=
-  by
+    ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r := by
   /- This is a direct application of the maximum principle. Pick `v` close to `f z₀`, and look at
     the function `λ z, ‖f z - v‖`: it is bounded below on the circle, and takes a small value at `z₀`
     so it is not constant on the disk, which implies that its infimum is equal to `0` and hence that
@@ -79,8 +78,7 @@ of `z₀`, or behaves locally like an open function (in the sense that the image
 of `z₀` is a neighborhood of `f z₀`, as in `is_open_map_iff_nhds_le`). For a function `f : E → ℂ`
 the same result holds, see `analytic_at.eventually_constant_or_nhds_le_map_nhds`. -/
 theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt ℂ f z₀) :
-    (∀ᶠ z in 𝓝 z₀, f z = f z₀) ∨ 𝓝 (f z₀) ≤ map f (𝓝 z₀) :=
-  by
+    (∀ᶠ z in 𝓝 z₀, f z = f z₀) ∨ 𝓝 (f z₀) ≤ map f (𝓝 z₀) := by
   /- The function `f` is analytic in a neighborhood of `z₀`; by the isolated zeros principle, if `f`
     is not constant in a neighborhood of `z₀`, then it is nonzero, and therefore bounded below, on
     every small enough circle around `z₀` and then `diff_cont_on_cl.ball_subset_image_closed_ball`
@@ -119,8 +117,7 @@ is analytic at a point `z₀`, then either it is constant in a neighborhood of `
 neighborhood of `z₀` to a neighborhood of `z₀`. For the particular case of a holomorphic function on
 `ℂ`, see `analytic_at.eventually_constant_or_nhds_le_map_nhds_aux`. -/
 theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : AnalyticAt ℂ g z₀) :
-    (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨ 𝓝 (g z₀) ≤ map g (𝓝 z₀) :=
-  by
+    (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨ 𝓝 (g z₀) ≤ map g (𝓝 z₀) := by
   /- The idea of the proof is to use the one-dimensional version applied to the restriction of `g`
     to lines going through `z₀` (indexed by `sphere (0 : E) 1`). If the restriction is eventually
     constant along each of these lines, then the identity theorem implies that `g` is constant on any
@@ -130,8 +127,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
   let ray : E → ℂ → E := fun z t => z₀ + t • z
   let gray : E → ℂ → ℂ := fun z => g ∘ ray z
   obtain ⟨r, hr, hgr⟩ := is_open_iff.mp (isOpen_analyticAt ℂ g) z₀ hg
-  have h1 : ∀ z ∈ sphere (0 : E) 1, AnalyticOn ℂ (gray z) (ball 0 r) :=
-    by
+  have h1 : ∀ z ∈ sphere (0 : E) 1, AnalyticOn ℂ (gray z) (ball 0 r) := by
     refine' fun z hz t ht => AnalyticAt.comp _ _
     · exact hgr (by simpa [ray, norm_smul, mem_sphere_zero_iff_norm.mp hz] using ht)
     ·
@@ -145,8 +141,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     refine' (eq_or_ne z z₀).casesOn (congr_arg g) fun h' => _
     replace h' : ‖z - z₀‖ ≠ 0 := by simpa only [Ne.def, norm_eq_zero, sub_eq_zero]
     let w : E := ‖z - z₀‖⁻¹ • (z - z₀)
-    have h3 : ∀ t ∈ ball (0 : ℂ) r, gray w t = g z₀ :=
-      by
+    have h3 : ∀ t ∈ ball (0 : ℂ) r, gray w t = g z₀ := by
       have e1 : IsPreconnected (ball (0 : ℂ) r) := (convex_ball 0 r).IsPreconnected
       have e2 : w ∈ sphere (0 : E) 1 := by simp [w, norm_smul, h']
       specialize h1 w e2
@@ -175,8 +170,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
 is analytic on a connected set `U`, then either it is constant on `U`, or it is open on `U` (in the
 sense that it maps any open set contained in `U` to an open set in `ℂ`). -/
 theorem AnalyticOn.is_constant_or_isOpen (hg : AnalyticOn ℂ g U) (hU : IsPreconnected U) :
-    (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ (s) (_ : s ⊆ U), IsOpen s → IsOpen (g '' s) :=
-  by
+    (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ (s) (_ : s ⊆ U), IsOpen s → IsOpen (g '' s) := by
   by_cases ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eq_on_of_preconnected_of_eventually_eq analyticOn_const hU hz₀ h⟩
