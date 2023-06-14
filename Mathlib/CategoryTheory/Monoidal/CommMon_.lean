@@ -87,6 +87,7 @@ def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
 set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_ CommMon_.forget₂Mon_
 
+-- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : Full (forget₂Mon_ C) := InducedCategory.full _
 instance : Faithful (forget₂Mon_ C) := InducedCategory.faithful _
 
