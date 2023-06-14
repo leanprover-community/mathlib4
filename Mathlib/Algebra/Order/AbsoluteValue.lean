@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 
 ! This file was ported from Lean 3 source module algebra.order.absolute_value
-! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
+! leanprover-community/mathlib commit 0013240bce820e3096cebb7ccf6d17e3f35f77ca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
