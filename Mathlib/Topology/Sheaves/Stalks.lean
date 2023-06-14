@@ -172,9 +172,8 @@ set_option linter.uppercaseLean3 false in
 -- (colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) ℱ) :
 --   colim.obj ((OpenNhds.inclusion (f x) ⋙ Opens.map f).op ⋙ ℱ) ⟶ _) ≫
 -- colimit.pre ((OpenNhds.inclusion x).op ⋙ ℱ) (OpenNhds.map f x).op
-namespace stalkPushforward
 
--- Porting note: TODO: attribute [local tidy] tactic.op_induction'
+namespace stalkPushforward
 
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
@@ -182,13 +181,10 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
   -- Porting note: We need to this to help ext tactic.
   change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
   ext1 j
-  induction' j using Opposite.rec with j
-  -- Porting note: unsupported non-interactive tactic tactic.op_induction'
-  -- run_tac
-  --   tactic.op_induction'
+  induction' j with j
   rcases j with ⟨⟨_, _⟩, _⟩
   erw [colimit.ι_map_assoc]
-  simpa [stalkFunctor, stalkPushforward] using by rfl
+  simp [stalkFunctor, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
