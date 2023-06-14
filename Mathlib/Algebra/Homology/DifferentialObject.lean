@@ -39,7 +39,8 @@ variable {V : Type _} [Category V] [HasZeroMorphisms V]
 /-- Since `eq_to_hom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
 is used to aid the simplifier. -/
 abbrev _root_.CategoryTheory.DifferentialObject.objEqToHom
-    (X : DifferentialObject (GradedObjectWithShift b V)) {i j : β} (h : i = j) : X.obj i ⟶ X.obj j :=
+    (X : DifferentialObject (GradedObjectWithShift b V)) {i j : β} (h : i = j) :
+    X.obj i ⟶ X.obj j :=
   eqToHom (congr_arg X.obj h)
 set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X_eq_to_hom CategoryTheory.DifferentialObject.objEqToHom
