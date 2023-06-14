@@ -39,15 +39,26 @@ open MeasureTheory
 
 open Lean Expr Elab Tactic Meta Parser
 
-theorem att {α β} [AddCommMonoid α] [TopologicalSpace α] [IsSymm _ r] [IsRefl _ r]
+private theorem att {α β} [AddCommMonoid α] [TopologicalSpace α] [IsSymm _ r] [IsRefl _ r]
     (f : β → α) (_sf : ¬ Summable f) (a b : α) (h : a ≠ b) : a ≠ b := h
+
+example {α β} [AddCommMonoid α] [TopologicalSpace α] [IsSymm ℕ (·=·)] {hs  : IsSymm ℕ (·=·)}
+    (f : β → α) --(hh : f = 0) --(hs : Summable f → (∑' b, f b) = 0)
+     : True := by
+  run_tac do
+    let xone := ← getPropsNonInst `att
+    dbg_trace xone
+--    guard <| xone.length == 1
+  trivial
+
 
 example {α β} [AddCommMonoid α] [TopologicalSpace α]
     (f : β → α) (hs : Summable f → (∑' b, f b) = 0) : (∑' b, f b) = 0 := by
   run_tac do
     let ft := ← getLocalDeclFromUserName `f
---    let xone := ← getPropsNonInst `att
---    dbg_trace ← xone.mapM (ppExpr ·)
+    let xone := ← getPropsNonInst `att
+    guard <| xone.length == 1
+    --dbg_trace ← xone.mapM (ppExpr ·)
     let xone := ← getOneProp `tsum_eq_zero_of_not_summable
     let (_notNot, exp) := ← xone.getNeg
     let sumF := ← mkAppM exp.getAppFn.constName #[ft.toExpr]
