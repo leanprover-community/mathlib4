@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Category.Top.Limits.Pullbacks
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 
 /-!
