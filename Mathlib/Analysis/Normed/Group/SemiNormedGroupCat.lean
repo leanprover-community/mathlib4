@@ -126,7 +126,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup.has_zero_object SemiNormedGroupCat.hasZeroObject
 
-/--Porting Note: Added to make iso_isometry_of_normNoninc work-/
+--Porting Note: Added to make iso_isometry_of_normNoninc work
 instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
   coe := (forget SemiNormedGroupCat).map
   coe_injective' := fun f g h => by cases f; cases g; congr
@@ -166,7 +166,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
-/-- Porting Note: Added-/
+-- Porting Note: Added
 instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X (fun _ => Y) where
   coe f := f.1.toFun
   coe_injective' := by
