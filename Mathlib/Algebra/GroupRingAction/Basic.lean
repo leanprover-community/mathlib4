@@ -41,7 +41,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
-  /-- Scalara multiplication distributes across multiplication -/
+  /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 #align mul_semiring_action MulSemiringAction
 
@@ -58,10 +58,11 @@ instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemir
 #align mul_semiring_action.to_mul_distrib_mul_action MulSemiringAction.toMulDistribMulAction
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
-@[simps]
+@[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
+#align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
@@ -69,10 +70,12 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 #align to_ring_hom_injective toRingHom_injective
 
 /-- Each element of the group defines a semiring isomorphism. -/
-@[simps]
+@[simps!]
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
 #align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
+#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
+#align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section
 

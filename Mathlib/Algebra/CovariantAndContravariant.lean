@@ -57,16 +57,10 @@ typeclass assumptions, since `Function.swap` is slightly better behaved than `fl
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
-
-# Porting notes
-
-In mathlib3 we used the `is_trans` typeclass from Lean 3 core,
-and we have switched to the `Trans` typeclass from Lean 4 core.
-
 -/
 
 
--- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
+-- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?
 -- TODO: relationship with `Con/AddCon`
 -- TODO: include equivalence of `LeftCancelSemigroup` with
 -- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
@@ -87,6 +81,7 @@ action of a Type on another one and a relation on the acted-upon Type.
 See the `CovariantClass` doc-string for its meaning. -/
 def Covariant : Prop :=
   ∀ (m) {n₁ n₂}, r n₁ n₂ → r (μ m n₁) (μ m n₂)
+#align covariant Covariant
 
 /-- `Contravariant` is useful to formulate succintly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
@@ -94,6 +89,7 @@ action of a Type on another one and a relation on the acted-upon Type.
 See the `ContravariantClass` doc-string for its meaning. -/
 def Contravariant : Prop :=
   ∀ (m) {n₁ n₂}, r (μ m n₁) (μ m n₂) → r n₁ n₂
+#align contravariant Contravariant
 
 /-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
 `CovariantClass` says that "the action `μ` preserves the relation `r`."
@@ -110,6 +106,7 @@ class CovariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
   `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)` -/
   protected elim : Covariant M N μ r
+#align covariant_class CovariantClass
 
 /-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
 `ContravariantClass` says that "if the result of the action `μ` on a pair satisfies the
@@ -128,10 +125,12 @@ class ContravariantClass : Prop where
   pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
   `r` also holds for the pair `(n₁, n₂)`. -/
   protected elim : Contravariant M N μ r
+#align contravariant_class ContravariantClass
 
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
+#align rel_iff_cov rel_iff_cov
 
 section flip
 
@@ -139,9 +138,11 @@ variable {M N μ r}
 
 theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
   fun a _ _ hbc ↦ h a hbc
+#align covariant.flip Covariant.flip
 
 theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
   fun a _ _ hbc ↦ h a hbc
+#align contravariant.flip Contravariant.flip
 
 end flip
 
@@ -151,6 +152,7 @@ variable {M N μ r} [CovariantClass M N μ r]
 
 theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
   CovariantClass.elim _ ab
+#align act_rel_act_of_rel act_rel_act_of_rel
 
 @[to_additive]
 theorem Group.covariant_iff_contravariant [Group N] :
@@ -160,6 +162,8 @@ theorem Group.covariant_iff_contravariant [Group N] :
     exact h a⁻¹ bc
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
     exact h a⁻¹ bc
+#align group.covariant_iff_contravariant Group.covariant_iff_contravariant
+#align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
 @[to_additive]
 instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
@@ -174,6 +178,8 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
     exact h a⁻¹ bc
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
+#align group.covariant_swap_iff_contravariant_swap Group.covariant_swap_iff_contravariant_swap
+#align add_group.covariant_swap_iff_contravariant_swap AddGroup.covariant_swap_iff_contravariant_swap
 
 
 @[to_additive]
@@ -184,14 +190,16 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
 
 section Trans
 
-variable [Trans r r r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
-  trans (act_rel_act_of_rel m ab) rl
+  _root_.trans (act_rel_act_of_rel m ab) rl
+#align act_rel_of_rel_of_act_rel act_rel_of_rel_of_act_rel
 
 theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
-  trans rr (act_rel_act_of_rel _ ab)
+  _root_.trans rr (act_rel_act_of_rel _ ab)
+#align rel_act_of_rel_of_rel_act rel_act_of_rel_of_rel_act
 
 end Trans
 
@@ -200,11 +208,12 @@ end Covariant
 --  Lemma with 4 elements.
 section MEqN
 
-variable {M N μ r} {mu : N → N → N} [Trans r r r] [i : CovariantClass N N mu r]
+variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
   [i' : CovariantClass N N (swap mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+#align act_rel_act_of_rel_of_rel act_rel_act_of_rel_of_rel
 
 end MEqN
 
@@ -214,19 +223,22 @@ variable {M N μ r} [ContravariantClass M N μ r]
 
 theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
   ContravariantClass.elim _ ab
+#align rel_of_act_rel_act rel_of_act_rel_act
 
 section Trans
 
-variable [Trans r r r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m n : M) {a b c d : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
-  trans ab (rel_of_act_rel_act m rl)
+  _root_.trans ab (rel_of_act_rel_act m rl)
+#align act_rel_of_act_rel_of_rel_act_rel act_rel_of_act_rel_of_rel_act_rel
 
 theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
-  trans (rel_of_act_rel_act m ab) rr
+  _root_.trans (rel_of_act_rel_act m ab) rr
+#align rel_act_of_act_rel_act_of_rel_act rel_act_of_act_rel_act_of_rel_act
 
 end Trans
 
@@ -241,28 +253,33 @@ variable {f : N → α}
 /-- The partial application of a constant to a covariant operator is monotone. -/
 theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) : Monotone (μ m) :=
   fun _ _ ha ↦ CovariantClass.elim m ha
+#align covariant.monotone_of_const Covariant.monotone_of_const
 
 /-- A monotone function remains monotone when composed with the partial application
-of a covariant operator. E.g., `∀ (m : ℕ), monotone f → monotone (λ n, f (m + n))`. -/
+of a covariant operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (λ n, f (m + n))`. -/
 theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Monotone f) (m : M) :
     Monotone fun n ↦ f (μ m n) :=
   fun _ _ x ↦ hf (Covariant.monotone_of_const m x)
+#align monotone.covariant_of_const Monotone.covariant_of_const
 
-/-- Same as `monotone.covariant_of_const`, but with the constant on the other side of
-the operator.  E.g., `∀ (m : ℕ), monotone f → monotone (λ n, f (n + m))`. -/
+/-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
+the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (λ n, f (n + m))`. -/
 theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
     (hf : Monotone f) (m : N) : Monotone fun n ↦ f (μ n m) :=
   fun _ _ x ↦ hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)
+#align monotone.covariant_of_const' Monotone.covariant_of_const'
 
-/-- Dual of `monotone.covariant_of_const` -/
+/-- Dual of `Monotone.covariant_of_const` -/
 theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Antitone f) (m : M) :
     Antitone fun n ↦ f (μ m n) :=
   hf.comp_monotone <| Covariant.monotone_of_const m
+#align antitone.covariant_of_const Antitone.covariant_of_const
 
-/-- Dual of `monotone.covariant_of_const'` -/
+/-- Dual of `Monotone.covariant_of_const'` -/
 theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
     (hf : Antitone f) (m : N) : Antitone fun n ↦ f (μ n m) :=
   hf.comp_monotone <| @Covariant.monotone_of_const _ _ (swap μ) _ _ m
+#align antitone.covariant_of_const' Antitone.covariant_of_const'
 
 end Monotone
 
@@ -272,21 +289,25 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   rcases le_iff_eq_or_lt.mp bc with (rfl | bc)
   · exact rfl.le
   · exact (h _ bc).le
+#align covariant_le_of_covariant_lt covariant_le_of_covariant_lt
 
 theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) := by
   refine fun h a b c bc ↦ lt_iff_le_and_ne.mpr ⟨h a bc.le, ?_⟩
   rintro rfl; exact lt_irrefl _ bc
+#align contravariant_lt_of_contravariant_le contravariant_lt_of_contravariant_le
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
   ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ not_le.mpr bc (h _ k),
    fun h _ _ _ bc ↦ not_lt.mp fun k ↦ not_lt.mpr bc (h _ k)⟩
+#align covariant_le_iff_contravariant_lt covariant_le_iff_contravariant_lt
 
 theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
     Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
   ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ not_lt.mpr bc (h _ k),
    fun h _ _ _ bc ↦ not_le.mp fun k ↦ not_le.mpr bc (h _ k)⟩
+#align covariant_lt_iff_contravariant_le covariant_lt_iff_contravariant_le
 
 -- Porting note: `covariant_flip_mul_iff` used to use the `IsSymmOp` typeclass from Lean 3 core.
 -- To avoid it, we prove the relevant lemma here.
@@ -297,10 +318,14 @@ lemma flip_mul [CommSemigroup N] : (flip (· * ·) : N → N → N) = (· * ·) 
 @[to_additive]
 theorem covariant_flip_mul_iff [CommSemigroup N] :
     Covariant N N (flip (· * ·)) r ↔ Covariant N N (· * ·) r := by rw [flip_mul]
+#align covariant_flip_mul_iff covariant_flip_mul_iff
+#align covariant_flip_add_iff covariant_flip_add_iff
 
 @[to_additive]
 theorem contravariant_flip_mul_iff [CommSemigroup N] :
     Contravariant N N (flip (· * ·)) r ↔ Contravariant N N (· * ·) r := by rw [flip_mul]
+#align contravariant_flip_mul_iff contravariant_flip_mul_iff
+#align contravariant_flip_add_iff contravariant_flip_add_iff
 
 @[to_additive]
 instance contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N]

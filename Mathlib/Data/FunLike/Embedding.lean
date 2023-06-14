@@ -19,20 +19,20 @@ This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 
 A typical type of embeddings should be declared as:
 ```
-structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] :=
-(toFun : A → B)
-(injective' : Function.Injective toFun)
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+structure MyEmbedding (A B : Type _) [MyClass A] [MyClass B] :=
+  (toFun : A → B)
+  (injective' : Function.Injective toFun)
+  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyEmbedding
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B :=
-{ coe := MyEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective' }
+  { coe := MyEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective' }
 
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
 instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
@@ -42,9 +42,9 @@ instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyEmbedding A B) (f' : A → B) (h : f' = ⇑f) : MyEmbedding A B :=
-{ toFun := f',
-  injective' := h.symm ▸ f.injective',
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    injective' := h.symm ▸ f.injective',
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyEmbedding
 ```
@@ -64,22 +64,22 @@ section
 
 /-- `MyEmbeddingClass F A B` states that `F` is a type of `MyClass.op`-preserving embeddings.
 You should extend this class when you extend `MyEmbedding`. -/
-class MyEmbeddingClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+class MyEmbeddingClass (F : Type _) (A B : outParam <| Type _) [MyClass A] [MyClass B]
   extends EmbeddingLike F A B :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 end
 
-@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyEmbeddingClass F A B]
+@[simp] lemma map_op {F A B : Type _} [MyClass A] [MyClass B] [MyEmbeddingClass F A B]
   (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
 MyEmbeddingClass.map_op
 
 -- You can replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : MyEmbeddingClass (MyEmbedding A B) A B :=
-{ coe := MyEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective',
-  map_op := MyEmbedding.map_op' }
+  { coe := MyEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective',
+    map_op := MyEmbedding.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -89,30 +89,30 @@ The second step is to add instances of your new `MyEmbeddingClass` for all types
 Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 
 ```
-structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B]
+structure CoolerEmbedding (A B : Type _) [CoolClass A] [CoolClass B]
   extends MyEmbedding A B :=
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
-class CoolerEmbeddingClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+class CoolerEmbeddingClass (F : Type _) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
   extends MyEmbeddingClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerEmbeddingClass F A B]
+@[simp] lemma map_cool {F A B : Type _} [CoolClass A] [CoolClass B] [CoolerEmbeddingClass F A B]
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 MyEmbeddingClass.map_op
 
 -- You can also replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
-{ coe := CoolerEmbedding.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := MyEmbedding.injective',
-  map_op := CoolerEmbedding.map_op',
-  map_cool := CoolerEmbedding.map_cool' }
+  { coe := CoolerEmbedding.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    injective' := MyEmbedding.injective',
+    map_op := CoolerEmbedding.map_op',
+    map_cool := CoolerEmbedding.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -121,7 +121,7 @@ Then any declaration taking a specific type of morphisms as parameter can instea
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyEmbedding A B) : sorry := sorry
-lemma do_something {F : Type*} [MyEmbeddingClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type _} [MyEmbeddingClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyEmbedding`s will automatically work for `CoolerEmbeddingClass`es,
@@ -137,6 +137,7 @@ injective coercion to injective functions `α ↪ β`.
 class EmbeddingLike (F : Sort _) (α β : outParam (Sort _)) extends FunLike F α fun _ ↦ β where
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, @Function.Injective α β (coe f)
+#align embedding_like EmbeddingLike
 
 namespace EmbeddingLike
 
@@ -144,14 +145,17 @@ variable {F α β γ : Sort _} [i : EmbeddingLike F α β]
 
 protected theorem injective (f : F) : Function.Injective f :=
   injective' f
+#align embedding_like.injective EmbeddingLike.injective
 
 @[simp]
 theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
+#align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
 @[simp]
 theorem comp_injective {F : Sort _} [EmbeddingLike F β γ] (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
+#align embedding_like.comp_injective EmbeddingLike.comp_injective
 
 end EmbeddingLike

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 
 ! This file was ported from Lean 3 source module data.list.big_operators.lemmas
-! leanprover-community/mathlib commit 940d371319c6658e526349d2c3e1daeeabfae0fd
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,8 +30,7 @@ variable {ι α M N P M₀ G R : Type _}
 namespace Commute
 
 theorem list_sum_right [NonUnitalNonAssocSemiring R] (a : R) (l : List R)
-    (h : ∀ b ∈ l, Commute a b) : Commute a l.sum :=
-  by
+    (h : ∀ b ∈ l, Commute a b) : Commute a l.sum := by
   induction' l with x xs ih
   · exact Commute.zero_right _
   · rw [List.sum_cons]
@@ -53,6 +52,7 @@ theorem pow_card_le_prod [Monoid M] [Preorder M]
     (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
   @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
 #align list.pow_card_le_prod List.pow_card_le_prod
+#align list.card_nsmul_le_sum List.card_nsmul_le_sum
 
 @[to_additive]
 theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
@@ -60,10 +60,10 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
 #align list.prod_eq_one_iff List.prod_eq_one_iff
+#align list.sum_eq_zero_iff List.sum_eq_zero_iff
 
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
-theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l :=
-  by
+theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
   obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
   exact
     Or.resolve_left
@@ -75,22 +75,19 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : 
 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
 by the sum of the elements. -/
-theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum :=
-  by
+theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
   induction' L with j L IH h; · simp
   rw [sum_cons, length, add_comm]
   exact add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
-theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :=
-  by
+theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := mem_split ha
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
 
-theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum :=
-  by
+theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih
   · exact dvd_zero _
   · rw [List.sum_cons]
@@ -107,21 +104,22 @@ theorem alternatingProd_append :
       alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
   | [], l₂ => by simp
   | a :: l₁, l₂ => by
-    simp_rw [cons_append, alternating_prod_cons, alternatingProd_append, length_cons, pow_succ,
+    simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ,
       neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
 #align list.alternating_prod_append List.alternatingProd_append
+#align list.alternating_sum_append List.alternatingSum_append
 
 @[to_additive]
 theorem alternatingProd_reverse :
     ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
-  | [] => by simp only [alternating_prod_nil, one_zpow, reverse_nil]
-  | a :: l =>
-    by
+  | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
+  | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
-      alternating_prod_singleton, alternating_prod_cons, length_reverse, length, pow_succ, neg_mul,
+      alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ, neg_mul,
       one_mul, zpow_neg, inv_inv]
     rw [mul_comm, ← div_eq_mul_inv, div_zpow]
 #align list.alternating_prod_reverse List.alternatingProd_reverse
+#align list.alternating_sum_reverse List.alternatingSum_reverse
 
 end Alternating
 

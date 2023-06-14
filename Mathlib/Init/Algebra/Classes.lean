@@ -13,7 +13,7 @@ These classes are part of an incomplete refactor described
 However a subset of them are widely used in mathlib3,
 and it has been tricky to clean this up as this file was in core Lean 3.
 
-By themselves, these classes are not good replacements for the `monoid` / `group` etc structures
+By themselves, these classes are not good replacements for the `Monoid` / `Group` etc structures
 provided by mathlib, as they are not discoverable by `simp` unlike the current lemmas due to there
 being little to index on.
 
@@ -140,11 +140,11 @@ instance [IsIdempotent α op] : Lean.IsIdempotent op where
 /-
 -- The following type class doesn't seem very useful, a regular simp lemma should work for this.
 class is_inv (α : Type u) (β : Type v) (f : α → β) (g : out β → α) : Prop :=
-(inv : ∀ a, g (f a) = a)
+  (inv : ∀ a, g (f a) = a)
 
 -- The following one can also be handled using a regular simp lemma
 class is_idempotent (α : Type u) (f : α → α) : Prop :=
-(idempotent : ∀ a, f (f a) = f a)
+  (idempotent : ∀ a, f (f a) = f a)
 -/
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -176,6 +176,12 @@ class IsAntisymm (α : Type u) (r : α → α → Prop) : Prop where
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
+
+instance {α : Type u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
+  ⟨IsTrans.trans _ _ _⟩
+
+instance {α : Type u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
+  ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`.-/
@@ -275,7 +281,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _ h₁ h₂ ↦ absurd (trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _ h₁ h₂ ↦ absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
 section ExplicitRelationVariants
 
@@ -291,7 +297,7 @@ theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
 
 @[elab_without_expected_type]
 theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
-  trans
+  _root_.trans
 
 @[elab_without_expected_type]
 theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
@@ -318,7 +324,7 @@ end ExplicitRelationVariants
 
 end
 
--- Porting note: the `StrictWeakOrder` section has been ommitted.
+-- Porting note: the `StrictWeakOrder` section has been omitted.
 
 -- namespace StrictWeakOrder
 

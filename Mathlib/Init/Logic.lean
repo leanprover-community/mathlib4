@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Logic
+import Std.WF
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Relation.Rfl
@@ -219,7 +220,7 @@ theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
 open Lean TSyntax.Compat in
-macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
+macro "∃!" xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
@@ -243,11 +244,13 @@ theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
 
 theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
 #align exists_of_exists_unique ExistsUnique.exists
+#align exists_unique.exists ExistsUnique.exists
 
 theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
   let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 #align unique_of_exists_unique ExistsUnique.unique
+#align exists_unique.unique ExistsUnique.unique
 
 /- exists, forall, exists unique congruences -/
 
@@ -302,7 +305,11 @@ alias instDecidableOr ← Or.decidable
 alias instDecidableAnd ← And.decidable
 alias instDecidableNot ← Not.decidable
 alias instDecidableIff ← Iff.decidable
+alias instDecidableTrue ← decidableTrue
+alias instDecidableFalse ← decidableFalse
 
+#align decidable.true decidableTrue
+#align decidable.false decidableFalse
 #align or.decidable Or.decidable
 #align and.decidable And.decidable
 #align not.decidable Not.decidable
@@ -313,19 +320,19 @@ instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
+def decidableEq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
     (h₂ : IsDecRefl p) : DecidableEq α
   | x, y =>
     if hp : p x y = true then isTrue (h₁ hp)
     else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
-#align decidable_eq_of_bool_pred decidable_eq_of_bool_pred
+#align decidable_eq_of_bool_pred decidableEq_of_bool_pred
 
-theorem decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
+theorem decidableEq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
     h a a = isTrue (Eq.refl a) :=
   match h a a with
   | isTrue _ => rfl
 
-theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
+theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
     (n : a ≠ b) : h a b = isFalse n :=
   match h a b with
   | isFalse _ => rfl
@@ -425,7 +432,11 @@ theorem AsTrue.get {c : Prop} [h₁ : Decidable c] (_ : AsTrue c) : c :=
 #align of_as_true AsTrue.get
 
 #align ulift ULift
+#align ulift.up ULift.up
+#align ulift.down ULift.down
 #align plift PLift
+#align plift.up PLift.up
+#align plift.down PLift.down
 
 /- Equalities for rewriting let-expressions -/
 theorem let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β)
@@ -518,27 +529,137 @@ def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a�
 def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
-    a*(b*c) = (a*b)*c := Eq.symm (hassoc a b c)
-          _ = (b*a)*c := hcomm a b ▸ rfl
-          _ = b*(a*c) := hassoc b a c
+  fun hcomm hassoc a b c ↦
+    calc  a*(b*c)
+      _ = (a*b)*c := Eq.symm (hassoc a b c)
+      _ = (b*a)*c := hcomm a b ▸ rfl
+      _ = b*(a*c) := hassoc b a c
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
-    (a*b)*c = a*(b*c) := hassoc a b c
-          _ = a*(c*b) := hcomm b c ▸ rfl
-          _ = (a*c)*b := Eq.symm (hassoc a c b)
+  fun hcomm hassoc a b c ↦
+    calc  (a*b)*c
+      _ = a*(b*c) := hassoc a b c
+      _ = a*(c*b) := hcomm b c ▸ rfl
+      _ = (a*c)*b := Eq.symm (hassoc a c b)
 
 end Binary
 
-namespace WellFounded
-
-variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
-
-unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ ↦ impl hwf F y
-
-@[implemented_by fix'.impl]
-def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
-
-end WellFounded
+#align not.elim Not.elim
+#align not.imp Not.imp
+#align not_not_of_not_imp not_not_of_not_imp
+#align not_of_not_imp not_of_not_imp
+#align imp_not_self imp_not_self
+#align iff_def iff_def
+#align iff_def' iff_def'
+#align iff_of_eq iff_of_eq
+#align iff_iff_eq iff_iff_eq
+#align eq_iff_iff eq_iff_iff
+#align iff_of_true iff_of_true
+#align iff_of_false iff_of_false
+#align iff_true_left iff_true_left
+#align iff_true_right iff_true_right
+#align iff_false_left iff_false_left
+#align iff_false_right iff_false_right
+#align imp_intro imp_intro
+#align imp_imp_imp imp_imp_imp
+#align imp_true_iff imp_true_iff
+#align imp_self imp_self
+#align imp_false imp_false
+#align imp_not_comm imp_not_comm
+#align and.imp_left And.imp_left
+#align and.imp_right And.imp_right
+#align and_congr_left' and_congr_left'
+#align and_rotate and_rotate
+#align and_and_and_comm and_and_and_comm
+#align and_iff_left_of_imp and_iff_left_of_imp
+#align and_iff_right_of_imp and_iff_right_of_imp
+#align and_iff_left_iff_imp and_iff_left_iff_imp
+#align and_iff_right_iff_imp and_iff_right_iff_imp
+#align iff_self_and iff_self_and
+#align iff_and_self iff_and_self
+#align and_self_left and_self_left
+#align and_self_right and_self_right
+#align not_and_of_not_left not_and_of_not_left
+#align not_and_of_not_right not_and_of_not_right
+#align and_not_self_iff and_not_self_iff
+#align not_and_self_iff not_and_self_iff
+#align or_or_or_comm or_or_or_comm
+#align or_or_distrib_left or_or_distrib_left
+#align or_or_distrib_right or_or_distrib_right
+#align or_rotate or_rotate
+#align or_iff_left_iff_imp or_iff_left_iff_imp
+#align or_iff_right_iff_imp or_iff_right_iff_imp
+#align or_iff_right or_iff_right
+#align not_imp_of_and_not not_imp_of_and_not
+#align and_imp and_imp
+#align not_and not_and
+#align not_and' not_and'
+#align not_and_of_not_or_not not_and_of_not_or_not
+#align or_self_left or_self_left
+#align or_self_right or_self_right
+#align forall_imp forall_imp
+#align forall₂_congr forall₂_congr
+#align exists₂_congr exists₂_congr
+#align forall₃_congr forall₃_congr
+#align exists₃_congr exists₃_congr
+#align forall₄_congr forall₄_congr
+#align exists₄_congr exists₄_congr
+#align forall₅_congr forall₅_congr
+#align exists₅_congr exists₅_congr
+#align not_exists not_exists
+#align exists_false exists_false
+#align forall_const forall_const
+#align not_forall_of_exists_not not_forall_of_exists_not
+#align forall_eq forall_eq
+#align forall_eq' forall_eq'
+#align exists_eq exists_eq
+#align exists_eq' exists_eq'
+#align exists_eq_left exists_eq_left
+#align exists_eq_right exists_eq_right
+#align exists_eq_left' exists_eq_left'
+#align forall_eq_or_imp forall_eq_or_imp
+#align exists_eq_right_right exists_eq_right_right
+#align exists_eq_right_right' exists_eq_right_right'
+#align exists_prop exists_prop
+#align exists_apply_eq_apply exists_apply_eq_apply
+#align forall_prop_of_true forall_prop_of_true
+#align decidable.not_not Decidable.not_not
+#align decidable.of_not_imp Decidable.of_not_imp
+#align decidable.not_imp_symm Decidable.not_imp_symm
+#align decidable.not_imp_comm Decidable.not_imp_comm
+#align decidable.not_imp_self Decidable.not_imp_self
+#align decidable.or_iff_not_imp_left Decidable.or_iff_not_imp_left
+#align decidable.not_imp_not Decidable.not_imp_not
+#align decidable.not_or_of_imp Decidable.not_or_of_imp
+#align decidable.imp_iff_not_or Decidable.imp_iff_not_or
+#align decidable.not_imp Decidable.not_imp
+#align decidable.peirce Decidable.peirce
+#align peirce' peirce'
+#align decidable.not_iff_not Decidable.not_iff_not
+#align decidable.not_iff_comm Decidable.not_iff_comm
+#align decidable.not_iff Decidable.not_iff
+#align decidable.iff_not_comm Decidable.iff_not_comm
+#align decidable.iff_iff_and_or_not_and_not Decidable.iff_iff_and_or_not_and_not
+#align decidable.iff_iff_not_or_and_or_not Decidable.iff_iff_not_or_and_or_not
+#align decidable.not_and_not_right Decidable.not_and_not_right
+#align decidable.or_iff_not_and_not Decidable.or_iff_not_and_not
+#align decidable.and_iff_not_or_not Decidable.and_iff_not_or_not
+#align decidable.imp_iff_right_iff Decidable.imp_iff_right_iff
+#align decidable.and_or_imp Decidable.and_or_imp
+#align heq_iff_eq heq_iff_eq
+#align proof_irrel_heq proof_irrel_heq
+#align eq_rec_constant eq_rec_constant
+#align ne_of_mem_of_not_mem ne_of_mem_of_not_mem
+#align ne_of_mem_of_not_mem' ne_of_mem_of_not_mem'
+#align apply_dite apply_dite
+#align apply_ite apply_ite
+#align dite_not dite_not
+#align ite_not ite_not
+#align empty.elim Empty.elim
+#align pempty.elim PEmpty.elim
+#align not_nonempty_pempty not_nonempty_pempty
+#align eq_iff_true_of_subsingleton eq_iff_true_of_subsingleton
+#align subsingleton_of_forall_eq subsingleton_of_forall_eq
+#align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
+#align false_ne_true false_ne_true
+#align ne_comm ne_comm

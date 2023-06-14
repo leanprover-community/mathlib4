@@ -16,7 +16,7 @@ import Mathlib.Data.List.Infix
 
 Taking or removing element from the tail end of a list
 
-## Main defintions
+## Main definitions
 
 - `rdrop n`: drop `n : ℕ` elements from the tail
 - `rtake n`: take `n : ℕ` elements from the tail
@@ -181,12 +181,11 @@ variable (p) (l)
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
   exact fun h => dropWhile_nthLe_zero_not p l h
-
 #align list.drop_while_idempotent List.dropWhile_idempotent
 
-theorem rdrop_while_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
+theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
-#align list.rdrop_while_idempotent List.rdrop_while_idempotent
+#align list.rdrop_while_idempotent List.rdropWhile_idempotent
 
 /-- Take elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
@@ -242,7 +241,6 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx
   exact mem_takeWhile_imp hx
-
 #align list.mem_rtake_while_imp List.mem_rtakeWhile_imp
 
 variable (p) (l)

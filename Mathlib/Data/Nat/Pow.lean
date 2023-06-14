@@ -40,8 +40,8 @@ theorem pow_lt_pow_succ {p : ℕ} (h : 1 < p) (n : ℕ) : p ^ n < p ^ (n + 1) :=
 #align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
 
 theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
-| 0 => zero_le _
-| (_ + 1) => _root_.le_self_pow (le_add_left _ _) hn
+  | 0 => zero_le _
+  | (_ + 1) => _root_.le_self_pow (le_add_left _ _) hn
 #align nat.le_self_pow Nat.le_self_pow
 
 theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
@@ -50,7 +50,6 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
     calc
       n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
       _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
-
 #align nat.lt_pow_self Nat.lt_pow_self
 
 theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=
@@ -154,6 +153,7 @@ theorem sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
 #align nat.sq_sub_sq Nat.sq_sub_sq
 
 alias sq_sub_sq ← pow_two_sub_pow_two
+#align nat.pow_two_sub_pow_two Nat.pow_two_sub_pow_two
 
 /-! ### `pow` and `mod` / `dvd` -/
 

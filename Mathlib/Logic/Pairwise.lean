@@ -11,6 +11,7 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relation
 import Mathlib.Init.Set
+import Mathlib.Tactic.Common
 
 /-!
 # Relations holding pairwise
@@ -50,6 +51,7 @@ theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ �
 #align function.injective_iff_pairwise_ne Function.injective_iff_pairwise_ne
 
 alias Function.injective_iff_pairwise_ne ↔ Function.Injective.pairwise_ne _
+#align function.injective.pairwise_ne Function.Injective.pairwise_ne
 
 namespace Set
 

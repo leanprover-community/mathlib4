@@ -35,8 +35,8 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-| []       => default
-| (a :: _) => a
+  | []       => default
+  | (a :: _) => a
 #align list.head List.headI
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -59,11 +59,6 @@ def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.find
 
 #align list.band List.and
 
-/-- List consisting of an element `a` repeated a specified number of times. -/
-@[deprecated replicate, simp]
-def «repeat» (a : α) (n : Nat) : List α := List.replicate n a
-#align list.repeat List.repeat
-
 #align list.last List.getLast
 
 /-- The last element of a list, with the default if list empty -/
@@ -85,3 +80,6 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List
+
+#align list.replicate List.replicate
+#align list.length_replicate List.length_replicate

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 
 ! This file was ported from Lean 3 source module data.part
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 80c43012d26f63026d362c3aba28f3c3bafb07e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,14 +14,14 @@ import Mathlib.Logic.Equiv.Defs
 /-!
 # Partial values of a type
 This file defines `Part α`, the partial values of a type.
-`o : Part α` carries a proposition `o.dom`, its domain, along with a function `get : o.dom → α`, its
+`o : Part α` carries a proposition `o.Dom`, its domain, along with a function `get : o.Dom → α`, its
 value. The rule is then that every partial value has a value but, to access it, you need to provide
 a proof of the domain.
 `Part α` behaves the same as `Option α` except that `o : Option α` is decidably `none` or `some a`
 for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
-In current mathlib, `Part ℕ`, aka `part_enat`, is used to move decidability of the order to
+In current mathlib, `Part ℕ`, aka `PartENat`, is used to move decidability of the order to
 decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
 there's none).
 ## Main declarations
@@ -38,7 +38,7 @@ Monadic structure:
 * `Part.map`: Maps the value and keeps the same domain.
 Other:
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
-  `p → o.dom`.
+  `p → o.Dom`.
 * `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 ## Notation
@@ -66,6 +66,14 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 def toOption (o : Part α) [Decidable o.Dom] : Option α :=
   if h : Dom o then some (o.get h) else none
 #align part.to_option Part.toOption
+
+@[simp] lemma toOption_isSome (o : Part α) [Decidable o.Dom] : o.toOption.isSome ↔ o.Dom := by
+  by_cases h : o.Dom <;> simp [h, toOption]
+#align part.to_option_is_some Part.toOption_isSome
+
+@[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
+  by_cases h : o.Dom <;> simp [h, toOption]
+#align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
@@ -124,7 +132,7 @@ instance : Inhabited (Part α) :=
 theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
 #align part.not_mem_none Part.not_mem_none
 
-/-- The `some a` value in `Part` has a `true` domain and the
+/-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
   ⟨True, fun _ => a⟩
@@ -254,7 +262,7 @@ instance someDecidable (a : α) : Decidable (some a).Dom :=
   instDecidableTrue
 #align part.some_decidable Part.someDecidable
 
-/-- Retrieves the value of `a : part α` if it exists, and return the provided default value
+/-- Retrieves the value of `a : Part α` if it exists, and return the provided default value
 otherwise. -/
 def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
   if ha : a.Dom then a.get ha else d
@@ -314,6 +322,7 @@ theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) 
 #align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `Option α` into a `Part α`. -/
+@[coe]
 def ofOption : Option α → Part α
   | Option.none => none
   | Option.some a => some a
@@ -427,6 +436,8 @@ protected def bind (f : Part α) (g : α → Part β) : Part β :=
 def map (f : α → β) (o : Part α) : Part β :=
   ⟨o.Dom, f ∘ o.get⟩
 #align part.map Part.map
+#align part.map_dom Part.map_Dom
+#align part.map_get Part.map_get
 
 theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map f o
   | _, ⟨_, rfl⟩ => ⟨_, rfl⟩
@@ -521,7 +532,7 @@ theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = m
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
     (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
-  by_cases o.Dom
+  by_cases h : o.Dom
   · simp_rw [h.toOption, h.bind]
     rfl
   · rw [Part.toOption_eq_none_iff.2 h]
@@ -701,61 +712,74 @@ end
 theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
   ⟨trivial, rfl⟩
 #align part.one_mem_one Part.one_mem_one
+#align part.zero_mem_zero Part.zero_mem_zero
 
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
 #align part.mul_mem_mul Part.mul_mem_mul
+#align part.add_mem_add Part.add_mem_add
 
 @[to_additive]
 theorem left_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : a.Dom := hab.1
 #align part.left_dom_of_mul_dom Part.left_dom_of_mul_dom
+#align part.left_dom_of_add_dom Part.left_dom_of_add_dom
 
 @[to_additive]
 theorem right_dom_of_mul_dom [Mul α] {a b : Part α} (hab : Dom (a * b)) : b.Dom := hab.2
 #align part.right_dom_of_mul_dom Part.right_dom_of_mul_dom
+#align part.right_dom_of_add_dom Part.right_dom_of_add_dom
 
 @[to_additive (attr := simp)]
 theorem mul_get_eq [Mul α] (a b : Part α) (hab : Dom (a * b)) :
     (a * b).get hab = a.get (left_dom_of_mul_dom hab) * b.get (right_dom_of_mul_dom hab) := rfl
 #align part.mul_get_eq Part.mul_get_eq
+#align part.add_get_eq Part.add_get_eq
 
 @[to_additive]
 theorem some_mul_some [Mul α] (a b : α) : some a * some b = some (a * b) := by simp [mul_def]
 #align part.some_mul_some Part.some_mul_some
+#align part.some_add_some Part.some_add_some
 
 @[to_additive]
 theorem inv_mem_inv [Inv α] (a : Part α) (ma : α) (ha : ma ∈ a) : ma⁻¹ ∈ a⁻¹ :=
   by simp [inv_def]; aesop
 #align part.inv_mem_inv Part.inv_mem_inv
+#align part.neg_mem_neg Part.neg_mem_neg
 
 @[to_additive]
 theorem inv_some [Inv α] (a : α) : (some a)⁻¹ = some a⁻¹ :=
   rfl
 #align part.inv_some Part.inv_some
+#align part.neg_some Part.neg_some
 
 @[to_additive]
 theorem div_mem_div [Div α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma / mb ∈ a / b := by simp [div_def]; aesop
 #align part.div_mem_div Part.div_mem_div
+#align part.sub_mem_sub Part.sub_mem_sub
 
 @[to_additive]
 theorem left_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : a.Dom := hab.1
 #align part.left_dom_of_div_dom Part.left_dom_of_div_dom
+#align part.left_dom_of_sub_dom Part.left_dom_of_sub_dom
 
 @[to_additive]
 theorem right_dom_of_div_dom [Div α] {a b : Part α} (hab : Dom (a / b)) : b.Dom := hab.2
 #align part.right_dom_of_div_dom Part.right_dom_of_div_dom
+#align part.right_dom_of_sub_dom Part.right_dom_of_sub_dom
 
 @[to_additive (attr := simp)]
 theorem div_get_eq [Div α] (a b : Part α) (hab : Dom (a / b)) :
     (a / b).get hab = a.get (left_dom_of_div_dom hab) / b.get (right_dom_of_div_dom hab) :=
   by simp [div_def]; aesop
 #align part.div_get_eq Part.div_get_eq
+#align part.sub_get_eq Part.sub_get_eq
 
 @[to_additive]
 theorem some_div_some [Div α] (a b : α) : some a / some b = some (a / b) := by simp [div_def]
 #align part.some_div_some Part.some_div_some
+#align part.some_sub_some Part.some_sub_some
 
 theorem mod_mem_mod [Mod α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
     ma % mb ∈ a % b := by simp [mod_def]; aesop

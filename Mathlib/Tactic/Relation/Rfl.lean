@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Lean
+import Mathlib.Lean.Meta
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -38,22 +39,37 @@ initialize registerBuiltinAttribute {
     reflExt.add (decl, key) kind
 }
 
-open Elab.Tactic in
+open Elab Tactic
+
+/-- `MetaM` version of the `rfl` tactic.
+
+This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
+relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
+-/
+def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
+  let .app (.app rel _) _ ← whnfR <|← instantiateMVars <|← goal.getType
+    | throwError "reflexivity lemmas only apply to binary relations, not
+      {indentExpr (← goal.getType)}"
+  let s ← saveState
+  let mut ex? := none
+  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
+    try
+      let gs ← goal.apply (← mkConstWithFreshMVarLevels lem)
+      if gs.isEmpty then return () else
+        logError <| MessageData.tagged `Tactic.unsolvedGoals <| m!"unsolved goals\n
+          {goalsToMessageData gs}"
+    catch e =>
+      ex? := ex? <|> (some (← saveState, e)) -- stash the first failure of `apply`
+    s.restore
+  if let some (sErr, e) := ex? then
+    sErr.restore
+    throw e
+  else
+    throwError "rfl failed, no lemma with @[refl] applies"
+
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
 elab_rules : tactic
-| `(tactic| rfl) => withMainContext do
-  let tgt ← getMainTarget
-  let .app (.app rel _) _ := tgt
-    | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  let s ← saveState
-  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
-    try
-      liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
-      return
-    catch e =>
-      s.restore
-      throw e
-  throwError "rfl failed, no lemma with @[refl] applies"
+| `(tactic| rfl) => withMainContext do liftMetaFinishingTactic (·.rfl)

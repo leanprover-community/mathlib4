@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.nat.with_bot
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Aesop
 
 /-!
 # `WithBot ℕ`
@@ -55,7 +54,6 @@ theorem add_eq_three_iff {n m : WithBot ℕ} :
   exact Nat.add_eq_three_iff
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff
 
-@[simp]
 theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
   rw [← WithBot.coe_zero]
   exact WithBot.coe_le_coe.mpr (Nat.zero_le n)
@@ -84,6 +82,13 @@ theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
 theorem lt_one_iff_le_zero {x : WithBot ℕ} : x < 1 ↔ x ≤ 0 :=
   not_iff_not.mp (by simpa using one_le_iff_zero_lt)
 #align nat.with_bot.lt_one_iff_le_zero Nat.WithBot.lt_one_iff_le_zero
+
+theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
+  cases n
+  · exact bot_le
+  cases m
+  exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+#align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
 end WithBot
 

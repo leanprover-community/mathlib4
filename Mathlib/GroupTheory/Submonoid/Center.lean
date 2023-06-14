@@ -46,17 +46,10 @@ theorem coe_center : ↑(center M) = Set.center M :=
 #align submonoid.coe_center Submonoid.coe_center
 #align add_submonoid.coe_center AddSubmonoid.coe_center
 
-@[simp]
+@[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
-
-theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
-    (AddSubmonoid.center M).toAddSubsemigroup = AddSubsemigroup.center M :=
-  rfl
-#align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_toAddSubsemigroup
-
-attribute [to_additive AddSubmonoid.center_to_add_subsemigroup] Submonoid.center_toSubsemigroup
 
 variable {M}
 
@@ -73,7 +66,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
 /-- The center of a monoid is commutative. -/
-instance : CommMonoid (center M) :=
+instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid with
     mul_comm := fun _ b => Subtype.ext <| b.prop _ }
 
@@ -89,7 +82,6 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 
 /-! Note that `smulCommClass (center M) (center M) M` is already implied by
 `Submonoid.smulCommClass_right` -/
-
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
 
@@ -108,6 +100,5 @@ end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` is not ported yet
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 
 ! This file was ported from Lean 3 source module algebra.parity
-! leanprover-community/mathlib commit dcf2250875895376a142faeeac5eabff32c48655
+! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -26,10 +26,10 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/Even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
-* TODO: Consider moving the definition and lemmas about `odd` to a separate file.
+* TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
 * TODO: The "old" definition of `Even a` asked for the existence of an element `c` such that
   `a = 2 * c`.  For this reason, several fixes introduce an extra `two_mul` or `← two_mul`.
   It might be the case that by making a careful choice of `simp` lemma, this can be avoided.
@@ -93,13 +93,16 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
 alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+#align is_square.exists_sq IsSquare.exists_sq
+#align is_square_of_exists_sq isSquare_of_exists_sq
 
 attribute
   [to_additive Even.exists_two_nsmul
-      "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
+      "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
   IsSquare.exists_sq
+#align even.exists_two_nsmul Even.exists_two_nsmul
 
-@[to_additive Even.nsmul]
+@[to_additive]
 theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
@@ -169,8 +172,10 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
 #align even_neg even_neg
 
 alias isSquare_inv ↔ _ IsSquare.inv
+#align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
+#align even.neg Even.neg
 
 @[to_additive]
 theorem IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
@@ -214,10 +219,10 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
--- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) : Even (m - n) :=
-  by
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn
   refine' ⟨a - b, _⟩
@@ -226,17 +231,15 @@ theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α
   · exact (tsub_add_tsub_comm h h).symm
 #align even.tsub Even.tsub
 
-
 set_option linter.deprecated false in
 theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
 alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+#align even.exists_bit0 Even.exists_bit0
 
 section Semiring
-
-set_option linter.deprecated false
 
 variable [Semiring α] [Semiring β] {m n : α}
 
@@ -247,15 +250,25 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
+alias even_iff_two_dvd ↔ Even.two_dvd _
+#align even.two_dvd Even.two_dvd
+
+theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
+  even_iff_two_dvd.2 <| hm.two_dvd.trans hn
+#align even.trans_dvd Even.trans_dvd
+
+theorem Dvd.dvd.even (hn : m ∣ n) (hm : Even m) : Even n :=
+  hm.trans_dvd hn
+#align has_dvd.dvd.even Dvd.dvd.even
+
 @[simp]
-theorem range_two_mul (α : Type _) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } :=
-  by
+theorem range_two_mul (α) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } := by
   ext x
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul
 
-@[simp]
-theorem even_bit0 (a : α) : Even (bit0 a) :=
+set_option linter.deprecated false in
+@[simp] theorem even_bit0 (a : α) : Even (bit0 a) :=
   ⟨a, rfl⟩
 #align even_bit0 even_bit0
 
@@ -292,6 +305,7 @@ def Odd (a : α) : Prop :=
   ∃ k, a = 2 * k + 1
 #align odd Odd
 
+set_option linter.deprecated false in
 theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
   exists_congr fun b => by
     rw [two_mul]
@@ -299,9 +313,10 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
 alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+#align odd.exists_bit1 Odd.exists_bit1
 
-@[simp]
-theorem odd_bit1 (a : α) : Odd (bit1 a) :=
+set_option linter.deprecated false in
+@[simp] theorem odd_bit1 (a : α) : Odd (bit1 a) :=
   odd_iff_exists_bit1.2 ⟨a, rfl⟩
 #align odd_bit1 odd_bit1
 
@@ -325,9 +340,8 @@ theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
 theorem Odd.add_odd : Odd m → Odd n → Even (m + n) := by
   rintro ⟨m, rfl⟩ ⟨n, rfl⟩
   refine' ⟨n + m + 1, _⟩
-  rw [← two_mul, ← add_assoc, add_comm _ (2 * n), ← add_assoc, ← mul_add, add_assoc,
-    mul_add _ (n + m), mul_one]
-  rw [one_add_one_eq_two]
+  rw [two_mul, two_mul]
+  ac_rfl
 #align odd.add_odd Odd.add_odd
 
 @[simp]
@@ -369,7 +383,6 @@ end Semiring
 section Monoid
 
 variable [Monoid α] [HasDistribNeg α] {a : α} {n : ℕ}
-
 
 theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a
@@ -507,3 +520,6 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
+
+/-- Simp attribute for lemmas about `Even` -/
+register_simp_attr parity_simps

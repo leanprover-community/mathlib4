@@ -24,7 +24,7 @@ Possibly only of archaeological significance.
 
 universe u
 
--- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+-- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
@@ -92,17 +92,11 @@ theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
   simp [not] at this
   have _ : ∀ b, and false b = false := by
-    intros
-    rename_i b
-    cases b
-    case false => rfl
-    case true => rfl
+    intro b
+    cases b <;> rfl
   have _ : ∀ b, bxor b false = b := by
-    intros
-    rename_i b'
-    cases b'
-    case false => rfl
-    case true => rfl
+    intro b
+    cases b <;> rfl
   rw [← this]
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
 #align nat.mod_two_of_bodd Nat.mod_two_of_bodd
@@ -123,14 +117,12 @@ theorem div2_two : div2 2 = 1 :=
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  cases boddDiv2 n
-  rename_i fst snd
+  cases' boddDiv2 n with fst snd
   cases fst
   case mk.false =>
     simp
   case mk.true =>
     simp
-
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -163,7 +155,6 @@ theorem bit0_val (n : Nat) : bit0 n = 2 * n :=
     n + n = 0 + n + n := by rw [Nat.zero_add]
     _ = n * 2 := rfl
     _ = 2 * n := Nat.mul_comm _ _
-
 #align nat.bit0_val Nat.bit0_val
 
 theorem bit1_val (n : Nat) : bit1 n = 2 * n + 1 :=
@@ -222,8 +213,7 @@ def shiftr : ℕ → ℕ → ℕ
 #align nat.shiftr Nat.shiftr
 
 theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
-  intros
-  rename_i n
+  intro n
   induction' n with n IH
   case zero =>
     rw [shiftr]
@@ -250,10 +240,9 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
-    if n0 : n = 0 then
-      by
-        simp [n0]
-        exact z
+    if n0 : n = 0 then by
+      simp [n0]
+      exact z
     else by
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by
@@ -261,8 +250,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       rw [←_x]
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
-
-#align nat.binaryRec Nat.binaryRec
+#align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -283,17 +271,17 @@ def bits : ℕ → List Bool :=
 def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
-#align nat.bitwise Nat.bitwise
+#align nat.bitwise Nat.bitwise'
 
 /--`lor'` takes two natural numbers and returns their bitwise `or`-/
 def lor' : ℕ → ℕ → ℕ :=
   bitwise' or
-#align nat.lor Nat.lor
+#align nat.lor Nat.lor'
 
 /--`land'` takes two naturals numbers and returns their `and`-/
 def land' : ℕ → ℕ → ℕ :=
   bitwise' and
-#align nat.land Nat.land
+#align nat.land Nat.land'
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
@@ -371,16 +359,17 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  by_cases bit b n = 0
+  by_cases h : bit b n = 0
+  -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp [dif_pos h']
+    simp [dif_pos h]
     generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
     simp at bf n0
-    rw [← bf, ← n0]
+    subst bf n0
     rw [binaryRec_zero]
     intros
     rw [h']
@@ -397,8 +386,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
-      fun n : ℕ => cond (f false true) n 0 :=
-  by
+      fun n : ℕ => cond (f false true) n 0 := by
   funext n
   apply bitCasesOn n
   intro b n
@@ -420,7 +408,6 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
 theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
     bitwise' f 0 n = cond (f false true) n 0 := by
   unfold bitwise'; rw [binaryRec_zero]
-
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
 @[simp]
@@ -428,7 +415,6 @@ theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = fa
     bitwise' f m 0 = cond (f true false) m 0 := by
   unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
     exact bitwise'_bit_aux h
-
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
 @[simp]

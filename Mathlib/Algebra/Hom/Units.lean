@@ -5,7 +5,7 @@ Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.units
-! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -20,8 +20,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 
 ## Main declarations
 
-* `Units.map`: Turn an homomorphism from `α` to `β` monoids into an homomorphism from `αˣ` to `βˣ`.
-* `MonoidHom.toHomUnits`: Turn an homomorphism from a group `α` to `β` into an homomorphism from
+* `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
+* `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
 
 ## TODO
@@ -39,7 +39,7 @@ universe u v w
 theorem Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
 #align group.is_unit Group.isUnit
-#align add_group.is_unit AddGroup.isAddUnit
+#align add_group.is_add_unit AddGroup.isAddUnit
 
 section MonoidHomClass
 
@@ -118,7 +118,7 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 #align add_units.coe_hom_apply AddUnits.coeHom_apply
 
-@[to_additive (attr := simp, norm_cast) AddUnits.val_nsmul_eq_nsmul_val]
+@[to_additive (attr := simp, norm_cast)]
 theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
 #align units.coe_pow Units.val_pow_eq_pow_val
@@ -132,7 +132,7 @@ variable [DivisionMonoid α]
 theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
-#align add_units.coe_neg AddUnits.val_neg_eq_neg_val
+#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
@@ -276,12 +276,11 @@ variable [DivisionMonoid α] {a b c : α}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive
+@[to_additive (attr := simps)
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
   computable and comes from the negation on `α`. This is useful to transfer properties of negation
-  in `AddUnits α` to `α`. See also `toAddUnits`.",
-  simps]
+  in `AddUnits α` to `α`. See also `toAddUnits`."]
 def unit' (h : IsUnit a) : αˣ :=
   ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 #align is_unit.unit' IsUnit.unit'
@@ -438,7 +437,8 @@ protected theorem div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
 #align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
 #align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
 
-@[to_additive]
+/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
+@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
 protected theorem div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
   rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
 #align is_unit.div_mul_left IsUnit.div_mul_left
@@ -505,6 +505,12 @@ protected theorem div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
   rw [div_div_eq_mul_div, h.mul_div_cancel_left]
 #align is_unit.div_div_cancel IsUnit.div_div_cancel
 #align is_add_unit.sub_sub_cancel IsAddUnit.sub_sub_cancel
+
+@[to_additive]
+protected theorem div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
+#align is_unit.div_div_cancel_left IsUnit.div_div_cancel_left
+#align is_add_unit.sub_sub_cancel_left IsAddUnit.sub_sub_cancel_left
 
 end DivisionCommMonoid
 

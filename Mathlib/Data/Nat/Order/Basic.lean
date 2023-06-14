@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,7 +50,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
@@ -74,7 +74,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
     exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => Nat.eq_zero_of_mul_eq_zero }
+    eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
 instance canonicallyLinearOrderedAddMonoid : CanonicallyLinearOrderedAddMonoid ℕ :=
   { (inferInstance : CanonicallyOrderedAddMonoid ℕ), Nat.linearOrder with }
@@ -175,18 +175,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
-
-theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  calc
-    m + n > 0 + n := Nat.add_lt_add_right h n
-    _ = n := Nat.zero_add n
-    _ ≥ 0 := zero_le n
-
 #align nat.add_pos_left Nat.add_pos_left
-
-theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
-  rw [add_comm]
-  exact add_pos_left h m
 #align nat.add_pos_right Nat.add_pos_right
 
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
@@ -211,7 +200,6 @@ theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m
   cases n <;>
   simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
     succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
-
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
@@ -271,7 +259,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left, right]
+  cases' le_or_lt m k with h' h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
@@ -288,21 +276,6 @@ theorem sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 :=
 #align nat.sub_succ' Nat.sub_succ'
 
 /-! ### `mul` -/
-
-
-theorem mul_eq_one_iff : ∀ {m n : ℕ}, m * n = 1 ↔ m = 1 ∧ n = 1
-  | 0, 0 => by decide
-  | 0, 1 => by decide
-  | 1, 0 => by decide
-  | m + 2, 0 => by simp
-  | 0, n + 2 => by simp
-  | m + 1, n + 1 =>
-    ⟨fun h => by
-      simp only [succ_mul, mul_succ, add_succ, one_mul, mul_one, (add_assoc _ _ _).symm,
-          ← succ_eq_add_one, add_eq_zero_iff, (show 1 = succ 0 from rfl), succ_inj'] at h
-      simp [h],
-      fun h => by simp only [h, mul_one]⟩
-#align nat.mul_eq_one_iff Nat.mul_eq_one_iff
 
 theorem succ_mul_pos (m : ℕ) (hn : 0 < n) : 0 < succ m * n :=
   mul_pos (succ_pos m) hn
@@ -411,7 +384,6 @@ protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
         _ = m := mod_add_div _ _
         _ ≤ k * n := h) k0
-
 #align nat.div_le_of_le_mul' Nat.div_le_of_le_mul'
 
 protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
@@ -420,7 +392,6 @@ protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
       calc
         m = 1 * m := (one_mul _).symm
         _ ≤ n * m := Nat.mul_le_mul_right _ n0
-
 #align nat.div_le_self' Nat.div_le_self'
 
 protected theorem div_lt_of_lt_mul (h : m < n * k) : m / n < k :=
@@ -447,8 +418,6 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
-
-
 #align nat.div_mul_div_le_div Nat.div_mul_div_le_div
 
 theorem eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 :=
@@ -465,15 +434,13 @@ theorem mul_div_mul_comm_of_dvd_dvd (hmk : k ∣ m) (hnl : l ∣ n) :
     Nat.mul_div_cancel_left _ (mul_pos hk0 hl0)]
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
-theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 :=
-  by
+theorem le_half_of_half_lt_sub {a b : ℕ} (h : a / 2 < a - b) : b ≤ a / 2 := by
   rw [Nat.le_div_iff_mul_le two_pos]
   rw [Nat.div_lt_iff_lt_mul two_pos, Nat.mul_sub_right_distrib, lt_tsub_iff_right, mul_two a] at h
   exact le_of_lt (Nat.lt_of_add_lt_add_left h)
 #align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
 
-theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :=
-  by
+theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b := by
   rw [Nat.le_div_iff_mul_le two_pos, Nat.mul_sub_right_distrib, tsub_le_iff_right, mul_two,
     add_le_add_iff_left] at h
   rw [← Nat.mul_div_left b two_pos]
@@ -486,7 +453,7 @@ theorem half_le_of_sub_le_half {a b : ℕ} (h : a - b ≤ a / 2) : a / 2 ≤ b :
 theorem two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv =>
     rhs
-    rw [← Nat.mod_add_div n 2, hn, add_tsub_cancel_left]
+    rw [← Nat.mod_add_div n 2, hn, @add_tsub_cancel_left]
 #align nat.two_mul_odd_div_two Nat.two_mul_odd_div_two
 
 theorem div_dvd_of_dvd (h : n ∣ m) : m / n ∣ m :=
@@ -523,7 +490,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, tsub_add_eq_tsub_tsub,
-    add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
+    @add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp]
@@ -565,7 +532,6 @@ theorem div_mul_div_comm (hmn : n ∣ m) (hkl : l ∣ k) : m / n * (k / l) = m *
       repeat' assumption
       -- Porting note: this line was `cc` in Lean3
       simp only [mul_comm, mul_left_comm, mul_assoc]
-
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
@@ -645,13 +611,13 @@ theorem findGreatest_eq_iff :
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts[rfl, (hm hlt le_rfl hk).elim]
+        exacts [rfl, (hm hlt le_rfl hk).elim]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
         refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
@@ -678,8 +644,8 @@ theorem le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n 
   le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 #align nat.le_find_greatest Nat.le_findGreatest
 
-theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
-  by
+theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] :
+    Monotone (Nat.findGreatest P) := by
   refine monotone_nat_of_le_succ fun n => ?_
   rw [findGreatest_succ]
   split_ifs

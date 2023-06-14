@@ -26,6 +26,7 @@ variable {α β γ : Sort _}
 /-- `IsEmpty α` expresses that `α` is empty. -/
 class IsEmpty (α : Sort _) : Prop where
   protected false : α → False
+#align is_empty IsEmpty
 
 instance : IsEmpty Empty :=
   ⟨Empty.elim⟩
@@ -36,7 +37,7 @@ instance : IsEmpty PEmpty :=
 instance : IsEmpty False :=
   ⟨id⟩
 
-instance : IsEmpty (Fin 0) :=
+instance Fin.isEmpty : IsEmpty (Fin 0) :=
   ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
@@ -86,6 +87,7 @@ example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instanc
 @[elab_as_elim]
 def isEmptyElim [IsEmpty α] {p : α → Sort _} (a : α) : p a :=
   (IsEmpty.false a).elim
+#align is_empty_elim isEmptyElim
 
 theorem isEmpty_iff : IsEmpty α ↔ α → False :=
   ⟨@IsEmpty.false α, IsEmpty.mk⟩
@@ -99,24 +101,29 @@ open Function
 @[elab_as_elim]
 protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort _} (a : α) : p a :=
   isEmptyElim a
+#align is_empty.elim IsEmpty.elim
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
   correctly. -/
 protected def elim' {β : Sort _} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
+#align is_empty.elim' IsEmpty.elim'
 
 protected theorem prop_iff {p : Prop} : IsEmpty p ↔ ¬p :=
   isEmpty_iff
+#align is_empty.prop_iff IsEmpty.prop_iff
 
 variable [IsEmpty α]
 
 @[simp]
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ True :=
   iff_true_intro isEmptyElim
+#align is_empty.forall_iff IsEmpty.forall_iff
 
 @[simp]
 theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
+#align is_empty.exists_iff IsEmpty.exists_iff
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Subsingleton α :=
@@ -127,6 +134,7 @@ end IsEmpty
 @[simp]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
+#align not_nonempty_iff not_nonempty_iff
 
 @[simp]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=

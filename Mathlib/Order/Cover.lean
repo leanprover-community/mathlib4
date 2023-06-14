@@ -145,8 +145,10 @@ theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 #align of_dual_wcovby_of_dual_iff ofDual_wcovby_ofDual_iff
 
 alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
+#align wcovby.to_dual Wcovby.toDual
 
 alias ofDual_wcovby_ofDual_iff ↔ _ Wcovby.ofDual
+#align wcovby.of_dual Wcovby.ofDual
 
 end Preorder
 
@@ -167,7 +169,7 @@ theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 
 theorem Wcovby.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
   refine' ⟨fun h2 => h.eq_or_eq h2.1 h2.2, _⟩; rintro (rfl | rfl);
-  exacts[⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
+  exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
 #align wcovby.le_and_le_iff Wcovby.le_and_le_iff
 
 theorem Wcovby.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by
@@ -230,6 +232,7 @@ theorem not_covby_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
 #align not_covby_iff not_covby_iff
 
 alias not_covby_iff ↔ exists_lt_lt_of_not_covby _
+#align exists_lt_lt_of_not_covby exists_lt_lt_of_not_covby
 
 alias exists_lt_lt_of_not_covby ← LT.lt.exists_lt_lt
 
@@ -255,8 +258,10 @@ theorem ofDual_covby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b �
 #align of_dual_covby_of_dual_iff ofDual_covby_ofDual_iff
 
 alias toDual_covby_toDual_iff ↔ _ Covby.toDual
+#align covby.to_dual Covby.toDual
 
 alias ofDual_covby_ofDual_iff ↔ _ Covby.ofDual
+#align covby.of_dual Covby.ofDual
 
 end LT
 
@@ -382,8 +387,10 @@ theorem wcovby_iff_eq_or_covby : a ⩿ b ↔ a = b ∨ a ⋖ b :=
 #align wcovby_iff_eq_or_covby wcovby_iff_eq_or_covby
 
 alias wcovby_iff_covby_or_eq ↔ Wcovby.covby_or_eq _
+#align wcovby.covby_or_eq Wcovby.covby_or_eq
 
 alias wcovby_iff_eq_or_covby ↔ Wcovby.eq_or_covby _
+#align wcovby.eq_or_covby Wcovby.eq_or_covby
 
 theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b :=
   h.wcovby.eq_or_eq h2 h3
@@ -449,6 +456,15 @@ theorem Covby.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
     x = b :=
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
 #align covby.eq_of_between Covby.eq_of_between
+
+/-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
+of `Set.Ioi b'`. -/
+lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
+    ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
+  by_cases h' : a ⋖ b
+  · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
+  · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
+    exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
 

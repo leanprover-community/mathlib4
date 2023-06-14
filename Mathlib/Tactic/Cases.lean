@@ -35,8 +35,8 @@ example (h : p ∨ q) : q ∨ p := by
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
 
-namespace Lean.Parser.Tactic
-open Meta Elab Elab.Tactic
+namespace Mathlib.Tactic
+open Lean Meta Elab Elab.Tactic
 
 open private getAltNumFields in evalCases ElimApp.evalAlts.go in
 def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
@@ -57,13 +57,13 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars in evalInduction in
-elab (name := induction') "induction' " tgts:(casesTarget,+)
+open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
+elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
     usingArg:((" using " ident)?)
-    withArg:((" with " (colGt binderIdent)+)?)
-    genArg:((" generalizing " (colGt ident)+)?) : tactic => do
+    withArg:((" with" (ppSpace colGt binderIdent)+)?)
+    genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.1.getSepArgs
-  let g ← getMainGoal
+  let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
@@ -88,13 +88,12 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
       g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
         (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
-      setGoals (subgoals ++ result.others).toList
+      setGoals <| (subgoals ++ result.others).toList ++ gs
 
-open private getElimNameInfo in evalCases in
-elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)?)
-  withArg:((" with " (colGt binderIdent)+)?) : tactic => do
+elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
+  withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.1.getSepArgs
-  let g ← getMainGoal
+  let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)
     let targets ← addImplicitTargets elimInfo targets
@@ -109,4 +108,4 @@ elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)
       g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
          (numEqs := targets.size) (toClear := targetsNew)
-      setGoals subgoals.toList
+      setGoals <| subgoals.toList ++ gs

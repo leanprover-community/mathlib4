@@ -116,8 +116,7 @@ protected def Function.Surjective.nonUnitalNonAssocSemiring {α : Type u}
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) : NonUnitalNonAssocSemiring β :=
   { hf.mulZeroClass f zero mul, hf.addCommMonoid f zero add nsmul, hf.distrib f add mul with }
-#align function.surjective.non_unital_non_assoc_semiring
-  Function.Surjective.nonUnitalNonAssocSemiring
+#align function.surjective.non_unital_non_assoc_semiring Function.Surjective.nonUnitalNonAssocSemiring
 
 /-- Pushforward a `NonUnitalSemiring` instance along a surjective function.
 See note [reducible non-instances]. -/
@@ -328,7 +327,7 @@ section NonAssocRing
 
 variable [NonAssocRing α]
 
--- porting note: for some reaso this declaration is very slow?
+-- porting note: for some reason this declaration is very slow?
 /-- Pullback a `NonAssocRing` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]

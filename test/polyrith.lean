@@ -16,7 +16,7 @@ A full test suite is provided at the bottom of the file.
 -/
 
 /-!
-## Set up testing infrastructre
+## Set up testing infrastructure
 -/
 
 -- section tactic
@@ -93,7 +93,7 @@ A full test suite is provided at the bottom of the file.
 -- end tactic
 
 -- /-!
--- ## SageCell communcation tests
+-- ## SageCell communication tests
 -- -/
 
 -- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
@@ -325,7 +325,7 @@ A full test suite is provided at the bottom of the file.
 --   "((var0 * ((var1 * var2) - (var3 * var4))) - 0)"]
 --   "linear_combination e * h1 + a * h2"
 
--- example {K : Type*} [field K] [invertible 2] [invertible 3]
+-- example {K : Type _} [field K] [invertible 2] [invertible 3]
 --   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
 --   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
 --   x ^ 3 + 3 * p * x - 2 * q =
@@ -373,7 +373,7 @@ A full test suite is provided at the bottom of the file.
 
 -- /-! ## Degenerate cases -/
 
--- example {K : Type*} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
+-- example {K : Type _} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
 -- by test_polyrith
 --   "{\"data\":[\"(poly.const 1/3)\"],\"success\":true}"
 --   ["ff",
@@ -663,7 +663,7 @@ example {α} [h : comm_ring α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = 
   c * (a*f - b*e) = 0 :=
 by create_polyrith_test
 
-example {K : Type*} [field K] [invertible 2] [invertible 3]
+example {K : Type _} [field K] [invertible 2] [invertible 3]
   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
   x ^ 3 + 3 * p * x - 2 * q =
@@ -681,7 +681,7 @@ end
 
 /-! ## Degenerate cases -/
 
-example {K : Type*} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
+example {K : Type _} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
 by create_polyrith_test
 
 example {x : ℤ} (h1 : x + 4 = 2) : x = -2 :=
@@ -701,3 +701,16 @@ by create_polyrith_test
 
 
 -/
+
+-- example (a b : ℤ) (h : a + b = 4) : a + b = 0 := by
+--   fail_if_success polyrith
+--   -- polyrith failed to retrieve a solution from Sage!
+--   -- ValueError: polynomial is not in the ideal
+--   sorry
+
+-- example (a : ℕ) : a = 0 := by
+--   have := True.intro
+--   polyrith -- polyrith did not find any relevant hypotheses and the goal is not provable by ring
+
+-- example (y a : ℤ) (k : ℕ) (h : a ^ k = 0) : a ^ k * y = 0 := by
+--   polyrith

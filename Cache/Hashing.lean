@@ -12,8 +12,10 @@ namespace Cache.Hashing
 open System IO
 
 structure HashMemo where
-  depsMap : Lean.HashMap FilePath (Array FilePath)
-  hashMap : HashMap
+  rootHash : UInt64
+  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
+  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
@@ -41,12 +43,17 @@ abbrev HashM := StateT HashMemo IO
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
-  let imps := s.imports.map (·.module.toString)
-    |>.map (·.splitOn ".")
+  let imps := s.imports.map (·.module.components |> .map toString)
     |>.filter fun parts => match parts.head? with
       | some head => pkgDirs.contains head
       | none => false
   imps.map (mkFilePath · |>.withExtension "lean")
+
+/-- Computes a canonical hash of a file's contents. -/
+def hashFileContents (contents : String) : UInt64 :=
+  -- revert potential file transformation by git's `autocrlf`
+  let contents := contents.replace "\r\n" "\n"
+  hash contents
 
 /--
 Computes the root hash, which mixes the hashes of the content of:
@@ -57,10 +64,8 @@ Computes the root hash, which mixes the hashes of the content of:
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  return hash $ ← rootFiles.mapM fun path => do
-    pure $ ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
-
-initialize rootHash : UInt64 ← getRootHash
+  hash <$> rootFiles.mapM fun path =>
+    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
 
 /--
 Computes the hash of a file, which mixes:
@@ -69,22 +74,39 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
-  match (← get).hashMap.find? filePath with
-  | some hash => pure hash
+partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
+  let stt ← get
+  match stt.cache.find? filePath with
+  | some hash? => return hash?
   | none =>
-    let content ← IO.FS.readFile $ (← IO.getPackageDir filePath) / filePath
+    let fixedPath := (← IO.getPackageDir filePath) / filePath
+    if !(← fixedPath.pathExists) then
+      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
+      set { stt with cache := stt.cache.insert filePath none }
+      return none
+    let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content pkgDirs
-    let importHashes ← fileImports.mapM getFileHash
+    let mut importHashes := #[]
+    for importHash? in ← fileImports.mapM getFileHash do
+      match importHash? with
+      | some importHash => importHashes := importHashes.push importHash
+      | none =>
+        set { stt with cache := stt.cache.insert filePath none }
+        return none
+    let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
+    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
-      (fileHash, { stt with
+      (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash
+        cache   := stt.cache.insert   filePath (some fileHash)
         depsMap := stt.depsMap.insert filePath fileImports })
+
+/-- Files to start hashing from. -/
+def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo : IO HashMemo :=
-  return (← StateT.run (getFileHash ⟨"Mathlib.lean"⟩) default).2
+  return (← StateT.run (roots.mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

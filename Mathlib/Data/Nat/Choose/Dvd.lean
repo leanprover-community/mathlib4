@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 
 ! This file was ported from Lean 3 source module data.nat.choose.dvd
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -22,22 +22,23 @@ open Nat
 
 namespace Prime
 
-theorem dvd_choose_add {p a b : ℕ} (hap : a < p) (hbp : b < p) (h : p ≤ a + b) (hp : Prime p) :
+variable {p a b k : ℕ}
+
+theorem dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
     p ∣ choose (a + b) a := by
   have h₁ : p ∣ (a + b)! := hp.dvd_factorial.2 h
-  have h₂ : ¬p ∣ a ! := mt hp.dvd_factorial.1 (not_le_of_gt hap)
-  have h₃ : ¬p ∣ b ! := mt hp.dvd_factorial.1 (not_le_of_gt hbp)
-  rw [← choose_mul_factorial_mul_factorial (le_add_right a b), mul_assoc,
-      hp.dvd_mul, hp.dvd_mul, add_tsub_cancel_left a b] at h₁
-  exact h₁.resolve_right (not_or.2 ⟨h₂, h₃⟩)
+  rw [← add_choose_mul_factorial_mul_factorial, ← choose_symm_add, hp.dvd_mul, hp.dvd_mul,
+    hp.dvd_factorial, hp.dvd_factorial] at h₁
+  exact (h₁.resolve_right hbp.not_le).resolve_right hap.not_le
 #align nat.prime.dvd_choose_add Nat.Prime.dvd_choose_add
 
-theorem dvd_choose_self {p k : ℕ} (hk : 0 < k) (hkp : k < p) (hp : Prime p) : p ∣ choose p k := by
-  have r : k + (p - k) = p := by
-    rw [← add_tsub_assoc_of_le (Nat.le_of_lt hkp) k, add_tsub_cancel_left]
-  have e : p ∣ choose (k + (p - k)) k :=
-    dvd_choose_add hkp (Nat.sub_lt (hk.trans hkp) hk) (by rw [r]) hp
-  rwa [r] at e
+lemma dvd_choose (hp : Prime p) (ha : a < p) (hab : b - a < p) (h : p ≤ b) : p ∣ choose b a :=
+  have : a + (b - a) = b := Nat.add_sub_of_le (ha.le.trans h)
+  this ▸ hp.dvd_choose_add ha hab (this.symm ▸ h)
+#align nat.prime.dvd_choose Nat.Prime.dvd_choose
+
+lemma dvd_choose_self (hp : Prime p) (hk : k ≠ 0) (hkp : k < p) : p ∣ choose p k :=
+  hp.dvd_choose hkp (sub_lt ((zero_le _).trans_lt hkp) hk.bot_lt) le_rfl
 #align nat.prime.dvd_choose_self Nat.Prime.dvd_choose_self
 
 end Prime

@@ -39,11 +39,13 @@ instance : SMul M (Σi, α i) :=
 theorem smul_def : a • x = x.map id fun _ => (· • ·) a :=
   rfl
 #align sigma.smul_def Sigma.smul_def
+#align sigma.vadd_def Sigma.vadd_def
 
 @[to_additive (attr := simp)]
 theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
   rfl
 #align sigma.smul_mk Sigma.smul_mk
+#align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
 instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
@@ -68,6 +70,7 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
 protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (ext_iff.1 <| h <| mk i a).2⟩
 #align sigma.has_faithful_smul' Sigma.FaithfulSMul'
+#align sigma.has_faithful_vadd' Sigma.FaithfulVAdd'
 
 @[to_additive]
 instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=

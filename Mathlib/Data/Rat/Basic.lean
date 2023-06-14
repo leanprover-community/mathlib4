@@ -46,7 +46,7 @@ instance field : Field ℚ :=
     one := 1
     mul := (· * ·)
     inv := Inv.inv
-    ratCast := id
+    ratCast := Rat.cast
     ratCast_mk := fun a b h1 h2 => (num_div_den _).symm
     qsmul := (· * ·) }
 

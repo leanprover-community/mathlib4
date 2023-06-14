@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,6 +61,13 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
+@[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+#align int.coe_nat_abs Int.coe_natAbs
+
+lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
+  by rw [←coe_natAbs, Int.cast_ofNat]
+#align nat.cast_nat_abs Nat.cast_natAbs
+
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
@@ -80,9 +87,15 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
    fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
-theorem coe_natAbs (n : ℕ) : |(n : ℤ)| = n :=
-  abs_of_nonneg (coe_nat_nonneg n)
-#align int.coe_nat_abs Int.coe_natAbs
+@[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
+#align int.abs_coe_nat Int.abs_coe_nat
+
+theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
+  have : (1 : ℤ) ≠ -1 := by decide
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
+  rw [Int.sign_eq_one_iff_pos]
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+#align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
 
@@ -147,6 +160,7 @@ where
     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
+#align int.induction_on' Int.inductionOn'
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
@@ -265,6 +279,8 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
+-- porting note: this should be a doc comment, but the lemma isn't here any more!
+/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
 attribute [local simp] Int.zero_emod
@@ -274,8 +290,8 @@ attribute [local simp] Int.zero_emod
 @[simp]
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i)
-  simp only [two_mul, sub_eq_add_neg]
+  convert Int.mul_emod_right 2 (-i) using 2
+  rw [two_mul, sub_eq_add_neg]
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/
@@ -537,6 +553,5 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 
 end Int
 
--- Porting note assert_not_exists not ported yet.
 -- We should need only a minimal development of sets in order to get here.
--- assert_not_exists set.range
+assert_not_exists Set.range

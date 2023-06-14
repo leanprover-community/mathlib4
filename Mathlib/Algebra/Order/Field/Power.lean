@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module algebra.order.field.power
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
+! leanprover-community/mathlib commit acb3d204d4ee883eb686f45d486a2a6811a01329
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,8 +29,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 /-! ### Integer powers -/
 
 
-theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
-  by
+theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   have ha₀ : 0 < a := one_pos.trans_le ha
   lift n - m to ℕ using sub_nonneg.2 h with k hk
   calc
@@ -38,7 +37,6 @@ theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
     _ ≤ a ^ m * a ^ k :=
       mul_le_mul_of_nonneg_left (one_le_pow_of_one_le ha _) (zpow_nonneg ha₀.le _)
     _ = a ^ n := by rw [← zpow_ofNat, ← zpow_add₀ ha₀.ne', hk, add_sub_cancel'_right]
-
 #align zpow_le_of_le zpow_le_of_le
 
 theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
@@ -49,8 +47,7 @@ theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
   (zpow_zero _).symm.trans_le <| zpow_le_of_le ha hn
 #align one_le_zpow_of_nonneg one_le_zpow_of_nonneg
 
-protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n :=
-  by
+protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n := by
   apply zpow_pos_of_pos
   exact_mod_cast h
 #align nat.zpow_pos_of_pos Nat.zpow_pos_of_pos
@@ -95,8 +92,7 @@ theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
   div_le_self ha <| one_le_pow_of_one_le hb _
 #align div_pow_le div_pow_le
 
-theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective ((· ^ ·) a : ℤ → α) :=
-  by
+theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective ((· ^ ·) a : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
   · exact (zpow_strictAnti h₀ H).injective
   · exact (zpow_strictMono H).injective
@@ -137,6 +133,10 @@ theorem zpow_bit0_nonneg (a : α) (n : ℤ) : 0 ≤ a ^ bit0 n :=
 theorem zpow_two_nonneg (a : α) : 0 ≤ a ^ (2 : ℤ) := by
   convert zpow_bit0_nonneg a 1
 #align zpow_two_nonneg zpow_two_nonneg
+
+theorem zpow_neg_two_nonneg (a : α) : 0 ≤ a ^ (-2 : ℤ) :=
+  zpow_bit0_nonneg _ (-1)
+#align zpow_neg_two_nonneg zpow_neg_two_nonneg
 
 theorem zpow_bit0_pos (h : a ≠ 0) (n : ℤ) : 0 < a ^ bit0 n :=
   (zpow_bit0_nonneg a n).lt_of_ne (zpow_ne_zero _ h).symm
@@ -231,7 +231,7 @@ theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n 
 #align nat.cast_le_pow_sub_div_sub Nat.cast_le_pow_sub_div_sub
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also
-`nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
+`Nat.cast_le_pow_sub_div_sub` for a stronger inequality with `a ^ n - 1` in the numerator. -/
 theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a - 1) :=
   (n.cast_le_pow_sub_div_sub H).trans <|
     div_le_div_of_le (sub_nonneg.2 H.le) (sub_le_self _ zero_le_one)

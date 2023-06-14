@@ -16,19 +16,19 @@ import Mathlib.Order.OrdContinuous
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 
 /-!
-# Semiconjugate by `supₛ`
+# Semiconjugate by `sSup`
 
 In this file we prove two facts about semiconjugate (families of) functions.
 
 First, if an order isomorphism `fa : α → α` is semiconjugate to an order embedding `fb : β → β` by
-`g : α → β`, then `fb` is semiconjugate to `fa` by `y ↦ supₛ {x | g x ≤ y}`, see
+`g : α → β`, then `fb` is semiconjugate to `fa` by `y ↦ sSup {x | g x ≤ y}`, see
 `Semiconj.symm_adjoint`.
 
 Second, consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`,
-see `Function.supₛ_div_semiconj`.  In the case of a conditionally complete lattice, a similar
+see `Function.sSup_div_semiconj`.  In the case of a conditionally complete lattice, a similar
 statement holds true under an additional assumption that each set `{(f₁ g)⁻¹ (f₂ g x) | g : G}` is
-bounded above, see `function.csupₛ_div_semiconj`.
+bounded above, see `Function.csSup_div_semiconj`.
 
 The lemmas come from [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie
 bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper they are formulated for
@@ -48,14 +48,14 @@ def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → 
   ∀ y, IsLUB { x | f x ≤ y } (g y)
 #align is_order_right_adjoint IsOrderRightAdjoint
 
-theorem isOrderRightAdjoint_supₛ [CompleteLattice α] [Preorder β] (f : α → β) :
-    IsOrderRightAdjoint f fun y => supₛ { x | f x ≤ y } := fun _ => isLUB_supₛ _
-#align is_order_right_adjoint_Sup isOrderRightAdjoint_supₛ
+theorem isOrderRightAdjoint_sSup [CompleteLattice α] [Preorder β] (f : α → β) :
+    IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun _ => isLUB_sSup _
+#align is_order_right_adjoint_Sup isOrderRightAdjoint_sSup
 
-theorem isOrderRightAdjoint_csupₛ [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
+theorem isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
     (hne : ∀ y, ∃ x, f x ≤ y) (hbdd : ∀ y, BddAbove { x | f x ≤ y }) :
-    IsOrderRightAdjoint f fun y => supₛ { x | f x ≤ y } := fun y => isLUB_csupₛ (hne y) (hbdd y)
-#align is_order_right_adjoint_cSup isOrderRightAdjoint_csupₛ
+    IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun y => isLUB_csSup (hne y) (hbdd y)
+#align is_order_right_adjoint_cSup isOrderRightAdjoint_csSup
 
 namespace IsOrderRightAdjoint
 
@@ -74,8 +74,7 @@ theorem orderIso_comp [Preorder α] [Preorder β] [Preorder γ] {f : α → β} 
 #align is_order_right_adjoint.order_iso_comp IsOrderRightAdjoint.orderIso_comp
 
 theorem comp_orderIso [Preorder α] [Preorder β] [Preorder γ] {f : α → β} {g : β → α}
-    (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) :=
-  by
+    (h : IsOrderRightAdjoint f g) (e : γ ≃o α) : IsOrderRightAdjoint (f ∘ e) (e.symm ∘ g) := by
   intro y
   change IsLUB (e ⁻¹' { x | f x ≤ y }) (e.symm (g y))
   rw [e.isLUB_preimage, e.apply_symm_apply]
@@ -87,15 +86,14 @@ end IsOrderRightAdjoint
 namespace Function
 
 /-- If an order automorphism `fa` is semiconjugate to an order embedding `fb` by a function `g`
-and `g'` is an order right adjoint of `g` (i.e. `g' y = supₛ {x | f x ≤ y}`), then `fb` is
+and `g'` is an order right adjoint of `g` (i.e. `g' y = sSup {x | f x ≤ y}`), then `fb` is
 semiconjugate to `fa` by `g'`.
 
 This is a version of Proposition 2.1 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
 theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} {fb : β ↪o β} {g : α → β}
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
-    Function.Semiconj g' fb fa :=
-  by
+    Function.Semiconj g' fb fa := by
   refine' fun y => (hg' _).unique _
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
@@ -105,8 +103,7 @@ variable {G : Type _}
 
 theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
-    Function.Semiconj h (f₂ g) (f₁ g) :=
-  by
+    Function.Semiconj h (f₂ g) (f₁ g) := by
   refine' fun y => (H _).unique _
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
@@ -118,23 +115,22 @@ isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconju
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
-theorem supₛ_div_semiconj [CompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α) (g : G) :
+theorem sSup_div_semiconj [CompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
-  semiconj_of_isLUB f₁ f₂ (fun _ => isLUB_supᵢ) _
-#align function.Sup_div_semiconj Function.supₛ_div_semiconj
+  semiconj_of_isLUB f₁ f₂ (fun _ => isLUB_iSup) _
+#align function.Sup_div_semiconj Function.sSup_div_semiconj
 
 /-- Consider two actions `f₁ f₂ : G → α → α` of a group on a conditionally complete lattice by order
 isomorphisms. Suppose that each set $s(x)=\{f_1(g)^{-1} (f_2(g)(x)) | g \in G\}$ is bounded above.
-Then the map `x ↦ supₛ s(x)` semiconjugates each `f₁ g'` to `f₂ g'`.
+Then the map `x ↦ sSup s(x)` semiconjugates each `f₁ g'` to `f₂ g'`.
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
-theorem csupₛ_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
+theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
-  semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csupₛ (range_nonempty _) (hbdd x)) _
-#align function.cSup_div_semiconj Function.csupₛ_div_semiconj
+  semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csSup (range_nonempty _) (hbdd x)) _
+#align function.cSup_div_semiconj Function.csSup_div_semiconj
 
 -- Guard against import creep
--- Porting note: not implemented yet
--- assert_not_exists finset
+assert_not_exists Finset

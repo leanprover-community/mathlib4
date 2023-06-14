@@ -10,11 +10,12 @@ def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
 Commands:
-  # No priviledge required
+  # No privilege required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
-  mk           Compress non-compressed build files into the local cache
-  mk!          Compress build files into the local cache (no skipping)
+  get- [ARGS]  Download linked files missing to the local cache, but do no compress
+  pack         Compress non-compressed build files into the local cache
+  pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
@@ -42,24 +43,36 @@ Which will download the cache for:
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
+open System (FilePath) in
+/-- Note that this normalizes the path strings, which is needed when running from a unix shell
+(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
+match. -/
+def toPaths (args : List String) : List FilePath :=
+  args.map (FilePath.mk · |>.normalize)
+
+def curlArgs : List String :=
+  ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
+
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
-  if !(← validateCurl) then return
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
+  let goodCurl := !(curlArgs.contains (args.headD "") && !(← validateCurl))
   match args with
-  | ["get"] => getFiles hashMap false
-  | ["get!"] => getFiles hashMap true
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (args.map .mk)) false
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (args.map .mk)) true
-  | ["mk"] => discard $ mkCache hashMap false
-  | ["mk!"] => discard $ mkCache hashMap true
+  | ["get"] => getFiles hashMap false goodCurl true
+  | ["get!"] => getFiles hashMap true goodCurl true
+  | ["get-"] => getFiles hashMap false goodCurl false
+  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl true
+  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true goodCurl true
+  | "get-"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl false
+  | ["pack"] => discard $ packCache hashMap false
+  | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← mkCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← mkCache hashMap false) true (← getToken)
+  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
+  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

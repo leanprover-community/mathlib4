@@ -12,7 +12,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Qq.Match
+import Qq
 
 /-!
 The `tauto` tactic.
@@ -20,16 +20,18 @@ The `tauto` tactic.
 
 namespace Mathlib.Tactic.Tauto
 
-open Lean Elab.Tactic Parser.Tactic Lean.Meta
+open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId
 open Qq
 
 initialize registerTraceClass `tauto
 
 /-- Tries to apply de-Morgan-like rules on a hypothesis. -/
-def distribNotAt (h : LocalDecl) (g : MVarId) : MetaM MVarId := do
+def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := g.withContext do
+  let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
+  let h ← fvarId.getDecl
   let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
   let replace (p : Expr) := g.replace h.fvarId p
-  let result ← match e with
+  match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
     replace q(mt Iff.to_eq $h')
@@ -70,16 +72,56 @@ def distribNotAt (h : LocalDecl) (g : MVarId) : MetaM MVarId := do
     let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
     replace q(Decidable.not_or_of_imp $h')
   | _ => throwError "distribNot found nothing to work on"
-  pure result.mvarId
+
+/--
+State of the `distribNotAt` function. We need to carry around the list of
+remaining hypothesis as fvars so that we can incrementally apply the
+`AssertAfterResult.subst` from each step to each of them. Otherwise,
+they could end up referring to old hypotheses.
+-/
+structure DistribNotState where
+  /-- The list of hypothesis left to work on, renamed to be up-to-date with
+  the current goal. -/
+  fvars : List Expr
+
+  /-- The current goal. -/
+  currentGoal : MVarId
+
+/--
+Calls `distribNotAt` on the head of `state.fvars` up to `nIters` times, returning
+early on failure.
+-/
+partial def distribNotAt (nIters : Nat) (state : DistribNotState) : MetaM DistribNotState :=
+match nIters, state.fvars with
+| 0, _ | _, [] => pure state
+| n + 1, fv::fvs => do
+  try
+    let result ← distribNotOnceAt fv state.currentGoal
+    let newFVars := (mkFVar result.fvarId)::(fvs.map (fun x ↦ result.subst.apply x))
+    distribNotAt n ⟨newFVars, result.mvarId⟩
+  catch _ => pure state
+
+/--
+For each fvar in `fvars`, calls `distribNotAt` and carries along the resulting
+renamings.
+-/
+partial def distribNotAux (fvars : List Expr) (g : MVarId) : MetaM MVarId :=
+match fvars with
+| [] => pure g
+| _ => do
+   let result ← distribNotAt 3 ⟨fvars, g⟩
+   distribNotAux result.fvars.tail! result.currentGoal
 
 /--
 Tries to apply de-Morgan-like rules on all hypotheses.
 Always succeeds, regardless of whether any progress was actually made.
 -/
 def distribNot : TacticM Unit := withMainContext do
+  let mut fvars := []
   for h in ← getLCtx do
     if !h.isImplementationDetail then
-      iterateAtMost 3 $ liftMetaTactic' (distribNotAt h)
+      fvars := (mkFVar h.fvarId):: fvars
+  liftMetaTactic' (distribNotAux fvars)
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
 structure Config
@@ -124,11 +166,11 @@ def tautoCore : TacticM Unit := do
     allGoals (
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       distribNot <;>
-      liftMetaTactic (casesMatching · casesMatcher) <;>
+      liftMetaTactic (casesMatching casesMatcher (recursive := true)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
       (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
-      liftMetaTactic (constructorMatching · coreConstructorMatcher) <;>
+      liftMetaTactic (constructorMatching · coreConstructorMatcher (recursive := true)) <;>
       do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
     if gs == gs' then failure -- no progress

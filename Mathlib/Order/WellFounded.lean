@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.well_founded
-! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.ByContra
 import Mathlib.Data.Set.Image
 
 /-!
@@ -85,28 +84,6 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   exact hm' y hy' hy
 #align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min
 
-theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : (x ≤ y → y = x) ↔ ¬x < y := by
-  constructor
-  · intro xle nge
-    rw [xle (le_not_le_of_lt nge).1] at nge
-    exact lt_irrefl x nge
-  . intro ngt xle
-    contrapose! ngt
-    exact lt_of_le_of_ne xle (Ne.symm ngt)
-#align well_founded.eq_iff_not_lt_of_le WellFounded.eq_iff_not_lt_of_le
-
-theorem wellFounded_iff_has_max' [PartialOrder α] :
-    WellFounded ((· > ·) : α → α → Prop) ↔
-      ∀ p : Set α, p.Nonempty → ∃ m ∈ p, ∀ x ∈ p, m ≤ x → x = m :=
-  by simp [eq_iff_not_lt_of_le, wellFounded_iff_has_min]
-#align well_founded.well_founded_iff_has_max' WellFounded.wellFounded_iff_has_max'
-
-theorem wellFounded_iff_has_min' [PartialOrder α] :
-    WellFounded (LT.lt : α → α → Prop) ↔
-      ∀ p : Set α, p.Nonempty → ∃ m ∈ p, ∀ x ∈ p, x ≤ m → x = m :=
-  @wellFounded_iff_has_max' αᵒᵈ _
-#align well_founded.well_founded_iff_has_min' WellFounded.wellFounded_iff_has_min'
-
 open Set
 
 /-- The supremum of a bounded, well-founded order -/
@@ -153,7 +130,7 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     exact hy.symm
     left
     exact hy
-  rintro (hy | rfl); exact trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
+  rintro (hy | rfl); exact _root_.trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
 #align well_founded.lt_succ_iff WellFounded.lt_succ_iff
 
 section LinearOrder

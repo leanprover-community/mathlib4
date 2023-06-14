@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Isomorphisms
@@ -39,7 +39,7 @@ category, category theory, isomorphism
 
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 open Category
@@ -63,8 +63,18 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
+#align category_theory.iso.hom CategoryTheory.Iso.hom
+#align category_theory.iso.inv CategoryTheory.Iso.inv
+#align category_theory.iso.inv_hom_id CategoryTheory.Iso.inv_hom_id
+#align category_theory.iso.hom_inv_id CategoryTheory.Iso.hom_inv_id
 
 attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
+#align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
+#align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
+
+-- Pretty printer support for additional arguments when in a concrete category
+pp_extended_field_notation Iso.hom
+pp_extended_field_notation Iso.inv
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -85,7 +95,6 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
     _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
     _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
-
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
@@ -94,6 +103,8 @@ def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
 #align category_theory.iso.symm CategoryTheory.Iso.symm
+
+pp_extended_field_notation Iso.symm
 
 @[simp]
 theorem symm_hom (α : X ≅ Y) : α.symm.hom = α.inv :=
@@ -131,19 +142,31 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 #align category_theory.iso.refl CategoryTheory.Iso.refl
+#align category_theory.iso.refl_inv CategoryTheory.Iso.refl_inv
+#align category_theory.iso.refl_hom CategoryTheory.Iso.refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
+
+theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 #align category_theory.iso.refl_symm CategoryTheory.Iso.refl_symm
 
+-- Porting note: It seems that the trans `trans` attribute isn't working properly
+-- in this case, so we have to manually add a `Trans` instance (with a `simps` tag).
 /-- Composition of two isomorphisms -/
 @[trans, simps]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 #align category_theory.iso.trans CategoryTheory.Iso.trans
+#align category_theory.iso.trans_hom CategoryTheory.Iso.trans_hom
+#align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
+
+@[simps]
+instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+  trans := trans
 
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
@@ -276,10 +299,12 @@ theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
 @[simp]
 theorem hom_inv_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : X ⟶ Z) : f ≫ inv f ≫ g = g := by
   simp [← Category.assoc]
+#align category_theory.is_iso.hom_inv_id_assoc CategoryTheory.IsIso.hom_inv_id_assoc
 
 @[simp]
 theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f ≫ f ≫ g = g := by
   simp [← Category.assoc]
+#align category_theory.is_iso.inv_hom_id_assoc CategoryTheory.IsIso.inv_hom_id_assoc
 
 end IsIso
 
@@ -568,6 +593,10 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom_inv_id := by rw [← map_comp, Iso.hom_inv_id, ← map_id]
   inv_hom_id := by rw [← map_comp, Iso.inv_hom_id, ← map_id]
 #align category_theory.functor.map_iso CategoryTheory.Functor.mapIso
+#align category_theory.functor.map_iso_inv CategoryTheory.Functor.mapIso_inv
+#align category_theory.functor.map_iso_hom CategoryTheory.Functor.mapIso_hom
+
+pp_extended_field_notation Functor.mapIso
 
 @[simp]
 theorem mapIso_symm (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.mapIso i.symm = (F.mapIso i).symm :=

@@ -61,29 +61,29 @@ open Function OrderDual
 variable {ι α β : Type _} {π : ι → Type _}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
-def symmDiff [HasSup α] [SDiff α] (a b : α) : α :=
+def symmDiff [Sup α] [SDiff α] (a b : α) : α :=
   a \ b ⊔ b \ a
 #align symm_diff symmDiff
 
 /-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
 propositions. -/
-def bihimp [HasInf α] [HImp α] (a b : α) : α :=
+def bihimp [Inf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
 /- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
-  `order` or `symm_diff` if that happens. -/
+  `order` or `symmDiff` if that happens. -/
 /-- Notation for symmDiff -/
 infixl:100 " ∆ " =>  symmDiff
 
 /-- Notation for bihimp -/
 infixl:100 " ⇔ " => bihimp
 
-theorem symmDiff_def [HasSup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
+theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
 #align symm_diff_def symmDiff_def
 
-theorem bihimp_def [HasInf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
+theorem bihimp_def [Inf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 #align bihimp_def bihimp_def
 

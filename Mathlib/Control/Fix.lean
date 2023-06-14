@@ -32,7 +32,7 @@ open Classical
 
 variable {α : Type _} {β : α → Type _}
 
-/-- `Fix α` provides a `fix` operator to define recursive computatiation
+/-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type _) where
   /-- `fix f` represents the computation of a fixed point for `f`.-/
@@ -68,8 +68,7 @@ it satisfies the equations:
   1. `fix f = f (fix f)`          (is a fixed point)
   2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
 -/
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-protected noncomputable def fix (x : α) : Part (β x) :=
+protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 #align part.fix Part.fix
@@ -96,7 +95,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     rw [assert_neg]
     rfl
     rw [Nat.zero_add] at _this
-    simpa only [_root_.not_not, Coe]
+    simpa only [not_not, Coe]
   | succ n n_ih =>
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
@@ -122,9 +121,9 @@ end Part
 
 namespace Part
 
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-noncomputable instance : Fix (Part α) :=
+instance hasFix : Fix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
+#align part.has_fix Part.hasFix
 
 end Part
 
@@ -132,8 +131,7 @@ open Sigma
 
 namespace Pi
 
--- porting note: added noncomputable, because WellFounded.fix is noncomputable (for now?)
-noncomputable instance Part.hasFix {β} : Fix (α → Part β) :=
+instance Part.hasFix {β} : Fix (α → Part β) :=
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
 

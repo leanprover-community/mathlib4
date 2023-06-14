@@ -109,7 +109,7 @@ end
 theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = size m + n := by
   induction' n with n IH <;> simp [shiftl'] at h⊢
   rw [size_bit h, Nat.add_succ]
-  by_cases s0 : shiftl' b m n = 0 <;> [skip, rw [IH s0]]
+  by_cases s0 : shiftl' b m n = 0 <;> [skip; rw [IH s0]]
   rw [s0] at h⊢
   cases b; · exact absurd rfl h
   have : shiftl' true m n + 1 = 1 := congr_arg (· + 1) s0
@@ -133,7 +133,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   apply binaryRec _ _ n
   · apply this rfl
   intro b n IH
-  by_cases bit b n = 0
+  by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftl_succ]
   exact bit_lt_bit0 _ IH

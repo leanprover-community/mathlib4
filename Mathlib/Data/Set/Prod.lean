@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 
 ! This file was ported from Lean 3 source module data.set.prod
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit 27f315c5591c84687852f816d8ef31fe103d03de
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.SProd
 
 /-!
 # Sets in product and pi types
@@ -37,14 +38,14 @@ section Prod
 
 variable {α β γ δ : Type _} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
-/-- The cartesian product `prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) :=
   { p | p.1 ∈ s ∧ p.2 ∈ t }
 #align set.prod Set.prod
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-infixr:82 " ×ˢ " => Set.prod
+@[default_instance]
+instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+  sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
   rfl
@@ -420,7 +421,7 @@ theorem prod_eq_prod_iff :
 
 @[simp]
 theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ := by
-  simp_rw [prod_eq_prod_iff, ht.ne_empty, eq_self_iff_true, and_true_iff, or_iff_left_iff_imp,
+  simp_rw [prod_eq_prod_iff, ht.ne_empty, and_true_iff, or_iff_left_iff_imp,
     or_false_iff]
   rintro ⟨rfl, rfl⟩
   rfl
@@ -476,6 +477,10 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
   Iff.rfl
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
+lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
+  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+#align set.diagonal_nonempty Set.diagonal_nonempty
+
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 #align set.decidable_mem_diagonal Set.decidableMemDiagonal
@@ -492,11 +497,13 @@ theorem range_diag : (range fun x => (x, x)) = diagonal α := by
   simp [diagonal, eq_comm]
 #align set.range_diag Set.range_diag
 
+theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
+  rw [← range_diag, range_subset_iff]
+#align set.diagonal_subset_iff Set.diagonal_subset_iff
+
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
-  subset_compl_comm.trans <| by
-    simp_rw [← range_diag, range_subset_iff, disjoint_left, mem_compl_iff, prod_mk_mem_set_prod_eq,
-      not_and]
+  prod_subset_iff.trans disjoint_iff_forall_ne.symm
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
 @[simp]
@@ -507,6 +514,16 @@ theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = 
 theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 #align set.diag_preimage_prod_self Set.diag_preimage_prod_self
+
+theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨x, y⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+#align set.diag_image Set.diag_image
 
 end Diagonal
 
@@ -539,8 +556,10 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 #align set.off_diag_eq_empty Set.offDiag_eq_empty
 
 alias offDiag_nonempty ↔ _ Nontrivial.offDiag_nonempty
+#align set.nontrivial.off_diag_nonempty Set.Nontrivial.offDiag_nonempty
 
 alias offDiag_nonempty ↔ _ Subsingleton.offDiag_eq_empty
+#align set.subsingleton.off_diag_eq_empty Set.Subsingleton.offDiag_eq_empty
 
 variable (s t)
 
@@ -613,7 +632,7 @@ section Pi
 
 variable {ι : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
 
-/-- Given an index set `ι` and a family of sets `t : Π i, set (α i)`, `pi s t`
+/-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
 whenever `a ∈ s`. -/
 def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
@@ -729,8 +748,7 @@ theorem preimage_pi (s : Set ι) (t : ∀ i, Set (β i)) (f : ∀ i, α i → β
 
 theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : ∀ i, Set (α i)) :
     (pi s fun i => if p i then t₁ i else t₂ i) =
-      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ :=
-  by
+      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine' ⟨fun h => _, _⟩
   · constructor <;>
@@ -764,7 +782,6 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
         by rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
     _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
         by rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
-
 #align set.pi_update_of_mem Set.pi_update_of_mem
 
 theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type _} (i : ι) (f : ∀ j, α j) (a : α i)

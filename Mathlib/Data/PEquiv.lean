@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.pequiv
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -68,33 +68,27 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
-instance : CoeFun (α ≃. β) fun _ => α → Option β :=
-  ⟨toFun⟩
+instance : FunLike (α ≃. β) α fun _ => Option β :=
+  { coe := toFun
+    coe_injective' := by
+      rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)
+      congr with y x
+      simp only [hf, hg] }
+
+@[simp] theorem coe_mk (f₁ : α → Option β) (f₂ h) : (mk f₁ f₂ h : α → Option β) = f₁ :=
+  rfl
 
 theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x : α) :
     (PEquiv.mk f₁ f₂ h : α → Option β) x = f₁ x :=
-  by simp
+  rfl
 #align pequiv.coe_mk_apply PEquiv.coe_mk_apply
 
-@[ext]
-theorem ext : ∀ {f g : α ≃. β} (_ : ∀ x, f x = g x), f = g
-  | ⟨f₁, f₂, hf⟩, ⟨g₁, g₂, hg⟩, h => by
-    have h : f₁ = g₁ := funext h
-    have : ∀ b, f₂ b = g₂ b := by
-      subst h
-      intro b
-      have hf := fun a => hf a b
-      have hg := fun a => hg a b
-      cases' h : g₂ b with a
-      · simp only [h, Option.not_mem_none, false_iff_iff] at hg
-        simp only [hg, iff_false_iff] at hf
-        rwa [Option.eq_none_iff_forall_not_mem]
-      · rw [← Option.mem_def, hf, ← hg, h, Option.mem_def]
-    simp [*, funext_iff]
+@[ext] theorem ext {f g : α ≃. β} (h : ∀ x, f x = g x) : f = g :=
+  FunLike.ext f g h
 #align pequiv.ext PEquiv.ext
 
 theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => by rw [h], ext⟩
+  FunLike.ext_iff
 #align pequiv.ext_iff PEquiv.ext_iff
 
 /-- The identity map as a partial equivalence. -/

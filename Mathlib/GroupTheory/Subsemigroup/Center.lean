@@ -103,8 +103,7 @@ theorem center_units_eq [GroupWithZero M] : Set.center Mˣ = ((↑) : Mˣ → M)
 #align set.center_units_eq Set.center_units_eq
 
 @[simp]
-theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M :=
-  by
+theorem inv_mem_center₀ [GroupWithZero M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
   obtain rfl | ha0 := eq_or_ne a 0
   · rw [inv_zero]
     exact zero_mem_center M
@@ -123,8 +122,7 @@ theorem div_mem_center [Group M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈
 
 @[simp]
 theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
-    (hb : b ∈ Set.center M) : a / b ∈ Set.center M :=
-  by
+    (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center₀ hb)
 #align set.div_mem_center₀ Set.div_mem_center₀
@@ -150,7 +148,7 @@ variable (M) [Semigroup M]
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
-  mul_mem':= Set.mul_mem_center
+  mul_mem' := Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
@@ -174,8 +172,10 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 
 /-- The center of a semigroup is commutative. -/
 @[to_additive "The center of an additive semigroup is commutative."]
-instance : CommSemigroup (center M) :=
+instance center.commSemigroup : CommSemigroup (center M) :=
   { MulMemClass.toSemigroup (center M) with mul_comm := fun _ b => Subtype.ext <| b.2 _ }
+#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
+#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
 
 end
 
@@ -194,5 +194,4 @@ end
 end Subsemigroup
 
 -- Guard against import creep
--- Porting note: Not implemented yet
--- assert_not_exists finset
+assert_not_exists Finset

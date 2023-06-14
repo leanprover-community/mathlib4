@@ -196,7 +196,7 @@ instance linearOrder : LinearOrder ℚ where
   le_trans := @Rat.le_trans
   le_antisymm := @Rat.le_antisymm
   le_total := Rat.le_total
-  decidable_le _ _ := by infer_instance
+  decidableLE _ _ := by infer_instance
   lt_iff_le_not_le _ _ := by
     rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 
@@ -211,9 +211,9 @@ instance : SemilatticeInf ℚ := by infer_instance
 
 instance : SemilatticeSup ℚ := by infer_instance
 
-instance : HasInf ℚ := by infer_instance
+instance : Inf ℚ := by infer_instance
 
-instance : HasSup ℚ := by infer_instance
+instance : Sup ℚ := by infer_instance
 
 instance : PartialOrder ℚ := by infer_instance
 
@@ -311,15 +311,13 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
 
 end Rat
 
--- Porting note: `assert_not_exists` not yet implemented.
-
 -- We make some assertions here about declarations that do not need to be in the import dependencies
 -- for this file, but have been in the past.
--- assert_not_exists fintype
+assert_not_exists Fintype
 
--- assert_not_exists set.Icc
+assert_not_exists Set.Icc
 
--- assert_not_exists galois_connection
+assert_not_exists GaloisConnection
 
 -- These are less significant, but should not be relaxed until at least after port to Lean 4.
--- assert_not_exists LinearOrderedCommGroupWithZero
+assert_not_exists LinearOrderedCommGroupWithZero

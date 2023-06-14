@@ -41,22 +41,25 @@ instance : SMul M (Option α) :=
 theorem smul_def : a • x = x.map ((· • ·) a) :=
   rfl
 #align option.smul_def Option.smul_def
+#align option.vadd_def Option.vadd_def
 
 @[to_additive (attr := simp)]
 theorem smul_none : a • (none : Option α) = none :=
   rfl
 #align option.smul_none Option.smul_none
+#align option.vadd_none Option.vadd_none
 
 @[to_additive (attr := simp)]
 theorem smul_some : a • some b = some (a • b) :=
   rfl
 #align option.smul_some Option.smul_some
+#align option.vadd_some Option.vadd_some
 
 @[to_additive]
 instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=
   ⟨fun a b x => by
     cases x
-    exacts[rfl, congr_arg some (smul_assoc _ _ _)]⟩
+    exacts [rfl, congr_arg some (smul_assoc _ _ _)]⟩
 
 @[to_additive]
 instance [SMulCommClass M N α] : SMulCommClass M N (Option α) :=
@@ -66,7 +69,7 @@ instance [SMulCommClass M N α] : SMulCommClass M N (Option α) :=
 instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option α) :=
   ⟨fun a x => by
     cases x
-    exacts[rfl, congr_arg some (op_smul_eq_smul _ _)]⟩
+    exacts [rfl, congr_arg some (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
 instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
@@ -79,9 +82,9 @@ instance [Monoid M] [MulAction M α] :
   smul := (· • ·)
   one_smul b := by
     cases b
-    exacts[rfl, congr_arg some (one_smul _ _)]
+    exacts [rfl, congr_arg some (one_smul _ _)]
   mul_smul a₁ a₂ b := by
     cases b
-    exacts[rfl, congr_arg some (mul_smul _ _ _)]
+    exacts [rfl, congr_arg some (mul_smul _ _ _)]
 
 end Option

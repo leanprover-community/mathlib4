@@ -9,8 +9,8 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.SimpSet
-import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Mathlib.Tactic.CasesM
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -182,7 +182,7 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
--- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+-- [todo] add notation for `Functor.mapConst` and port `Functor.mapConstRev`
 /-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
@@ -192,6 +192,10 @@ def succeeds {α} (x : F α) : F Bool :=
 def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
+
+/-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
+def try? {α} (x : F α) : F (Option α) :=
+  some <$> x <|> pure none
 
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
@@ -219,7 +223,8 @@ instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
   bind := @Sum.bind e
 
-instance : LawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
+instance : LawfulFunctor (Sum.{v, u} e) := by
+  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by
@@ -263,12 +268,9 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
-      by
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
-    _ = (fun b a => f a b) <$> b <*> a :=
-      by
-        rw [@CommApplicative.commutative_prod m h] <;>
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
-
+    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
+    _ = (fun b a => f a b) <$> b <*> a := by
+      rw [@CommApplicative.commutative_prod m h] <;>
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

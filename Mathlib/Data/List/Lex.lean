@@ -9,7 +9,6 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Classical
 
 /-!
 # Lexicographic ordering of lists.
@@ -191,5 +190,19 @@ instance [LinearOrder α] : LinearOrder (List α) :=
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 #align list.has_le' List.LE'
+
+theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < ·) l l' := by
+  constructor <;>
+  intro h
+  · induction h with
+    | nil b bs => exact Lex.nil
+    | @head a as b bs hab => apply Lex.rel; assumption
+    | @tail a as b bs hab hba _ ih =>
+      have heq : a = b := _root_.le_antisymm (le_of_not_lt hba) (le_of_not_lt hab)
+      subst b; apply Lex.cons; assumption
+  · induction h with
+    | @nil a as => apply lt.nil
+    | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
+    | @rel a as b bs h => apply lt.head; assumption
 
 end List

@@ -16,7 +16,7 @@ import Mathlib.Init.Data.List.Basic
 
 This file allows to state that all propositions in a list are equivalent. It is used by
 `Mathlib.Tactic.Tfae`.
-`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `pairwise (↔) l`.
+`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
 -/
 
 
@@ -40,12 +40,12 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
     fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
-    by
-    rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
-    · rfl
-    · exact ab.trans (H _ h _ hq)
-    · exact (ab.trans (H _ h _ hp)).symm
-    · exact H _ hp _ hq⟩
+      by
+        rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
+        · rfl
+        · exact ab.trans (H _ h _ hq)
+        · exact (ab.trans (H _ h _ hp)).symm
+        · exact H _ hp _ hq⟩
 #align list.tfae_cons_of_mem List.tfae_cons_of_mem
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
@@ -57,8 +57,7 @@ theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : T
 #align list.tfae_of_forall List.tfae_of_forall
 
 theorem tfae_of_cycle {a b} {l : List Prop} :
-    List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) :=
-  by
+    List.Chain (· → ·) a (b :: l) → (ilast' b l → a) → TFAE (a :: b :: l) := by
   induction' l with c l IH generalizing a b <;>
     simp only [tfae_cons_cons, tfae_singleton, and_true_iff, chain_cons, Chain.nil] at *
   · intro a b

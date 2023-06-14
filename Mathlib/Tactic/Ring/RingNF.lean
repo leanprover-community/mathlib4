@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Tim Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
+import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic
@@ -17,7 +18,8 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean Qq Meta
+open Lean hiding Rat
+open Qq Meta
 
 namespace Ring
 
@@ -28,7 +30,7 @@ def ExBase.isAtom : ExBase sα a → Bool
 
 /-- True if this represents an atomic expression. -/
 def ExProd.isAtom : ExProd sα a → Bool
-  | .mul va₁ (.const 1) (.const 1) => va₁.isAtom
+  | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
   | _ => false
 
 /-- True if this represents an atomic expression. -/
@@ -89,11 +91,13 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
         guard e.isApp -- all interesting ring expressions are applications
-        let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
+        let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-        let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
-        let ⟨a, va, pa⟩ ← eval sα c e rctx s
-        guard !va.isAtom
+        let c ← mkCache sα
+        let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
+        | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
+        | some none => failure -- No point rewriting atoms
+        | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
@@ -115,6 +119,7 @@ theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
 theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
     (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
   simp [Int.negOfNat_eq, OfNat.ofNat]
+theorem rat_rawCast_2 {R} [DivisionRing R] : (Rat.rawCast n d : R) = n / d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:
@@ -135,8 +140,8 @@ partial def M.run
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2
-      ].foldlM (·.addConst · (post := false)) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2,
+      ``rat_rawCast_2].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
@@ -188,7 +193,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? : tactic => do
+elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -196,7 +201,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
     fun _ ↦ throwError "ring_nf failed"
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
+@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| ring_nf ! $(cfg)? $(loc)?)
 
 @[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? (config)? : conv

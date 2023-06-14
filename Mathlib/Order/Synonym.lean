@@ -129,14 +129,17 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 @[elab_as_elim]
 protected def rec {C : αᵒᵈ → Sort _} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
   h₂
+#align order_dual.rec OrderDual.rec
 
 @[simp]
 protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
   Iff.rfl
+#align order_dual.forall OrderDual.forall
 
 @[simp]
 protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
   Iff.rfl
+#align order_dual.exists OrderDual.exists
 
 alias toDual_le_toDual ↔ _ _root_.LE.le.dual
 
@@ -156,16 +159,19 @@ end OrderDual
 /-- A type synonym to equip a type with its lexicographic order. -/
 def Lex (α : Type _) :=
   α
+#align lex Lex
 
 /-- `toLex` is the identity function to the `Lex` of a type.  -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
+#align to_lex toLex
 
-/-- `ofLex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `Lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _
+#align of_lex ofLex
 
 @[simp]
 theorem toLex_symm_eq : (@toLex α).symm = ofLex :=
@@ -201,3 +207,4 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
 
 /-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
 protected def Lex.rec {β : Lex α → Sort _} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+#align lex.rec Lex.rec

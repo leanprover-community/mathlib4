@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.char_zero.lemmas
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
+! leanprover-community/mathlib commit acee671f47b8e7972a1eb6f4eed74b4b3abce829
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,6 +34,7 @@ variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
 def castEmbedding : ℕ ↪ R :=
   ⟨Nat.cast, cast_injective⟩
 #align nat.cast_embedding Nat.castEmbedding
+#align nat.cast_embedding_apply Nat.castEmbedding_apply
 
 @[simp]
 theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :
@@ -43,7 +44,7 @@ theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : �
 #align nat.cast_pow_eq_one Nat.cast_pow_eq_one
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
     ((m / n : ℕ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
@@ -182,6 +183,15 @@ instance {R : Type _} [AddMonoidWithOne R] [CharZero R] :
     rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
+
+namespace WithBot
+
+instance {R : Type _} [AddMonoidWithOne R] [CharZero R] :
+    CharZero (WithBot R) where
+  cast_injective m n h := by
+    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+
+end WithBot
 
 section RingHom
 

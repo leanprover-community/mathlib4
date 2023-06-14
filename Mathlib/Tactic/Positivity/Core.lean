@@ -7,9 +7,10 @@ import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Order.Basic
+import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
-import Qq.Match
+import Qq
 
 /-!
 ## `positivity` core functionality
@@ -23,7 +24,7 @@ open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
-syntax (name := positivity) "positivity" term,+ : attr
+syntax (name := positivity) "positivity " term,+ : attr
 
 lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
@@ -50,7 +51,7 @@ def Strictness.toString : Strictness zα pα e → String
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where
-  /-- Attempts to prove a expression `e : α` is `>0`, `≥0`, or `≠0`. -/
+  /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
   eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
 
@@ -124,6 +125,27 @@ lemma nz_of_isNegNat [StrictOrderedRing A]
   apply ne_of_gt
   simpa using w
 
+lemma pos_of_isRat [LinearOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (0 < n)) → (0 < (e : A))
+  | ⟨inv, eq⟩, h => by
+    have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)
+    rw [eq]
+    exact mul_pos pos_n pos_invOf_d
+
+lemma nonneg_of_isRat [LinearOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
+  | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
+
+lemma nz_of_isRat [LinearOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
+  | ⟨inv, eq⟩, h => by
+    have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have neg_n : ((n : A) < 0) := Int.cast_lt_zero (n := n) |>.2 (of_decide_eq_true h)
+    have neg := mul_neg_of_neg_of_pos neg_n pos_invOf_d
+    rw [eq]
+    exact ne_iff_lt_or_gt.2 (Or.inl neg)
+
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
@@ -144,22 +166,37 @@ def throwNone [Monad m] [Alternative m]
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
 def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with
-  | .isNat i lit p =>
+  | .isBool .. => failure
+  | .isNat _ lit p =>
     if 0 < lit.natLit! then
       let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
+      assumeInstancesCommute
+      have p : Q(NormNum.IsNat $e $lit) := p
       let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
       pure (.positive (q(@pos_of_isNat $α _ _ _ $p $p') : Expr))
     else
       let _a ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
-      have p : Q(by clear! «$i»; exact NormNum.IsNat $e $lit) := p
+      assumeInstancesCommute
+      have p : Q(NormNum.IsNat $e $lit) := p
       pure (.nonnegative (q(nonneg_of_isNat $p) : Expr))
-  | .isNegNat i lit p =>
+  | .isNegNat _ lit p =>
     let _a ← synthInstanceQ (q(StrictOrderedRing $α) : Q(Type u))
-    have p : Q(by clear! «$i»; exact NormNum.IsInt $e (Int.negOfNat $lit)) := p
+    assumeInstancesCommute
+    have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
     pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
-  | .isRat _ .. => throwError "isRat" -- TODO
+  | .isRat i q n d p =>
+    let _a ← synthInstanceQ (q(LinearOrderedRing $α) : Q(Type u))
+    have p : Q(by clear! «$i»; exact NormNum.IsRat $e $n $d) := p
+    if 0 < q then
+      let w : Q(decide (0 < $n) = true) := (q(Eq.refl true) : Expr)
+      pure (.positive (q(pos_of_isRat $p $w) : Expr))
+    else if q = 0 then -- should not be reachable, but just in case
+      let w : Q(decide ($n = 0) = true) := (q(Eq.refl true) : Expr)
+      pure (.nonnegative (q(nonneg_of_isRat $p $w) : Expr))
+    else
+      let w : Q(decide ($n < 0) = true) := (q(Eq.refl true) : Expr)
+      pure (.nonzero (q(nz_of_isRat $p $w) : Expr))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do

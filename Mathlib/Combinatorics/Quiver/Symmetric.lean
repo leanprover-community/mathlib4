@@ -35,6 +35,7 @@ namespace Quiver
     NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
 -- Porting note: no hasNonemptyInstance linter yet
 def Symmetrify (V : Type _) := V
+#align quiver.symmetrify Quiver.Symmetrify
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
@@ -46,15 +47,18 @@ variable (U V W : Type _) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} 
 class HasReverse where
   /-- the map which sends an arrow to its reverse -/
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
+#align quiver.has_reverse Quiver.HasReverse
 
 /-- Reverse the direction of an arrow. -/
 def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
   HasReverse.reverse'
+#align quiver.reverse Quiver.reverse
 
 /-- A quiver `HasInvolutiveReverse` if reversing twice is the identity.`-/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f
+#align quiver.has_involutive_reverse Quiver.HasInvolutiveReverse
 
 variable {U V W}
 
@@ -76,7 +80,6 @@ theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
 theorem eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
     (g : b ⟶ a) : f = reverse g ↔ reverse f = g := by
   rw [←reverse_inj, reverse_reverse]
-
 #align quiver.eq_reverse_iff Quiver.eq_reverse_iff
 
 section MapReverse
@@ -140,6 +143,7 @@ abbrev Hom.toNeg {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom Y X :
 def Path.reverse [HasReverse V] {a : V} : ∀ {b}, Path a b → Path b a
   | _, Path.nil => Path.nil
   | _, Path.cons p e => (Quiver.reverse e).toPath.comp p.reverse
+#align quiver.path.reverse Quiver.Path.reverse
 
 @[simp]
 theorem Path.reverse_toPath [HasReverse V] {a b : V} (f : a ⟶ b) :
@@ -153,6 +157,7 @@ theorem Path.reverse_comp [HasReverse V] {a b c : V} (p : Path a b) (q : Path b 
   induction' q with _ _ _ _ h
   · simp
   · simp [h]
+#align quiver.path.reverse_comp Quiver.Path.reverse_comp
 
 @[simp]
 theorem Path.reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (p : Path a b) :
@@ -161,6 +166,7 @@ theorem Path.reverse_reverse [h : HasInvolutiveReverse V] {a b : V} (p : Path a 
   · simp
   · rw [Path.reverse, Path.reverse_comp, h, Path.reverse_toPath, Quiver.reverse_reverse]
     rfl
+#align quiver.path.reverse_reverse Quiver.Path.reverse_reverse
 
 end Paths
 
@@ -170,6 +176,7 @@ namespace Symmetrify
 def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl
+#align quiver.symmetrify.of Quiver.Symmetrify.of
 
 variable {V' : Type _} [Quiver.{v' + 1} V']
 
@@ -181,6 +188,7 @@ def lift [HasReverse V'] (φ : Prefunctor V V') :
   map f := match f with
   | Sum.inl g => φ.map g
   | Sum.inr g => reverse (φ.map g)
+#align quiver.symmetrify.lift Quiver.Symmetrify.lift
 
 theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     Symmetrify.of.comp (Symmetrify.lift φ) = φ := by
@@ -189,6 +197,7 @@ theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
     rfl
   · rintro X Y f
     rfl
+#align quiver.symmetrify.lift_spec Quiver.Symmetrify.lift_spec
 
 theorem lift_reverse [h : HasInvolutiveReverse V']
     (φ : Prefunctor V V') {X Y : Symmetrify V} (f : X ⟶ Y) :
@@ -198,6 +207,7 @@ theorem lift_reverse [h : HasInvolutiveReverse V']
     rfl
   · simp only [reverse_reverse]
     rfl
+#align quiver.symmetrify.lift_reverse Quiver.Symmetrify.lift_reverse
 
 /-- `lift φ` is the only prefunctor extending `φ` and preserving reverses. -/
 theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V') (hΦ : (of ⋙q Φ) = φ)
@@ -245,7 +255,7 @@ end Push
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
 Note that if `V` doesn't `HasReverse`, then the definition is stronger than
-simply having a preconnected underlying `simple_graph`, since a path in one
+simply having a preconnected underlying `SimpleGraph`, since a path in one
 direction doesn't induce one in the other.
 -/
 def IsPreconnected (V) [Quiver.{u + 1} V] :=

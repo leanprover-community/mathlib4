@@ -43,35 +43,30 @@ This is useful for hypotheses of the form `h : a ∈ [l₁, l₂, ...]`,
 which will be transformed into a sequence of goals with hypotheses `h : a = l₁`, `h : a = l₂`,
 and so on.
 -/
-partial def unfoldCases (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
+partial def unfoldCases (g : MVarId) (h : FVarId) : MetaM (List MVarId) := do
   let gs ← g.cases h
   try
     let #[g₁, g₂] := gs | throwError "unexpected number of cases"
-    let gs ← unfoldCases g₂.fields[2]!.fvarId! g₂.mvarId
+    let gs ← unfoldCases g₂.mvarId g₂.fields[2]!.fvarId!
     return g₁.mvarId :: gs
   catch _ => return []
 
 /-- Implementation of the `fin_cases` tactic. -/
-partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
-  withMainContext do
-    let lDecl ←
-      match (← getLCtx).find? hyp with
-      | none => throwError m!"hypothesis not found"
-      | some lDecl => pure lDecl
-    match ← getMemType lDecl.type with
-    | some _ => liftMetaTactic (unfoldCases hyp)
-    | none =>
-      -- Deal with `x : A`, where `[Fintype A]` is available:
-      let inst ← synthInstance (← mkAppM ``Fintype #[lDecl.type])
-      let elems ← mkAppOptM ``Fintype.elems #[lDecl.type, inst]
-      let t ← mkAppM ``Membership.mem #[lDecl.toExpr, elems]
-      let v ← mkAppOptM ``Fintype.complete #[lDecl.type, inst, lDecl.toExpr]
-
-      let hyp ← liftMetaTacticAux fun mvarId ↦ do
-        let (fvar, mvarId) ← (← mvarId.assert `this t v).intro1P
-        pure (fvar, [mvarId])
-
-      finCasesAt hyp
+partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.withContext do
+  let lDecl ←
+    match (← getLCtx).find? hyp with
+    | none => throwError m!"hypothesis not found"
+    | some lDecl => pure lDecl
+  match ← getMemType lDecl.type with
+  | some _ => unfoldCases g hyp
+  | none =>
+    -- Deal with `x : A`, where `[Fintype A]` is available:
+    let inst ← synthInstance (← mkAppM ``Fintype #[lDecl.type])
+    let elems ← mkAppOptM ``Fintype.elems #[lDecl.type, inst]
+    let t ← mkAppM ``Membership.mem #[lDecl.toExpr, elems]
+    let v ← mkAppOptM ``Fintype.complete #[lDecl.type, inst, lDecl.toExpr]
+    let (fvar, g) ← (← g.assert `this t v).intro1P
+    finCasesAt g fvar
 
 /--
 `fin_cases h` performs case analysis on a hypothesis of the form
@@ -115,7 +110,7 @@ These hypotheses can be given a name using `fin_cases a using ha`.
 
 For example,
 ```
-example (f : ℕ → fin 3) : true := by
+example (f : ℕ → Fin 3) : True := by
   let a := f 3
   fin_cases a using ha
 ```
@@ -128,7 +123,6 @@ produces three goals with hypotheses
    rather than `tail.tail.tail.head`? -/
 
 @[tactic finCases] elab_rules : tactic
-  | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext do
-  focus
+  | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
     for h in hyps do
-      allGoals (finCasesAt (← getFVarId h))
+      allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))

@@ -39,6 +39,7 @@ instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedComm
   { Pi.partialOrder, Pi.commMonoid with
     mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
 #align pi.ordered_comm_monoid Pi.orderedCommMonoid
+#align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
 @[to_additive]
 instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [∀ i, Mul (α i)]
@@ -46,7 +47,8 @@ instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [�
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
       funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
-#align pi.exists_mul_of_le Pi.existsMulOfLe
+#align pi.has_exists_mul_of_le Pi.existsMulOfLe
+#align pi.has_exists_add_of_le Pi.existsAddOfLe
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
@@ -80,6 +82,7 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   --       npow := Monoid.npow } <;>
   --   pi_instance_derive_field
 #align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
+#align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 
 @[to_additive]
 instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
@@ -90,6 +93,7 @@ instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (�
     lt := (· < ·)
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
+#align pi.ordered_add_comm_group Pi.orderedAddCommGroup
 
 instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
   { Pi.semiring,
@@ -121,10 +125,12 @@ variable (β) [One α] [Preorder α] {a : α}
 @[to_additive const_nonneg_of_nonneg]
 theorem one_le_const_of_one_le (ha : 1 ≤ a) : 1 ≤ const β a := fun _ => ha
 #align function.one_le_const_of_one_le Function.one_le_const_of_one_le
+#align function.const_nonneg_of_nonneg Function.const_nonneg_of_nonneg
 
 @[to_additive]
 theorem const_le_one_of_le_one (ha : a ≤ 1) : const β a ≤ 1 := fun _ => ha
 #align function.const_le_one_of_le_one Function.const_le_one_of_le_one
+#align function.const_nonpos_of_nonpos Function.const_nonpos_of_nonpos
 
 variable {β} [Nonempty β]
 
@@ -132,21 +138,25 @@ variable {β} [Nonempty β]
 theorem one_le_const : 1 ≤ const β a ↔ 1 ≤ a :=
   @const_le_const _ _ _ _ 1 _
 #align function.one_le_const Function.one_le_const
+#align function.const_nonneg Function.const_nonneg
 
 @[to_additive (attr := simp) const_pos]
 theorem one_lt_const : 1 < const β a ↔ 1 < a :=
   @const_lt_const _ _ _ _ 1 a
 #align function.one_lt_const Function.one_lt_const
+#align function.const_pos Function.const_pos
 
 @[to_additive (attr := simp)]
 theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
   @const_le_const _ _ _ _ _ 1
 #align function.const_le_one Function.const_le_one
+#align function.const_nonpos Function.const_nonpos
 
 @[to_additive (attr := simp)]
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
+#align function.const_neg Function.const_neg
 
 end Function
 --Porting note: Tactic code not ported yet
@@ -170,7 +180,7 @@ end Function
 --   const_pos.2
 -- #align tactic.function_const_pos tactic.function_const_pos
 
--- /-- Extension for the `positivity` tactic: `function.const` is positive/nonnegative/nonzero if
+-- /-- Extension for the `positivity` tactic: `Function.const` is positive/nonnegative/nonzero if
 -- its input is. -/
 -- @[positivity]
 -- unsafe def positivity_const : expr → tactic strictness
@@ -183,7 +193,7 @@ end Function
 --       | nonnegative p => nonnegative <$> to_expr ``(const_nonneg_of_nonneg $(ι) $(p))
 --       | nonzero p => nonzero <$> to_expr ``(function_const_ne_zero $(ι) $(p))
 --   | e =>
---     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `function.const ι a`"
+--     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `Function.const ι a`"
 -- #align tactic.positivity_const tactic.positivity_const
 
 -- end Tactic

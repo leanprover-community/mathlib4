@@ -86,7 +86,6 @@ private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
-
 #align rat.mk_eq_zero Rat.divInt_eq_zero
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
@@ -157,7 +156,6 @@ theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
 
 #align rat.add_def Rat.add_def''
-
 #align rat.neg Rat.neg
 
 -- Porting note: there's already an instance for `Neg ℚ` is in Std.
@@ -251,6 +249,15 @@ theorem divInt_neg_one_one : -1 /. 1 = -1 :=
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
+theorem divInt_one (n : ℤ) : n /. 1 = n :=
+  show divInt _ _ = _ by
+    rw [divInt]
+    simp [mkRat, normalize]
+    rfl
+
+theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
+  simp [Rat.mkRat_eq, Rat.divInt_one]
+
 #align rat.mul_one Rat.mul_one
 #align rat.one_mul Rat.one_mul
 #align rat.mul_comm Rat.mul_comm
@@ -332,7 +339,10 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     inv := Inv.inv
     div := (· / ·)
     exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := rfl
+    inv_zero := by
+      change Rat.inv 0 = 0
+      rw [Rat.inv_def]
+      rfl
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
     zero_mul := zero_mul }
@@ -456,7 +466,6 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
-
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
@@ -538,8 +547,18 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 
 end Casts
 
+theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
+  simp [mkRat]
+  by_cases d = 0
+  · simp [h]
+  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+    unfold Rat.inv
+    have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
+    have h₂ : ¬ (d : ℤ) < 0 := by simp
+    simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+      Rat.mkRat_mul_mkRat]
+
 end Rat
 
--- Porting note: `assert_not_exists` is not implemented yet.
 -- Guard against import creep.
--- assert_not_exists field
+assert_not_exists Field

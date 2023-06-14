@@ -6,7 +6,7 @@ Neil Strickland, Aaron Anderson
 Ported by: Matej Penciak
 
 ! This file was ported from Lean 3 source module algebra.divisibility.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -53,6 +53,7 @@ theorem Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
 #align dvd.intro Dvd.intro
 
 alias Dvd.intro ← dvd_of_mul_right_eq
+#align dvd_of_mul_right_eq dvd_of_mul_right_eq
 
 theorem exists_eq_mul_right_of_dvd (h : a ∣ b) : ∃ c, b = a * c :=
   h
@@ -71,11 +72,9 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
 
 alias dvd_trans ← Dvd.dvd.trans
 
-instance : IsTrans α (· ∣ ·) :=
+/-- Transitivity of `|` for use in `calc` blocks. -/
+instance : IsTrans α Dvd.dvd :=
   ⟨fun _ _ _ => dvd_trans⟩
-
-/-- Transitivity of `|` for use in `calc` blocks -/
-instance : @Trans α α α Dvd.dvd Dvd.dvd Dvd.dvd := ⟨dvd_trans⟩
 
 @[simp]
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=
@@ -114,7 +113,7 @@ end Semigroup
 
 section Monoid
 
-variable [Monoid α]
+variable [Monoid α] {a b : α}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -131,6 +130,12 @@ theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)
 #align one_dvd one_dvd
 
+theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
+#align dvd_of_eq dvd_of_eq
+
+alias dvd_of_eq ← Eq.dvd
+#align eq.dvd Eq.dvd
+
 end Monoid
 
 section CommSemigroup
@@ -142,6 +147,7 @@ theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
 #align dvd.intro_left Dvd.intro_left
 
 alias Dvd.intro_left ← dvd_of_mul_left_eq
+#align dvd_of_mul_left_eq dvd_of_mul_left_eq
 
 theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
   Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))

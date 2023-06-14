@@ -26,15 +26,13 @@ variable {α : Type _} (p : α → Prop) [DecidablePred p]
 namespace FreeAddMonoid
 
 /-- `List.countp` as a bundled additive monoid homomorphism. -/
--- Porting note: changed the type of `p : α → Prop` to `p : α → Bool` to match the
--- change in `List.countp`
-def countp (p : α → Bool): FreeAddMonoid α →+ ℕ where
+def countp : FreeAddMonoid α →+ ℕ where
   toFun := List.countp p
-  map_zero' := List.countp_nil p
-  map_add' := List.countp_append p
+  map_zero' := List.countp_nil _
+  map_add' := List.countp_append _
 #align free_add_monoid.countp FreeAddMonoid.countp
 
-theorem countp_of (x : α): countp p (of x) = if p x = true then 1 else 0 := by
+theorem countp_of (x : α) : countp p (of x) = if p x = true then 1 else 0 := by
   simp [countp, List.countp, List.countp.go]
 #align free_add_monoid.countp_of FreeAddMonoid.countp_of
 
@@ -42,9 +40,8 @@ theorem countp_apply (l : FreeAddMonoid α) : countp p l = List.countp p l := rf
 #align free_add_monoid.countp_apply FreeAddMonoid.countp_apply
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
--- Porting note: changed from `countp (Eq x)` to match the definition of `List.count` and thus
--- we can prove `count_apply` by `rfl`
-def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countp (· == x)
+-- Porting note: was (x = ·)
+def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countp (· = x)
 #align free_add_monoid.count FreeAddMonoid.count
 
 theorem count_of [DecidableEq α] (x y : α) : count x (of y) = (Pi.single x 1 : α → ℕ) y := by
@@ -60,22 +57,18 @@ end FreeAddMonoid
 
 namespace FreeMonoid
 
-/-- `list.countp` as a bundled multiplicative monoid homomorphism. -/
--- Porting note: changed the type of `p : α → Prop` to `p : α → Bool` to match the
--- definition of `FreeAddMonoid.countp`
-def countp (p : α → Bool): FreeMonoid α →* Multiplicative ℕ :=
+/-- `List.countp` as a bundled multiplicative monoid homomorphism. -/
+def countp : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countp p)
 #align free_monoid.countp FreeMonoid.countp
 
--- Porting note: changed the type of `p : α → Prop` to `p : α → Bool` and `if` to `bif`
-theorem countp_of' (x : α) (p : α → Bool):
-    countp p (of x) = bif p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
-    simp [countp]
-    exact AddMonoidHom.toMultiplicative_apply_apply (FreeAddMonoid.countp p) (of x)
+theorem countp_of' (x : α) :
+    countp p (of x) = if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
+    erw [FreeAddMonoid.countp_of]
+    simp only [eq_iff_iff, iff_true, ofAdd_zero]; rfl
 #align free_monoid.countp_of' FreeMonoid.countp_of'
 
--- Porting note: changed `if` to `bif`
-theorem countp_of (x : α) : countp p (of x) = bif p x then Multiplicative.ofAdd 1 else 1 := by
+theorem countp_of (x : α) : countp p (of x) = if p x then Multiplicative.ofAdd 1 else 1 := by
   rw [countp_of', ofAdd_zero]
 #align free_monoid.countp_of FreeMonoid.countp_of
 
@@ -85,7 +78,7 @@ theorem countp_apply (l : FreeAddMonoid α) : countp p l = Multiplicative.ofAdd 
 #align free_monoid.countp_apply FreeMonoid.countp_apply
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
-def count [DecidableEq α] (x : α) : FreeMonoid α →* Multiplicative ℕ := countp (· == x)
+def count [DecidableEq α] (x : α) : FreeMonoid α →* Multiplicative ℕ := countp (· = x)
 #align free_monoid.count FreeMonoid.count
 
 theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :

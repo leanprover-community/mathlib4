@@ -52,7 +52,7 @@ instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoi
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.to_covariantClass_left
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.to_covariantClass_left
 
-/- This instance can be proven with `by apply_instance`.  However, `WithBot ℕ` does not
+/- This instance can be proven with `by infer_instance`.  However, `WithBot ℕ` does not
 pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
 instance OrderedCommMonoid.to_covariantClass_right (M : Type _) [OrderedCommMonoid M] :
@@ -100,7 +100,7 @@ class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAd
 class LinearOrderedCommMonoid (α : Type _) extends LinearOrder α, OrderedCommMonoid α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
 
-attribute [to_additive] LinearOrderedCommMonoid.toOrderedCommMonoid
+attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined.` -/
@@ -116,8 +116,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type _) extends LinearOrderedAddCo
 instance (priority := 100) LinearOrderedAddCommMonoidWithTop.toOrderTop (α : Type u)
     [h : LinearOrderedAddCommMonoidWithTop α] : OrderTop α :=
   { h with }
-#align linear_ordered_add_comm_monoid_with_top.to_order_top
-  LinearOrderedAddCommMonoidWithTop.toOrderTop
+#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 section LinearOrderedAddCommMonoidWithTop
 
