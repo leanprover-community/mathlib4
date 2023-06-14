@@ -514,7 +514,8 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
-    sorry--fun r => IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+    fun r => IsScalarTower.of_algebraMap_eq'
+      (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm
   -- By the hypothesis, we may find a finite generating set for each `Sᵣ`. This set can then be
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.
@@ -558,7 +559,7 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
   letI := f'.toAlgebra
   haveI : IsScalarTower R R' S' :=
-    sorry--IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+    IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp M.le_comap_map).symm
   let fₐ : S →ₐ[R] S' := AlgHom.mk' (algebraMap S S') fun c x => RingHom.map_mul _ _ _
   obtain ⟨T, hT⟩ := id hf
   use T.image (algebraMap S S')
@@ -579,9 +580,8 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
       (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using
     1
   rw [Algebra.smul_def]
-  erw [IsLocalization.map_mk']
+  erw [IsLocalization.map_mk' M.le_comap_map]
   rw [map_one]
-  rfl
 #align localization_finite_type localization_finiteType
 
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
@@ -647,7 +647,8 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
   haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
-    sorry--fun r => IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+    fun r => IsScalarTower.of_algebraMap_eq'
+      (IsLocalization.map_comp (Submonoid.powers (r : R)).le_comap_map).symm
   constructor
   replace H := fun r => (H r).1
   choose s₁ s₂ using H
