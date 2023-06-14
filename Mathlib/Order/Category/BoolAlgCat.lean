@@ -78,13 +78,10 @@ attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 instance hasForgetToHeytAlgCat : HasForget₂ BoolAlgCat HeytAlgCat where
   forget₂ :=
     { obj := fun X => {α := X}
-      map := fun {X Y} f => show BoundedLatticeHom X Y from f
-
-      -- Porting note: TODO remove these below once `map` works. only here to divert
-      -- the error message
-      map_id := _
-      map_comp := _
-      }
+      -- Porting note: was `fun {X Y} f => show BoundedLatticeHom X Y from f`
+      -- which already looks like a hack, but I don't understand why this hack works now and
+      -- the old one didn't
+      map := fun {X Y} (f : BoundedLatticeHom X Y) => show HeytingHom X Y from f }
 #align BoolAlg.has_forget_to_HeytAlg BoolAlgCat.hasForgetToHeytAlgCat
 
 end
@@ -98,7 +95,7 @@ def Iso.mk {α β : BoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align BoolAlg.iso.mk BoolAlgCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : BoolAlgCat ⥤ BoolAlgCat where
   obj X := of Xᵒᵈ
