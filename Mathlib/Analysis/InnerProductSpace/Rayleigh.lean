@@ -20,16 +20,16 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 The Rayleigh quotient of a self-adjoint operator `T` on an inner product space `E` is the function
 `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2`.
 
-The main results of this file are `is_self_adjoint.has_eigenvector_of_is_max_on` and
-`is_self_adjoint.has_eigenvector_of_is_min_on`, which state that if `E` is complete, and if the
+The main results of this file are `IsSelfAdjoint.hasEigenvector_of_isMaxOn` and
+`IsSelfAdjoint.hasEigenvector_of_isMinOn`, which state that if `E` is complete, and if the
 Rayleigh quotient attains its global maximum/minimum over some sphere at the point `x₀`, then `x₀`
-is an eigenvector of `T`, and the `supr`/`infi` of `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2` is the corresponding
+is an eigenvector of `T`, and the `iSup`/`iInf` of `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2` is the corresponding
 eigenvalue.
 
-The corollaries `is_self_adjoint.has_eigenvalue_supr_of_finite_dimensional` and
-`is_self_adjoint.has_eigenvalue_supr_of_finite_dimensional` state that if `E` is finite-dimensional
-and nontrivial, then `T` has some (nonzero) eigenvectors with eigenvalue the `supr`/`infi` of
-`λ x, ⟪T x, x⟫ / ‖x‖ ^ 2`.
+The corollaries `LinearMap.IsSymmetric.hasEigenvalue_iSup_of_finiteDimensional` and
+`LinearMap.IsSymmetric.hasEigenvalue_iSup_of_finiteDimensional` state that if `E` is
+finite-dimensional and nontrivial, then `T` has some (nonzero) eigenvectors with eigenvalue the
+`iSup`/`iInf` of `λ x, ⟪T x, x⟫ / ‖x‖ ^ 2`.
 
 ## TODO
 
@@ -54,6 +54,8 @@ namespace ContinuousLinearMap
 
 variable (T : E →L[𝕜] E)
 
+/-- The *Rayleigh quotient* of a continuous linear map `T` (over `ℝ` or `ℂ`) at a vector `x` is
+the quantity `re ⟪T x, x⟫ / ‖x‖ ^ 2`. -/
 noncomputable abbrev rayleighQuotient (x : E) := T.reApplyInnerSelf x / ‖(x : E)‖ ^ 2
 
 theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
