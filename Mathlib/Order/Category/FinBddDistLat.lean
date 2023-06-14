@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Order
-import Mathbin.Order.Category.BddDistLat
-import Mathbin.Order.Category.FinPartOrd
+import Mathlib.Data.Fintype.Order
+import Mathlib.Order.Category.BddDistLat
+import Mathlib.Order.Category.FinPartOrd
 
 /-!
 # The category of finite bounded distributive lattices
@@ -78,8 +78,7 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : FinBddDistLat.{u}} (e : α ≃o β) : α ≅ β
-    where
+def Iso.mk {α β : FinBddDistLat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : BoundedLatticeHom α β)
   inv := (e.symm : BoundedLatticeHom β α)
   hom_inv_id' := by ext; exact e.symm_apply_apply _
@@ -91,8 +90,7 @@ example {X Y : FinBddDistLat} : (X ⟶ Y) = BoundedLatticeHom X Y :=
 
 /-- `order_dual` as a functor. -/
 @[simps]
-def dual : FinBddDistLat ⥤ FinBddDistLat
-    where
+def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
   map X Y := BoundedLatticeHom.dual
 #align FinBddDistLat.dual FinBddDistLat.dual
