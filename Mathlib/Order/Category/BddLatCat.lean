@@ -228,9 +228,7 @@ def latToBddLatCatForgetAdjunction : latToBddLatCat.{u} ⊣ forget₂ BddLatCat 
 
 
 /-- `latToBddLatCat` and `OrderDual` commute. -/
--- Porting note: There is a warning plus `simpNF` linter complaining which I don't feel like
--- debugging at the moment.
--- @[simps]
+@[simps!]
 def latToBddLatCatCompDualIsoDualCompLatToBddLatCat :
     latToBddLatCat.{u} ⋙ BddLatCat.dual ≅ LatCat.dual ⋙ latToBddLatCat :=
   Adjunction.leftAdjointUniq (latToBddLatCatForgetAdjunction.comp BddLatCat.dualEquiv.toAdjunction)
