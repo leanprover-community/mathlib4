@@ -380,9 +380,14 @@ instance : CoeSort CommRingCat (Type _) where
 
 instance commRing (X : CommRingCat) : CommRing X := X.str
 
+instance commRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
+
 -- porting note: this instance was not necessary in mathlib
 instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →+* Y) := f
+
+instance ringHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.ringHomClass
 
 -- porting note: added
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl

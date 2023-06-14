@@ -34,16 +34,6 @@ open TopologicalSpace Opposite CategoryTheory
 
 universe v u w
 
--- Porting note: [TODO] It does not find these instances :(
-instance hack₁ (X : CommRingCat) : CommRing ((forget CommRingCat).obj X) :=
-  X.commRing
-
--- Porting note: [TODO] It does not find these instances :(
-instance hack₂ (X Y : CommRingCat) :
-  MonoidHomClass (X ⟶ Y) ((forget CommRingCat).obj X) ((forget CommRingCat).obj Y) :=
-  @RingHomClass.toMonoidHomClass (X ⟶ Y) ((forget CommRingCat).obj X)
-    ((forget CommRingCat).obj Y) _ _ (@RingHom.ringHomClass _ _ _ _)
-
 namespace TopCat
 
 namespace Presheaf
@@ -61,29 +51,42 @@ structure SubmonoidPresheaf [∀ X : C, MulOneClass X] [∀ X Y : C, MonoidHomCl
 
 variable {F : X.Presheaf CommRingCat.{w}} (G : F.SubmonoidPresheaf)
 
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
+  (forget CommRingCat).obj R ≟ R
+
 /-- The localization of a presheaf of `CommRing`s with respect to a `SubmonoidPresheaf`. -/
 protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf CommRingCat where
   obj U := CommRingCat.of <| Localization (G.obj U)
   map {U V} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i) (G.map i)
   map_id U := by
-    apply IsLocalization.ringHom_ext (G.obj U)
-    any_goals dsimp; infer_instance
-    refine' (IsLocalization.map_comp _).trans _
-    rw [F.map_id]
-    rfl
+    simp_rw [F.map_id]
+    ext x
+    -- Porting note : `M` and `S` needs to be specified manually
+    exact IsLocalization.map_id (M := G.obj U) (S := Localization (G.obj U)) x
   map_comp {U V W} i j := by
-    refine' Eq.trans _ (IsLocalization.map_comp_map _ _).symm
-    ext; dsimp; congr; rw [F.map_comp]; rfl
+    delta CommRingCat.ofHom CommRingCat.of Bundled.of
+    simp_rw [F.map_comp, CommRingCat.comp_eq_ring_hom_comp]
+    rw [IsLocalization.map_comp_map]
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
+-- Porting note : this is instance can't be synthesized
+instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
+  show Algebra _ (Localization (G.obj U)) from inferInstance
+
+-- Porting note : this is instance can't be synthesized
+instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
+  show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
+
 /-- The map into the localization presheaf. -/
+@[simps app]
 def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf where
   app U := CommRingCat.ofHom <| algebraMap (F.obj U) (Localization <| G.obj U)
-  naturality {U V} i := (IsLocalization.map_comp (G.map i)).symm
+  naturality {_ _} i := (IsLocalization.map_comp (G.map i)).symm
 #align Top.presheaf.submonoid_presheaf.to_localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.toLocalizationPresheaf
 
-instance : Epi G.toLocalizationPresheaf :=
-  @NatTrans.epi_of_epi_app _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)
+instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf :=
+  @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)
 
 variable (F)
 
@@ -92,7 +95,7 @@ sections whose restriction onto each stalk falls in the given submonoid. -/
 @[simps]
 noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)) :
     F.SubmonoidPresheaf where
-  obj U := ⨅ x : unop U, Submonoid.comap (F.germ x) (S x)
+  obj U := ⨅ x : U.unop, Submonoid.comap (F.germ x) (S x)
   map {U V} i := by
     intro s hs
     simp only [Submonoid.mem_comap, Submonoid.mem_iInf] at hs ⊢
@@ -113,21 +116,33 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-deriving Epi
 #align Top.presheaf.to_total_quotient_presheaf TopCat.Presheaf.toTotalQuotientPresheaf
 
-instance (F : X.Sheaf CommRingCat.{w}) : Mono F.Presheaf.toTotalQuotientPresheaf := by
-  apply (config := { synthAssignedInstances := false }) NatTrans.mono_of_mono_app
+-- Porting note : deriving `Epi` failed
+instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+
+instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
+  -- Porting note : was an `apply (config := { synthAssignedInstances := false })`
+  suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
+  . apply NatTrans.mono_of_mono_app
   intro U
-  apply concrete_category.mono_of_injective
-  apply IsLocalization.injective _
-  pick_goal 3; · exact Localization.isLocalization
+  apply ConcreteCategory.mono_of_injective
+  dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
+  -- Porting note : this is a hack to make the `refine` below works
+  set m := _
+  change Function.Injective (algebraMap _ (Localization m))
+  change Function.Injective (algebraMap (F.presheaf.obj U) _)
+  haveI : IsLocalization _ (Localization m) := Localization.isLocalization
+  -- Porting note : `M` and `S` need to be specified manually, so used a hack to save some typing
+  refine IsLocalization.injective (M := m) (S := Localization m) ?_
   intro s hs t e
   apply section_ext F (unop U)
   intro x
   rw [map_zero]
-  apply submonoid.mem_infi.mp hs x
-  rw [← map_mul, e, map_zero]
+  apply Submonoid.mem_iInf.mp hs x
+  -- Porting note : added `dsimp` to make `rw ←map_mul` work
+  dsimp
+  rw [←map_mul, e, map_zero]
 
 end Presheaf
 
