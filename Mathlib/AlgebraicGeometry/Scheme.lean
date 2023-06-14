@@ -38,7 +38,7 @@ namespace AlgebraicGeometry
 /-- We define `Scheme` as a `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
-as a locally ringed space, to `Spec.to_LocallyRingedSpace.obj (op R)`
+as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
 structure Scheme extends LocallyRingedSpace where
@@ -282,7 +282,7 @@ theorem basicOpen_res (i : op U ⟶ op V) : X.basicOpen (X.presheaf.map i f) = V
   RingedSpace.basicOpen_res _ i f
 #align algebraic_geometry.Scheme.basic_open_res AlgebraicGeometry.Scheme.basicOpen_res
 
--- This should fire before `basic_open_res`.
+-- This should fire before `basicOpen_res`.
 @[simp]
 theorem basicOpen_res_eq (i : op U ⟶ op V) [IsIso i] :
     X.basicOpen (X.presheaf.map i f) = X.basicOpen f :=
