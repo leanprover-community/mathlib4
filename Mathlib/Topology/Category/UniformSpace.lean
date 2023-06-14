@@ -165,7 +165,7 @@ open UniformSpace
 open CpltSepUniformSpace
 
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
-@[simps obj map] noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
+noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := CpltSepUniformSpace.of (Completion X)
   map f := ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
   map_id _ := Subtype.eq Completion.map_id
@@ -192,6 +192,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   property := Completion.uniformContinuous_extension
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
+-- Porting note : added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
@@ -210,8 +211,6 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   exact congr_fun (Completion.extension_comp_coe f.property) x
 #align UniformSpace.extension_comp_coe UniformSpaceCat.extension_comp_coe
 
-unif_hint test (Y : CpltSepUniformSpace) where ⊢
-  (forget UniformSpaceCat).obj ((forget₂ CpltSepUniformSpace UniformSpaceCat).obj Y) ≟ Y
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv
@@ -226,6 +225,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp
         erw [coe_comp]
+        -- Porting note : used to be `erw [← Completion.extension_map]`
         have := (Completion.extension_map (γ := Y) (f := g) g.2 f.2)
         simp only [forget_map_eq_coe] at this ⊢
         erw [this]
