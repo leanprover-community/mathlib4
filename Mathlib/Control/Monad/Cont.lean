@@ -143,13 +143,13 @@ instance {ε} [MonadCont m] : MonadCont (ExceptT ε m) where
 
 instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m) where
   callCC_bind_right := by
-    intros; simp [callCC, ExceptT.callCC, callCC_bind_right, ExceptT.run_bind]; ext
-    dsimp [ExceptT.run_bind]
-    congr with ⟨⟩ <;> simp [ExceptT.bindCont, @callCC_dummy m _, ExceptT.run, ExceptT.mk]
+    intros; simp [callCC, ExceptT.callCC, callCC_bind_right]; ext
+    dsimp
+    congr with ⟨⟩ <;> simp [ExceptT.bindCont, @callCC_dummy m _]
   callCC_bind_left := by
     intros
     simp [callCC, ExceptT.callCC, callCC_bind_right, ExceptT.goto_mkLabel, map_eq_bind_pure_comp,
-      bind_assoc, @callCC_bind_left m _, ExceptT.run_bind, Function.comp]
+      bind_assoc, @callCC_bind_left m _, Function.comp]
     ext; rfl
   callCC_dummy := by intros; simp [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
 
@@ -157,7 +157,7 @@ def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
 #align option_t.mk_label OptionTₓ.mkLabel
 
-theorem OptionT.goto_mkLabel [LawfulMonad m] {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
+theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
   rfl
 #align option_t.goto_mk_label OptionTₓ.goto_mkLabel
@@ -172,13 +172,13 @@ instance [MonadCont m] : MonadCont (OptionT m) where
 
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
-    intros; simp [callCC, OptionT.callCC, callCC_bind_right, OptionT.run_bind]; ext
-    dsimp [OptionT.run_bind]
+    intros; simp [callCC, OptionT.callCC, callCC_bind_right]; ext
+    dsimp
     congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros;
     simp [callCC, OptionT.callCC, callCC_bind_right, OptionT.goto_mkLabel, map_eq_bind_pure_comp,
-      bind_assoc, @callCC_bind_left m _, OptionT.run_bind, Function.comp]
+      bind_assoc, @callCC_bind_left m _, Function.comp]
     ext; rfl
   callCC_dummy := by intros; simp [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 
@@ -217,16 +217,16 @@ instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) whe
   callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
-  | ⟨f⟩ => ⟨fun a => fun s => f (a, s)⟩
+  | ⟨f⟩ => ⟨fun a => StateT.mk (fun s => f (a, s))⟩
 #align state_t.mk_label StateTₓ.mkLabel
 
 theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
-    goto (StateT.mkLabel x) i = fun s => goto x (i, s) := by cases x; rfl
+    goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl
 #align state_t.goto_mk_label StateTₓ.goto_mkLabel
 
 nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
     (f : Label α (StateT σ m) β → StateT σ m α) : StateT σ m α :=
-  fun r => callCC fun f' => (f <| StateT.mkLabel f').run r
+  StateT.mk (fun r => callCC fun f' => (f <| StateT.mkLabel f').run r)
 #align state_t.call_cc StateTₓ.callCC
 
 instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
@@ -235,15 +235,13 @@ instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
 instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
-    simp [callCC, StateT.callCC, callCC_bind_right, (· >>= ·), StateT.bind, StateT.run]
+    simp [callCC, StateT.callCC, callCC_bind_right]; ext; rfl
   callCC_bind_left := by
     intros;
-    simp [callCC, StateT.callCC, callCC_bind_left, (· >>= ·), StateT.bind, StateT.goto_mkLabel,
-      StateT.run]
-    ext; rfl
+    simp [callCC, StateT.callCC, callCC_bind_left, StateT.goto_mkLabel]; ext; rfl
   callCC_dummy := by
     intros;
-    simp [callCC, StateT.callCC, callCC_bind_right, (· >>= ·), StateT.bind, @callCC_dummy m _]
+    simp [callCC, StateT.callCC, callCC_bind_right, @callCC_dummy m _]
     ext; rfl
 
 def ReaderT.mkLabel {α β} (ρ) : Label α m β → Label α (ReaderT ρ m) β
@@ -256,7 +254,7 @@ theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
 
 nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
     (f : Label α (ReaderT ε m) β → ReaderT ε m α) : ReaderT ε m α :=
-  fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r
+  ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
 #align reader_t.call_cc ReaderTₓ.callCC
 
 instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
