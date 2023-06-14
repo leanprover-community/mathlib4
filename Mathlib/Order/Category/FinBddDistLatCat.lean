@@ -9,7 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Category.BddDistLat
+import Mathlib.Order.Category.BddDistLatCat
 import Mathlib.Order.Category.FinPartOrd
 
 /-!
@@ -110,4 +110,3 @@ theorem finBddDistLat_dual_comp_forget_to_bddDistLat :
       forget₂ FinBddDistLat BddDistLat ⋙ BddDistLat.dual :=
   rfl
 #align FinBddDistLat_dual_comp_forget_to_BddDistLat finBddDistLat_dual_comp_forget_to_bddDistLat
-
