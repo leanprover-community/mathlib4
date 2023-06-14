@@ -447,6 +447,7 @@ import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Analytic.Uniqueness

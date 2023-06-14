@@ -8,11 +8,11 @@ Authors: Vincent Beffara
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Analytic.Basic
-import Mathbin.Analysis.Calculus.Dslope
-import Mathbin.Analysis.Calculus.FderivAnalytic
-import Mathbin.Analysis.Calculus.FormalMultilinearSeries
-import Mathbin.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Calculus.Dslope
+import Mathlib.Analysis.Calculus.FderivAnalytic
+import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Analysis.Analytic.Uniqueness
 
 /-!
 # Principle of isolated zeros
@@ -54,8 +54,7 @@ theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n
 #align has_sum.has_sum_at_zero HasSum.hasSum_at_zero
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
-    (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t :=
-  by
+    (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simpa
   by_cases h : z = 0
@@ -76,8 +75,7 @@ end HasSum
 namespace HasFPowerSeriesAt
 
 theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ :=
-  by
+    HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
   simp only [hasFPowerSeriesAt_iff, apply_eq_pow_smul_coeff, coeff_fslope] at hp ⊢
@@ -91,23 +89,20 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt ((swap dslope z₀^[n]) f) ((fslope^[n]) p) z₀ :=
-  by
+    HasFPowerSeriesAt ((swap dslope z₀^[n]) f) ((fslope^[n]) p) z₀ := by
   induction' n with n ih generalizing f p
   · exact hp
   · simpa using ih (has_fpower_series_dslope_fslope hp)
 #align has_fpower_series_at.has_fpower_series_iterate_dslope_fslope HasFPowerSeriesAt.has_fpower_series_iterate_dslope_fslope
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
-    (swap dslope z₀^[p.order]) f z₀ ≠ 0 :=
-  by
+    (swap dslope z₀^[p.order]) f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 #align has_fpower_series_at.iterate_dslope_fslope_ne_zero HasFPowerSeriesAt.iterate_dslope_fslope_ne_zero
 
 theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀^[p.order]) f z :=
-  by
+    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀^[p.order]) f z := by
   have hq := has_fpower_series_at_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
   filter_upwards [hq, has_fpower_series_at_iff'.mp hp] with x hx1 hx2
   have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by
@@ -118,8 +113,7 @@ theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
   exact hx1.unique hs2
 #align has_fpower_series_at.eq_pow_order_mul_iterate_dslope HasFPowerSeriesAt.eq_pow_order_mul_iterate_dslope
 
-theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 :=
-  by
+theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
   have h2 := (has_fpower_series_iterate_dslope_fslope p.order hp).ContinuousAt
   have h3 := h2.eventually_ne (iterate_dslope_fslope_ne_zero hp h)
@@ -139,8 +133,7 @@ namespace AnalyticAt
 analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
 vanish in a punctured neighborhood of `z₀`. -/
 theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
-    (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 :=
-  by
+    (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rcases hf with ⟨p, hp⟩
   by_cases h : p = 0
   · exact Or.inl (HasFPowerSeriesAt.eventually_eq_zero (by rwa [h] at hp ))
@@ -192,8 +185,7 @@ they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `eq_on_of_preconnected_of_eventually_eq`. -/
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
-    (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U :=
-  by
+    (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
   simpa [sub_eq_zero] using fun z hz =>
