@@ -46,7 +46,7 @@ class Abs (α : Type _) where
 
 export Abs (abs)
 
-/-- The positive part of an element admiting a decomposition into positive and negative parts.
+/-- The positive part of an element admitting a decomposition into positive and negative parts.
 -/
 class PosPart (α : Type _) where
   /-- The positive part function. -/
@@ -54,7 +54,7 @@ class PosPart (α : Type _) where
 
 #align has_pos_part PosPart
 
-/-- The negative part of an element admiting a decomposition into positive and negative parts.
+/-- The negative part of an element admitting a decomposition into positive and negative parts.
 -/
 class NegPart (α : Type _) where
   /-- The negative part function. -/

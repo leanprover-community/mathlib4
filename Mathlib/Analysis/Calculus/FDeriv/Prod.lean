@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module analysis.calculus.fderiv.prod
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
+! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -122,12 +122,12 @@ theorem DifferentiableAt.fderiv_prod (hf₁ : DifferentiableAt 𝕜 f₁ x)
   (hf₁.hasFDerivAt.prod hf₂.hasFDerivAt).fderiv
 #align differentiable_at.fderiv_prod DifferentiableAt.fderiv_prod
 
-theorem DifferentiableAt.fderivWithin_prod (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
+theorem DifferentiableWithinAt.fderivWithin_prod (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
     (hf₂ : DifferentiableWithinAt 𝕜 f₂ s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : E => (f₁ x, f₂ x)) s x =
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
   (hf₁.hasFDerivWithinAt.prod hf₂.hasFDerivWithinAt).fderivWithin hxs
-#align differentiable_at.fderiv_within_prod DifferentiableAt.fderivWithin_prod
+#align differentiable_within_at.fderiv_within_prod DifferentiableWithinAt.fderivWithin_prod
 
 end Prod
 

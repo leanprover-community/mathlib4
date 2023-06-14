@@ -32,7 +32,7 @@ just requiring a property.
 -/
 
 
-open CategoryTheory
+open CategoryTheory MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -279,7 +279,7 @@ theorem comp_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G �
   rfl
 #align category_theory.lax_braided_functor.comp_to_nat_trans CategoryTheory.LaxBraidedFunctor.comp_toNatTrans
 
-/-- Interpret a natural isomorphism of the underlyling lax monoidal functors as an
+/-- Interpret a natural isomorphism of the underlying lax monoidal functors as an
 isomorphism of the lax braided monoidal functors.
 -/
 @[simps]
@@ -294,7 +294,7 @@ end LaxBraidedFunctor
 which preserves the braiding.
 -/
 structure BraidedFunctor extends MonoidalFunctor C D where
-  -- Note this is stated differently than for `lax_braided_functor`.
+  -- Note this is stated differently than for `LaxBraidedFunctor`.
   -- We move the `μ X Y` to the right hand side,
   -- so that this makes a good `@[simp]` lemma.
   braided : ∀ X Y : C, map (β_ X Y).hom = inv (μ X Y) ≫ (β_ (obj X) (obj Y)).hom ≫ μ Y X := by
@@ -308,8 +308,8 @@ A braided category with a faithful braided functor to a symmetric category is it
 -/
 def symmetricCategoryOfFaithful {C D : Type _} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : BraidedFunctor C D)
-    [Faithful F.toFunctor] : SymmetricCategory C
-    where symmetry X Y := F.map_injective (by simp)
+    [Faithful F.toFunctor] : SymmetricCategory C where
+  symmetry X Y := F.map_injective (by simp)
 #align category_theory.symmetric_category_of_faithful CategoryTheory.symmetricCategoryOfFaithful
 
 namespace BraidedFunctor
@@ -362,7 +362,8 @@ section CommMonoid
 
 variable (M : Type u) [CommMonoid M]
 
-instance : BraidedCategory (Discrete M) where braiding X Y := Discrete.eqToIso (mul_comm X.as Y.as)
+instance : BraidedCategory (Discrete M) where
+  braiding X Y := Discrete.eqToIso (mul_comm X.as Y.as)
 
 variable {M} {N : Type u} [CommMonoid N]
 

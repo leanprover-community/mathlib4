@@ -1527,10 +1527,10 @@ section
 
 variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
 
-/-- Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of `1`
+/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
   such that `K * V ⊆ U`. -/
 @[to_additive
-  "Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of
+  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `K + V ⊆ U`."]
 theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), K * V ⊆ U := by
@@ -1555,10 +1555,10 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
 
 open MulOpposite
 
-/-- Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of `1`
+/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
   such that `V * K ⊆ U`. -/
 @[to_additive
-  "Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of
+  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `V + K ⊆ U`."]
 theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U := by

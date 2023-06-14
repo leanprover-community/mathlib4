@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit e8da5f215e815d9ed3455f0216ef52b53e05438a
+! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1284,7 +1284,7 @@ of a sequence is closed. -/
 theorem isClosed_setOf_clusterPt {f : Filter α} : IsClosed { x | ClusterPt x f } := by
   simp only [ClusterPt, inf_neBot_iff_frequently_left, setOf_forall, imp_iff_not_or]
   refine' isClosed_iInter fun p => IsClosed.union _ _ <;> apply isClosed_compl_iff.2
-  exacts[isOpen_setOf_eventually_nhds, isOpen_const]
+  exacts [isOpen_setOf_eventually_nhds, isOpen_const]
 #align is_closed_set_of_cluster_pt isClosed_setOf_clusterPt
 
 theorem mem_closure_iff_clusterPt {s : Set α} {a : α} : a ∈ closure s ↔ ClusterPt a (𝓟 s) :=
@@ -1652,6 +1652,11 @@ nonrec theorem ContinuousAt.comp {g : β → γ} {f : α → β} {x : α} (hg : 
   hg.comp hf
 #align continuous_at.comp ContinuousAt.comp
 
+/-- See note [comp_of_eq lemmas] -/
+theorem ContinuousAt.comp_of_eq {g : β → γ} {f : α → β} {x : α} {y : β} (hg : ContinuousAt g y)
+    (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
+#align continuous_at.comp_of_eq ContinuousAt.comp_of_eq
+
 theorem Continuous.tendsto {f : α → β} (hf : Continuous f) (x) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   ((nhds_basis_opens x).tendsto_iff <| nhds_basis_opens <| f x).2 fun t ⟨hxt, ht⟩ =>
     ⟨f ⁻¹' t, ⟨hxt, ht.preimage hf⟩, Subset.rfl⟩
@@ -1915,7 +1920,7 @@ This has the following advantages
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `Continuous.neg`.
+As an example for a unary operation, we have `Continuous.neg`.
 ```
 Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
 ```
@@ -1967,4 +1972,32 @@ lemma ContinuousOn.comp_fract {X Y : Type _} [TopologicalSpace X] [TopologicalSp
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
+-/
+
+library_note "comp_of_eq lemmas"/--
+Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
+two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
+`ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like
+`ContinuousAt g (f x) → ContinuousAt f x → ContinuousAt (g ∘ f) x`.
+Since Lean's elaborator elaborates the arguments from left-to-right, when you write `hg.comp hf`,
+the elaborator will try to figure out *both* `f` and `g` from the type of `hg`. It tries to figure
+out `f` just from the point where `g` is continuous. For example, if `hg : ContinuousAt g (a, x)`
+then the elaborator will assign `f` to the function `Prod.mk a`, since in that case `f x = (a, x)`.
+This is undesirable in most cases where `f` is not a variable. There are some ways to work around
+this, for example by giving `f` explicitly, or to force Lean to elaborate `hf` before elaborating
+`hg`, but this is annoying.
+Another better solution is to reformulate composition lemmas to have the following shape
+`ContinuousAt g y → ContinuousAt f x → f x = y → ContinuousAt (g ∘ f) x`.
+This is even useful if the proof of `f x = y` is `rfl`.
+The reason that this works better is because the type of `hg` doesn't mention `f`.
+Only after elaborating the two `ContinuousAt` arguments, Lean will try to unify `f x` with `y`,
+which is often easy after having chosen the correct functions for `f` and `g`.
+Here is an example that shows the difference:
+```
+example [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
+    (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
+    ContinuousAt (fun x ↦ f x x) x₀ :=
+  -- hf.comp (continuousAt_id.prod continuousAt_id) -- type mismatch
+  -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
+```
 -/

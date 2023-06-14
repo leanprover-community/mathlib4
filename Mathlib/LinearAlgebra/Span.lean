@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module linear_algebra.span
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 10878f6bf1dab863445907ab23fbfcefcb5845d0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -359,7 +359,7 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
     exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
 #align submodule.mem_sup Submodule.mem_sup
 
-theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p)(z : p'), (y : M) + z = x :=
+theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
 
@@ -974,6 +974,17 @@ theorem ext_on_range {ι : Type _} {v : ι → M} {f g : M →ₛₗ[σ₁₂] M
 
 end AddCommMonoid
 
+section NoZeroDivisors
+
+variable (R M)
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+
+theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
+  SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
+#align linear_map.ker_to_span_singleton LinearMap.ker_toSpanSingleton
+
+end NoZeroDivisors
+
 section Field
 
 variable [Field K] [AddCommGroup V] [Module K V]
@@ -991,26 +1002,6 @@ theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 
           by simp only [add_sub_cancel'_right]⟩⟩
 #align linear_map.span_singleton_sup_ker_eq_top LinearMap.span_singleton_sup_ker_eq_top
 
-variable (K V)
-
-theorem ker_toSpanSingleton {x : V} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton K V x) = ⊥ := by
-  ext c; constructor
-  · intro hc
-    rw [Submodule.mem_bot]
-    rw [mem_ker] at hc
-    by_contra hc'
-    have : x = 0
-    calc
-      x = c⁻¹ • c • x := by rw [← mul_smul, inv_mul_cancel hc', one_smul]
-      _ = c⁻¹ • (toSpanSingleton K V x) c := rfl
-      _ = 0 := by rw [hc, smul_zero]
-    tauto
-  · rw [mem_ker, Submodule.mem_bot]
-    intro h
-    rw [h]
-    simp
-#align linear_map.ker_to_span_singleton LinearMap.ker_toSpanSingleton
-
 end Field
 
 end LinearMap
@@ -1019,41 +1010,40 @@ open LinearMap
 
 namespace LinearEquiv
 
-section Field
+variable (R M)
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] (x : M) (h : x ≠ 0)
 
-variable (K V) [Field K] [AddCommGroup V] [Module K V]
-
-/-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
-    map from `K` to the span of `x`, with invertibility check to consider it as an
-    isomorphism.-/
+/-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
+isomorphism from `R` to the span of `x` given by $r \mapsto r \cdot x$. -/
 noncomputable
-def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
+def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
-    (LinearEquiv.ofInjective (LinearMap.toSpanSingleton K V x)
-      (ker_eq_bot.1 <| LinearMap.ker_toSpanSingleton K V h))
-    (LinearEquiv.ofEq (range $ toSpanSingleton K V x) (K ∙ x) (span_singleton_eq_range K V x).symm)
+    (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
+      (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
+    (LinearEquiv.ofEq (range $ toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
-theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
-    LinearEquiv.toSpanNonzeroSingleton K V x h 1 =
-      (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) := by
+theorem toSpanNonzeroSingleton_one :
+    LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
+      (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by
   apply SetLike.coe_eq_coe.mp
-  have : ↑(toSpanNonzeroSingleton K V x h 1) = toSpanSingleton K V x 1 := rfl
+  have : ↑(toSpanNonzeroSingleton R M x h 1) = toSpanSingleton R M x 1 := rfl
   rw [this, toSpanSingleton_one, Submodule.coe_mk]
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
-/-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural map
-    from the span of `x` to `K`.-/
+/-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
+isomorphism from the span of `x` to `R` given by $r \cdot x \mapsto r$. -/
 noncomputable
-abbrev coord (x : V) (h : x ≠ 0) : (K ∙ x) ≃ₗ[K] K :=
-  (toSpanNonzeroSingleton K V x h).symm
+abbrev coord : (R ∙ x) ≃ₗ[R] R :=
+  (toSpanNonzeroSingleton R M x h).symm
 #align linear_equiv.coord LinearEquiv.coord
 
-theorem coord_self (x : V) (h : x ≠ 0) :
-    (coord K V x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) = 1 := by
-  rw [← toSpanNonzeroSingleton_one K V x h, LinearEquiv.symm_apply_apply]
+theorem coord_self : (coord R M x h) (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) = 1 := by
+  rw [← toSpanNonzeroSingleton_one R M x h, LinearEquiv.symm_apply_apply]
 #align linear_equiv.coord_self LinearEquiv.coord_self
 
-end Field
+theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y • x = y :=
+  Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
+#align linear_equiv.coord_apply_smul LinearEquiv.coord_apply_smul
 
 end LinearEquiv

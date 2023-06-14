@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 
 ! This file was ported from Lean 3 source module ring_theory.polynomial.quotient
-! leanprover-community/mathlib commit 61d8b8248633da198afea97ae7a90ee63bdf8c1c
+! leanprover-community/mathlib commit 4f840b8d28320b20c87db17b3a6eef3d325fca87
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -54,6 +54,17 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
 #align polynomial.quotient_span_X_sub_C_alg_equiv_symm_apply Polynomial.quotientSpanXSubCAlgEquiv_symm_apply
+
+/-- For a commutative ring $R$, evaluating a polynomial at an element $y \in R$ induces an
+isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
+noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
+    (R[X] ⧸ (Ideal.span {C x, X - C y} : Ideal R[X])) ≃ₐ[R] R ⧸ (Ideal.span {x} : Ideal R) :=
+  (Ideal.quotientEquivAlgOfEq R <| by rw [Ideal.span_insert, sup_comm]).trans <|
+    (DoubleQuot.quotQuotEquivQuotSupₐ R _ _).symm.trans <|
+      (Ideal.quotientEquivAlg _ _ (quotientSpanXSubCAlgEquiv y) rfl).trans <|
+        Ideal.quotientEquivAlgOfEq R <| by
+          simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
+#align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
 
 end Polynomial
 

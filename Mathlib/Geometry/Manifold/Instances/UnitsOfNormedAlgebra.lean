@@ -30,9 +30,9 @@ its group of units, the general linear group GL(`𝕜`, `V`).
 The Lie group instance requires the following fields:
 ```
 instance : LieGroup 𝓘(𝕜, R) Rˣ :=
-{ Units.smoothManifoldWithCorners with
-  smooth_mul := sorry,
-  smooth_inv := sorry }
+  { Units.smoothManifoldWithCorners with
+    smooth_mul := sorry,
+    smooth_inv := sorry }
 ```
 
 The ingredients needed for the construction are

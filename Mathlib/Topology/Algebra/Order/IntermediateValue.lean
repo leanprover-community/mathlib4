@@ -276,7 +276,7 @@ theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
 `[Inf s, Sup s]`, `[Inf s, Sup s)`, `(Inf s, Sup s]`, `(Inf s, Sup s)`, `[Inf s, +∞)`,
 `(Inf s, +∞)`, `(-∞, Sup s]`, `(-∞, Sup s)`, `(-∞, +∞)`, or `∅`. The converse statement requires
-`α` to be densely ordererd. -/
+`α` to be densely ordered. -/
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     s ∈
       ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
@@ -612,7 +612,7 @@ theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → 
   by cases' le_total (f a) (f b) with hab hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
-/-- A continuous function which tendsto `Fitler.atTop` along `Filter.atTop` and to `atBot` along
+/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
 `at_bot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>
