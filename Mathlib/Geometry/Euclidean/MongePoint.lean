@@ -564,7 +564,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 the altitude. -/
 theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
-  refine' span_points_subset_coe_of_subset_coe _
+  refine' spanPoints_subset_coe_of_subset_coe _
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 #align affine.triangle.affine_span_orthocenter_point_le_altitude Affine.Triangle.affineSpan_orthocenter_point_le_altitude
