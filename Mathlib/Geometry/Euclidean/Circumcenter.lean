@@ -911,7 +911,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     (hp₂ : p₂ ∈ affineSpan ℝ (insert p (Set.range s.points))) (h₁ : ∀ i, dist (s.points i) p₁ = r)
     (h₂ : ∀ i, dist (s.points i) p₂ = r) :
     p₁ = p₂ ∨ p₁ = reflection (affineSpan ℝ (Set.range s.points)) p₂ := by
-  let span_s := affineSpan ℝ (Set.range s.points)
+  set span_s := affineSpan ℝ (Set.range s.points)
   have h₁' := s.orthogonalProjection_eq_circumcenter_of_dist_eq h₁
   have h₂' := s.orthogonalProjection_eq_circumcenter_of_dist_eq h₂
   rw [← affineSpan_insert_affineSpan, mem_affineSpan_insert_iff (orthogonalProjection_mem p)]
