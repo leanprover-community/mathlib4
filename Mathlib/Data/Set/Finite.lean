@@ -240,6 +240,8 @@ alias Finite.toFinset_ssubset_toFinset ↔ _ toFinset_strictMono
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
     (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
   ext
+  -- porting note: next line wasn't needed in Lean 3
+  letI := h.fintype
   simp
 #align set.finite.to_finset_set_of Set.Finite.toFinset_setOf
 
