@@ -16,7 +16,7 @@ import Mathlib.Analysis.NormedSpace.Completion
 # Uniqueness principle for analytic functions
 
 We show that two analytic functions which coincide around a point coincide on whole connected sets,
-in `analytic_on.eq_on_of_preconnected_of_eventually_eq`.
+in `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`.
 -/
 
 
@@ -30,7 +30,7 @@ open scoped Topology ENNReal
 namespace AnalyticOn
 
 /-- If an analytic function vanishes around a point, then it is uniformly zero along
-a connected set. Superseded by `eq_on_zero_of_preconnected_of_locally_zero` which does not assume
+a connected set. Superseded by `eqOn_zero_of_preconnected_of_locally_zero` which does not assume
 completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
     (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -46,28 +46,28 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     simpa using mem_of_mem_nhds (Uu hz)
   /- Take a limit point `x`, then a ball `B (x, r)` on which it has a power series expansion, and
     then `y ∈ B (x, r/2) ∩ u`. Then `f` has a power series expansion on `B (y, r/2)` as it is
-    contained in `B (x, r)`. All the coefficients in this series expansion vanish, as `f` is zero on a
-    neighborhood of `y`. Therefore, `f` is zero on `B (y, r/2)`. As this ball contains `x`, it follows
-    that `f` vanishes on a neighborhood of `x`, proving the claim. -/
+    contained in `B (x, r)`. All the coefficients in this series expansion vanish, as `f` is zero
+    on a neighborhood of `y`. Therefore, `f` is zero on `B (y, r/2)`. As this ball contains `x`,
+    it follows that `f` vanishes on a neighborhood of `x`, proving the claim. -/
   rintro x ⟨xu, xU⟩
   rcases hf x xU with ⟨p, r, hp⟩
   obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2
   exact EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
-  let q := p.change_origin (y - x)
+  let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
-    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy 
-    have := hp.change_origin (A.trans_le ENNReal.half_le_self)
-    simp only [add_sub_cancel'_right] at this 
+    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy
+    have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
+    simp only [add_sub_cancel'_right] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
     apply ENNReal.le_sub_of_add_le_left ENNReal.coe_ne_top
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)
     exact ENNReal.add_halves _
-  have M : EMetric.ball y (r / 2) ∈ 𝓝 x := emetric.is_open_ball.mem_nhds hxy
+  have M : EMetric.ball y (r / 2) ∈ 𝓝 x := EMetric.isOpen_ball.mem_nhds hxy
   filter_upwards [M] with z hz
-  have A : HasSum (fun n : ℕ => q n fun i : Fin n => z - y) (f z) := has_series.has_sum_sub hz
-  have B : HasSum (fun n : ℕ => q n fun i : Fin n => z - y) 0 := by
-    have : HasFPowerSeriesAt 0 q y := has_series.has_fpower_series_at.congr yu
-    convert hasSum_zero
+  have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
+  have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
+    have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
+    convert hasSum_zero (α := F) using 2
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B
@@ -76,15 +76,15 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
 /-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
 neighborhood of a point `z₀`, then it is uniformly zero along a connected set. For a one-dimensional
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
-`eq_on_zero_of_preconnected_of_frequently_eq_zero`. -/
+`eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   let F' := UniformSpace.Completion F
   set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL
-  have : AnalyticOn 𝕜 (e ∘ f) U := fun x hx => (e.analytic_at _).comp (hf x hx)
-  have A : eq_on (e ∘ f) 0 U := by
-    apply eq_on_zero_of_preconnected_of_eventually_eq_zero_aux this hU h₀
+  have : AnalyticOn 𝕜 (e ∘ f) U := fun x hx => (e.analyticAt _).comp (hf x hx)
+  have A : EqOn (e ∘ f) 0 U := by
+    apply eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux this hU h₀
     filter_upwards [hfz₀] with x hx
     simp only [hx, Function.comp_apply, Pi.zero_apply, map_zero]
   intro z hz
@@ -95,7 +95,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `eq_on_of_preconnected_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `eqOn_of_preconnected_of_frequently_eq`. -/
 theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOn 𝕜 f U)
     (hg : AnalyticOn 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
@@ -115,4 +115,3 @@ theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticO
 #align analytic_on.eq_of_eventually_eq AnalyticOn.eq_of_eventuallyEq
 
 end AnalyticOn
-
