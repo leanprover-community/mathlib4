@@ -411,9 +411,8 @@ theorem localization_finite : RingHom.LocalizationPreserves @RingHom.Finite := b
       (H hy) using
     1
   rw [Algebra.smul_def]
-  erw [IsLocalization.map_mk']
+  erw [IsLocalization.map_mk' M.le_comap_map]
   rw [map_one]
-  rfl
 #align localization_finite localization_finite
 
 theorem localization_away_map_finite (r : R) [IsLocalization.Away r R']
