@@ -315,7 +315,7 @@ def ofArray {m : Type → Type} [Monad m] {α : Type} (L : Array α) : ListM m �
   fin L.size |>.map L.get
 
 /-- Group the elements of a lazy list into chunks of a given size.
-If the lazy list if finite, the last chunk may be smaller (possibly even length 0). -/
+If the lazy list is finite, the last chunk may be smaller (possibly even length 0). -/
 partial def chunk (L : ListM m α) (n : Nat) : ListM m (Array α) :=
   go n #[] L
 where
@@ -406,7 +406,7 @@ unsafe def fold (f : β → α → β) (init : β) (L : ListM m α) : m β :=
   L.foldM (fun b a => pure (f b a)) init
 
 /--
-Extract the prefix up a lazy list consisting of elements up to and including
+Extract the prefix of a lazy list consisting of elements up to and including
 the first element satisfying a monadic predicate.
 Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
 -/
@@ -420,7 +420,7 @@ partial def getUpToFirstM (L : ListM m α) (p : α → m (ULift Bool)) : m (List
       return (x :: acc, R))
 
 /--
-Extract the prefix up a lazy list consisting of elements up to and including
+Extract the prefix of a lazy list consisting of elements up to and including
 the first element satisfying a predicate.
 Return (in the monad) the prefix as a `List`, along with the remaining elements as a `ListM`.
 -/
