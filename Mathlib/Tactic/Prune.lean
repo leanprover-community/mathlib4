@@ -20,46 +20,15 @@ def revertLoop : TacticM (List LocalDecl × MVarId) := focus do
   let (fvars, ctx, newGoal) := ← revertVarsOnce
   if fvars.size == 0 then pure (ctx, newGoal) else revertLoop
 
-def revertNMLoop (n m : Nat) : TacticM (List LocalDecl × MVarId) := do
+def revertNLoop (n m : Nat) : TacticM (List LocalDecl × MVarId) := do
   match n with
   | 0     => revertLoop
   | 1     => do let goal := ← getMainGoal; pure ([], goal)
   | n + 1 => focus do
     let (fvars, ctx, newGoal) := ← revertVarsOnce
---    logInfo m!"fvs: {fvars.size}"
---    let decl := ← fvars.mapM (Lean.FVarId.getDecl ·)
---    dbg_trace Format.pretty f!"{decl.map LocalDecl.userName}"
     if fvars.size == 0 then
-      logInfo m!"{m} iterations would have sufficed.\nTry this: prunne {m}"
-      pure (ctx, newGoal) else revertNMLoop n (m + 1)
-
-/-
-def revertNLoop (n : Nat) : TacticM (List LocalDecl × MVarId) := do
-  let mut m := 0; match n with
-  | 0     => revertLoop
-  | 1     => do let goal := ← getMainGoal; pure ([], goal)
-  | n + 1 => dbg_trace m; focus do
-    let m := n;
-    let (fvars, ctx, newGoal) := ← revertVarsOnce
-    if fvars.size == 0 then
-      logInfo m!"{m} iterations would have sufficed -- "
-      pure (ctx, newGoal) else revertNLoop n
--/
-/-
-  if n == 0 then revertLoop else
-  if n == 1 then do let goal := ← getMainGoal; pure ([], goal) else
-
-  focus do
-    let m := n;
-    let (fvars, ctx, newGoal) := ← revertVarsOnce
-    if fvars.size == 0 then
-      logInfo m!"{m} iterations would have sufficed -- "
-      pure (ctx, newGoal) else revertNLoop n
---  for i in [:n] do
-
-#exit
--/
-
+      logInfo m!"{m} iterations suffice.\nTry this: prunne {m}"
+      pure (ctx, newGoal) else revertNLoop n (m + 1)
 
 def pruneTac : TacticM Unit := focus do
   let dcls := (← getLCtx).decls.toList.reduceOption
@@ -75,15 +44,26 @@ elab "prune" : tactic => do
   pruneTac
 
 elab "prunne" n:num : tactic => do
-  let _ := ← revertNMLoop n.getNat 0
+  let _ := ← revertNLoop n.getNat 0
   pruneTac
+
+syntax "prunne" (num)? : tactic
+
+elab_rules : tactic
+  | `(tactic| prunne $[$n]?) => do
+    let _ := ← revertNLoop (n.getD default).getNat 0
+    pruneTac
+
+--elab "prunne" (n:num)? : tactic => do
+--  let _ := ← revertNLoop n.getNat 0
+--  pruneTac
 
 end Lean.Elab.Tactic
 
 universe u
 variable {α : Type u} [Add α] [Add α] {e f : α} {a b _d : Nat} {_h : e ≠ f} (h₁ : a = b)
   (h₂ : ff = b) {c : Int}
-
+set_option pp.rawOnError true
 example : a + 5 = c ∨ True := by
   prunne 5
   /- goal state:
@@ -115,7 +95,7 @@ example {α : Type u} [Add α] [OfNat α 0] {e f : α} {a b _d : Nat} {_h : e �
   _c: Int
   ⊢ e + f = e ∨ True
   -/
-  prune
+  prunne
   /- goal state:
   α: Type u
   inst✝¹: Add α
@@ -126,7 +106,7 @@ example {α : Type u} [Add α] [OfNat α 0] {e f : α} {a b _d : Nat} {_h : e �
   -/
   exact Or.inr trivial
 
-example (a : Nat) : ∃ n, n = 0 := by
+example (a : Nat) : ∃ n, n + 1 = 0 := by
   constructor
   /-
   2 goals
@@ -137,10 +117,11 @@ example (a : Nat) : ∃ n, n = 0 := by
   a: ℕ
   ⊢ ℕ
   -/
-  prune
+  prunne
 
   sorry
-  prune
+  prunne 0
+
   /-
   1 goal
   case h
