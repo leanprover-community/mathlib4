@@ -117,7 +117,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
-#align absolute_value.map_mul map_mul
+#align absolute_value.map_mul AbsoluteValue.map_mul
 
 protected theorem ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
   abv.eq_zero.not
