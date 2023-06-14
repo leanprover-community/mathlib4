@@ -71,6 +71,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.cycles_ext ModuleCat.cycles_ext
 
 -- porting note: both proofs by `rw` were proofs by `simp` which no longer worked
+-- see https://github.com/leanprover-community/mathlib4/issues/5026
 @[simp]
 theorem cyclesMap_toCycles (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
     (cyclesMap f i) (toCycles x) = toCycles ⟨f.f i x.1, by
