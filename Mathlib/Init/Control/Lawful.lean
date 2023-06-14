@@ -118,6 +118,7 @@ variable [Monad m]
 
 #align except_t.run_pure ExceptTₓ.run_pure
 
+attribute [simp] run_bind
 #align except_t.run_bind ExceptTₓ.run_bind
 
 #align except_t.run_map ExceptTₓ.run_map
