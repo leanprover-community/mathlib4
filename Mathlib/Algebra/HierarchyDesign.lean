@@ -32,7 +32,7 @@ especially once interactions between algebraic and order/topological/etc structu
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
-2. when there is a meaninful gain in simplicity by factoring out a common substructure.
+2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
 (As examples, at this point we don't have `Loop`, or `UnitalMagma`,
 but we do have `LieSubmodule` and `TopologicalField`!
@@ -133,7 +133,7 @@ you should provide instances transferring
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
 instance SubY.toZ [Z α] : Z (SubY α) :=
-coe_injective.Z coe ...
+  coe_injective.Z coe ...
 ```
 
 ## Morphisms and equivalences

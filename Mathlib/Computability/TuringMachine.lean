@@ -16,8 +16,6 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.WLOG
-import Mathlib.Tactic.RSuffices
 
 /-!
 # Turing machines
@@ -196,7 +194,7 @@ precondition `BlankExtends` instead of `BlankRel`. -/
 @[reducible]  -- Porting note: Removed `@[elab_as_elim]`
 protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
-  l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h, exact (H _ _ h).symm]
+  l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h; exact (H _ _ h).symm]
 #align turing.list_blank.lift_on Turing.ListBlank.liftOn
 
 /-- The quotient map turning a `List` into a `ListBlank`. -/
@@ -231,7 +229,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine' Quotient.sound' (Or.inl _)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩, exact ⟨i, rfl⟩]
+  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 #align turing.list_blank.tail Turing.ListBlank.tail
 
@@ -318,7 +316,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     (∀ i, L₁.nth i = L₂.nth i) → L₁ = L₂ := by
   refine' ListBlank.induction_on L₁ fun l₁ ↦ ListBlank.induction_on L₂ fun l₂ H ↦ _
   wlog h : l₁.length ≤ l₂.length
-  · cases le_total l₁.length l₂.length <;> [skip, symm] <;> apply this <;> try assumption
+  · cases le_total l₁.length l₂.length <;> [skip; symm] <;> apply this <;> try assumption
     intro
     rw [H]
   refine' Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, _⟩)
@@ -378,7 +376,7 @@ theorem PointedMap.map_pt {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
 @[simp]
 theorem PointedMap.headI_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : List Γ) : (l.map f).headI = f l.headI := by
-  cases l <;> [exact (PointedMap.map_pt f).symm, rfl]
+  cases l <;> [exact (PointedMap.map_pt f).symm; rfl]
 #align turing.pointed_map.head_map Turing.PointedMap.headI_map
 
 /-- The `map` function on lists is well defined on `ListBlank`s provided that the map is
@@ -1348,8 +1346,8 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   induction' q₂ with _ q IH _ q IH _ q IH <;>
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
-  iterate 3 rcases h with (rfl | h) <;> [exact hs, exact IH h hs]
-  case branch p q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
+  iterate 3 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
+  case branch p q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts [hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
 #align turing.TM1.stmts₁_supports_stmt_mono Turing.TM1.stmts₁_supportsStmt_mono
@@ -1357,12 +1355,12 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
 /-- The set of all statements in a turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
-  Finset.insertNone (S.bunionᵢ fun q ↦ stmts₁ (M q))
+  Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 #align turing.TM1.stmts Turing.TM1.stmts
 
 theorem stmts_trans {M : Λ → Stmt₁} {S : Finset Λ} {q₁ q₂ : Stmt₁} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_biUnion, Option.mem_def, Option.some.injEq,
     forall_eq', exists_imp, and_imp]
   exact fun l ls h₂ ↦ ⟨_, ls, stmts₁_trans h₂ h₁⟩
 #align turing.TM1.stmts_trans Turing.TM1.stmts_trans
@@ -1378,7 +1376,7 @@ def Supports (M : Λ → Stmt₁) (S : Finset Λ) :=
 
 theorem stmts_supportsStmt {M : Λ → Stmt₁} {S : Finset Λ} {q : Stmt₁} (ss : Supports M S) :
     some q ∈ stmts M S → SupportsStmt S q := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_biUnion, Option.mem_def, Option.some.injEq,
     forall_eq', exists_imp, and_imp]
   exact fun l ls h ↦ stmts₁_supportsStmt_mono h (ss.2 _ ls)
 #align turing.TM1.stmts_supports_stmt Turing.TM1.stmts_supportsStmt
@@ -1529,9 +1527,8 @@ variable [Fintype σ]
 
 /-- Given a finite set of accessible `Λ` machine states, there is a finite set of accessible
 machine states in the target (even though the type `Λ'` is infinite). -/
--- Porting note: Unfolded `×ˢ` to `Finset.product`.
 noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
-  Finset.product (TM1.stmts M S) Finset.univ
+  (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
 open Classical
@@ -1544,7 +1541,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
   · apply Finset.mem_product.2
     constructor
     · simp only [default, TM1.stmts, Finset.mem_insertNone, Option.mem_def, Option.some_inj,
-        forall_eq', Finset.mem_bunionᵢ]
+        forall_eq', Finset.mem_biUnion]
       exact ⟨_, ss.1, TM1.stmts₁_self⟩
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
@@ -1579,7 +1576,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
         exact Finset.mem_insert_of_mem (Finset.mem_union_left _ TM1.stmts₁_self)
     case goto l =>
       cases h₁
-      exact Finset.some_mem_insertNone.2 (Finset.mem_bunionᵢ.2 ⟨_, hs _ _, TM1.stmts₁_self⟩)
+      exact Finset.some_mem_insertNone.2 (Finset.mem_biUnion.2 ⟨_, hs _ _, TM1.stmts₁_self⟩)
     case halt => cases h₁
 #align turing.TM1to0.tr_supports Turing.TM1to0.tr_supports
 
@@ -1884,7 +1881,7 @@ theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ 
       apply IH
     case branch p q₁ q₂ IH₁ IH₂ =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
-      cases p R.head v <;> [apply IH₂, apply IH₁]
+      cases p R.head v <;> [apply IH₂; apply IH₁]
     case goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
@@ -1911,19 +1908,19 @@ noncomputable def writes : Stmt₁ → Finset Λ'₁
 /-- The set of accessible machine states, assuming that the input machine is supported on `S`,
 are the normal states embedded from `S`, plus all write states accessible from these states. -/
 noncomputable def trSupp (S : Finset Λ) : Finset Λ'₁ :=
-  S.bunionᵢ fun l ↦ insert (Λ'.normal l) (writes (M l))
+  S.biUnion fun l ↦ insert (Λ'.normal l) (writes (M l))
 #align turing.TM1to1.tr_supp Turing.TM1to1.trSupp
 
 theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M) (trSupp M S) :=
-  ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert_self _ _⟩, fun q h ↦ by
+  ⟨Finset.mem_biUnion.2 ⟨_, ss.1, Finset.mem_insert_self _ _⟩, fun q h ↦ by
     suffices ∀ q, SupportsStmt S q → (∀ q' ∈ writes q, q' ∈ trSupp M S) →
         SupportsStmt (trSupp M S) (trNormal dec q) ∧
         ∀ q' ∈ writes q, SupportsStmt (trSupp M S) (tr enc dec M q') by
-      rcases Finset.mem_bunionᵢ.1 h with ⟨l, hl, h⟩
+      rcases Finset.mem_biUnion.1 h with ⟨l, hl, h⟩
       have :=
-        this _ (ss.2 _ hl) fun q' hq ↦ Finset.mem_bunionᵢ.2 ⟨_, hl, Finset.mem_insert_of_mem hq⟩
+        this _ (ss.2 _ hl) fun q' hq ↦ Finset.mem_biUnion.2 ⟨_, hl, Finset.mem_insert_of_mem hq⟩
       rcases Finset.mem_insert.1 h with (rfl | h)
-      exacts[this.1, this.2 _ h]
+      exacts [this.1, this.2 _ h]
     intro q hs hw
     induction q
     case move d q IH =>
@@ -1952,7 +1949,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     case goto l =>
       simp only [writes, Finset.not_mem_empty]; refine' ⟨_, fun _ ↦ False.elim⟩
       refine' supportsStmt_read _ fun a _ s ↦ _
-      exact Finset.mem_bunionᵢ.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
+      exact Finset.mem_biUnion.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     case halt =>
       simp only [writes, Finset.not_mem_empty]; refine' ⟨_, fun _ ↦ False.elim⟩
       simp only [SupportsStmt, supportsStmt_move, trNormal]⟩
@@ -1968,7 +1965,7 @@ end TM1to1
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head
 and local state, while TM1 doesn't (in order to have more programming language-like semantics).
-So we use a computed `goto` to go to a state that performes the desired action and then returns to
+So we use a computed `goto` to go to a state that performs the desired action and then returns to
 normal execution.
 
 One issue with this is that the `halt` instruction is supposed to halt immediately, not take a step
@@ -2219,20 +2216,20 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₂} (h : q�
   induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;>
     simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
       at h hs
-  iterate 4 rcases h with (rfl | h) <;> [exact hs, exact IH h hs]
-  case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
+  iterate 4 rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
+  case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts [hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
   case halt => subst h; trivial
 #align turing.TM2.stmts₁_supports_stmt_mono Turing.TM2.stmts₁_supportsStmt_mono
 
 /-- The set of statements accessible from initial set `S` of labels. -/
 noncomputable def stmts (M : Λ → Stmt₂) (S : Finset Λ) : Finset (Option Stmt₂) :=
-  Finset.insertNone (S.bunionᵢ fun q ↦ stmts₁ (M q))
+  Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 #align turing.TM2.stmts Turing.TM2.stmts
 
 theorem stmts_trans {M : Λ → Stmt₂} {S : Finset Λ} {q₁ q₂ : Stmt₂} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_biUnion, Option.mem_def, Option.some.injEq,
     forall_eq', exists_imp, and_imp]
   exact fun l ls h₂ ↦ ⟨_, ls, stmts₁_trans h₂ h₁⟩
 #align turing.TM2.stmts_trans Turing.TM2.stmts_trans
@@ -2247,7 +2244,7 @@ def Supports (M : Λ → Stmt₂) (S : Finset Λ) :=
 
 theorem stmts_supportsStmt {M : Λ → Stmt₂} {S : Finset Λ} {q : Stmt₂} (ss : Supports M S) :
     some q ∈ stmts M S → SupportsStmt S q := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_biUnion, Option.mem_def, Option.some.injEq,
     forall_eq', exists_imp, and_imp]
   exact fun l ls h ↦ stmts₁_supportsStmt_mono h (ss.2 _ ls)
 #align turing.TM2.stmts_supports_stmt Turing.TM2.stmts_supportsStmt
@@ -2721,7 +2718,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₃ p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
     simp only []
-    cases p v <;> [exact IH₂ _ hT, exact IH₁ _ hT]
+    cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 #align turing.TM2to1.tr_respects Turing.TM2to1.tr_respects
@@ -2757,7 +2754,7 @@ theorem tr_eval_dom (k) (L : List (Γ k)) :
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
     (H₂ : L₂ ∈ TM2.eval M k L) :
-    ∃ (S : ∀ k, List (Γ k))(L' : ListBlank (∀ k, Option (Γ k))),
+    ∃ (S : ∀ k, List (Γ k)) (L' : ListBlank (∀ k, Option (Γ k))),
       addBottom L' = L₁ ∧
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
@@ -2769,18 +2766,18 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
 
 /-- The support of a set of TM2 states in the TM2 emulator. -/
 noncomputable def trSupp (S : Finset Λ) : Finset Λ'₂₁ :=
-  S.bunionᵢ fun l ↦ insert (normal l) (trStmts₁ (M l))
+  S.biUnion fun l ↦ insert (normal l) (trStmts₁ (M l))
 #align turing.TM2to1.tr_supp Turing.TM2to1.trSupp
 
 theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M S) :=
-  ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h ↦ by
+  ⟨Finset.mem_biUnion.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h ↦ by
     suffices ∀ (q) (_ : TM2.SupportsStmt S q) (_ : ∀ x ∈ trStmts₁ q, x ∈ trSupp M S),
         TM1.SupportsStmt (trSupp M S) (trNormal q) ∧
         ∀ l' ∈ trStmts₁ q, TM1.SupportsStmt (trSupp M S) (tr M l') by
-      rcases Finset.mem_bunionᵢ.1 h with ⟨l, lS, h⟩
+      rcases Finset.mem_biUnion.1 h with ⟨l, lS, h⟩
       have :=
-        this _ (ss.2 l lS) fun x hx ↦ Finset.mem_bunionᵢ.2 ⟨_, lS, Finset.mem_insert_of_mem hx⟩
-      rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1, exact this.2 _ h]
+        this _ (ss.2 l lS) fun x hx ↦ Finset.mem_biUnion.2 ⟨_, lS, Finset.mem_insert_of_mem hx⟩
+      rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1; exact this.2 _ h]
     clear h l'
     refine' stmtStRec _ _ _ _ _
     · intro _ s _ IH ss' sub -- stack op
@@ -2811,10 +2808,10 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
       refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ _⟩
       rw [trStmts₁] at h
-      rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h, exact IH₂₂ _ h]
+      rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]
     · intro _ ss' _ -- goto
       simp only [trStmts₁, Finset.not_mem_empty]; refine' ⟨_, fun _ ↦ False.elim⟩
-      exact fun _ v ↦ Finset.mem_bunionᵢ.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩
+      exact fun _ v ↦ Finset.mem_biUnion.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩
     · intro _ _ -- halt
       simp only [trStmts₁, Finset.not_mem_empty]
       exact ⟨trivial, fun _ ↦ False.elim⟩⟩

@@ -51,9 +51,9 @@ instance : LinearOrder ℤ where
   lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  decidable_eq := by infer_instance
-  decidable_le := by infer_instance
-  decidable_lt := by infer_instance
+  decidableEq := by infer_instance
+  decidableLE := by infer_instance
+  decidableLT := by infer_instance
 
 #align int.eq_nat_abs_of_zero_le Int.eq_natAbs_of_zero_le
 #align int.le_nat_abs Int.le_natAbs

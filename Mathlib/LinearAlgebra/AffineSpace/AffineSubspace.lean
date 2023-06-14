@@ -29,13 +29,13 @@ This file defines affine subspaces (over modules) and the affine span of a set o
   direction. The `affineSpan` is defined in terms of `spanPoints`, which gives an explicit
   description of the points contained in the affine span; `spanPoints` itself should generally only
   be used when that description is required, with `affineSpan` being the main definition for other
-  purposes. Two other descriptions of the affine span are proved equivalent: it is the `infₛ` of
+  purposes. Two other descriptions of the affine span are proved equivalent: it is the `sInf` of
   affine subspaces containing the points, and (if `[Nontrivial k]`) it contains exactly those points
   that are affine combinations of points in the given set.
 
 ## Implementation notes
 
-`outParam` is used in the definiton of `AddTorsor V P` to make `V` an implicit argument (deduced
+`outParam` is used in the definition of `AddTorsor V P` to make `V` an implicit argument (deduced
 from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by `P` or
 `V`.
 
@@ -593,11 +593,11 @@ instance : CompleteLattice (AffineSubspace k P) :=
         ⟨s1.smul_vsub_vadd_mem c hp1.1 hp2.1 hp3.1, s2.smul_vsub_vadd_mem c hp1.2 hp2.2 hp3.2⟩
     inf_le_left := fun _ _ => Set.inter_subset_left _ _
     inf_le_right := fun _ _ => Set.inter_subset_right _ _
-    le_infₛ := fun S s1 hs1 => by
+    le_sInf := fun S s1 hs1 => by
       -- porting note: surely there is an easier way?
-      refine' Set.subset_interₛ (t := (s1 : Set P)) _
+      refine' Set.subset_sInter (t := (s1 : Set P)) _
       rintro t ⟨s, _hs, rfl⟩
-      exact Set.subset_interᵢ (hs1 s)
+      exact Set.subset_iInter (hs1 s)
     top :=
       { carrier := Set.univ
         smul_vsub_vadd_mem := fun _ _ _ _ _ _ _ => Set.mem_univ _ }
@@ -606,15 +606,15 @@ instance : CompleteLattice (AffineSubspace k P) :=
       { carrier := ∅
         smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
     bot_le := fun _ _ => False.elim
-    supₛ := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
-    infₛ := fun s =>
+    sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
+    sInf := fun s =>
       mk (⋂ s' ∈ s, (s' : Set P)) fun c p1 p2 p3 hp1 hp2 hp3 =>
-        Set.mem_interᵢ₂.2 fun s2 hs2 => by
-          rw [Set.mem_interᵢ₂] at *
+        Set.mem_iInter₂.2 fun s2 hs2 => by
+          rw [Set.mem_iInter₂] at *
           exact s2.smul_vsub_vadd_mem c (hp1 s2 hs2) (hp2 s2 hs2) (hp3 s2 hs2)
-    le_supₛ := fun _ _ h => Set.Subset.trans (Set.subset_bunionᵢ_of_mem h) (subset_spanPoints k _)
-    supₛ_le := fun _ _ h => spanPoints_subset_coe_of_subset_coe (Set.unionᵢ₂_subset h)
-    infₛ_le := fun _ _ => Set.binterᵢ_subset_of_mem
+    le_sSup := fun _ _ h => Set.Subset.trans (Set.subset_biUnion_of_mem h) (subset_spanPoints k _)
+    sSup_le := fun _ _ h => spanPoints_subset_coe_of_subset_coe (Set.iUnion₂_subset h)
+    sInf_le := fun _ _ => Set.biInter_subset_of_mem
     le_inf := fun _ _ _ => Set.subset_inter }
 
 instance : Inhabited (AffineSubspace k P) :=
@@ -663,12 +663,12 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
 
 variable (k V)
 
-/-- The affine span is the `infₛ` of subspaces containing the given points. -/
-theorem affineSpan_eq_infₛ (s : Set P) :
-    affineSpan k s = infₛ { s' : AffineSubspace k P | s ⊆ s' } :=
-  le_antisymm (spanPoints_subset_coe_of_subset_coe <| Set.subset_interᵢ₂ fun _ => id)
-    (infₛ_le (subset_spanPoints k _))
-#align affine_subspace.affine_span_eq_Inf AffineSubspace.affineSpan_eq_infₛ
+/-- The affine span is the `sInf` of subspaces containing the given points. -/
+theorem affineSpan_eq_sInf (s : Set P) :
+    affineSpan k s = sInf { s' : AffineSubspace k P | s ⊆ s' } :=
+  le_antisymm (spanPoints_subset_coe_of_subset_coe <| Set.subset_iInter₂ fun _ => id)
+    (sInf_le (subset_spanPoints k _))
+#align affine_subspace.affine_span_eq_Inf AffineSubspace.affineSpan_eq_sInf
 
 variable (P)
 
@@ -729,10 +729,10 @@ theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ a
 #align affine_subspace.span_union AffineSubspace.span_union
 
 /-- The span of a union of an indexed family of sets is the sup of their spans. -/
-theorem span_unionᵢ {ι : Type _} (s : ι → Set P) :
+theorem span_iUnion {ι : Type _} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
-  (AffineSubspace.gi k V P).gc.l_supᵢ
-#align affine_subspace.span_Union AffineSubspace.span_unionᵢ
+  (AffineSubspace.gi k V P).gc.l_iSup
+#align affine_subspace.span_Union AffineSubspace.span_iUnion
 
 variable (P)
 
@@ -900,8 +900,8 @@ theorem direction_inf (s1 s2 : AffineSubspace k P) :
     (s1 ⊓ s2).direction ≤ s1.direction ⊓ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
   exact
-    le_inf (infₛ_le_infₛ fun p hp => trans (vsub_self_mono (inter_subset_left _ _)) hp)
-      (infₛ_le_infₛ fun p hp => trans (vsub_self_mono (inter_subset_right _ _)) hp)
+    le_inf (sInf_le_sInf fun p hp => trans (vsub_self_mono (inter_subset_left _ _)) hp)
+      (sInf_le_sInf fun p hp => trans (vsub_self_mono (inter_subset_right _ _)) hp)
 #align affine_subspace.direction_inf AffineSubspace.direction_inf
 
 /-- If two affine subspaces have a point in common, the direction of their inf equals the inf of
@@ -947,8 +947,8 @@ theorem sup_direction_le (s1 s2 : AffineSubspace k P) :
   simp only [direction_eq_vectorSpan, vectorSpan_def]
   exact
     sup_le
-      (infₛ_le_infₛ fun p hp => Set.Subset.trans (vsub_self_mono (le_sup_left : s1 ≤ s1 ⊔ s2)) hp)
-      (infₛ_le_infₛ fun p hp => Set.Subset.trans (vsub_self_mono (le_sup_right : s2 ≤ s1 ⊔ s2)) hp)
+      (sInf_le_sInf fun p hp => Set.Subset.trans (vsub_self_mono (le_sup_left : s1 ≤ s1 ⊔ s2)) hp)
+      (sInf_le_sInf fun p hp => Set.Subset.trans (vsub_self_mono (le_sup_right : s2 ≤ s1 ⊔ s2)) hp)
 #align affine_subspace.sup_direction_le AffineSubspace.sup_direction_le
 
 /-- The sup of the directions of two nonempty affine subspaces with empty intersection is less than
@@ -1432,7 +1432,7 @@ theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1)
   · refine' sup_le (sup_direction_le _ _) _
     rw [direction_eq_vectorSpan, vectorSpan_def]
     exact
-      infₛ_le_infₛ fun p hp =>
+      sInf_le_sInf fun p hp =>
         Set.Subset.trans
           (Set.singleton_subset_iff.2
             (vsub_mem_vsub (mem_spanPoints k p2 _ (Set.mem_union_right _ hp2))
@@ -1456,7 +1456,7 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p1 p2 : P} (hp1 : 
 `s` with `p2` added if and only if it is a multiple of `p2 -ᵥ p1` added to a point in `s`. -/
 theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 ∈ s) (p2 p : P) :
     p ∈ affineSpan k (insert p2 (s : Set P)) ↔
-      ∃ (r : k)(p0 : P)(_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
+      ∃ (r : k) (p0 : P) (_hp0 : p0 ∈ s), p = r • (p2 -ᵥ p1 : V) +ᵥ p0 := by
   rw [← mem_coe] at hp1
   rw [← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_insert_of_mem _ hp1)),
     direction_affineSpan_insert hp1, Submodule.mem_sup]
@@ -1666,10 +1666,10 @@ theorem map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔
   (gc_map_comap f).l_sup
 #align affine_subspace.map_sup AffineSubspace.map_sup
 
-theorem map_supᵢ {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
-    (supᵢ s).map f = ⨆ i, (s i).map f :=
-  (gc_map_comap f).l_supᵢ
-#align affine_subspace.map_supr AffineSubspace.map_supᵢ
+theorem map_iSup {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
+    (iSup s).map f = ⨆ i, (s i).map f :=
+  (gc_map_comap f).l_iSup
+#align affine_subspace.map_supr AffineSubspace.map_iSup
 
 theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
     (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
@@ -1677,8 +1677,8 @@ theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
 #align affine_subspace.comap_inf AffineSubspace.comap_inf
 
 theorem comap_supr {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
-    (infᵢ s).comap f = ⨅ i, (s i).comap f :=
-  (gc_map_comap f).u_infᵢ
+    (iInf s).comap f = ⨅ i, (s i).comap f :=
+  (gc_map_comap f).u_iInf
 #align affine_subspace.comap_supr AffineSubspace.comap_supr
 
 @[simp]

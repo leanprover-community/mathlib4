@@ -24,9 +24,6 @@ interval is convex on this interval.
 affine space, slope
 -/
 
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 open AffineMap
 
 variable {k E PE : Type _} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]

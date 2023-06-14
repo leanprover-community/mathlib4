@@ -15,7 +15,7 @@ import Mathlib.Computability.NFA
 
 This file contains the definition of an epsilon Nondeterministic Finite Automaton (`εNFA`), a state
 machine which determines whether a string (implemented as a list over an arbitrary alphabet) is in a
-regular set by evaluating the string over every possible path, also having access to ε-transitons,
+regular set by evaluating the string over every possible path, also having access to ε-transitions,
 which can be followed without reading a character.
 Since this definition allows for automata with infinite states, a `Fintype` instance must be
 supplied for true `εNFA`'s.
@@ -78,12 +78,12 @@ variable {M}
 
 @[simp]
 theorem mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (M.step t a) := by
-  simp_rw [stepSet, mem_unionᵢ₂, exists_prop]
+  simp_rw [stepSet, mem_iUnion₂, exists_prop]
 #align ε_NFA.mem_step_set_iff εNFA.mem_stepSet_iff
 
 @[simp]
 theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by
-  simp_rw [stepSet, mem_empty_iff_false, unionᵢ_false, unionᵢ_empty]
+  simp_rw [stepSet, mem_empty_iff_false, iUnion_false, iUnion_empty]
 #align ε_NFA.step_set_empty εNFA.stepSet_empty
 
 variable (M)
@@ -198,7 +198,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
   rw [evalFrom, εNFA.evalFrom, toεNFA_εClosure]
   suffices εNFA.stepSet (toεNFA M) = stepSet M by rw [this]
   ext S s
-  simp only [stepSet, εNFA.stepSet, exists_prop, Set.mem_unionᵢ]
+  simp only [stepSet, εNFA.stepSet, exists_prop, Set.mem_iUnion]
   apply exists_congr
   simp only [and_congr_right_iff]
   intro _ _

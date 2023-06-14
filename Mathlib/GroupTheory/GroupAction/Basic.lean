@@ -124,11 +124,11 @@ def fixedBy (g : α) : Set β :=
 #align add_action.fixed_by AddAction.fixedBy
 
 @[to_additive]
-theorem fixed_eq_interᵢ_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
+theorem fixed_eq_iInter_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_interᵢ.2 fun g => hx g, fun hx g => (Set.mem_interᵢ.1 hx g : _)⟩
-#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_interᵢ_fixedBy
-#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_interᵢ_fixedBy
+    ⟨fun hx => Set.mem_iInter.2 fun g => hx g, fun hx g => (Set.mem_iInter.1 hx g : _)⟩
+#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_iInter_fixedBy
+#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_iInter_fixedBy
 
 variable {α}
 
@@ -295,10 +295,10 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
   constructor
   · rintro ⟨y, hy, hxy⟩
     obtain ⟨a, rfl⟩ := Quotient.exact hxy
-    rw [Set.mem_unionᵢ]
+    rw [Set.mem_iUnion]
     exact ⟨a⁻¹, a • x, hy, inv_smul_smul a x⟩
   · intro hx
-    rw [Set.mem_unionᵢ] at hx
+    rw [Set.mem_iUnion] at hx
     obtain ⟨a, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
     refine' ⟨a⁻¹ • x, _, by simp only [Quotient.eq']; use a⁻¹⟩

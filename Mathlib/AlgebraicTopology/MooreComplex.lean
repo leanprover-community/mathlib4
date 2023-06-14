@@ -73,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | 0 => Subobject.arrow _ ≫ X.δ (0 : Fin 2) ≫ inv (⊤ : Subobject _).arrow
   | n + 1 => by
-    -- The differential is `Subobject.arrow _ ≫ X.δ (0 : fin (n+3))`,
+    -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
     -- factored through the intersection of the kernels.
     refine' factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
     -- We now need to show that it factors!

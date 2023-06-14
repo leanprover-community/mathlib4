@@ -14,7 +14,6 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Set
 
 /-!
 # Bitwise operations on natural numbers

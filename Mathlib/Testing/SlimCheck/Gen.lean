@@ -79,7 +79,7 @@ def arrayOf (x : Gen m α) : Gen m (Array α) := do
     res := res.push (← x)
   pure res
 
-/-- Create an `List` of examples using `x`. The size is controlled
+/-- Create a `List` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def listOf (x : Gen m α) : Gen m (List α) :=
   arrayOf x >>= pure ∘ Array.toList
@@ -97,11 +97,11 @@ def elements (xs : List α) (pos : 0 < xs.length) : Gen m α := do
 open List in
 /-- Generate a random permutation of a given list. -/
 def permutationOf : (xs : List α) → Gen m { ys // ys ~ xs }
-| [] => pure ⟨[], Perm.nil⟩
-| x::xs => do
-  let ⟨ys, h1⟩ ← permutationOf xs
-  let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
-  pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
+  | [] => pure ⟨[], Perm.nil⟩
+  | x::xs => do
+    let ⟨ys, h1⟩ ← permutationOf xs
+    let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
+    pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α β : Type u} (x : Gen m α) (y : Gen m β) : Gen m (α × β) := do

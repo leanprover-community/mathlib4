@@ -15,7 +15,7 @@ import Mathlib.Order.PropInstances
 
 This file defines Heyting, co-Heyting and bi-Heyting algebras.
 
-An Heyting algebra is a bounded distributive lattice with an implication operation `⇨` such that
+A Heyting algebra is a bounded distributive lattice with an implication operation `⇨` such that
 `a ≤ b ⇨ c ↔ a ⊓ b ≤ c`. It also comes with a pseudo-complement `ᶜ`, such that `aᶜ = a ⇨ ⊥`.
 
 Co-Heyting algebras are dual to Heyting algebras. They have a difference `\` and a negation `￢`

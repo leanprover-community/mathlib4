@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 
 ! This file was ported from Lean 3 source module algebra.order.lattice_group
-! leanprover-community/mathlib commit 474656fdf40ae1741dfffcdd7c685a0f198da61a
+! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Tactic.NthRewrite
+import Mathlib.Order.Closure
+
 /-!
 # Lattice ordered groups
 
@@ -65,16 +66,6 @@ lattice, ordered, group
 -- Needed for squares
 -- Needed for squares
 universe u
-
--- A linearly ordered additive commutative group is a lattice ordered commutative group
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) LinearOrderedCommGroup.to_covariantClass (α : Type u)
-    [LinearOrderedCommGroup α] :
-    CovariantClass α α (· * ·)
-      (· ≤ ·) where elim a _ _ bc := OrderedCommGroup.mul_le_mul_left _ _ bc a
-#align linear_ordered_comm_group.to_covariant_class LinearOrderedCommGroup.to_covariantClass
-#align linear_ordered_add_comm_group.to_covariant_class LinearOrderedAddCommGroup.to_covariantClass
 
 variable {α : Type u} [Lattice α] [CommGroup α]
 
@@ -605,3 +596,30 @@ theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : �
 #align lattice_ordered_comm_group.abs_abs_sub_abs_le LatticeOrderedCommGroup.abs_abs_sub_abs_le
 
 end LatticeOrderedCommGroup
+
+namespace LatticeOrderedAddCommGroup
+
+variable {β : Type u} [Lattice β] [AddCommGroup β]
+
+section solid
+
+/-- A subset `s ⊆ β`, with `β` an `AddCommGroup` with a `Lattice` structure, is solid if for
+all `x ∈ s` and all `y ∈ β` such that `|y| ≤ |x|`, then `y ∈ s`. -/
+def IsSolid (s : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
+#align lattice_ordered_add_comm_group.is_solid LatticeOrderedAddCommGroup.IsSolid
+
+/-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/
+def solidClosure (s : Set β) : Set β := { y | ∃ x ∈ s, |y| ≤ |x| }
+#align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
+
+theorem isSolid_solidClosure (s : Set β) : IsSolid (solidClosure s) :=
+  fun _ ⟨y, hy, hxy⟩ _ hzx => ⟨y, hy, hzx.trans hxy⟩
+#align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
+
+theorem solidClosure_min (s t : Set β) (h1 : s ⊆ t) (h2 : IsSolid t) : solidClosure s ⊆ t :=
+  fun _ ⟨_, hy, hxy⟩ => h2 (h1 hy) hxy
+#align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
+
+end solid
+
+end LatticeOrderedAddCommGroup

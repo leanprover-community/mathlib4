@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-# Canoncially ordered rings and semirings.
+# Canonically ordered rings and semirings.
 
 * `CanonicallyOrderedCommSemiring`
   - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors

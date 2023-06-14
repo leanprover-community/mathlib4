@@ -20,7 +20,7 @@ import Mathlib.Data.Fintype.Card
 This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
 this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
 `Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
-seperately for both groups and modules, the proof in this file can be applied to both.
+separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
@@ -548,9 +548,9 @@ def snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) : Composit
   series := Fin.snoc s x
   step' i := by
     refine' Fin.lastCases _ _ i
-    · rwa [Fin.snoc_cast_succ, Fin.succ_last, Fin.snoc_last, ← top]
+    · rwa [Fin.snoc_castSucc, Fin.succ_last, Fin.snoc_last, ← top]
     · intro i
-      rw [Fin.snoc_cast_succ, ← Fin.castSucc_fin_succ, Fin.snoc_cast_succ]
+      rw [Fin.snoc_castSucc, ← Fin.castSucc_fin_succ, Fin.snoc_castSucc]
       exact s.step _
 #align composition_series.snoc CompositionSeries.snoc
 
@@ -569,7 +569,7 @@ theorem snoc_last (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
 @[simp]
 theorem snoc_castSucc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x)
     (i : Fin (s.length + 1)) : snoc s x hsat (Fin.castSucc i) = s i :=
-  Fin.snoc_cast_succ (α := fun _ => X) _ _ _
+  Fin.snoc_castSucc (α := fun _ => X) _ _ _
 #align composition_series.snoc_cast_succ CompositionSeries.snoc_castSucc
 
 @[simp]

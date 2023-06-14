@@ -24,7 +24,7 @@ import Mathlib.Data.Rat.BigOperators
 * `Finsupp.mapDomain`: maps the domain of a `Finsupp` by a function and by summing.
 * `Finsupp.comapDomain`: postcomposition of a `Finsupp` with a function injective on the preimage
   of its support.
-* `Finsupp.some`: restrict a finitely supported function on `option α` to a finitely supported
+* `Finsupp.some`: restrict a finitely supported function on `Option α` to a finitely supported
   function on `α`.
 * `Finsupp.filter`: `filter p f` is the finitely supported function that is `f a` if `p a` is true
   and 0 otherwise.
@@ -179,7 +179,7 @@ section ZeroHom
 
 variable [Zero M] [Zero N] [Zero P]
 
-/-- Composition with a fixed zero-preserving homomorphism is itself an zero-preserving homomorphism
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
 def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N)
@@ -539,8 +539,8 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.bunionᵢ_mono fun a _ => support_single_subset) <| by
-      rw [Finset.bunionᵢ_singleton]
+    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+      rw [Finset.biUnion_singleton]
 #align finsupp.map_domain_support Finsupp.mapDomain_support
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -798,12 +798,12 @@ end FInjective
 
 end ComapDomain
 
-/-! ### Declarations about finitely supported functions whose support is an `option` type -/
+/-! ### Declarations about finitely supported functions whose support is an `Option` type -/
 
 
 section Option
 
-/-- Restrict a finitely supported function on `option α` to a finitely supported function on `α`. -/
+/-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
 def some [Zero M] (f : Option α →₀ M) : α →₀ M :=
   f.comapDomain Option.some fun _ => by simp
 #align finsupp.some Finsupp.some
@@ -874,7 +874,8 @@ section Zero
 variable [Zero M] (p : α → Prop) (f : α →₀ M)
 
 /--
-`filter p f` is the finitely supported function that is `f a` if `p a` is true and 0 otherwise. -/
+`Finsupp.filter p f` is the finitely supported function that is `f a` if `p a` is true and `0`
+otherwise. -/
 def filter (p : α → Prop) (f : α →₀ M) : α →₀ M
     where
   toFun a :=
@@ -1280,14 +1281,14 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
 
 theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
-  rw [← Finset.bunionᵢ_singleton]
+  rw [← Finset.biUnion_singleton]
   refine' Finset.Subset.trans support_sum _
-  refine' Finset.bunionᵢ_mono fun a _ => support_single_subset
+  refine' Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
 end CurryUncurry
 
-/-! ### Declarations about finitely supported functions whose support is a `sum` type -/
+/-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
 
 section Sum

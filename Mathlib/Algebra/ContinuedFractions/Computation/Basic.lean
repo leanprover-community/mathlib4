@@ -126,7 +126,7 @@ theorem coe_to_intFractPair {b : ℤ} {fr : K} :
 
 end coe
 
--- Note: this could be relaxed to something like `linear_ordered_division_ring` in the future.
+-- Note: this could be relaxed to something like `LinearOrderedDivisionRing` in the future.
 -- Fix a discrete linear ordered field with `floor` function.
 variable [LinearOrderedField K] [FloorRing K]
 
