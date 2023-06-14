@@ -42,7 +42,7 @@ corresponding adic topology to the type class inference system.
 ## Implementation notes
 
 The `I`-adic topology on a ring `R` has a contrived definition using `I^n • ⊤` instead of `I`
-to make sure it is definitionally equal to the `I`-topology on `R` seen as a `R`-module.
+to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
 
 -/
 
@@ -130,7 +130,7 @@ theorem adic_module_basis :
         exact smul_mem_smul a_in mem_top⟩ }
 #align ideal.adic_module_basis Ideal.adic_module_basis
 
-/-- The topology on a `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
+/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
@@ -138,7 +138,7 @@ def adicModuleTopology : TopologicalSpace M :=
 #align ideal.adic_module_topology Ideal.adicModuleTopology
 
 /-- The elements of the basis of neighborhoods of zero for the `I`-adic topology
-on a `R`-module `M`, seen as open additive subgroups of `M`. -/
+on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩

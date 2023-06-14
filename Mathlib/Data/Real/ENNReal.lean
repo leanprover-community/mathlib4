@@ -18,7 +18,7 @@ import Mathlib.Tactic.GCongr.Core
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
-and of the extended distance `edist` in a `EMetricSpace`.
+and of the extended distance `edist` in an `EMetricSpace`.
 In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
 and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
 
@@ -1520,7 +1520,7 @@ protected theorem inv_lt_one : a⁻¹ < 1 ↔ 1 < a := by rw [inv_lt_iff_inv_lt,
 protected theorem one_lt_inv : 1 < a⁻¹ ↔ a < 1 := by rw [lt_inv_iff_lt_inv, inv_one]
 #align ennreal.one_lt_inv ENNReal.one_lt_inv
 
-/-- The inverse map `λ x, x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
+/-- The inverse map `fun x ↦ x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
 @[simps! apply]
 def _root_.OrderIso.invENNReal : ℝ≥0∞ ≃o ℝ≥0∞ᵒᵈ where
   map_rel_iff' := ENNReal.inv_le_inv

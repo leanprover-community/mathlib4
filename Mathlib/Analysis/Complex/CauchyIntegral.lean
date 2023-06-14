@@ -302,7 +302,7 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
     (hc : ContinuousOn f (closedBall c R \ ball c r))
     (hd : ∀ z ∈ (ball c R \ closedBall c r) \ s, DifferentiableAt ℂ f z) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = ∮ z in C(c, r), (z - c)⁻¹ • f z := by
-  /- We apply the previous lemma to `λ z, f (c + exp z)` on the rectangle
+  /- We apply the previous lemma to `fun z ↦ f (c + exp z)` on the rectangle
     `[log r, log R] × [0, 2 * π]`. -/
   set A := closedBall c R \ ball c r
   obtain ⟨a, rfl⟩ : ∃ a, Real.exp a = r; exact ⟨Real.log r, Real.exp_log h0⟩

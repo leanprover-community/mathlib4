@@ -145,7 +145,7 @@ Returns `#[]` if nothing has been pushed yet. -/
 def MatchState.getFoldArray (s : MatchState) (name : Name) : Array Term :=
   (s.foldState.find? name).getD #[]
 
-/-- Push an delaborated term onto a foldr/foldl array. -/
+/-- Push a delaborated term onto a foldr/foldl array. -/
 def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :=
   let ts := (s.getFoldArray name).push t
   {s with foldState := s.foldState.insert name ts}

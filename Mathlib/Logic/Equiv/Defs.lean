@@ -581,7 +581,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
 
 -- This should not be a simp lemma as long as `(∘)` is reducible:
 -- when `(∘)` is reducible, Lean can unify `f₁ ∘ f₂` with any `g` using
--- `f₁ := g` and `f₂ := λ x, x`.  This causes nontermination.
+-- `f₁ := g` and `f₂ := fun x ↦ x`. This causes nontermination.
 theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
   apply arrowCongr_comp
 #align equiv.conj_comp Equiv.conj_comp
@@ -763,7 +763,7 @@ def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i))
     (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
 #align equiv.sigma_plift_equiv_subtype Equiv.sigmaPLiftEquivSubtype
 
-/-- A `Sigma` with `λ i, ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
+/-- A `Sigma` with `fun i ↦ ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
 Variant of `sigmaPLiftEquivSubtype`.
 -/
 def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :

@@ -1072,7 +1072,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
-/-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
+/-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=

@@ -85,7 +85,7 @@ end Invariant
 -/
 
 
-/-- A flow on a topological space `α` by an a additive topological
+/-- A flow on a topological space `α` by an additive topological
     monoid `τ` is a continuous monoid action of `τ` on `α`.-/
 structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type _)
   [TopologicalSpace α] where
