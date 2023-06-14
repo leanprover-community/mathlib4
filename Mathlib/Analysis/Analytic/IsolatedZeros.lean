@@ -18,15 +18,15 @@ import Mathlib.Analysis.Analytic.Uniqueness
 # Principle of isolated zeros
 
 This file proves the fact that the zeros of a non-constant analytic function of one variable are
-isolated. It also introduces a little bit of API in the `has_fpower_series_at` namespace that is
+isolated. It also introduces a little bit of API in the `HasFPowerSeriesAt` namespace that is
 useful in this setup.
 
 ## Main results
 
-* `analytic_at.eventually_eq_zero_or_eventually_ne_zero` is the main statement that if a function is
+* `AnalyticAt.eventually_eq_zero_or_eventually_ne_zero` is the main statement that if a function is
   analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
   vanish in a punctured neighborhood of `z₀`.
-* `analytic_on.eq_on_of_preconnected_of_frequently_eq` is the identity theorem for analytic
+* `AnalyticOn.eqOn_of_preconnected_of_frequently_eq` is the identity theorem for analytic
   functions: if a function `f` is analytic on a connected set `U` and is zero on a set with an
   accumulation point in `U` then `f` is identically `0` on `U`.
 -/
@@ -40,7 +40,8 @@ open scoped Topology BigOperators
 
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
---  {y : Fin n → 𝕜} -- Porting note: TODO
+--  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
+-- automatically included as an hypothesis
 
 namespace HasSum
 
