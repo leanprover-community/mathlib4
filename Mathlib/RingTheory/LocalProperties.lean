@@ -191,7 +191,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
   -- Porting note: was `apply_with hP.holds_for_localization_away { instances := ff }`
   have : IsLocalization.Away (1 : R) S := by
     apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-  apply RingHom.PropertyIsLocal.HoldsForLocalizationAway hP
+  exact RingHom.PropertyIsLocal.HoldsForLocalizationAway hP S (1 : R)
 #align ring_hom.property_is_local.respects_iso RingHom.PropertyIsLocal.respectsIso
 
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
@@ -367,7 +367,8 @@ theorem surjective_ofLocalizationSpan :
   erw [IsLocalization.map_mk'] at e'
   rw [eq_comm, IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
   obtain ⟨⟨_, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'
-  rw [Subtype.coe_mk, mul_comm x, ← mul_assoc, ← map_pow, ← map_mul, ← map_mul, ← pow_add] at e''
+  dsimp only at e''
+  rw [mul_comm x, ← mul_assoc, ← map_pow, ← map_mul, ← map_mul, ← pow_add] at e''
   exact ⟨n' + n, _, e''.symm⟩
 #align surjective_of_localization_span surjective_ofLocalizationSpan
 
@@ -513,8 +514,8 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
     ∀ r : s,
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
-  haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) := fun r =>
-    IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+  haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
+    sorry--fun r => IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
   -- By the hypothesis, we may find a finite generating set for each `Sᵣ`. This set can then be
   -- lifted into `R` by multiplying a sufficiently large power of `r`. I claim that the union of
   -- these generates `S`.
@@ -522,7 +523,7 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
   replace H := fun r => (H r).1
   choose s₁ s₂ using H
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
-  use s.attach.bUnion sf
+  use s.attach.biUnion sf
   rw [Submodule.span_attach_biUnion, eq_top_iff]
   -- It suffices to show that `r ^ n • x ∈ span T` for each `r : s`, since `{ r ^ n }` spans `R`.
   -- This then follows from the fact that each `x : R` is a linear combination of the generating set
@@ -535,8 +536,8 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
     multiple_mem_span_of_mem_localization_span (Submonoid.powers (r : R))
       (Localization.Away (r : R)) (s₁ r : Set (Localization.Away (f r))) (algebraMap S _ x)
       (by rw [s₂ r]; trivial)
-  rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, Subtype.coe_mk, ←
-    map_mul] at hn₁
+  dsimp only at hn₁
+  rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, ← map_mul] at hn₁
   obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.smul_mem_finsetIntegerMultiple_span (Submonoid.powers (r : R))
       (Localization.Away (f r)) _ (s₁ r) hn₁
@@ -557,7 +558,8 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
   letI := ((algebraMap S S').comp f).toAlgebra
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
   letI := f'.toAlgebra
-  haveI : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+  haveI : IsScalarTower R R' S' :=
+    sorry--IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
   let fₐ : S →ₐ[R] S' := AlgHom.mk' (algebraMap S S') fun c x => RingHom.map_mul _ _ _
   obtain ⟨T, hT⟩ := id hf
   use T.image (algebraMap S S')
@@ -567,7 +569,7 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
   rw [IsLocalization.mk'_eq_mul_mk'_one, mul_comm, Finset.coe_image]
   have hy : y ∈ Algebra.adjoin R (T : Set S) := by rw [hT]; trivial
   replace hy : algebraMap S S' y ∈ (Algebra.adjoin R (T : Set S)).map fₐ :=
-    subalgebra.mem_map.mpr ⟨_, hy, rfl⟩
+    Subalgebra.mem_map.mpr ⟨_, hy, rfl⟩
   rw [fₐ.map_adjoin T] at hy
   have H :
     Algebra.adjoin R (algebraMap S S' '' T) ≤
@@ -612,7 +614,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
   use a * y ^ n
   convert A.mul_mem hx' (hA₂ a.prop) using 1
-  rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, Submonoid.coe_pow, mul_assoc, ← ha₂,
+  rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, SubmonoidClass.coe_pow, mul_assoc, ← ha₂,
     mul_comm]
 #align is_localization.exists_smul_mem_of_mem_adjoin IsLocalization.exists_smul_mem_of_mem_adjoin
 
@@ -645,14 +647,14 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
     ∀ r : s,
       IsLocalization ((Submonoid.powers (r : R)).map (algebraMap R S)) (Localization.Away (f r)) :=
     by intro r; rw [Submonoid.map_powers]; exact Localization.isLocalization
-  haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) := fun r =>
-    IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
+  haveI : ∀ r : s, IsScalarTower R (Localization.Away (r : R)) (Localization.Away (f r)) :=
+    sorry--fun r => IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp _).symm
   constructor
   replace H := fun r => (H r).1
   choose s₁ s₂ using H
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (f x)) (s₁ x)
-  use s.attach.bUnion sf
-  convert (Algebra.adjoin_attach_biUnion sf).trans _
+  use s.attach.biUnion sf
+  convert (Algebra.adjoin_attach_biUnion (R := R) sf).trans _
   rw [eq_top_iff]
   rintro x -
   apply
@@ -663,8 +665,7 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
     multiple_mem_adjoin_of_mem_localization_adjoin (Submonoid.powers (r : R))
       (Localization.Away (r : R)) (s₁ r : Set (Localization.Away (f r)))
       (algebraMap S (Localization.Away (f r)) x) (by rw [s₂ r]; trivial)
-  rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, Subtype.coe_mk, ←
-    map_mul] at hn₁
+  rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, ← map_mul] at hn₁
   obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.lift_mem_adjoin_finsetIntegerMultiple (Submonoid.powers (r : R)) _ (s₁ r) hn₁
   rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, Subtype.coe_mk, ← pow_add] at hn₂
