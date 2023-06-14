@@ -8,7 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Init.Data.DList
+import Mathlib.Data.DList.Defs
 
 
 /-!
