@@ -207,6 +207,10 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) where
   triangle M N := triangle M N
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
+@[simp] lemma tensorUnit_coe : ((𝟙_ (ModuleCat.{u} R)) : Type u) = R := rfl
+@[simp] lemma tensorObj_coe {M N : ModuleCat R} :
+    ((M ⊗ N : ModuleCat R) : Type u) = TensorProduct R M N := rfl
+
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
 instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
@@ -300,4 +304,3 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
       LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
 end ModuleCat
-

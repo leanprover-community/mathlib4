@@ -107,8 +107,8 @@ set_option linter.uppercaseLean3 false in
 #align Module.Module_category ModuleCat.moduleCategory
 
 -- porting note: was not necessary in mathlib
-instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M (fun _ => N) :=
-  ⟨fun f => f.toFun, fun _ _ h => LinearMap.ext (congr_fun h)⟩
+instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
+  LinearMap.semilinearMapClass
 
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
@@ -137,9 +137,6 @@ instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat wh
       map := fun f => AddCommGroupCat.ofHom f.toAddMonoidHom }
 set_option linter.uppercaseLean3 false in
 #align Module.has_forget_to_AddCommGroup ModuleCat.hasForgetToAddCommGroup
-
-instance (M N : ModuleCat R) : LinearMapClass (M ⟶ N) R M N :=
-  { LinearMap.semilinearMapClass with coe := fun f => f }
 
 /-- The object in the category of R-modules associated to an R-module -/
 def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
@@ -196,7 +193,8 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
 set_option linter.uppercaseLean3 false in
 #align Module.of_unique ModuleCat.ofUnique
 
--- porting note: remove simp attribute because it makes the linter complain
+-- Porting note: the simpNF linter complains, but we really need this?!
+-- @[simp, nolint simpNF]
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
   rfl
 set_option linter.uppercaseLean3 false in

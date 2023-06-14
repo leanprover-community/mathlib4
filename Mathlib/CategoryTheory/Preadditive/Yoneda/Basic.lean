@@ -68,6 +68,7 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat.{v} where
   map_comp f g := by ext ; dsimp ; simp
 #align category_theory.preadditive_yoneda CategoryTheory.preadditiveYoneda
 
+
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
