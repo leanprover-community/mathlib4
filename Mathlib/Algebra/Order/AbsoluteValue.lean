@@ -111,7 +111,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 #align absolute_value.add_le AbsoluteValue.add_le
 
-@[simp]
+-- porting note: was `@[simp]` but `simp` can prove it
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 #align absolute_value.map_mul AbsoluteValue.map_mul
@@ -137,7 +137,7 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
-@[simp]
+-- porting note: was `@[simp]` but `simp` can prove it
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 #align absolute_value.map_zero AbsoluteValue.map_zero
@@ -152,7 +152,7 @@ protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c)
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
-@[simp]
+@[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
@@ -173,7 +173,7 @@ variable {R S : Type _} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 variable [IsDomain S] [Nontrivial R]
 
-@[simp]
+-- porting note: was `@[simp]` but `simp` can prove it
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
@@ -203,7 +203,7 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
-@[simp]
+-- porting note: was `@[simp]` but `simp` can prove it
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 #align absolute_value.map_pow AbsoluteValue.map_pow
