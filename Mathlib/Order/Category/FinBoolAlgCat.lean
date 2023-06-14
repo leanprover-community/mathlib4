@@ -106,11 +106,20 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd
       map := fun {X Y} f => show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f) }
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlgCat.hasForgetToFinPartOrd
 
+-- Porting note: TODO added, does it help?
+instance instFunLike (X Y : FinBoolAlgCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
+  show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
+
 instance forget_to_finPartOrd_faithful : Faithful (forget₂ FinBoolAlgCat FinPartOrd) :=
-  ⟨sorry⟩
+  -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h
   --   FunLike.coe_injective this⟩
+  ⟨fun {X Y} f g h => by
+    dsimp at *
+    apply FunLike.coe_injective
+    sorry
+  ⟩
 #align FinBoolAlg.forget_to_FinPartOrd_faithful FinBoolAlgCat.forget_to_finPartOrd_faithful
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
