@@ -23,27 +23,27 @@ example [Ring R] [Ring S] (w : noZeroDivisors S) (f : R →+* S) (inj : Function
   intro y
   specialize w (f y)
   -- "Now the transport goal is `↑f x * ↑f y = 0 → ↑f x = 0 ∨ ↑f y = 0` ~~~> `x * y = 0 → x = 0 ∨ y = 0`"
-  -- "The first argument is something we know how to transport: namely a equality in the source of an injective function."
-  intro p
-  apply_fun f at p
-  -- Try:
-  -- specialize w p
-  -- but it fails!
-  simp at p
-  specialize w p
-  clear p
-  -- "Now the transport goal is `↑f x = 0 ∨ ↑f y = 0` ~~~> `x = 0 ∨ y = 0`"
-  -- "This is an `∨`, so we should be able to separately transport each branch."
-  cases' w with wl wr
-  · left
-    -- "Now the transport goal is `↑f x = 0` ~~~> `x = 0`"
-    -- "The goal is an equation in the source of an injective function"
-    apply_fun f
-    -- exact wl -- oops! that fails
-    simpa using wl
-  · right
-    apply_fun f
-    simpa using wr
+  -- To transport an implication `p → q` ~~~> `p' → q'`, we should transport `p' → p` and `q → q'`"
+  convert _ ∘ w ∘ _
+  all_goals (clear w)
+  . -- "Now the transport goal is `↑f x = 0 ∨ ↑f y = 0` ~~~> `x = 0 ∨ y = 0`"
+    -- "This is an `∨`, so we should separately transport each branch."
+    intro w
+    cases' w with wl wr
+    . left
+      -- "Now the transport goal is `↑f x = 0` ~~~> `x = 0`"
+      -- "The goal is an equation in the source of an injective function"
+      apply_fun f
+      -- exact wl -- oops! that fails
+      simpa using wl
+    . right
+      apply_fun f
+      simpa using wr
+  . -- "We want to transport an equality in the source of an injective function."
+    intro p
+    apply_fun f at p
+    simpa using p
+  done
 
 example [Zero R] [Zero S] (f : ZeroHom R S) (x : R) (y : S) (h : f x = y) (w : x = 0) :
     y = 0 := by
@@ -53,6 +53,7 @@ example [Zero R] [Zero S] (f : ZeroHom R S) (x : R) (y : S) (h : f x = y) (w : x
   apply_fun f at w
   -- exact w -- oops! that fails
   simpa [h] using w
+  done
 
 example [Ring R] [Ring S] (f : R →+* S) (inj : Function.Injective f)
     (w : ∃ (n : ℕ) (r : R), r ≠ 0 ∧ r ^ n = 0) :
@@ -79,6 +80,7 @@ example [Ring R] [Ring S] (f : R →+* S) (inj : Function.Injective f)
   · clear wl
     apply_fun f at wr
     simpa using wr
+  done
 
 open Classical
 #check Submonoid.closure
@@ -101,18 +103,24 @@ example [Monoid M] [Monoid N] (f : M →* N) (sur : Function.Surjective f)
   intro n
   rcases sur n with ⟨m, rfl⟩
   specialize w m
+  -- Cheating here
+  unfold Submonoid.closure sInf Submonoid.instInfSetSubmonoid at w ⊢
+  simp at w ⊢
   -- It's a forall!
   intro r
-  specialize w (f ⁻¹' r) -- How did we know to use `⁻¹'` here?
-  -- It's a forall!
-  intro p
-  apply w
-  clear w
-  -- It's an existential!
-  cases' p with W p
-  use W.comap f
-
-
+  specialize w (r.comap f) -- How did we know to use `⁻Submonoid.comap` here?
+  -- It's an implication!
+  convert _ ∘ w ∘ _
+  all_goals (clear w)
+  . -- Now the transport goal is `m ∈ r.comap f` ~~~> `f m ∈ r`
+    -- Personally I think there should be lemmas tagged `[transport]` for the `∈` predicate
+    intro w
+    simpa using w
+  . -- Now the transport goal is `↑s ⊆ ↑f ⁻¹' ↑r` ~~~> `↑s ⊆ ↑(Submonoid.comap f r)`
+    -- We could treat this as an implication, but it's actually just refl more or less
+    intro w
+    simpa using w -- simp only [Submonoid.coe_comap, w]
+  done
 
 -- Postponing this one, to avoid dealing with structures/classes for now:
 example [Ring R] [Ring S] [IsCancelMulZero S] (f : R →+* S) (inj : Function.Injective f) :
