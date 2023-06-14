@@ -19,7 +19,7 @@ leanmodule = leanfile[:-5].replace('/', '.')
 # try to build
 log = subprocess.run(
     ['lake', 'build', leanmodule],
-    capture_output=True)
+    capture_output=True, encoding='utf8')
 if log.returncode == 0:
     print("no errors 🎉")
     exit(0)
@@ -29,7 +29,7 @@ shutil.copyfile(leanfile, leanfile + '.bak')
 with open(leanfile + '.bak', encoding='utf8') as fp:
     f = list(fp)
 count = 0
-for l in reversed(log.stderr.decode().splitlines()):
+for l in reversed(log.stderr.splitlines()):
     if 'linter.unusedVariables' in l:
         line, col = getpos(l)
         f[line-1] = f[line-1][0:col] + '_' + f[line-1][col:]
