@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.to_LocallyRingedSpace.obj (op R)`
-for some `R : CommRing`.
+for some `R : CommRingCat`.
 -/
 structure Scheme extends LocallyRingedSpace where
   local_affine :
@@ -86,7 +86,7 @@ theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
   rfl
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
-/-- The forgetful functor from `Scheme` to `Top`. -/
+/-- The forgetful functor from `Scheme` to `TopCat`. -/
 @[simps!]
 def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
