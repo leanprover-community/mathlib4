@@ -223,15 +223,14 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
   · refine' AEStronglyMeasurable.mul _ (hfc.mono_set (Ioi_subset_Ioi he'.le))
     refine' (ContinuousAt.continuousOn fun t ht => _).aestronglyMeasurable measurableSet_Ioi
     exact continuousAt_rpow_const _ _ (Or.inl <| (he'.trans ht).ne')
-  · have : ∀ᵐ t : ℝ ∂volume.restrict (Ioi <| max e 1), ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d :=
-      by
-      refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun t ht => _)
+  · have : ∀ᵐ t : ℝ ∂volume.restrict (Ioi <| max e 1),
+        ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d := by
+      refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht => _
       have ht' : 0 < t := he'.trans ht
       rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le (-a)), mul_assoc,
         mul_comm _ d, norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le _)]
-      exact
-        mul_le_mul_of_nonneg_left (he t ((le_max_left e 1).trans_lt ht).le)
-          (rpow_pos_of_pos ht' _).le
+      exact mul_le_mul_of_nonneg_left (he t ((le_max_left e 1).trans_lt ht).le)
+        (rpow_pos_of_pos ht' _).le
     refine' (HasFiniteIntegral.mul_const _ _).mono' this
     exact (integrableOn_Ioi_rpow_of_lt (by linarith) he').hasFiniteIntegral
 set_option linter.uppercaseLean3 false in
