@@ -1189,8 +1189,8 @@ namespace Prod
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
-instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β) [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] :
-    Decidable (x ≤ y) := And.decidable
+instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β)
+    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
