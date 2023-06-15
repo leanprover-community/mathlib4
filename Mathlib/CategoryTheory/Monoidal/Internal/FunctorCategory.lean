@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.CommMon_
-import Mathbin.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.CommMon_
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`
@@ -51,8 +51,7 @@ variable {C D}
 to a functor into the category of monoid objects.
 -/
 @[simps]
-def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D
-    where
+def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
   obj A :=
     { obj := fun X =>
         { pt := A.pt.obj X
@@ -79,8 +78,7 @@ def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D
 to a monoid object in the functor category
 -/
 @[simps]
-def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D)
-    where
+def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   obj F :=
     { pt := F ⋙ Mon_.forget D
       one := { app := fun X => (F.obj X).one }
@@ -140,8 +138,7 @@ monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the monoid objects of `D`.
 -/
 @[simps]
-def monFunctorCategoryEquivalence : Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D
-    where
+def monFunctorCategoryEquivalence : Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D where
   Functor := Functor
   inverse := inverse
   unitIso := unitIso
@@ -158,8 +155,7 @@ variable {C D}
 to a functor into the category of commutative monoid objects.
 -/
 @[simps]
-def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D
-    where
+def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
   obj A :=
     { (monFunctorCategoryEquivalence C D).Functor.obj A.toMon_ with
       obj := fun X =>
@@ -172,8 +168,7 @@ def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D
 to a commutative monoid object in the functor category
 -/
 @[simps]
-def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D)
-    where
+def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
       mul_comm' := by ext X; exact (F.obj X).mul_comm }
@@ -224,8 +219,7 @@ commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.
 -/
 @[simps]
-def commMonFunctorCategoryEquivalence : CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D
-    where
+def commMonFunctorCategoryEquivalence : CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D where
   Functor := Functor
   inverse := inverse
   unitIso := unitIso
