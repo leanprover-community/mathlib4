@@ -26,18 +26,18 @@ open TensorProduct Algebra.TensorProduct
 local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] => fun f : X →+* Y =>
   Function.Surjective f
 
-theorem surjective_stableUnderComposition : StableUnderComposition surjective := by introv R hf hg;
-  exact hg.comp hf
+theorem surjective_stableUnderComposition : StableUnderComposition surjective := by
+  introv R hf hg; exact hg.comp hf
 #align ring_hom.surjective_stable_under_composition RingHom.surjective_stableUnderComposition
 
 theorem surjective_respectsIso : RespectsIso surjective := by
-  apply surjective_stable_under_composition.respects_iso
-  intros
+  apply surjective_stableUnderComposition.respectsIso
+  intros _ _ _ _ e
   exact e.surjective
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
-  refine' stable_under_base_change.mk _ surjective_respects_iso _
+  refine' StableUnderBaseChange.mk _ surjective_respectsIso _
   classical
   introv h x
   skip
@@ -53,7 +53,7 @@ open scoped BigOperators
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
   skip
-  letI := f.to_algebra
+  letI := f.toAlgebra
   show Function.Surjective (Algebra.ofId R S)
   rw [← Algebra.range_top_iff_surjective, eq_top_iff]
   rintro x -
@@ -68,13 +68,12 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   · intro r
     obtain ⟨y, hy⟩ := H r (IsLocalization.mk' _ x (1 : Submonoid.powers (f r)))
     obtain ⟨z, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) y
-    erw [IsLocalization.map_mk', IsLocalization.eq] at hy 
+    erw [IsLocalization.map_mk', IsLocalization.eq] at hy
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := hy
     refine' ⟨m + n, _⟩
     dsimp at hm ⊢
-    simp_rw [_root_.one_mul, ← _root_.mul_assoc, ← map_pow, ← f.map_mul, ← pow_add, map_pow] at hm 
+    simp_rw [_root_.one_mul, ← _root_.mul_assoc, ← map_pow, ← f.map_mul, ← pow_add, map_pow] at hm
     exact ⟨_, hm⟩
 #align ring_hom.surjective_of_localization_span RingHom.surjective_ofLocalizationSpan
 
 end RingHom
-
