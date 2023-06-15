@@ -200,6 +200,9 @@ protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y =>
   simp only [edist_self, zero_le]
 #align lipschitz_with.const LipschitzWith.const
 
+protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
+  simp only [edist_self, zero_le]
+
 protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id

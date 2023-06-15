@@ -135,10 +135,6 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
   nonempty' := range_nonempty _
 #align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
 
-theorem lipschitzWith_const [PseudoMetricSpace α] [PseudoMetricSpace β] (b: β) (K : ℝ≥0):
-  LipschitzWith K (fun _ : α ↦ b):= by
-  intro x y; simp
-
 /--
     A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
     extension to the whole space.
@@ -159,7 +155,7 @@ theorem LipschitzOnWith.extend_linf [PseudoMetricSpace α] {s : Set α} {f : α 
       _ ≤ K * dist x y := hfl x hx y hy
   choose g hg using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
-  . exact ⟨fun _ ↦ 0, lipschitzWith_const 0 K, by simp⟩
+  . exact ⟨fun _ ↦ 0, LipschitzWith.const' 0, by simp⟩
   · let f_ext : α → ι → ℝ := fun x i ↦ g i x
     -- Show that the extensions are uniformly bounded
     have hf_extb : ∀ a : α, Memℓp (f_ext a) ∞
