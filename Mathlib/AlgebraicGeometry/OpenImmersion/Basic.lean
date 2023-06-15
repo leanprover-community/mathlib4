@@ -367,7 +367,7 @@ def pullbackConeOfLeftFst :
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
                     simpa using h₁
                   · rintro _ ⟨x, h₁, rfl⟩
-                    exact ⟨_, h₁, concrete_category.congr_hom pullback.condition x⟩))
+                    exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))
       naturality := by
         intro U V i
         induction U using Opposite.rec'
