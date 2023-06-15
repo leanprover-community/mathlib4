@@ -153,9 +153,7 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
 #align minpoly.prime_of_is_integrally_closed minpoly.prime_of_isIntegrallyClosed
 
-section AdjoinRoot
-
-noncomputable section
+noncomputable section AdjoinRoot
 
 open Algebra Polynomial AdjoinRoot
 
@@ -197,6 +195,7 @@ noncomputable def PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsInte
     (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
       Subalgebra.topEquiv
 #align power_basis.of_gen_mem_adjoin' PowerBasis.ofGenMemAdjoin'
+
 
 end AdjoinRoot
 
