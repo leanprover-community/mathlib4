@@ -43,8 +43,8 @@ instance bundledHom : BundledHom @NormedAddGroupHom where
 
 deriving instance LargeCategory for SemiNormedGroupCat
 
---Porting note: deriving fails for ConcreteCategory, adding instance manually.
---deriving instance LargeCategory, ConcreteCategory for SemiRingCat
+-- Porting note: deriving fails for ConcreteCategory, adding instance manually.
+-- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
   infer_instance
