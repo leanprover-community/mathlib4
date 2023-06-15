@@ -22,7 +22,7 @@ import Mathlib.Topology.Order.Basic
 We show that the generalized_continued_fraction given by `GeneralizedContinuedFraction.of` in fact
 is a (regular) continued fraction. Using the equivalence of the convergents computations
 (`GeneralizedContinuedFraction.convergents` and `GeneralizedContinuedFraction.convergents'`) for
-continued fractions (see `algebra.continued_fractions.convergents_equiv`), it follows that the
+continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
 convergents computations for `GeneralizedContinuedFraction.of` are equivalent.
 
 Moreover, we show the convergence of the continued fractions computations, that is
@@ -34,7 +34,7 @@ Moreover, we show the convergence of the continued fractions computations, that 
 
 ## Main Theorems
 
-- `generalized_continued_fraction.of_convergents_eq_convergents'` shows that the convergents
+- `GeneralizedContinuedFraction.of_convergents_eq_convergents'` shows that the convergents
   computations for `GeneralizedContinuedFraction.of` are equivalent.
 - `GeneralizedContinuedFraction.of_convergence` shows that
   `(GeneralizedContinuedFraction.of v).convergents` converges to `v`.
