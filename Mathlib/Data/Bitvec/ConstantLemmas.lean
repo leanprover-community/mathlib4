@@ -53,9 +53,16 @@ section Zero
     case succ n ih =>
       rw[ofNat_zero_succ, Vector.replicate_succ, ih]
 
-  @[simp]
+
+  @[aesop 50%]
   theorem zero_unfold : (0 : Bitvec <| n+1) = false ::ᵥ 0 := by
     rfl
+
+  @[aesop 50%]
+  theorem zero_unfold_snoc : (0 : Bitvec <| n+1) = Vector.snoc 0 false := by
+    induction n
+    . rfl
+    . simp[zero_unfold, *]; congr
 end Zero
 
 

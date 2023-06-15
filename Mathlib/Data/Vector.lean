@@ -106,6 +106,8 @@ def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 #align vector.append Vector.append
 
+instance : HAppend (Vector α n) (Vector α m) (Vector α (n+m)) := ⟨append⟩
+
 /- warning: vector.elim -> Vector.elim is a dubious translation:
 lean 3 declaration is
   forall {α : Type.{u_1}} {C : forall {n : ℕ},

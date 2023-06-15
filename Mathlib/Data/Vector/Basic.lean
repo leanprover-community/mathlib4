@@ -455,14 +455,14 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
-    (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
+    (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
-    exact h_nil
+    exact nil
   · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
-    apply @h_cons n _ ⟨v, (add_left_inj 1).mp v_property⟩
+    apply @cons n _ ⟨v, (add_left_inj 1).mp v_property⟩
     apply ih
 #align vector.induction_on Vector.inductionOn
 
@@ -816,5 +816,107 @@ theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n)
                       (h : x.toList = x'.toList) :
     (get x i) = (get x' i) := by
   rw [Vector.eq x x' h]
+
+
+
+section Snoc
+  def snoc : Vector α n → α → Vector α (n+1) :=
+    fun xs x => xs ++ (x ::ᵥ Vector.nil)
+
+  @[simp]
+  theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
+    rfl
+
+  @[simp]
+  theorem reverse_cons : reverse (x ::ᵥ xs) = (reverse xs).snoc x := by
+    cases xs
+    simp only [reverse, cons, toList_mk, List.reverse_cons, snoc]
+    congr
+
+  @[simp]
+  theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
+    cases xs
+    simp only [reverse, snoc, cons, toList_mk]
+    congr
+    simp[toList, (·++·), Vector.append, Append.append]
+    rfl
+
+
+  /-- Define `C v` by *reverse* induction on `v : Vector α n`.
+      That is, break the vector down starting from the right-most element, using `snoc`
+
+      This function has two arguments: `nil` handles the base case on `C nil`,
+      and `snoc` defines the inductive step using `∀ x : α, C xs → C (xs.snoc x)`.
+
+      This can be used as `induction v using Vector.revInductionOn`. -/
+      @[elab_as_elim]
+  def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+                      (nil : C nil)
+                      (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x))
+                      : C v :=
+    cast (by simp) <| inductionOn
+      (C := fun v => C v.reverse)
+      v.reverse
+      nil
+      (@fun n x xs (r : C xs.reverse) => cast (by simp) <| snoc xs.reverse x r)
+
+  /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
+      `w : Vector β n`. -/
+      @[elab_as_elim]
+  def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _} {n : ℕ}
+                      (v : Vector α n)
+                      (w : Vector β n)
+                      (nil : C nil nil)
+                      (snoc : ∀ {n : ℕ} (xs : Vector α n) (ys : Vector β n) (x : α) (y : β),
+                              C xs ys → C (xs.snoc x) (ys.snoc y))
+                      : C v w :=
+    cast (by simp) <| inductionOn₂
+      (C := fun v w => C v.reverse w.reverse)
+      v.reverse
+      w.reverse
+      nil
+      (@fun n x y xs ys (r : C xs.reverse ys.reverse) => cast (by simp) <| snoc xs.reverse ys.reverse x y r)
+
+
+  @[simp]
+  theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
+    rfl
+
+  @[simp]
+  theorem mapAccumr_cons :  mapAccumr f (x ::ᵥ xs) s
+                            = let r := mapAccumr f xs s
+                              let q := f x r.1
+                              (q.1, q.2 ::ᵥ r.2) :=
+    rfl
+
+  @[simp]
+  theorem mapAccumr_snoc :  mapAccumr f (xs.snoc x) s
+                            = let q := f x s
+                              let r := mapAccumr f xs q.1
+                              (r.1, r.2.snoc q.2) := by
+    induction xs using Vector.inductionOn
+    . rfl
+    . simp[*]
+
+  @[simp]
+  theorem mapAccumr₂_nil : mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil) :=
+    rfl
+
+  @[simp]
+  theorem mapAccumr₂_cons : mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s =
+                              let r := mapAccumr₂ f xs ys s
+                              let q := f x y r.1
+                              (q.1, q.2 ::ᵥ r.2) :=
+    rfl
+
+  @[simp]
+  theorem mapAccumr₂_snoc : mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
+                            = let q := f x y c
+                              let r := mapAccumr₂ f xs ys q.1
+                              (r.1, r.2.snoc q.2) := by
+    induction xs, ys using Vector.inductionOn₂
+    . rfl
+    . simp[*]
+end Snoc
 
 end Vector
