@@ -1622,19 +1622,33 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
       · rcases lt_or_le t x with (h' | h')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
-    · rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
+    · -- Porting note: was
+      -- rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
+      --   ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
+      rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), if_neg (not_mem_Ioi.mpr ht),
         ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
-    · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
-        indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
-    · rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
-        indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)), ContinuousLinearMap.map_zero]
-  · convert (integral_zero ℝ F).symm
-    ext1 t
+    · -- Porting note: was
+      -- rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
+      --     indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
+      rw [indicator_of_mem ht, if_pos (mem_Ioi.mpr ht.1),
+        if_pos (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
+    · -- Porting note: was
+      -- rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
+      --     indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)),
+      --     ContinuousLinearMap.map_zero]
+      rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
+        if_neg (not_mem_Ioi.mpr (sub_nonpos_of_le ht)), ContinuousLinearMap.map_zero]
+  · convert (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
-    · rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+    · -- Porting note: was
+      -- rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+      rw [if_neg (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
       rw [not_mem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
+    · -- Porting note: was
+      -- rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
+      --  ContinuousLinearMap.zero_apply]
+      rw [if_neg (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
         ContinuousLinearMap.zero_apply]
 #align pos_convolution_eq_convolution_indicator posConvolution_eq_convolution_indicator
 
