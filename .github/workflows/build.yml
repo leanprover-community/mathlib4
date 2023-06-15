@@ -88,7 +88,7 @@ jobs:
 
       - name: update Counterexamples.lean
         run: |
-          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Counterexamples.lean
+          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
 
       - name: check that all files are imported
         run: git diff --exit-code
@@ -115,7 +115,7 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: get cache
         run: |
