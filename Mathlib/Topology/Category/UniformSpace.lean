@@ -68,17 +68,23 @@ theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
 instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
 
-@[simp]
+-- Porting note: `simpNF` should not trigger on `rfl` lemmas.
+-- see https://github.com/leanprover-community/mathlib4/issues/5081
+@[simp, nolint simpNF]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
-@[simp]
+-- Porting note: `simpNF` should not trigger on `rfl` lemmas.
+-- see https://github.com/leanprover-community/mathlib4/issues/5081
+@[simp, nolint simpNF]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
-@[simp]
+-- Porting note: `simpNF` should not trigger on `rfl` lemmas.
+-- see https://github.com/leanprover-community/mathlib4/issues/5081
+@[simp, nolint simpNF]
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
@@ -101,6 +107,7 @@ end UniformSpaceCat
 
 /-- A (bundled) complete separated uniform space. -/
 structure CpltSepUniformSpace where
+  /-- The underlying space -/
   α : Type u
   [isUniformSpace : UniformSpace α]
   [isCompleteSpace : CompleteSpace α]
@@ -245,3 +252,5 @@ example [HasLimits.{u} UniformSpaceCat.{u}] : HasLimits.{u} CpltSepUniformSpace.
   hasLimits_of_reflective <| forget₂ CpltSepUniformSpace UniformSpaceCat.{u}
 
 end UniformSpaceCat
+
+#lint
