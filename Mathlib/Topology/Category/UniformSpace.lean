@@ -82,9 +82,7 @@ theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
--- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
-@[simp, nolint simpNF]
+-- Porting note : removed `simp` attribute due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
@@ -252,5 +250,3 @@ example [HasLimits.{u} UniformSpaceCat.{u}] : HasLimits.{u} CpltSepUniformSpace.
   hasLimits_of_reflective <| forget₂ CpltSepUniformSpace UniformSpaceCat.{u}
 
 end UniformSpaceCat
-
-#lint
