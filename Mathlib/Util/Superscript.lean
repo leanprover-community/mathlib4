@@ -33,9 +33,9 @@ instance : Hashable Char := ⟨fun c => hash c.1⟩
 
 /-- A bidirectional character mapping. -/
 structure Mapping where
-  /-- Map from "special" (i.e. superscript) characters to "normal" characters. -/
+  /-- Map from "special" (e.g. superscript) characters to "normal" characters. -/
   toNormal : HashMap Char Char := {}
-  /-- Map from "normal" text to "special" (i.e. superscript) characters. -/
+  /-- Map from "normal" text to "special" (e.g. superscript) characters. -/
   toSpecial : HashMap Char Char := {}
   deriving Inhabited
 
