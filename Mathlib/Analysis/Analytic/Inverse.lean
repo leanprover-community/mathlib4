@@ -9,6 +9,7 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Tactic.CongrConfig
 
 /-!
 
@@ -199,9 +200,7 @@ theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | n + 2 =>
     simp only [rightInv, neg_inj]
     rw [removeZero_comp_of_pos _ _ (add_pos_of_nonneg_of_pos n.zero_le zero_lt_two)]
-    -- Porting note: `congr 2 with k` with the option `(closePost := false)`.
-    run_tac Lean.Elab.Tactic.liftMetaTactic fun mvarId => mvarId.congrN 2 (closePost := false)
-    ext k
+    congr (config := { closePost := false }) 2 with k
     by_cases hk : k < n + 2 <;> simp [hk, IH]
 #align formal_multilinear_series.right_inv_remove_zero FormalMultilinearSeries.rightInv_removeZero
 
@@ -278,8 +277,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
   | 1 => exact False.elim (one_lt_two.not_le hn)
   | n + 2 =>
     simp only [rightInv, neg_inj]
-    -- Porting note: `congr 1` with the option `(closePost := false)`.
-    run_tac Lean.Elab.Tactic.liftMetaTactic fun mvarId => mvarId.congrN 1 (closePost := false)
+    congr (config := { closePost := false }) 1
     ext v
     have N : 0 < n + 2 := by norm_num
     have : ((p 1) fun i : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
