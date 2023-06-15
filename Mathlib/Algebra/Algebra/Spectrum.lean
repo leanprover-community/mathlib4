@@ -23,7 +23,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
   `A` is an  `R`-algebra.
 * `spectrum a : Set R`: the spectrum of an element `a : A` where
   `A` is an  `R`-algebra.
-* `resolvent : R → A`: the resolvent function is `λ r, Ring.inverse (↑ₐr - a)`, and hence
+* `resolvent : R → A`: the resolvent function is `fun r ↦ Ring.inverse (↑ₐr - a)`, and hence
   when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐr - a)`.
 
 ## Main statements

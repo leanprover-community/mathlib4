@@ -41,3 +41,9 @@ lean_exe cache where
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
+
+lean_lib Archive where
+  roots := #[`Archive]
+
+lean_lib Counterexamples where
+  roots := #[`Counterexamples]

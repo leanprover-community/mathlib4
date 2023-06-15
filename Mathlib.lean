@@ -454,6 +454,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.RingedSpace
+import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.SheafedSpace
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.Stalks
@@ -572,6 +573,7 @@ import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.PhragmenLindelof
 import Mathlib.Analysis.Complex.Polynomial
@@ -633,6 +635,8 @@ import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Rayleigh
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.l2Space
@@ -662,6 +666,7 @@ import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Analysis.Normed.Order.Basic
@@ -838,6 +843,7 @@ import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Closed.Cartesian
+import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Closed.Types
@@ -1479,6 +1485,7 @@ import Mathlib.Data.ListM.BestFirst
 import Mathlib.Data.ListM.DepthFirst
 import Mathlib.Data.ListM.Heartbeats
 import Mathlib.Data.ListM.IO
+import Mathlib.Data.ListM.Split
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
@@ -1827,17 +1834,21 @@ import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
+import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
+import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Conformal
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Basic
+import Mathlib.Geometry.Euclidean.Circumcenter
 import Mathlib.Geometry.Euclidean.Inversion
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.Geometry.Euclidean.Sphere.Power
@@ -2087,9 +2098,11 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Polynomial
+import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
@@ -2352,10 +2365,16 @@ import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.Category.BddDistLatCat
+import Mathlib.Order.Category.BddLatCat
 import Mathlib.Order.Category.BddOrdCat
+import Mathlib.Order.Category.BoolAlgCat
+import Mathlib.Order.Category.CompleteLatCat
 import Mathlib.Order.Category.DistLatCat
+import Mathlib.Order.Category.FinBddDistLatCat
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
+import Mathlib.Order.Category.HeytAlgCat
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
@@ -2547,6 +2566,7 @@ import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
@@ -2605,6 +2625,7 @@ import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.Integral
+import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.RootsOfUnity.Basic
@@ -2697,6 +2718,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
@@ -3019,6 +3041,7 @@ import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.Init
 import Mathlib.Topology.Sheaves.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
+import Mathlib.Topology.Sheaves.LocallySurjective
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
