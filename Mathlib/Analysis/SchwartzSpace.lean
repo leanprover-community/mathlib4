@@ -819,13 +819,12 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
         rw [le_div_iff' hpos]
         change i ≤ (k', n).snd at hi
         exact one_add_le_sup_seminorm_apply le_rfl hi _ _
-      have hgrowth' :
-        ∀ (N : ℕ) (hN₁ : 1 ≤ N) (hN₂ : N ≤ n),
+      have hgrowth' : ∀ N : ℕ, 1 ≤ N → N ≤ n →
           ‖iteratedFDeriv ℝ N g x‖ ≤ ((C + 1) * (1 + ‖x‖) ^ l) ^ N := by
         intro N hN₁ hN₂
         refine' (hgrowth N hN₂ x).trans _
         rw [mul_pow]
-        have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).Ne.symm
+        have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
         refine' mul_le_mul _ _ (by positivity) (by positivity)
         · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
         · refine' le_self_pow (one_le_pow_of_one_le _ l) hN₁'
@@ -844,7 +843,7 @@ def compClm {g : D → E} (hg : g.HasTemperateGrowth)
       rw [rearrange]
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper''
-      have hpos : 0 ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
+      have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
         have : 0 ≤ seminorm_f := map_nonneg _ _
         positivity
       refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
