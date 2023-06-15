@@ -264,9 +264,6 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   rfl
 #align vector.to_list_take Vector.toList_take
 
-instance {α : Type u} {n : Nat} : GetElem (Vector α n) (Fin n) α (fun _ _ => True) where
-  getElem := fun x i _ => get x i
-
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
 
