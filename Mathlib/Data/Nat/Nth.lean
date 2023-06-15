@@ -27,7 +27,7 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 
 * `nat.nth_set_card`: For a fintely-often true `p`, gives the cardinality of the set of numbers
   satisfying `p` above particular values of `nth p`
-* `nat.count_nth_gc`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
+* `Nat.gc_count_nth`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-ofter true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
@@ -181,7 +181,6 @@ theorem nth_mem_of_infinite (hf : (setOf p).Infinite) (n : ℕ) : p (nth p n) :=
 /-!
 ### Lemmas that work for finite and infinite sets
 -/
-
 
 theorem exists_lt_card_nth_eq {x} (h : p x) :
     ∃ n, (∀ hf : (setOf p).Finite, n < hf.toFinset.card) ∧ nth p n = x := by
