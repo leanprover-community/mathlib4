@@ -12,6 +12,7 @@ import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Category.BoolAlgCat
 import Mathlib.Order.Category.FinBddDistLatCat
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # The category of finite boolean algebras
@@ -80,6 +81,13 @@ instance concreteCategory : ConcreteCategory FinBoolAlgCat :=
   InducedCategory.concreteCategory FinBoolAlgCat.toBoolAlgCat
 #align FinBoolAlg.concrete_category FinBoolAlgCat.concreteCategory
 
+-- Porting note: added
+-- TODO: in all of the earlier bundled order categories,
+-- we should be constructing instances analogous to this,
+-- rather than directly coercions to functions.
+instance instBoundedLatticeHomClass {X Y : FinBoolAlgCat} : BoundedLatticeHomClass (X ⟶ Y) X Y :=
+  BoundedLatticeHom.instBoundedLatticeHomClass
+
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlgCat BoolAlgCat :=
   InducedCategory.hasForget₂ FinBoolAlgCat.toBoolAlgCat
 #align FinBoolAlg.has_forget_to_BoolAlg FinBoolAlgCat.hasForgetToBoolAlg
@@ -95,9 +103,9 @@ instance forgetToBoolAlgFull : Full (forget₂ FinBoolAlgCat BoolAlgCat) :=
   InducedCategory.full _
 #align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlgCat.forgetToBoolAlgFull
 
-instance forget_to_boolAlg_faithful : Faithful (forget₂ FinBoolAlgCat BoolAlgCat) :=
+instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlgCat BoolAlgCat) :=
   InducedCategory.faithful _
-#align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlgCat.forget_to_boolAlg_faithful
+#align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlgCat.forgetToBoolAlgFaithful
 
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd
@@ -106,21 +114,21 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd
       map := fun {X Y} f => show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f) }
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlgCat.hasForgetToFinPartOrd
 
--- Porting note: TODO added, does it help?
-instance instFunLike (X Y : FinBoolAlgCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
-
-instance forget_to_finPartOrd_faithful : Faithful (forget₂ FinBoolAlgCat FinPartOrd) :=
+instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlgCat FinPartOrd) :=
   -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h
   --   FunLike.coe_injective this⟩
+  -- Porting note: the coercions to functions for the various bundled order categories
+  -- are quite inconsistent. We need to go back through and make all these files uniform.
   ⟨fun {X Y} f g h => by
     dsimp at *
     apply FunLike.coe_injective
-    sorry
-  ⟩
-#align FinBoolAlg.forget_to_FinPartOrd_faithful FinBoolAlgCat.forget_to_finPartOrd_faithful
+    dsimp
+    ext x
+    apply_fun (fun f => f x) at h
+    exact h ⟩
+#align FinBoolAlg.forget_to_FinPartOrd_faithful FinBoolAlgCat.forgetToFinPartOrdFaithful
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
@@ -132,14 +140,14 @@ def Iso.mk {α β : FinBoolAlgCat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align FinBoolAlg.iso.mk FinBoolAlgCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : FinBoolAlgCat ⥤ FinBoolAlgCat where
   obj X := of Xᵒᵈ
   map {X Y} := BoundedLatticeHom.dual
 #align FinBoolAlg.dual FinBoolAlgCat.dual
 
-/-- The equivalence between `FinBoolAlgCat` and itself induced by `order_dual` both ways. -/
+/-- The equivalence between `FinBoolAlgCat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : FinBoolAlgCat ≌ FinBoolAlgCat where
   functor := dual
@@ -156,7 +164,7 @@ theorem finBoolAlgCat_dual_comp_forget_to_finBddDistLatCat :
   rfl
 #align FinBoolAlg_dual_comp_forget_to_FinBddDistLat finBoolAlgCat_dual_comp_forget_to_finBddDistLatCat
 
-/-- The powerset functor. `set` as a functor. -/
+/-- The powerset functor. `Set` as a functor. -/
 @[simps]
 def fintypeToFinBoolAlgCatOp : FintypeCat ⥤ FinBoolAlgCatᵒᵖ where
   obj X := op <| FinBoolAlgCat.of (Set X)
