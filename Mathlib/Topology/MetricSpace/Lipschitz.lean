@@ -673,8 +673,8 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
 
 /-- A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
 extension to the whole space.
-TODO: state the same result (with the same proof) for the space `ℓ^∞ (ι, ℝ)` over a possibly
-infinite type `ι`. -/
+The same result (with the same proof) for the space `ℓ^∞ (ι, ℝ)` over a possibly
+infinite type `ι` is implemented in `LipschitzOnWith.extend_linf`. -/
 theorem LipschitzOnWith.extend_pi [PseudoMetricSpace α] [Fintype ι] {f : α → ι → ℝ} {s : Set α}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) : ∃ g : α → ι → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s := fun i => by

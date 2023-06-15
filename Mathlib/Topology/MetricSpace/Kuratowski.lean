@@ -142,6 +142,9 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
 
     Theorem 2.2 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
     https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
+
+    The same result for the case of a finite type `ι` is implemented in
+    `LipschitzOnWith.extend_pi`.
 -/
 theorem LipschitzOnWith.extend_linf [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
     {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
