@@ -170,7 +170,7 @@ theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
       (‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ : ℝ≥0∞) := by
     refine' hg_eq_restrict.mono fun x hx => _
     dsimp only
-    rw [hx]
+    simp_rw [hx]
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
   refine'
     lintegral_nnnorm_le_of_forall_fin_meas_integral_eq hm (Lp.stronglyMeasurable f) _ _ _ _ hs hμs
@@ -236,18 +236,18 @@ theorem condexpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
     h_mem_Lp.coeFn_toLp
   refine' EventuallyEq.trans _ h_eq
   refine' Lp.ae_eq_of_forall_set_integral_eq' 𝕜 hm _ _ two_ne_zero ENNReal.coe_ne_top
-    (fun s hs hμs => integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _) _ _ _ _
-  · intro s hs hμs
+    (fun s _ hμs => integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _) _ _ _ _
+  · intro s _ hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae h_eq)]
     exact (integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _).const_inner _
   · intro s hs hμs
     rw [← lpMeas_coe, integral_condexpL2_eq_of_fin_meas_real _ hs hμs.ne,
       integral_congr_ae (ae_restrict_of_ae h_eq), lpMeas_coe, ←
       L2.inner_indicatorConstLp_eq_set_integral_inner 𝕜 (↑(condexpL2 E 𝕜 hm f)) (hm s hs) c hμs.ne,
-      ← inner_condexpL2_left_eq_right, condexpL2_indicator_of_measurable,
+      ← inner_condexpL2_left_eq_right, condexpL2_indicator_of_measurable _ hs,
       L2.inner_indicatorConstLp_eq_set_integral_inner 𝕜 f (hm s hs) c hμs.ne,
       set_integral_congr_ae (hm s hs)
-        ((Memℒp.coeFn_toLp ((Lp.memℒp f).const_inner c)).mono fun x hx hxs => hx)]
+        ((Memℒp.coeFn_toLp ((Lp.memℒp f).const_inner c)).mono fun x hx _ => hx)]
   · rw [← lpMeas_coe]; exact lpMeas.aeStronglyMeasurable' _
   · refine' AEStronglyMeasurable'.congr _ h_eq.symm
     exact (lpMeas.aeStronglyMeasurable' _).const_inner _
@@ -389,15 +389,15 @@ noncomputable def condexpIndSMul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : 
 
 theorem aeStronglyMeasurable'_condexpIndSMul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : AEStronglyMeasurable' m (condexpIndSMul hm hs hμs x) μ := by
-  have h : AEStronglyMeasurable' m (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ :=
+  have h : AEStronglyMeasurable' m (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) μ :=
     aeStronglyMeasurable'_condexpL2 _ _
   rw [condexpIndSMul]
   suffices AEStronglyMeasurable' m
-      (toSpanSingleton ℝ x ∘ condexpL2 ℝ hm (indicatorConstLp 2 hs hμs (1 : ℝ))) μ by
+      (toSpanSingleton ℝ x ∘ condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ by
     refine' AEStronglyMeasurable'.congr this _
-    refine' EventuallyEq.trans _ (coe_fn_comp_LpL _ _).symm
+    refine' EventuallyEq.trans _ (coeFn_compLpL _ _).symm
     rw [lpMeas_coe]
-  exact AEStronglyMeasurable'.continuous_comp (toSpanSingleton ℝ x).Continuous h
+  exact AEStronglyMeasurable'.continuous_comp (toSpanSingleton ℝ x).continuous h
 #align measure_theory.ae_strongly_measurable'_condexp_ind_smul MeasureTheory.aeStronglyMeasurable'_condexpIndSMul
 
 theorem condexpIndSMul_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : G) :
@@ -492,10 +492,10 @@ theorem set_integral_condexpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSe
 theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]
     condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) := by
-  have h : AEStronglyMeasurable' m (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ :=
+  have h : AEStronglyMeasurable' m (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) μ :=
     aeStronglyMeasurable'_condexpL2 _ _
   refine' EventuallyLE.trans_eq _ h.ae_eq_mk.symm
-  refine' @ae_le_of_ae_le_trim _ _ _ _ _ _ hm _ _ _
+  refine' @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ _
   refine' ae_nonneg_of_forall_set_integral_nonneg_of_sigmaFinite _ _
   · intro t ht hμt
     refine' @Integrable.integrableOn _ _ m _ _ _ _ _
@@ -506,11 +506,11 @@ theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   · intro t ht hμt
     rw [← set_integral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
-      ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = condexpL2 ℝ hm (indicatorConstLp 2 hs hμs (1 : ℝ)) x := by
+      ∀ᵐ x ∂μ, x ∈ t → h.mk _ x = (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
       filter_upwards [h.ae_eq_mk] with x hx
       exact fun _ => hx.symm
     rw [set_integral_congr_ae (hm t ht) h_ae,
-      set_integral_condexpL2_indicator ht hs ((le_trim hm).trans_lt hμt).Ne hμs]
+      set_integral_condexpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg
 #align measure_theory.condexp_L2_indicator_nonneg MeasureTheory.condexpL2_indicator_nonneg
 
