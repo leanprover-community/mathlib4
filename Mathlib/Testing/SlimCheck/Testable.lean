@@ -306,9 +306,9 @@ candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
-    (var : String) (x : SampleableExt.proxy α) (n : Nat) :
-    OptionT (Gen MetaM) (Σ x, TestResult (β (SampleableExt.interp x))) := do
+partial def minimizeAux [SampleableExt m α] {β : α → Prop} [∀ x, Testable (β x)]
+    (cfg : Configuration) (var : String) (x : SampleableExt.proxy m α) (n : Nat) :
+    OptionT (Gen MetaM) (Σ x, TestResult (β (@SampleableExt.interp m _ _ x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
@@ -328,9 +328,9 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
-def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
-    (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
-    Gen MetaM (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+def minimize [SampleableExt m α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+    (var : String) (x : SampleableExt.proxy m α) (r : TestResult (β $ SampleableExt.interp x)) :
+    Gen MetaM (Σ x, TestResult (β $ @SampleableExt.interp m _ _ x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
@@ -339,7 +339,7 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
-instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
+instance varTestable [SampleableExt MetaM α] {β : α → Prop} [∀ x, Testable (β x)] :
     Testable (NamedBinder var $ ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample

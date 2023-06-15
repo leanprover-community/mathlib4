@@ -84,6 +84,8 @@ and suggest simpler examples. -/
 class Shrinkable (α : Type u) where
   shrink : (x : α) → List α := λ _ => []
 
+variable (m : Type → Type) [Monad m] [MonadLiftT (ST IO.RealWorld) m]
+
 /-- `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
 if this is what you want to do then `SampleableExt.mkSelfContained` is
@@ -97,20 +99,22 @@ For that purpose, `SampleableExt` provides a proxy representation
 `proxy` that can be printed and shrunken as well
 as interpreted (using `interp`) as an object of the right type. -/
 class SampleableExt (α : Sort u) where
-  proxy : Type v
+  proxy : Type
   [proxyRepr : Repr proxy]
   [shrink : Shrinkable proxy]
-  sample : Gen Id proxy
+  sample : Gen m proxy
   interp : proxy → α
 
 attribute [instance] SampleableExt.proxyRepr
 attribute [instance] SampleableExt.shrink
 
+variable {m}
+
 namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen Id α) : SampleableExt α where
+def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen m α) : SampleableExt m α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -119,7 +123,7 @@ def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen Id α) : SampleableE
 
 /-- First samples a proxy value and interprets it. Especially useful if
 the proxy and target type are the same. -/
-def interpSample (α : Type u) [SampleableExt α] : Gen Id α :=
+def interpSample (α : Type) [SampleableExt m α] : Gen m α :=
   SampleableExt.interp <$> SampleableExt.sample
 
 end SampleableExt
@@ -172,28 +176,28 @@ section Samplers
 
 open SampleableExt
 
-instance Nat.sampleableExt : SampleableExt Nat :=
+instance Nat.sampleableExt : SampleableExt m Nat :=
   mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
 
-instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
+instance Fin.sampleableExt {n : Nat} : SampleableExt m (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
     simp [Fin.ofNat, LE.le]
     exact Nat.zero_le _
   ))
 
-instance Int.sampleableExt : SampleableExt Int :=
+instance Int.sampleableExt : SampleableExt m Int :=
   mkSelfContained (do
     choose Int (-(←getSize)) (←getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
-instance Bool.sampleableExt : SampleableExt Bool :=
+instance Bool.sampleableExt : SampleableExt m Bool :=
   mkSelfContained $ chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
 and it otherwise chooses a character from `chars` with uniform probabilities.  -/
 def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
-    SampleableExt Char :=
+    SampleableExt m Char :=
   mkSelfContained do
     let x ← choose Nat 0 length (Nat.zero_le _)
     if x.val == 0 then
@@ -202,26 +206,26 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     else
       elements chars pos
 
-instance Char.sampleableDefault : SampleableExt Char :=
+instance Char.sampleableDefault : SampleableExt m Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α β : Type u} [SampleableExt.{u+1, v} α] [SampleableExt.{u+1, v} β] :
-    SampleableExt.{u+1, v} (α × β) where
-  proxy := Prod (proxy α) (proxy β)
+instance Prod.sampleableExt {α β : Type u} [SampleableExt.{u+1} m α] [SampleableExt.{u+1} m β] :
+    SampleableExt.{u+1} m (α × β) where
+  proxy := Prod (proxy _ α) (proxy _ β)
   proxyRepr := inferInstance
   shrink := inferInstance
   sample := prodOf sample sample
   interp := Prod.map interp interp
 
-instance Prop.sampleableExt : SampleableExt Prop where
+instance Prop.sampleableExt : SampleableExt m Prop where
   proxy := Bool
   proxyRepr := inferInstance
   sample := interpSample Bool
   shrink := inferInstance
   interp := Coe.coe
 
-instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
-  proxy := List (proxy α)
+instance List.sampleableExt [SampleableExt m α] : SampleableExt m (List α) where
+  proxy := List (proxy _ α)
   sample := Gen.listOf sample
   interp := List.map interp
 
@@ -241,7 +245,7 @@ instance repr [inst : Repr α] : Repr (NoShrink α) := inst
 instance shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
-instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
+instance sampleableExt [SampleableExt m α] [Repr α] : SampleableExt m (NoShrink α) :=
   SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
@@ -252,13 +256,13 @@ Print (at most) 10 samples of a given type to stdout for debugging.
 -/
 -- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
 -- to enable sampling from higher types.
-def printSamples {t : Type} [Repr t] (g : Gen t) : IO PUnit := do
+def printSamples {t : Type} [Repr t] (g : Gen IO t) : IO PUnit := do
   for i in List.range 10 do
     IO.println s!"{repr (← g.run i)}"
 
 open Lean Meta Qq
 
-/-- Create a `Gen α` expression from the argument of `#sample` -/
+/-- Create a `Gen IO α` expression from the argument of `#sample` -/
 def mkGenerator (e : Expr) : MetaM (Expr × Expr) := do
   let t ← inferType e
   match t.getAppFnArgs with
@@ -266,9 +270,10 @@ def mkGenerator (e : Expr) : MetaM (Expr × Expr) := do
     let repr_inst ← synthInstance (← mkAppM ``Repr #[t])
     pure (repr_inst, e)
   | _ => do
-    let sampleableExt_inst ← synthInstance (mkApp (← mkConstWithFreshMVarLevels ``SampleableExt) e)
-    let repr_inst ← mkAppOptM ``SampleableExt.proxyRepr #[e, sampleableExt_inst]
-    let gen ← mkAppOptM ``SampleableExt.sample #[none, sampleableExt_inst]
+    let sampleableExt_inst ← synthInstance
+      (← mkAppM ``SampleableExt #[← mkConstWithFreshMVarLevels ``IO, e])
+    let repr_inst ← mkAppOptM ``SampleableExt.proxyRepr #[none, e, sampleableExt_inst]
+    let gen ← mkAppOptM ``SampleableExt.sample #[none, none, sampleableExt_inst]
     pure (repr_inst, gen)
 
 open Elab

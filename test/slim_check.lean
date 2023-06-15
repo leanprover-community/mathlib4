@@ -8,6 +8,8 @@ import Mathlib.Data.Dfinsupp.Basic
 -- Many of these fail, I think because of missing `Testable` instances.
 -- Hopefully Henrik Böving and/or Simon Hudon could look at this.
 
+#sample List Int
+
 example : true := by
   have : ∀ i j : ℕ, i < j → j < i
   success_if_fail_with_msg "
