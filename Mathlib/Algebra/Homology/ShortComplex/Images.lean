@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.Refinements
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 -- Verdier, Des catégories dérivées des catégories abéliennes, II 4.2.7
 
@@ -90,6 +91,9 @@ noncomputable def shortComplex : ShortComplex C where
       image.lift_ι_assoc, ← cancel_epi (Abelian.factorThruImage I.S.f), comp_zero,
       kernel.lift_ι_assoc, I.S.zero]
 
+lemma shortComplex_f_fac :
+    I.shortComplex.f ≫ image.ι I.f₂ = image.ι I.S.f := by simp
+
 lemma shortComplex_g_fac :
     Abelian.factorThruImage I.f₂ ≫ I.shortComplex.g = Abelian.factorThruImage I.f₃ := by
   rw [← cancel_mono (image.ι I.f₃), assoc, shortComplex_g, image.lift_ι,
@@ -112,6 +116,13 @@ lemma shortComplex_exact : I.shortComplex.Exact := by
   refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, x₁ ≫ Abelian.factorThruImage I.S.f, _⟩
   simp only [← cancel_mono (Abelian.image.ι I.f₂), assoc, hy,
     image.lift_ι, kernel.lift_ι, hx₁]
+
+instance : Mono (I.shortComplex.f) := mono_of_mono_fac I.shortComplex_f_fac
+
+instance : Epi (I.shortComplex.g) := epi_of_epi_fac I.shortComplex_g_fac
+
+lemma shortComplex_shortExact : I.shortComplex.ShortExact where
+  exact := I.shortComplex_exact
 
 end ImagesLemmaInput
 

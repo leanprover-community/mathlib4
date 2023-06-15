@@ -1581,15 +1581,15 @@ noncomputable def EObjIsoImage (D : Arrow₃ ι) :
       Abelian.image ((X.H n₁).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app D)) :=
   Abelian.isoImageOfFac _ _ _ (X.HπE_EιH_app n₀ n₁ n₂ hn₁ hn₂ D)
 
-def imagesLemmaInput : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
-  Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₀
-  S := (X.shortComplex₂ n₀).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₂)
+@[simps]
+def imagesLemmaInput (D : Arrow₃ ι) : Abelian.ImagesLemmaInput C where
+  Y := (X.H n₀).obj (Arrow.mk (D.f ≫ D.g))
+  S := (X.shortComplex₂ n₀).map ((evaluation _ _).obj (Arrow₃.δ₂.obj D))
   hS := (X.shortComplex₂_exact n₀).map _
-  f₁ := whiskerRight Arrow₃.δ₂δ₂Toδ₃δ₁ (X.H n₀)
-  f₂ := whiskerRight Arrow₃.δ₃δ₁Toδ₂δ₁ (X.H n₀)
-  f₃ := whiskerRight Arrow₃.δ₃δ₁Toδ₂δ₀ (X.H n₀)
+  f₁ := (X.H n₀).map (Arrow₃.δ₂δ₂Toδ₃δ₁.app D)
+  f₂ := (X.H n₀).map (Arrow₃.δ₃δ₁Toδ₂δ₁.app D)
+  f₃ := (X.H n₀).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app D)
   fac₁ := by
-    ext D
     dsimp
     simp only [← Functor.map_comp]
     congr 1
@@ -1598,7 +1598,6 @@ def imagesLemmaInput : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
       simp
     . rfl
   fac₂ := by
-    ext D
     dsimp
     simp only [← Functor.map_comp]
     congr 1
@@ -1606,9 +1605,21 @@ def imagesLemmaInput : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
 
 pp_extended_field_notation imagesLemmaInput
 
-lemma imagesLemmaInput_shortComplex_exact :
-    (X.imagesLemmaInput n₀).shortComplex.Exact :=
-  (X.imagesLemmaInput n₀).shortComplex_exact
+lemma imagesLemmaInput_shortComplex_shortExact (D : Arrow₃ ι) :
+    (X.imagesLemmaInput n₀ D).shortComplex.ShortExact :=
+  (X.imagesLemmaInput n₀ D).shortComplex_shortExact
+
+@[simps]
+noncomputable def imagesCokernelSequenceE (D : Arrow₃ ι) : ShortComplex C where
+  f := (X.imagesLemmaInput n₁ D).shortComplex.f
+  g := (X.imagesLemmaInput n₁ D).shortComplex.g ≫ (X.EObjIsoImage n₀ n₁ n₂ hn₁ hn₂ D).inv
+  zero := by rw [ShortComplex.zero_assoc, zero_comp]
+
+lemma imagesCokernelSequenceE_shortExact (D : Arrow₃ ι) :
+    (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ D).ShortExact := by
+  refine' ShortComplex.shortExact_of_iso _ (X.imagesLemmaInput_shortComplex_shortExact n₁ D)
+  exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (X.EObjIsoImage n₀ n₁ n₂ hn₁ hn₂ D).symm
+    (by dsimp ; simp) (by dsimp ; simp)
 
 end
 
@@ -1659,6 +1670,17 @@ pp_extended_field_notation filtration'
 pp_extended_field_notation filtration
 pp_extended_field_notation filtrationι
 
+noncomputable def filtrationShortComplex {i j : ι} (φ : i ⟶ j) : ShortComplex C where
+  X₁ := (X.filtration n₁).obj i
+  X₂ := (X.filtration n₁).obj j
+  X₃ := (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk φ)
+  f := (X.filtration n₁).map φ
+  g := (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))).g
+  zero := (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))).zero
+
+lemma filtrationShortComplex_shortExact {i j : ι} (φ : i ⟶ j) :
+    (X.filtrationShortComplex n₀ n₁ n₂ hn₁ hn₂ φ).ShortExact :=
+  X.imagesCokernelSequenceE_shortExact n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))
 
 variable (ι)
 
