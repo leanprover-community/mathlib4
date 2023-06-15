@@ -28,9 +28,9 @@ group as domain. We use a continuous bilinear operation `L` on these function va
 For many applications we can take `L = ContinuousLinearMap.lsmul ℝ ℝ` or
 `L = ContinuousLinearMap.mul ℝ ℝ`.
 
-We also define `convolution_exists` and `convolution_exists_at` to state that the convolution is
+We also define `ConvolutionExists` and `ConvolutionExistsAt` to state that the convolution is
 well-defined (everywhere or at a single point). These conditions are needed for pointwise
-computations (e.g. `convolution_exists_at.distrib_add`), but are generally not stong enough for any
+computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not stong enough for any
 local (or global) properties of the convolution. For this we need stronger assumptions on `f`
 and/or `g`, and generally if we impose stronger conditions on one of the functions, we can impose
 weaker conditions on the other.
@@ -46,7 +46,7 @@ This generality has several advantages
 
 * This allows us to compute the total derivative of the convolution, in case the functions are
   multivariate. The total derivative is again a convolution, but where the codomains of the
-  functions can be higher-dimensional. See `has_compact_support.has_fderiv_at_convolution_right`.
+  functions can be higher-dimensional. See `HasCompactSupport.hasFDerivAt_convolution_right`.
 * This allows us to use `@[to_additive]` everywhere (which would not be possible if we would use
   `mul`/`smul` in the integral, since `@[to_additive]` will incorrectly also try to additivize
   those definitions).
@@ -56,24 +56,24 @@ This generality has several advantages
 # Main Definitions
 * `convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
   `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
-* `convolution_exists_at f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
+* `ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
   (i.e. the integral exists).
-* `convolution_exists f g L μ` states that the convolution `f ⋆[L, μ] g` is well-defined at each
+* `ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g` is well-defined at each
   point.
 
 # Main Results
-* `has_compact_support.has_fderiv_at_convolution_right` and
-  `has_compact_support.has_fderiv_at_convolution_left`: we can compute the total derivative
+* `HasCompactSupport.hasFDerivAt_convolution_right` and
+  `HasCompactSupport.hasFDerivAt_convolution_left`: we can compute the total derivative
   of the convolution as a convolution with the total derivative of the right (left) function.
-* `has_compact_support.cont_diff_convolution_right` and
-  `has_compact_support.cont_diff_convolution_left`: the convolution is `𝒞ⁿ` if one of the functions
+* `HasCompactSupport.contDiff_convolution_right` and
+  `HasCompactSupport.contDiff_convolution_left`: the convolution is `𝒞ⁿ` if one of the functions
   is `𝒞ⁿ` with compact support and the other function in locally integrable.
 
 Versions of these statements for functions depending on a parameter are also given.
 
 * `convolution_tendsto_right`: Given a sequence of nonnegative normalized functions whose support
   tends to a small neighborhood around `0`, the convolution tends to the right argument.
-  This is specialized to bump functions in `cont_diff_bump.convolution_tendsto_right`.
+  This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
 The following notations are localized in the locale `convolution`:
@@ -85,7 +85,7 @@ The following notations are localized in the locale `convolution`:
 # To do
 * Existence and (uniform) continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
-  This might require a generalization of `measure_theory.mem_ℒp.smul` where `smul` is generalized
+  This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
 * The convolution is a `ae_strongly_measurable` function
@@ -382,7 +382,7 @@ We assume that the integrand has compact support and `g` is bounded on this supp
 both properties hold if `g` is continuous with compact support). We also require that `f` is
 integrable on the support of the integrand, and that both functions are strongly measurable.
 
-This is a variant of `bdd_above.convolution_exists_at'` in an abelian group with a left-invariant
+This is a variant of `BddAbove.convolutionExistsAt'` in an abelian group with a left-invariant
 measure. This allows us to state the boundedness and measurability of `g` in a more natural way. -/
 theorem BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ] {x₀ : G} {s : Set G}
     (hbg : BddAbove ((fun i => ‖g i‖) '' ((fun t => x₀ - t) ⁻¹' s))) (hs : MeasurableSet s)
@@ -598,7 +598,7 @@ variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCo
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
-not assuming `t2_space G`. -/
+not assuming `T2Space G`. -/
 theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set P} {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
     (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
@@ -704,7 +704,7 @@ theorem continuousOn_convolution_right_with_param [T2Space G] {g : P → G → E
 compactly supported. Version where `g` depends on an additional parameter in an open subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
 given in terms of compositions with an additional continuous map.
-Version not assuming `t2_space G`. -/
+Version not assuming `T2Space G`. -/
 theorem continuousOn_convolution_right_with_param_comp' {s : Set P} {v : P → G}
     (hv : ContinuousOn v s) {g : P → G → E'} {k : Set G} (hk : IsCompact k) (h'k : IsClosed k)
     (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0) (hf : LocallyIntegrable f μ)
@@ -839,11 +839,11 @@ section NormedAddCommGroup
 
 variable [SeminormedAddCommGroup G]
 
-/-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `metric.ball 0 R`, and `g` is constant
-on `metric.ball x₀ R`.
+/-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
+on `Metric.ball x₀ R`.
 
 We can simplify the RHS further if we assume `f` is integrable, but also if `L = (•)` or more
-generally if `L` has a `antilipschitz_with`-condition. -/
+generally if `L` has a `AntilipschitzWith`-condition. -/
 theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 : G) R)
     (hg : ∀ x ∈ ball x₀ R, g x = g x₀) : (f ⋆[L, μ] g) x₀ = ∫ t, L (f t) (g x₀) ∂μ := by
   have h2 : ∀ t, L (f t) (g (x₀ - t)) = L (f t) (g x₀) := fun t ↦ by
@@ -930,7 +930,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
 * `g i x` tends to `z₀` as `(i, x)` tends to `l ×ˢ 𝓝 x₀`;
 * `k i` tends to `x₀`.
 
-See also `cont_diff_bump.convolution_tendsto_right`.
+See also `ContDiffBump.convolution_tendsto_right`.
 -/
 theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x₀ : G} {z₀ : E'}
     {φ : ι → G → ℝ} {k : ι → G} (hnφ : ∀ᶠ i in l, ∀ x, 0 ≤ φ i x)
@@ -974,7 +974,7 @@ variable [CompleteSpace E']
 
 variable {a : G} {φ : ContDiffBump (0 : G)}
 
-/-- If `φ` is a bump function, compute `(φ ⋆ g) x₀` if `g` is constant on `metric.ball x₀ φ.R`. -/
+/-- If `φ` is a bump function, compute `(φ ⋆ g) x₀` if `g` is constant on `Metric.ball x₀ φ.R`. -/
 theorem convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
     (φ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = integral μ φ • g x₀ := by
   simp_rw [convolution_eq_right' _ φ.support_eq.subset hg, lsmul_apply, integral_smul_const]
@@ -986,7 +986,7 @@ variable [IsLocallyFiniteMeasure μ] [IsOpenPosMeasure μ]
 
 variable [FiniteDimensional ℝ G]
 
-/-- If `φ` is a normed bump function, compute `φ ⋆ g` if `g` is constant on `metric.ball x₀ φ.R`. -/
+/-- If `φ` is a normed bump function, compute `φ ⋆ g` if `g` is constant on `Metric.ball x₀ φ.R`. -/
 theorem normed_convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x = g x₀) :
     (φ.normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀ = g x₀ := by
   rw [convolution_eq_right' _ φ.support_normed_eq.subset hg]
@@ -1019,7 +1019,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
     hcg hk
 #align cont_diff_bump.convolution_tendsto_right ContDiffBump.convolution_tendsto_right
 
-/-- Special case of `cont_diff_bump.convolution_tendsto_right` where `g` is continuous,
+/-- Special case of `ContDiffBump.convolution_tendsto_right` where `g` is continuous,
   and the limit is taken only in the first function. -/
 theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
@@ -1175,7 +1175,7 @@ variable [NormedSpace 𝕜 G] [SigmaFinite μ] [IsAddLeftInvariant μ]
 
 /-- Compute the total derivative of `f ⋆ g` if `g` is `C^1` with compact support and `f` is locally
 integrable. To write down the total derivative as a convolution, we use
-`continuous_linear_map.precompR`. -/
+`ContinuousLinearMap.precompR`. -/
 theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 1 g) (x₀ : G) :
     HasFDerivAt (f ⋆[L, μ] g) ((f ⋆[L.precompR G, μ] fderiv 𝕜 g) x₀) x₀ := by
@@ -1424,7 +1424,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a
 parameter space `P` (and the compact support `k` is independent of the parameter in `s`).
 In this version, all the types belong to the same universe (to get an induction working in the
-proof). Use instead `cont_diff_on_convolution_right_with_param`, which removes this restriction. -/
+proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
     {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
     [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] {μ : Measure G}
@@ -1434,7 +1434,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     (hf : LocallyIntegrable f μ) (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) :
     ContDiffOn 𝕜 n (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
   /- We have a formula for the derivation of `f * g`, which is of the same form, thanks to
-    `has_fderiv_at_convolution_right_with_param`. Therefore, we can prove the result by induction on
+    `hasFDerivAt_convolution_right_with_param`. Therefore, we can prove the result by induction on
     `n` (but for this we need the spaces at the different steps of the induction to live in the same
     universe, which is why we make the assumption in the lemma that all the relevant spaces
     come from the same universe). -/
@@ -1479,8 +1479,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) :
     ContDiffOn 𝕜 n (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
   /- The result is known when all the universes are the same, from
-    `cont_diff_on_convolution_right_with_param_aux`. We reduce to this situation by pushing
-    everything through `ulift` continuous linear equivalences. -/
+    `contDiffOn_convolution_right_with_param_aux`. We reduce to this situation by pushing
+    everything through `ULift` continuous linear equivalences. -/
   let eG : Type max uG uE' uF uP := ULift.{max uE' uF uP} G
   -- porting note: `borelize eG` doesn't work
   let _ : MeasurableSpace eG := borel eG; let _ : BorelSpace eG := ⟨rfl⟩
