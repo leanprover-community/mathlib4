@@ -2274,6 +2274,7 @@ import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Category.BddDistLatCat
 import Mathlib.Order.Category.BddLatCat
 import Mathlib.Order.Category.BddOrdCat
+import Mathlib.Order.Category.BoolAlgCat
 import Mathlib.Order.Category.CompleteLatCat
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinPartOrd
