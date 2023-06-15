@@ -17,7 +17,7 @@ import Mathlib.Algebra.BigOperators.Basic
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-open BigOperators
+open scoped BigOperators
 
 variable {M N : Type _} [CommMonoid M] [AddCommMonoid N]
 

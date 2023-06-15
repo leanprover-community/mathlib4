@@ -22,7 +22,7 @@ then `f * g` tends to positive infinity.
 -/
 
 
-open Set Filter TopologicalSpace Function Topology Classical
+open scoped Set Filter TopologicalSpace Function Topology Classical
 open OrderDual (toDual ofDual)
 
 /-- If a (possibly non-unital and/or non-associative) ring `R` admits a submultiplicative

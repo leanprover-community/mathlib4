@@ -42,7 +42,7 @@ variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y
 
 open Metric Set Filter
 
-open BoundedContinuousFunction Topology
+open scoped BoundedContinuousFunction Topology
 
 noncomputable section
 

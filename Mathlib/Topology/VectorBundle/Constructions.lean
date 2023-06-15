@@ -33,7 +33,7 @@ Vector bundle, direct sum, pullback
 
 noncomputable section
 
-open Bundle Set FiberBundle Classical
+open scoped Bundle Set FiberBundle Classical
 
 /-! ### The trivial vector bundle -/
 

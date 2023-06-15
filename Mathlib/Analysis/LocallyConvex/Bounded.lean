@@ -48,7 +48,7 @@ variable {𝕜 𝕜' E E' F ι : Type _}
 
 open Set Filter
 
-open Topology Pointwise
+open scoped Topology Pointwise
 
 set_option linter.uppercaseLean3 false
 

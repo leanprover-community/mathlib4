@@ -28,7 +28,7 @@ This file contains some results about vector spaces over the field of fractions 
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 open nonZeroDivisors
 

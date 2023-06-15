@@ -25,7 +25,7 @@ variable {R A T B ι : Type _}
 
 namespace AddMonoidAlgebra
 
-open Classical BigOperators
+open scoped Classical BigOperators
 
 /-! ### Results about the `Finset.sup` and `Finset.inf` of `Finsupp.support` -/
 

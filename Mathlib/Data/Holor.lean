@@ -39,7 +39,7 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 universe u
 
 open List
-open BigOperators
+open scoped BigOperators
 
 /-- `HolorIndex ds` is the type of valid index tuples used to identify an entry of a holor
 of dimensions `ds`. -/

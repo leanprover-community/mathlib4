@@ -56,7 +56,7 @@ More fine grained instances for `TopologicalSpace.FirstCountableTopology`,
 -/
 
 
-open Set Filter Function Topology
+open scoped Set Filter Function Topology
 
 noncomputable section
 

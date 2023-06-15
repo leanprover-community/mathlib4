@@ -95,7 +95,7 @@ noncomputable section
 
 open Filter Function Metric Set
 
-open Topology Filter
+open scoped Topology Filter
 
 /-!
 ### Weak star topology on duals of normed spaces

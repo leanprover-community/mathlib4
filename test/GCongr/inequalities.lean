@@ -10,7 +10,7 @@ import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Inequality tests for the `gcongr` tactic -/
 
-open Nat Finset BigOperators
+open scoped Nat Finset BigOperators
 
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type

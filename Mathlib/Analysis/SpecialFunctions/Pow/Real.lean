@@ -21,7 +21,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open Classical Real BigOperators ComplexConjugate
+open scoped Classical Real BigOperators ComplexConjugate
 
 open Finset Set
 

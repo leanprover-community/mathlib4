@@ -243,7 +243,7 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
   isPrimitive_iff_content_eq_one.mp hp
 #align polynomial.is_primitive.content_eq_one Polynomial.IsPrimitive.content_eq_one
 
-open Classical
+open scoped Classical
 
 section PrimPart
 

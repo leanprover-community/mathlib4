@@ -312,7 +312,7 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
   rw [← Int.coe_nat_dvd, ← int_lt_one_iff, Int.cast_ofNat]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
-open BigOperators
+open scoped BigOperators
 
 theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by

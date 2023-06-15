@@ -63,7 +63,7 @@ sequentially closed, sequentially compact, sequential space
 -/
 
 
-open Set Function Filter TopologicalSpace Topology Uniformity
+open scoped Set Function Filter TopologicalSpace Topology Uniformity
 
 variable {X Y : Type _}
 
@@ -245,7 +245,7 @@ end TopologicalSpace
 
 section SeqCompact
 
-open TopologicalSpace TopologicalSpace.FirstCountableTopology
+open scoped TopologicalSpace TopologicalSpace.FirstCountableTopology
 
 variable [TopologicalSpace X]
 
@@ -283,7 +283,7 @@ section FirstCountableTopology
 
 variable [FirstCountableTopology X]
 
-open TopologicalSpace.FirstCountableTopology
+open scoped TopologicalSpace.FirstCountableTopology
 
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>

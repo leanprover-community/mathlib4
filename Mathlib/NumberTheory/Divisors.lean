@@ -34,7 +34,11 @@ divisors, perfect numbers
 -/
 
 
-open BigOperators Classical Finset
+open scoped BigOperators
+
+open scoped Classical
+
+open Finset
 
 namespace Nat
 

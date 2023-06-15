@@ -21,7 +21,7 @@ order are locally finite and calculates the cardinality of their intervals.
 
 open Finset Fintype
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} {α : ι → Type _}
 

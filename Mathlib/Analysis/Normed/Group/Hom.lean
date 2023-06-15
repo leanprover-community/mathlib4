@@ -31,7 +31,7 @@ theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when 
 
 noncomputable section
 
-open NNReal BigOperators
+open scoped NNReal BigOperators
 
 -- TODO: migrate to the new morphism / morphism_class style
 /-- A morphism of seminormed abelian groups is a bounded group homomorphism. -/

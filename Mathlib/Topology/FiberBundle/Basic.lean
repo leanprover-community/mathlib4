@@ -172,7 +172,7 @@ Fiber bundle, topological bundle, structure group
 
 variable {ι B F X : Type _} [TopologicalSpace X]
 
-open TopologicalSpace Filter Set Bundle Topology
+open scoped TopologicalSpace Filter Set Bundle Topology
 
 attribute [mfld_simps]
   totalSpaceMk coe_fst coe_snd coe_snd_map_apply coe_snd_map_smul TotalSpace.mk_cast

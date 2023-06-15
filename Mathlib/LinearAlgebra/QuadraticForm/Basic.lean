@@ -75,7 +75,7 @@ variable {S : Type _}
 
 variable {R R₁ : Type _} {M : Type _}
 
-open BigOperators
+open scoped BigOperators
 
 section Polar
 

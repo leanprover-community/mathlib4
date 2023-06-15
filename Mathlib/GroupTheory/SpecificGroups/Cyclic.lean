@@ -49,7 +49,7 @@ variable {α : Type u} {a : α}
 
 section Cyclic
 
-open BigOperators
+open scoped BigOperators
 
 attribute [local instance] setFintype
 
@@ -239,7 +239,7 @@ open Finset Nat
 
 section Classical
 
-open Classical
+open scoped Classical
 
 @[to_additive IsAddCyclic.card_pow_eq_one_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :

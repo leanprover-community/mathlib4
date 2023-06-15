@@ -1573,7 +1573,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
   of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
 #align measurable_embedding.of_measurable_inverse MeasurableEmbedding.of_measurable_inverse
 
-open Classical
+open scoped Classical
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
@@ -1642,7 +1642,7 @@ class CountablyGenerated [m : MeasurableSpace α] : Prop where
   IsCountablyGenerated : ∃ b : Set (Set α), b.Countable ∧ m = generateFrom b
 #align measurable_space.countably_generated MeasurableSpace.CountablyGenerated
 
-open Classical
+open scoped Classical
 
 /-- If a measurable space is countably generated, it admits a measurable injection
 into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/

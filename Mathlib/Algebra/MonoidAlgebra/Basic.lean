@@ -52,7 +52,7 @@ Similarly, I attempted to just define
 
 noncomputable section
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

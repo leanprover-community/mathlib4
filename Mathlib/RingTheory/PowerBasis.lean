@@ -147,7 +147,7 @@ theorem algHom_ext {S' : Type _} [Semiring S'] [Algebra R S'] (pb : PowerBasis R
 
 section minpoly
 
-open BigOperators
+open scoped BigOperators
 
 variable [Algebra A S]
 

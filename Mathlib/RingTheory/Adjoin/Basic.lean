@@ -28,7 +28,7 @@ adjoin, algebra
 
 universe u v w
 
-open Pointwise
+open scoped Pointwise
 
 open Submodule Subsemiring
 

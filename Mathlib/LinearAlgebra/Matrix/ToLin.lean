@@ -71,7 +71,7 @@ noncomputable section
 
 open LinearMap Matrix Set Submodule
 
-open BigOperators
+open scoped BigOperators
 
 open Matrix
 

@@ -98,7 +98,7 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 #align category_theory.functor.map_zsmul CategoryTheory.Functor.map_zsmul
 
-open BigOperators
+open scoped BigOperators
 
 @[simp]
 theorem map_sum {X Y : C} {α : Type _} (f : α → (X ⟶ Y)) (s : Finset α) :

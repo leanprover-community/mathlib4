@@ -43,7 +43,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 namespace SimpleGraph
 

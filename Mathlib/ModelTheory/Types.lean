@@ -44,7 +44,7 @@ universe u v w w'
 
 open Cardinal Set
 
-open Cardinal FirstOrder Classical
+open scoped Cardinal FirstOrder Classical
 
 namespace FirstOrder
 

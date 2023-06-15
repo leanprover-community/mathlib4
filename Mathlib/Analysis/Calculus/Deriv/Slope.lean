@@ -34,7 +34,7 @@ universe u v w
 
 noncomputable section
 
-open Topology Filter
+open scoped Topology Filter
 open Filter Set
 
 section NormedField

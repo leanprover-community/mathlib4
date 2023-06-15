@@ -21,7 +21,7 @@ theory developped in `Analysis.Asymptotics.Asymptotics`.
 
 open Filter Asymptotics
 
-open Topology
+open scoped Topology
 
 section NormedField
 
@@ -102,7 +102,7 @@ end NormedLinearOrderedField
 
 section Real
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

@@ -24,7 +24,7 @@ namespace Complex
 
 open Set Filter
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -230,7 +230,7 @@ section LogDeriv
 
 open Complex Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type _}
 

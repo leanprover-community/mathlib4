@@ -330,7 +330,7 @@ section big_operators
 
 variable {α : Type _} [CommRing α]
 
-open BigOperators
+open scoped BigOperators
 
 -- Lists:
 example : ([1, 2, 1, 3]).sum = 7 := by norm_num only

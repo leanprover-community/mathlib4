@@ -63,7 +63,7 @@ convex, strictly convex
 
 open Set Metric
 
-open Convex Pointwise
+open scoped Convex Pointwise
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,

@@ -25,7 +25,7 @@ It also contains proofs of some corollaries of this lemma about existence of fix
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 open Fintype MulAction
 
@@ -412,4 +412,3 @@ theorem commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a *
 end P2comm
 
 end IsPGroup
-

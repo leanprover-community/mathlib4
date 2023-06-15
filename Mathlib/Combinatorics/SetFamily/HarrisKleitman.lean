@@ -32,7 +32,7 @@ correlate in the uniform measure.
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {α : Type _} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 

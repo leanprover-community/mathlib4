@@ -117,7 +117,7 @@ But it makes a more systematic use of the filter library.
 -/
 
 
-open Set Filter Topology
+open scoped Set Filter Topology
 
 universe ua ub uc ud
 

@@ -26,7 +26,7 @@ local notation "abs'" => Abs.abs
 
 open IsAbsoluteValue
 
-open Classical BigOperators ComplexConjugate
+open scoped Classical BigOperators ComplexConjugate
 
 section
 

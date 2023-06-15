@@ -32,7 +32,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 open Finset
 

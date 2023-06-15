@@ -22,7 +22,7 @@ This file starts looking like the ring theory of $ R[X] $
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 namespace Polynomial
 

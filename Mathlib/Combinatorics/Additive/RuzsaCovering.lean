@@ -22,7 +22,7 @@ Merge this file with other prerequisites to Freiman's theorem once we have them.
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 namespace Finset
 

@@ -35,7 +35,7 @@ convex, convex body
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 open NNReal
 

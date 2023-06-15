@@ -23,7 +23,7 @@ import Mathlib.Topology.Order.Basic
 
 open Filter TopologicalSpace
 
-open Topology Classical
+open scoped Topology Classical
 
 universe u v
 
@@ -413,7 +413,7 @@ end Monotone
 
 section InfiAndSupr
 
-open Topology
+open scoped Topology
 
 open Filter Set
 
@@ -454,7 +454,7 @@ end InfiAndSupr
 
 section Indicator
 
-open BigOperators
+open scoped BigOperators
 
 theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     limsup s atTop = { ω | Tendsto

@@ -23,7 +23,7 @@ finite and calculates the cardinality of its finite intervals.
 
 open Dfinsupp Finset
 
-open BigOperators Pointwise
+open scoped BigOperators Pointwise
 
 variable {ι : Type _} {α : ι → Type _}
 

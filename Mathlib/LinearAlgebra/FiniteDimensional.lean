@@ -82,7 +82,7 @@ equivalence is proved in `Submodule.fg_iff_finiteDimensional`.
 
 universe u v v' w
 
-open Classical Cardinal Submodule Module Function
+open scoped Classical Cardinal Submodule Module Function
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
@@ -440,7 +440,7 @@ theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank [FiniteDime
 
 section
 
-open BigOperators
+open scoped BigOperators
 
 open Finset
 

@@ -39,7 +39,7 @@ variable {𝕜 E F G ι : Type _} {π : ι → Type _}
 
 open Function Set
 
-open Pointwise Convex
+open scoped Pointwise Convex
 
 section OrderedSemiring
 

@@ -74,7 +74,7 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators
+open scoped Polynomial BigOperators
 
 open Polynomial AddMonoidAlgebra Finsupp
 
@@ -497,7 +497,7 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
 
 section ExactDegrees
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by

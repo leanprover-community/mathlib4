@@ -23,7 +23,7 @@ the scalar restriction of a linear map.
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open scoped Topology Classical NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 

@@ -33,7 +33,7 @@ integral domain, finite integral domain, finite field
 
 section
 
-open Finset Polynomial Function BigOperators Nat
+open scoped Finset Polynomial Function BigOperators Nat
 
 section CancelMonoidWithZero
 

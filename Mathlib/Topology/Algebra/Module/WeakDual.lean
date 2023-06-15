@@ -70,7 +70,7 @@ noncomputable section
 
 open Filter
 
-open Topology
+open scoped Topology
 
 variable {α 𝕜 𝕝 R E F M : Type _}
 

@@ -23,7 +23,7 @@ variable {F α β γ : Type _}
 
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :

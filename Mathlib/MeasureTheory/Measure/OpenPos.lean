@@ -21,7 +21,7 @@ about these measures.
 -/
 
 
-open Topology ENNReal MeasureTheory
+open scoped Topology ENNReal MeasureTheory
 
 open Set Function Filter
 

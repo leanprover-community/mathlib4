@@ -21,7 +21,7 @@ This file is for elementary lemmas that depend on both Cauchy filters and separa
 
 open Filter
 
-open Topology Filter
+open scoped Topology Filter
 
 variable {α : Type _}
 

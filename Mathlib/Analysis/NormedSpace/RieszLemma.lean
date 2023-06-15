@@ -28,7 +28,7 @@ the closure of a set `s` of optimal distance from a point in `x` to the frontier
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 variable {𝕜 : Type _} [NormedField 𝕜]
 

@@ -28,7 +28,7 @@ noncomputable section
 
 variable {α β γ : Type _}
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical BigOperators NNReal ENNReal
 
 open MeasureTheory
 

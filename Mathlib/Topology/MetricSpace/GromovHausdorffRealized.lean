@@ -37,11 +37,11 @@ space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCou
 
 noncomputable section
 
-open Classical Topology NNReal
+open scoped Classical Topology NNReal
 
 universe u v w
 
-open Classical Set Function TopologicalSpace Filter Metric Quotient
+open scoped Classical Set Function TopologicalSpace Filter Metric Quotient
 
 open BoundedContinuousFunction
 

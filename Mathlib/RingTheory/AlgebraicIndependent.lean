@@ -46,7 +46,7 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open Classical BigOperators
+open scoped Classical BigOperators
 
 universe x u v w
 

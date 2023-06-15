@@ -46,7 +46,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 noncomputable section
 
-open BigOperators
+open scoped BigOperators
 
 open Nat Polynomial
 

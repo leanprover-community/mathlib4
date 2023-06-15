@@ -39,7 +39,7 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 noncomputable section
 
-open BigOperators
+open scoped BigOperators
 
 section OrderedCommSemiring
 

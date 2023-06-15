@@ -31,7 +31,7 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 
 noncomputable section
 
-open Classical Topology Filter ENNReal
+open scoped Classical Topology Filter ENNReal
 
 open Filter Encodable Set TopologicalSpace
 

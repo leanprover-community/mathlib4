@@ -35,7 +35,7 @@ Then we extend the valuation given on `K` to a valuation on `hat K`.
 
 open Filter Set
 
-open Topology
+open scoped Topology
 
 section DivisionRing
 
@@ -113,7 +113,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpac
 
 section
 
-open WithZeroTopology
+open scoped WithZeroTopology
 
 open Valued
 
@@ -197,7 +197,7 @@ instance (priority := 100) completable : CompletableTopField K :=
           exact mul_le_mul_left' this γ }
 #align valued.completable Valued.completable
 
-open WithZeroTopology
+open scoped WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=

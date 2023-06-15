@@ -34,7 +34,7 @@ open Finset
 
 open Multiset
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 universe u w
 

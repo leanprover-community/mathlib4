@@ -109,7 +109,7 @@ section LocalExtr
 
 variable {α β : Type _} [TopologicalSpace α] [LinearOrderedSemifield β] {a : α}
 
-open Topology
+open scoped Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
@@ -165,4 +165,3 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
 #align is_preconnected.eq_of_sq_eq IsPreconnected.eq_of_sq_eq
 
 end Preconnected
-

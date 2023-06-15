@@ -696,7 +696,7 @@ end NeWord
 
 section PingPongLemma
 
-open Pointwise
+open scoped Pointwise
 
 open Cardinal
 
@@ -865,7 +865,7 @@ def _root_.freeGroupEquivFreeProduct {ι : Type u_1} :
 
 section PingPongLemma
 
-open Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable [Nontrivial ι]
 

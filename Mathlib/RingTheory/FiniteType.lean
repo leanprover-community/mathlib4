@@ -28,7 +28,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 open Function (Surjective)
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 section ModuleAndAlgebra
 
@@ -84,7 +84,7 @@ protected theorem polynomial : FiniteType R R[X] :=
       exact Polynomial.adjoin_X⟩⟩
 #align algebra.finite_type.polynomial Algebra.FiniteType.polynomial
 
-open Classical
+open scoped Classical
 
 protected theorem mvPolynomial (ι : Type _) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι

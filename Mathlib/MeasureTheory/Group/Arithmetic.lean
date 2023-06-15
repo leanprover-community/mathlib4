@@ -50,7 +50,7 @@ measurable function, arithmetic operator
 
 universe u v
 
-open BigOperators Pointwise MeasureTheory
+open scoped BigOperators Pointwise MeasureTheory
 
 open MeasureTheory
 

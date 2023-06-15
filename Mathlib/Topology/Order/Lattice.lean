@@ -30,7 +30,7 @@ topological, lattice
 
 open Filter
 
-open Topology
+open scoped Topology
 
 /-- Let `L` be a topological space and let `L×L` be equipped with the product topology and let
 `⊓:L×L → L` be an infimum. Then `L` is said to have *(jointly) continuous infimum* if the map

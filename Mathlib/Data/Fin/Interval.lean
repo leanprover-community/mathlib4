@@ -21,7 +21,7 @@ intervals as Finsets and Fintypes.
 
 open Finset Fin Function
 
-open BigOperators
+open scoped BigOperators
 
 variable (n : ℕ)
 

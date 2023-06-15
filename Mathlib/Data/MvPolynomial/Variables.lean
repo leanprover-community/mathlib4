@@ -63,7 +63,7 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
+open scoped BigOperators
 
 universe u v w
 

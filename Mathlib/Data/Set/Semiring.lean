@@ -22,7 +22,7 @@ pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {α β : Type _}
 

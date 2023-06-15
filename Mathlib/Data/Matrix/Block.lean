@@ -31,7 +31,7 @@ variable {l m n o p q : Type _} {m' n' p' : o → Type _}
 
 variable {R : Type _} {S : Type _} {α : Type _} {β : Type _}
 
-open BigOperators Matrix
+open scoped BigOperators Matrix
 
 namespace Matrix
 

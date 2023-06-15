@@ -37,7 +37,7 @@ equicontinuity, continuity modulus
 -/
 
 
-open Filter Topology Uniformity
+open scoped Filter Topology Uniformity
 
 variable {α β ι : Type _} [PseudoMetricSpace α]
 

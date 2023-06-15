@@ -44,7 +44,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

@@ -30,7 +30,7 @@ matrix determinant, polynomial
 
 set_option linter.uppercaseLean3 false
 
-open Matrix BigOperators Polynomial
+open scoped Matrix BigOperators Polynomial
 
 variable {n α : Type _} [DecidableEq n] [Fintype n] [CommRing α]
 

@@ -26,7 +26,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 open Set OmegaCompletePartialOrder
 
-open Classical
+open scoped Classical
 
 universe u
 

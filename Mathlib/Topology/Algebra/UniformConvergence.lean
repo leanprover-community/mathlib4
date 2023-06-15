@@ -56,7 +56,7 @@ uniform convergence, strong dual
 
 open Filter
 
-open Topology Pointwise UniformConvergence
+open scoped Topology Pointwise UniformConvergence
 
 section AlgebraicInstances
 

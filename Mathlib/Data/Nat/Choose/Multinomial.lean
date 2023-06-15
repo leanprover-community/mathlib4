@@ -31,9 +31,9 @@ This file defines the multinomial coefficient and several small lemma's for mani
 -/
 
 
-open BigOperators Nat
+open scoped BigOperators Nat
 
-open BigOperators
+open scoped BigOperators
 
 namespace Nat
 

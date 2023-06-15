@@ -102,7 +102,7 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 universe u v w u₁ v₁
 
-open BigOperators
+open scoped BigOperators
 
 section Prio
 
@@ -186,7 +186,7 @@ section CommSemiringCommSemiring
 
 variable {R A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-open BigOperators
+open scoped BigOperators
 
 -- direct to_additive fails because of some mix-up with polynomials
 @[norm_cast]

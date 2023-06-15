@@ -27,7 +27,7 @@ namespace Filter
 
 variable {α β : Type _}
 
-open Topology
+open scoped Topology
 
 /-- If `l` is a filter on `α`, then a function `f : α → β` is `ZeroAtFilter l`
   if it tends to zero along `l`. -/

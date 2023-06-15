@@ -21,7 +21,7 @@ These are mostly useful to avoid diamonds during type class inference.
 
 open Filter Set
 
-open Topology
+open scoped Topology
 
 variable {α : Type _}
 

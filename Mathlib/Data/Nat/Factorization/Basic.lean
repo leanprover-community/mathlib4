@@ -47,7 +47,7 @@ attribute [-instance] instBEqNat
 
 open Nat Finset List Finsupp
 
-open BigOperators
+open scoped BigOperators
 
 namespace Nat
 

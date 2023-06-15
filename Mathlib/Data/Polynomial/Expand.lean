@@ -25,7 +25,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 universe u v w
 
-open Classical BigOperators Polynomial
+open scoped Classical BigOperators Polynomial
 
 open Finset
 

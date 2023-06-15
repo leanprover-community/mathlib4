@@ -48,7 +48,7 @@ More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 
 open Function Set
 
-open Affine Classical
+open scoped Affine Classical
 
 variable {𝕜 E F ι : Type _} {π : ι → Type _}
 

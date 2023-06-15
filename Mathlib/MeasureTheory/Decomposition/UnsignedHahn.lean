@@ -29,7 +29,7 @@ Hahn decomposition
 
 open Set Filter
 
-open Classical Topology ENNReal
+open scoped Classical Topology ENNReal
 
 namespace MeasureTheory
 

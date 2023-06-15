@@ -39,7 +39,7 @@ type class and the main results are the instances `UniformSpace.Completion.Field
 
 noncomputable section
 
-open Classical uniformity Topology
+open scoped Classical uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
 

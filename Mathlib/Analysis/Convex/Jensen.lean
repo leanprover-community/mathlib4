@@ -33,7 +33,7 @@ As corollaries, we get:
 
 open Finset LinearMap Set
 
-open BigOperators Classical Convex Pointwise
+open scoped BigOperators Classical Convex Pointwise
 
 variable {𝕜 E F β ι : Type _}
 

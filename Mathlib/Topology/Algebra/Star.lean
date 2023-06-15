@@ -20,7 +20,7 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
-open Filter Topology
+open scoped Filter Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
 class ContinuousStar (R : Type _) [TopologicalSpace R] [Star R] : Prop where

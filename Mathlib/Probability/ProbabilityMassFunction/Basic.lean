@@ -39,7 +39,7 @@ noncomputable section
 
 variable {α β γ : Type _}
 
-open Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical BigOperators NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/

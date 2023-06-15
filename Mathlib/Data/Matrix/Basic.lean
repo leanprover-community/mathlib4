@@ -53,7 +53,7 @@ These have not yet been implemented.
 
 universe u u' v w
 
-open BigOperators
+open scoped BigOperators
 
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/

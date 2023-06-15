@@ -23,7 +23,7 @@ variable {R : Type _} [CancelCommMonoidWithZero R]
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 /-- If `x * y = a * ∏ i in s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by

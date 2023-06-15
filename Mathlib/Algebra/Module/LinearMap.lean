@@ -353,7 +353,7 @@ theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 variable (M M₃ σ) {F : Type _} (h : F)
 

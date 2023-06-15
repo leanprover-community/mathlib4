@@ -31,7 +31,7 @@ variable {ι ι' α β γ : Type _}
 
 open Set
 
-open BigOperators
+open scoped BigOperators
 
 namespace Filter
 

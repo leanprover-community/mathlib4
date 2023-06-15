@@ -386,7 +386,7 @@ variable {R M}
 
 section Coprime
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} {p : ι → Ideal R} {S : Finset ι}
 
@@ -477,7 +477,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Submodule
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} [DecidableEq ι] {S : Finset ι}
 
@@ -667,7 +667,7 @@ section Torsion
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-open BigOperators
+open scoped BigOperators
 
 variable (R M)
 

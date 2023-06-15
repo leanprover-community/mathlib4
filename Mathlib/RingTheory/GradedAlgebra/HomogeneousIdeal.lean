@@ -47,7 +47,7 @@ graded algebra, homogeneous
 
 open SetLike DirectSum Set
 
-open BigOperators Pointwise DirectSum
+open scoped BigOperators Pointwise DirectSum
 
 variable {ι σ R A : Type _}
 

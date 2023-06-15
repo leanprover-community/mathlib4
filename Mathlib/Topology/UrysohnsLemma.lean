@@ -75,7 +75,7 @@ Urysohn's lemma, normal topological space
 
 variable {X : Type _} [TopologicalSpace X]
 
-open Set Filter TopologicalSpace Topology Filter
+open scoped Set Filter TopologicalSpace Topology Filter
 
 namespace Urysohns
 

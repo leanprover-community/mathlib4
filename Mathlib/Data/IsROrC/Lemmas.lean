@@ -29,7 +29,7 @@ end Polynomial
 
 namespace FiniteDimensional
 
-open Classical
+open scoped Classical
 
 open IsROrC
 

@@ -18,9 +18,9 @@ import Mathlib.Data.Set.Pointwise.Basic
 
 namespace Set
 
-open BigOperators
+open scoped BigOperators
 
-open Pointwise Function
+open scoped Pointwise Function
 
 variable {ι α β F : Type _}
 

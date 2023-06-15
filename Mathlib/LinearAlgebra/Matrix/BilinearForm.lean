@@ -59,7 +59,7 @@ section Matrix
 
 variable {n o : Type _}
 
-open BigOperators
+open scoped BigOperators
 
 open BilinForm Finset LinearMap Matrix
 

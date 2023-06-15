@@ -55,11 +55,11 @@ noncomputable section
 
 open Set TopologicalSpace Metric Filter
 
-open Topology
+open scoped Topology
 
 namespace NNReal
 
-open NNReal BigOperators Filter
+open scoped NNReal BigOperators Filter
 
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
@@ -178,7 +178,7 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 #align nnreal.summable_coe_of_nonneg NNReal.summable_mk
 
-open Classical
+open scoped Classical
 
 @[norm_cast]
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=

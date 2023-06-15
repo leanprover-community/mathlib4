@@ -33,7 +33,7 @@ metric space, paracompact space, normal space
 
 variable {α : Type _}
 
-open ENNReal Topology Set
+open scoped ENNReal Topology Set
 
 namespace EMetric
 

@@ -25,7 +25,7 @@ topological space, opposite monoid, units
 
 variable {M X : Type _}
 
-open Filter Topology
+open scoped Filter Topology
 
 namespace MulOpposite
 

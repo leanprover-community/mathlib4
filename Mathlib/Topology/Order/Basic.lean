@@ -81,7 +81,7 @@ for specific types.
 -/
 
 
-open Set Filter TopologicalSpace Topology Function
+open scoped Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
 

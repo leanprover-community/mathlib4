@@ -658,7 +658,7 @@ open Function
 
 section
 
-open BigOperators
+open scoped BigOperators
 
 theorem map_update_sum {α : Type _} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
     f (update m i (∑ a in t, g a)) = ∑ a in t, f (update m i (g a)) :=
@@ -839,7 +839,7 @@ end Fin
 
 end AlternatingMap
 
-open BigOperators
+open scoped BigOperators
 
 namespace MultilinearMap
 
@@ -925,7 +925,7 @@ end LinearMap
 
 section Coprod
 
-open BigOperators
+open scoped BigOperators
 
 open TensorProduct
 

@@ -43,7 +43,7 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 universe u v
 

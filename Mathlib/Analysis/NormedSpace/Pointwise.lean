@@ -23,7 +23,7 @@ multiplication of bounded sets remain bounded.
 
 open Metric Set
 
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 E : Type _}
 

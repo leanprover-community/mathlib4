@@ -18,7 +18,7 @@ In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some b
 -/
 
 
-open Classical NNReal ENNReal
+open scoped Classical NNReal ENNReal
 
 noncomputable section
 
@@ -122,4 +122,3 @@ theorem toENNReal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
 #align enat.coe_ennreal_sub ENat.toENNReal_sub
 
 end ENat
-

@@ -32,7 +32,7 @@ submodule, subspace, linear map
 
 open Function
 
-open BigOperators
+open scoped BigOperators
 
 universe u'' u' u v w
 

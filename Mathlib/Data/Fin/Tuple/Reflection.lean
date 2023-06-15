@@ -148,7 +148,7 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
 
-open BigOperators
+open scoped BigOperators
 
 /-- This can be used to prove
 ```lean

@@ -149,7 +149,7 @@ theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.f
   LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
-open BigOperators
+open scoped BigOperators
 
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]

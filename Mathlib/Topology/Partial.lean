@@ -21,7 +21,7 @@ In this file we prove properties of `Filter.PTendsto` etc in topological spaces.
 
 open Filter
 
-open Topology
+open scoped Topology
 
 variable {α β : Type _} [TopologicalSpace α]
 

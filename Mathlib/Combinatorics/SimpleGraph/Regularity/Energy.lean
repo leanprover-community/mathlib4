@@ -30,7 +30,7 @@ has an energy greater than the previous one plus some fixed constant.
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {α : Type _} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
   [DecidableRel G.Adj]

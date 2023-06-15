@@ -20,7 +20,7 @@ universe u v w
 
 open TensorProduct
 
-open BigOperators
+open scoped BigOperators
 
 open TensorProduct
 

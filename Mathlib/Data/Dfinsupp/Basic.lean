@@ -51,7 +51,7 @@ definitions, or introduce two more definitions for the other combinations of dec
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 

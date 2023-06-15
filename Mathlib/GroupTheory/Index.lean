@@ -39,7 +39,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 namespace Subgroup
 
-open BigOperators Cardinal
+open scoped BigOperators Cardinal
 
 variable {G : Type _} [Group G] (H K L : Subgroup G)
 

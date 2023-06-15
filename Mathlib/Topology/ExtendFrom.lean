@@ -30,7 +30,7 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter Set
 

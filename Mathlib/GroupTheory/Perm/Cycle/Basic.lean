@@ -59,7 +59,7 @@ The following two definitions require that `β` is a `Fintype`:
 
 open Equiv Function Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι α β : Type _}
 

@@ -39,7 +39,7 @@ one-point compactification, compactness
 -/
 
 
-open Set Filter Topology
+open scoped Set Filter Topology
 
 /-!
 ### Definition and basic properties

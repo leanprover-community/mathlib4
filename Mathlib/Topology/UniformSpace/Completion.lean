@@ -52,7 +52,7 @@ open Filter Set
 
 universe u v w x
 
-open Uniformity Classical Topology Filter
+open scoped Uniformity Classical Topology Filter
 
 /-- Space of Cauchy filters
 

@@ -19,7 +19,7 @@ import Mathlib.Topology.Algebra.Monoid
 
 open TopologicalSpace Set Filter
 
-open Topology Filter
+open scoped Topology Filter
 
 variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 

@@ -18,7 +18,7 @@ import Mathlib.Topology.MetricSpace.Metrizable
 
 open Filter MeasureTheory TopologicalSpace
 
-open Classical Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 variable {α β : Type _} [MeasurableSpace α]
 

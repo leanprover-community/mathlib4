@@ -37,7 +37,7 @@ You should not assume that there has been any effort to state lemmas as generall
 
 universe u v v' w
 
-open Classical Cardinal
+open scoped Classical Cardinal
 
 open Cardinal Submodule Module Function
 

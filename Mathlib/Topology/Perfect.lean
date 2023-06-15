@@ -52,7 +52,7 @@ accumulation point, perfect set, cantor-bendixson.
 -/
 
 
-open Topology Filter
+open scoped Topology Filter
 
 open TopologicalSpace Filter Set
 

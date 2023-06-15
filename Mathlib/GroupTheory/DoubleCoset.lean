@@ -34,7 +34,7 @@ variable {G : Type _} [Group G] {α : Type _} [Mul α] (J : Subgroup G) (g : G)
 
 namespace Doset
 
-open Pointwise
+open scoped Pointwise
 
 /-- The double coset as an element of `Set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=

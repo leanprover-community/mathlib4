@@ -35,7 +35,7 @@ a linearly ordered commutative group with zero. You can locally activate this to
 `open WithZeroTopology`.
 -/
 
-open Topology Filter TopologicalSpace Filter Set Function
+open scoped Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
 

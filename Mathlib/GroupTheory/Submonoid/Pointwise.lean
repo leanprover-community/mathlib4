@@ -46,7 +46,8 @@ on `Set`s.
 -/
 
 
-open Set Pointwise
+open Set
+open scoped Pointwise
 
 variable {α : Type _} {G : Type _} {M : Type _} {R : Type _} {A : Type _}
 

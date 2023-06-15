@@ -25,7 +25,7 @@ variable {M : Submonoid A}
 
 namespace Polynomial
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 /-- `scaleRoots p s` is a polynomial with root `r * s` for each root `r` of `p`. -/
 noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=

@@ -806,7 +806,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open Classical
+open scoped Classical
 
 open Multiset Associates
 
@@ -1050,7 +1050,7 @@ variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 variable {β : Type _} [CancelCommMonoidWithZero β]
 
-open BigOperators
+open scoped BigOperators
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)

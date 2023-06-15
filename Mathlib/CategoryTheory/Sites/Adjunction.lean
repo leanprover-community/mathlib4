@@ -22,7 +22,7 @@ categories of sheaves, under certain hypotheses on `F` and `G`.
 
 namespace CategoryTheory
 
-open GrothendieckTopology CategoryTheory Limits Opposite
+open scoped GrothendieckTopology CategoryTheory Limits Opposite
 
 universe w₁ w₂ v u
 

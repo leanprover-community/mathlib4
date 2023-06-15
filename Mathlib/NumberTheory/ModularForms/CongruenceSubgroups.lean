@@ -236,7 +236,7 @@ end CongruenceSubgroup
 
 section Conjugation
 
-open Pointwise
+open scoped Pointwise
 
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)

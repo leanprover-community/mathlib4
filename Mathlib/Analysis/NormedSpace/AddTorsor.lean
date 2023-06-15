@@ -23,7 +23,7 @@ This file contains lemmas about normed additive torsors over normed spaces.
 
 noncomputable section
 
-open NNReal Topology
+open scoped NNReal Topology
 
 open Filter
 

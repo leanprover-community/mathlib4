@@ -24,7 +24,7 @@ In this file we prove a few facts like “`-s` is bounded above iff `s` is bound
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 section InvNeg
 

@@ -89,7 +89,7 @@ protected noncomputable def one : One (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
@@ -171,7 +171,7 @@ protected def inv [Inv α] : Inv (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.inv Set.neg
 
-open Pointwise
+open scoped Pointwise
 
 section Inv
 
@@ -306,7 +306,7 @@ end InvolutiveInv
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Set addition/multiplication -/
 
@@ -813,7 +813,7 @@ theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
 
 end Div
 
-open Pointwise
+open scoped Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action].-/
@@ -1029,7 +1029,7 @@ protected noncomputable def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
 
-open Pointwise
+open scoped Pointwise
 
 section DivisionMonoid
 
@@ -1342,7 +1342,7 @@ end Set
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 namespace Group
 

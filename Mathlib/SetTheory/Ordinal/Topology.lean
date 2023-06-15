@@ -32,7 +32,7 @@ noncomputable section
 
 universe u v
 
-open Cardinal Order Topology
+open scoped Cardinal Order Topology
 
 namespace Ordinal
 

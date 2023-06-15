@@ -22,7 +22,7 @@ universe u v
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 variable {R : Type _}
 
@@ -406,7 +406,7 @@ theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
 #align frobenius_nat_cast frobenius_nat_cast
 
-open BigOperators
+open scoped BigOperators
 
 variable {R}
 

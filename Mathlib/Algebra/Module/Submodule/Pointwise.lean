@@ -35,7 +35,7 @@ Most of the lemmas in this file are direct copies of lemmas from
 
 variable {α : Type _} {R : Type _} {M : Type _}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 
@@ -61,7 +61,7 @@ protected def pointwiseNeg : Neg (Submodule R M)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
@@ -145,7 +145,7 @@ theorem neg_iSup {ι : Sort _} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ 
 
 end Semiring
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
@@ -207,7 +207,7 @@ protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=

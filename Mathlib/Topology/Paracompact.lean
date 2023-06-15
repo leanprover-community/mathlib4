@@ -52,7 +52,7 @@ compact space, paracompact space, locally finite covering
 
 open Set Filter Function
 
-open Filter Topology
+open scoped Filter Topology
 
 universe u v w
 

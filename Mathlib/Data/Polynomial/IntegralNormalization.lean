@@ -19,7 +19,7 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 -/
 
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 namespace Polynomial
 

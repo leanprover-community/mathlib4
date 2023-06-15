@@ -30,7 +30,7 @@ namespace ModuleCat
 
 universe u
 
-open Classical
+open scoped Classical
 
 variable (R : Type u)
 

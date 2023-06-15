@@ -26,9 +26,9 @@ This file introduces the commuting probability of finite groups.
 -/
 noncomputable section
 
-open Classical
+open scoped Classical
 
-open BigOperators
+open scoped BigOperators
 
 open Fintype
 

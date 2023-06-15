@@ -34,7 +34,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
 
 variable [Algebra R S] {P : Type _} [CommRing P]
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 namespace IsLocalization
 
@@ -44,7 +44,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open Classical
+open scoped Classical
 
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/

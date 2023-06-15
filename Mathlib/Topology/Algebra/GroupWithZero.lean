@@ -33,7 +33,7 @@ consistency of notation.
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
-open Topology Filter Function
+open scoped Topology Filter Function
 
 /-!
 ### A `DivInvMonoid` with continuous multiplication

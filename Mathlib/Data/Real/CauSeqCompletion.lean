@@ -201,7 +201,7 @@ instance Cauchy.commRing : CommRing (Cauchy abv) :=
 
 end
 
-open Classical
+open scoped Classical
 
 section
 

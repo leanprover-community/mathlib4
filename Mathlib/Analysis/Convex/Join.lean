@@ -21,7 +21,7 @@ convex hulls of finite sets.
 
 open Set
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Sort _} {𝕜 E : Type _}
 

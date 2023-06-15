@@ -30,7 +30,7 @@ In this file we define several notions of finiteness that are common in commutat
 
 open Function (Surjective)
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 section ModuleAndAlgebra
 

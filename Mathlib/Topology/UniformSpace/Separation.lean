@@ -69,7 +69,7 @@ uniformly continuous).
 
 -/
 
-open Filter Set Function Topology Uniformity UniformSpace
+open scoped Filter Set Function Topology Uniformity UniformSpace
 open scoped Classical
 
 noncomputable section

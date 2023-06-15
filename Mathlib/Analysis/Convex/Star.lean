@@ -50,7 +50,7 @@ A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
 
 open Set
 
-open Convex Pointwise
+open scoped Convex Pointwise
 
 variable {𝕜 E F : Type _}
 

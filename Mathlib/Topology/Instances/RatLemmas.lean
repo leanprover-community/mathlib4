@@ -34,7 +34,7 @@ compactification.
 
 open Set Metric Filter TopologicalSpace
 
-open Topology OnePoint
+open scoped Topology OnePoint
 
 local notation "ℚ∞" => OnePoint ℚ
 

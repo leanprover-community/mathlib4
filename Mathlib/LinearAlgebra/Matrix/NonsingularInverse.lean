@@ -58,7 +58,7 @@ universe u u' v
 
 variable {l : Type _} {m : Type u} {n : Type u'} {α : Type v}
 
-open Matrix BigOperators Equiv Equiv.Perm Finset
+open scoped Matrix BigOperators Equiv Equiv.Perm Finset
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
 

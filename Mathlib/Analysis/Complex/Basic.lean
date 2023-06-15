@@ -44,7 +44,7 @@ noncomputable section
 
 namespace Complex
 
-open ComplexConjugate Topology Filter
+open scoped ComplexConjugate Topology Filter
 
 instance : Norm ℂ :=
   ⟨abs⟩

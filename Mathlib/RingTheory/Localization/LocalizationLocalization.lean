@@ -29,7 +29,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
 
 variable [Algebra R S] {P : Type _} [CommRing P]
 
-open Function BigOperators
+open scoped Function BigOperators
 
 namespace IsLocalization
 

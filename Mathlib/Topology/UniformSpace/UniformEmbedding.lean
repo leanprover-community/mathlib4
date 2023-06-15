@@ -19,7 +19,7 @@ Extension of uniform continuous functions.
 -/
 
 
-open Filter Function Set Uniformity Topology
+open scoped Filter Function Set Uniformity Topology
 
 section
 

@@ -28,7 +28,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open scoped Topology Classical NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -327,7 +327,7 @@ section Sum
 /-! ### Derivative of a finite sum of functions -/
 
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
@@ -666,4 +666,3 @@ theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv �
 end Sub
 
 end
-

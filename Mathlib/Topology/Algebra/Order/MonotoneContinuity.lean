@@ -28,7 +28,7 @@ continuous, monotone
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section LinearOrder
 

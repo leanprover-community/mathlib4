@@ -22,7 +22,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open BigOperators
+open scoped BigOperators
 
 universe w v u
 

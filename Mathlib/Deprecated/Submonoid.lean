@@ -34,7 +34,7 @@ Submonoid, Submonoids, IsSubmonoid
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 variable {M : Type _} [Monoid M] {s : Set M}
 

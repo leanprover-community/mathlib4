@@ -72,7 +72,7 @@ universe u
 
 open Function Set Submodule
 
-open BigOperators
+open scoped BigOperators
 
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}

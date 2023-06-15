@@ -52,7 +52,7 @@ universe v u
 
 open CategoryTheory.Limits
 
-open BigOperators
+open scoped BigOperators
 
 namespace CategoryTheory
 

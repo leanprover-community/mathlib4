@@ -55,7 +55,7 @@ arithmetic functions, dirichlet convolution, divisors
 
 open Finset
 
-open BigOperators
+open scoped BigOperators
 
 namespace Nat
 

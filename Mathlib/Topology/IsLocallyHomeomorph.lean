@@ -26,7 +26,7 @@ This file defines local homeomorphisms.
 -/
 
 
-open Topology
+open scoped Topology
 
 variable {X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (g : Y → Z)
   (f : X → Y) (s : Set X) (t : Set Y)
@@ -134,4 +134,3 @@ protected theorem comp (hg : IsLocallyHomeomorph g) (hf : IsLocallyHomeomorph f)
 #align is_locally_homeomorph.comp IsLocallyHomeomorph.comp
 
 end IsLocallyHomeomorph
-

@@ -20,7 +20,7 @@ then `C ⥤ D` is also `R`-linear.
 -/
 
 
-open BigOperators
+open scoped BigOperators
 
 namespace CategoryTheory
 

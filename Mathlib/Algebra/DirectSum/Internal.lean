@@ -44,7 +44,7 @@ internally graded ring
 -/
 
 
-open DirectSum BigOperators
+open scoped DirectSum BigOperators
 
 variable {ι : Type _} {σ S R : Type _}
 

@@ -32,7 +32,7 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 -/
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁ v₁
 

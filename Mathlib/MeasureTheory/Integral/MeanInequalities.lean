@@ -51,7 +51,7 @@ only to prove the more general results:
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical BigOperators NNReal ENNReal MeasureTheory
 
 set_option linter.uppercaseLean3 false
 

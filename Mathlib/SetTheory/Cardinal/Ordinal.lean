@@ -50,7 +50,7 @@ noncomputable section
 
 open Function Cardinal Set Equiv Order
 
-open Classical Cardinal Ordinal
+open scoped Classical Cardinal Ordinal
 
 universe u v w
 

@@ -18,7 +18,7 @@ import Mathlib.Topology.UniformSpace.Separation
 
 noncomputable section
 
-open Uniformity Topology
+open scoped Uniformity Topology
 
 section
 

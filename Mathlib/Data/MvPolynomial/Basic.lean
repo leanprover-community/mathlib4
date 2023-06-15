@@ -74,11 +74,11 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 noncomputable section
 
-open BigOperators
+open scoped BigOperators
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
+open scoped BigOperators
 
 universe u v w x
 

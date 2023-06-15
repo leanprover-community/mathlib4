@@ -50,7 +50,7 @@ protected def pointwiseMulAction : MulAction M (Subring R) where
 
 scoped[Pointwise] attribute [instance] Subring.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_def {a : M} (S : Subring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
@@ -107,7 +107,7 @@ section Group
 
 variable [Group M] [Ring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Subring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
@@ -145,7 +145,7 @@ section GroupWithZero
 
 variable [GroupWithZero M] [Ring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subring R) (x : R) :

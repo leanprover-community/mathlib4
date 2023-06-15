@@ -55,7 +55,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 -/
 
 
-open Set Filter Topology TopologicalSpace Classical
+open scoped Set Filter Topology TopologicalSpace Classical
 
 universe u v
 

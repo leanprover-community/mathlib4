@@ -40,7 +40,7 @@ variable (𝕜 : Type _) [NontriviallyNormedField 𝕜]
 
 open Filter Set
 
-open Topology
+open scoped Topology
 
 section TangentCone
 

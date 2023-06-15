@@ -40,7 +40,7 @@ We provide many variations to stricten the result under more assumptions on the 
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E : Type _}
 

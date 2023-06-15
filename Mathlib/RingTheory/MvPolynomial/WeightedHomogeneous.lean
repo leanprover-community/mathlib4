@@ -46,7 +46,7 @@ components.
 
 noncomputable section
 
-open BigOperators
+open scoped BigOperators
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 

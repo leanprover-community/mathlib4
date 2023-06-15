@@ -32,7 +32,7 @@ compact, extreme value theorem
 
 open Filter OrderDual TopologicalSpace Function Set
 
-open Filter Topology
+open scoped Filter Topology
 
 /-!
 ### Compactness of a closed interval

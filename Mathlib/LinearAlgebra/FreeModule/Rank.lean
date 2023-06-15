@@ -23,7 +23,7 @@ universe u v w
 
 variable (R : Type u) (M : Type v) (N : Type w)
 
-open TensorProduct DirectSum BigOperators Cardinal
+open scoped TensorProduct DirectSum BigOperators Cardinal
 
 open Cardinal
 
