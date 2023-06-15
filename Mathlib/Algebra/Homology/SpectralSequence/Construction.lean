@@ -29,29 +29,85 @@ noncomputable def page (r : ℤ) (hr : 2 ≤ r) (pq : ℤ × ℤ) : C :=
   (X.E (pq.1+pq.2-1) (pq.1+pq.2) (pq.1+pq.2+1) (by linarith) (by linarith)).obj
     (ιℤt.mapArrow₃.obj (Arrow₃.mkOfLE (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1)))
 
+noncomputable def pageIsoE (r : ℤ) (hr : 2 ≤ r) (pq : ℤ × ℤ) (n₀ n₁ n₂ : ℤ)
+    (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn : pq.1 + pq.2 = n₁)
+    (D : Arrow₃ ℤt) (hD₀ : D.X₀ = ℤt.mk (pq.2-r+2))
+    (hD₁ : D.X₁ = ℤt.mk pq.2) (hD₂ : D.X₂ = ℤt.mk (pq.2+1))
+    (hD₃ : D.X₃ = ℤt.mk (pq.2+r-1)) :
+    page X r hr pq ≅ (X.E n₀ n₁ n₂ hn₁ hn₂).obj D :=
+  (X.EIsoOfEq (pq.1+pq.2-1) (pq.1+pq.2) (pq.1+pq.2+1) _ _
+    n₀ n₁ n₂ hn₁ hn₂ hn).app _ ≪≫ (X.E n₀ n₁ n₂ hn₁ hn₂).mapIso
+      (Arrow₃.isoMk _ _ (eqToIso hD₀.symm) (eqToIso hD₁.symm) (eqToIso hD₂.symm) (eqToIso hD₃.symm)
+        (Subsingleton.elim _ _) (Subsingleton.elim _ _) (Subsingleton.elim _ _))
+
 noncomputable def d (r : ℤ) (hr : 2 ≤ r) (pq pq' : ℤ × ℤ) (hpq' : pq + (r, 1-r) = pq') :
     page X r hr pq ⟶ page X r hr pq' := by
+  let n := pq.1 + pq.2
   have h₁ : pq.1 + r = pq'.1 := congr_arg _root_.Prod.fst hpq'
   have h₂ : pq.2 + (1-r) = pq'.2 := congr_arg _root_.Prod.snd hpq'
-  refine' (X.d (pq.1 + pq.2 - 1) (pq.1 + pq.2) (pq.1 + pq.2 + 1) (pq.1 + pq.2 + 2) _ _ _).app
-     (ιℤt.mapArrow₅.obj
-        (Arrow₅.mkOfLE (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1))) ≫
-    (X.EIsoOfEq (pq.1+pq.2) (pq.1+pq.2+1) (pq.1+pq.2+2) _ _
-      (pq'.1+pq'.2-1) (pq'.1+pq'.2) (pq'.1+pq'.2+1) _ _ (by linarith)).hom.app _ ≫
-    (X.E _ _ _ _ _).map
-      (Arrow₃.Hom.mk (𝟙 _) (𝟙 _) (eqToHom _) (eqToHom _) (Subsingleton.elim _ _)
-      (Subsingleton.elim _ _) (Subsingleton.elim _ _))
+  refine' (X.d (n-1) n (n+1) (n+2) _ _ _).app
+    (ιℤt.mapArrow₅.obj
+      (Arrow₅.mkOfLE (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1))) ≫
+      Iso.inv (pageIsoE X r hr _ _ _ _ _ _ _ _ _ _ _ _)
   . linarith
-  all_goals dsimp ; congr 1 ; linarith
+  . dsimp
+    linarith
+  . rfl
+  . rfl
+  . dsimp
+    congr 1
+    linarith
+  . dsimp
+    congr 1
+    linarith
+
+lemma d_eq (r : ℤ) (hr : 2 ≤ r) (pq pq' : ℤ × ℤ) (hpq' : pq + (r, 1-r) = pq')
+    (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+    (hn : pq.1 + pq.2 = n₁)
+    (D : Arrow₅ ℤt) (hD₀ : D.X₀ = ℤt.mk (pq'.2-r+2)) (hD₁ : D.X₁ = ℤt.mk pq'.2)
+      (hD₂ : D.X₂ = ℤt.mk (pq.2-r+2)) (hD₃ : D.X₃ = ℤt.mk pq.2)
+      (hD₄ : D.X₄ = ℤt.mk (pq.2+1)) (hD₅ : D.X₅ = ℤt.mk (pq.2+r-1)) :
+    d X r hr pq pq' hpq' = Iso.hom (pageIsoE X r hr pq n₀ n₁ n₂ hn₁ hn₂ hn
+        ((Arrow₅.δ₀ ⋙ Arrow₄.δ₀).obj D) hD₂ hD₃ hD₄ hD₅) ≫
+          (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app D ≫
+          Iso.inv (pageIsoE X r hr pq' n₁ n₂ n₃ hn₂ hn₃
+            (by subst hpq' ; dsimp ; linarith) _ hD₀ hD₁
+            (by subst hpq' ; dsimp ; rw [hD₂] ; congr 1 ; linarith)
+            (by subst hpq' ; dsimp ; rw [hD₃] ; congr 1 ; linarith)) := by
+  obtain rfl : n₀ = n₁ - 1 := by linarith
+  obtain rfl : n₂ = n₁ + 1 := by linarith
+  obtain rfl : n₃ = n₁ + 2 := by linarith
+  subst hn
+  obtain ⟨f₁, f₂, f₃, f₄, f₅⟩ := D
+  dsimp at hD₀ hD₁ hD₂ hD₃ hD₄ hD₅
+  substs hD₀ hD₁ hD₂ hD₃ hD₄ hD₅
+  dsimp [d, pageIsoE, Arrow₃.isoMk, Arrow₄.δ₀, Arrow₅.δ₀]
+  erw [EIsoOfEq_refl, Iso.refl_hom, NatTrans.id_app]
+  dsimp
+  erw [id_comp, Functor.map_id, id_comp]
+  rfl
+
+lemma d_comp_d (r : ℤ) (hr : 2 ≤ r) (pq pq' pq'' : ℤ × ℤ) (hpq' : pq + (r, 1 - r) = pq')
+    (hpq'' : pq' + (r, 1 - r) = pq'') :
+    d X r hr pq pq' hpq' ≫ d X r hr pq' pq'' hpq'' = 0 := by
+  have h₁ : pq.1 + r = pq'.1 := congr_arg _root_.Prod.fst hpq'
+  have h₂ : pq.2 + (1-r) = pq'.2 := congr_arg _root_.Prod.snd hpq'
+  have h₄ : pq'.2 + (1-r) = pq''.2 := congr_arg _root_.Prod.snd hpq''
+  let n := pq.1 + pq.2
+  have hn : n = pq.1 + pq.2 := rfl
+  let D₇ := ιℤt.mapArrow₇.obj (Arrow₇.mkOfLE (pq''.2-r+2) pq''.2 (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1))
+  rw [d_eq X r hr pq pq' hpq' (n-1) n (n+1) (n+2) (by linarith) (by linarith)
+    (by linarith) rfl ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D₇) rfl rfl rfl rfl rfl rfl]
+  rw [d_eq X r hr pq' pq'' hpq'' n (n+1) (n+2) (n+3) (by linarith) (by linarith)
+    (by linarith) (by linarith) ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D₇) rfl rfl rfl rfl, assoc, assoc]
+  erw [Iso.inv_hom_id_assoc, X.d_comp_d_app_assoc, zero_comp, comp_zero]
 
 end ToE₂CohomologicalSpectralSequence
 
 noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectralSequence C where
-  page' r hr pq := ToE₂CohomologicalSpectralSequence.page X r hr pq
-  d' r hr pq pq' hpq' := ToE₂CohomologicalSpectralSequence.d X r hr pq pq' hpq'
-  d_comp_d' r hr := fun ⟨p, q⟩ ⟨p', q'⟩ ⟨p'', q''⟩ hpq' hpq'' => by
-    dsimp
-    sorry
+  page' := ToE₂CohomologicalSpectralSequence.page X
+  d' := ToE₂CohomologicalSpectralSequence.d X
+  d_comp_d' := ToE₂CohomologicalSpectralSequence.d_comp_d X
   iso' := sorry
 
 pp_extended_field_notation toE₂CohomologicalSpectralSequence

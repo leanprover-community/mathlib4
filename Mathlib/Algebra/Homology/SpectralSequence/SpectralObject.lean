@@ -346,6 +346,9 @@ def shortComplexEIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁') 
   obtain rfl : n₂ = n₂' := by linarith
   rfl)
 
+lemma shortComplexEIsoOfEq_refl :
+  X.shortComplexEIsoOfEq n₀ n₁ n₂ hn₁ hn₂ n₀ n₁ n₂ hn₁ hn₂ rfl = Iso.refl _ := rfl
+
 -- the homology of this short complex gives the terms in all the pages of the spectral sequence
 def shortComplexEObj (D : Arrow₃ ι) : ShortComplex C :=
   ShortComplex.mk ((X.δ n₀ n₁ hn₁).app (Arrow₂.mk D.g D.h))
@@ -360,6 +363,13 @@ noncomputable def EIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁'
     (h : n₁ = n₁') :
     X.E n₀ n₁ n₂ hn₁ hn₂ ≅ X.E n₀' n₁' n₂' hn₁' hn₂' :=
   ShortComplex.homologyMapIso (X.shortComplexEIsoOfEq n₀ n₁ n₂ hn₁ hn₂ n₀' n₁' n₂' hn₁' hn₂' h)
+
+lemma EIsoOfEq_refl : (X.EIsoOfEq n₀ n₁ n₂ hn₁ hn₂ n₀ n₁ n₂ hn₁ hn₂ rfl) = Iso.refl _ := by
+  dsimp only [EIsoOfEq]
+  rw [shortComplexEIsoOfEq_refl]
+  ext1
+  simp only [ShortComplex.homologyMapIso_hom, Iso.refl_hom, ShortComplex.homologyMap_id]
+  rfl
 
 pp_extended_field_notation E
 
@@ -1244,6 +1254,7 @@ lemma π_d  :
   ext D
   apply π_d_app
 
+@[reassoc]
 lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ ⟶ x₁)
     (f₂ : x₁ ⟶ x₂) (f₃ : x₂ ⟶ x₃) (f₄ : x₃ ⟶ x₄) (f₅ : x₄ ⟶ x₅) (f₆ : x₅ ⟶ x₆) (f₇ : x₆ ⟶ x₇) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app (Arrow₅.mk f₃ f₄ f₅ f₆ f₇) ≫
@@ -1251,11 +1262,13 @@ lemma d_comp_d_app' {x₀ x₁ x₂ x₃ x₄ x₅ x₆ x₇ : ι} (f₁ : x₀ 
   rw [← cancel_mono ((X.EιH n₂ n₃ n₄ hn₃ hn₄).app (Arrow₃.mk f₁ f₂ f₃)), assoc, zero_comp,
     d_ι_app', d_ι_app'_assoc, shortComplexE_zero_app', comp_zero]
 
+@[reassoc]
 lemma d_comp_d_app (D : Arrow₇ ι) :
     (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).app ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D) ≫
       (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).app ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D) = 0 := by
   apply X.d_comp_d_app'
 
+@[reassoc]
 lemma d_comp_d :
     whiskerLeft (Arrow₇.δ₀ ⋙ Arrow₆.δ₀) (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃) ≫
       whiskerLeft (Arrow₇.δ₇ ⋙ Arrow₆.δ₆) (X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄) = 0 := by
