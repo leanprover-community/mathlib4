@@ -35,8 +35,8 @@ def withSign (i : ℤˣ) : Submodule ℕ ℤ :=
     show AddSubmonoid ℤ from
       { carrier := {z | 0 ≤ i • z}
         zero_mem' := show 0 ≤ i • (0 : ℤ) from (smul_zero _).ge
-        add_mem' := fun x y (hx : 0 ≤ i • x) (hy : 0 ≤ i • y) =>
-          show _ ≤ _ by
+        add_mem' := fun {x y} (hx : 0 ≤ i • x) (hy : 0 ≤ i • y) =>
+          show 0 ≤ i • (x + y) by
             rw [smul_add]
             exact add_nonneg hx hy }
 #align counterexample.with_sign Counterexample.withSign
@@ -48,11 +48,11 @@ local notation "ℤ≥0" => withSign 1
 local notation "ℤ≤0" => withSign (-1)
 
 theorem mem_withSign_one {x : ℤ} : x ∈ ℤ≥0 ↔ 0 ≤ x :=
-  show _ ≤ _ ↔ _ by rw [one_smul]
+  show _ ≤ (_ : ℤˣ) • x ↔ _ by rw [one_smul]
 #align counterexample.mem_with_sign_one Counterexample.mem_withSign_one
 
 theorem mem_withSign_neg_one {x : ℤ} : x ∈ ℤ≤0 ↔ x ≤ 0 :=
-  show _ ≤ _ ↔ _ by rw [Units.neg_smul, le_neg, one_smul, neg_zero]
+  show _ ≤ (_ : ℤˣ) • x ↔ _ by rw [Units.neg_smul, le_neg, one_smul, neg_zero]
 #align counterexample.mem_with_sign_neg_one Counterexample.mem_withSign_neg_one
 
 /-- The two submodules are complements. -/
@@ -60,41 +60,42 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
   constructor
   · apply Submodule.disjoint_def.2
     intro x hx hx'
-    exact le_antisymm (mem_with_sign_neg_one.mp hx') (mem_with_sign_one.mp hx)
+    exact le_antisymm (mem_withSign_neg_one.mp hx') (mem_withSign_one.mp hx)
   · rw [codisjoint_iff_le_sup]
-    intro x hx
+    intro x _hx
     obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
-    exact Submodule.mem_sup_left (mem_with_sign_one.mpr hp)
-    exact Submodule.mem_sup_right (mem_with_sign_neg_one.mpr hn)
+    exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
+    exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 #align counterexample.with_sign.is_compl Counterexample.withSign.isCompl
 
 def withSign.independent : CompleteLattice.Independent withSign := by
   refine'
-    (CompleteLattice.independent_pair units_int.one_ne_neg_one _).mpr with_sign.is_compl.disjoint
+    (CompleteLattice.independent_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
 #align counterexample.with_sign.independent Counterexample.withSign.independent
 
 theorem withSign.iSup : iSup withSign = ⊤ := by
   rw [← Finset.sup_univ_eq_iSup, UnitsInt.univ, Finset.sup_insert, Finset.sup_singleton]
-  exact with_sign.is_compl.sup_eq_top
+  exact withSign.isCompl.sup_eq_top
 #align counterexample.with_sign.supr Counterexample.withSign.iSup
 
 /-- But there is no embedding into `ℤ` from the direct sum. -/
 theorem withSign.not_injective :
-    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i => (withSign i).Subtype) := by
+    ¬Function.Injective (DirectSum.toModule ℕ ℤˣ ℤ fun i => (withSign i).subtype) := by
   intro hinj
-  let p1 : ℤ≥0 := ⟨1, mem_with_sign_one.2 zero_le_one⟩
-  let n1 : ℤ≤0 := ⟨-1, mem_with_sign_neg_one.2 <| neg_nonpos.2 zero_le_one⟩
+  let p1 : ℤ≥0 := ⟨1, mem_withSign_one.2 zero_le_one⟩
+  let n1 : ℤ≤0 := ⟨-1, mem_withSign_neg_one.2 <| neg_nonpos.2 zero_le_one⟩
   let z :=
-    DirectSum.lof ℕ _ (fun i => with_sign i) 1 p1 + DirectSum.lof ℕ _ (fun i => with_sign i) (-1) n1
+    DirectSum.lof ℕ _ (fun i => withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i => withSign i) (-1) n1
   have : z ≠ 0 := by
     intro h
-    dsimp [z, DirectSum.lof_eq_of, DirectSum.of] at h 
-    replace h := dfinsupp.ext_iff.mp h 1
+    -- porting note: `Dfinsupp.singleAddHom_apply` doesn't work so we have to unfold
+    dsimp [DirectSum.lof_eq_of, DirectSum.of, Dfinsupp.singleAddHom] at h
+    replace h := Dfinsupp.ext_iff.mp h 1
     rw [Dfinsupp.zero_apply, Dfinsupp.add_apply, Dfinsupp.single_eq_same,
-      Dfinsupp.single_eq_of_ne units_int.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
-      Submodule.coe_zero] at h 
+      Dfinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
+      Submodule.coe_zero] at h
     apply zero_ne_one h.symm
   apply hinj.ne this
   rw [LinearMap.map_zero, LinearMap.map_add, DirectSum.toModule_lof, DirectSum.toModule_lof]
@@ -107,4 +108,3 @@ theorem withSign.not_internal : ¬DirectSum.IsInternal withSign :=
 #align counterexample.with_sign.not_internal Counterexample.withSign.not_internal
 
 end Counterexample
-
