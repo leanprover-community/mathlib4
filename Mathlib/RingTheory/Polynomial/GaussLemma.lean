@@ -103,9 +103,11 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
   refine' ⟨map algeq.toAlgHom.toRingHom _, _⟩
-  use Classical.choose H
-  rw [map_map, this]
-  exact Classical.choose_spec H
+  · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
+    exact Classical.choose H
+  · rw [map_map, this]
+    exact Classical.choose_spec H
+set_option linter.uppercaseLean3 false in
 #align is_integrally_closed.eq_map_mul_C_of_dvd IsIntegrallyClosed.eq_map_mul_C_of_dvd
 
 end IsIntegrallyClosed
@@ -177,7 +179,8 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
   refine'
     IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit _) (show ¬IsUnit a' from _)))
       (isUnit_iff_exists_inv'.mpr
-        (Exists.intro (C a.leadingCoeff) <| by rwa [← C_mul, this, C_1]))
+        -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
+        (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))
   · exact Polynomial.map_injective _ (IsFractionRing.injective R K) H
   · by_contra h_contra
     refine' hₐ _
@@ -185,7 +188,8 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
     exact
       IsUnit.mul (IsUnit.map _ h_contra)
         (isUnit_iff_exists_inv.mpr
-          (Exists.intro (C b.leadingCoeff) <| by rwa [← C_mul, this, C_1]))
+          -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
+          (Exists.intro (C b.leadingCoeff) <| by rw [← C_mul, this, C_1]))
 #align polynomial.monic.irreducible_iff_irreducible_map_fraction_map Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map
 
 /-- Integrally closed domains are precisely the domains for in which Gauss's lemma holds
