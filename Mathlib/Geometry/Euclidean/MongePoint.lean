@@ -535,15 +535,17 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
     dist t.orthocenter (reflection (affineSpan ℝ (t.points '' {i₁, i₂})) t.circumcenter) =
       t.circumradius := by
   rw [← mul_self_inj_of_nonneg dist_nonneg t.circumradius_nonneg,
-    t.reflection_circumcenter_eq_affine_combination_of_points_with_circumcenter h,
-    t.orthocenter_eq_monge_point, mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
-    dist_affine_combination t.points_with_circumcenter (sum_mongePointWeightsWithCircumcenter _)
-      (sum_reflection_circumcenter_weights_with_circumcenter h)]
+    t.reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter h,
+    t.orthocenter_eq_mongePoint, mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
+    dist_affineCombination t.pointsWithCircumcenter (sum_mongePointWeightsWithCircumcenter _)
+      (sum_reflectionCircumcenterWeightsWithCircumcenter h)]
   simp_rw [sum_pointsWithCircumcenter, Pi.sub_apply, mongePointWeightsWithCircumcenter,
-    reflection_circumcenter_weights_with_circumcenter]
+    reflectionCircumcenterWeightsWithCircumcenter]
   have hu : ({i₁, i₂} : Finset (Fin 3)) ⊆ univ := subset_univ _
   obtain ⟨i₃, hi₃, hi₃₁, hi₃₂⟩ :
-    ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by decide!
+    ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by
+      -- porting note: was `decide!`
+      fin_cases i₁ <;> fin_cases i₂ <;> simp at h <;> decide
   simp_rw [← sum_sdiff hu, hi₃]
   simp [hi₃₁, hi₃₂]
   norm_num
@@ -580,37 +582,50 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
     (h₂ : t₂.points j₂ = t₁.points i₂) (h₃ : t₂.points j₃ = t₁.points i₃) :
     t₂.altitude j₂ = line[ℝ, t₁.points i₁, t₁.points i₂] := by
   symm
-  rw [← h₂, t₂.affine_span_pair_eq_altitude_iff]
+  rw [← h₂, t₂.affineSpan_pair_eq_altitude_iff]
   rw [h₂]
-  use t₁.independent.injective.ne hi₁₂
+  use t₁.Independent.injective.ne hi₁₂
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine'
       ext_of_direction_eq _
         ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine' eq_of_le_of_finrank_eq (direction_le (span_points_subset_coe_of_subset_coe _)) _
+    refine' eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe _)) _
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- porting note: was `decide!`
-        fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
+        sorry
+        /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
         fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
-        simp at h₁ h₂ h₃ ⊢
+        simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢-/
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
       exact
-        ⟨t₁.orthocenter_mem_affine_span, mem_affineSpan ℝ (Set.mem_range_self _),
+        ⟨t₁.orthocenter_mem_affineSpan, mem_affineSpan ℝ (Set.mem_range_self _),
           mem_affineSpan ℝ (Set.mem_range_self _)⟩
     · rw [direction_affineSpan, direction_affineSpan,
-        t₁.independent.finrank_vector_span (Fintype.card_fin _),
-        t₂.independent.finrank_vector_span (Fintype.card_fin _)]
+        t₁.Independent.finrank_vectorSpan (Fintype.card_fin _),
+        t₂.Independent.finrank_vectorSpan (Fintype.card_fin _)]
   rw [he]
   use mem_affineSpan ℝ (Set.mem_range_self _)
-  have hu : finset.univ.erase j₂ = {j₁, j₃} := by clear h₁ h₂ h₃; decide!
+  have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
+    clear h₁ h₂ h₃
+    -- porting note: was `decide!`
+    sorry
+    /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
+    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
+    simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢ -/
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
-    Submodule.orthogonal_le (direction_le (affine_span_orthocenter_point_le_altitude _ _))
-  refine' hle ((t₁.vector_span_is_ortho_altitude_direction i₃) _)
-  have hui : finset.univ.erase i₃ = {i₁, i₂} := by clear hle h₂ h₃; decide!
+    Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
+  refine' hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) _)
+  have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
+    clear hle h₂ h₃
+    -- porting note: was `decide!`
+    sorry
+    /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
+    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
+    simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢-/
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
   refine' vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 #align affine.triangle.altitude_replace_orthocenter_eq_affine_span Affine.Triangle.altitude_replace_orthocenter_eq_affineSpan
@@ -731,7 +746,7 @@ theorem OrthocentricSystem.affineIndependent {s : Set P} (ho : OrthocentricSyste
     (hps : Set.range p ⊆ s) (hpi : Function.Injective p) : AffineIndependent ℝ p := by
   rcases ho with ⟨t, hto, hst⟩
   rw [hst] at hps
-  rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto hps hpi with ⟨c, hcs, hc⟩
+  rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto hps hpi with ⟨c, _, hc⟩
   exact Cospherical.affineIndependent ⟨c, t.circumradius, hc⟩ Set.Subset.rfl hpi
 #align euclidean_geometry.orthocentric_system.affine_independent EuclideanGeometry.OrthocentricSystem.affineIndependent
 
