@@ -91,6 +91,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -3011,6 +3012,7 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
 import Mathlib.Util.Pickle
 import Mathlib.Util.Qq
+import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
