@@ -45,10 +45,6 @@ namespace TopCat.Presheaf
 
 section LocallySurjective
 
-attribute [local instance] ConcreteCategory.hasCoeToFun
-
-attribute [local instance] ConcreteCategory.hasCoeToSort
-
 open scoped AlgebraicGeometry
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {X : TopCat.{v}}
