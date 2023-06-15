@@ -73,7 +73,10 @@ variable {C : Type _} [Category C]
 spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U`.
 -/
 class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
+  /-- the underlying continuous map of underlying spaces from the source to an open subset of the
+    target. -/
   base_open : OpenEmbedding f.base
+  /-- the underlying sheaf morphism is an isomorphism on each open subset-/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
 #align algebraic_geometry.PresheafedSpace.is_open_immersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersion
 
@@ -221,10 +224,8 @@ theorem inv_invApp (U : Opens X) :
           -- structure
           apply congr_arg (op .); ext
           dsimp [openFunctor, IsOpenMap.functor]
-          rw [Set.preimage_image_eq _ H.base_open.inj])) :=
-  by
-  rw [← cancel_epi (H.invApp U)]
-  rw [IsIso.hom_inv_id]
+          rw [Set.preimage_image_eq _ H.base_open.inj])) := by
+  rw [← cancel_epi (H.invApp U), IsIso.hom_inv_id]
   delta invApp
   simp [← Functor.map_comp]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_inv_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.inv_invApp
@@ -825,7 +826,8 @@ variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
 
 -- Porting note : `forget ↦ CategoryTheory.forget` because `forget` on its own is
 -- `AlgebraicGeometry.SheafedSpace.forget`
-variable [ReflectsIsomorphisms (CategoryTheory.forget C)] [PreservesLimits (CategoryTheory.forget C)]
+variable [ReflectsIsomorphisms (CategoryTheory.forget C)]
+  [PreservesLimits (CategoryTheory.forget C)]
 
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 
@@ -1156,7 +1158,7 @@ def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
 @[simp, reassoc]
 theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g := by
   -- Porting note : added instance manually
-  have := pullback_snd_isIso_of_range_subset f g H'
+  haveI := pullback_snd_isIso_of_range_subset f g H'
   erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_fac AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_fac
 
@@ -1189,7 +1191,8 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
 end Pullback
 
 /-- An open immersion is isomorphic to the induced open subscheme on its image. -/
-noncomputable def isoRestrict {X Y : LocallyRingedSpace} {f : X ⟶ Y} (H : LocallyRingedSpace.IsOpenImmersion f) :
+noncomputable def isoRestrict {X Y : LocallyRingedSpace} {f : X ⟶ Y}
+    (H : LocallyRingedSpace.IsOpenImmersion f) :
     X ≅ Y.restrict H.base_open := by
   apply LocallyRingedSpace.isoOfSheafedSpaceIso
   refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
