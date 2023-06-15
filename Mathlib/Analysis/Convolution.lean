@@ -1508,7 +1508,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
       convert hf
       ext1 x
-      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
+      simp only [ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
         ContinuousLinearEquiv.apply_symm_apply]
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
@@ -1533,8 +1533,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     ext1 a
     simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
-      ContinuousLinearEquiv.coe_coe, comp_app, ContinuousLinearEquiv.apply_symm_apply,
+      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply_toFun,
+      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply,
       LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply, eq_self_iff_true]
   simp_rw [this] at A
   exact A
