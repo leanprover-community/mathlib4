@@ -19,25 +19,25 @@ import Mathlib.Topology.Order.Basic
 
 ## Summary
 
-We show that the generalized_continued_fraction given by `generalized_continued_fraction.of` in fact
+We show that the generalized_continued_fraction given by `GeneralizedContinuedFraction.of` in fact
 is a (regular) continued fraction. Using the equivalence of the convergents computations
-(`generalized_continued_fraction.convergents` and `generalized_continued_fraction.convergents'`) for
+(`GeneralizedContinuedFraction.convergents` and `GeneralizedContinuedFraction.convergents'`) for
 continued fractions (see `algebra.continued_fractions.convergents_equiv`), it follows that the
-convergents computations for `generalized_continued_fraction.of` are equivalent.
+convergents computations for `GeneralizedContinuedFraction.of` are equivalent.
 
 Moreover, we show the convergence of the continued fractions computations, that is
-`(generalized_continued_fraction.of v).convergents` indeed computes `v` in the limit.
+`(GeneralizedContinuedFraction.of v).convergents` indeed computes `v` in the limit.
 
 ## Main Definitions
 
-- `continued_fraction.of` returns the (regular) continued fraction of a value.
+- `ContinuedFraction.of` returns the (regular) continued fraction of a value.
 
 ## Main Theorems
 
 - `generalized_continued_fraction.of_convergents_eq_convergents'` shows that the convergents
-  computations for `generalized_continued_fraction.of` are equivalent.
-- `generalized_continued_fraction.of_convergence` shows that
-  `(generalized_continued_fraction.of v).convergents` converges to `v`.
+  computations for `GeneralizedContinuedFraction.of` are equivalent.
+- `GeneralizedContinuedFraction.of_convergence` shows that
+  `(GeneralizedContinuedFraction.of v).convergents` converges to `v`.
 
 ## Tags
 
@@ -90,7 +90,7 @@ section Convergence
 /-!
 ### Convergence
 
-We next show that `(generalized_continued_fraction.of v).convergents v` converges to `v`.
+We next show that `(GeneralizedContinuedFraction.of v).convergents v` converges to `v`.
 -/
 
 
