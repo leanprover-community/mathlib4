@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.LocalProperties
+import Mathlib.RingTheory.LocalProperties
 
 /-!
 
@@ -30,15 +30,13 @@ theorem surjective_stableUnderComposition : StableUnderComposition surjective :=
   exact hg.comp hf
 #align ring_hom.surjective_stable_under_composition RingHom.surjective_stableUnderComposition
 
-theorem surjective_respectsIso : RespectsIso surjective :=
-  by
+theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stable_under_composition.respects_iso
   intros
   exact e.surjective
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
-theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective :=
-  by
+theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
   refine' stable_under_base_change.mk _ surjective_respects_iso _
   classical
   introv h x
@@ -52,8 +50,7 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective :=
 
 open scoped BigOperators
 
-theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective :=
-  by
+theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
   skip
   letI := f.to_algebra
