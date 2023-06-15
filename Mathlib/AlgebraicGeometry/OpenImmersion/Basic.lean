@@ -365,6 +365,8 @@ def pullbackConeOfLeftFst :
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
+                    -- Porting note : need a slight hand holding
+                    change _ ∈ _ ⁻¹' _ ∧ _
                     simpa using h₁
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))
@@ -372,22 +374,26 @@ def pullbackConeOfLeftFst :
         intro U V i
         induction U using Opposite.rec'
         induction V using Opposite.rec'
-        simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, Category.assoc,
-          NatTrans.naturality_assoc, Functor.op_map, inv_naturality_assoc, ← Y.presheaf.map_comp]
-        erw [← Y.presheaf.map_comp]
-        congr }
+        simp only [Quiver.Hom.unop_op, Category.assoc, Functor.op_map, inv_naturality_assoc]
+        -- Porting note : the following lemmas are not picked up by `simp`
+        -- See https://github.com/leanprover-community/mathlib4/issues/5026
+        erw [g.c.naturality_assoc, TopCat.Presheaf.pushforwardObj_map, ← Y.presheaf.map_comp,
+          ← Y.presheaf.map_comp]
+        congr 1 }
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_fst AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
-  ext U
+  -- Porting note : `ext` did not pick up `NatTrans.ext`
+  refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun U => ?_
+  · simpa using pullback.condition
   · induction U using Opposite.rec'
-    dsimp only [comp_c_app, nat_trans.comp_app, unop_op, whisker_right_app,
-      pullback_cone_of_left_fst]
-    simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, app_inv_app_assoc,
-      eq_to_hom_app, eq_to_hom_unop, category.assoc, nat_trans.naturality_assoc, functor.op_map]
+    dsimp only [comp_c_app, NatTrans.comp_app, unop_op, whiskerRight_app,
+      pullbackConeOfLeftFst]
+    simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, app_invApp_assoc,
+      eqToHom_app, eqToHom_unop, Category.assoc, NatTrans.naturality_assoc, Functor.op_map]
     erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr
-  · simpa using pullback.condition
+
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_condition AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition
 
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
