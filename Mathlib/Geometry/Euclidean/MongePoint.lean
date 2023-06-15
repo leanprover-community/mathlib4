@@ -556,8 +556,9 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
     (h : i₁ ≠ i₂) :
     dist t.orthocenter
         (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.circumcenter) =
-      t.circumradius :=
-  by convert dist_orthocenter_reflection_circumcenter _ h; simp
+      t.circumradius := by
+    simp only [mem_singleton, coe_insert, coe_singleton, Set.mem_singleton_iff]
+    exact dist_orthocenter_reflection_circumcenter _ h
 #align affine.triangle.dist_orthocenter_reflection_circumcenter_finset Affine.Triangle.dist_orthocenter_reflection_circumcenter_finset
 
 /-- The affine span of the orthocenter and a vertex is contained in
