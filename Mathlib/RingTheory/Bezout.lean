@@ -16,11 +16,11 @@ import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 # Bézout rings
 
 A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are principal.
-Notible examples include principal ideal rings, valuation rings, and the ring of algebraic integers.
+Notable examples include principal ideal rings, valuation rings, and the ring of algebraic integers.
 
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `Is_bezout.toGCDDomain`: Every Bézout domain is a GCD domain. This is not an instance.
+- `IsBezout.toGCDDomain`: Every Bézout domain is a GCD domain. This is not an instance.
 - `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/

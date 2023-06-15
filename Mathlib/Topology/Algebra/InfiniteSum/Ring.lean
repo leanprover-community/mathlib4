@@ -138,7 +138,7 @@ end DivisionSemiring
 
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `λ x : ι × κ, f x.1 * g x.2` is summable, since there is no way to
-deduce this from the summmabilities of `f` and `g` in general, but if you are working in a normed
+deduce this from the summabilities of `f` and `g` in general, but if you are working in a normed
 space, you may want to use the analogous lemmas in `Analysis/NormedSpace/Basic`
 (e.g `tsum_mul_tsum_of_summable_norm`).
 
@@ -170,7 +170,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
 #align has_sum.mul HasSum.mul
 
 /-- Product of two infinites sums indexed by arbitrary types.
-    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are abolutely summable. -/
+    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 theorem tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ => f x.1 * g x.2) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=

@@ -371,7 +371,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine' IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => _
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
-        exacts[hm _ h, h]
+        exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
       refine' ⟨n.succ::v.1, _, rfl⟩
       have : (n.succ::v.1 : List ℕ) ∈

@@ -381,7 +381,7 @@ instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable �
     [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
     OpensMeasurableSpace (∀ i, π i) := by
   constructor
-  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a))(i : Finset ι),
+  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
     rw [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
@@ -720,7 +720,7 @@ theorem ext_of_Ioc' {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ioc a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν := by
   refine' @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν _ _ <;> intro a b hab <;> erw [dual_Ico (α := α)]
-  exacts[hμ hab, h hab]
+  exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
 /-- Two measures which are finite on closed-open intervals are equal if the agree on all

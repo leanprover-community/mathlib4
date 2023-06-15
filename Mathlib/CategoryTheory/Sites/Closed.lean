@@ -192,7 +192,7 @@ def Functor.closedSieves : Cᵒᵖ ⥤ Type max v u where
 #align category_theory.functor.closed_sieves CategoryTheory.Functor.closedSieves
 
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
-The proof of this is adapted from [MM92], Chatper III, Section 7, Lemma 1.
+The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 -/
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS

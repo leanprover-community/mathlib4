@@ -693,7 +693,7 @@ theorem contDiffOn_top : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn �
 theorem contDiffOn_all_iff_nat : (∀ n, ContDiffOn 𝕜 n f s) ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s := by
   refine' ⟨fun H n => H n, _⟩
   rintro H (_ | n)
-  exacts[contDiffOn_top.2 H, H n]
+  exacts [contDiffOn_top.2 H, H n]
 #align cont_diff_on_all_iff_nat contDiffOn_all_iff_nat
 
 theorem ContDiffOn.continuousOn (h : ContDiffOn 𝕜 n f s) : ContinuousOn f s := fun x hx =>
@@ -1087,7 +1087,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
     rw [← inter_assoc, nhdsWithin_inter_of_mem', ← diff_eq_compl_inter, insert_diff_of_mem,
       diff_eq_compl_inter]
-    exacts[rfl, mem_nhdsWithin_of_mem_nhds (uo.mem_nhds xu)]
+    exacts [rfl, mem_nhdsWithin_of_mem_nhds (uo.mem_nhds xu)]
   have B : iteratedFDerivWithin 𝕜 m f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 m f t :=
     iteratedFDerivWithin_eventually_congr_set' _ A.symm _
   have C : DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f t) t x :=
