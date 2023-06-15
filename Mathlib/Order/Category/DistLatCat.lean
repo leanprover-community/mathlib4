@@ -58,6 +58,7 @@ instance : BundledHom.ParentProjection @DistribLattice.toLattice :=
 
 deriving instance LargeCategory for DistLatCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory DistLatCat :=
   BundledHom.concreteCategory _
 

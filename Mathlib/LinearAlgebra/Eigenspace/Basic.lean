@@ -87,8 +87,15 @@ def Eigenvalues (f : End R M) : Type _ :=
   { μ : R // f.HasEigenvalue μ }
 #align module.End.eigenvalues Module.End.Eigenvalues
 
--- Porting note: this instance does not compile and does not seem to be used in this file
--- instance (f : End R M) : Coe f.Eigenvalues R := coeSubtype
+@[coe]
+def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := Subtype.val
+
+instance Eigenvalues.instCoeOut {f : Module.End R M} : CoeOut (Eigenvalues f) R where
+  coe := Eigenvalues.val f
+
+instance Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
+    DecidableEq (Eigenvalues f) :=
+  inferInstanceAs (DecidableEq (Subtype (fun x : R => HasEigenvalue f x)))
 
 theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
     HasEigenvalue f μ := by

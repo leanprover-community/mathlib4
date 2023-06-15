@@ -37,7 +37,7 @@ variable {x : α} {r : ℝ} {s : Set α}
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
 of a closed subset of a proper metric space by open balls can be shrunk to a new cover by open balls
 so that each of the new balls has strictly smaller radius than the old one. This version assumes
-that `λ x, ball (c i) (r i)` is a locally finite covering and provides a covering indexed by the
+that `fun x ↦ ball (c i) (r i)` is a locally finite covering and provides a covering indexed by the
 same type. -/
 theorem exists_subset_iUnion_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
     (uf : ∀ x ∈ s, { i | x ∈ ball (c i) (r i) }.Finite) (us : s ⊆ ⋃ i, ball (c i) (r i)) :
