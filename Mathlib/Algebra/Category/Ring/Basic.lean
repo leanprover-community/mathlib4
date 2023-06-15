@@ -137,7 +137,9 @@ def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom SemiRingCat.ofHom
 
-@[simp]
+-- Porting note: `simpNF` should not trigger on `rfl` lemmas.
+-- see https://github.com/leanprover-community/mathlib4/issues/5081
+@[simp, nolint simpNF]
 theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
   rfl
