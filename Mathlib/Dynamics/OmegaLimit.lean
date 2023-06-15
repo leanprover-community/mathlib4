@@ -226,7 +226,7 @@ theorem omegaLimit_subset_closure_fw_image {u : Set τ} (hu : u ∈ f) :
 #align omega_limit_subset_closure_fw_image omegaLimit_subset_closure_fw_image
 
 /-!
-### `ω-limits and compactness
+### ω-limits and compactness
 -/
 
 
