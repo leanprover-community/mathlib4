@@ -1268,6 +1268,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace �
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
+set_option maxHeartbeats 300000 in
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
 and `g` is `C^1` and compactly supported. Version where `g` depends on an additional parameter in an
 open subset `s` of a parameter space `P` (and the compact support `k` is independent of the
@@ -1297,7 +1298,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     exact hgs p y hp hy
   /- We find a small neighborhood of `{q₀.1} × k` on which the derivative is uniformly bounded. This
     follows from the continuity at all points of the compact set `k`. -/
-  obtain ⟨ε, C, εpos, Cnonneg, h₀ε, hε⟩ :
+  obtain ⟨ε, C, εpos, -, h₀ε, hε⟩ :
     ∃ ε C, 0 < ε ∧ 0 ≤ C ∧ ball q₀.1 ε ⊆ s ∧ ∀ p x, ‖p - q₀.1‖ < ε → ‖g' (p, x)‖ ≤ C := by
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ Bounded (g' '' t) := by
@@ -1338,7 +1339,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have I1 :
     ∀ᶠ x : P × G in 𝓝 q₀, AEStronglyMeasurable (fun a : G => L (f a) (g x.1 (x.2 - a))) μ := by
     filter_upwards [A' q₀ hq₀]
-    rintro ⟨p, x⟩ ⟨hp, hx⟩
+    rintro ⟨p, x⟩ ⟨hp, -⟩
     refine' (HasCompactSupport.convolutionExists_right L _ hf (A _ hp) _).1
     apply isCompact_of_isClosed_subset hk (isClosed_tsupport _)
     exact closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) hk.isClosed
@@ -1369,10 +1370,10 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     refine' ⟨min δ ε, lt_min δpos εpos, min_le_right δ ε, _⟩
     exact (add_subset_add_left ((ball_subset_ball (min_le_left _ _)).trans hδ)).trans hV
   obtain ⟨δ, δpos, δε, hδ⟩ := hδ
-  letI: Norm (E →L[𝕜] (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) := ContinuousLinearMap.hasOpNorm
-  -- inferInstance does not work
-  -- ContinuousLinearMap.hasOpNorm gives wrong universes
-  let bound : G → ℝ := indicator U fun t => ‖L.precompR (P × G)‖ * ‖f t‖ * C
+  -- Porting note: added to speed up the line below.
+  letI := ContinuousLinearMap.hasOpNorm (𝕜 := 𝕜) (𝕜₂ := 𝕜) (E := E)
+    (F := (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) (σ₁₂ := RingHom.id 𝕜)
+  let bound : G → ℝ := indicator U fun t => ‖(L.precompR (P × G))‖ * ‖f t‖ * C
   have I4 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
       ‖L.precompR (P × G) (f a) (g' (x.fst, x.snd - a))‖ ≤ bound a := by
     apply eventually_of_forall
