@@ -36,11 +36,11 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
       calc
         d < f m := sub_lt_self _ (hpos (m - n))
         _ < f n := h_fm_lt_fn
-    have h_neg_d_lt_fn : -d < f n := by
-      calc
+    have h_neg_d_lt_fn : -d < f n
+    · calc
         -d = f (m - n) - f m := neg_sub _ _
         _ < f (m - n) := (sub_lt_self _ (hpos m))
-        _ ≤ f n - f m := (le_of_dvd (sub_pos.mpr h_fm_lt_fn) _)
+        _ ≤ f n - f m := (le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_)
         _ < f n := sub_lt_self _ (hpos m)
       -- ⊢ f (m - n) ∣ f n - f m
       rw [← dvd_neg, neg_sub];
@@ -64,4 +64,3 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
   ·-- m = n
     rw [h_fm_eq_fn]
 #align imo2011_q5 imo2011_q5
-
