@@ -68,8 +68,7 @@ theorem fact_irreducible_factor (f : K[X]) : Fact (Irreducible (factor f)) :=
 
 attribute [local instance] fact_irreducible_factor
 
-theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f :=
-  by
+theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
   rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
