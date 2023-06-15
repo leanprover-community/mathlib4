@@ -15,7 +15,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Topology.Order.Basic
 
 /-!
-# Corollaries From Approximation Lemmas (`algebra.continued_fractions.computation.approximations`)
+# Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
 
 ## Summary
 
@@ -57,12 +57,12 @@ theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
 #align generalized_continued_fraction.of_is_simple_continued_fraction GeneralizedContinuedFraction.of_isSimpleContinuedFraction
 
 /-- Creates the simple continued fraction of a value. -/
-def SimpleContinuedFraction.of : SimpleContinuedFraction K :=
+nonrec def SimpleContinuedFraction.of : SimpleContinuedFraction K :=
   ⟨of v, GeneralizedContinuedFraction.of_isSimpleContinuedFraction v⟩
 #align simple_continued_fraction.of SimpleContinuedFraction.of
 
 theorem SimpleContinuedFraction.of_isContinuedFraction :
-    (SimpleContinuedFraction.of v).IsContinuedFraction := fun _ denom nth_part_denom_eq =>
+    (SimpleContinuedFraction.of v).IsContinuedFraction := fun _ _ nth_part_denom_eq =>
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_part_denom nth_part_denom_eq)
 #align simple_continued_fraction.of_is_continued_fraction SimpleContinuedFraction.of_isContinuedFraction
 
@@ -108,9 +108,9 @@ theorem of_convergence_epsilon : ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v 
   exists N
   intro n n_ge_N
   let g := of v
-  cases' Decidable.em (g.terminated_at n) with terminated_at_n not_terminated_at_n
-  · have : v = g.convergents n := of_correctness_of_terminated_at terminated_at_n
-    have : v - g.convergents n = 0 := sub_eq_zero.elim_right this
+  cases' Decidable.em (g.TerminatedAt n) with terminated_at_n not_terminated_at_n
+  · have : v = g.convergents n := of_correctness_of_terminatedAt terminated_at_n
+    have : v - g.convergents n = 0 := sub_eq_zero.mpr this
     rw [this]
     exact_mod_cast ε_pos
   · let B := g.denominators n
@@ -120,10 +120,10 @@ theorem of_convergence_epsilon : ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v 
     suffices : 1 / (B * nB) < ε; exact lt_of_le_of_lt abs_v_sub_conv_le this
     -- show that `0 < (B * nB)` and then multiply by `B * nB` to get rid of the division
     have nB_ineq : (fib (n + 2) : K) ≤ nB :=
-      haveI : ¬g.terminated_at (n + 1 - 1) := not_terminated_at_n
+      haveI : ¬g.TerminatedAt (n + 1 - 1) := not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
     have B_ineq : (fib (n + 1) : K) ≤ B :=
-      haveI : ¬g.terminated_at (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
+      haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
     have zero_lt_B : 0 < B :=
       haveI : (0 : K) < fib (n + 1) := by exact_mod_cast fib_pos n.zero_lt_succ
@@ -133,18 +133,18 @@ theorem of_convergence_epsilon : ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v 
         haveI : (0 : K) < fib (n + 2) := by exact_mod_cast fib_pos (n + 1).zero_lt_succ
         lt_of_lt_of_le this nB_ineq
       solve_by_elim [mul_pos]
-    suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).right this
+    suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).mpr this
     -- use that `N ≥ n` was obtained from the archimedean property to show the following
     have one_lt_ε_mul_N : 1 < ε * n := by
-      have one_lt_ε_mul_N' : 1 < ε * (N' : K) := (div_lt_iff' ε_pos).left one_div_ε_lt_N'
+      have one_lt_ε_mul_N' : 1 < ε * (N' : K) := (div_lt_iff' ε_pos).mp one_div_ε_lt_N'
       have : (N' : K) ≤ N := by exact_mod_cast le_max_left _ _
       have : ε * N' ≤ ε * n :=
-        (mul_le_mul_left ε_pos).right (le_trans this (by exact_mod_cast n_ge_N))
+        (mul_le_mul_left ε_pos).mpr (le_trans this (by exact_mod_cast n_ge_N))
       exact lt_of_lt_of_le one_lt_ε_mul_N' this
     suffices : ε * n ≤ ε * (B * nB); exact lt_of_lt_of_le one_lt_ε_mul_N this
     -- cancel `ε`
     suffices : (n : K) ≤ B * nB;
-    exact (mul_le_mul_left ε_pos).right this
+    exact (mul_le_mul_left ε_pos).mpr this
     show (n : K) ≤ B * nB
     calc
       (n : K) ≤ fib n := by exact_mod_cast le_fib_self <| le_trans (le_max_right N' 5) n_ge_N
@@ -167,4 +167,3 @@ theorem of_convergence [OrderTopology K] :
 end Convergence
 
 end GeneralizedContinuedFraction
-
