@@ -24,26 +24,26 @@ theorem get_ofInt_minus : get (Bitvec.ofInt n (-1)) i = true := by
     happens if we supply the same argument twice
   -/
   @[simp] theorem or_self         : x.or x = x                      := by ext; simp
-  @[simp] theorem or_not_self     : x.or (not x) = (allOnes n)    := by ext; simp
-  @[simp] theorem not_or_self     : (not x).or x = (allOnes n)    := by ext; simp
+  @[simp] theorem or_not_self     : x.or (not x) = (allOnes n)      := by ext; simp
+  @[simp] theorem not_or_self     : (not x).or x = (allOnes n)      := by ext; simp
   @[simp] theorem or_zeroes       : x.or 0 = x                      := by ext; simp
   @[simp] theorem or_ones         : x.or (allOnes n) = (allOnes n)  := by ext; simp
 
   @[simp] theorem and_self        : x.and x = x                     := by ext; simp
-  @[simp] theorem and_not_self    : x.and (not x) = 0             := by ext; simp
-  @[simp] theorem not_and_self    : (not x).and x = 0             := by ext; simp
+  @[simp] theorem and_not_self    : x.and (not x) = 0               := by ext; simp
+  @[simp] theorem not_and_self    : (not x).and x = 0               := by ext; simp
   @[simp] theorem and_zeroes      : x.and 0 = 0                     := by ext; simp
   @[simp] theorem and_ones        : x.and (allOnes n) = x           := by ext; simp
 
   @[simp] theorem xor_self        : x.xor x = 0                     := by ext; simp
-  @[simp] theorem xor_not_self    : x.xor (not x) = (allOnes n)   := by ext; simp
-  @[simp] theorem not_xor_self    : (not x).xor x = (allOnes n)   := by ext; simp
+  @[simp] theorem xor_not_self    : x.xor (not x) = (allOnes n)     := by ext; simp
+  @[simp] theorem not_xor_self    : (not x).xor x = (allOnes n)     := by ext; simp
   @[simp] theorem xor_zeroes      : x.xor 0 = x                     := by ext; simp
-  @[simp] theorem xor_ones        : x.xor (allOnes n) = x.not     := by ext; simp
+  @[simp] theorem xor_ones        : x.xor (allOnes n) = x.not       := by ext; simp
 
 
-  theorem not_zeroes              : Bitvec.not (allOnes n) = 0    := by ext; simp
-  theorem not_ones                : Bitvec.not 0 = (allOnes n)    := by ext; simp
+  theorem not_zeroes              : Bitvec.not (allOnes n) = 0      := by ext; simp
+  theorem not_ones                : Bitvec.not 0 = (allOnes n)      := by ext; simp
 
 
 
