@@ -147,7 +147,7 @@ noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k
 
 /- Porting note: linter informs me the LHS simplifies to... itself.
 But fwiw I also can't get simp to use this lemma. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
   rfl
