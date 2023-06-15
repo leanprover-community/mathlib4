@@ -60,14 +60,17 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat :=
 instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
--- Porting Note: Added -- needed to make coe_id work
-instance instFunLike (X Y : SemiNormedGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-show FunLike (NormedAddGroupHom X Y) X (fun _ => Y) from inferInstance
+-- Porting Note: added
+instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
+  coe := (forget SemiNormedGroupCat).map
+  coe_injective' := fun f g h => by cases f; cases g; congr
+  map_add f := f.map_add'
+  map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
--- Porting note : Added
-instance instZeroHomClass (X Y : SemiNormedGroupCat) : ZeroHomClass (X ⟶ Y) X Y :=
-show ZeroHomClass (NormedAddGroupHom X Y) X Y from inferInstance
-
+-- Porting note: added to ease automation
+@[ext]
+lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+  FunLike.ext _ _ h
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat.of V : Type u) = V :=
@@ -95,43 +98,28 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup.of_unique SemiNormedGroupCat.ofUnique
 
-/--porting note: originally empty, which didn't work. Notation for composition changed?-/
-instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
-  Zero _ _ := NormedAddGroupHom.zero
-  comp_zero _ _ := rfl
-  zero_comp _ _ _ f := NormedAddGroupHom.comp_zero f
-
+instance {M N : SemiNormedGroupCat} : Zero (M ⟶ N) :=
+  NormedAddGroupHom.zero
 
 @[simp]
 theorem zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
   rfl
 #align SemiNormedGroup.zero_apply SemiNormedGroupCat.zero_apply
 
+instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
+
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   · ext x
-    --porting note: `Subsingleton.elim` didn't work without `change`
-    change V at x
     have  := Subsingleton.elim (x : V) (0 : V)
-    --porting note: Next three lines were simply `simp [this, map_zero]`
-    rw [this]
-    suffices f 0 = (0 : V⟶ X) 0 by convert this
-    simp only [map_zero]
+    simp [this, map_zero]
   · ext
-    --porting note: was `Subsingleton.elim`
-    apply @Subsingleton.elim V _
+    apply Subsingleton.elim
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup.has_zero_object SemiNormedGroupCat.hasZeroObject
-
---Porting Note: Added to make iso_isometry_of_normNoninc work
-instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V ⟶ W) V W where
-  coe := (forget SemiNormedGroupCat).map
-  coe_injective' := fun f g h => by cases f; cases g; congr
-  map_add f := f.map_add'
-  map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
 theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 : i.hom.NormNoninc)
     (h2 : i.inv.NormNoninc) : Isometry i.hom := by
@@ -154,10 +142,6 @@ def SemiNormedGroupCat₁ : Type (u + 1) :=
 
 namespace SemiNormedGroupCat₁
 
---Porting Note: hasCoeToSort doesn't exist anymore
---instance : CoeSort SemiNormedGroupCat₁ (Type u) :=
---  Bundled.hasCoeToSort
-
 instance : CoeSort SemiNormedGroupCat₁ (Type _) where
   coe X := X.α
 
@@ -169,19 +153,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
 -- Porting Note: Added
 instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X (fun _ => Y) where
   coe f := f.1.toFun
-  coe_injective' := by
-    intros a b
-    intro h
-    apply Subtype.val_inj.mp
-    apply NormedAddGroupHom.coe_injective
-    exact h
-
-instance instZeroHomClass (X Y : SemiNormedGroupCat₁) : ZeroHomClass (X ⟶ Y) X Y where
-  map_zero := by
-    intro f
-    dsimp [instFunLike]
-    simp only [map_zero]
-
+  coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 @[ext]
 theorem hom_ext {M N : SemiNormedGroupCat₁} (f g : M ⟶ N) (w : (f : M → N) = (g : M → N)) :
@@ -194,6 +166,10 @@ instance : ConcreteCategory.{u} SemiNormedGroupCat₁ where
     { obj := fun X => X
       map := fun f => f }
   forget_faithful := { }
+
+instance toAddMonoidHomClass {V W : SemiNormedGroupCat₁} : AddMonoidHomClass (V ⟶ W) V W where
+  map_add f := f.1.map_add'
+  map_zero f := (AddMonoidHom.mk' f.1 f.1.map_add').map_zero
 
 /-- Construct a bundled `SemiNormedGroupCat₁` from the underlying type and typeclass. -/
 def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat₁ :=
@@ -209,7 +185,7 @@ def mkHom {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) :
   ⟨f, i⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroupCat₁.mkHom
 
-@[simp, nolint simpNF] -- Porting note: claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
+-- @[simp] -- Porting note: claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
 theorem mkHom_apply {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) (x) :
     mkHom f i x = f x :=
   rfl
@@ -235,29 +211,21 @@ theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGroupCat₁.
   rfl
 #align SemiNormedGroup₁.coe_of SemiNormedGroupCat₁.coe_of
 
-@[simp]
+-- Porting note : marked with high priority to short circuit simplifier's path
+@[simp (high)]
 theorem coe_id (V : SemiNormedGroupCat₁) : ⇑(𝟙 V) = id :=
   rfl
 #align SemiNormedGroup₁.coe_id SemiNormedGroupCat₁.coe_id
 
--- Porting note : removed `simp` attribute for not being simp normal form
+-- Porting note : marked with high priority to short circuit simplifier's path
+@[simp (high)]
 theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : M → K) = g ∘ f :=
   rfl
 #align SemiNormedGroup₁.coe_comp SemiNormedGroupCat₁.coe_comp
 
--- Porting note: Added to make `coe_comp'` work -- might cause double coercions
-instance coeToNormedAddGroupHom {M N : SemiNormedGroupCat₁} :
-    Coe (M ⟶ N) (NormedAddGroupHom M N) :=
-  ⟨fun f => f.1⟩
-
--- Porting Note: This comment might no longer make sense
--- If `coe_fn_coe_base` fires before `coe_comp`, `coe_comp'` puts us back in normal form.
-@[simp]
-theorem coe_comp' {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
-    ((f ≫ g) : NormedAddGroupHom M K) = (g : NormedAddGroupHom N K).comp f :=
-  rfl
-#align SemiNormedGroup₁.coe_comp' SemiNormedGroupCat₁.coe_comp'
+-- Porting note: deleted `coe_comp'`, as we no longer have the relevant coercion.
+#noalign SemiNormedGroup₁.coe_comp'
 
 instance : Inhabited SemiNormedGroupCat₁ :=
   ⟨of PUnit⟩
@@ -277,13 +245,6 @@ theorem zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :
 #align SemiNormedGroup₁.zero_apply SemiNormedGroupCat₁.zero_apply
 
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
-  comp_zero {X Y} f Z := by ext; rfl
-  zero_comp X {Y Z} f := by
-    ext x
-    -- Porting note: used to be `simp [coe_fn_coe_base']` in mathlib3, added the below instead
-    rw [comp_apply, zero_apply]
-    change f ((0 : X → Y) x) = 0
-    rw [Pi.zero_apply, map_zero]
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
@@ -296,9 +257,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
-  -- Porting note: was `change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)`
-  dsimp only [FunLike.coe]
-  dsimp [NormedAddGroupHom.toFun]
+  change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
   refine' AddMonoidHomClass.isometry_of_norm _ _
   intro v
   apply le_antisymm (i.hom.2 v)
