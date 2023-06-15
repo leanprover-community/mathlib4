@@ -16,11 +16,11 @@ import Mathlib.Tactic.FinCases
 # Not all complementary decompositions of a module over a semiring make up a direct sum
 
 This shows that while `ℤ≤0` and `ℤ≥0` are complementary `ℕ`-submodules of `ℤ`, which in turn
-implies as a collection they are `complete_lattice.independent` and that they span all of `ℤ`, they
+implies as a collection they are `CompleteLattice.Independent` and that they span all of `ℤ`, they
 do not form a decomposition into a direct sum.
 
-This file demonstrates why `direct_sum.is_internal_submodule_of_independent_of_supr_eq_top` must
-take `ring R` and not `semiring R`.
+This file demonstrates why `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top` must
+take `Ring R` and not `Semiring R`.
 -/
 
 
