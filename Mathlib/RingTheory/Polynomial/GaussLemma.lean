@@ -256,9 +256,10 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0
   irreducible in the fraction field. -/
 theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp : p.IsPrimitive) :
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
+  -- Porting note: was `(IsFractionRing.injective _ _)`
   refine'
     ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => _⟩,
-      hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective _ _)⟩
+      hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b
   rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
@@ -279,20 +280,20 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   rw [← RingHom.map_mul, eq_comm, (integerNormalization R⁰ a).eq_C_content_mul_primPart,
     (integerNormalization R⁰ b).eq_C_content_mul_primPart, mul_assoc, mul_comm _ (C _ * _), ←
     mul_assoc, ← mul_assoc, ← RingHom.map_mul, ← hu, RingHom.map_mul, mul_assoc, mul_assoc, ←
-    mul_assoc (C ↑u)] at h1
+    mul_assoc (C (u : R))] at h1
   have h0 : a ≠ 0 ∧ b ≠ 0 := by
     classical
-    rw [Ne.def, Ne.def, ← Decidable.not_or_iff_and_not, ← mul_eq_zero, ← hab]
+    rw [Ne.def, Ne.def, ← not_or, ← mul_eq_zero, ← hab]
     intro con
     apply hp.ne_zero (map_injective (algebraMap R K) (IsFractionRing.injective _ _) _)
-    simp [Con]
+    simp [con]
   rcases hi.isUnit_or_isUnit (mul_left_cancel₀ hcd0 h1).symm with (h | h)
   · right
     apply
-      isUnit_or_eq_zero_of_isUnit_integerNormalization_prim_part h0.2
+      isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart h0.2
         (isUnit_of_mul_isUnit_right h)
   · left
-    apply isUnit_or_eq_zero_of_isUnit_integerNormalization_prim_part h0.1 h
+    apply isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart h0.1 h
 #align polynomial.is_primitive.irreducible_iff_irreducible_map_fraction_map Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map
 
 theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
