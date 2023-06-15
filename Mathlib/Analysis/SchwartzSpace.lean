@@ -61,6 +61,13 @@ The implementation of the seminorms is taken almost literally from `continuous_l
 Schwartz space, tempered distributions
 -/
 
+-- TODO: move elsewhere
+instance [LE α] [LE β] [DecidableRel ((· ≤ ·) : α → α → Prop)]
+    [DecidableRel ((· ≤ ·) : β → β → Prop)] :
+    DecidableRel ((· ≤ ·) : (α × β) → (α × β) → Prop) := fun _ _ ↦
+  And.decidable
+
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 noncomputable section
 
@@ -91,8 +98,8 @@ namespace SchwartzMap
 
 open SchwartzSpace
 
-instance : Coe 𝓢(E, F) (E → F) :=
-  ⟨toFun⟩
+-- porting note: removed
+-- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance funLike : FunLike 𝓢(E, F) E fun _ => F where
   coe f := f.toFun
@@ -101,11 +108,11 @@ instance funLike : FunLike 𝓢(E, F) E fun _ => F where
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
 instance : CoeFun 𝓢(E, F) fun _ => E → F :=
-  ⟨fun p => p.toFun⟩
+  FunLike.hasCoeToFun
 
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
-    ∃ (C : ℝ) (_hC : 0 < C), ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
+    ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
   rcases f.decay' k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 #align schwartz_map.decay SchwartzMap.decay
@@ -136,7 +143,7 @@ theorem ext {f g : 𝓢(E, F)} (h : ∀ x, (f : E → F) x = g x) : f = g :=
   FunLike.ext f g h
 #align schwartz_map.ext SchwartzMap.ext
 
-section IsO
+section IsBigO
 
 variable (f : 𝓢(E, F))
 
@@ -163,11 +170,8 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine' (isBigO_cocompact_zpow_neg_nat f k).trans _
-  refine'
-    (_ :
-          Asymptotics.IsBigO Filter.atTop (fun x : ℝ => x ^ (-k : ℤ)) fun x : ℝ =>
-            x ^ s).comp_tendsto
-      tendsto_norm_cocompact_atTop
+  refine' (_ : Asymptotics.IsBigO Filter.atTop (fun x : ℝ => x ^ (-k : ℤ)) fun x : ℝ =>
+    x ^ s).comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨1, Filter.eventually_of_mem (Filter.eventually_ge_atTop 1) fun x hx => _⟩
   simp_rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
@@ -182,7 +186,7 @@ theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow SchwartzMap.isBigO_cocompact_zpow
 
-end IsO
+end IsBigO
 
 section Aux
 
@@ -247,7 +251,6 @@ end SeminormAux
 
 /-! ### Algebraic properties -/
 
-
 section Smul
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
@@ -287,7 +290,7 @@ theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
 
-instance hasNsmul : SMul ℕ 𝓢(E, F) :=
+instance hasNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
@@ -298,9 +301,9 @@ instance hasNsmul : SMul ℕ 𝓢(E, F) :=
           exact nsmul_eq_smul_cast _ _ _
         simp only [this]
         exact ((c : ℝ) • f).decay' }⟩
-#align schwartz_map.has_nsmul SchwartzMap.hasNsmul
+#align schwartz_map.has_nsmul SchwartzMap.hasNSMul
 
-instance hasZsmul : SMul ℤ 𝓢(E, F) :=
+instance hasZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
@@ -311,7 +314,7 @@ instance hasZsmul : SMul ℤ 𝓢(E, F) :=
           exact zsmul_eq_smul_cast _ _ _
         simp only [this]
         exact ((c : ℝ) • f).decay' }⟩
-#align schwartz_map.has_zsmul SchwartzMap.hasZsmul
+#align schwartz_map.has_zsmul SchwartzMap.hasZSMul
 
 end Smul
 
@@ -648,7 +651,7 @@ Note: This is a helper definition for `mk_clm`. -/
 def mkLm (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ⊤ (A f))
-    (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ) (_ : 0 ≤ C), ∀ (f : 𝓢(D, E)) (x : F),
+    (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
       ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →ₛₗ[σ] 𝓢(F, G) where
   toFun f :=
@@ -669,7 +672,7 @@ def mkClm [RingHomIsometric σ] (A : (D → E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ⊤ (A f))
-    (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ) (_ : 0 ≤ C), ∀ (f : 𝓢(D, E)) (x : F),
+    (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
       ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →SL[σ] 𝓢(F, G) where
   cont := by
