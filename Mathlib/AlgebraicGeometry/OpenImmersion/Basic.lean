@@ -387,20 +387,22 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U using Opposite.rec'
-    dsimp only [comp_c_app, NatTrans.comp_app, unop_op, whiskerRight_app,
-      pullbackConeOfLeftFst]
+    -- Porting note : `NatTrans.comp_app` is not picked up by `dsimp`
+    -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
+    rw [NatTrans.comp_app]
+    dsimp only [comp_c_app, unop_op, whiskerRight_app, pullbackConeOfLeftFst]
+    -- simp only [ofRestrict_c_app, NatTrans.comp_app]
     simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, app_invApp_assoc,
       eqToHom_app, eqToHom_unop, Category.assoc, NatTrans.naturality_assoc, Functor.op_map]
     erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
-    congr
-
+    congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_condition AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition
 
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
 maps of underlying spaces (which is also an open embedding).
 -/
 def pullbackConeOfLeft : PullbackCone f g :=
-  PullbackCone.mk (pullbackConeOfLeftFst f g) (Y.of_restrict _)
+  PullbackCone.mk (pullbackConeOfLeftFst f g) (Y.ofRestrict _)
     (pullback_cone_of_left_condition f g)
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeft
 
@@ -415,43 +417,50 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
   c :=
     { app := fun U =>
         s.snd.c.app _ ≫
-          s.pt.Presheaf.map
+          s.pt.presheaf.map
             (eqToHom
               (by
-                dsimp only [opens.map, IsOpenMap.functor, functor.op]
+                dsimp only [Opens.map, IsOpenMap.functor, Functor.op]
                 congr 2
-                let s' : pullback_cone f.base g.base := pullback_cone.mk s.fst.base s.snd.base _
-                have : _ = s.snd.base := limit.lift_π s' walking_cospan.right
+                let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
+                  -- Porting note : in mathlib3, this is just an underscore
+                  (congr_arg Hom.base s.condition)
+
+                have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   erw [← this]
-                  rw [coe_comp]
+                  dsimp
+                  -- Porting note : need a bit more hand holding here about function composition
+                  rw [coe_comp, show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
                   erw [← Set.preimage_preimage]
                 erw [Set.preimage_image_eq _
-                    (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]))
-      naturality' := fun U V i => by
+                    (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]
+                rfl))
+      naturality := fun U V i => by
         erw [s.snd.c.naturality_assoc]
-        rw [category.assoc]
-        erw [← s.X.presheaf.map_comp, ← s.X.presheaf.map_comp]
-        congr }
+        rw [Category.assoc]
+        erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
+        congr 1 }
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_lift AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
 
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_fst :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).fst = s.fst := by
-  ext x
-  · induction x using Opposite.rec'
+  -- Porting note : `ext` did not pick up `NatTrans.ext`
+  refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun x => ?_
+  · change pullback.lift _ _ _ ≫ pullback.fst = _
+    simp
+  · induction x using Opposite.rec' with | h x => ?_
     change ((_ ≫ _) ≫ _ ≫ _) ≫ _ = _
-    simp_rw [category.assoc]
-    erw [← s.X.presheaf.map_comp]
+    simp_rw [Category.assoc]
+    erw [← s.pt.presheaf.map_comp]
     erw [s.snd.c.naturality_assoc]
-    have := congr_app s.condition (op (hf.open_functor.obj x))
-    dsimp only [comp_c_app, unop_op] at this 
-    rw [← is_iso.comp_inv_eq] at this 
+    have := congr_app s.condition (op (hf.openFunctor.obj x))
+    dsimp only [comp_c_app, unop_op] at this
+    rw [← IsIso.comp_inv_eq] at this
     reassoc! this
     erw [← this, hf.inv_app_app_assoc, s.fst.c.naturality_assoc]
     simpa [eq_to_hom_map]
-  · change pullback.lift _ _ _ ≫ pullback.fst = _
-    simp
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_lift_fst AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst
 
 -- this lemma is not a `simp` lemma, because it is an implementation detail
@@ -775,7 +784,7 @@ instance sheafedSpace_pullback_snd_of_left :
   have : _ = limit.π (cospan f g) right := preserves_limits_iso_hom_π forget (cospan f g) right
   rw [← this]
   have := has_limit.iso_of_nat_iso_hom_π (diagramIsoCospan.{v} (cospan f g ⋙ forget)) right
-  erw [category.comp_id] at this 
+  erw [category.comp_id] at this
   rw [← this]
   dsimp
   infer_instance
@@ -787,7 +796,7 @@ instance sheafedSpace_pullback_fst_of_right :
   have : _ = limit.π (cospan g f) left := preserves_limits_iso_hom_π forget (cospan g f) left
   rw [← this]
   have := has_limit.iso_of_nat_iso_hom_π (diagramIsoCospan.{v} (cospan g f ⋙ forget)) left
-  erw [category.comp_id] at this 
+  erw [category.comp_id] at this
   rw [← this]
   dsimp
   infer_instance
@@ -823,11 +832,11 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward f.base).obj X.sheaf from ⟨f.c⟩)
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
-      delta PresheafedSpace.stalk_map at H 
+      delta PresheafedSpace.stalk_map at H
       haveI H' :=
         TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding C hf X.presheaf y
       have := @is_iso.comp_is_iso _ H (@is_iso.inv_is_iso _ H')
-      rw [category.assoc, is_iso.hom_inv_id, category.comp_id] at this 
+      rw [category.assoc, is_iso.hom_inv_id, category.comp_id] at this
       exact this }
 #align algebraic_geometry.SheafedSpace.is_open_immersion.of_stalk_iso AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso
 
@@ -842,11 +851,11 @@ theorem sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
   rw [← show _ = (colimit.ι F i).base from ι_preserves_colimits_iso_inv (SheafedSpace.forget C) F i]
   have : _ = _ ≫ colimit.ι (discrete.functor ((F ⋙ SheafedSpace.forget C).obj ∘ discrete.mk)) i :=
     has_colimit.iso_of_nat_iso_ι_hom discrete.nat_iso_functor i
-  rw [← iso.eq_comp_inv] at this 
+  rw [← iso.eq_comp_inv] at this
   rw [this]
   have : colimit.ι _ _ ≫ _ = _ :=
     TopCat.sigmaIsoSigma_hom_ι.{v, v} ((F ⋙ SheafedSpace.forget C).obj ∘ discrete.mk) i.as
-  rw [← iso.eq_comp_inv] at this 
+  rw [← iso.eq_comp_inv] at this
   cases i
   rw [this]
   simp_rw [← category.assoc, TopCat.openEmbedding_iff_comp_isIso,
@@ -868,16 +877,16 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
       (preserves_colimit_iso (SheafedSpace.forget C) F ≪≫
           has_colimit.iso_of_nat_iso discrete.nat_iso_functor ≪≫ TopCat.sigmaIsoSigma.{v} _).Hom
       Eq
-  simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq 
-  rw [ι_preserves_colimits_iso_inv] at eq 
+  simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
+  rw [ι_preserves_colimits_iso_inv] at eq
   change
     ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _) y =
       ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _) x at
-    eq 
+    eq
   cases i; cases j
   rw [ι_preserves_colimits_iso_hom_assoc, ι_preserves_colimits_iso_hom_assoc,
     has_colimit.iso_of_nat_iso_ι_hom_assoc, has_colimit.iso_of_nat_iso_ι_hom_assoc,
-    TopCat.sigmaIsoSigma_hom_ι.{v}, TopCat.sigmaIsoSigma_hom_ι.{v}] at eq 
+    TopCat.sigmaIsoSigma_hom_ι.{v}, TopCat.sigmaIsoSigma_hom_ι.{v}] at eq
   exact h (congr_arg discrete.mk (congr_arg Sigma.fst Eq))
 #align algebraic_geometry.SheafedSpace.is_open_immersion.image_preimage_is_empty AlgebraicGeometry.SheafedSpace.IsOpenImmersion.image_preimage_is_empty
 
@@ -959,8 +968,8 @@ def pullbackConeOfLeft : PullbackCone f g := by
     have :=
       PresheafedSpace.stalk_map.congr_hom _ _
         (PresheafedSpace.is_open_immersion.pullback_cone_of_left_condition f.1 g.1) x
-    rw [PresheafedSpace.stalk_map.comp, PresheafedSpace.stalk_map.comp] at this 
-    rw [← is_iso.eq_inv_comp] at this 
+    rw [PresheafedSpace.stalk_map.comp, PresheafedSpace.stalk_map.comp] at this
+    rw [← is_iso.eq_inv_comp] at this
     rw [this]
     infer_instance
   ·
@@ -984,8 +993,8 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
           (PresheafedSpace.is_open_immersion.pullback_cone_of_left_lift_snd f.1 g.1
             (pullback_cone.mk s.fst.1 s.snd.1 (congr_arg LocallyRingedSpace.hom.val s.condition)))
           x
-      change _ = _ ≫ PresheafedSpace.stalk_map s.snd.1 x at this 
-      rw [PresheafedSpace.stalk_map.comp, ← is_iso.eq_inv_comp] at this 
+      change _ = _ ≫ PresheafedSpace.stalk_map s.snd.1 x at this
+      rw [PresheafedSpace.stalk_map.comp, ← is_iso.eq_inv_comp] at this
       rw [this]
       infer_instance
     constructor
@@ -1177,4 +1186,3 @@ section OpenCover
 end OpenCover
 
 end AlgebraicGeometry
-
