@@ -8,7 +8,7 @@ Authors: David Renshaw
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
+import Mathlib.Data.Real.Basic
 
 /-!
 # IMO 2011 Q3
@@ -25,22 +25,18 @@ Direct translation of the solution found in https://www.imo-official.org/problem
 -/
 
 
-theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f x)) : ∀ x ≤ 0, f x = 0 :=
-  by
+theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f x)) : ∀ x ≤ 0, f x = 0 := by
   -- reparameterize
-  have hxt : ∀ x t, f t ≤ t * f x - x * f x + f (f x) :=
-    by
+  have hxt : ∀ x t, f t ≤ t * f x - x * f x + f (f x) := by
     intro x t
     calc
       f t = f (x + (t - x)) := by rw [add_eq_of_eq_sub' rfl]
       _ ≤ (t - x) * f x + f (f x) := (hf x (t - x))
       _ = t * f x - x * f x + f (f x) := by rw [sub_mul]
-  have h_ab_combined : ∀ a b, a * f a + b * f b ≤ 2 * f a * f b :=
-    by
+  have h_ab_combined : ∀ a b, a * f a + b * f b ≤ 2 * f a * f b := by
     intro a b
     linarith [hxt b (f a), hxt a (f b)]
-  have h_f_nonneg_of_pos : ∀ a < 0, 0 ≤ f a :=
-    by
+  have h_f_nonneg_of_pos : ∀ a < 0, 0 ≤ f a := by
     intro a han
     suffices : a * f a ≤ 0; exact nonneg_of_mul_nonpos_right this han
     exact add_le_iff_nonpos_left.mp (h_ab_combined a (2 * f a))
@@ -57,8 +53,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
       f (min 0 s - 1) ≤ (min 0 s - 1) * f x - x * f x + f (f x) := hxt x (min 0 s - 1)
       _ < s * f x - x * f x + f (f x) := by linarith [(mul_lt_mul_right hp).mpr hm]
       _ = 0 := by rw [(eq_div_iff hp.ne.symm).mp rfl]; linarith
-  have h_fx_zero_of_neg : ∀ x < 0, f x = 0 :=
-    by
+  have h_fx_zero_of_neg : ∀ x < 0, f x = 0 := by
     intro x hxz
     exact (h_f_nonpos x).antisymm (h_f_nonneg_of_pos x hxz)
   intro x hx
