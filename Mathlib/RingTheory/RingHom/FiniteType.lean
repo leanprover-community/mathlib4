@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.LocalProperties
-import Mathbin.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 
@@ -28,8 +28,7 @@ theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType :
   exact hg.comp hf
 #align ring_hom.finite_type_stable_under_composition RingHom.finiteType_stableUnderComposition
 
-theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteType :=
-  by
+theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteType := by
   introv R _
   skip
   suffices Algebra.FiniteType R S by change Algebra.FiniteType _ _; convert this; ext;
@@ -37,8 +36,7 @@ theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteTy
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
 #align ring_hom.finite_type_holds_for_localization_away RingHom.finiteType_holdsForLocalizationAway
 
-theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType :=
-  by
+theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
   -- Setup algebra intances.
   rw [of_localization_span_target_iff_finite]
   introv R hs H
