@@ -94,6 +94,7 @@ import Mathlib.Algebra.ContinuedFractions.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+import Mathlib.Algebra.ContinuedFractions.Computation.TerminatesIffRat
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
