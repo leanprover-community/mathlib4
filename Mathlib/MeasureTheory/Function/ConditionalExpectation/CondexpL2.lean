@@ -143,7 +143,7 @@ theorem inner_condexpL2_eq_inner_fun (hm : m ≤ m0) (f g : α →₂[μ] E)
     ⟪(condexpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, g⟫₂ := by
   symm
   rw [← sub_eq_zero, ← inner_sub_left, condexpL2]
-  simp only [mem_lpMeas_iff_aeStronglyMeasurable'.mpr hg, orthogonalProjection_inner_eq_zero]
+  simp only [mem_lpMeas_iff_aeStronglyMeasurable'.mpr hg, orthogonalProjection_inner_eq_zero f g]
 #align measure_theory.inner_condexp_L2_eq_inner_fun MeasureTheory.inner_condexpL2_eq_inner_fun
 
 section Real
@@ -152,7 +152,7 @@ variable {hm : m ≤ m0}
 
 theorem integral_condexpL2_eq_of_fin_meas_real (f : Lp 𝕜 2 μ) (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, (condexpL2 𝕜 𝕜 hm f : α → 𝕜) x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [← L2.inner_indicatorConstLp_one (hm s hs) hμs]
+  rw [← L2.inner_indicatorConstLp_one (𝕜 := 𝕜) (hm s hs) hμs f]
   have h_eq_inner : ∫ x in s, (condexpL2 𝕜 𝕜 hm f : α → 𝕜) x ∂μ =
       inner (indicatorConstLp 2 (hm s hs) hμs (1 : 𝕜)) (condexpL2 𝕜 𝕜 hm f) := by
     rw [L2.inner_indicatorConstLp_one (hm s hs) hμs]
@@ -213,6 +213,7 @@ theorem lintegral_nnnorm_condexpL2_indicator_le_real (hs : MeasurableSet s) (hμ
       ∫⁻ x in t, s.indicator (fun x => (1 : ℝ≥0∞)) x ∂μ := by
     refine' lintegral_congr_ae (ae_restrict_of_ae _)
     refine' (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => _
+    dsimp only
     rw [hx]
     classical
     simp_rw [Set.indicator_apply]
@@ -396,7 +397,7 @@ theorem aeStronglyMeasurable'_condexpIndSMul (hm : m ≤ m0) (hs : MeasurableSet
       (toSpanSingleton ℝ x ∘ condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ by
     refine' AEStronglyMeasurable'.congr this _
     refine' EventuallyEq.trans _ (coeFn_compLpL _ _).symm
-    rw [lpMeas_coe]
+    rfl
   exact AEStronglyMeasurable'.continuous_comp (toSpanSingleton ℝ x).continuous h
 #align measure_theory.ae_strongly_measurable'_condexp_ind_smul MeasureTheory.aeStronglyMeasurable'_condexpIndSMul
 
@@ -498,7 +499,7 @@ theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine' @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ _
   refine' ae_nonneg_of_forall_set_integral_nonneg_of_sigmaFinite _ _
   · intro t ht hμt
-    refine' @Integrable.integrableOn _ _ m _ _ _ _ _
+    refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
     refine' Integrable.trim hm _ _
     · rw [integrable_congr h.ae_eq_mk.symm]
       exact integrable_condexpL2_indicator hm hs hμs _
