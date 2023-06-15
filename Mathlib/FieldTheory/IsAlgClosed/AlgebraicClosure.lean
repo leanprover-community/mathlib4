@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectLimit
-import Mathbin.Algebra.CharP.Algebra
-import Mathbin.FieldTheory.IsAlgClosed.Basic
-import Mathbin.FieldTheory.SplittingField.Construction
+import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Algebraic Closure
@@ -78,15 +78,13 @@ def toSplittingField (s : Finset (MonicIrreducible k)) :
 #align algebraic_closure.to_splitting_field AlgebraicClosure.toSplittingField
 
 theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f ∈ s) :
-    toSplittingField k s (evalXSelf k f) = 0 :=
-  by
+    toSplittingField k s (evalXSelf k f) = 0 := by
   rw [to_splitting_field, eval_X_self, ← AlgHom.coe_toRingHom, hom_eval₂, AlgHom.coe_toRingHom,
     MvPolynomial.aeval_X, dif_pos hf, ← algebra_map_eq, AlgHom.comp_algebraMap]
   exact map_root_of_splits _ _ _
 #align algebraic_closure.to_splitting_field_eval_X_self AlgebraicClosure.toSplittingField_evalXSelf
 
-theorem spanEval_ne_top : spanEval k ≠ ⊤ :=
-  by
+theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, span_eval, Ideal.span, ← Set.image_univ,
     Finsupp.mem_span_image_iff_total]
   rintro ⟨v, _, hv⟩
@@ -142,16 +140,14 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z :=
     MvPolynomial.induction_on p (fun x => isIntegral_algebraMap) (fun p q => isIntegral_add)
       fun p f ih =>
       @isIntegral_mul _ _ _ _ _ _ (Ideal.Quotient.mk _ _) ih
-        ⟨f, f.2.1,
-          by
+        ⟨f, f.2.1, by
           erw [adjoin_monic.algebra_map, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
           exact le_max_ideal k (Ideal.subset_span ⟨f, rfl⟩)⟩
 #align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
 
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
-  ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k),
-    by
+  ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
     rw [to_adjoin_monic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_max_ideal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 #align algebraic_closure.adjoin_monic.exists_root AlgebraicClosure.AdjoinMonic.exists_root
@@ -194,8 +190,7 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
 #align algebraic_closure.to_step_succ.exists_root AlgebraicClosure.toStepSucc.exists_root
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
-def toStepOfLe (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n
-    where
+def toStepOfLe (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   toFun := Nat.leRecOn h fun n => toStepSucc k n
   map_one' := by
     induction' h with n h ih; · exact Nat.leRecOn_self 1
@@ -272,8 +267,7 @@ theorem exists_ofStep (z : AlgebraicClosure k) : ∃ n x, ofStep k n x = z :=
 
 -- slow
 theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi : Irreducible f) :
-    ∃ x : AlgebraicClosure k, f.eval x = 0 :=
-  by
+    ∃ x : AlgebraicClosure k, f.eval x = 0 := by
   have : ∃ n p, Polynomial.map (of_step k n) p = f := by
     convert Ring.DirectLimit.Polynomial.exists_of f
   obtain ⟨n, p, rfl⟩ := this
