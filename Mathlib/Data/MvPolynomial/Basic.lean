@@ -144,12 +144,6 @@ instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
--- Register with high priority to avoid timeout in `Data.MvPolynomial.PDeriv`
-instance isScalarTower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
-    IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  IsScalarTower.right
-#align mv_polynomial.is_scalar_tower' MvPolynomial.isScalarTower'
-
 instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isScalarTower_self _
