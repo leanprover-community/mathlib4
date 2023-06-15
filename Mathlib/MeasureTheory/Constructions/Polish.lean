@@ -509,7 +509,7 @@ countable topology, then for any measurable space `β` and `g : Y → β`, the c
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
-  forall₂_congr fun s _ => Measurable.measurableSet_preimage_iff_preimage_coe hf (s := g ⁻¹' s)
+  forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_coe hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
 
 /-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
@@ -517,7 +517,7 @@ with second countable topology, then for any measurable space `α` and `g : Y �
 `g ∘ f` is measurable if and only if `g` is measurable. -/
 theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
     (hf : Measurable f) (hsurj : Surjective f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable g :=
-  forall₂_congr fun s _ => Measurable.measurableSet_preimage_iff_of_surjective hf hsurj (s := g⁻¹'s)
+  forall₂_congr fun s _ => measurableSet_preimage_iff_of_surjective hf hsurj (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_of_surjective Measurable.measurable_comp_iff_of_surjective
 
 end Measurable
