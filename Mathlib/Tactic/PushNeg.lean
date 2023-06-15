@@ -55,6 +55,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
     catch _ => return none
   let e_whnf ← whnfR e
   let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
+  let ex := ex.consumeMData
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
       return mkSimpStep e (← mkAppM ``not_not_eq #[e])
