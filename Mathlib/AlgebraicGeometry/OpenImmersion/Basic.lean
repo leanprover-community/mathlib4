@@ -22,36 +22,36 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 
 ## Main definitions
 
-* `algebraic_geometry.PresheafedSpace.is_open_immersion`: the `Prop`-valued typeclass asserting
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion`: the `Prop`-valued typeclass asserting
   that a PresheafedSpace hom `f` is an open_immersion.
 * `algebraic_geometry.is_open_immersion`: the `Prop`-valued typeclass asserting
   that a Scheme morphism `f` is an open_immersion.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict`: The source of an
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.lift`: Any morphism whose range is
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
   contained in an open immersion factors though the open immersion.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.to_SheafedSpace`: If `f : X ⟶ Y` is an
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace`: If `f : X ⟶ Y` is an
   open immersion of presheafed spaces, and `Y` is a sheafed space, then `X` is also a sheafed
   space. The morphism as morphisms of sheafed spaces is given by `to_SheafedSpace_hom`.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.to_LocallyRingedSpace`: If `f : X ⟶ Y` is
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toLocallyRingedSpace`: If `f : X ⟶ Y` is
   an open immersion of presheafed spaces, and `Y` is a locally ringed space, then `X` is also a
   locally ringed space. The morphism as morphisms of locally ringed spaces is given by
   `to_LocallyRingedSpace_hom`.
 
 ## Main results
 
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.comp`: The composition of two open
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.comp`: The composition of two open
   immersions is an open immersion.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.of_iso`: An iso is an open immersion.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.to_iso`:
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIso`: An iso is an open immersion.
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.to_iso`:
   A surjective open immersion is an isomorphism.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.stalk_iso`: An open immersion induces
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.stalk_iso`: An open immersion induces
   an isomorphism on stalks.
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.has_pullback_of_left`: If `f` is an open
-  immersion, then the pullback `(f, g)` exists (and the forgetful functor to `Top` preserves it).
-* `algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_of_left`: Open immersions
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.hasPullback_of_left`: If `f` is an open
+  immersion, then the pullback `(f, g)` exists (and the forgetful functor to `TopCat` preserves it).
+* `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft`: Open immersions
   are stable under pullbacks.
-* `algebraic_geometry.SheafedSpace.is_open_immersion.of_stalk_iso` An (topological) open embedding
+* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso` An (topological) open embedding
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
@@ -161,7 +161,7 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : is_open_immersion f] (
     generalize_proofs h
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
       TopCat.Presheaf.pushforwardObj_obj, Opens.map_comp_obj]
-    -- Porting note : was `apply (config := { instances := false }) ...`
+    -- Porting note : was `apply (config := { instances := False }) ...`
     have : IsIso (g.c.app (op <| (h.functor).obj U))
     · have : h.functor.obj U = hg.openFunctor.obj (hf.openFunctor.obj U) := by
         ext1
@@ -312,7 +312,7 @@ theorem ofRestrict_invApp {C : Type _} [Category C] (X : PresheafedSpace C) {Y :
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
 theorem to_iso (f : X ⟶ Y) [h : is_open_immersion f] [h' : Epi f.base] : IsIso f := by
-  -- Porting Note : was `apply (config := { instances := false }) ...`
+  -- Porting Note : was `apply (config := { instances := False }) ...`
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U)
   . intro U
     have : U = op (h.openFunctor.obj ((Opens.map f.base).obj (unop U))) := by
@@ -840,7 +840,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
     [H : ∀ x : X.1, IsIso (PresheafedSpace.stalkMap f x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
-      -- Porting note : was `apply (config := { instances := false }) ...`
+      -- Porting note : was `apply (config := { instances := False }) ...`
       have h := TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward f.base).obj X.sheaf from ⟨f.c⟩)
       refine @h _ ?_
@@ -929,7 +929,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
       -- convert this using 6
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
-    -- Porting note : this instance created manually to make the `infer_instance` below work
+    -- Porting note : this instance created manually to make the `inferInstance` below work
     have inst1 : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c :=
       PresheafedSpace.c_isIso_of_iso _
     rsuffices : IsIso
@@ -1082,7 +1082,7 @@ instance forgetToTopPreservesPullbackOfLeft :
   change PreservesLimit _ <|
     (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) ⋙
     PresheafedSpace.forget _
-  -- Porting note : was `apply (config := { instances := false }) ...`
+  -- Porting note : was `apply (config := { instances := False }) ...`
   have : PreservesLimit
       (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
         WalkingCospan.Hom.inl)
@@ -1130,16 +1130,16 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     IsIso (pullback.snd : pullback f g ⟶ _) := by
-  -- Porting note : was `apply (config := { instances := false }) ...`
+  -- Porting note : was `apply (config := { instances := False }) ...`
   have h1 := @ReflectsIsomorphisms.reflects (F := LocallyRingedSpace.forgetToSheafedSpace) _ _ _
   refine @h1 _ _ _ ?_; clear h1
-  -- Porting note : was `apply (config := { instances := false }) ...`
+  -- Porting note : was `apply (config := { instances := False }) ...`
   have h2 := @ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace (C := CommRingCat)) _ _ _
   refine @h2 _ _ _ ?_; clear h2
   erw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]
-  -- Porting note : was `infer_instance`
+  -- Porting note : was `inferInstance`
   exact @IsIso.comp_isIso _ _ _ _ _ _ _ _ <|
     PresheafedSpace.IsOpenImmersion.pullback_snd_isIso_of_range_subset _ _ H'
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_snd_is_iso_of_range_subset AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_snd_isIso_of_range_subset
