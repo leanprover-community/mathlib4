@@ -8,11 +8,11 @@ Authors: Kevin Kappelmann
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.ContinuedFractions.Computation.Approximations
-import Mathbin.Algebra.ContinuedFractions.ConvergentsEquiv
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Topology.Order.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Corollaries From Approximation Lemmas (`algebra.continued_fractions.computation.approximations`)
@@ -128,16 +128,14 @@ theorem of_convergence_epsilon : ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v 
     have zero_lt_B : 0 < B :=
       haveI : (0 : K) < fib (n + 1) := by exact_mod_cast fib_pos n.zero_lt_succ
       lt_of_lt_of_le this B_ineq
-    have zero_lt_mul_conts : 0 < B * nB :=
-      by
+    have zero_lt_mul_conts : 0 < B * nB := by
       have : 0 < nB :=
         haveI : (0 : K) < fib (n + 2) := by exact_mod_cast fib_pos (n + 1).zero_lt_succ
         lt_of_lt_of_le this nB_ineq
       solve_by_elim [mul_pos]
     suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).right this
     -- use that `N ≥ n` was obtained from the archimedean property to show the following
-    have one_lt_ε_mul_N : 1 < ε * n :=
-      by
+    have one_lt_ε_mul_N : 1 < ε * n := by
       have one_lt_ε_mul_N' : 1 < ε * (N' : K) := (div_lt_iff' ε_pos).left one_div_ε_lt_N'
       have : (N' : K) ≤ N := by exact_mod_cast le_max_left _ _
       have : ε * N' ≤ ε * n :=
