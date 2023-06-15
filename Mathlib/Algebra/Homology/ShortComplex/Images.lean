@@ -20,6 +20,40 @@ lemma image.lift_ι {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
     Abelian.image.lift f g hg ≫ Abelian.image.ι f = g :=
   kernel.lift_ι _ _ _
 
+section
+
+variable {X Y : C} (f : X ⟶ Y) {Z : C} (p : X ⟶ Z) (i : Z ⟶ Y)
+    (fac : p ≫ i = f) [Epi p]
+
+noncomputable def toImageOfFac : Z ⟶ Abelian.image f :=
+  image.lift f i
+    (by rw [← cancel_epi p, reassoc_of% fac, cokernel.condition, comp_zero])
+
+@[simp]
+lemma toImageOfFac_ι : toImageOfFac f p i fac ≫ Abelian.image.ι f = i := by
+  dsimp [toImageOfFac]
+  simp only [image.lift_ι]
+
+lemma toImageOfFac_fac :
+    p ≫ toImageOfFac f p i fac = Abelian.factorThruImage f := by
+  rw [← cancel_mono (Abelian.image.ι f), assoc, toImageOfFac_ι, kernel.lift_ι, fac]
+
+instance [Mono i] : Mono (toImageOfFac f p i fac) :=
+  mono_of_mono_fac (toImageOfFac_ι f p i fac)
+
+instance : Epi (toImageOfFac f p i fac) :=
+  epi_of_epi_fac (toImageOfFac_fac f p i fac)
+
+instance [Mono i] : IsIso (toImageOfFac f p i fac) := by
+  apply isIso_of_mono_of_epi
+
+@[simps! hom]
+noncomputable def isoImageOfFac [Mono i] :
+    Z ≅ Abelian.image f :=
+  asIso (toImageOfFac f p i fac)
+
+end
+
 variable (C)
 
 structure ImagesLemmaInput where

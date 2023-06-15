@@ -1576,29 +1576,12 @@ noncomputable def homologyShortComplexEEEObjIso (D : Arrow₇ ι) :
   ((X.homologyDataShortComplexEEE n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄).map
     ((evaluation _ _).obj D)).left.homologyIso
 
-def imagesLemmaInput₁ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
-  Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₁
-  S := (X.shortComplex₁ n₀ n₁ hn₁).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₀)
-  hS := (X.shortComplex₁_exact n₀ n₁ hn₁).map _
-  f₁ := whiskerLeft Arrow₃.δ₁ (X.δ n₀ n₁ hn₁)
-  f₂ := whiskerRight Arrow₃.δ₃δ₁Toδ₀δ₂ (X.H n₁)
-  f₃ := whiskerRight Arrow₃.δ₃δ₁Toδ₀δ₁ (X.H n₁)
-  fac₁ := by
-    ext D
-    refine' ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₁Toδ₀.app D)).symm.trans _
-    dsimp
-    simp
-  fac₂ := by
-    ext D
-    dsimp
-    simp only [← Functor.map_comp]
-    congr 1
-    ext <;> dsimp <;> simp
+noncomputable def EObjIsoImage (D : Arrow₃ ι) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅
+      Abelian.image ((X.H n₁).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app D)) :=
+  Abelian.isoImageOfFac _ _ _ (X.HπE_EιH_app n₀ n₁ n₂ hn₁ hn₂ D)
 
-lemma images_exact₁ : (X.imagesLemmaInput₁ n₀ n₁ hn₁).shortComplex.Exact :=
-  (X.imagesLemmaInput₁ n₀ n₁ hn₁).shortComplex_exact
-
-def imagesLemmaInput₂ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
+def imagesLemmaInput : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
   Y := Arrow₃.δ₃ ⋙ Arrow₂.δ₁ ⋙ X.H n₀
   S := (X.shortComplex₂ n₀).map ((whiskeringLeft (Arrow₃ ι) (Arrow₂ ι) C).obj Arrow₃.δ₂)
   hS := (X.shortComplex₂_exact n₀).map _
@@ -1621,10 +1604,11 @@ def imagesLemmaInput₂ : Abelian.ImagesLemmaInput (Arrow₃ ι ⥤ C) where
     congr 1
     ext <;> dsimp <;> simp
 
-pp_extended_field_notation imagesLemmaInput₂
+pp_extended_field_notation imagesLemmaInput
 
-lemma images_exact₂ : (X.imagesLemmaInput₂ n₀).shortComplex.Exact :=
-  (X.imagesLemmaInput₂ n₀).shortComplex_exact
+lemma imagesLemmaInput_shortComplex_exact :
+    (X.imagesLemmaInput n₀).shortComplex.Exact :=
+  (X.imagesLemmaInput n₀).shortComplex_exact
 
 end
 
