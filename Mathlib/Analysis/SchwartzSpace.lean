@@ -145,11 +145,13 @@ theorem ext {f g : 𝓢(E, F)} (h : ∀ x, (f : E → F) x = g x) : f = g :=
 
 section IsBigO
 
+open Asymptotics Filter
+
 variable (f : 𝓢(E, F))
 
 /-- Auxiliary lemma, used in proving the more general result `is_O_cocompact_zpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ (-k : ℤ) := by
+    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
@@ -161,22 +163,23 @@ set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow_neg_nat SchwartzMap.isBigO_cocompact_zpow_neg_nat
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ s := by
+    f =O[cocompact E] fun x => ‖x‖ ^ s := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine' (isBigO_cocompact_zpow_neg_nat f k).trans _
-  refine' (_ : Asymptotics.IsBigO Filter.atTop (fun x : ℝ => x ^ (-k : ℤ)) fun x : ℝ =>
-    x ^ s).comp_tendsto tendsto_norm_cocompact_atTop
+  suffices (fun x : ℝ => x ^ (-k : ℤ)) =O[atTop] fun x : ℝ => x ^ s
+    from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine' ⟨1, Filter.eventually_of_mem (Filter.eventually_ge_atTop 1) fun x hx => _⟩
-  simp_rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
-    Int.cast_neg, Int.cast_ofNat]
+  refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
+  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg_of_nonneg (zero_le_one.trans hx) _),
+    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
+    Int.cast_ofNat]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_rpow SchwartzMap.isBigO_cocompact_rpow
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
-    Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ k := by
+    f =O[cocompact E] fun x => ‖x‖ ^ k := by
   simpa only [Real.rpow_int_cast] using isBigO_cocompact_rpow f k
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow SchwartzMap.isBigO_cocompact_zpow
@@ -483,7 +486,7 @@ theorem le_seminorm' (k n : ℕ) (f : 𝓢(ℝ, F)) (x : ℝ) :
 theorem norm_iteratedFDeriv_le_seminorm (f : 𝓢(E, F)) (n : ℕ) (x₀ : E) :
     ‖iteratedFDeriv ℝ n f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 n) f := by
   have := SchwartzMap.le_seminorm 𝕜 0 n f x₀
-  rwa [CharP.cast_eq_zero, Real.rpow_zero, one_mul] at this
+  rwa [pow_zero, one_mul] at this
 #align schwartz_map.norm_iterated_fderiv_le_seminorm SchwartzMap.norm_iteratedFDeriv_le_seminorm
 
 theorem norm_pow_mul_le_seminorm (f : 𝓢(E, F)) (k : ℕ) (x₀ : E) :
@@ -494,7 +497,7 @@ theorem norm_pow_mul_le_seminorm (f : 𝓢(E, F)) (k : ℕ) (x₀ : E) :
 
 theorem norm_le_seminorm (f : 𝓢(E, F)) (x₀ : E) : ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 0) f := by
   have := norm_pow_mul_le_seminorm 𝕜 f 0 x₀
-  rwa [CharP.cast_eq_zero, Real.rpow_zero, one_mul] at this
+  rwa [pow_zero, one_mul] at this
 #align schwartz_map.norm_le_seminorm SchwartzMap.norm_le_seminorm
 
 variable (E F)
@@ -538,14 +541,10 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   refine' Finset.sum_le_sum fun i hi => _
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · norm_cast
-    exact i.choose_le_choose hk
-  exact
-    (le_seminorm 𝕜 i n f x).trans
-      (Seminorm.le_def.1
-        (Finset.le_sup_of_le
-          (Finset.mem_Iic.2 <| Prod.mk_le_mk.2 ⟨finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl)
-        _)
+  · exact_mod_cast Nat.choose_le_choose i hk
+  · exact (le_seminorm 𝕜 i n f x).trans <| Seminorm.le_def.1
+      (Finset.le_sup_of_le (Finset.mem_Iic.2 <|
+        Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl) _
 #align schwartz_map.one_add_le_sup_seminorm_apply SchwartzMap.one_add_le_sup_seminorm_apply
 
 end Seminorms
