@@ -82,7 +82,7 @@ theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : fa
   factor_dvd_of_degree_ne_zero (mt natDegree_eq_of_degree_eq_some hf)
 #align polynomial.factor_dvd_of_nat_degree_ne_zero Polynomial.factor_dvd_of_natDegree_ne_zero
 
-/-- Divide a polynomial f by X - C r where r is a root of f in a bigger field extension. -/
+/-- Divide a polynomial f by `X - C r` where `r` is a root of `f` in a bigger field extension. -/
 def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
   map (AdjoinRoot.of f.factor) f /ₘ (X - C (AdjoinRoot.root f.factor))
 #align polynomial.remove_factor Polynomial.removeFactor
@@ -124,7 +124,7 @@ def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X],
       ⟨L, fL, (RingHom.comp (algebraMap _ _) (AdjoinRoot.of f.factor)).toAlgebra⟩
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
-`n` (arbitrarily-chosen) factors. It is the type constructed in `splitting_field_aux_aux`.
+`n` (arbitrarily-chosen) factors. It is the type constructed in `SplittingFieldAuxAux`.
 -/
 def SplittingFieldAux (n : ℕ) {K : Type u} [Field K] (f : K[X]) : Type u :=
   (SplittingFieldAuxAux n f).1
@@ -245,8 +245,8 @@ theorem adjoin_rootSet (n : ℕ) :
 instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
-/-- The natural map from `mv_polynomial (f.root_set (splitting_field_aux f.nat_degree f))`
-to `splitting_field_aux f.nat_degree f` sendind a variable to the corresponding root. -/
+/-- The natural map from `MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f))`
+to `SplittingFieldAux f.natDegree f` sendind a variable to the corresponding root. -/
 def ofMvPolynomial (f : K[X]) :
     MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K →ₐ[K]
       SplittingFieldAux f.natDegree f :=
@@ -264,9 +264,9 @@ theorem ofMvPolynomial_surjective (f : K[X]) : Function.Surjective (ofMvPolynomi
 #align polynomial.splitting_field_aux.of_mv_polynomial_surjective Polynomial.SplittingFieldAux.ofMvPolynomial_surjective
 
 /-- The algebra isomorphism between the quotient of
-`mv_polynomial (f.root_set (splitting_field_aux f.nat_degree f)) K` by the kernel of
-`of_mv_polynomial f` and `splitting_field_aux f.nat_degree f`. It is used to transport all the
-algebraic structures from the latter to `f.splitting_field`, that is defined as the former. -/
+`MvPolynomial (f.rootSet (SplittingFieldAuxAux f.natDegree f)) K` by the kernel of
+`ofMvPolynomial f` and `SplittingFieldAux f.natDegree f`. It is used to transport all the
+algebraic structures from the latter to `f.SplittingFieldAux`, that is defined as the former. -/
 def algEquivQuotientMvPolynomial (f : K[X]) :
     (MvPolynomial (f.rootSet (SplittingFieldAux f.natDegree f)) K ⧸
         RingHom.ker (ofMvPolynomial f).toRingHom) ≃ₐ[K]
@@ -310,7 +310,7 @@ instance isScalarTower {R : Type _} [CommSemiring R] [Algebra R K] :
   Ideal.Quotient.isScalarTower _ _ _
 #align polynomial.splitting_field.is_scalar_tower Polynomial.SplittingField.isScalarTower
 
-/-- The algebra equivalence with `splitting_field_aux`,
+/-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
   SplittingFieldAux.algEquivQuotientMvPolynomial f
@@ -348,7 +348,7 @@ instance [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
--- deriving from the field structure on `splitting_field f`.
+-- deriving from the field structure on `SplittingField f`.
 example :
     (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
@@ -405,7 +405,7 @@ instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
 instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
 
-/-- Any splitting field is isomorphic to `splitting_field f`. -/
+/-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
 def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
   refine'
     AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
