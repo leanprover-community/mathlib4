@@ -87,8 +87,8 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b =
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_range_iff.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right]
-  simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal, ← inf_iInf (ι := { x // x ≤ a }),
-    ← iInf_inf, this, iInf_subtype]
+  simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
+    ← inf_iInf (ι := { x // x ≤ a }), ← iInf_inf, this, iInf_subtype]
   suffices : (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio; exact this.principal_inf _
   refine' has_basis_binfi_principal _ nonempty_Ioi
   exact directedOn_iff_directed.2 (directed_of_inf fun x y hxy => Iio_subset_Iio hxy)
@@ -108,8 +108,8 @@ theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun n hn =>
       ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.pos), Subset.rfl⟩
   rcases exists_nat_one_div_lt (sub_pos.2 hb) with ⟨k, hk⟩
-  rw [one_div] at hk 
-  rw [← Nat.cast_add_one] at hk 
+  rw [one_div] at hk
+  rw [← Nat.cast_add_one] at hk
   exact ⟨k.succPNat, trivial, Ico_subset_Ico_right (le_sub_iff_add_le'.1 hk.le)⟩
 #align counterexample.sorgenfrey_line.nhds_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_basis_Ico_inv_pnat
 
@@ -191,10 +191,13 @@ instance : FirstCountableTopology ℝₗ :=
 
 /-- Sorgenfrey line is a completely normal Hausdorff topological space. -/
 instance : T5Space ℝₗ := by
-  /- Let `s` and `t` be disjoint closed sets. For each `x ∈ s` we choose `X x` such that
-    `set.Ico x (X x)` is disjoint with `t`. Similarly, for each `y ∈ t` we choose `Y y` such that
-    `set.Ico y (Y y)` is disjoint with `s`. Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
-    disjoint open sets that include `s` and `t`. -/
+  /-
+  Let `s` and `t` be disjoint closed sets.
+  For each `x ∈ s` we choose `X x` such that `set.Ico x (X x)` is disjoint with `t`.
+  Similarly, for each `y ∈ t` we choose `Y y` such that `set.Ico y (Y y)` is disjoint with `s`.
+  Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
+  disjoint open sets that include `s` and `t`.
+  -/
   refine' ⟨fun s t hd₁ hd₂ => _⟩
   choose! X hX hXd using fun x (hx : x ∈ s) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
