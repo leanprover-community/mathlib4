@@ -32,10 +32,6 @@ namespace Bitvec
   @[simp] theorem xor_ones        : x.xor (allOnes n) = x.not       := by ext; simp
 
 
-  theorem not_zeroes              : Bitvec.not (allOnes n) = 0      := by ext; simp
-  theorem not_ones                : Bitvec.not 0 = (allOnes n)      := by ext; simp
-
-
 
   /-!
     Associativity and Commutativity
