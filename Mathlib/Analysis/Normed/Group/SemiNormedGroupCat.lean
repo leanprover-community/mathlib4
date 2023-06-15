@@ -44,6 +44,7 @@ instance bundledHom : BundledHom @NormedAddGroupHom where
 deriving instance LargeCategory for SemiNormedGroupCat
 
 -- Porting note: deriving fails for ConcreteCategory, adding instance manually.
+-- See https://github.com/leanprover-community/mathlib4/issues/5020
 -- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
@@ -110,11 +111,8 @@ instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
-  · ext x
-    have  := Subsingleton.elim (x : V) (0 : V)
-    simp [this, map_zero]
-  · ext
-    apply Subsingleton.elim
+  · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
+  · ext; apply Subsingleton.elim
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
 
 instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
@@ -123,7 +121,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
 
 theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 : i.hom.NormNoninc)
     (h2 : i.inv.NormNoninc) : Isometry i.hom := by
-  apply AddMonoidHomClass.isometry_of_norm i.hom
+  apply AddMonoidHomClass.isometry_of_norm
   intro v
   apply le_antisymm (h1 v)
   calc
@@ -167,6 +165,7 @@ instance : ConcreteCategory.{u} SemiNormedGroupCat₁ where
       map := fun f => f }
   forget_faithful := { }
 
+-- Porting note: added
 instance toAddMonoidHomClass {V W : SemiNormedGroupCat₁} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.1.map_add'
   map_zero f := (AddMonoidHom.mk' f.1 f.1.map_add').map_zero
@@ -185,7 +184,7 @@ def mkHom {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) :
   ⟨f, i⟩
 #align SemiNormedGroup₁.mk_hom SemiNormedGroupCat₁.mkHom
 
--- @[simp] -- Porting note: claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
+-- @[simp] -- Porting note: simpNF linter claims LHS simplifies with `SemiNormedGroupCat₁.coe_of`
 theorem mkHom_apply {M N : SemiNormedGroupCat} (f : M ⟶ N) (i : f.NormNoninc) (x) :
     mkHom f i x = f x :=
   rfl
