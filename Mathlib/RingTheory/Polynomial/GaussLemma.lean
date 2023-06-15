@@ -210,8 +210,8 @@ theorem isIntegrallyClosed_iff' :
 #align polynomial.is_integrally_closed_iff' Polynomial.isIntegrallyClosed_iff'
 
 theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
-    (hp : p.Monic) (hq : q.Monic) (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p :=
-  by
+    (hp : p.Monic) (hq : q.Monic)
+    (h : q.map (algebraMap R K) ∣ p.map (algebraMap R K)) : q ∣ p := by
   obtain ⟨r, hr⟩ := h
   obtain ⟨d', hr'⟩ := IsIntegrallyClosed.eq_map_mul_C_of_dvd K hp (dvd_of_mul_left_eq _ hr.symm)
   rw [Monic.leadingCoeff, C_1, mul_one] at hr'
