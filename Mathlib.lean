@@ -91,6 +91,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -625,6 +626,7 @@ import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Analysis.Normed.Order.Basic
@@ -1398,6 +1400,7 @@ import Mathlib.Data.ListM.BestFirst
 import Mathlib.Data.ListM.DepthFirst
 import Mathlib.Data.ListM.Heartbeats
 import Mathlib.Data.ListM.IO
+import Mathlib.Data.ListM.Split
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
@@ -2011,6 +2014,7 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Polynomial
+import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
@@ -2953,6 +2957,7 @@ import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.Init
 import Mathlib.Topology.Sheaves.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
+import Mathlib.Topology.Sheaves.LocallySurjective
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
@@ -3008,6 +3013,7 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
 import Mathlib.Util.Pickle
 import Mathlib.Util.Qq
+import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic

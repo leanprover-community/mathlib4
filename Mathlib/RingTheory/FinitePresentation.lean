@@ -518,7 +518,7 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : f.toRingHom.ker.FG) :
     f.FinitePresentation := by
-  -- Porting note: added `convert
+  -- Porting note: added `convert`
   convert RingHom.FinitePresentation.of_surjective f hf hker
 #align alg_hom.finite_presentation.of_surjective AlgHom.FinitePresentation.of_surjective
 

@@ -870,7 +870,7 @@ namespace ContinuousMap
 variable [Mul X] [ContinuousMul X]
 
 /-- The continuous map `fun y => y * x` -/
-@[to_additive "The continuous map `fun y => y + x"]
+@[to_additive "The continuous map `fun y => y + x`"]
 protected def mulRight (x : X) : C(X, X) :=
   mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
@@ -883,7 +883,7 @@ theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
 /-- The continuous map `fun y => x * y` -/
-@[to_additive "The continuous map `fun y => x + y"]
+@[to_additive "The continuous map `fun y => x + y`"]
 protected def mulLeft (x : X) : C(X, X) :=
   mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft

@@ -37,8 +37,8 @@ interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions
 * `Finsupp.domLCongr`: a `LinearEquiv` version of `Finsupp.domCongr`;
 * `Finsupp.congr`: if the sets `s` and `t` are equivalent, then `supported M R s` is equivalent to
   `supported M R t`;
-* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using `e : α ≃
-  β` and `e' : M ≃ₗ[R] N`.
+* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using
+  `e : α ≃ β` and `e' : M ≃ₗ[R] N`.
 
 ## Tags
 

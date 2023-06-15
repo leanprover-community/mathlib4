@@ -27,8 +27,8 @@ import Mathlib.Tactic.Common
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
 
-The rewrite rules for monads are carefully chosen so that `simp with
-functor_norm` will not introduce monadic vocabulary in a context where
+The rewrite rules for monads are carefully chosen so that `simp with functor_norm`
+will not introduce monadic vocabulary in a context where
 applicatives would do just fine but will handle monadic notation
 already present in an expression.
 
