@@ -231,8 +231,8 @@ theorem fib_le_of_continuantsAux_b :
         have : (0 : K) ≤ fib (n + 1) := by exact_mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
         mono
-        norm_num
-        tauto)
+        · norm_num
+        · tauto)
 #align generalized_continued_fraction.fib_le_of_continuants_aux_b GeneralizedContinuedFraction.fib_le_of_continuantsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
@@ -573,4 +573,3 @@ theorem abs_sub_convergents_le' {b : K}
 end ErrorTerm
 
 end GeneralizedContinuedFraction
-#lint
