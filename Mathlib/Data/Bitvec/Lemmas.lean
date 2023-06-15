@@ -453,24 +453,7 @@ theorem get_replicate_val_eq_val : get (Vector.replicate n val) i = val := by
     case H0 => rfl
     case Hs => apply ih
 
-/-- Every bit in `zero` is `0`/`false` -/
-@[simp]
-theorem get_zeroes_eq_false : get (Bitvec.zero n) i = false :=
-  get_replicate_val_eq_val
 
-@[simp]
-theorem get_zero_eq_false : get 0 i = false :=
-  get_replicate_val_eq_val
-
-/-- Every bit in `ones` is `1`/`true` -/
-@[simp]
-theorem get_ones_eq_true : get (allOnes n) i = true :=
-  get_replicate_val_eq_val
-
-/-- The all-ones bit pattern is also spelled `-1` -/
-@[simp]
-theorem get_minus_one : get (-1 : Bitvec n) i = true := by
-  rw[neg_one]; apply get_ones_eq_true
 
 
 /-!

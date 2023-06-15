@@ -1,4 +1,6 @@
 import Mathlib.Data.Bitvec.Tactic
+import Mathlib.Data.Bitvec.BitwiseLemmas
+import Mathlib.Data.Bitvec.ConstantLemmas
 
 -- A lot of this should probably go to a differet file here and not Mathlib
 inductive Refinement {α : Type u} : Option α → Option α → Prop

@@ -1,5 +1,6 @@
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.Bitvec.Tactic
 
 
@@ -7,17 +8,6 @@ import Mathlib.Data.Bitvec.Tactic
 namespace Bitvec
   open Bitvec (not)
   variable (x y z : Bitvec n)
-
-
-@[simp]
-theorem get_ofNat_zero : get (Bitvec.ofNat n 0) i = false := by
-  admit
-
-/-- Yet another spelling of `11111..` -/
-@[simp]
-theorem get_ofInt_minus : get (Bitvec.ofInt n (-1)) i = true := by
-  simp[Bitvec.ofInt, Neg.neg, Int.neg, Int.negOfNat]
-
 
   /-!
     How do the operations interact with constant patterns `000000...` and `11111....`, and what

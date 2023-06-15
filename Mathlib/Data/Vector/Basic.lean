@@ -790,6 +790,15 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
 theorem append_nil : (append xs nil) = xs :=
   by cases xs; simp[append]
 
+@[simp]
+theorem append_cons_left (x : α) (xs : Vector α n) (ys : Vector α m) :
+    HEq (append (x ::ᵥ xs) ys) (x ::ᵥ (append xs ys)) := by
+  cases xs
+  cases ys
+  simp[append, Vector.cons]
+  congr <;> simp[Nat.succ_add]
+
+
 
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
