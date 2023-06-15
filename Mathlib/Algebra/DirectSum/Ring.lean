@@ -66,11 +66,11 @@ instances for:
 * `A : ι → Subgroup S`:
   `DirectSum.GSemiring.ofAddSubgroups`, `DirectSum.GCommSemiring.ofAddSubgroups`.
 * `A : ι → Submodule S`:
-  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GcommSemiring.ofSubmodules`.
+  `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
 If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (λ i, AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
 
 ## tags
 
@@ -490,7 +490,7 @@ def ofZeroRingHom : A 0 →+* ⨁ i, A i :=
     map_mul' := of_zero_mul A }
 #align direct_sum.of_zero_ring_hom DirectSum.ofZeroRingHom
 
-/-- Each grade `A i` derives a `A 0`-module structure from `GSemiring A`. Note that this results
+/-- Each grade `A i` derives an `A 0`-module structure from `GSemiring A`. Note that this results
 in an overall `Module (A 0) (⨁ i, A i)` structure via `DirectSum.module`.
 -/
 instance GradeZero.module {i} : Module (A 0) (A i) :=

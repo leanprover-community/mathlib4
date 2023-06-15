@@ -134,7 +134,7 @@ instance boundaries_additive : (boundariesFunctor V c i).Additive where
 variable [HasEqualizers V] [HasCokernels V]
 
 instance homology_additive : (homologyFunctor V c i).Additive where
-  map_add {_ _ f g}:= by
+  map_add {_ _ f g} := by
     dsimp [homologyFunctor]
     ext
     simp only [homology.π_map, Preadditive.comp_add, ← Preadditive.add_comp]

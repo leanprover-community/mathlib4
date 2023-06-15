@@ -120,7 +120,7 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `Orderedring` is an `Orderedring`. -/
+/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
@@ -384,7 +384,7 @@ protected theorem multiset_prod_mem {R} [CommRing R] (s : Subring R) (m : Multis
   multiset_prod_mem _
 #align subring.multiset_prod_mem Subring.multiset_prod_mem
 
-/-- Sum of a multiset of elements in an `Subring` of a `Ring` is
+/-- Sum of a multiset of elements in a `Subring` of a `Ring` is
 in the `Subring`. -/
 protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=

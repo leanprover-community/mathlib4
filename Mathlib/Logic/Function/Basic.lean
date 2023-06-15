@@ -70,7 +70,7 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
   rfl
 #align function.on_fun_apply Function.onFun_apply
 
-lemma hfunext {α α': Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
+lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
   (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
   have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
@@ -282,9 +282,9 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
-| i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
-       RightInverse.surjective
-         (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
+  | i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
+        RightInverse.surjective
+          (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type u`. This theorem
@@ -402,17 +402,18 @@ noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
 #align function.partial_inv Function.partialInv
 
 theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
-| a, b =>
-⟨λ h => have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
-          rfl
-        if h' : ∃ a, f a = b
-        then by rw [hpi, dif_pos h'] at h
-                injection h with h
-                subst h
-                apply Classical.choose_spec h'
-        else by rw [hpi, dif_neg h'] at h; contradiction,
- λ e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
-            (dif_pos h).trans (congr_arg _ (I $ Classical.choose_spec h))⟩
+  | a, b =>
+  ⟨fun h =>
+    have hpi : partialInv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
+      rfl
+    if h' : ∃ a, f a = b
+    then by rw [hpi, dif_pos h'] at h
+            injection h with h
+            subst h
+            apply Classical.choose_spec h'
+    else by rw [hpi, dif_neg h'] at h; contradiction,
+  fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
+              (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 #align function.partial_inv_of_injective Function.partialInv_of_injective
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
@@ -521,13 +522,13 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 #align function.surjective_to_subsingleton Function.surjective_to_subsingleton
 
-/-- Composition by an surjective function on the left is itself surjective. -/
+/-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f ↦
   ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
-/-- Composition by an bijective function on the left is itself bijective. -/
+/-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
     Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
   ⟨hg.injective.comp_left, hg.surjective.comp_left⟩
@@ -586,7 +587,7 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 #align function.forall_update_iff Function.forall_update_iff
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
-    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _)(_ : x ≠ a), p x (f x) := by
+    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _) (_ : x ≠ a), p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b ↦ ¬p a b]
   simp [-not_and, not_and_or]
 #align function.exists_update_iff Function.exists_update_iff
@@ -823,7 +824,7 @@ def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
   f (g a) (h b)
 #align function.bicompl Function.bicompl
 
-/-- Compose an unary function `f` with a binary function `g`. -/
+/-- Compose a unary function `f` with a binary function `g`. -/
 def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
   f (g a b)
 #align function.bicompr Function.bicompr
