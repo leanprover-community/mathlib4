@@ -95,6 +95,7 @@ theorem norm_lt_iff {r : ℝ} (hr : 0 < r) {A : Matrix m n α} : ‖A‖ < r ↔
 
 theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
     ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r := by
+  -- Porting note: was `by simp [pi_nnnorm_lt_iff hr]`
   rw [pi_nnnorm_lt_iff hr]
   simp_rw [pi_nnnorm_lt_iff hr]
 #align matrix.nnnorm_lt_iff Matrix.nnnorm_lt_iff
@@ -110,6 +111,7 @@ theorem nnnorm_entry_le_entrywise_sup_nnnorm (A : Matrix m n α) {i : m} {j : n}
 @[simp]
 theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
     ‖A.map f‖₊ = ‖A‖₊ := by
+  -- Porting note: was `by simp [Pi.nnnorm_def, Matrix.map_apply, hf]`
   rw [Pi.nnnorm_def, Pi.nnnorm_def]
   simp only [Pi.nnnorm_def, Matrix.map_apply, hf]
 #align matrix.nnnorm_map_eq Matrix.nnnorm_map_eq
@@ -146,6 +148,7 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
 
 @[simp]
 theorem nnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
+  -- Porting note: was `by simp [Pi.nnnorm_def]`
   rw [Pi.nnnorm_def]
   simp [Pi.nnnorm_def]
 #align matrix.nnnorm_col Matrix.nnnorm_col
@@ -157,6 +160,7 @@ theorem norm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
 
 @[simp]
 theorem nnnorm_row (v : n → α) : ‖row v‖₊ = ‖v‖₊ := by
+  -- Porting note: was `by simp [Pi.nnnorm_def]`
   rw [Pi.nnnorm_def]
   simp [Pi.nnnorm_def]
 #align matrix.nnnorm_row Matrix.nnnorm_row
