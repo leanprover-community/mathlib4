@@ -40,6 +40,7 @@ instance : BundledHom @OrderHom where
 
 deriving instance LargeCategory for PreordCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory PreordCat :=
   BundledHom.concreteCategory _
 
