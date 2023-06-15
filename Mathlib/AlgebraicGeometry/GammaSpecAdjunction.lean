@@ -65,33 +65,39 @@ namespace LocallyRingedSpace
 variable (X : LocallyRingedSpace.{u})
 
 /-- The map from the global sections to a stalk. -/
-def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.Presheaf.stalk x :=
-  X.Presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
+def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
+  X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_to_stalk AlgebraicGeometry.LocallyRingedSpace.ΓToStalk
 
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
-  comap (X.ΓToStalk x) (LocalRing.closedPoint (X.Presheaf.stalk x))
+  comap (X.ΓToStalk x) (LocalRing.closedPoint (X.presheaf.stalk x))
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_fun AlgebraicGeometry.LocallyRingedSpace.toΓSpecFun
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.ΓToStalk x r) := by
   erw [LocalRing.mem_maximalIdeal, Classical.not_not]
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.not_mem_prime_iff_unit_in_stalk AlgebraicGeometry.LocallyRingedSpace.not_mem_prime_iff_unit_in_stalk
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
 theorem to_Γ_Spec_preim_basicOpen_eq (r : Γ.obj (op X)) :
-    X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by ext;
-  erw [X.to_RingedSpace.mem_top_basic_open]; apply not_mem_prime_iff_unit_in_stalk
+    X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
+      ext
+      erw [X.toRingedSpace.mem_top_basicOpen]; apply not_mem_prime_iff_unit_in_stalk
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_preim_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.to_Γ_Spec_preim_basicOpen_eq
 
 /-- `to_Γ_Spec_fun` is continuous. -/
 theorem to_Γ_Spec_continuous : Continuous X.toΓSpecFun := by
-  apply is_topological_basis_basic_opens.continuous
+  apply isTopologicalBasis_basic_opens.continuous
   rintro _ ⟨r, rfl⟩
-  erw [X.to_Γ_Spec_preim_basic_open_eq r]
-  exact (X.to_RingedSpace.basic_open r).2
+  erw [X.to_Γ_Spec_preim_basicOpen_eq r]
+  exact (X.toRingedSpace.basicOpen r).2
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_continuous AlgebraicGeometry.LocallyRingedSpace.to_Γ_Spec_continuous
 
 /-- The canonical (bundled) continuous map from the underlying topological
@@ -100,6 +106,7 @@ space of `X` to the prime spectrum of its global sections. -/
 def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
   continuous_toFun := X.to_Γ_Spec_continuous
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
 
 variable (r : Γ.obj (op X))
@@ -107,17 +114,20 @@ variable (r : Γ.obj (op X))
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
 abbrev toΓSpecMapBasicOpen : Opens X :=
   (Opens.map X.toΓSpecBase).obj (basicOpen r)
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_map_basic_open AlgebraicGeometry.LocallyRingedSpace.toΓSpecMapBasicOpen
 
 /-- The preimage is the basic open in `X` defined by the same element `r`. -/
 theorem toΓSpecMapBasicOpen_eq : X.toΓSpecMapBasicOpen r = X.toRingedSpace.basicOpen r :=
   Opens.ext (X.to_Γ_Spec_preim_basicOpen_eq r)
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_map_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecMapBasicOpen_eq
 
 /-- The map from the global sections `Γ(X)` to the sections on the (preimage of) a basic open. -/
 abbrev toToΓSpecMapBasicOpen :
-    X.Presheaf.obj (op ⊤) ⟶ X.Presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
-  X.Presheaf.map (X.toΓSpecMapBasicOpen r).le_top.op
+    X.presheaf.obj (op ⊤) ⟶ X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
+  X.presheaf.map (X.toΓSpecMapBasicOpen r).leTop.op
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_to_Γ_Spec_map_basic_open AlgebraicGeometry.LocallyRingedSpace.toToΓSpecMapBasicOpen
 
 /-- `r` is a unit as a section on the basic open defined by `r`. -/
@@ -220,7 +230,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     let S := (structure_sheaf _).Presheaf.stalk p
     rintro (t : S) ht
     obtain ⟨⟨r, s⟩, he⟩ := IsLocalization.surj p.as_ideal.prime_compl t
-    dsimp at he 
+    dsimp at he
     apply isUnit_of_mul_isUnit_left
     rw [he]
     refine' IsLocalization.map_units S (⟨r, _⟩ : p.as_ideal.prime_compl)
@@ -383,11 +393,11 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
       ((ΓSpec.adjunction.Unit.app X).val.c.app (op ⊤))
       (SpecΓIdentity.Hom.app (X.Presheaf.obj (op ⊤))) := by
   have := congr_app Γ_Spec.adjunction.left_triangle X
-  dsimp at this 
-  rw [← is_iso.eq_comp_inv] at this 
+  dsimp at this
+  rw [← is_iso.eq_comp_inv] at this
   simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
-    Γ_Spec.adjunction_counit_app] at this 
-  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this 
+    Γ_Spec.adjunction_counit_app] at this
+  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
   exact this
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
@@ -434,4 +444,3 @@ instance Spec.reflective : Reflective Scheme.spec :=
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry
-
