@@ -497,17 +497,17 @@ instance commSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A] [I
     [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
   { Unitization.commMonoid, Unitization.nonAssocSemiring with }
 
-instance nonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A] : NonAssocRing (Unitization R A) :=
-{ Unitization.addCommGroup, Unitization.nonAssocSemiring with }
+instance nonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+    NonAssocRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.nonAssocSemiring with }
 
 instance ring [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A] : Ring (Unitization R A) :=
-{ Unitization.addCommGroup, Unitization.semiring with }
+    [SMulCommClass R A A] : Ring (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.semiring with }
 
 instance commRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A] : CommRing (Unitization R A) :=
-{ Unitization.addCommGroup, Unitization.commSemiring with }
+    [SMulCommClass R A A] : CommRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.commSemiring with }
 
 variable (R A)
 
