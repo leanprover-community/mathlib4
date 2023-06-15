@@ -698,7 +698,7 @@ theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `addOrderOf_pos' but with one fewer explicit
+@[to_additive "This is the same as `addOrderOf_pos'` but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
   orderOf_pos' (exists_pow_eq_one x)

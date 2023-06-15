@@ -926,7 +926,7 @@ end Equiv
 namespace Quot
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) : Quot ra ≃ Quot rb where
   toFun := Quot.map e fun a₁ a₂ => (eq a₁ a₂).1
@@ -960,7 +960,7 @@ end Quot
 namespace Quotient
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
     (eq : ∀ a₁ a₂, @Setoid.r α ra a₁ a₂ ↔ @Setoid.r β rb (e a₁) (e a₂)) :
     Quotient ra ≃ Quotient rb := Quot.congr e eq

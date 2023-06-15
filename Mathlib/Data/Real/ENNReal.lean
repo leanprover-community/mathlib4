@@ -33,8 +33,8 @@ and prove basic properties of these operations, order, and conversions to/from `
 
   - `a + b` is defined so that `↑p + ↑q = ↑(p + q)` for `(p q : ℝ≥0)` and `a + ∞ = ∞ + a = ∞`;
 
-  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and `a *
-    ∞ = ∞ * a = ∞` for `a ≠ 0`;
+  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and
+    `a * ∞ = ∞ * a = ∞` for `a ≠ 0`;
 
   - `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
     `↑p - ↑q = ↑(p - q)`, `∞ - ↑p = ∞`, `↑p - ∞ = ∞ - ∞ = 0`; note that there is no negation, only
