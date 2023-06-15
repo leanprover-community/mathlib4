@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Fintype.Perm
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Dynamics.FixedPoints.Basic
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Formalization of IMO 1987, Q1
@@ -82,22 +82,19 @@ It is easy to see that the cardinality of the LHS is given by
 `∑ k : fin (card α + 1), k * p α k`. -/
 def fixedPointsEquiv' :
     (Σ (k : Fin (card α + 1)) (σ : fiber α k), fixedPoints σ.1) ≃
-      { σx : α × Perm α // σx.2 σx.1 = σx.1 }
-    where
+      { σx : α × Perm α // σx.2 σx.1 = σx.1 } where
   toFun p := ⟨⟨p.2.2, p.2.1⟩, p.2.2.2⟩
   invFun p :=
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
-  left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ =>
-    by
+  left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
     simp only [mem_fiber, Fin.val_mk] at hσ 
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 #align imo1987_q1.fixed_points_equiv' Imo1987Q1.fixedPointsEquiv'
 
 /-- Main statement for any `(α : Type*) [fintype α]`. -/
-theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! :=
-  by
+theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
   have A : ∀ (k) (σ : fiber α k), card (fixedPoints ⇑(↑σ : Perm α)) = k := fun k σ => σ.2
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_of_finset, Finset.card_univ, card_fixed_points,
     mul_comm] using card_congr (fixed_points_equiv' α)
