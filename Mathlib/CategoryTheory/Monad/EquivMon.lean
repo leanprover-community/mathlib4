@@ -8,9 +8,9 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monad.Basic
-import Mathbin.CategoryTheory.Monoidal.End
-import Mathbin.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Monad.Basic
+import Mathlib.CategoryTheory.Monoidal.End
+import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 
@@ -105,8 +105,7 @@ variable {C}
 
 /-- Isomorphism of functors used in `Monad_Mon_equiv` -/
 @[simps (config := { rhsMd := semireducible })]
-def counitIso : monToMonad C ⋙ monadToMon C ≅ 𝟭 _
-    where
+def counitIso : monToMonad C ⋙ monadToMon C ≅ 𝟭 _ where
   Hom := { app := fun _ => { Hom := 𝟙 _ } }
   inv := { app := fun _ => { Hom := 𝟙 _ } }
   hom_inv_id' := by ext; simp
@@ -126,8 +125,7 @@ def unitIsoInv : monadToMon C ⋙ monToMonad C ⟶ 𝟭 _ where app _ := { app :
 
 /-- Isomorphism of functors used in `Monad_Mon_equiv` -/
 @[simps]
-def unitIso : 𝟭 _ ≅ monadToMon C ⋙ monToMonad C
-    where
+def unitIso : 𝟭 _ ≅ monadToMon C ⋙ monToMonad C where
   Hom := unitIsoHom
   inv := unitIsoInv
   hom_inv_id' := by ext; simp
@@ -141,8 +139,7 @@ open MonadMonEquiv
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
-def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C)
-    where
+def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C) where
   Functor := monadToMon _
   inverse := monToMonad _
   unitIso := unitIso
