@@ -1697,7 +1697,7 @@ theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
   FunLike.coe_injective $ Eq.symm $ Option.map_comp_map _ _
 #align inf_hom.with_top_comp InfHom.withTop_comp
 
-/-- Adjoins a `⊥ to the domain and codomain of an `InfHom`. -/
+/-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withBot (f : InfHom α β) : InfHom (WithBot α) (WithBot β) where
   toFun := Option.map f

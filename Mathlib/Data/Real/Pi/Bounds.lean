@@ -96,7 +96,7 @@ section Tactic
 open Lean Elab Tactic
 
 /-- `numDen stx` takes a syntax expression `stx` and
-* if it is of the form `a / b`, then it returns `some (a, b);
+* if it is of the form `a / b`, then it returns `some (a, b)`;
 * otherwise it returns `none`.
 -/
 private def numDen : Syntax → Option (Syntax.Term × Syntax.Term)
