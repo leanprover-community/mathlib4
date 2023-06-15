@@ -48,7 +48,7 @@ vectors.
 * `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
 * `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;
-* linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
+* `linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
   `linearIndependent_fin_succ`: type-specific tests for linear independence of families of vector
   fields;
 * `linearIndependent_insert`, `linearIndependent_union`, `linearIndependent_pair`,

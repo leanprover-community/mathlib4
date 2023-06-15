@@ -106,9 +106,8 @@ The two sides of the equivalence are definitionally equal types. We want to use 
 to distinguish the types because `Matrix` has different instances to pi types (such as `Pi.mul`,
 which performs elementwise multiplication, vs `Matrix.mul`).
 
-If you are defining a matrix, in terms of its entries, use `of (λ i j, _)`. The
-purpose of this approach is to ensure that terms of th
-e form `(λ i j, _) * (λ i j, _)` do not
+If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
+purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
 
 Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
