@@ -15,10 +15,10 @@ namespace Bitvec.Tactic
     Returns a list of all such `i` that were found, if indeed all occurences were guarded,
     or `none` if a non-guarded occurence of `x` was found
   -/
-  def findBitvecGet : Expr → Option (Expr × Expr)
-    | .app (.app (.app (.const ``Bitvec.get _) _) x) i =>
+  def findBitvecGet : Expr → Option (Expr)
+    | e@(.app (.app (.app (.const ``Bitvec.get _) _) _) _) =>
         -- dbg_trace "Found (get x i) pattern (x={y.name}, i={i}), looking for {x.name}"
-        (x, i)
+        e
 
     | .proj _ _ e
     | .mdata _ e =>
@@ -44,15 +44,14 @@ namespace Bitvec.Tactic
     For every variable `x : Bitvec n`, if the goal only contains `x` as part of a
     `get x i` expression (for arbitary value of `i`), do a case split on `get x i`
   -/
-  @[aesop safe 10 tactic (rule_sets [Mathlib.Data.Bitvec])]
+  @[aesop unsafe 50% tactic (rule_sets [Mathlib.Data.Bitvec])]
   def bitblast_bitvec_get : TacticM Unit := do
     withMainContext do
       let goal ← getMainTarget
       match findBitvecGet goal with
-        | some (x, i) =>
-            let x ← delab x
-            let i ← delab i
-            let tct ← `(cases (Bitvec.get $x $i))
+        | some e =>
+            let tgt ← delab e
+            let tct ← `(tactic| cases ($tgt))
             dbg_trace "{tct}"
             evalTactic tct
         | none =>
