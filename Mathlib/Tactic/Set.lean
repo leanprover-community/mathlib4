@@ -55,7 +55,7 @@ elab_rules : tactic
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
     let tt ← delab ty
-      (RBMap.empty.insert .root <| KVMap.empty.setBool `pp.structureInstanceTypes true)
+      (RBMap.empty.insert .root <| KVMap.empty.setBool ((`pp).append `structureInstanceTypes) true)
     match h, rev with
     | some h, some none =>
       evalTactic (← `(tactic| have%$tk $h : $a = ($val : $tt) := rfl))
