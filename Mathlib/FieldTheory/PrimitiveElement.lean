@@ -64,8 +64,8 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
     exact F⟮α.val⟯.zero_mem
   · obtain ⟨n, hn⟩ := Set.mem_range.mp (hα (Units.mk0 x hx))
     simp only at hn
-    rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0]]
-    exact zpow_mem (mem_adjoin_simple_self F ↑α) n
+    rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0], Units.val_zpow_eq_zpow_val]
+    exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
 #align field.exists_primitive_element_of_finite_top Field.exists_primitive_element_of_finite_top
 
 /-- Primitive element theorem for finite dimensional extension of a finite field. -/
@@ -119,14 +119,16 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
         rw [← add_sub_cancel α (c • β)]
         exact F⟮γ⟯.sub_mem (mem_adjoin_simple_self F γ) (F⟮γ⟯.toSubalgebra.smul_mem β_in_Fγ c)
       exact fun x hx => by
-        cases' hx with hx hx <;> cases' hx with hx hx <;> cases hx <;> assumption
+        -- Porting note: was `by cases hx <;> cases hx <;> cases hx <;> assumption`
+        cases' hx with hx hx
+        · rwa [← hx] at α_in_Fγ
+        · cases hx; norm_cast
     · rw [adjoin_simple_le_iff]
       have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
       have β_in_Fαβ : β ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert_of_mem α rfl)
       exact F⟮α, β⟯.add_mem α_in_Fαβ (F⟮α, β⟯.smul_mem β_in_Fαβ)
-  let p :=
-    EuclideanDomain.gcd ((f.map (algebraMap F F⟮γ⟯)).comp (C (AdjoinSimple.gen F γ) - C ↑c * X))
-      (g.map (algebraMap F F⟮γ⟯))
+  let p := EuclideanDomain.gcd ((f.map (algebraMap F F⟮γ⟯)).comp
+    (C (AdjoinSimple.gen F γ) - (C ↑c : F⟮γ⟯[X]) * X)) (g.map (algebraMap F F⟮γ⟯))
   let h := EuclideanDomain.gcd ((f.map ιFE).comp (C γ - C (ιFE c) * X)) (g.map ιFE)
   have map_g_ne_zero : g.map ιFE ≠ 0 := map_ne_zero (minpoly.ne_zero hβ)
   have h_ne_zero : h ≠ 0 :=
@@ -148,17 +150,13 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
     rw [mem_roots_map h_ne_zero] at hx
-    specialize
-      hc (ιEE' γ - ιEE' (ιFE c) * x)
-        (by
-          have f_root := root_left_of_root_gcd hx
-          rw [eval₂_comp, eval₂_sub, eval₂_mul, eval₂_C, eval₂_C, eval₂_X, eval₂_map] at f_root
-          exact (mem_roots_map (minpoly.ne_zero hα)).mpr f_root)
-    specialize
-      hc x
-        (by
-          rw [mem_roots_map (minpoly.ne_zero hβ), ← eval₂_map]
-          exact root_right_of_root_gcd hx)
+    specialize hc (ιEE' γ - ιEE' (ιFE c) * x) (by
+      have f_root := root_left_of_root_gcd hx
+      rw [eval₂_comp, eval₂_sub, eval₂_mul, eval₂_C, eval₂_C, eval₂_X, eval₂_map] at f_root
+      exact (mem_roots_map (minpoly.ne_zero hα)).mpr f_root)
+    specialize hc x (by
+      rw [mem_roots_map (minpoly.ne_zero hβ), ← eval₂_map]
+      exact root_right_of_root_gcd hx)
     by_contra a
     apply hc
     apply (div_eq_iff (sub_ne_zero.mpr a)).mpr
@@ -182,7 +180,7 @@ section SeparableAssumption
 variable [IsSeparable F E]
 
 /-- Primitive element theorem: a finite separable field extension `E` of `F` has a
-  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : subalgebra F E)`.-/
+  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.-/
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
@@ -217,9 +215,6 @@ end Field
 theorem AlgHom.card (F E K : Type _) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
     [FiniteDimensional F E] [IsSeparable F E] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
-  convert
-    (AlgHom.card_of_powerBasis (Field.powerBasisOfFiniteOfSeparable F E) (IsSeparable.separable _ _)
-          (IsAlgClosed.splits_codomain _)).trans
-      (PowerBasis.finrank _).symm
-  infer_instance
+  convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
+    (IsSeparable.separable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
 #align alg_hom.card AlgHom.card
