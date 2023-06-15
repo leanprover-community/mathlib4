@@ -8,8 +8,8 @@ Authors: Ruben Van de Velde, Stanislas Polu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Analysis.NormedSpace.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # IMO 1972 Q5
@@ -31,20 +31,17 @@ from `hneg` directly), finally raising a contradiction with `k' < k'`.
 (Authored by Stanislas Polu inspired by Ruben Van de Velde).
 -/
 example (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y) (hf2 : ∀ y, ‖f y‖ ≤ 1)
-    (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 :=
-  by
+    (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
   set S := Set.range fun x => ‖f x‖
   -- Introduce `k`, the supremum of `f`.
   let k : ℝ := Sup S
   -- Show that `‖f x‖ ≤ k`.
-  have hk₁ : ∀ x, ‖f x‖ ≤ k :=
-    by
+  have hk₁ : ∀ x, ‖f x‖ ≤ k := by
     have h : BddAbove S := ⟨1, set.forall_range_iff.mpr hf2⟩
     intro x
     exact le_csSup h (Set.mem_range_self x)
   -- Show that `2 * (‖f x‖ * ‖g y‖) ≤ 2 * k`.
-  have hk₂ : ∀ x, 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k :=
-    by
+  have hk₂ : ∀ x, 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k := by
     intro x
     calc
       2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
@@ -56,8 +53,7 @@ example (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x
   by_contra' hneg
   set k' := k / ‖g y‖
   -- Demonstrate that `k' < k` using `hneg`.
-  have H₁ : k' < k :=
-    by
+  have H₁ : k' < k := by
     have h₁ : 0 < k := by
       obtain ⟨x, hx⟩ := hf3
       calc
@@ -67,8 +63,7 @@ example (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x
     apply lt_mul_of_one_lt_right h₁ hneg
     exact trans zero_lt_one hneg
   -- Demonstrate that `k ≤ k'` using `hk₂`.
-  have H₂ : k ≤ k' :=
-    by
+  have H₂ : k ≤ k' := by
     have h₁ : ∃ x : ℝ, x ∈ S := by use ‖f 0‖; exact Set.mem_range_self 0
     have h₂ : ∀ x, ‖f x‖ ≤ k' := by
       intro x
@@ -93,8 +88,7 @@ Prove that `|g(x)| ≤ 1` for all `x`.
 This is a more concise version of the proof proposed by Ruben Van de Velde.
 -/
 example (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y)
-    (hf2 : BddAbove (Set.range fun x => ‖f x‖)) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 :=
-  by
+    (hf2 : BddAbove (Set.range fun x => ‖f x‖)) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
   obtain ⟨x, hx⟩ := hf3
   set k := ⨆ x, ‖f x‖
   have h : ∀ x, ‖f x‖ ≤ k := le_ciSup hf2
