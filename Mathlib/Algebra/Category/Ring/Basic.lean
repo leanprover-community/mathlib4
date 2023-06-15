@@ -68,11 +68,17 @@ instance : ConcreteCategory SemiRingCat := by
 instance : CoeSort SemiRingCat (Type _) where
   coe X := X.α
 
-instance (X : SemiRingCat) : Semiring X := X.str
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
+  (forget SemiRingCat).obj R ≟ R
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+instance instSemiring (X : SemiRingCat) : Semiring X := X.str
+
+instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
@@ -179,9 +185,17 @@ instance : CoeSort RingCat (Type _) where
 
 instance (X : RingCat) : Ring X := X.str
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : RingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
+  (forget RingCat).obj R ≟ R
+
+instance instRing (X : RingCat) : Ring X := X.str
+
+instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
@@ -271,9 +285,17 @@ instance : CoeSort CommSemiRingCat (Type _) where
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : CommSemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
+  (forget CommSemiRingCat).obj R ≟ R
+
+instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
+
+instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
@@ -382,16 +404,13 @@ instance : CoeSort CommRingCat (Type _) where
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
-instance commRing (X : CommRingCat) : CommRing X := X.str
+instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
-instance commRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
+instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
-
-instance ringHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
-  RingHom.ringHomClass
+-- Porting note: added
+instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
