@@ -486,7 +486,7 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
 
 /-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
 countable topology, then the preimage of a set `s` is measurable if and only if the set is
-measurable in `set.range f`. -/
+measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_coe {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) := by
@@ -496,7 +496,7 @@ theorem measurableSet_preimage_iff_preimage_coe {f : X → Y} [SecondCountableTo
 
 /-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
 countable topology and the range of `f` is measurable, then the preimage of a set `s` is measurable
-if and only if the intesection with `set.range f` is measurable. -/
+if and only if the intesection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
@@ -509,8 +509,7 @@ countable topology, then for any measurable space `β` and `g : Y → β`, the c
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
-  forall₂_congr fun s _ =>
-    @Measurable.measurableSet_preimage_iff_preimage_coe _ _ _ _ _ _ _ _ _ _ _ _ hf (g ⁻¹' s)
+  forall₂_congr fun s _ => Measurable.measurableSet_preimage_iff_preimage_coe hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
 
 /-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
@@ -518,8 +517,7 @@ with second countable topology, then for any measurable space `α` and `g : Y �
 `g ∘ f` is measurable if and only if `g` is measurable. -/
 theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
     (hf : Measurable f) (hsurj : Surjective f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable g :=
-  forall₂_congr fun s _ =>
-    @Measurable.measurableSet_preimage_iff_of_surjective _ _ _ _ _ _ _ _ _ _ _ _ hf hsurj (g ⁻¹' s)
+  forall₂_congr fun s _ => Measurable.measurableSet_preimage_iff_of_surjective hf hsurj (s := g⁻¹'s)
 #align measurable.measurable_comp_iff_of_surjective Measurable.measurable_comp_iff_of_surjective
 
 end Measurable
