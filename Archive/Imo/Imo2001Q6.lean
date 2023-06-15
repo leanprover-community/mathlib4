@@ -9,7 +9,7 @@ Authors: Sara Díaz Real
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -21,7 +21,6 @@ $$ a*c + b*d = (a + b - c + d) * (-a + b + c + d). $$
 Prove that $a*b + c*d$ is not prime.
 
 -/
-
 
 variable {a b c d : ℤ}
 
@@ -46,4 +45,3 @@ theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
     have : a * c + b * d ≤ a * d + b * c := Int.le_of_dvd aux h2
     nlinarith only [hba, hdc, h, this]
 #align imo2001_q6 imo2001_q6
-
