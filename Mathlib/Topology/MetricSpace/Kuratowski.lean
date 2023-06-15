@@ -14,7 +14,9 @@ import Mathlib.Topology.Sets.Compacts
 /-!
 # The Kuratowski embedding
 
-Any separable metric space can be embedded isometrically in `ℓ^∞(ℝ)`.
+Any separable metric space can be embedded isometrically in `ℓ^∞(ℕ, ℝ)`.
+Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole space.
+
 -/
 
 
@@ -22,11 +24,9 @@ noncomputable section
 
 set_option linter.uppercaseLean3 false
 
-open Set Metric TopologicalSpace
+open Set Metric TopologicalSpace NNReal ENNReal
 
-open scoped ENNReal
-
-local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
+notation "ℓ^∞(" ι ") " => lp (fun i : ι => ℝ ) ∞
 
 universe u v w
 
@@ -34,15 +34,15 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace KuratowskiEmbedding
 
-/-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℝ) -/
+/-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
-variable {f g : ℓ_infty_ℝ} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
+variable {f g : ℓ^∞(ℕ)} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
 
 /-- A metric space can be embedded in `l^∞(ℝ)` via the distances to points in
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
 without density assumptions. -/
-def embeddingOfSubset : ℓ_infty_ℝ :=
+def embeddingOfSubset : ℓ^∞(ℕ) :=
   ⟨fun n => dist a (x n) - dist (x 0) (x n), by
     apply memℓp_infty
     use dist a (x 0)
@@ -93,9 +93,9 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
   simpa [dist_comm] using this
 #align Kuratowski_embedding.embedding_of_subset_isometry KuratowskiEmbedding.embeddingOfSubset_isometry
 
-/-- Every separable metric space embeds isometrically in `ℓ_infty_ℝ`. -/
+/-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
-    ∃ f : α → ℓ_infty_ℝ, Isometry f := by
+    ∃ f : α → ℓ^∞(ℕ), Isometry f := by
   cases' (univ : Set α).eq_empty_or_nonempty with h h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
@@ -112,12 +112,16 @@ end KuratowskiEmbedding
 
 open TopologicalSpace KuratowskiEmbedding
 
-/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℝ)`. -/
-def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ_infty_ℝ :=
+/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`. -/
+def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ^∞(ℕ) :=
   Classical.choose (KuratowskiEmbedding.exists_isometric_embedding α)
 #align Kuratowski_embedding kuratowskiEmbedding
 
-/-- The Kuratowski embedding is an isometry. -/
+/--
+    The Kuratowski embedding is an isometry.
+    Theorem 2.1 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
+    https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
+ -/
 protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
@@ -125,8 +129,63 @@ protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [S
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
-    [Nonempty α] : NonemptyCompacts ℓ_infty_ℝ where
+    [Nonempty α] : NonemptyCompacts ℓ^∞(ℕ) where
   carrier := range (kuratowskiEmbedding α)
   isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
   nonempty' := range_nonempty _
 #align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
+
+theorem lipschitzWith_const [PseudoMetricSpace α] [PseudoMetricSpace β] (b: β) (K : ℝ≥0):
+  LipschitzWith K (fun _ : α ↦ b):= by
+  intro x y; simp
+
+/--
+    A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
+    extension to the whole space.
+
+    Theorem 2.2 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
+    https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
+-/
+theorem LipschitzOnWith.extend_linf [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
+    {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
+  -- Construct the coordinate-wise extensions
+  have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
+  · intro i
+    apply LipschitzOnWith.extend_real -- use the nonlinear Hahn-Banach theorem here!
+    rw [lipschitzOnWith_iff_dist_le_mul] at hfl ⊢
+    intro x hx y hy
+    calc
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      _ ≤ K * dist x y := hfl x hx y hy
+  choose g hg using this
+  rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
+  . exact ⟨fun _ ↦ 0, lipschitzWith_const 0 K, by simp⟩
+  · let f_ext : α → ι → ℝ := fun x i ↦ g i x
+    -- Show that the extensions are uniformly bounded
+    have hf_extb : ∀ a : α, Memℓp (f_ext a) ∞
+    · intro a
+      let M : ℝ := ‖f a₀‖
+      use K * dist a a₀ + M
+      rintro - ⟨i, rfl⟩
+      rcases hg i with ⟨hgl, hgr⟩
+      calc
+        |g i a| = |g i a - f a₀ i + f a₀ i| := by simp
+        _ ≤ |g i a - f a₀ i| + |f a₀ i| := abs_add _ _
+        _ ≤ |g i a - g i a₀| + |g i a₀ - f a₀ i| + |f a₀ i| := by gcongr; apply abs_sub_le
+        _ = |g i a - g i a₀| + |f a₀ i| := by simp [hgr ha₀_in_s]
+        _ ≤ ↑K * dist a a₀ + |f a₀ i| := by
+            gcongr
+            exact lipschitzWith_iff_dist_le_mul.1 hgl a a₀
+        _ ≤ ↑K * dist a a₀ + M := by
+            gcongr
+            exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
+    -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
+    let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨f_ext i, hf_extb i⟩
+    refine ⟨f_ext', ?_, ?_⟩
+    · rw [lipschitzWith_iff_dist_le_mul]
+      intro x y
+      apply lp.norm_le_of_forall_le; positivity
+      exact fun i ↦ lipschitzWith_iff_dist_le_mul.mp (hg i).1 x y
+    · intro a hyp
+      ext i
+      exact (hg i).2 hyp
