@@ -75,21 +75,28 @@ protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
-theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r :=
+theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
   -- Porting note: was `by simp [pi_norm_le_iff_of_nonneg hr]`
-  (pi_norm_le_iff_of_nonneg hr).trans <| forall_congr' fun _ => pi_norm_le_iff_of_nonneg hr
+  rw [pi_norm_le_iff_of_nonneg hr]
+  simp_rw [pi_norm_le_iff_of_nonneg hr]
 #align matrix.norm_le_iff Matrix.norm_le_iff
 
 theorem nnnorm_le_iff {r : ℝ≥0} {A : Matrix m n α} : ‖A‖₊ ≤ r ↔ ∀ i j, ‖A i j‖₊ ≤ r := by
-  simp [pi_nnnorm_le_iff]
+  -- Porting note: was `by simp [pi_nnnorm_le_iff]`
+  rw [pi_nnnorm_le_iff]
+  simp_rw [pi_nnnorm_le_iff]
 #align matrix.nnnorm_le_iff Matrix.nnnorm_le_iff
 
 theorem norm_lt_iff {r : ℝ} (hr : 0 < r) {A : Matrix m n α} : ‖A‖ < r ↔ ∀ i j, ‖A i j‖ < r := by
-  simp [pi_norm_lt_iff hr]
+  -- Porting note: was `by simp [pi_norm_lt_iff hr]`
+  rw [pi_norm_lt_iff hr]
+  simp_rw [pi_norm_lt_iff hr]
 #align matrix.norm_lt_iff Matrix.norm_lt_iff
 
-theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} : ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r :=
-  by simp [pi_nnnorm_lt_iff hr]
+theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
+    ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r := by
+  rw [pi_nnnorm_lt_iff hr]
+  simp_rw [pi_nnnorm_lt_iff hr]
 #align matrix.nnnorm_lt_iff Matrix.nnnorm_lt_iff
 
 theorem norm_entry_le_entrywise_sup_norm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖ ≤ ‖A‖ :=
@@ -102,7 +109,9 @@ theorem nnnorm_entry_le_entrywise_sup_nnnorm (A : Matrix m n α) {i : m} {j : n}
 
 @[simp]
 theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
-    ‖A.map f‖₊ = ‖A‖₊ := by simp_rw [Pi.nnnorm_def, Matrix.map_apply, hf]
+    ‖A.map f‖₊ = ‖A‖₊ := by
+  rw [Pi.nnnorm_def, Pi.nnnorm_def]
+  simp only [Pi.nnnorm_def, Matrix.map_apply, hf]
 #align matrix.nnnorm_map_eq Matrix.nnnorm_map_eq
 
 @[simp]
@@ -136,7 +145,9 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
   ⟨norm_conjTranspose⟩
 
 @[simp]
-theorem nnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by simp [Pi.nnnorm_def]
+theorem nnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
+  rw [Pi.nnnorm_def]
+  simp [Pi.nnnorm_def]
 #align matrix.nnnorm_col Matrix.nnnorm_col
 
 @[simp]
@@ -145,7 +156,9 @@ theorem norm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
 #align matrix.norm_col Matrix.norm_col
 
 @[simp]
-theorem nnnorm_row (v : n → α) : ‖row v‖₊ = ‖v‖₊ := by simp [Pi.nnnorm_def]
+theorem nnnorm_row (v : n → α) : ‖row v‖₊ = ‖v‖₊ := by
+  rw [Pi.nnnorm_def]
+  simp [Pi.nnnorm_def]
 #align matrix.nnnorm_row Matrix.nnnorm_row
 
 @[simp]
@@ -280,7 +293,7 @@ theorem linfty_op_norm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
 theorem linfty_op_nnnorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_op_nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine' (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j hj hij => _).trans _
+  refine' (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => _).trans _
   · rw [diagonal_apply_ne' _ hij, nnnorm_zero]
   · rw [diagonal_apply_eq]
 #align matrix.linfty_op_nnnorm_diagonal Matrix.linfty_op_nnnorm_diagonal
@@ -306,9 +319,10 @@ theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
         Finset.sum_le_sum fun k hk => nnnorm_sum_le_of_le _ fun j hj => nnnorm_mul_le _ _
     _ = Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
       simp_rw [@Finset.sum_comm _ m n, Finset.mul_sum]
-    _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ :=
-      (Finset.sup_mono_fun fun i hi =>
-        Finset.sum_le_sum fun j hj => mul_le_mul_of_nonneg_left (Finset.le_sup hj) (zero_le _))
+    _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
+      gcongr
+      --(Finset.sup_mono_fun fun i hi =>
+      --  Finset.sum_le_sum fun j hj => mul_le_mul_of_nonneg_left (Finset.le_sup hj) (zero_le _))
     _ ≤ (Finset.univ.sup fun i => ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
 #align matrix.linfty_op_nnnorm_mul Matrix.linfty_op_nnnorm_mul
