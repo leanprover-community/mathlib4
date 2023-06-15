@@ -88,12 +88,11 @@ The following notations are localized in the locale `convolution`:
   This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
-* The convolution is a `ae_strongly_measurable` function
+* The convolution is a `AEStronglyMeasurable` function
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255I).
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere
 -/
-
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ContinuousLinearMap Metric
