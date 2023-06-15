@@ -82,8 +82,23 @@ example [Ring R] [Ring S] (f : R →+* S) (inj : Function.Injective f)
     simpa using wr
   done
 
+
+noncomputable section
 open Classical
-#check Submonoid.closure
+example (f : M → N) (sur : Function.Surjective f) : N → M := Function.surjInv sur
+
+def surjInv' (f : M → N) (sur : Function.Surjective f) (n : N) : N → M := sorry
+lemma surjInv'_spec (f : M → N) (sur : Function.Surjective f) (n : N) :
+   (surjInv' f sur n) (f (sur n).choose) = (sur n).choose := sorry
+
+open Classical
+
+attribute [simp] MonoidHom.map_mclosure
+#check MonoidHom.map_mtop
+
+@[simp]
+lemma foo [Monoid M] [Monoid N] (f : M →* N) (sur : Function.Surjective f) : Submonoid.map f ⊤ = ⊤ := sorry
+
 example [Monoid M] [Monoid N] (f : M →* N) (sur : Function.Surjective f)
     (w : Monoid.FG M) : Monoid.FG N := by
   -- transport w along f
@@ -98,29 +113,42 @@ example [Monoid M] [Monoid N] (f : M →* N) (sur : Function.Surjective f)
   -- Here `w` is an equation in `Submonoid M`, and the goal is an equation in `Submonoid N`.
   -- Really we should think here about why `Submonoid` is functorial, and use that...
   -- Let's have a magic step here, where we cleverly realise that:
-  rw [Submonoid.eq_top_iff'] at w ⊢
-  -- It's a forall, but we need to pick a preimage.
-  intro n
-  rcases sur n with ⟨m, rfl⟩
-  specialize w m
-  -- Cheating here
-  unfold Submonoid.closure sInf Submonoid.instInfSetSubmonoid at w ⊢
-  simp at w ⊢
-  -- It's a forall!
-  intro r
-  specialize w (r.comap f) -- How did we know to use `⁻Submonoid.comap` here?
-  -- It's an implication!
-  convert _ ∘ w ∘ _
-  all_goals (clear w)
-  . -- Now the transport goal is `m ∈ r.comap f` ~~~> `f m ∈ r`
-    -- Personally I think there should be lemmas tagged `[transport]` for the `∈` predicate
-    intro w
-    simpa using w
-  . -- Now the transport goal is `↑s ⊆ ↑f ⁻¹' ↑r` ~~~> `↑s ⊆ ↑(Submonoid.comap f r)`
-    -- We could treat this as an implication, but it's actually just refl more or less
-    intro w
-    simpa using w -- simp only [Submonoid.coe_comap, w]
-  done
+  have : Submonoid.map f (Submonoid.closure s) = Submonoid.closure (f '' s)
+  · -- FIXME attribute [simp] MonoidHom.map_mclosure
+    simp
+  have : Submonoid.map f ⊤ = ⊤ := by
+    ext x
+    constructor
+    simp
+    simp
+  -- FIXME this lemma should be in the library? as a simp lemma?
+  -- exact MonoidHom.map_mclosure f s
+  -- -- exact MonoidHom.map_mclosure f s
+  -- rw [Submonoid.eq_top_iff'] at w ⊢
+  -- -- It's a forall, but we need to pick a preimage.
+  -- intro n
+  -- specialize w _
+  -- · exact surjInv' f sur n n
+  -- rcases sur n with ⟨m, rfl⟩
+
+  -- -- Cheating here
+  -- unfold Submonoid.closure sInf Submonoid.instInfSetSubmonoid at w ⊢
+  -- simp at w ⊢
+  -- -- It's a forall!
+  -- intro r
+  -- specialize w (r.comap f) -- How did we know to use `⁻Submonoid.comap` here?
+  -- -- It's an implication!
+  -- convert _ ∘ w ∘ _
+  -- all_goals (clear w)
+  -- . -- Now the transport goal is `m ∈ r.comap f` ~~~> `f m ∈ r`
+  --   -- Personally I think there should be lemmas tagged `[transport]` for the `∈` predicate
+  --   intro w
+  --   simpa using w
+  -- . -- Now the transport goal is `↑s ⊆ ↑f ⁻¹' ↑r` ~~~> `↑s ⊆ ↑(Submonoid.comap f r)`
+  --   -- We could treat this as an implication, but it's actually just refl more or less
+  --   intro w
+  --   simpa using w -- simp only [Submonoid.coe_comap, w]
+  -- done
 
 -- Postponing this one, to avoid dealing with structures/classes for now:
 example [Ring R] [Ring S] [IsCancelMulZero S] (f : R →+* S) (inj : Function.Injective f) :
