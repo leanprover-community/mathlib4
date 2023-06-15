@@ -45,7 +45,7 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
 * `ContinuousMap.setOfIdeal`: complement of the set on which all functions in the ideal vanish.
 * `ContinuousMap.opensOfIdeal`: `ContinuousMap.setOfIdeal` as a term of `opens X`.
 * `ContinuousMap.idealOpensGI`: The Galois insertion `ContinuousMap.opensOfIdeal` and
-  `λ s, ContinuousMap.idealOfSet ↑s`.
+  `fun s ↦ ContinuousMap.idealOfSet ↑s`.
 * `WeakDual.CharacterSpace.continuousMapEval`: the natural continuous map from a locally compact
   topological space `X` to the `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point
   evaluation at `x`, with modest hypothesis on `𝕜`.
@@ -255,7 +255,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
-    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `λ y, ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
+    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
@@ -343,7 +343,7 @@ theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (ide
 variable (X)
 
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
-`λ s, ContinuousMap.idealOfSet ↑s`. -/
+`fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
     where
