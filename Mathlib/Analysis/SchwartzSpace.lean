@@ -61,12 +61,6 @@ The implementation of the seminorms is taken almost literally from `continuous_l
 Schwartz space, tempered distributions
 -/
 
--- TODO: move elsewhere
-instance [LE α] [LE β] [DecidableRel ((· ≤ ·) : α → α → Prop)]
-    [DecidableRel ((· ≤ ·) : β → β → Prop)] :
-    DecidableRel ((· ≤ ·) : (α × β) → (α × β) → Prop) := fun _ _ ↦
-  And.decidable
-
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 noncomputable section
