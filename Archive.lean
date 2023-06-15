@@ -1,1 +1,1 @@
-import Archive.Imo.Imo1987Q1.lean
+import Archive.Imo.Imo1987Q1
