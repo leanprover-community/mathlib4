@@ -204,7 +204,7 @@ variable? [VectorSpace k A] [Rep k A V]
 end
 
 section
--- This fails due to requiring `Module k A` with two different sets of instance arguments
+-- This fails due to requiring `Module k A` with two different sets of instance arguments (TODO?)
 -- variable? [Rep k A V] [VectorSpace k A]
 end
 
