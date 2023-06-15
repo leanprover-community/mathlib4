@@ -64,9 +64,9 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
     -∑ c : { c : Composition (n + 2) // c.length < n + 2 },
-        have : (c : Composition (n + 2)).length < n + 2 := c.2
         (leftInv p i (c : Composition (n + 2)).length).compAlongComposition
           (p.compContinuousLinearMap i.symm) c
+  decreasing_by exact c.2
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
@@ -583,12 +583,5 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         single_le_sum this (by simp [one_le_n]))
       _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
-
-/-
-Porting note:
-These theorems get `unusedHavesSuffices` lint, but they have no `have`.
-It seems the bug of the linter.
--/
-attribute [nolint unusedHavesSuffices] leftInv_removeZero leftInv_comp
 
 end FormalMultilinearSeries
