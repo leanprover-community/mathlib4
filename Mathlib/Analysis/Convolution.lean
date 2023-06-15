@@ -161,20 +161,21 @@ theorem HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupp
 end NoMeasurability
 
 section Measurability
-
-variable [MeasurableSpace G] {μ ν : Measure G}
+-- porting note: throughout this file we use `MeasureTheory.Measure` instead of `Measure`.
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Measure.20is.20overloaded
+variable [MeasurableSpace G] {μ ν : MeasureTheory.Measure G}
 
 /-- The convolution of `f` and `g` exists at `x` when the function `t ↦ L (f t) (g (x - t))` is
 integrable. There are various conditions on `f` and `g` to prove this. -/
 def ConvolutionExistsAt [Sub G] (f : G → E) (g : G → E') (x : G) (L : E →L[𝕜] E' →L[𝕜] F)
-    (μ : Measure G := by volume_tac) : Prop :=
+    (μ : MeasureTheory.Measure G := by volume_tac) : Prop :=
   Integrable (fun t => L (f t) (g (x - t))) μ
 #align convolution_exists_at ConvolutionExistsAt
 
 /-- The convolution of `f` and `g` exists when the function `t ↦ L (f t) (g (x - t))` is integrable
 for all `x : G`. There are various conditions on `f` and `g` to prove this. -/
 def ConvolutionExists [Sub G] (f : G → E) (g : G → E') (L : E →L[𝕜] E' →L[𝕜] F)
-    (μ : Measure G := by volume_tac) : Prop :=
+    (μ : MeasureTheory.Measure G := by volume_tac) : Prop :=
   ∀ x : G, ConvolutionExistsAt f g x L μ
 #align convolution_exists ConvolutionExists
 
@@ -440,7 +441,7 @@ variable [NormedSpace ℝ F] [CompleteSpace F]
 /-- The convolution of two functions `f` and `g` with respect to a continuous bilinear map `L` and
 measure `μ`. It is defined to be `(f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`. -/
 noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[𝕜] E' →L[𝕜] F)
-    (μ : Measure G := by volume_tac) : G → F := fun x =>
+    (μ : MeasureTheory.Measure G := by volume_tac) : G → F := fun x =>
   ∫ t, L (f t) (g (x - t)) ∂μ
 #align convolution convolution
 
@@ -1051,7 +1052,7 @@ variable {n : ℕ∞}
 
 variable [CompleteSpace F]
 
-variable [MeasurableSpace G] {μ ν : Measure G}
+variable [MeasurableSpace G] {μ ν : MeasureTheory.Measure G}
 
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
@@ -1239,7 +1240,7 @@ variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 variable [CompleteSpace F]
 
-variable {μ : Measure 𝕜}
+variable {μ : MeasureTheory.Measure 𝕜}
 
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
 
@@ -1264,7 +1265,7 @@ section WithParam
 
 variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
   [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
-  [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
+  [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : MeasureTheory.Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
 set_option maxHeartbeats 300000 in
@@ -1426,7 +1427,8 @@ In this version, all the types belong to the same universe (to get an induction 
 proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
     {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
-    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] {μ : Measure G}
+    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G]
+    {μ : MeasureTheory.Measure G}
     [NormedAddCommGroup G] [BorelSpace G] [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P]
     {f : G → E} {n : ℕ∞} (L : E →L[𝕜] E' →L[𝕜] F) {g : P → G → E'} {s : Set P} {k : Set G}
     (hs : IsOpen s) (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
@@ -1491,7 +1493,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   have isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
   have isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
   let ef := f ∘ isoG
-  let eμ : Measure eG := Measure.map isoG.symm μ
+  let eμ : MeasureTheory.Measure eG := Measure.map isoG.symm μ
   let eg : eP → eG → eE' := fun ep ex => isoE'.symm (g (isoP ep) (isoG ex))
   let eL :=
     ContinuousLinearMap.comp
@@ -1603,12 +1605,12 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F] [CompleteS
 bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` to
 `∫ t in 0..x, L (f t) (g (x - t)) ∂ν` if `0 < x`, and 0 otherwise. -/
 noncomputable def posConvolution (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
-    (ν : Measure ℝ := by volume_tac) : ℝ → F :=
+    (ν : MeasureTheory.Measure ℝ := by volume_tac) : ℝ → F :=
   indicator (Ioi (0 : ℝ)) fun x => ∫ t in (0)..x, L (f t) (g (x - t)) ∂ν
 #align pos_convolution posConvolution
 
 theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
-    (ν : Measure ℝ := by volume_tac) [NoAtoms ν] :
+    (ν : MeasureTheory.Measure ℝ := by volume_tac) [NoAtoms ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x
   unfold convolution posConvolution indicator; simp only
@@ -1652,7 +1654,8 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         ContinuousLinearMap.zero_apply]
 #align pos_convolution_eq_convolution_indicator posConvolution_eq_convolution_indicator
 
-theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SigmaFinite μ]
+theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : MeasureTheory.Measure ℝ}
+    [SigmaFinite μ]
     [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)
     (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     Integrable (posConvolution f g L ν) μ := by
@@ -1663,7 +1666,8 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
-theorem integral_pos_convolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
+theorem integral_pos_convolution [CompleteSpace E] [CompleteSpace E']
+    {μ ν : MeasureTheory.Measure ℝ}
     [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     (∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ) =
