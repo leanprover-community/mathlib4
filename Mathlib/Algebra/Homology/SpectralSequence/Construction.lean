@@ -102,13 +102,80 @@ lemma d_comp_d (r : ℤ) (hr : 2 ≤ r) (pq pq' pq'' : ℤ × ℤ) (hpq' : pq + 
     (by linarith) (by linarith) ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D₇) rfl rfl rfl rfl, assoc, assoc]
   erw [Iso.inv_hom_id_assoc, X.d_comp_d_app_assoc, zero_comp, comp_zero]
 
+noncomputable def shortComplexIso (r : ℤ) (hr : 2 ≤ r) (pq pq' pq'' : ℤ × ℤ) (hpq' : pq + (r, 1 - r) = pq')
+    (hpq'' : pq' + (r, 1 - r) = pq'')
+    (n₀ n₁ n₂ n₃ n₄ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+      (hn₄ : n₃ + 1 = n₄) (hn : pq.1 + pq.2 = n₁) (D : Arrow₇ ℤt)
+      (hD₀ : D.X₀ = ℤt.mk (pq''.snd-r+2))
+      (hD₁ : D.X₁ = ℤt.mk pq''.snd)
+      (hD₂ : D.X₂ = ℤt.mk (pq''.snd + 1))
+      (hD₃ : D.X₃ = ℤt.mk pq'.snd)
+      (hD₄ : D.X₄ = ℤt.mk (pq'.snd + 1))
+      (hD₅ : D.X₅ = ℤt.mk pq.snd)
+      (hD₆ : D.X₆ = ℤt.mk (pq.snd+1))
+      (hD₇ : D.X₇ = ℤt.mk (pq.snd+r-1)) :
+    ShortComplex.mk _ _ (d_comp_d X r hr pq pq' pq'' hpq' hpq'') ≅
+      X.shortComplexEEEObj n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ D := by
+  have h₁ : pq.1 + r = pq'.1 := congr_arg _root_.Prod.fst hpq'
+  have h₂ : pq.2 + (1-r) = pq'.2 := congr_arg _root_.Prod.snd hpq'
+  have h₃ : pq'.1 + r = pq''.1 := congr_arg _root_.Prod.fst hpq''
+  have h₄ : pq'.2 + (1-r) = pq''.2 := congr_arg _root_.Prod.snd hpq''
+  refine' ShortComplex.isoMk (pageIsoE X r hr pq n₀ n₁ n₂ hn₁ hn₂ hn _ _ hD₅ hD₆ hD₇)
+    (pageIsoE X r hr pq' n₁ n₂ n₃ hn₂ hn₃ (by linarith) _ _ hD₃ hD₄ _)
+    (pageIsoE X r hr pq'' n₂ n₃ n₄ hn₃ hn₄ (by linarith) _ hD₀ hD₁ hD₂ _) _ _
+  . dsimp
+    rw [hD₄]
+    congr 1
+    linarith
+  . dsimp
+    rw [hD₂]
+    congr 1
+    linarith
+  . dsimp
+    rw [hD₅]
+    congr 1
+    linarith
+  . dsimp
+    rw [hD₃]
+    congr 1
+    linarith
+  . dsimp [shortComplexEEEObj]
+    rw [d_eq X r hr pq pq' hpq' n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ (by linarith)
+      ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D), assoc, assoc]
+    erw [Iso.inv_hom_id, comp_id]
+    rfl
+  . dsimp [shortComplexEEEObj]
+    rw [d_eq X r hr pq' pq'' hpq'' n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ (by linarith)
+      ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D), assoc, assoc]
+    erw [Iso.inv_hom_id, comp_id]
+    rfl
+
+noncomputable def iso (r r' : ℤ) (hr : 2 ≤ r) (hr' : r + 1 = r') (pq pq' pq'' : ℤ × ℤ)
+    (hpq' : pq + (r, 1 - r) = pq') (hpq'' : pq' + (r, 1 - r) = pq'') :
+    (ShortComplex.mk _ _ (ToE₂CohomologicalSpectralSequence.d_comp_d
+      X r hr pq pq' pq'' hpq' hpq'')).homology ≅ page X r' (by linarith) pq' := by
+  have h₁ : pq.1 + r = pq'.1 := congr_arg _root_.Prod.fst hpq'
+  have h₂ : pq.2 + (1-r) = pq'.2 := congr_arg _root_.Prod.snd hpq'
+  have h₄ : pq'.2 + (1-r) = pq''.2 := congr_arg _root_.Prod.snd hpq''
+  let n := pq.1 + pq.2
+  have hn : n = pq.1 + pq.2 := rfl
+  refine' ShortComplex.homologyMapIso (shortComplexIso X r hr pq pq' pq'' hpq' hpq'' (n-1) n (n+1) (n+2) (n+3)
+    _ _ _ _ (by linarith)
+    (ιℤt.mapArrow₇.obj (Arrow₇.mkOfLE (pq''.2-r+2) pq''.2 (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1)))
+    _ _ _ _ _ _ _ _) ≪≫
+    X.homologyShortComplexEEEObjIso _ _ _ _ _ _ _ _ _ _ ≪≫
+    (pageIsoE X r' _ _ _ _ _ _ _ _ _ _ _ _ _).symm
+  all_goals try rfl
+  all_goals try linarith
+  all_goals dsimp ; congr 1 ; linarith
+
 end ToE₂CohomologicalSpectralSequence
 
 noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectralSequence C where
   page' := ToE₂CohomologicalSpectralSequence.page X
   d' := ToE₂CohomologicalSpectralSequence.d X
   d_comp_d' := ToE₂CohomologicalSpectralSequence.d_comp_d X
-  iso' := sorry
+  iso' := ToE₂CohomologicalSpectralSequence.iso X
 
 pp_extended_field_notation toE₂CohomologicalSpectralSequence
 
