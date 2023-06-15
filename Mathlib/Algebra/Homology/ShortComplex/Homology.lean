@@ -702,11 +702,16 @@ instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
   dsimp only [homologyMap']
   infer_instance
 
-instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
-    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+lemma isIso_homologyMap_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
+    (h₁ : Epi φ.τ₁) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by
   dsimp only [homologyMap]
   infer_instance
+
+instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (homologyMap φ) :=
+  isIso_homologyMap_of_epi_of_isIso_of_mono' φ inferInstance inferInstance inferInstance
 
 instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :

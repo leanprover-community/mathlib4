@@ -155,6 +155,11 @@ lemma epi_homology_map_iff {a b : ι} (φ : a ⟶ b) :
   (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
     (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
 
+lemma isIso_homology_map_iff {a b : ι} (φ : a ⟶ b) :
+    IsIso (S.homology.map φ) ↔ IsIso (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
+  (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
+    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
+
 end ShortComplex
 
 
@@ -1803,6 +1808,56 @@ lemma isIso_H_map₂ (n : ℤ) {D₁ D₂ : Arrow ι} (φ : D₁ ⟶ D₂) (hφ 
   have := X.epi_H_map₂ B n φ hφ β
   have := X.mono_H_map₂ B n φ hφ n' hn' β'
   apply isIso_of_mono_of_epi
+
+lemma isIso_E_map {D₁ D₂ : Arrow₃ ι} (φ : D₁ ⟶ D₂) (α : D₂.X₀ ⟶ B.γ₁ n₂)
+    (hφ₁ : IsIso φ.τ₁) (hφ₂ : IsIso φ.τ₂) (β : B.γ₂ n₀ ⟶ D₁.X₃) :
+    IsIso ((X.E n₀ n₁ n₂ hn₁ hn₂).map φ) := by
+  dsimp [E]
+  rw [ShortComplex.isIso_homology_map_iff]
+  apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
+  . exact X.epi_H_map₂ B n₀ _ hφ₂ β
+  . dsimp [shortComplexE]
+    have : IsIso (Arrow₃.gMor.map φ) := by
+      refine @Arrow.isIso_of_isIso_left_of_isIso_right _ _ _ _ _ ?_ ?_
+      all_goals dsimp ; infer_instance
+    infer_instance
+  . exact X.mono_H_map₁ B n₂ _ hφ₁ α
+
+@[simps! hom]
+noncomputable def asIsoEMap {D₁ D₂ : Arrow₃ ι} (φ : D₁ ⟶ D₂) (α : D₂.X₀ ⟶ B.γ₁ n₂)
+    (hφ₁ : IsIso φ.τ₁) (hφ₂ : IsIso φ.τ₂) (β : B.γ₂ n₀ ⟶ D₁.X₃) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj D₁ ≅ (X.E n₀ n₁ n₂ hn₁ hn₂).obj D₂ := by
+  have := X.isIso_E_map n₀ n₁ n₂ hn₁ hn₂ B φ α hφ₁ hφ₂ β
+  exact asIso ((X.E n₀ n₁ n₂ hn₁ hn₂).map φ)
+
+noncomputable def isoEInfty₁ (D : Arrow₃ ι) (α : D.X₀ ⟶ B.γ₁ n₂) (β : B.γ₂ n₀ ⟶ D.X₃) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj (Arrow₃.mk (homOfLE bot_le) D.g D.h) ≅
+      (X.E n₀ n₁ n₂ hn₁ hn₂).obj D :=
+  X.asIsoEMap n₀ n₁ n₂ hn₁ hn₂ B
+    { τ₀ := homOfLE bot_le
+      τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := 𝟙 _
+      commf := Subsingleton.elim _ _
+      commg := Subsingleton.elim _ _
+      commh := Subsingleton.elim _ _ } α inferInstance inferInstance β
+
+noncomputable def isoEInfty₂ (D : Arrow₂ ι) (β : B.γ₂ n₀ ⟶ D.X₂) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj (Arrow₃.mk (homOfLE bot_le) D.f D.g) ≅
+      (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk D.f) :=
+  X.asIsoEMap n₀ n₁ n₂ hn₁ hn₂ B
+    { τ₀ := 𝟙 _
+      τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := homOfLE le_top
+      commf := Subsingleton.elim _ _
+      commg := Subsingleton.elim _ _
+      commh := Subsingleton.elim _ _ } (homOfLE bot_le) inferInstance inferInstance β
+
+noncomputable def isoEInfty (D : Arrow₃ ι) (α : D.X₀ ⟶ B.γ₁ n₂) (β : B.γ₂ n₀ ⟶ D.X₃) :
+    (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk D.g) :=
+  (X.isoEInfty₁ n₀ n₁ n₂ hn₁ hn₂ B D α β).symm ≪≫
+    X.isoEInfty₂ n₀ n₁ n₂ hn₁ hn₂ B (Arrow₃.δ₀.obj D) β
 
 lemma epi_overAbutment_obj_hom (n : ℤ) (i : ι) (β : B.γ₂ n ⟶ i) :
     Epi ((X.overAbutment n).obj i).hom :=
