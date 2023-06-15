@@ -8,7 +8,7 @@ Authors: Riccardo Brasca, Johan Commelin, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Normed.Group.SemiNormedGroup
+import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
