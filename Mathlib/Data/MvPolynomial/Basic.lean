@@ -154,7 +154,6 @@ instance sMulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommC
   AddMonoidAlgebra.sMulCommClass_self _
 #align mv_polynomial.smul_comm_class_right MvPolynomial.sMulCommClass_right
 
-
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
   AddMonoidAlgebra.unique
