@@ -315,16 +315,17 @@ theorem linfty_op_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ 
   calc
     (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
         Finset.univ.sup fun i => ∑ k, ∑ j, ‖A i j‖₊ * ‖B j k‖₊ :=
-      Finset.sup_mono_fun fun i hi =>
-        Finset.sum_le_sum fun k hk => nnnorm_sum_le_of_le _ fun j hj => nnnorm_mul_le _ _
+      Finset.sup_mono_fun fun i _hi =>
+        Finset.sum_le_sum fun k _hk => nnnorm_sum_le_of_le _ fun j _hj => nnnorm_mul_le _ _
     _ = Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
       simp_rw [@Finset.sum_comm _ m n, Finset.mul_sum]
     _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
-      gcongr
-      --(Finset.sup_mono_fun fun i hi =>
-      --  Finset.sum_le_sum fun j hj => mul_le_mul_of_nonneg_left (Finset.le_sup hj) (zero_le _))
+      refine Finset.sup_mono_fun fun i _hi => ?_
+      gcongr with j hj
+      exact Finset.le_sup (f := fun i ↦ ∑ k : n, ‖B i k‖₊) hj
     _ ≤ (Finset.univ.sup fun i => ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
+      rfl
 #align matrix.linfty_op_nnnorm_mul Matrix.linfty_op_nnnorm_mul
 
 theorem linfty_op_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A ⬝ B‖ ≤ ‖A‖ * ‖B‖ :=
@@ -373,7 +374,8 @@ the norm of a matrix. -/
 @[local instance]
 protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
     NonUnitalNormedRing (Matrix n n α) :=
-  { Matrix.linftyOpNonUnitalSemiNormedRing with }
+  { Matrix.linftyOpNonUnitalSemiNormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align matrix.linfty_op_non_unital_normed_ring Matrix.linftyOpNonUnitalNormedRing
 
 /-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
@@ -381,7 +383,8 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[local instance]
 protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
-  { Matrix.linftyOpSemiNormedRing with }
+  { Matrix.linftyOpSemiNormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align matrix.linfty_op_normed_ring Matrix.linftyOpNormedRing
 
 /-- Normed algebra instance (using sup norm of L1 norm) for matrices over a normed algebra. Not
@@ -390,7 +393,7 @@ matrix. -/
 @[local instance]
 protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
-  { Matrix.linftyOpNormedSpace with }
+  { Matrix.linftyOpNormedSpace, Matrix.instAlgebraMatrixSemiring with }
 #align matrix.linfty_op_normed_algebra Matrix.linftyOpNormedAlgebra
 
 end LinftyOp
@@ -412,7 +415,7 @@ matrix. -/
 @[local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  (by infer_instance : SeminormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+  inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
 #align matrix.frobenius_seminormed_add_comm_group Matrix.frobeniusSeminormedAddCommGroup
 
 /-- Normed group instance (using frobenius norm) for matrices over a normed group.  Not
@@ -512,7 +515,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
   let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
-  rw [← Finset.sum_subset (Finset.subset_univ s) fun i hi his => ?_]
+  rw [← Finset.sum_subset (Finset.subset_univ s) fun i _hi his => ?_]
   · rw [Finset.sum_map, NNReal.sqrt_eq_rpow]
     dsimp
     simp_rw [diagonal_apply_eq, NNReal.rpow_two]
@@ -565,9 +568,10 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[local instance]
 def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
-  { Matrix.frobeniusSeminormedAddCommGroup with
+  { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
     norm := Norm.norm
-    norm_mul := frobenius_norm_mul }
+    norm_mul := frobenius_norm_mul
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align matrix.frobenius_normed_ring Matrix.frobeniusNormedRing
 
 /-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
@@ -576,7 +580,7 @@ matrix. -/
 @[local instance]
 def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] :
     NormedAlgebra R (Matrix m m α) :=
-  { Matrix.frobeniusNormedSpace with }
+  { Matrix.frobeniusNormedSpace, Matrix.instAlgebraMatrixSemiring with }
 #align matrix.frobenius_normed_algebra Matrix.frobeniusNormedAlgebra
 
 end IsROrC
