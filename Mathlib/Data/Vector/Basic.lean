@@ -516,7 +516,7 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
-def casesOn {motive : ∀{n}, Vector α n → Sort _}
+def casesOn {motive : ∀ {n}, Vector α n → Sort _}
             (v : Vector α m)
             (nil : motive nil)
             (cons : ∀{n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
@@ -787,9 +787,8 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
   rfl
 
 @[simp]
-theorem append_nil : (append xs nil) = xs :=
-  by cases xs; simp[append]
-
+theorem append_nil : append xs nil = xs := by
+  cases xs; simp [append]
 
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
