@@ -61,7 +61,7 @@ namespace Bitvec.Tactic
 
   macro "aesop_bitvec" : tactic => `(tactic|
     aesop
-      ( add 90% cases Bool, 90% Bitvec.ext,
+      ( add 90% cases Bool,
       ) (
         rule_sets [Mathlib.Data.Bitvec]
       )

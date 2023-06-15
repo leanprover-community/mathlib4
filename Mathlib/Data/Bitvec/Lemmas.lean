@@ -9,6 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.Bitvec.Ruleset
 import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.NormNum
 
@@ -340,7 +341,7 @@ instance (n : Nat) : Inhabited (Bitvec n) :=
   ⟨Vector.replicate n true⟩
 
 /-- Two `v w : Bitvec n` are equal iff they are equal at every single index. -/
-@[ext]
+@[ext, aesop 90% (rule_sets [Mathlib.Data.Bitvec])]
 theorem ext : ∀ {v w : Bitvec n} (_ : ∀ m : Fin n, Bitvec.get v m = Bitvec.get w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
     Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)

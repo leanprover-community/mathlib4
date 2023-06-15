@@ -52,6 +52,10 @@ section Zero
       rfl
     case succ n ih =>
       rw[ofNat_zero_succ, Vector.replicate_succ, ih]
+
+  @[simp]
+  theorem zero_unfold : (0 : Bitvec <| n+1) = false ::ᵥ 0 := by
+    rfl
 end Zero
 
 
