@@ -242,10 +242,11 @@ noncomputable def toE₂CohomologicalSpectralSequencePageTwoIso
   refine' X.EObjIsoH (n-1) n (n+1) _ rfl _ _ _
   all_goals dsimp ; infer_instance
 
-noncomputable def toE₂CohomologicalSpectralSequencePageInfinityIso (pq : ℤ × ℤ) (n : ℤ)
-    (h : pq.1 + pq.2 = n) (q' : ℤ) (hq' : pq.2 + 1 = q') [X.IsStationary Bounds.firstQuadrant] :
-    X.toE₂CohomologicalSpectralSequence.pageInfinity pq ≅
-      (ιℤt.mapArrow ⋙ X.EInfty (n-1) n (n+1) (by linarith) rfl).obj (Arrow.mkOfLE pq.2 q') :=
+noncomputable def toE₂CohomologicalSpectralSequencePageInfinityIso (pq : ℤ × ℤ) (n₀ n₁ n₂ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn : pq.1 + pq.2 = n₁)
+    (D : Arrow ℤt) (hD₀ : D.left = ℤt.mk pq.2) (hD₁ : D.right = ℤt.mk (pq.2+1))
+    [X.IsStationary Bounds.firstQuadrant] :
+    X.toE₂CohomologicalSpectralSequence.pageInfinity pq ≅ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj D :=
   sorry
 
 noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBoundsFirstQuadrant
