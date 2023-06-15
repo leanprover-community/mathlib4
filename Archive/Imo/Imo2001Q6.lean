@@ -8,9 +8,9 @@ Authors: Sara Díaz Real
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Associated
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Algebra.Associated
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2001 Q6
@@ -26,15 +26,13 @@ Prove that $a*b + c*d$ is not prime.
 variable {a b c d : ℤ}
 
 theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
-    (h : a * c + b * d = (a + b - c + d) * (-a + b + c + d)) : ¬Prime (a * b + c * d) :=
-  by
+    (h : a * c + b * d = (a + b - c + d) * (-a + b + c + d)) : ¬Prime (a * b + c * d) := by
   intro (h0 : Prime (a * b + c * d))
   have ha : 0 < a := by linarith
   have hb : 0 < b := by linarith
   have hc : 0 < c := by linarith
   -- the key step is to show that `a*c + b*d` divides the product `(a*b + c*d) * (a*d + b*c)`
-  have dvd_mul : a * c + b * d ∣ (a * b + c * d) * (a * d + b * c) :=
-    by
+  have dvd_mul : a * c + b * d ∣ (a * b + c * d) * (a * d + b * c) := by
     use b ^ 2 + b * d + d ^ 2
     linear_combination b * d * h
   -- since `a*b + c*d` is prime (by assumption), it must divide `a*c + b*d` or `a*d + b*c`
