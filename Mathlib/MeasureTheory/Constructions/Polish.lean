@@ -250,8 +250,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type _} [t : TopologicalSpa
     ∃ b : Set (Set (range f)), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b :=
     exists_countable_basis (range f)
   haveI : Countable b := b_count.to_subtype
-  have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := by
-    intro s
+  have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := fun s ↦ by
     apply MeasurableSet.isClopenable
     exact hf.subtype_mk (hb.isOpen s.2).measurableSet
   choose T Tt Tpolish _ Topen using this
@@ -259,7 +258,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type _} [t : TopologicalSpa
     ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le T Tt Tpolish
   refine' ⟨t', t't, _, t'_polish⟩
-  have : @Continuous _ _ t' _ (rangeFactorization f) :=
+  have : Continuous[t', _] (rangeFactorization f) :=
     hb.continuous _ fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 #align measurable.exists_continuous Measurable.exists_continuous
@@ -445,7 +444,6 @@ end MeasureTheory
 ### Measurability of preimages under measurable maps
 -/
 
-
 namespace Measurable
 
 variable {X Y β : Type _} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -459,8 +457,8 @@ Polish space. -/
 theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
     (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
-  refine' ⟨fun h => _, fun h => hf h⟩
-  apply MeasureTheory.AnalyticSet.measurableSet_of_compl
+  refine ⟨fun h => ?_, fun h => hf h⟩
+  apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
     exact h.analyticSet_image hf
   · rw [← image_preimage_eq (sᶜ) hsurj]
@@ -487,12 +485,12 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
 /-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
 countable topology, then the preimage of a set `s` is measurable if and only if the set is
 measurable in `Set.range f`. -/
-theorem measurableSet_preimage_iff_preimage_coe {f : X → Y} [SecondCountableTopology (range f)]
+theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {s : Set Y} :
-    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) := by
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  rw [← hf'.measurableSet_preimage_iff_of_surjective surjective_onto_range]; rfl
-#align measurable.measurable_set_preimage_iff_preimage_coe Measurable.measurableSet_preimage_iff_preimage_coe
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+#align measurable.measurable_set_preimage_iff_preimage_coe Measurable.measurableSet_preimage_iff_preimage_val
 
 /-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
 countable topology and the range of `f` is measurable, then the preimage of a set `s` is measurable
@@ -500,8 +498,8 @@ if and only if the intesection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
-  rw [hf.measurableSet_preimage_iff_preimage_coe, ←
-    (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+  rw [hf.measurableSet_preimage_iff_preimage_val,
+    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
 #align measurable.measurable_set_preimage_iff_inter_range Measurable.measurableSet_preimage_iff_inter_range
 
 /-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
@@ -509,7 +507,7 @@ countable topology, then for any measurable space `β` and `g : Y → β`, the c
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
-  forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_coe hf (s := g ⁻¹' s)
+  forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
 
 /-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
@@ -547,9 +545,10 @@ instance Quotient.borelSpace {X : Type _} [TopologicalSpace X] [PolishSpace X] [
 instance QuotientGroup.borelSpace {G : Type _} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
-  haveI := ((Subgroup.t3_quotient_of_isClosed N).t25Space).t2Space
+  -- porting note: 1st and 3rd `haveI`s were not needed in Lean 3
+  haveI := Subgroup.t3_quotient_of_isClosed N
   haveI := @PolishSpace.secondCountableTopology G
-  haveI := @QuotientGroup.secondCountableTopology G
+  haveI := QuotientGroup.secondCountableTopology (Γ := N)
   Quotient.borelSpace
 #align quotient_group.borel_space QuotientGroup.borelSpace
 #align quotient_add_group.borel_space QuotientAddGroup.borelSpace
@@ -557,7 +556,6 @@ instance QuotientGroup.borelSpace {G : Type _} [TopologicalSpace G] [PolishSpace
 namespace MeasureTheory
 
 /-! ### Injective images of Borel sets -/
-
 
 variable {γ : Type _} [tγ : TopologicalSpace γ] [PolishSpace γ]
 
@@ -851,7 +849,6 @@ theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable 
 end MeasureTheory
 
 /-! ### The Borel Isomorphism Theorem -/
-
 
 -- Porting note: Move to topology/metric_space/polish when porting.
 instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopology α] :
