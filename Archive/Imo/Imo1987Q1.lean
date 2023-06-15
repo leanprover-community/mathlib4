@@ -51,9 +51,9 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 #align imo1987_q1.fixed_points_equiv Imo1987Q1.fixedPointsEquiv
 
-theorem card_fixed_points : card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! :=
-  by
-  simp [card_congr (fixed_points_equiv α), card_perm, Finset.filter_not, Finset.card_sdiff,
+theorem card_fixed_points :
+    card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
+  simp [card_congr (fixedPointsEquiv α), card_perm, Finset.filter_not, Finset.card_sdiff,
     Finset.filter_eq', Finset.card_univ]
 #align imo1987_q1.card_fixed_points Imo1987Q1.card_fixed_points
 
@@ -61,8 +61,9 @@ theorem card_fixed_points : card { σx : α × Perm α // σx.2 σx.1 = σx.1 } 
 fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
-deriving Fintype
 #align imo1987_q1.fiber Imo1987Q1.fiber
+
+instance : Fintype (fiber α k) := by unfold fiber; infer_instance
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=
@@ -87,7 +88,8 @@ def fixedPointsEquiv' :
   invFun p :=
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
-  left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
+  left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ =>
+    by
     simp only [mem_fiber, Fin.val_mk] at hσ 
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
@@ -95,9 +97,9 @@ def fixedPointsEquiv' :
 
 /-- Main statement for any `(α : Type*) [fintype α]`. -/
 theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
-  have A : ∀ (k) (σ : fiber α k), card (fixedPoints ⇑(↑σ : Perm α)) = k := fun k σ => σ.2
-  simpa [A, ← Fin.sum_univ_eq_sum_range, -card_of_finset, Finset.card_univ, card_fixed_points,
-    mul_comm] using card_congr (fixed_points_equiv' α)
+  have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
+  simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,
+    mul_comm] using card_congr (fixedPointsEquiv' α)
 #align imo1987_q1.main_fintype Imo1987Q1.main_fintype
 
 /-- Main statement for permutations of `fin n`, a version that works for `n = 0`. -/
