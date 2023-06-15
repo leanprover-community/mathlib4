@@ -121,8 +121,11 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   . exact mul_div_mul_right _ _ h
 #align comm_prob_def' commProb_def'
 
--- porting note: inserted [Group G]
-variable {G} [Group G] [Finite G] (H : Subgroup G)
+variable {G}
+
+section finite
+
+variable [Finite G] (H : Subgroup G)
 
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
@@ -154,6 +157,8 @@ theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ �
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
       (commutator G).commProb_quotient_le)
 #align inv_card_commutator_le_comm_prob inv_card_commutator_le_commProb
+
+end finite
 
 lemma aux1 {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
@@ -319,6 +324,34 @@ namespace CommutingProbability
 
 open Pointwise
 
+instance (A B : Set G) [Finite A] [Finite B] : Finite (A * B) := by
+  sorry
+
+instance (A : Set G) [Finite A] (n : ℕ) : Finite (A ^ n) := by
+  induction' n with n hn
+  . rw [pow_zero]
+    infer_instance
+  . rw [pow_succ]
+    infer_instance
+
+instance (A B : Set G) [Infinite A] [Nonempty B] : Infinite (A * B) := by
+  sorry
+
+instance (A B : Set G) [Nonempty A] [Infinite B] : Infinite (A * B) := by
+  sorry
+
+instance myinst (A : Set G) [Infinite A] (n : ℕ) : Infinite (A ^ (n + 1 : ℕ)) := by
+  induction' n with n hn
+  . rw [pow_one]
+    infer_instance
+  . rw [pow_succ]
+    infer_instance
+
+lemma Set.ncard_eq_zero_of_infinite (A : Set G) [hA : Infinite A] : Set.ncard A = 0 :=
+  Set.Infinite.ncard (Set.infinite_coe_iff.mp hA)
+
+lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := sorry
+
 -- growth lemma for powers of symmetric sets
 lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
     (h : g ∈ A ^ (k + 2) \ A ^ (k + 1)) : g • A ⊆ A ^ (k + 3) \ A ^ k := by
@@ -329,20 +362,28 @@ lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
 
 -- growth lemma for powers of symmetric sets
 lemma mylem2 (A : Set G) (hA : A⁻¹ = A) (hA1 : 1 ∈ A) (k : ℕ)
-    (h : Nat.card (A ^ (k + 1) : Set G) < Nat.card (A ^ (k + 2) : Set G)) :
-    Nat.card (A ^ k : Set G) + Nat.card A ≤ Nat.card (A ^ (k + 3) : Set G) := by
-  have := Set.ncard_diff
-  sorry
+    (h : Set.ncard (A ^ (k + 1) : Set G) < Set.ncard (A ^ (k + 2) : Set G)) :
+    Set.ncard (A ^ k : Set G) + Set.ncard (A : Set G) ≤ Set.ncard (A ^ (k + 3) : Set G) := by
+  by_cases h' : Finite A
+  . obtain ⟨g, hg⟩ := Set.exists_mem_not_mem_of_ncard_lt_ncard h
+    have h1 : A ^ k ⊆ A ^ (k + 3) := Set.pow_subset_pow_of_one_mem hA1 le_self_add
+    have h2 := Set.ncard_le_of_subset (mylem A hA k g hg)
+    rw [add_comm, ←Set.ncard_diff_add_ncard_eq_ncard h1, add_le_add_iff_right]
+    rw [Set.ncard_smul] at h2
+    exact h2
+  . have : Infinite A := not_finite_iff_infinite.mp h'
+    rw [Set.ncard_eq_zero_of_infinite, Set.ncard_eq_zero_of_infinite] at h
+    contradiction
 
 -- growth lemma for powers of symmetric sets
 lemma mylem3 (A : Set G) (hA1 : 1 ∈ A) (hA2 : A⁻¹ = A) (k : ℕ) (g : G)
-    (h : Nat.card (A ^ (3 * k + 2) : Set G) < Nat.card (A ^ (3 * k + 3) : Set G)) :
-    (k + 2) * Nat.card A ≤ Nat.card (A ^ (3 * k + 4) : Set G) := by
+    (h : Set.ncard (A ^ (3 * k + 2) : Set G) < Set.ncard (A ^ (3 * k + 3) : Set G)) :
+    (k + 2) * Set.ncard (A : Set G) ≤ Set.ncard (A ^ (3 * k + 4) : Set G) := by
   induction' k with k ih
-  . simp at h ⊢
+  . rw [Nat.zero_eq, zero_add, mul_zero, zero_add, two_mul]
+    have := mylem2 A hA2 hA1 (k + 1)
     sorry
 
-
-
+#check Set.Finite
 
 end CommutingProbability
