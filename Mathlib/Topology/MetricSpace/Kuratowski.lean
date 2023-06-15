@@ -26,7 +26,7 @@ set_option linter.uppercaseLean3 false
 
 open Set Metric TopologicalSpace NNReal ENNReal
 
-notation "ℓ^∞(" ι ") " => lp (fun i : ι => ℝ ) ∞
+local notation "ℓ^∞(" ι ") " => lp (fun i : ι => ℝ ) ∞
 
 universe u v w
 
@@ -112,7 +112,8 @@ end KuratowskiEmbedding
 
 open TopologicalSpace KuratowskiEmbedding
 
-/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`. -/
+/-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
+-/
 def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ^∞(ℕ) :=
   Classical.choose (KuratowskiEmbedding.exists_isometric_embedding α)
 #align Kuratowski_embedding kuratowskiEmbedding
