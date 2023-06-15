@@ -86,7 +86,6 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
-      (by aesop_cat)
 #align category_theory.over.pullback CategoryTheory.Over.pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
@@ -175,7 +174,6 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
     Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
-      (by aesop_cat)
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end

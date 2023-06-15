@@ -886,8 +886,9 @@ theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   rw [Set.mem_smul] at hx
   rcases hx with ⟨a, y, ha, hy, hx⟩
   rw [← hx, mem_ball_zero, map_smul_eq_mul]
-  exact
-    mul_lt_mul'' (mem_ball_zero_iff.mp ha) (p.mem_ball_zero.mp hy) (norm_nonneg a) (map_nonneg p y)
+  gcongr
+  · exact mem_ball_zero_iff.mp ha
+  · exact p.mem_ball_zero.mp hy
 #align seminorm.ball_smul_ball Seminorm.ball_smul_ball
 
 theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
@@ -898,7 +899,9 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   rcases hx with ⟨a, y, ha, hy, hx⟩
   rw [← hx, mem_closedBall_zero, map_smul_eq_mul]
   rw [mem_closedBall_zero_iff] at ha
-  exact mul_le_mul ha (p.mem_closedBall_zero.mp hy) (map_nonneg _ y) ((norm_nonneg a).trans ha)
+  gcongr
+  · exact (norm_nonneg a).trans ha
+  · exact p.mem_closedBall_zero.mp hy
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 @[simp]
@@ -953,7 +956,7 @@ theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
   rintro x ⟨y, hy, h⟩
   rw [Seminorm.mem_closedBall_zero, ← h, map_smul_eq_mul]
   rw [Seminorm.mem_closedBall_zero] at hy
-  exact mul_le_mul_of_nonneg_left hy (norm_nonneg _)
+  gcongr
 #align seminorm.smul_closed_ball_subset Seminorm.smul_closedBall_subset
 
 theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 < ‖k‖) :
@@ -973,7 +976,7 @@ theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr�
   refine' ⟨r, hr₀, fun a ha x hx => _⟩
   rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
   rw [p.mem_ball_zero] at hx
-  exact hx.trans (hr.trans_le <| mul_le_mul_of_nonneg_right ha hr₁.le)
+  exact hx.trans (hr.trans_le <| by gcongr)
 #align seminorm.ball_zero_absorbs_ball_zero Seminorm.ball_zero_absorbs_ball_zero
 
 /-- Seminorm-balls at the origin are absorbent. -/
@@ -1118,7 +1121,8 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
   have := (set_smul_mem_nhds_zero_iff hk0').mpr hp
   refine' Filter.mem_of_superset this (smul_set_subset_iff.mpr fun x hx => _)
   rw [mem_closedBall_zero, map_smul_eq_mul, ← div_mul_cancel ε hr.ne.symm]
-  exact mul_le_mul hkε.le (p.mem_closedBall_zero.mp hx) (map_nonneg _ _) (div_nonneg hε.le hr.le)
+  gcongr
+  exact p.mem_closedBall_zero.mp hx
 #align seminorm.continuous_at_zero' Seminorm.continuousAt_zero'
 
 theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}

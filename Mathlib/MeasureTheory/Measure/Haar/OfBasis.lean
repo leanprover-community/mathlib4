@@ -49,7 +49,7 @@ def parallelepiped (v : ι → E) : Set E :=
 #align parallelepiped parallelepiped
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
-    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ)(_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
+    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ) (_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
@@ -256,6 +256,10 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
+
+instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
+  IsAddHaarMeasure_basis_addHaar _
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/

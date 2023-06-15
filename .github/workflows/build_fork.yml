@@ -112,7 +112,9 @@ jobs:
           find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: get cache
-        run: lake exe cache get
+        run: |
+          lake exe cache clean
+          lake exe cache get
 
       - name: build mathlib
         uses: liskin/gh-problem-matcher-wrap@v2
@@ -135,7 +137,10 @@ jobs:
         run: make -j 8 test
 
       - name: lint mathlib
-        run: env LEAN_ABORT_ON_PANIC=1 make lint
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 make lint
 
   final:
     name: Post-CI job (fork)

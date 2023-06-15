@@ -204,6 +204,8 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
+  | "MathlibExtras" :: _ => true
+  | ["MathlibExtras.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/

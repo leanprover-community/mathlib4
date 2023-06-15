@@ -460,7 +460,7 @@ theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
     (∑' x : s, f x) = ∑' x : t, f x := by rw [h]
 #align tsum_congr_subtype tsum_congr_subtype
 
-theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _b : β, (0 : α)) = 0 := by
+theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _ : β, (0 : α)) = 0 := by
   classical
     rw [tsum_def, dif_pos summable_zero]
     suffices ∀ x : α, HasSum (fun _ : β => (0 : α)) x → x = 0 by
@@ -473,7 +473,7 @@ theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _b : β, (0 : α)) = 0
 #align tsum_zero' tsum_zero'
 
 @[simp]
-theorem tsum_zero [T1Space α] : (∑' _b : β, (0 : α)) = 0 :=
+theorem tsum_zero [T1Space α] : (∑' _ : β, (0 : α)) = 0 :=
   tsum_zero' isClosed_singleton
 #align tsum_zero tsum_zero
 
@@ -1009,7 +1009,7 @@ theorem HasSum.int_rec {b : α} {f g : ℕ → α} (hf : HasSum f a) (hg : HasSu
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) _
-      exacts[Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
+      exacts [Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
   exact HasSum.add_isCompl this (h₁.hasSum_range_iff.mpr hf) (h₂.hasSum_range_iff.mpr hg)
 #align has_sum.int_rec HasSum.int_rec
 

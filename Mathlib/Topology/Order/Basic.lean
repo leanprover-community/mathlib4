@@ -57,7 +57,7 @@ see their statements.
 * `le_of_tendsto_of_tendsto` : if `f` converges to `a`, `g` converges to `b`, and eventually
   `f x ≤ g x`, then `a ≤ b`
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
-  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a); we also provide primed versions
+  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
 
 ### Min, max, `sSup` and `sInf`
@@ -114,7 +114,7 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
 namespace Subtype
 
--- todo: add `OrderEmbedding.orderClosedtopology`
+-- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prod_map continuous_subtype_val
@@ -974,7 +974,7 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le {f g h : β → α} {b : Filte
 #align tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_of_tendsto_of_tendsto_of_le_of_le
 
 theorem nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
-    𝓝 a = ⨅ (l) (_h₂ : l < a) (u) (_h₂ : a < u), 𝓟 (Ioo l u) := by
+    𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
   simp only [nhds_eq_order, ← inf_biInf, ← biInf_inf, *, ← inf_principal, ← Ioi_inter_Iio]; rfl
 #align nhds_order_unbounded nhds_order_unbounded
 
@@ -1072,7 +1072,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
-/-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
+/-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
@@ -1081,7 +1081,7 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
-    𝓝[≥] a = (⨅ (u) (_hu : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
+    𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
   refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
@@ -1093,7 +1093,7 @@ theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology �
 #align nhds_within_Iic_eq'' nhdsWithin_Iic_eq''
 
 theorem nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
-    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_hu : a < u), 𝓟 (Ico a u) := by
+    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsWithin_Ici_eq'', biInf_inf ha, inf_principal, Iio_inter_Ici]
 #align nhds_within_Ici_eq' nhdsWithin_Ici_eq'
 

@@ -48,7 +48,7 @@ vectors.
 * `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
 * `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;
-* linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
+* `linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
   `linearIndependent_fin_succ`: type-specific tests for linear independence of families of vector
   fields;
 * `linearIndependent_insert`, `linearIndependent_union`, `linearIndependent_pair`,
@@ -362,7 +362,7 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
       intros
       assumption
     · rwa [Finsupp.embDomain_eq_mapDomain, Finsupp.sum_mapDomain_index]
-      exacts[fun _ => zero_smul _ _, fun _ _ _ => add_smul _ _ _]
+      exacts [fun _ => zero_smul _ _, fun _ _ _ => add_smul _ _ _]
 #align linear_independent_comp_subtype linearIndependent_comp_subtype
 
 theorem linearDependent_comp_subtype' {s : Set ι} :
@@ -876,7 +876,7 @@ theorem exists_maximal_independent' (s : ι → M) :
   let indep : Set ι → Prop := fun I => LinearIndependent R (s ∘ (↑) : I → M)
   let X := { I : Set ι // indep I }
   let r : X → X → Prop := fun I J => I.1 ⊆ J.1
-  have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_H : I ∈ c), I) := by
+  have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_ : I ∈ c), I) := by
     intro c hc
     dsimp
     rw [linearIndependent_comp_subtype]
@@ -1268,7 +1268,7 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 #align linear_independent_fin2 linearIndependent_fin2
 
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
-    ∃ (b : _)(_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ (b : _) (_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
   -- Porting note: The placeholder should be solved before `rcases`.
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
@@ -1288,7 +1288,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
 variable (K t)
 
 theorem exists_linearIndependent :
-    ∃ (b : _)(_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ (b : _) (_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩

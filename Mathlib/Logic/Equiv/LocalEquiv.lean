@@ -150,6 +150,8 @@ structure LocalEquiv (α : Type _) (β : Type _) where
   right_inv' : ∀ ⦃x⦄, x ∈ target → toFun (invFun x) = x
 #align local_equiv LocalEquiv
 
+attribute [coe] LocalEquiv.toFun
+
 namespace LocalEquiv
 
 variable (e : LocalEquiv α β) (e' : LocalEquiv β γ)

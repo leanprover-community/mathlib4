@@ -240,7 +240,7 @@ theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : 
   and only the natural map from the direct sum of the submodules to the module is injective. -/
 -- Porting note: needed to use `_H`
 def Independent {ι : Sort _} {α : Type _} [CompleteLattice α] (t : ι → α) : Prop :=
-  ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j)
+  ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 #align complete_lattice.independent CompleteLattice.Independent
 
 theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
@@ -252,7 +252,7 @@ theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
 
 variable {t : ι → α} (ht : Independent t)
 
-theorem independent_def : Independent t ↔ ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j) :=
+theorem independent_def : Independent t ↔ ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j) :=
   Iff.rfl
 #align complete_lattice.independent_def CompleteLattice.independent_def
 
@@ -262,7 +262,7 @@ theorem independent_def' : Independent t ↔ ∀ i, Disjoint (t i) (sSup (t '' {
 #align complete_lattice.independent_def' CompleteLattice.independent_def'
 
 theorem independent_def'' :
-    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _)(_ : j ≠ i), t j = a }) := by
+    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _) (_ : j ≠ i), t j = a }) := by
   rw [independent_def']
   aesop
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''
@@ -313,7 +313,7 @@ theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ �
   intro i j h
   by_contra' contra
   apply h_ne_bot j
-  suffices t j ≤ ⨆ (k) (_hk : k ≠ i), t k by
+  suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i

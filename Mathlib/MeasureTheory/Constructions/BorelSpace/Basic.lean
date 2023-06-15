@@ -381,7 +381,7 @@ instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable �
     [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
     OpensMeasurableSpace (∀ i, π i) := by
   constructor
-  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a))(i : Finset ι),
+  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
     rw [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
@@ -586,7 +586,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type _} [TopologicalSpace 
   refine' generateFrom_le (forall_range_iff.2 fun a => _)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases ha : ∀ b < a, (Ioo b a).Nonempty
-  · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_hlu : l < u) (_hu : u ≤ a), Ico l u)
+  · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
     · ext y
       simp only [mem_iUnion, mem_Iio, mem_Ico]
       constructor
@@ -601,7 +601,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type _} [TopologicalSpace 
       exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
   · simp only [not_forall, not_nonempty_iff_eq_empty] at ha
     replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
-    convert_to MeasurableSet (⋃ (l ∈ t) (_hl : l < a), Ico l a)
+    convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
       simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right_iff_subset, subset_def, mem_iUnion,
         mem_Ici, mem_Iio]
@@ -694,7 +694,7 @@ theorem ext_of_Ico' {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ico a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) : μ = ν := by
   rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, _⟩
-  have : (⋃ (l ∈ s) (u ∈ s) (_h : l < u), {Ico l u} : Set (Set α)).Countable :=
+  have : (⋃ (l ∈ s) (u ∈ s) (_ : l < u), {Ico l u} : Set (Set α)).Countable :=
     hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
   simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
   refine'
@@ -720,7 +720,7 @@ theorem ext_of_Ioc' {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ioc a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν := by
   refine' @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν _ _ <;> intro a b hab <;> erw [dual_Ico (α := α)]
-  exacts[hμ hab, h hab]
+  exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
 /-- Two measures which are finite on closed-open intervals are equal if the agree on all
@@ -1237,14 +1237,14 @@ end LinearOrder
 
 @[measurability]
 theorem Measurable.iSup_Prop {α} [MeasurableSpace α] [CompleteLattice α] (p : Prop) {f : δ → α}
-    (hf : Measurable f) : Measurable fun b => ⨆ _h : p, f b :=
+    (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b :=
   _root_.by_cases (fun h : p => by convert hf; funext; exact iSup_pos h) fun h : ¬p => by
     convert measurable_const using 1; funext; exact iSup_neg h
 #align measurable.supr_Prop Measurable.iSup_Prop
 
 @[measurability]
 theorem Measurable.iInf_Prop {α} [MeasurableSpace α] [CompleteLattice α] (p : Prop) {f : δ → α}
-    (hf : Measurable f) : Measurable fun b => ⨅ _h : p, f b :=
+    (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b :=
   _root_.by_cases (fun h : p => by convert hf; funext; exact iInf_pos h) fun h : ¬p => by
     convert measurable_const using 1; funext; exact iInf_neg h
 #align measurable.infi_Prop Measurable.iInf_Prop
@@ -1678,12 +1678,12 @@ namespace Real
 open MeasurableSpace MeasureTheory
 
 theorem borel_eq_generateFrom_Ioo_rat :
-    borel ℝ = .generateFrom (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) (b : ℝ)}) :=
+    borel ℝ = .generateFrom (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) :=
   isTopologicalBasis_Ioo_rat.borel_eq_generateFrom
 #align real.borel_eq_generate_from_Ioo_rat Real.borel_eq_generateFrom_Ioo_rat
 
 theorem isPiSystem_Ioo_rat :
-    @IsPiSystem ℝ (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
+    @IsPiSystem ℝ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
   convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
@@ -1692,7 +1692,7 @@ theorem isPiSystem_Ioo_rat :
 /-- The intervals `(-(n + 1), (n + 1))` form a finite spanning sets in the set of open intervals
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
 def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
-    μ.FiniteSpanningSetsIn (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) (b : ℝ)}) where
+    μ.FiniteSpanningSetsIn (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) where
   set n := Ioo (-(n + 1)) (n + 1)
   set_mem n := by
     simp only [mem_iUnion, mem_singleton_iff]

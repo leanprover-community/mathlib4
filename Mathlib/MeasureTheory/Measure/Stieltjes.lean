@@ -310,7 +310,7 @@ theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftL
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
 def length (s : Set ℝ) : ℝ≥0∞ :=
-  ⨅ (a) (b) (_h : s ⊆ Ioc a b), ofReal (f b - f a)
+  ⨅ (a) (b) (_ : s ⊆ Ioc a b), ofReal (f b - f a)
 #align stieltjes_function.length StieltjesFunction.length
 
 @[simp]

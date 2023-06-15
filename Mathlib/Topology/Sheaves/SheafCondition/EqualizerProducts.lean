@@ -132,7 +132,7 @@ theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallel
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_π_app_walking_parallel_pair_zero TopCat.Presheaf.SheafConditionEqualizerProducts.fork_π_app_walkingParallelPair_zero
 
--- Porting note : Shortcut simplifer
+-- Porting note : Shortcut simplifier
 @[simp (high)]
 theorem fork_π_app_walkingParallelPair_one :
     (fork F U).π.app WalkingParallelPair.one = res F U ≫ leftRes F U :=
@@ -212,7 +212,7 @@ set_option linter.uppercaseLean3 false in
 
 /-!
 The remainder of this file shows that the equalizer_products sheaf condition is equivalent
-to the pariwise_intersections sheaf condition.
+to the pairwise_intersections sheaf condition.
 -/
 
 
@@ -384,7 +384,7 @@ set_option linter.uppercaseLean3 false in
 @[simps!]
 def coneEquivUnitIso :
     𝟭 (Limits.Cone ((diagram U).op ⋙ F)) ≅ coneEquivFunctor F U ⋙ coneEquivInverse F U :=
-  NatIso.ofComponents (coneEquivUnitIsoApp F U) (fun {_ _} f => by aesop_cat)
+  NatIso.ofComponents (coneEquivUnitIsoApp F U)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.cone_equiv_unit_iso TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivUnitIso
 

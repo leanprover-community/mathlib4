@@ -30,8 +30,8 @@ variable (𝕜 : Type _) {E F G : Type _} [NontriviallyNormedField 𝕜] [Normed
 /-- A predicate saying that a function is differentiable on a set and is continuous on its
 closure. This is a common assumption in complex analysis. -/
 structure DiffContOnCl (f : E → F) (s : Set E) : Prop where
-  protected DifferentiableOn : DifferentiableOn 𝕜 f s
-  protected ContinuousOn : ContinuousOn f (closure s)
+  protected differentiableOn : DifferentiableOn 𝕜 f s
+  protected continuousOn : ContinuousOn f (closure s)
 #align diff_cont_on_cl DiffContOnCl
 
 variable {𝕜}
@@ -45,7 +45,7 @@ theorem Differentiable.diffContOnCl (h : Differentiable 𝕜 f) : DiffContOnCl �
 #align differentiable.diff_cont_on_cl Differentiable.diffContOnCl
 
 theorem IsClosed.diffContOnCl_iff (hs : IsClosed s) : DiffContOnCl 𝕜 f s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => h.DifferentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
+  ⟨fun h => h.differentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
 #align is_closed.diff_cont_on_cl_iff IsClosed.diffContOnCl_iff
 
 theorem diffContOnCl_univ : DiffContOnCl 𝕜 f univ ↔ Differentiable 𝕜 f :=
@@ -69,7 +69,7 @@ theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnC
   · rw [closedBall_zero]
     exact continuousOn_singleton f x
   · rw [← closure_ball x hr]
-    exact h.ContinuousOn
+    exact h.continuousOn
 #align diff_cont_on_cl.continuous_on_ball DiffContOnCl.continuousOn_ball
 
 theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
@@ -79,15 +79,15 @@ theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
 
 protected theorem differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (hx : x ∈ s) :
     DifferentiableAt 𝕜 f x :=
-  h.DifferentiableOn.differentiableAt <| hs.mem_nhds hx
+  h.differentiableOn.differentiableAt <| hs.mem_nhds hx
 #align diff_cont_on_cl.differentiable_at DiffContOnCl.differentiableAt
 
 theorem differentiable_at' (h : DiffContOnCl 𝕜 f s) (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
-  h.DifferentiableOn.differentiableAt hx
+  h.differentiableOn.differentiableAt hx
 #align diff_cont_on_cl.differentiable_at' DiffContOnCl.differentiable_at'
 
 protected theorem mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl 𝕜 f t :=
-  ⟨h.DifferentiableOn.mono ht, h.ContinuousOn.mono (closure_mono ht)⟩
+  ⟨h.differentiableOn.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 #align diff_cont_on_cl.mono DiffContOnCl.mono
 
 theorem add (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f + g) s :=

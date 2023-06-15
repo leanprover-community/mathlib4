@@ -356,9 +356,9 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
     rw [Opens.coe_iSup, Set.mem_iUnion]
     constructor
     · rintro (h | h)
-      exacts[⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
+      exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
-      exacts[Or.inl h, Or.inr h]
+      exacts [Or.inl h, Or.inr h]
   refine'
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
         ⟨s.pt,
@@ -412,9 +412,9 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
     rw [Opens.coe_iSup, Set.mem_iUnion]
     constructor
     · rintro (h | h)
-      exacts[⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
+      exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
-      exacts[Or.inl h, Or.inr h]
+      exacts [Or.inl h, Or.inr h]
   apply PullbackCone.isLimitAux'
   intro s
   use interUnionPullbackConeLift F U V s

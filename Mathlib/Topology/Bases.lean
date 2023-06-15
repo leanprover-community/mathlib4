@@ -472,7 +472,7 @@ theorem isTopologicalBasis_iInf {β : Type _} {ι : Type _} {X : ι → Type _}
     (cond : ∀ i, IsTopologicalBasis (T i)) (f : ∀ i, β → X i) :
     @IsTopologicalBasis β (⨅ i, induced (f i) (t i))
       { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_hi : i ∈ F), f i ⁻¹' U i } := by
+        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
   letI := ⨅ i, induced (f i) (t i)
   convert (isTopologicalBasis_pi cond).inducing (inducing_iInf_to_pi f)
   ext V
@@ -521,7 +521,7 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type _} [TopologicalSp
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine' ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, _, _, _, _, _⟩
-  exacts[inter_subset_right _ _,
+  exacts [inter_subset_right _ _,
     (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
     htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
     fun x hx hxs => ⟨Or.inr <| Or.inr hx, hxs⟩]

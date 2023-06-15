@@ -44,7 +44,7 @@ set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 
 
 This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
-  ⋃ (k) (_hk : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
+  ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
 #align measure_theory.egorov.not_convergent_seq MeasureTheory.Egorov.notConvergentSeq
 
 variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}

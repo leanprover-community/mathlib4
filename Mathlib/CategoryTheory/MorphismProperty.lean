@@ -373,7 +373,7 @@ theorem RespectsIso.inverseImage {P : MorphismProperty D} (h : RespectsIso P) (F
     intro X Y Z e f hf
     dsimp [MorphismProperty.inverseImage]
     rw [F.map_comp]
-  exacts[h.1 (F.mapIso e) (F.map f) hf, h.2 (F.mapIso e) (F.map f) hf]
+  exacts [h.1 (F.mapIso e) (F.map f) hf, h.2 (F.mapIso e) (F.map f) hf]
 #align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
 
 theorem StableUnderComposition.inverseImage {P : MorphismProperty D} (h : StableUnderComposition P)
@@ -615,7 +615,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 

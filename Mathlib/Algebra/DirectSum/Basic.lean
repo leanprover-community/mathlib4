@@ -264,7 +264,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Unique ι] :
-    (⨁ _x : ι, M) ≃+ M :=
+    (⨁ _ : ι, M) ≃+ M :=
   {
     DirectSum.toAddMonoid fun _ =>
       AddMonoidHom.id

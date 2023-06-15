@@ -533,10 +533,10 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
   contrapose! h
   rw [← nonpos_iff_eq_zero]
   rw [← hU.interior_eq] at hne
-  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_H : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
+  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
     compact_covered_by_mul_left_translates hK hne
   calc
-    μ K ≤ μ (⋃ (g : G) (_H : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
+    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
     _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := (measure_biUnion_finset_le _ _)
     _ = 0 := by simp [measure_preimage_mul, h]
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_compact
@@ -582,10 +582,10 @@ any compact set."]
 theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOpen U)
     (h'U : U.Nonempty) (h : μ U ≠ ∞) {K : Set G} (hK : IsCompact K) : μ K < ∞ := by
   rw [← hU.interior_eq] at h'U
-  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_H : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
+  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
     compact_covered_by_mul_left_translates hK h'U
   calc
-    μ K ≤ μ (⋃ (g : G) (_H : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
+    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
     _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := (measure_biUnion_finset_le _ _)
     _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
     _ < ∞ := ENNReal.mul_lt_top (ENNReal.nat_ne_top _) h

@@ -11,6 +11,7 @@ Authors: Yaël Dillies, George Shakan
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
+import Mathlib.Tactic.GCongr
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -193,7 +194,7 @@ theorem card_add_nsmul_le {α : Type _} [AddCommGroup α] [DecidableEq α] {A B 
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| add_pluennecke_petridis _ hAB).trans _
   rw [cast_mul]
-  exact mul_le_mul_of_nonneg_left ih (zero_le _)
+  gcongr
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
 
 @[to_additive existing]
@@ -208,7 +209,7 @@ theorem card_mul_pow_le (hAB : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card �
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans _
   rw [cast_mul]
-  exact mul_le_mul_of_nonneg_left ih (zero_le _)
+  gcongr
 #align finset.card_mul_pow_le Finset.card_mul_pow_le
 
 /-- The **Plünnecke-Ruzsa inequality**. Multiplication version. Note that this is genuinely harder
@@ -229,9 +230,9 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   refine' (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _)
     (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _) (zero_le _) (zero_le _)).trans _
   rw [mul_mul_mul_comm, ← pow_add, ← mul_assoc]
-  refine' mul_le_mul_of_nonneg_right _ (zero_le _)
-  refine' mul_le_mul _ (cast_le.2 <| card_le_of_subset hC.2) (zero_le _) (zero_le _)
-  exact pow_le_pow_of_le_left (_root_.zero_le _) (hCA _ hA') _
+  gcongr ((?_ ^ _) * Nat.cast ?_) * _
+  · exact hCA _ hA'
+  · exact card_le_of_subset hC.2
 #align finset.card_pow_div_pow_le Finset.card_pow_div_pow_le
 #align finset.card_nsmul_sub_nsmul_le Finset.card_nsmul_sub_nsmul_le
 
