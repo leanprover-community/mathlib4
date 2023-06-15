@@ -37,7 +37,6 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-/- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The category of `k`-linear representations of a monoid `G`. -/
 abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
   Action (ModuleCat.{u} k) (MonCat.of G)
@@ -148,14 +147,15 @@ noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k
 
 /- Porting note: linter informs me the LHS simplifies to... itself.
 But fwiw I also can't get simp to use this lemma. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_category.braiding_hom_apply Rep.MonoidalCategory.braiding_hom_apply
 
-/- Porting note: same note as above. -/
+/- Porting note: linter informs me the LHS simplifies to... itself.
+But fwiw I also can't get simp to use this lemma. -/
 @[simp, nolint simpNF]
 theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
@@ -216,13 +216,13 @@ theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_μ_hom Rep.linearization_μ_hom
 
+@[simp]
+theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
+    (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
 -- Porting note: broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
-@[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
   rw [← Action.forget_map, Functor.map_inv]
   apply IsIso.inv_eq_of_hom_inv_id
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
@@ -283,11 +283,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {k G}
 
-/- Porting note: broken proof was
-   refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
-    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
-      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
-      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
@@ -295,6 +290,10 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
     refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+/- Porting note: rest of broken proof was
+    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
+      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
+      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
     simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
     erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
     simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
@@ -310,10 +309,6 @@ theorem leftRegularHom_apply {A : Rep k G} (x : A) :
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
 
-/- Porting note: in the proof of `left_inv`, the lines after `have : ... := ...` used to just be
-    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
-      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
-      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
@@ -328,6 +323,10 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
       LinearMap.ext_iff.1 (f.comm x) (Finsupp.single 1 1)
+/- Porting note: rest of broken proof was
+    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
+      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
+      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
     rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
@@ -378,14 +377,7 @@ protected theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) 
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_obj_ρ_apply Rep.ihom_obj_ρ_apply
 
-/- Porting note: the lines after `TensorProduct.ext'...` in the proof of `comm` of `invFun` were
-originally:
-dsimp only [monoidal_category.tensor_left_obj, ModuleCat.comp_def, LinearMap.comp_apply,
-  tensor_rho, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
-simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
-  hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
 /- Porting note: the linter simplifies some of the LHSs of the `simps` lemmas to themselves. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
@@ -403,6 +395,11 @@ protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom 
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
       comm := fun g => TensorProduct.ext' fun x y => by
+/- Porting note: rest of broken proof was
+        dsimp only [MonoidalCategory.tensorLeft_obj, ModuleCat.comp_def, LinearMap.comp_apply,
+          tensor_rho, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
+        simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
+          hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
         change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
           C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
         rw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply, Rep.ihom_obj_ρ_apply,
@@ -454,7 +451,6 @@ set_option maxHeartbeats 230000 in
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_coev_app_hom Rep.ihom_coev_app_hom
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
 def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
@@ -464,7 +460,6 @@ def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k 
   set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv Rep.MonoidalClosed.linearHomEquiv
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
 def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Rep k G] C :=
@@ -474,7 +469,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {A B C}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom = (TensorProduct.curry f.hom).flip :=
@@ -482,7 +476,6 @@ theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_hom Rep.MonoidalClosed.linearHomEquiv_hom
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom = TensorProduct.curry f.hom :=
@@ -514,7 +507,6 @@ open MonoidalCategory
 variable {k G : Type u} [CommRing k] [Monoid G] {V W : Type u} [AddCommGroup V] [AddCommGroup W]
   [Module k V] [Module k W] (ρ : Representation k G V) (τ : Representation k G W)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Tautological isomorphism to help Lean in typechecking. -/
 def repOfTprodIso : Rep.of (ρ.tprod τ) ≅ Rep.of ρ ⊗ Rep.of τ :=
   Iso.refl _
@@ -621,7 +613,6 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
-/- Porting note: in the proof of `map_smul'`, the lines after `dsimp` used to just be one `simp`. -/
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
@@ -629,6 +620,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
+/- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
         erw [Representation.ofModule_asAlgebraHom_apply_apply]
         exact AddEquiv.symm_apply_apply _ _}
@@ -644,10 +636,6 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
-/- Porting note: in the proof of `map_smul'`, the lines after `dsimp [unitIsoAddEquiv]` were
-originally just
-simp only [Representation.asModuleEquiv_symm_map_smul,
-  RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
 /-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
@@ -655,6 +643,9 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
           dsimp [unitIsoAddEquiv]
+/- Porting note: rest of broken proof was
+          simp only [Representation.asModuleEquiv_symm_map_smul,
+            RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
           rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
             Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul]
