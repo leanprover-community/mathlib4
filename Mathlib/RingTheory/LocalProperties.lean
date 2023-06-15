@@ -41,6 +41,7 @@ The following properties are covered:
 
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open scoped Pointwise Classical BigOperators
 
@@ -302,9 +303,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   · simpa using congr_arg (· * x) e
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
-  -- Porting note: `(· ^ n.succ)` is interpreted as ℕ → ℕ
-  -- let hx' := congr_arg (· ^ n.succ) hx
-  let hx' := congr_arg (fun x : S => x ^ n.succ) hx
+  let hx' := congr_arg (· ^ n.succ) hx
   simp only [mul_pow, e, MulZeroClass.zero_mul, ← RingHom.map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
