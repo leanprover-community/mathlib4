@@ -53,8 +53,7 @@ polynomial over the fraction field. See `minpoly.is_integrally_closed_eq_field_f
 theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsIntegral R s) :
     minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) := by
   refine' (eq_of_irreducible_of_monic _ _ _).symm
-  ·
-    exact
+  · exact
       (Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map (monic hs)).1 (irreducible hs)
   · rw [aeval_map_algebraMap, aeval_algebraMap_apply, aeval, map_zero]
   · exact (monic hs).map _
@@ -107,10 +106,11 @@ theorem isIntegrallyClosed_dvd_iff [Nontrivial R] {s : S} (hs : IsIntegral R s) 
 #align minpoly.is_integrally_closed_dvd_iff minpoly.isIntegrallyClosed_dvd_iff
 
 theorem ker_eval {s : S} (hs : IsIntegral R s) :
-    ((Polynomial.aeval s).toRingHom : R[X] →+* S).ker = Ideal.span ({minpoly R s} : Set R[X]) := by
-  ext p <;>
-    simp_rw [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
-      isIntegrallyClosed_dvd_iff hs, ← Ideal.mem_span_singleton]
+    RingHom.ker ((Polynomial.aeval s).toRingHom : R[X] →+* S) =
+    Ideal.span ({minpoly R s} : Set R[X]) := by
+  ext p
+  simp_rw [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
+    isIntegrallyClosed_dvd_iff hs, ← Ideal.mem_span_singleton]
 #align minpoly.ker_eval minpoly.ker_eval
 
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
@@ -136,17 +136,17 @@ theorem IsIntegrallyClosed.Minpoly.unique {s : S} {P : R[X]} (hmo : P.Monic)
   by_contra hnz
   have := IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP])
   contrapose! this
-  refine' degree_sub_lt _ (NeZero hs) _
+  refine' degree_sub_lt _ (ne_zero hs) _
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
-  · rw [(monic hs).leadingCoeff, hmo.leading_coeff]
+  · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 #align minpoly.is_integrally_closed.minpoly.unique minpoly.IsIntegrallyClosed.Minpoly.unique
 
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine'
-    ⟨(minpoly.monic hx).NeZero,
+    ⟨(minpoly.monic hx).ne_zero,
       ⟨by
-        by_contra h_contra <;>
-          exact (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
+        by_contra h_contra
+        exact (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
         fun a b h => or_iff_not_imp_left.mpr fun h' => _⟩⟩
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
@@ -169,13 +169,13 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   by_cases hPzero : P = 0
   · simpa [hPzero] using hP.symm
   rw [← hP, Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
-    SetLike.coe_mk, is_integrally_closed_dvd_iff hx] at hP₁
+    isIntegrallyClosed_dvd_iff hx] at hP₁
   obtain ⟨Q, hQ⟩ := hP₁
   rw [← hP, hQ, RingHom.map_mul, mk_self, MulZeroClass.zero_mul]
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
 /-- The algebra isomorphism `adjoin_root (minpoly R x) ≃ₐ[R] adjoin R x` -/
-@[simps]
+@[simps!]
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
@@ -183,14 +183,14 @@ def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoi
 
 /-- The `power_basis` of `adjoin R {x}` given by `x`. See `algebra.adjoin.power_basis` for a version
 over a field. -/
-@[simps]
+@[simps!]
 def Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
     PowerBasis R (Algebra.adjoin R ({x} : Set S)) :=
   PowerBasis.map (AdjoinRoot.powerBasis' (minpoly.monic hx)) (minpoly.equivAdjoin hx)
 #align algebra.adjoin.power_basis' Algebra.adjoin.powerBasis'
 
 /-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
-@[simps]
+@[simps!]
 noncomputable def PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsIntegral R x)
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : PowerBasis R S :=
   (Algebra.adjoin.powerBasis' hint).map <|
