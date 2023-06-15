@@ -151,17 +151,12 @@ variable (f : 𝓢(E, F))
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     Asymptotics.IsBigO (Filter.cocompact E) f fun x => ‖x‖ ^ (-k : ℤ) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
-  simp_rw [norm_iteratedFDeriv_zero] at hd'
+  simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite _⟩
-  refine' (Filter.eventually_cofinite_ne 0).mp (Filter.eventually_of_forall fun x hx => _)
-  --  porting note: worked without norm_cast before
-  norm_cast
-  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg x) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
-  simp only [zpow_coe_nat]
-  convert hd' x
-  norm_cast
-  exact zpow_pos_of_pos (norm_pos_iff.mpr hx) k
+  refine' (Filter.eventually_cofinite_ne 0).mono fun x hx => _
+  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
+  exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow_neg_nat SchwartzMap.isBigO_cocompact_zpow_neg_nat
 
