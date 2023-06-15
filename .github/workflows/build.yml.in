@@ -70,6 +70,10 @@ jobs:
         run: |
           git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
 
+      - name: update Archive.lean
+        run: |
+          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
+
       - name: check that all files are imported
         run: git diff --exit-code
 
@@ -111,9 +115,6 @@ jobs:
       - name: build library_search cache
         run: lake build MathlibExtras
 
-      - name: build counterexamples
-        run: lake build Counterexamples
-
       - name: upload cache
         if: always()
         run: |
@@ -121,6 +122,12 @@ jobs:
           lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
+
+      - name: build archive
+        run: lake build Archive
+
+      - name: build counterexamples
+        run: lake build Counterexamples
 
       - name: test mathlib
         run: make -j 8 test
