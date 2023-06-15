@@ -84,6 +84,12 @@ lemma le_of_hasPage (r : ℤ) [h : E.HasPage r] : r₀ ≤ r :=
 lemma hasPage_of_le (r₁ r₂ : ℤ) (h : r₁ ≤ r₂) [E.HasPage r₁] : E.HasPage r₂ where
   le' := (E.le_of_hasPage r₁).trans h
 
+instance (a b : ℤ) [E.HasPage a] : E.HasPage (max a b) :=
+  E.hasPage_of_le a (max a b) (le_max_left _ _)
+
+instance (a b : ℤ) [E.HasPage b] : E.HasPage (max a b) :=
+  E.hasPage_of_le b (max a b) (le_max_right _ _)
+
 instance [E.HasPage 0] : E.HasPage 1 := E.hasPage_of_le 0 1 (by simp)
 instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_le 1 2 (by simp)
 instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_le 2 3 (by simp)

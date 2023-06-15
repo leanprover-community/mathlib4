@@ -243,12 +243,32 @@ noncomputable def toE₂CohomologicalSpectralSequencePageTwoIso
   all_goals dsimp ; infer_instance
 
 noncomputable def toE₂CohomologicalSpectralSequencePageInfinityIso (pq : ℤ × ℤ) (n₀ n₁ n₂ : ℤ)
-  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn : pq.1 + pq.2 = n₁)
+    (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn : pq.1 + pq.2 = n₁)
     (D : Arrow ℤt) (hD₀ : D.left = ℤt.mk pq.2) (hD₁ : D.right = ℤt.mk (pq.2+1))
     [X.IsStationary Bounds.firstQuadrant] :
-    X.toE₂CohomologicalSpectralSequence.pageInfinity pq ≅ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj D :=
-  sorry
-
+    X.toE₂CohomologicalSpectralSequence.pageInfinity pq ≅ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj D := by
+  let r := max 2 (max (pq.fst + 1) (pq.snd + 2))
+  refine' (X.toE₂CohomologicalSpectralSequence.isoPageInfinityOfLE pq r
+    (X.toE₂CohomologicalSpectralSequence.rMin_le_of_isFirstQuadrant pq)).symm ≪≫
+    X.toE₂CohomologicalSpectralSequencePageIso r pq n₀ n₁ n₂ hn₁ hn₂ hn
+      (pq.2-r+2) (pq.2+1) (pq.2+r-1) (by linarith) (by linarith) (by linarith) ≪≫
+    X.isoEInfty n₀ n₁ n₂ hn₁ hn₂ Bounds.firstQuadrant _ _ _ ≪≫
+    Functor.mapIso _ (Arrow.isoMk (eqToIso hD₀.symm) (eqToIso hD₁.symm)
+      (Subsingleton.elim _ _))
+  . refine' homOfLE _
+    dsimp
+    simp only [ℤt.mk_le_mk_iff]
+    change pq.2 - r + 2 ≤ 0
+    have : pq.2 +2 ≤ r := (le_max_right _ _ ).trans (le_max_right _ _)
+    linarith
+  . refine' homOfLE _
+    dsimp
+    simp only [ℤt.mk_le_mk_iff, sub_zero, ge_iff_le, max_le_iff,
+      add_le_iff_nonpos_left, le_max_iff, le_add_iff_nonneg_left, hn₁, ← hn]
+    have : pq.1 +1 ≤ r := (le_max_left _ _ ).trans (le_max_right _ _)
+    change pq.1 + pq.2 ≤ pq.2 + r - 1
+    linarith
+#check cohomologicalStripes
 noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBoundsFirstQuadrant
     [X.IsStationary Bounds.firstQuadrant] :
   X.toE₂CohomologicalSpectralSequence.StronglyConvergesTo
@@ -260,7 +280,11 @@ noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBounds
         ⟨0, X.isZero_filtration_obj_eq_bot Bounds.firstQuadrant _ _ (𝟙 _)⟩
       exists_isIso_filtration'_hom :=
         ⟨n + 1, X.isIso_filtrationι Bounds.firstQuadrant _ _ (homOfLE (by simp))⟩
-      π' := fun i pq hpq => sorry
+      π' := fun i pq hpq => by
+        refine' _ ≫ (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1)
+          (by linarith) (by linarith) (cohomologicalStripes.stripe_eq n i pq hpq)
+          (ιℤt.mapArrow.obj (Arrow.mkOfLE pq.2 (pq.2+1))) rfl rfl).inv
+        sorry
       epi_π' := sorry
       comp_π' := sorry
       exact' := sorry }
