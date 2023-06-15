@@ -592,7 +592,7 @@ variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneCl
   (f : M →* M') (g : N →* N')
 
 /-- `prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddHonoidHom`"]
+@[to_additive prodMap "`prod.map` as an `AddMonoidHom`."]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align monoid_hom.prod_map MonoidHom.prodMap

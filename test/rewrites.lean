@@ -4,28 +4,28 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 
--- To see the (sorted) list of lemmas that `rewrites` will try rewriting by, use:
+-- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
 
--- Recall that `rewrites` caches the discrimination tree on disk.
+-- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
 -- while testing you will probably want to delete
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
 example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
-  rewrites!
+  rw?!
 
 open CategoryTheory
 
 example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
-  rewrites!
+  rw?!
 
 example [Group G] (h : G) : 1 * h = h := by
-  rewrites!
+  rw?!
 
 example [Group G] (g h : G) : g * g⁻¹ * h = h := by
-  rewrites -- the right answer is not the first solution, so we can't use rewrites!
+  rw? -- the right answer is not the first solution, so we can't use rw?!
   /- Prints:
   rw [@Semigroup.mul_assoc]
   -- g * (g⁻¹ * h) = h
@@ -52,4 +52,4 @@ example [Group G] (g h : G) : g * g⁻¹ * h = h := by
   rw [one_mul]
 
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
-  rewrites!
+  rw?!

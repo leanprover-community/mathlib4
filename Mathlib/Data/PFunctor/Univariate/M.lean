@@ -261,7 +261,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children PFunctor.M.children
 
-/-- select a subtree using a `i : F.Idx` or return an arbitrary tree if
+/-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F :=
   if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
@@ -324,7 +324,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.M.mk
 
 /-- `Agree' n` relates two trees of type `M F` that
-are the same up to dept `n` -/
+are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :

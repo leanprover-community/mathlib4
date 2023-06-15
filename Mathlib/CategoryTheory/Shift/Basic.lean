@@ -24,7 +24,7 @@ would be the degree `i+n`-th term of `C`.
 ## Main definitions
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
-  an self-equivalence of `C`.
+  a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
 ## Implementation Notes
@@ -716,7 +716,7 @@ lemma map_hasShiftOfFullyFaithful_add_inv_app (a b : A) (X : C) :
   simp
 #align category_theory.map_has_shift_of_fully_faithful_add_inv_app CategoryTheory.map_hasShiftOfFullyFaithful_add_inv_app
 
-/-- Given a family of endomorphisms of `C` which are interwined by a fully faithful `F : C ⥤ D`
+/-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/
 def hasShiftOfFullyFaithful :
     HasShift C A :=

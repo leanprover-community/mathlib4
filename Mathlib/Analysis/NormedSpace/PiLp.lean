@@ -28,7 +28,7 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`PiLp p α`. The assumpion `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumption `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
 
 We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity

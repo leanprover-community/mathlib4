@@ -22,7 +22,7 @@ with polynomials variables indexed by an arbitrary type `idx`.
 Then there exists a unique family of polynomials `φ : ℕ → MvPolynomial (idx × ℕ) Φ`
 such that for all `n : ℕ` we have (`wittStructureInt_existsUnique`)
 ```
-bind₁ φ (wittPolynomial p ℤ n) = bind₁ (λ i, (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
+bind₁ φ (wittPolynomial p ℤ n) = bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
 In other words: evaluating the `n`-th Witt polynomial on the family `φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
@@ -79,7 +79,7 @@ dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} :
   - `WittVector.wittMul`
   - `WittVector.wittNeg`
   (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
-  which is defined as `λ a b, a + -b`. See `WittVector.sub_coeff` for this proof.)
+  which is defined as `fun a b ↦ a + -b`. See `WittVector.sub_coeff` for this proof.)
 
 ## References
 
@@ -122,7 +122,7 @@ scoped[Witt] notation "W" => wittPolynomial p _
 that are uniquely characterised by the property that
 ```
 bind₁ (wittStructureRat p Φ) (wittPolynomial p ℚ n) =
-bind₁ (λ i, (rename (prod.mk i) (wittPolynomial p ℚ n))) Φ
+bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℚ n))) Φ
 ```
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureRat Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
@@ -195,7 +195,7 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
 that are uniquely characterised by the property that
 ```
 bind₁ (wittStructureInt p Φ) (wittPolynomial p ℤ n) =
-bind₁ (λ i, (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
+bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureInt Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.

@@ -23,7 +23,7 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
   and the composition is bilinear.
 
 See `ring_theory.derivation.lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form an lie algebra over `R`.
+- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `ring_theory.derivation.to_square_zero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
