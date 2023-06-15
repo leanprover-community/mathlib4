@@ -701,19 +701,17 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     (hps : Set.range p ⊆ insert t.orthocenter (Set.range t.points)) (hpi : Function.Injective p) :
     ∃ c ∈ affineSpan ℝ (Set.range t.points), ∀ p₁ ∈ Set.range p, dist p₁ c = t.circumradius := by
   rcases exists_of_range_subset_orthocentric_system ho hps hpi with
-    (⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩ | hs)
+    (⟨i₁, i₂, i₃, j₂, j₃, _, _, _, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩ | hs)
   · use reflection (affineSpan ℝ (t.points '' {j₂, j₃})) t.circumcenter,
       reflection_mem_of_le_of_mem (affineSpan_mono ℝ (Set.image_subset_range _ _))
         t.circumcenter_mem_affineSpan
     intro p₁ hp₁
     rcases hp₁ with ⟨i, rfl⟩
-    replace h₁₂₃ := h₁₂₃ i
-    repeat' cases h₁₂₃
-    · rw [h₁]
-      exact triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
-    · rw [← h₂,
-        dist_reflection_eq_of_mem _
-          (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
+    have h₁₂₃ := h₁₂₃ i
+    repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
+    · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
+    · rw [←h₂, dist_reflection_eq_of_mem _
+       (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
     · rw [← h₃,
         dist_reflection_eq_of_mem _
