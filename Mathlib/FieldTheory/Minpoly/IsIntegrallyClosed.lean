@@ -185,7 +185,7 @@ over a field. -/
 def Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
     PowerBasis R (Algebra.adjoin R ({x} : Set S)) :=
   PowerBasis.map (AdjoinRoot.powerBasis' (minpoly.monic hx)) (minpoly.equivAdjoin hx)
-#align algebra.adjoin.power_basis' Algebra.adjoin.powerBasis'
+#align algebra.adjoin.power_basis' minpoly.Algebra.adjoin.powerBasis'
 
 /-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
 @[simps!]
@@ -194,7 +194,7 @@ noncomputable def PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsInte
   (Algebra.adjoin.powerBasis' hint).map <|
     (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
       Subalgebra.topEquiv
-#align power_basis.of_gen_mem_adjoin' PowerBasis.ofGenMemAdjoin'
+#align power_basis.of_gen_mem_adjoin' minpoly.PowerBasis.ofGenMemAdjoin'
 
 
 end AdjoinRoot
