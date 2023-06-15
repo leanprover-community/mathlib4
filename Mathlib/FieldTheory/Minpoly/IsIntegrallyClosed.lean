@@ -8,9 +8,9 @@ Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.AdjoinRoot
-import Mathbin.FieldTheory.Minpoly.Field
-import Mathbin.RingTheory.Polynomial.GaussLemma
+import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -51,8 +51,7 @@ variable [IsIntegrallyClosed R]
 polynomial over the fraction field. See `minpoly.is_integrally_closed_eq_field_fractions'` if
 `S` is already a `K`-algebra. -/
 theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsIntegral R s) :
-    minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) :=
-  by
+    minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) := by
   refine' (eq_of_irreducible_of_monic _ _ _).symm
   ·
     exact
@@ -65,8 +64,7 @@ theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsInteg
 polynomial over the fraction field. Compared to `minpoly.is_integrally_closed_eq_field_fractions`,
 this version is useful if the element is in a ring that is already a `K`-algebra. -/
 theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsScalarTower R K S]
-    {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) :=
-  by
+    {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) := by
   let L := FractionRing S
   rw [← is_integrally_closed_eq_field_fractions K L hs]
   refine'
@@ -83,12 +81,10 @@ variable [IsIntegrallyClosed R]
   integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`
   in exchange for stronger assumptions on `R`. -/
 theorem isIntegrallyClosed_dvd [Nontrivial R] {s : S} (hs : IsIntegral R s) {p : R[X]}
-    (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p :=
-  by
+    (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R
   let L := FractionRing S
-  have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) :=
-    by
+  have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_mod_by_monic _ (minpoly.monic hs), mod_by_monic_eq_sub_mul_div]
     refine' dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
     rw [← map_aeval_eq_aeval_map, hp, map_zero]
@@ -122,8 +118,7 @@ theorem ker_eval {s : S} (hs : IsIntegral R s) :
 degree of the minimal polynomial of `x`. See also `minpoly.degree_le_of_ne_zero` which relaxes the
 assumptions on `S` in exchange for stronger assumptions on `R`. -/
 theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p : R[X]}
-    (hp0 : p ≠ 0) (hp : Polynomial.aeval s p = 0) : degree (minpoly R s) ≤ degree p :=
-  by
+    (hp0 : p ≠ 0) (hp : Polynomial.aeval s p = 0) : degree (minpoly R s) ≤ degree p := by
   rw [degree_eq_nat_degree (minpoly.ne_zero hs), degree_eq_nat_degree hp0]
   norm_cast
   exact nat_degree_le_of_dvd ((is_integrally_closed_dvd_iff hs _).mp hp) hp0
@@ -147,8 +142,7 @@ theorem IsIntegrallyClosed.Minpoly.unique {s : S} {P : R[X]} (hmo : P.Monic)
   · rw [(monic hs).leadingCoeff, hmo.leading_coeff]
 #align minpoly.is_integrally_closed.minpoly.unique minpoly.IsIntegrallyClosed.Minpoly.unique
 
-theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) :=
-  by
+theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine'
     ⟨(minpoly.monic hx).NeZero,
       ⟨by
@@ -168,8 +162,7 @@ open Algebra Polynomial AdjoinRoot
 
 variable {R} {x : S}
 
-theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) :=
-  by
+theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine' (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => _
   obtain ⟨P, hP⟩ := mk_surjective (minpoly.monic hx) P₁
   by_cases hPzero : P = 0
