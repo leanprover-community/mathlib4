@@ -176,12 +176,8 @@ protected def xor : Bitvec n → Bitvec n → Bitvec n :=
   map₂ xor
 #align bitvec.xor Bitvec.xor
 
-/-- bitwise Boolean negation/complement -/
-protected def compl : Bitvec n → Bitvec n :=
-  map not
 
-
-instance : Complement (Bitvec n) := ⟨Bitvec.compl⟩
+instance : Complement (Bitvec n) := ⟨Bitvec.not⟩
 
 end Bitwise
 

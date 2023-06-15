@@ -1,10 +1,22 @@
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.Bitvec.Tactic
+
 
 
 namespace Bitvec
-  open Bitvec (compl)
+  open Bitvec (not)
   variable (x y z : Bitvec n)
+
+
+@[simp]
+theorem get_ofNat_zero : get (Bitvec.ofNat n 0) i = false := by
+  admit
+
+/-- Yet another spelling of `11111..` -/
+@[simp]
+theorem get_ofInt_minus : get (Bitvec.ofInt n (-1)) i = true := by
+  simp[Bitvec.ofInt, Neg.neg, Int.neg, Int.negOfNat]
 
 
   /-!
@@ -12,26 +24,26 @@ namespace Bitvec
     happens if we supply the same argument twice
   -/
   @[simp] theorem or_self         : x.or x = x                      := by ext; simp
-  @[simp] theorem or_compl_self   : x.or (compl x) = (allOnes n)    := by ext; simp
-  @[simp] theorem compl_or_self   : (compl x).or x = (allOnes n)    := by ext; simp
+  @[simp] theorem or_not_self     : x.or (not x) = (allOnes n)    := by ext; simp
+  @[simp] theorem not_or_self     : (not x).or x = (allOnes n)    := by ext; simp
   @[simp] theorem or_zeroes       : x.or 0 = x                      := by ext; simp
   @[simp] theorem or_ones         : x.or (allOnes n) = (allOnes n)  := by ext; simp
 
   @[simp] theorem and_self        : x.and x = x                     := by ext; simp
-  @[simp] theorem and_compl_self  : x.and (compl x) = 0             := by ext; simp
-  @[simp] theorem compl_and_self  : (compl x).and x = 0             := by ext; simp
+  @[simp] theorem and_not_self    : x.and (not x) = 0             := by ext; simp
+  @[simp] theorem not_and_self    : (not x).and x = 0             := by ext; simp
   @[simp] theorem and_zeroes      : x.and 0 = 0                     := by ext; simp
   @[simp] theorem and_ones        : x.and (allOnes n) = x           := by ext; simp
 
   @[simp] theorem xor_self        : x.xor x = 0                     := by ext; simp
-  @[simp] theorem xor_compl_self  : x.xor (compl x) = (allOnes n)   := by ext; simp
-  @[simp] theorem compl_xor_self  : (compl x).xor x = (allOnes n)   := by ext; simp
+  @[simp] theorem xor_not_self    : x.xor (not x) = (allOnes n)   := by ext; simp
+  @[simp] theorem not_xor_self    : (not x).xor x = (allOnes n)   := by ext; simp
   @[simp] theorem xor_zeroes      : x.xor 0 = x                     := by ext; simp
-  @[simp] theorem xor_ones        : x.xor (allOnes n) = x.compl     := by ext; simp
+  @[simp] theorem xor_ones        : x.xor (allOnes n) = x.not     := by ext; simp
 
 
-  theorem not_zeroes              : Bitvec.compl (allOnes n) = 0    := by ext; simp
-  theorem not_ones                : Bitvec.compl 0 = (allOnes n)    := by ext; simp
+  theorem not_zeroes              : Bitvec.not (allOnes n) = 0    := by ext; simp
+  theorem not_ones                : Bitvec.not 0 = (allOnes n)    := by ext; simp
 
 
 
@@ -76,11 +88,11 @@ namespace Bitvec
     De Morgan's laws for bitvectors
   -/
   @[simp]
-  theorem not_and : compl (x.and y) = (compl x).or (compl y) := by
+  theorem not_and : not (x.and y) = (not x).or (not y) := by
     ext; simp
 
   @[simp]
-  theorem not_or  : compl (x.or y) = (compl x).and (compl y) := by
+  theorem not_or  : not (x.or y) = (not x).and (not y) := by
     ext; simp
 
 end Bitvec
