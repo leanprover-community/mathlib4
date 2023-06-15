@@ -35,7 +35,7 @@ Our star rings are actually star semirings, but of course we can prove
 assert_not_exists Finset
 assert_not_exists Subgroup
 
-universe u v
+universe u v w
 
 open MulOpposite
 
@@ -66,7 +66,7 @@ export StarMemClass (star_mem)
 
 namespace StarMemClass
 
-variable {S : Type u} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
+variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
 nonrec instance star : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
