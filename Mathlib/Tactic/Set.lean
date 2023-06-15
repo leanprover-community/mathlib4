@@ -16,7 +16,6 @@ syntax (name := setTactic) "set" "!"? setArgsRest : tactic
 
 macro "set!" rest:setArgsRest : tactic => `(tactic| set ! $rest:setArgsRest)
 
--- set_option pp.structureInstanceTypes true
 /--
 `set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
 the local context and replaces `t` with `a` everywhere it can.
@@ -40,7 +39,7 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
+| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>
   withMainContext do
     let (ty, vale) ← match ty with
     | some ty =>
@@ -55,7 +54,8 @@ elab_rules : tactic
     Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
-    let tt ← delab ty (({} : RBMap _ _ _).insert .root <| KVMap.mk [((`pp).append `structureInstanceTypes, true)])
+    let tt ← delab ty
+      (RBMap.empty.insert .root <| KVMap.empty.setBool `pp.structureInstanceTypes true)
     match h, rev with
     | some h, some none =>
       evalTactic (← `(tactic| have%$tk $h : $a = ($val : $tt) := rfl))
