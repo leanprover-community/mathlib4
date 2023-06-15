@@ -19,7 +19,7 @@ An inherent limitation with this command is that variables are recorded in the s
 from typeclass synthesis errors, and these might fail to round trip.
 -/
 
-namespace Mathlib.Command
+namespace Mathlib.Command.Variable
 open Lean Elab Command Parser.Term Meta
 
 initialize registerTraceClass `variable?
@@ -36,7 +36,7 @@ register_option variable?.checkRedundant : Bool :=
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
 /-- Get the type out of a bracketed binder. -/
-private def bracketedBinderType : Syntax → Option Term
+def bracketedBinderType : Syntax → Option Term
   | `(bracketedBinderF|($_* $[: $ty?]? $(_annot?)?)) => ty?
   | `(bracketedBinderF|{$_* $[: $ty?]?})             => ty?
   | `(bracketedBinderF|⦃$_* $[: $ty?]?⦄)             => ty?
@@ -48,8 +48,15 @@ missing instance arguments wherever they are needed.
 It does not add variables that can already be deduced from others in the current context.
 By default the command checks that variables aren't implied by earlier ones, but it does *not*
 check that earlier variables aren't implied by later ones.
-
 Unlike `variable`, the `variable?` command does not support changing variable binder types.
+
+The `variable?` command will give a suggestion to replace itself with a command of the form
+`variable? ...binders... => ...binders...`.  The binders after the `=>` are the completed
+list of binders. When this `=>` clause is present, the command verifies that the expanded
+binders match the post-`=>` binders.  The purpose of this is to help keep code that uses
+`variable?` resiliant against changes to the typeclass hierarchy, at least in the sense
+that this additional information can be used to debug issues that might arise.
+One can also replace `variable? ...binders... =>` with `variable`.
 
 The core algorithm is to try elaborating binders one at a time, and whenever there is a
 typeclass instance inference failure, it synthesizes binder syntax for it and adds it to
@@ -71,7 +78,8 @@ from others in the current scope.
 A word of warning: the core algorithm depends on pretty printing, so if terms that appear
 in binders do not round trip, this algorithm can fail. That said, it has some support
 for quantified binders such as `[∀ i, F i]`. -/
-syntax (name := «variable?») "variable?" (ppSpace bracketedBinder)* : command
+syntax (name := «variable?»)
+  "variable?" (ppSpace bracketedBinder)* (" =>" (ppSpace bracketedBinder)*)? : command
 
 /--
 Attribute to record aliases for the `variable?` command. It should be placed on a structure.
@@ -92,7 +100,7 @@ initialize variableAliasAttr : TagAttribute ←
   registerTagAttribute `variable_alias "Attribute to record aliases for the `variable?` command."
 
 /-- Find a synthetic typeclass metavariable with no expr metavariables in its type. -/
-private def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
+def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
     TermElabM (Option MVarId) := do
   let pendingMVars := (← get).pendingMVars
   if pendingMVars.isEmpty then
@@ -110,10 +118,10 @@ private def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
 /-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
 or it returns a new binder that needs to come first. Does not add info unless it throws
 an exception. -/
-private partial def getSubproblem
-    (binder : TSyntax `Lean.Parser.Term.bracketedBinder) (ty : Term) :
-    TermElabM (Option (MessageData × TSyntax `Lean.Parser.Term.bracketedBinder)) := do
-  let res : Term.TermElabResult (Option (MessageData × TSyntax `Lean.Parser.Term.bracketedBinder)) ←
+partial def getSubproblem
+    (binder : TSyntax ``bracketedBinder) (ty : Term) :
+    TermElabM (Option (MessageData × TSyntax ``bracketedBinder)) := do
+  let res : Term.TermElabResult (Option (MessageData × TSyntax ``bracketedBinder)) ←
     Term.observing do
     withTheReader Term.Context (fun ctx => {ctx with ignoreTCFailures := true}) do
     Term.withAutoBoundImplicit do
@@ -144,11 +152,11 @@ private partial def getSubproblem
 
 The `toOmit` array keeps track of which binders should be removed at the end,
 in particular the `variable_alias` binders and any redundant binders. -/
-private partial def completeBinders (maxSteps : Nat) (gas : Nat)
+partial def completeBinders' (maxSteps : Nat) (gas : Nat)
     (checkRedundant : Bool)
-    (binders : TSyntaxArray `Lean.Parser.Term.bracketedBinder)
+    (binders : TSyntaxArray ``bracketedBinder)
     (toOmit : Array Bool) (i : Nat) :
-    TermElabM (TSyntaxArray `Lean.Parser.Term.bracketedBinder × Array Bool) := do
+    TermElabM (TSyntaxArray ``bracketedBinder × Array Bool) := do
   if 0 < gas && i < binders.size then
     let binder := binders[i]!
     trace[«variable?»]
@@ -167,7 +175,7 @@ private partial def completeBinders (maxSteps : Nat) (gas : Nat)
           ""}Current variable command:{indentD (← `(command| variable $binders'*))}\n\n{
           ""}Local context for the unsatisfied dependency:{goalMsg}"
       let binders := binders.insertAt! i binder'
-      completeBinders maxSteps (gas - 1) checkRedundant binders toOmit i
+      completeBinders' maxSteps (gas - 1) checkRedundant binders toOmit i
     else
       let lctx ← getLCtx
       let linst ← getLocalInstances
@@ -201,7 +209,7 @@ private partial def completeBinders (maxSteps : Nat) (gas : Nat)
             else
               return (binders, toOmit.push false)
           | _ => return (binders, toOmit.push false)
-        completeBinders maxSteps gas checkRedundant binders toOmit (i + 1)
+        completeBinders' maxSteps gas checkRedundant binders toOmit (i + 1)
   else
     if gas == 0 && i < binders.size then
       let binders' := binders.extract 0 i
@@ -217,6 +225,11 @@ where
           return true
       return false
 
+def completeBinders (maxSteps : Nat) (checkRedundant : Bool)
+    (binders : TSyntaxArray ``bracketedBinder) :
+    TermElabM (TSyntaxArray ``bracketedBinder × Array Bool) :=
+  completeBinders' maxSteps maxSteps checkRedundant binders #[] 0
+
 /-- Strip off whitespace and comments. -/
 def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
     TSyntaxArray ``bracketedBinder := Id.run do
@@ -228,9 +241,9 @@ def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
 @[command_elab «variable?», inherit_doc «variable?»]
 def elabVariables : CommandElab := fun stx =>
   match stx with
-  | `(variable? $binders*) => do
+  | `(variable? $binders* $[=> $expectedBinders?*]?) => do
     let checkRedundant := variable?.checkRedundant.get (← getOptions)
-    process stx checkRedundant true binders
+    process stx checkRedundant binders expectedBinders?
   | _ => throwUnsupportedSyntax
 where
   extendScope (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
@@ -239,28 +252,46 @@ where
         (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
       modifyScope fun scope =>
         { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }
-  process (stx : Syntax) (checkRedundant : Bool) (suggest : Bool)
-      (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
+  process (stx : Syntax) (checkRedundant : Bool)
+      (binders : TSyntaxArray ``bracketedBinder)
+      (expectedBinders? : Option <| TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
     let binders := cleanBinders binders
     let maxSteps := variable?.maxSteps.get (← getOptions)
     trace[«variable?»] "variable?.maxSteps = {maxSteps}"
     for binder in binders do
       if (bracketedBinderType binder).isNone then
         throwErrorAt binder "variable? cannot update pre-existing variables"
-    let (binders, toOmit) ← runTermElabM fun _ =>
-      completeBinders maxSteps maxSteps checkRedundant binders #[] 0
-    -- Elaborate the binders again, which also adds the infotrees.
-    -- This also makes sure the list works with auto-bound implicits at the front.
-    runTermElabM fun _ => Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
-    -- Filter out omitted binders and then add the remaining binders to the scope
-    let binders' := (binders.zip toOmit).filterMap (fun (b, omit) => if omit then none else some b)
-    let varComm ← `(command| variable $binders'*)
+    let (binders', suggest) ← runTermElabM fun _ => do
+      let (binders, toOmit) ← completeBinders maxSteps checkRedundant binders
+      /- Elaborate the binders again, which also adds the infotrees.
+      This also makes sure the list works with auto-bound implicits at the front. -/
+      Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
+      -- Filter out omitted binders
+      let binders' : TSyntaxArray ``bracketedBinder :=
+        (binders.zip toOmit).filterMap fun (b, omit) => if omit then none else some b
+      if let some expectedBinders := expectedBinders? then
+        trace[«variable?»] "checking expected binders"
+        /- We re-elaborate the biders to record expressions that represent the whole resulting
+        local contexts (auto-bound implicits make it so we can't just use the argument to the
+        function for `Term.elabBinders`). -/
+        let ctx1 ← Term.withAutoBoundImplicit <| Term.elabBinders binders' fun _ => do
+          mkForallFVars (← getLCtx).getFVars (.sort .zero)
+        let ctx2 ← Term.withAutoBoundImplicit <| Term.elabBinders expectedBinders fun _ => do
+          mkForallFVars (← getLCtx).getFVars (.sort .zero)
+        trace[«variable?»] "new context: {ctx1}"
+        trace[«variable?»] "expected context: {ctx2}"
+        if ← isDefEq ctx1 ctx2 then
+          return (binders', false)
+        else
+          logWarning "Calculated binders do not match the expected binders given after `=>`."
+          return (binders', true)
+      else
+        return (binders', true)
+    extendScope binders'
+    let varComm ← `(command| variable? $binders* => $binders'*)
     trace[«variable?»] "derived{indentD varComm}"
     if suggest then
       liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
-    extendScope binders'
-
-end Mathlib.Command
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
