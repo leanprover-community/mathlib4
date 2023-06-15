@@ -524,7 +524,6 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have : ¬Injective fun n : ℕ => x ^ n := by
     have H := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
     contrapose! H -- Porting note: `contrapose! this` errored, so renamed `this ↦ H`
-    rw [not_not] at H -- Porting note: why is `contrapose!` not taking care of this?
     exact Set.injOn_of_injective H _
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
