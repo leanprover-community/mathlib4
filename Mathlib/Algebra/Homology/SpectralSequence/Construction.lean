@@ -268,7 +268,7 @@ noncomputable def toE₂CohomologicalSpectralSequencePageInfinityIso (pq : ℤ �
     have : pq.1 +1 ≤ r := (le_max_left _ _ ).trans (le_max_right _ _)
     change pq.1 + pq.2 ≤ pq.2 + r - 1
     linarith
-#check cohomologicalStripes
+
 noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBoundsFirstQuadrant
     [X.IsStationary Bounds.firstQuadrant] :
   X.toE₂CohomologicalSpectralSequence.StronglyConvergesTo
@@ -281,9 +281,9 @@ noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBounds
       exists_isIso_filtration'_hom :=
         ⟨n + 1, X.isIso_filtrationι Bounds.firstQuadrant _ _ (homOfLE (by simp))⟩
       π' := fun i pq hpq => by
-        refine' _ ≫ (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1)
-          (by linarith) (by linarith) (cohomologicalStripes.stripe_eq n i pq hpq)
-          (ιℤt.mapArrow.obj (Arrow.mkOfLE pq.2 (pq.2+1))) rfl rfl).inv
+        --refine' _ ≫ (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1)
+        --  (by linarith) (by linarith) (cohomologicalStripes.stripe_eq n i pq hpq)
+        --  (ιℤt.mapArrow.obj (Arrow.mkOfLE pq.2 (pq.2+1))) rfl rfl).inv
         sorry
       epi_π' := sorry
       comp_π' := sorry
