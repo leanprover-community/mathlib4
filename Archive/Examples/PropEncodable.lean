@@ -9,6 +9,7 @@ Authors: Jeremy Avigad
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # W types
@@ -33,10 +34,10 @@ namespace PropEncodable
 
 /-- Propositional formulas with labels from `α`. -/
 inductive PropForm (α : Type _)
-  | var : α → prop_form
-  | Not : prop_form → prop_form
-  | And : prop_form → prop_form → prop_form
-  | Or : prop_form → prop_form → prop_form
+  | var : α → PropForm α
+  | not : PropForm α → PropForm α
+  | and : PropForm α → PropForm α → PropForm α
+  | or : PropForm α → PropForm α → PropForm α
 #align prop_encodable.prop_form PropEncodable.PropForm
 
 /-!
@@ -44,37 +45,15 @@ The next three functions make it easier to construct functions from a small
 `fin`.
 -/
 
-
-section
-
-variable {α : Type _}
-
-/-- the trivial function out of `fin 0`. -/
-def mkFn0 : Fin 0 → α
-  | ⟨_, h⟩ => absurd h (by decide)
-#align prop_encodable.mk_fn0 PropEncodable.mkFn0
-
-/-- defines a function out of `fin 1` -/
-def mkFn1 (t : α) : Fin 1 → α
-  | ⟨0, _⟩ => t
-  | ⟨n + 1, h⟩ => absurd h (by decide)
-#align prop_encodable.mk_fn1 PropEncodable.mkFn1
-
-/-- defines a function out of `fin 2` -/
-def mkFn2 (s t : α) : Fin 2 → α
-  | ⟨0, _⟩ => s
-  | ⟨1, _⟩ => t
-  | ⟨n + 2, h⟩ => absurd h (by decide)
-#align prop_encodable.mk_fn2 PropEncodable.mkFn2
-
-attribute [simp] mk_fn0 mk_fn1 mk_fn2
-
-end
+-- porting note: using `![_, _]` notation instead
+#noalign prop_encodable.mk_fn0
+#noalign prop_encodable.mk_fn1
+#noalign prop_encodable.mk_fn2
 
 namespace PropForm
 
-private def constructors (α : Type _) :=
-  Sum α (Sum Unit (Sum Unit Unit))
+private def Constructors (α : Type _) :=
+  α ⊕ (Unit ⊕ (Unit ⊕ Unit))
 
 local notation "cvar " a => Sum.inl a
 
@@ -86,30 +65,34 @@ local notation "cor" => Sum.inr (Sum.inr (Sum.inl Unit.unit))
 
 @[simp]
 private def arity (α : Type _) : Constructors α → Nat
-  | cvar a => 0
+  | cvar _ => 0
   | cnot => 1
   | cand => 2
   | cor => 2
 
 variable {α : Type _}
 
+instance : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
+  | .inl () => ⟨one_ne_zero⟩
+  | .inr (.inl ()) => ⟨two_ne_zero⟩
+  | .inr (.inr ()) => ⟨two_ne_zero⟩
+
 private def f : PropForm α → WType fun i => Fin (arity α i)
-  | var a => ⟨cvar a, mkFn0⟩
-  | Not p => ⟨cnot, mkFn1 (f p)⟩
-  | And p q => ⟨cand, mkFn2 (f p) (f q)⟩
-  | Or p q => ⟨cor, mkFn2 (f p) (f q)⟩
+  | var a => ⟨cvar a, ![]⟩
+  | not p => ⟨cnot, ![f p]⟩
+  | and p q => ⟨cand, ![f p, f q]⟩
+  | or p q => ⟨cor, ![f p, f q]⟩
 
 private def finv : (WType fun i => Fin (arity α i)) → PropForm α
-  | ⟨cvar a, fn⟩ => var a
-  | ⟨cnot, fn⟩ => not (finv (fn ⟨0, by decide⟩))
-  | ⟨cand, fn⟩ => and (finv (fn ⟨0, by decide⟩)) (finv (fn ⟨1, by decide⟩))
-  | ⟨cor, fn⟩ => or (finv (fn ⟨0, by decide⟩)) (finv (fn ⟨1, by decide⟩))
+  | ⟨cvar a, _⟩ => var a
+  | ⟨cnot, fn⟩ => not (finv (fn 0))
+  | ⟨cand, fn⟩ => and (finv (fn 0)) (finv (fn 1))
+  | ⟨cor, fn⟩ => or (finv (fn 0)) (finv (fn 1))
 
 instance [Encodable α] : Encodable (PropForm α) :=
-  haveI : Encodable (constructors α) := by unfold constructors; infer_instance
+  haveI : Encodable (Constructors α) := by unfold Constructors; infer_instance
   Encodable.ofLeftInverse f finv (by intro p; induction p <;> simp [f, finv, *])
 
 end PropForm
 
 end PropEncodable
-
