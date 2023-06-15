@@ -294,7 +294,8 @@ unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
 
 instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
 
-instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X := X.str
+instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
+  X.str
 
 -- Porting note: added
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
