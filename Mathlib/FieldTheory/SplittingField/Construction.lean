@@ -122,6 +122,7 @@ def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], ∀ _ : K[X],
     fun _ ih _ _ f =>
       let ⟨L, fL, _⟩ := ih f.removeFactor
       ⟨L, fL, (RingHom.comp (algebraMap _ _) (AdjoinRoot.of f.factor)).toAlgebra⟩
+#align polynomial.splitting_field_aux_aux Polynomial.SplittingFieldAuxAux
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
 `n` (arbitrarily-chosen) factors. It is the type constructed in `SplittingFieldAuxAux`.
