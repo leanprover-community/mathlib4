@@ -19,22 +19,22 @@ import Mathlib.RingTheory.IntegrallyClosed
 Gauss's Lemma is one of a few results pertaining to irreducibility of primitive polynomials.
 
 ## Main Results
- - `is_integrally_closed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
+ - `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
   `g : K[X]` divides a monic polynomial with coefficients in `R`, then `g * (C g.leading_coeff⁻¹)`
   has coefficients in `R`
- - `polynomial.monic.irreducible_iff_irreducible_map_fraction_map`:
+ - `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
   A monic polynomial over an integrally closed domain is irreducible iff it is irreducible in a
     fraction field
- - `is_integrally_closed_iff'`:
+ - `isIntegrallyClosed_iff'`:
    Integrally closed domains are precisely the domains for in which Gauss's lemma holds
     for monic polynomials
- - `polynomial.is_primitive.irreducible_iff_irreducible_map_fraction_map`:
+ - `Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map`:
   A primitive polynomial over a GCD domain is irreducible iff it is irreducible in a fraction field
- - `polynomial.is_primitive.int.irreducible_iff_irreducible_map_cast`:
+ - `Polynomial.IsPrimitive.Int.irreducible_iff_irreducible_map_cast`:
   A primitive polynomial over `ℤ` is irreducible iff it is irreducible over `ℚ`.
- - `polynomial.is_primitive.dvd_iff_fraction_map_dvd_fraction_map`:
+ - `Polynomial.IsPrimitive.dvd_iff_fraction_map_dvd_fraction_map`:
   Two primitive polynomials over a GCD domain divide each other iff they do in a fraction field.
- - `polynomial.is_primitive.int.dvd_iff_map_cast_dvd_map_cast`:
+ - `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
   Two primitive polynomials over `ℤ` divide each other if they do in `ℚ`.
 
 -/
@@ -160,7 +160,7 @@ open IsIntegrallyClosed
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `is_primitive.irreducible_of_irreducible_map_of_injective`.
-       For the → direction, it is enought to show that if `(p.map $ algebra_map R K) = a * b` and
+       For the → direction, it is enought to show that if `(p.map $ algebraMap R K) = a * b` and
        `a` is not a unit then `b` is a unit -/
   refine'
     ⟨fun hp =>
