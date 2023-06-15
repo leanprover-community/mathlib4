@@ -785,8 +785,11 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
   rcases exists_of_range_subset_orthocentric_system ht₀o ht t.Independent.injective with
     (⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩ | hs)
   · obtain ⟨j₁, hj₁₂, hj₁₃, hj₁₂₃⟩ :
-      ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by clear h₂ h₃;
-      decide!
+      ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by
+      clear h₂ h₃;
+      -- porting note: was `decide!`
+      fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> fin_cases j₂ <;> fin_cases j₃ <;>
+      simp at h₁₂ h₁₃ h₂₃ hj₂₃ ⊢
     suffices h : t₀.points j₁ = t.orthocenter
     · have hui : (Set.univ : Set (Fin 3)) = {i₁, i₂, i₃} := by ext x; simpa using h₁₂₃ x
       have huj : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by ext x; simpa using hj₁₂₃ x
@@ -794,11 +797,11 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
       simp_rw [Set.image_insert_eq, Set.image_singleton, h₁, ← h₂, ← h₃]
       rw [Set.insert_comm]
     exact
-      (triangle.orthocenter_replace_orthocenter_eq_point hj₁₂ hj₁₃ hj₂₃ h₁₂ h₁₃ h₂₃ h₁ h₂.symm
+      (Triangle.orthocenter_replace_orthocenter_eq_point hj₁₂ hj₁₃ hj₂₃ h₁₂ h₁₃ h₂₃ h₁ h₂.symm
           h₃.symm).symm
   · rw [hs]
     convert ht₀s using 2
-    exact triangle.orthocenter_eq_of_range_eq hs
+    exact Triangle.orthocenter_eq_of_range_eq hs
 #align euclidean_geometry.orthocentric_system.eq_insert_orthocenter EuclideanGeometry.OrthocentricSystem.eq_insert_orthocenter
 
 end EuclideanGeometry
