@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Localization.InvSubmonoid
 
 # The meta properties of finite-type ring homomorphisms.
 
-The main result is `ring_hom.finite_is_local`.
+The main result is `RingHom.finiteType_is_local`.
 
 -/
 
@@ -48,8 +48,8 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   · intro r; simp_rw [RingHom.FiniteType] at H; convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   replace H := fun r => (H r).1
   constructor
-  -- Suppose `s : finset S` spans `S`, and each `Sᵣ` is finitely generated as an `R`-algebra.
-  -- Say `t r : finset Sᵣ` generates `Sᵣ`. By assumption, we may find `lᵢ` such that
+  -- Suppose `s : Finset S` spans `S`, and each `Sᵣ` is finitely generated as an `R`-algebra.
+  -- Say `t r : Finset Sᵣ` generates `Sᵣ`. By assumption, we may find `lᵢ` such that
   -- `∑ lᵢ * sᵢ = 1`. I claim that all `s` and `l` and the numerators of `t` and generates `S`.
   choose t ht using H
   obtain ⟨l, hl⟩ :=
