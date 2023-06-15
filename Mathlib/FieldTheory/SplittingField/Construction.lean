@@ -151,27 +151,6 @@ theorem succ (n : ℕ) (f : K[X]) :
   rfl
 #align polynomial.splitting_field_aux.succ Polynomial.SplittingFieldAux.succ
 
-section LiftInstances
-
-#noalign polynomial.splitting_field_aux.zero
-#noalign polynomial.splitting_field_aux.add
-#noalign polynomial.splitting_field_aux.smul
-#noalign polynomial.splitting_field_aux.is_scalar_tower
-#noalign polynomial.splitting_field_aux.neg
-#noalign polynomial.splitting_field_aux.sub
-#noalign polynomial.splitting_field_aux.one
-#noalign polynomial.splitting_field_aux.mul
-#noalign polynomial.splitting_field_aux.npow
-#noalign polynomial.splitting_field_aux.mk
-#noalign polynomial.splitting_field_aux.Inv
-#noalign polynomial.splitting_field_aux.div
-#noalign polynomial.splitting_field_aux.zpow
-#noalign polynomial.splitting_field_aux.Field
-#noalign polynomial.splitting_field_aux.inhabited
-#noalign polynomial.splitting_field_aux.mk_hom
-
-end LiftInstances
-
 instance algebra''' {n : ℕ} {f : K[X]} :
     Algebra (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor) :=
   SplittingFieldAux.algebra n _
