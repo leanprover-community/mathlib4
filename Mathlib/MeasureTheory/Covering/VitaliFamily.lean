@@ -82,7 +82,7 @@ structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
 
 namespace VitaliFamily
 
-variable {m0 : MeasurableSpace α} {μ : Measure α}
+variable {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 /-- A Vitali family for a measure `μ` is also a Vitali family for any measure absolutely continuous
 with respect to `μ`. -/

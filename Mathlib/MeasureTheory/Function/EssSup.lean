@@ -36,7 +36,7 @@ open MeasureTheory Filter Set TopologicalSpace
 
 open ENNReal MeasureTheory NNReal
 
-variable {α β : Type _} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β : Type _} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 section ConditionallyCompleteLattice
 

@@ -30,7 +30,7 @@ variable {𝕜 M α G E F : Type _} [MeasurableSpace G]
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
 
-variable {μ : Measure G} {f : G → E} {g : G}
+variable {μ : MeasureTheory.Measure G} {f : G → E} {g : G}
 
 section MeasurableInv
 

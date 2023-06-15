@@ -101,7 +101,7 @@ instance (priority := 100) OrderDual.instMeasurableInf₂ [Sup M] [MeasurableSup
 
 end OrderDual
 
-variable {α : Type _} {m : MeasurableSpace α} {μ : Measure α} {f g : α → M}
+variable {α : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} {f g : α → M}
 
 section Sup
 

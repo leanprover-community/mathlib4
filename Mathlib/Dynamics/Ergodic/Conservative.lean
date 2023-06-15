@@ -47,7 +47,8 @@ open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
 
 open Classical Topology
 
-variable {ι : Type _} {α : Type _} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
+variable {ι : Type _} {α : Type _} [MeasurableSpace α] {f : α → α} {s : Set α}
+  {μ : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 

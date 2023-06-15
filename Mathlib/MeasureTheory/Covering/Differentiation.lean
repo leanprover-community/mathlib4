@@ -86,8 +86,8 @@ open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
 
-variable {α : Type _} [MetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α} (v : VitaliFamily μ)
-  {E : Type _} [NormedAddCommGroup E]
+variable {α : Type _} [MetricSpace α] {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+  (v : VitaliFamily μ) {E : Type _} [NormedAddCommGroup E]
 
 namespace VitaliFamily
 
@@ -159,8 +159,8 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
 
 section
 
-variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] {ρ : Measure α}
-  [IsLocallyFiniteMeasure ρ]
+variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ]
+  {ρ : MeasureTheory.Measure α} [IsLocallyFiniteMeasure ρ]
 
 /-- If a measure `ρ` is singular with respect to `μ`, then for `μ` almost every `x`, the ratio
 `ρ a / μ a` tends to zero when `a` shrinks to `x` along the Vitali family. This makes sense

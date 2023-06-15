@@ -56,7 +56,7 @@ instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : 
 #align measure_theory.smul_invariant_measure.zero MeasureTheory.SMulInvariantMeasure.zero
 #align measure_theory.vadd_invariant_measure.zero MeasureTheory.VAddInvariantMeasure.zero
 
-variable [SMul M α] {m : MeasurableSpace α} {μ ν : Measure α}
+variable [SMul M α] {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 @[to_additive]
 instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :

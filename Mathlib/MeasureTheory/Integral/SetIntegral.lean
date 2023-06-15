@@ -68,7 +68,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α} {l l' : Filter α}
+variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : MeasureTheory.Measure α}
+  {l l' : Filter α}
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
 
@@ -678,7 +679,7 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {μ : Measure α} {f g : α → ℝ} {s t : Set α} (hf : IntegrableOn f s μ)
+variable {μ : MeasureTheory.Measure α} {f g : α → ℝ} {s t : Set α} (hf : IntegrableOn f s μ)
   (hg : IntegrableOn g s μ)
 
 theorem set_integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
@@ -721,7 +722,7 @@ end Mono
 
 section Nonneg
 
-variable {μ : Measure α} {f : α → ℝ} {s : Set α}
+variable {μ : MeasureTheory.Measure α} {f : α → ℝ} {s : Set α}
 
 theorem set_integral_nonneg_of_ae_restrict (hf : 0 ≤ᵐ[μ.restrict s] f) : 0 ≤ ∫ a in s, f a ∂μ :=
   integral_nonneg_of_ae hf
@@ -782,7 +783,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {μ : Measure α} [NormedAddCommGroup E] [Countable β]
+variable {μ : MeasureTheory.Measure α} [NormedAddCommGroup E] [Countable β]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : α → E} {s : β → Set α}
     (hs : ∀ b : β, MeasurableSet (s b)) (hi : ∀ b : β, IntegrableOn f (s b) μ)
@@ -830,8 +831,8 @@ end IntegrableUnion
 
 section TendstoMono
 
-variable {μ : Measure α} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E] {s : ℕ → Set α}
-  {f : α → E}
+variable {μ : MeasureTheory.Measure α} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+  {s : ℕ → Set α} {f : α → E}
 
 theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
@@ -1055,8 +1056,8 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure α} {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ENNReal}
+variable {μ : MeasureTheory.Measure α} {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
 
@@ -1318,7 +1319,7 @@ section BilinearMap
 
 namespace MeasureTheory
 
-variable {f : β → ℝ} {m m0 : MeasurableSpace β} {μ : Measure β}
+variable {f : β → ℝ} {m m0 : MeasurableSpace β} {μ : MeasureTheory.Measure β}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc β ℝ) (hf : Integrable f μ) :
     Integrable (⇑g * f) μ := by

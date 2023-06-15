@@ -76,7 +76,7 @@ def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
 
 section
 
-variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable {f : ℝ → E} {a b : ℝ} {μ : MeasureTheory.Measure ℝ}
 
 /-- A function is interval integrable with respect to a given measure `μ` on `a..b` if and
   only if it is integrable on `uIoc a b` with respect to `μ`. This is an equivalent
@@ -136,7 +136,7 @@ namespace IntervalIntegrable
 
 section
 
-variable {f : ℝ → E} {a b c d : ℝ} {μ ν : Measure ℝ}
+variable {f : ℝ → E} {a b c d : ℝ} {μ ν : MeasureTheory.Measure ℝ}
 
 @[symm]
 nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
@@ -237,7 +237,7 @@ protected theorem ae_strongly_measurable' (h : IntervalIntegrable f μ a b) :
 
 end
 
-variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
+variable [NormedRing A] {f g : ℝ → E} {a b : ℝ} {μ : MeasureTheory.Measure ℝ}
 
 theorem smul [NormedField 𝕜] [NormedSpace 𝕜 E] {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
     (h : IntervalIntegrable f μ a b) (r : 𝕜) : IntervalIntegrable (r • f) μ a b :=
@@ -352,7 +352,7 @@ end IntervalIntegrable
 
 section
 
-variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+variable {μ : MeasureTheory.Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 theorem ContinuousOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : ContinuousOn u (uIcc a b)) :
     IntervalIntegrable u μ a b :=
@@ -375,8 +375,8 @@ end
 
 section
 
-variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] [ConditionallyCompleteLinearOrder E]
-  [OrderTopology E] [SecondCountableTopology E]
+variable {μ : MeasureTheory.Measure ℝ} [IsLocallyFiniteMeasure μ]
+  [ConditionallyCompleteLinearOrder E] [OrderTopology E] [SecondCountableTopology E]
 
 theorem MonotoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : MonotoneOn u (uIcc a b)) :
     IntervalIntegrable u μ a b := by
@@ -459,7 +459,7 @@ namespace intervalIntegral
 
 section Basic
 
-variable {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+variable {a b : ℝ} {f g : ℝ → E} {μ : MeasureTheory.Measure ℝ}
 
 @[simp]
 theorem integral_zero : (∫ _ in a..b, (0 : E) ∂μ) = 0 := by simp [intervalIntegral]
@@ -662,7 +662,7 @@ nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} 
 
 section ContinuousLinearMap
 
-variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E}
+variable {a b : ℝ} {μ : MeasureTheory.Measure ℝ} {f : ℝ → E}
 
 variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -876,7 +876,7 @@ as well as a few other identities trivially equivalent to this one. We also prov
 
 section OrderClosedTopology
 
-variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+variable {a b c d : ℝ} {f g : ℝ → E} {μ : MeasureTheory.Measure ℝ}
 
 /-- If two functions are equal in the relevant interval, their interval integrals are also equal. -/
 theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
@@ -1123,7 +1123,7 @@ section ContinuousPrimitive
 
 open TopologicalSpace
 
-variable {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f g : ℝ → E}
+variable {a b b₀ b₁ b₂ : ℝ} {μ : MeasureTheory.Measure ℝ} {f g : ℝ → E}
 
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     (h_int : IntervalIntegrable f μ (min a b₁) (max a b₂)) :
@@ -1258,7 +1258,7 @@ end ContinuousPrimitive
 
 section
 
-variable {f g : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
+variable {f g : ℝ → ℝ} {a b : ℝ} {μ : MeasureTheory.Measure ℝ}
 
 theorem integral_eq_zero_iff_of_le_of_nonneg_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Ioc a b)] f)
     (hfi : IntervalIntegrable f μ a b) : (∫ x in a..b, f x ∂μ) = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 :=
@@ -1425,7 +1425,7 @@ end
 
 section HasSum
 
-variable {μ : Measure ℝ} {f : ℝ → E}
+variable {μ : MeasureTheory.Measure ℝ} {f : ℝ → E}
 
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
     HasSum (fun n : ℤ => ∫ x in y + n..y + n + 1, f x ∂μ) (∫ x, f x ∂μ) := by

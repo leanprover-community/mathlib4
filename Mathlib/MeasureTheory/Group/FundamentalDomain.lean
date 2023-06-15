@@ -84,7 +84,7 @@ theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G
   nullMeasurableSet := h_meas
   ae_covers := eventually_of_forall fun x => (h_exists x).exists
   aedisjoint a b hab := Disjoint.aedisjoint <| disjoint_left.2 fun x hxa hxb => by
-    rw [mem_smul_set_iff_inv_smul_mem] at hxa hxb 
+    rw [mem_smul_set_iff_inv_smul_mem] at hxa hxb
     exact hab (inv_injective <| (h_exists x).unique hxa hxb)
 #align measure_theory.is_fundamental_domain.mk' MeasureTheory.IsFundamentalDomain.mk'
 #align measure_theory.is_add_fundamental_domain.mk' MeasureTheory.IsAddFundamentalDomain.mk'
@@ -214,7 +214,7 @@ theorem smul (h : IsFundamentalDomain G s μ) (g : G) : IsFundamentalDomain G (g
 #align measure_theory.is_fundamental_domain.smul MeasureTheory.IsFundamentalDomain.smul
 #align measure_theory.is_add_fundamental_domain.vadd MeasureTheory.IsAddFundamentalDomain.vadd
 
-variable [Countable G] {ν : Measure α}
+variable [Countable G] {ν : MeasureTheory.Measure α}
 
 @[to_additive]
 theorem sum_restrict_of_ac (h : IsFundamentalDomain G s μ) (hν : ν ≪ μ) :
@@ -463,7 +463,7 @@ protected theorem set_integral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFund
       _ = ∑' g : G, ∫ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp only [hf, inter_comm]
       _ = ∫ x in t, f x ∂μ := (hs.set_integral_eq_tsum' hft).symm
   · rw [integral_undef hfs, integral_undef]
-    rwa [hs.integrableOn_iff ht hf] at hfs 
+    rwa [hs.integrableOn_iff ht hf] at hfs
 #align measure_theory.is_fundamental_domain.set_integral_eq MeasureTheory.IsFundamentalDomain.set_integral_eq
 #align measure_theory.is_add_fundamental_domain.set_integral_eq MeasureTheory.IsAddFundamentalDomain.set_integral_eq
 
@@ -515,7 +515,7 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
   rw [essSup_eq_sInf (μ.restrict s) f, essSup_eq_sInf μ f]
   refine' sInf_le_sInf _
   rintro a (ha : (μ.restrict s) {x : α | a < f x} = 0)
-  rw [Measure.restrict_apply₀' hs.nullMeasurableSet] at ha 
+  rw [Measure.restrict_apply₀' hs.nullMeasurableSet] at ha
   refine' measure_zero_of_invariant hs _ _ ha
   intro γ
   ext x
@@ -631,15 +631,15 @@ theorem pairwise_disjoint_fundamentalInterior :
     Pairwise (Disjoint on fun g : G => g • fundamentalInterior G s) := by
   refine' fun a b hab => disjoint_left.2 _
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
-  rw [mem_fundamentalInterior] at hx hy 
+  rw [mem_fundamentalInterior] at hx hy
   refine' hx.2 (a⁻¹ * b) _ _
   rwa [Ne.def, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
   simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 #align measure_theory.pairwise_disjoint_fundamental_interior MeasureTheory.pairwise_disjoint_fundamentalInterior
 #align measure_theory.pairwise_disjoint_add_fundamental_interior MeasureTheory.pairwise_disjoint_addFundamentalInterior
 
-variable [Countable G] [MeasurableSpace G] [MeasurableSpace α] [MeasurableSMul G α] {μ : Measure α}
-  [SMulInvariantMeasure G α μ]
+variable [Countable G] [MeasurableSpace G] [MeasurableSpace α] [MeasurableSMul G α]
+  {μ : MeasureTheory.Measure α} [SMulInvariantMeasure G α μ]
 
 @[to_additive MeasureTheory.NullMeasurableSet.addFundamentalFrontier]
 protected theorem NullMeasurableSet.fundamentalFrontier (hs : NullMeasurableSet s μ) :
@@ -661,8 +661,8 @@ namespace IsFundamentalDomain
 
 section Group
 
-variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
-  (hs : IsFundamentalDomain G s μ)
+variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α]
+  {μ : MeasureTheory.Measure α} {s : Set α} (hs : IsFundamentalDomain G s μ)
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
@@ -680,7 +680,8 @@ theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
 
 end Group
 
-variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
+variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α]
+  {μ : MeasureTheory.Measure α} {s : Set α}
   (hs : IsFundamentalDomain G s μ) [MeasurableSpace G] [MeasurableSMul G α]
   [SMulInvariantMeasure G α μ]
 
@@ -705,4 +706,3 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
 end IsFundamentalDomain
 
 end MeasureTheory
-

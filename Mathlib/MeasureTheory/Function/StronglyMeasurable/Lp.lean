@@ -38,8 +38,8 @@ namespace MeasureTheory
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup G]
-  {f : α → G}
+variable {α G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+  [NormedAddCommGroup G] {f : α → G}
 
 theorem Memℒp.finStronglyMeasurable_of_stronglyMeasurable (hf : Memℒp f p μ)
     (hf_meas : StronglyMeasurable f) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :

@@ -37,7 +37,7 @@ namespace MeasureTheory
 
 open TopologicalSpace
 
-variable {μ ν : Measure α}
+variable {μ ν : MeasureTheory.Measure α}
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 

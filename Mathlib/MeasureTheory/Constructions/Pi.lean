@@ -217,7 +217,7 @@ end OuterMeasure
 
 namespace Measure
 
-variable [∀ i, MeasurableSpace (α i)] (μ : ∀ i, Measure (α i))
+variable [∀ i, MeasurableSpace (α i)] (μ : ∀ i, MeasureTheory.Measure (α i))
 
 section Tprod
 

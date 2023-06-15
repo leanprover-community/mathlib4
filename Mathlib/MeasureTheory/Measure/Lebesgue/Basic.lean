@@ -474,7 +474,7 @@ theorem regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g
   simpa only [prod_univ, regionBetween, Set.preimage, setOf_subset_setOf] using fun a => And.left
 #align region_between_subset regionBetween_subset
 
-variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
+variable [MeasurableSpace α] {μ : MeasureTheory.Measure α} {f g : α → ℝ} {s : Set α}
 
 /-- The region between two measurable functions on a measurable set is measurable. -/
 theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :

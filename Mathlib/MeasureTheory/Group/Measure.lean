@@ -79,7 +79,7 @@ open Measure
 
 section Mul
 
-variable [Mul G] {μ : Measure G}
+variable [Mul G] {μ : MeasureTheory.Measure G}
 
 @[to_additive]
 theorem map_mul_left_eq_self (μ : Measure G) [IsMulLeftInvariant μ] (g : G) :
@@ -432,7 +432,7 @@ end InvolutiveInv
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
+variable [DivisionMonoid G] [MeasurableMul G] [MeasurableInv G] {μ : MeasureTheory.Measure G}
 
 @[to_additive]
 instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvariant μ.inv := by
@@ -487,7 +487,7 @@ end DivisionMonoid
 
 section Group
 
-variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
+variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : MeasureTheory.Measure G}
 
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :
@@ -502,7 +502,7 @@ end Measure
 
 section TopologicalGroup
 
-variable [TopologicalSpace G] [BorelSpace G] {μ : Measure G} [Group G]
+variable [TopologicalSpace G] [BorelSpace G] {μ : MeasureTheory.Measure G} [Group G]
 
 @[to_additive]
 instance Measure.Regular.inv [ContinuousInv G] [T2Space G] [Regular μ] : Regular μ.inv :=
@@ -716,7 +716,7 @@ instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type _} 
 
 section
 
-variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
+variable [Group G] [TopologicalSpace G] (μ : MeasureTheory.Measure G) [IsHaarMeasure μ]
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by

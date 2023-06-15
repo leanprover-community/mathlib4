@@ -48,7 +48,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory
 
-variable {α ι E : Type _} {m : MeasurableSpace α} {μ : Measure α}
+variable {α ι E : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 /-- A sequence of functions `f` is said to converge in measure to some function `g` if for all
 `ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends to 0 as `i` converges along

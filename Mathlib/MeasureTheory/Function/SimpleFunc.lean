@@ -961,7 +961,7 @@ end Measurable
 
 section Measure
 
-variable {m : MeasurableSpace α} {μ ν : Measure α}
+variable {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 /-- Integral of a simple function whose codomain is `ℝ≥0∞`. -/
 def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
@@ -1172,7 +1172,7 @@ theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
       mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
 #align measure_theory.simple_func.support_eq MeasureTheory.SimpleFunc.support_eq
 
-variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}
+variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : MeasureTheory.Measure α} {f : α →ₛ β}
 
 theorem measurableSet_support [MeasurableSpace α] (f : α →ₛ β) : MeasurableSet (support f) := by
   rw [f.support_eq]

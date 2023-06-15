@@ -60,7 +60,7 @@ structure QuasiErgodic (μ : Measure α := by volume_tac) extends
   QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
 #align quasi_ergodic QuasiErgodic
 
-variable {f} {μ : Measure α}
+variable {f} {μ : MeasureTheory.Measure α}
 
 namespace PreErgodic
 
@@ -83,7 +83,8 @@ end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
-variable {β : Type _} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
+variable {β : Type _} {m' : MeasurableSpace β} {μ' : MeasureTheory.Measure β}
+  {s' : Set β} {g : α → β}
 
 theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : g ∘ f = f' ∘ g) : PreErgodic f' μ' :=

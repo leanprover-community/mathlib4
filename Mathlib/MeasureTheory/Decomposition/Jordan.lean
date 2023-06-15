@@ -222,7 +222,8 @@ namespace SignedMeasure
 
 open Classical JordanDecomposition Measure Set VectorMeasure
 
-variable {s : SignedMeasure α} {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+variable {s : SignedMeasure α} {μ ν : MeasureTheory.Measure α}
+  [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
 /-- Given a signed measure `s`, `s.toJordanDecomposition` is the Jordan decomposition `j`,
 such that `s = j.toSignedMeasure`. This property is known as the Jordan decomposition

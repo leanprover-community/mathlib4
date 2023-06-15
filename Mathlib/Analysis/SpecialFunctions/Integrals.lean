@@ -48,7 +48,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} {μ ν : MeasureTheory.Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
 /-! ### Interval integrability -/
 

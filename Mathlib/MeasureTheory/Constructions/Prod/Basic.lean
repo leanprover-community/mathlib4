@@ -91,7 +91,7 @@ variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [Measur
 
 variable [MeasurableSpace γ]
 
-variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
+variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : MeasureTheory.Measure γ}
 
 variable [NormedAddCommGroup E]
 
@@ -616,8 +616,8 @@ open Measure
 
 namespace MeasurePreserving
 
-variable {δ : Type _} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
-  {μd : Measure δ}
+variable {δ : Type _} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β}
+  {μc : MeasureTheory.Measure γ} {μd : Measure δ}
 
 theorem skew_product [SigmaFinite μb] [SigmaFinite μd] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ x ∂μa, map (g x) μc = μd) :
@@ -809,7 +809,7 @@ theorem lintegral_prod_mul {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf :
 
 namespace Measure
 
-variable {ρ : Measure (α × β)}
+variable {ρ : MeasureTheory.Measure (α × β)}
 
 /-- Marginal measure on `α` obtained from a measure `ρ` on `α × β`, defined by `ρ.map Prod.fst`. -/
 noncomputable def fst (ρ : Measure (α × β)) : Measure α :=

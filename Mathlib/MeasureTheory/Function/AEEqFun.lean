@@ -79,7 +79,7 @@ open Classical ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
-variable {α β γ δ : Type _} [MeasurableSpace α] {μ ν : Measure α}
+variable {α β γ δ : Type _} [MeasurableSpace α] {μ ν : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 

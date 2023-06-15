@@ -56,8 +56,8 @@ def AEStronglyMeasurable' {α β} [TopologicalSpace β] (m : MeasurableSpace α)
 
 namespace AEStronglyMeasurable'
 
-variable {α β 𝕜 : Type _} {m m0 : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
-  {f g : α → β}
+variable {α β 𝕜 : Type _} {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+  [TopologicalSpace β] {f g : α → β}
 
 theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) : AEStronglyMeasurable' m g μ :=
   by obtain ⟨f', hf'_meas, hff'⟩ := hf; exact ⟨f', hf'_meas, hfg.symm.trans hff'⟩
@@ -274,7 +274,7 @@ measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies complet
 `lpMeasSubgroup` (and `lpMeas`). -/
 
 
-variable {ι : Type _} {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {ι : Type _} {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 /-- If `f` belongs to `lpMeasSubgroup F m p μ`, then the measurable function it is almost
 everywhere equal to (given by `AEMeasurable.mk`) belongs to `ℒp` for the measure `μ.trim hm`. -/
@@ -515,7 +515,7 @@ end CompleteSubspace
 
 section StronglyMeasurable
 
-variable {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 /-- We do not get `ae_fin_strongly_measurable f (μ.trim hm)`, since we don't have
 `f =ᵐ[μ.trim hm] Lp_meas_to_Lp_trim F 𝕜 p μ hm f` but only the weaker
@@ -560,7 +560,7 @@ end LpMeas
 
 section Induction
 
-variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedSpace ℝ F]
+variable {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} [Fact (1 ≤ p)] [NormedSpace ℝ F]
 
 /-- Auxiliary lemma for `Lp.induction_stronglyMeasurable`. -/
 @[elab_as_elim]

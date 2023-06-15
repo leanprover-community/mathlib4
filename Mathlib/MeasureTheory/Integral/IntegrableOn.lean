@@ -34,7 +34,7 @@ variable {α β E F : Type _} [MeasurableSpace α]
 
 section
 
-variable [TopologicalSpace β] {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+variable [TopologicalSpace β] {l l' : Filter α} {f g : α → β} {μ ν : MeasureTheory.Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -86,7 +86,7 @@ theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α →
   hasFiniteIntegral_of_bounded hf
 #align measure_theory.has_finite_integral_restrict_of_bounded MeasureTheory.hasFiniteIntegral_restrict_of_bounded
 
-variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α}
+variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : MeasureTheory.Measure α}
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
@@ -617,7 +617,8 @@ the unprimed ones use `[NoAtoms μ]`.
 
 section PartialOrder
 
-variable [PartialOrder α] [MeasurableSingletonClass α] {f : α → E} {μ : Measure α} {a b : α}
+variable [PartialOrder α] [MeasurableSingletonClass α] {f : α → E}
+  {μ : MeasureTheory.Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc' (ha : μ {a} ≠ ∞) :
     IntegrableOn f (Icc a b) μ ↔ IntegrableOn f (Ioc a b) μ := by

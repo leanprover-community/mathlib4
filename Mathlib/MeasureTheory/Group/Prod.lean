@@ -52,7 +52,7 @@ variable (G : Type _) [MeasurableSpace G]
 
 variable [Group G] [MeasurableMul₂ G]
 
-variable (μ ν : Measure G) [SigmaFinite ν] [SigmaFinite μ] {s : Set G}
+variable (μ ν : MeasureTheory.Measure G) [SigmaFinite ν] [SigmaFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
 @[to_additive "The map `(x, y) ↦ (x, x + y)` as a `MeasurableEquiv`."]

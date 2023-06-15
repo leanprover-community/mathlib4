@@ -385,7 +385,7 @@ theorem IndepSets.indep' {_m : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabil
   hyp.indep (generateFrom_le hp1m) (generateFrom_le hp2m) hp1 hp2 rfl rfl
 #align probability_theory.indep_sets.indep' ProbabilityTheory.IndepSets.indep'
 
-variable {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {m0 : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω}
 
 theorem indepSets_piiUnionInter_of_disjoint [IsProbabilityMeasure μ] {s : ι → Set (Set Ω)}
     {S T : Set ι} (h_indep : iIndepSets s μ) (hST : Disjoint S T) :
@@ -651,7 +651,8 @@ section IndepFun
 -/
 
 
-variable {β β' γ γ' : Type _} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → β} {g : Ω → β'}
+variable {β β' γ γ' : Type _} {mΩ : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω}
+  {f : Ω → β} {g : Ω → β'}
 
 theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} :

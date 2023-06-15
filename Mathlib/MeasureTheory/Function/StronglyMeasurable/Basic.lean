@@ -992,7 +992,7 @@ theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measur
 
 namespace FinStronglyMeasurable
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {f g : α → β}
+variable {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {f g : α → β}
 
 theorem aefinStronglyMeasurable [Zero β] [TopologicalSpace β] (hf : FinStronglyMeasurable f μ) :
     AEFinStronglyMeasurable f μ :=
@@ -1186,8 +1186,8 @@ theorem SimpleFunc.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure �
 
 namespace AEStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
-  {f g : α → β}
+variable {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+  [TopologicalSpace β] [TopologicalSpace γ] {f g : α → β}
 
 section Mk
 
@@ -1837,7 +1837,7 @@ end AEStronglyMeasurable
 
 namespace AEFinStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β] {f g : α → β}
+variable {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} [TopologicalSpace β] {f g : α → β}
 
 section Mk
 
@@ -1956,7 +1956,7 @@ end AEFinStronglyMeasurable
 
 section SecondCountableTopology
 
-variable {G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {G : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
   [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
   {f : α → G}
 

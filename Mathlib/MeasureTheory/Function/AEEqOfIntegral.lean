@@ -55,7 +55,7 @@ namespace MeasureTheory
 
 section AeEqOfForall
 
-variable {α E 𝕜 : Type _} {m : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E 𝕜 : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} [IsROrC 𝕜]
 
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
@@ -121,7 +121,7 @@ variable {𝕜}
 
 end AeEqOfForall
 
-variable {α E : Type _} {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {α E : Type _} {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {s t : Set α}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {p : ℝ≥0∞}
 
 section AeEqOfForallSetIntegralEq

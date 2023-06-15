@@ -131,7 +131,7 @@ theorem map_eq_set_lintegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : 
 
 namespace pdf
 
-variable {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
+variable {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : MeasureTheory.Measure E}
 
 theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
     (∫⁻ x, pdf X ℙ μ x ∂μ) = ℙ Set.univ := by
@@ -239,7 +239,7 @@ theorem hasPDF_iff_of_measurable {X : Ω → E} (hX : Measurable X) :
 
 section
 
-variable {F : Type _} [MeasurableSpace F] {ν : Measure F}
+variable {F : Type _} [MeasurableSpace F] {ν : MeasureTheory.Measure F}
 
 /-- A random variable that `HasPDF` transformed under a `quasi_measure_preserving`
 map also `HasPDF` if `(map g (map X ℙ)).have_lebesgue_decomposition μ`.

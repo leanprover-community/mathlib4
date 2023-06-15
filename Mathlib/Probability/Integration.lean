@@ -38,7 +38,8 @@ open Set MeasureTheory
 
 open scoped ENNReal MeasureTheory
 
-variable {Ω : Type _} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f g : Ω → ℝ≥0∞} {X Y : Ω → ℝ}
+variable {Ω : Type _} {mΩ : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω} {f g : Ω → ℝ≥0∞}
+  {X Y : Ω → ℝ}
 
 namespace ProbabilityTheory
 

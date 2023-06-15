@@ -628,7 +628,7 @@ instance (priority := 100) MeasurableSMul₂.toMeasurableSMul [MeasurableSMul₂
 #align has_measurable_smul₂.to_has_measurable_smul MeasurableSMul₂.toMeasurableSMul
 #align has_measurable_vadd₂.to_has_measurable_vadd MeasurableVAdd₂.toMeasurableVAdd
 
-variable [MeasurableSMul M β] {μ : Measure α}
+variable [MeasurableSMul M β] {μ : MeasureTheory.Measure α}
 
 @[to_additive (attr := measurability)]
 theorem Measurable.smul_const (hf : Measurable f) (y : β) : Measurable fun x => f x • y :=

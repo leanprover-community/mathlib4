@@ -36,7 +36,7 @@ end StronglyMeasurable
 
 namespace AEStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} {𝕜 : Type _} {E : Type _} [IsROrC 𝕜]
+variable {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} {𝕜 : Type _} {E : Type _} [IsROrC 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

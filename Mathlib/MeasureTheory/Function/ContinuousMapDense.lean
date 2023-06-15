@@ -68,7 +68,7 @@ open MeasureTheory TopologicalSpace ContinuousMap Set
 
 variable {α : Type _} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
 
-variable {E : Type _} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
+variable {E : Type _} [NormedAddCommGroup E] {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 

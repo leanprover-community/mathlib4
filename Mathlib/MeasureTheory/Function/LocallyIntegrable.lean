@@ -36,7 +36,7 @@ variable {X Y E R : Type _} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
-variable [NormedAddCommGroup E] {f : X → E} {μ : Measure X} {s : Set X}
+variable [NormedAddCommGroup E] {f : X → E} {μ : MeasureTheory.Measure X} {s : Set X}
 
 namespace MeasureTheory
 

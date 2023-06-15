@@ -33,7 +33,7 @@ open Classical Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α] {μ ν : Measure α}
+variable {α : Type _} [MeasurableSpace α] {μ ν : MeasureTheory.Measure α}
 
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :

@@ -52,7 +52,7 @@ variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [Measur
 
 variable [MeasurableSpace γ]
 
-variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
+variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : MeasureTheory.Measure γ}
 
 variable [NormedAddCommGroup E]
 

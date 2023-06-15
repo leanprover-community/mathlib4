@@ -80,7 +80,7 @@ namespace MeasureTheory
 
 section AECover
 
-variable {α ι : Type _} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
+variable {α ι : Type _} [MeasurableSpace α] (μ : MeasureTheory.Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
     `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
@@ -332,7 +332,7 @@ theorem AECover.comp_tendsto {α ι ι' : Type _} [MeasurableSpace α] {μ : Mea
 
 section AECoverUnionInterCountable
 
-variable {α ι : Type _} [Countable ι] [MeasurableSpace α] {μ : Measure α}
+variable {α ι : Type _} [Countable ι] [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
 theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
@@ -352,7 +352,7 @@ end AECoverUnionInterCountable
 
 section Lintegral
 
-variable {α ι : Type _} [MeasurableSpace α] {μ : Measure α} {l : Filter ι}
+variable {α ι : Type _} [MeasurableSpace α] {μ : MeasureTheory.Measure α} {l : Filter ι}
 
 private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ : AECover μ atTop φ)
     (hmono : Monotone φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
@@ -403,7 +403,8 @@ end Lintegral
 
 section Integrable
 
-variable {α ι E : Type _} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
+variable {α ι E : Type _} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
+  {l : Filter ι} [NormedAddCommGroup E]
 
 theorem AECover.integrable_of_lintegral_nnnorm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
@@ -480,8 +481,8 @@ end Integrable
 
 section Integral
 
-variable {α ι E : Type _} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E]
+variable {α ι E : Type _} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
+  {l : Filter ι} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
@@ -514,8 +515,8 @@ end Integral
 
 section IntegrableOfIntervalIntegral
 
-variable {ι E : Type _} {μ : Measure ℝ} {l : Filter ι} [Filter.NeBot l] [IsCountablyGenerated l]
-  [NormedAddCommGroup E] {a b : ι → ℝ} {f : ℝ → E}
+variable {ι E : Type _} {μ : MeasureTheory.Measure ℝ} {l : Filter ι} [Filter.NeBot l]
+  [IsCountablyGenerated l] [NormedAddCommGroup E] {a b : ι → ℝ} {f : ℝ → E}
 
 theorem integrable_of_intervalIntegral_norm_bounded (I : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc (a i) (b i)) μ) (ha : Tendsto a l atBot)
@@ -618,7 +619,7 @@ end IntegrableOfIntervalIntegral
 
 section IntegralOfIntervalIntegral
 
-variable {ι E : Type _} {μ : Measure ℝ} {l : Filter ι} [IsCountablyGenerated l]
+variable {ι E : Type _} {μ : MeasureTheory.Measure ℝ} {l : Filter ι} [IsCountablyGenerated l]
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {a b : ι → ℝ} {f : ℝ → E}
 
 theorem intervalIntegral_tendsto_integral (hfi : Integrable f μ) (ha : Tendsto a l atBot)

@@ -350,8 +350,8 @@ def toPmf [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
         h.measure_univ)⟩
 #align measure_theory.measure.to_pmf MeasureTheory.Measure.toPmf
 
-variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
-  [IsProbabilityMeasure μ]
+variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+  (μ : MeasureTheory.Measure α) [IsProbabilityMeasure μ]
 
 theorem toPmf_apply (x : α) : μ.toPmf x = μ {x} := rfl
 #align measure_theory.measure.to_pmf_apply MeasureTheory.Measure.toPmf_apply
@@ -379,8 +379,8 @@ instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : Pmf α) :
       toOuterMeasure_apply, ENNReal.coe_eq_one] using tsum_coe p⟩
 #align pmf.to_measure.is_probability_measure Pmf.toMeasure.isProbabilityMeasure
 
-variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α) (μ : Measure α)
-  [IsProbabilityMeasure μ]
+variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (p : Pmf α)
+  (μ : MeasureTheory.Measure α) [IsProbabilityMeasure μ]
 
 @[simp]
 theorem toMeasure_toPmf : p.toMeasure.toPmf = p :=

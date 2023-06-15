@@ -30,7 +30,7 @@ open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : MeasureTheory.Measure Ω}
 
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by

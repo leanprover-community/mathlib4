@@ -278,7 +278,7 @@ variable [MeasurableSpace α]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 
-variable {μ : Measure α} {p : ℝ≥0∞}
+variable {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 /-!
 ### Properties of simple functions in `Lp` spaces
@@ -951,7 +951,8 @@ end simpleFunc
 
 end Lp
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
+variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞}
+  {μ : MeasureTheory.Measure α}
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that

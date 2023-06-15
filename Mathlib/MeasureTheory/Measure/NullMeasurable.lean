@@ -74,7 +74,7 @@ def NullMeasurableSpace (α : Type _) [MeasurableSpace α]
 
 section
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {s t : Set α}
 
 instance NullMeasurableSpace.instInhabited [h : Inhabited α] :
     Inhabited (NullMeasurableSpace α μ) :=
@@ -410,7 +410,8 @@ end
 
 section NullMeasurable
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
+variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β}
+  {μ : MeasureTheory.Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
 measurable set. -/
@@ -450,7 +451,7 @@ class Measure.IsComplete {_ : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∀ s, μ s = 0 → MeasurableSet s
 #align measure_theory.measure.is_complete MeasureTheory.Measure.IsComplete
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {s t : Set α}
 
 theorem Measure.isComplete_iff : μ.IsComplete ↔ ∀ s, μ s = 0 → MeasurableSet s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩

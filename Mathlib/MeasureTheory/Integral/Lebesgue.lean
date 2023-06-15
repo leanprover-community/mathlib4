@@ -89,7 +89,7 @@ section Lintegral
 
 open SimpleFunc
 
-variable {m : MeasurableSpace α} {μ ν : Measure α}
+variable {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
 irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=

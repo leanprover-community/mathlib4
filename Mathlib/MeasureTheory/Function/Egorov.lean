@@ -34,7 +34,7 @@ namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type _} {m : MeasurableSpace α} [MetricSpace β] {μ : Measure α}
+variable {α β ι : Type _} {m : MeasurableSpace α} [MetricSpace β] {μ : MeasureTheory.Measure α}
 
 namespace Egorov
 

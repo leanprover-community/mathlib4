@@ -48,7 +48,8 @@ theorem Set.disjoint_sdiff_inter {α : Type _} (s t : Set α) : Disjoint (s \ t)
 
 open Set
 
-variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
+variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+  [TopologicalSpace α]
   [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
   {s : Set α} {φ : ι → α → ℝ}
 

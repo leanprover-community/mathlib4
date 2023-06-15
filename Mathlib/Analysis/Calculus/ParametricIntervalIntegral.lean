@@ -22,7 +22,7 @@ open TopologicalSpace MeasureTheory Filter Metric
 
 open scoped Topology Filter Interval
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {μ : Measure ℝ} {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type _} [IsROrC 𝕜] {μ : MeasureTheory.Measure ℝ} {E : Type _} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type _} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H] {a b ε : ℝ} {bound : ℝ → ℝ}
 

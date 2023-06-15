@@ -150,8 +150,8 @@ def InnerRegular {α} {_ : MeasurableSpace α} (μ : Measure α) (p q : Set α �
 
 namespace InnerRegular
 
-variable {α : Type _} {m : MeasurableSpace α} {μ : Measure α} {p q : Set α → Prop} {U : Set α}
-  {ε : ℝ≥0∞}
+variable {α : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} {p q : Set α → Prop}
+  {U : Set α} {ε : ℝ≥0∞}
 
 theorem measure_eq_iSup (H : InnerRegular μ p q) (hU : q U) :
     μ U = ⨆ (K) (_ : K ⊆ U) (_ : p K), μ K := by
@@ -196,7 +196,7 @@ theorem trans {q' : Set α → Prop} (H : InnerRegular μ p q) (H' : InnerRegula
 
 end InnerRegular
 
-variable {α β : Type _} [MeasurableSpace α] [TopologicalSpace α] {μ : Measure α}
+variable {α β : Type _} [MeasurableSpace α] [TopologicalSpace α] {μ : MeasureTheory.Measure α}
 
 /-- A measure `μ` is outer regular if `μ(A) = inf {μ(U) | A ⊆ U open}` for a measurable set `A`.
 

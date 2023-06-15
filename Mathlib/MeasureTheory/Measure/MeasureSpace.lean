@@ -111,7 +111,7 @@ namespace MeasureTheory
 
 section
 
-variable {m : MeasurableSpace α} {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
+variable {m : MeasurableSpace α} {μ μ₁ μ₂ : MeasureTheory.Measure α} {s s₁ s₂ t : Set α}
 
 instance ae_isMeasurablyGenerated : IsMeasurablyGenerated μ.ae :=
   ⟨fun _s hs =>
@@ -707,7 +707,7 @@ synthesizing instances in `MeasureSpace` section. -/
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
 
-variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
+variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : MeasureTheory.Measure α} {s s' t : Set α}
 namespace Measure
 
 /-- If `u` is a superset of `t` with the same (finite) measure (both sets possibly non-measurable),
@@ -998,7 +998,7 @@ protected theorem le_add_right (h : μ ≤ ν) : μ ≤ ν + ν' := fun s hs => 
 
 section sInf
 
-variable {m : Set (Measure α)}
+variable {m : Set (MeasureTheory.Measure α)}
 
 theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
@@ -1477,7 +1477,7 @@ section
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
 
-variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
+variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : MeasureTheory.Measure α} {s s' t : Set α}
 
 namespace Measure
 
@@ -2447,7 +2447,7 @@ protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasure
   ⟨measurable_id, map_id.absolutelyContinuous⟩
 #align measure_theory.measure.quasi_measure_preserving.id MeasureTheory.Measure.QuasiMeasurePreserving.id
 
-variable {μa μa' : Measure α} {μb μb' : Measure β} {μc : Measure γ} {f : α → β}
+variable {μa μa' : Measure α} {μb μb' : Measure β} {μc : MeasureTheory.Measure γ} {f : α → β}
 
 protected theorem _root_.Measurable.quasiMeasurePreserving
     {_m0 : MeasurableSpace α} (hf : Measurable f) (μ : Measure α) :
@@ -4285,7 +4285,7 @@ namespace MeasurableEquiv
 
 open Equiv MeasureTheory.Measure
 
-variable [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
+variable [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : MeasureTheory.Measure β}
 
 /-- If we map a measure along a measurable equivalence, we can compute the measure on all sets
   (not just the measurable ones). -/
@@ -4356,7 +4356,7 @@ theorem trim_eq_self [MeasurableSpace α] {μ : Measure α} : μ.trim le_rfl = �
   simp [Measure.trim]
 #align measure_theory.trim_eq_self MeasureTheory.trim_eq_self
 
-variable {m m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
+variable {m m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α} {s : Set α}
 
 theorem toOuterMeasure_trim_eq_trim_toOuterMeasure (μ : Measure α) (hm : m ≤ m0) :
     @Measure.toOuterMeasure _ m (μ.trim hm) = @OuterMeasure.trim _ m μ.toOuterMeasure := by
@@ -4454,7 +4454,7 @@ end MeasureTheory
 
 namespace IsCompact
 
-variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
+variable [TopologicalSpace α] [MeasurableSpace α] {μ : MeasureTheory.Measure α} {s : Set α}
 
 /-- If `s` is a compact set and `μ` is finite at `𝓝 x` for every `x ∈ s`, then `s` admits an open
 superset of finite measure. -/
@@ -4606,7 +4606,7 @@ end MeasureIxx
 
 section Piecewise
 
-variable [MeasurableSpace α] {μ : Measure α} {s t : Set α} {f g : α → β}
+variable [MeasurableSpace α] {μ : MeasureTheory.Measure α} {s t : Set α} {f g : α → β}
 
 theorem piecewise_ae_eq_restrict (hs : MeasurableSet s) : piecewise s f g =ᵐ[μ.restrict s] f := by
   rw [ae_restrict_eq hs]
@@ -4627,7 +4627,7 @@ end Piecewise
 
 section IndicatorFunction
 
-variable [MeasurableSpace α] {μ : Measure α} {s t : Set α} {f : α → β}
+variable [MeasurableSpace α] {μ : MeasureTheory.Measure α} {s t : Set α} {f : α → β}
 
 theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : Set β}
     (ht : (0 : β) ∈ t) (hs : MeasurableSet s) :

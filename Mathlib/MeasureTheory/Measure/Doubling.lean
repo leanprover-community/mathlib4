@@ -52,7 +52,7 @@ class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace �
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type _} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type _} [MetricSpace α] [MeasurableSpace α] (μ : MeasureTheory.Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 -- Porting note: added for missing infer kinds

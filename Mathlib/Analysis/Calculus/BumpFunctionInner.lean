@@ -479,7 +479,7 @@ protected theorem continuous : Continuous f :=
 
 open MeasureTheory
 
-variable [MeasurableSpace E] {μ : Measure E}
+variable [MeasurableSpace E] {μ : MeasureTheory.Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
 protected def normed (μ : Measure E) : E → ℝ := fun x => f x / ∫ x, f x ∂μ

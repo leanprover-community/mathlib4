@@ -37,7 +37,7 @@ noncomputable instance instSub {α : Type _} [MeasurableSpace α] : Sub (Measure
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
 #align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
-variable {α : Type _} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
+variable {α : Type _} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α} {s : Set α}
 
 theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 #align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def

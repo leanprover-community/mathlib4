@@ -20,7 +20,7 @@ section regionBetween
 
 variable {α : Type _}
 
-variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
+variable [MeasurableSpace α] {μ : MeasureTheory.Measure α} {f g : α → ℝ} {s : Set α}
 
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : f ≤ᵐ[μ.restrict s] g) :

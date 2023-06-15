@@ -42,7 +42,7 @@ namespace MeasureTheory
 
 section
 
-variable {α F : Type _} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
+variable {α F : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} [NormedAddCommGroup F]
 
 theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
@@ -66,7 +66,7 @@ end
 
 section InnerProductSpace
 
-variable {α : Type _} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α : Type _} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : MeasureTheory.Measure α}
 
 variable {E 𝕜 : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -116,8 +116,8 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
-  [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+variable {α E F 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {μ : MeasureTheory.Measure α}
+  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 -- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -287,7 +287,7 @@ section InnerContinuous
 
 variable {α : Type _} [TopologicalSpace α] [MeasureSpace α] [BorelSpace α] {𝕜 : Type _} [IsROrC 𝕜]
 
-variable (μ : Measure α) [IsFiniteMeasure μ]
+variable (μ : MeasureTheory.Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate
 

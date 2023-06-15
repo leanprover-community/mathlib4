@@ -95,7 +95,7 @@ attribute [coe] Measure.toOuterMeasure
 
 section
 
-variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
+variable [MeasurableSpace α] {μ μ₁ μ₂ : MeasureTheory.Measure α} {s s₁ s₂ t : Set α}
 
 namespace Measure
 
@@ -667,7 +667,7 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 -/
 
 
-variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
+variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : MeasureTheory.Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. -/

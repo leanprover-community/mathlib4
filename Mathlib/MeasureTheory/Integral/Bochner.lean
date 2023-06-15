@@ -162,7 +162,8 @@ section WeightedSmul
 
 open ContinuousLinearMap
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedAddCommGroup F] [NormedSpace ℝ F] {m : MeasurableSpace α}
+  {μ : MeasureTheory.Measure α}
 
 /-- Given a set `s`, return the continuous linear map `fun x => (μ s).toReal • x`. The extension
 of that set function through `setToL1` gives the Bochner integral of L1 functions. -/
@@ -466,7 +467,8 @@ set_option linter.uppercaseLean3 false -- `L1`
 
 open AEEqFun Lp.simpleFunc Lp
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] {m : MeasurableSpace α} {μ : Measure α}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] {m : MeasurableSpace α}
+  {μ : MeasureTheory.Measure α}
 
 namespace SimpleFunc
 
@@ -815,7 +817,7 @@ section Properties
 
 open ContinuousLinearMap MeasureTheory.SimpleFunc
 
-variable {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
+variable {f g : α → E} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) :=
   by rw [integral]; exact @dif_pos _ (id _) hf _ _ _
@@ -1397,7 +1399,7 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 #align measure_theory.tendsto_integral_approx_on_of_measurable_of_range_subset MeasureTheory.tendsto_integral_approxOn_of_measurable_of_range_subset
 
-variable {ν : Measure α}
+variable {ν : MeasureTheory.Measure α}
 
 theorem integral_add_measure {f : α → E} (hμ : Integrable f μ) (hν : Integrable f ν) :
     ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
@@ -1724,7 +1726,8 @@ attribute [integral_simps] integral_neg integral_smul L1.integral_add L1.integra
 
 section IntegralTrim
 
-variable {H β γ : Type _} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
+variable {H β γ : Type _} [NormedAddCommGroup H] {m m0 : MeasurableSpace β}
+  {μ : MeasureTheory.Measure β}
 
 /-- Simple function seen as simple function of a larger `MeasurableSpace`. -/
 def SimpleFunc.toLargerSpace (hm : m ≤ m0) (f : @SimpleFunc β m γ) : SimpleFunc β γ :=
@@ -1823,7 +1826,7 @@ end IntegralTrim
 
 section SnormBound
 
-variable {m0 : MeasurableSpace α} {μ : Measure α}
+variable {m0 : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f μ) (hfint' : 0 ≤ ∫ x, f x ∂μ)
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : snorm f 1 μ ≤ 2 * μ Set.univ * r := by

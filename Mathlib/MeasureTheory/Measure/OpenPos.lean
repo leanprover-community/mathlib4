@@ -181,7 +181,7 @@ open MeasureTheory MeasureTheory.Measure
 
 namespace Metric
 
-variable {X : Type _} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type _} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : MeasureTheory.Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
@@ -196,7 +196,7 @@ end Metric
 
 namespace EMetric
 
-variable {X : Type _} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type _} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : MeasureTheory.Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
