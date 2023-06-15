@@ -913,6 +913,10 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
   rfl
 #align lie_hom.ideal_range_eq_map LieHom.idealRange_eq_map
 
+@[simp]
+theorem map_top_eq_idealRange : LieIdeal.map f ⊤ = f.idealRange :=
+  (idealRange_eq_map f).symm
+
 /-- The condition that the image of a morphism of Lie algebras is an ideal. -/
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
@@ -991,7 +995,6 @@ theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
   exact LinearMap.range_eq_top
 #align lie_hom.range_eq_top LieHom.range_eq_top
 
-@[simp]
 theorem idealRange_eq_top_of_surjective (h : Function.Surjective f) : f.idealRange = ⊤ := by
   rw [← f.range_eq_top] at h
   rw [idealRange_eq_lieSpan_range, h, ← LieSubalgebra.coe_to_submodule, ←
