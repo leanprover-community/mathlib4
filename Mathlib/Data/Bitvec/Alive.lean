@@ -196,45 +196,45 @@ def statement39 :  some
       (Bitvec.xor (Bitvec.or (Bitvec.xor (Bitvec.ofInt w nx) ((-1 : Bitvec w))) y)
         ((-1 : Bitvec w))) ⊑
     some (Bitvec.and (Bitvec.ofInt w nx) (Bitvec.xor y ((-1 : Bitvec w))))
-    := sorry
+    := by aesop_bitvec
 
 def statement40 :  some (Bitvec.xor (Bitvec.and x y) ((-1 : Bitvec w))) ⊑
     some
       (Bitvec.or (Bitvec.xor x ((-1 : Bitvec w)))
         (Bitvec.xor y ((-1 : Bitvec w))))
-    := sorry
+    := by aesop_bitvec
 
 def statement41 :  some (Bitvec.xor (Bitvec.or x y) ((-1 : Bitvec w))) ⊑
     some
       (Bitvec.and (Bitvec.xor x ((-1 : Bitvec w)))
         (Bitvec.xor y ((-1 : Bitvec w))))
-    := sorry
+    := by aesop_bitvec
 
 def statement42 :  some (Bitvec.xor (Bitvec.or A (Bitvec.ofInt w op1)) (Bitvec.ofInt w op1)) ⊑
     some (Bitvec.and A (Bitvec.xor (Bitvec.ofInt w op1) ((-1 : Bitvec w))))
-    := sorry
+    := by aesop_bitvec
 
 def statement43 :  some (Bitvec.xor (Bitvec.and A (Bitvec.ofInt w op1)) (Bitvec.ofInt w op1)) ⊑
     some (Bitvec.and (Bitvec.xor A ((-1 : Bitvec w))) (Bitvec.ofInt w op1))
-    := sorry
+    := by aesop_bitvec
 
 def statement44 :  some
       (Bitvec.xor (Bitvec.and A B)
         (Bitvec.or A B)) ⊑
     some (Bitvec.xor A B)
-    := sorry
+    := by aesop_bitvec
 
 def statement45 :  some
       (Bitvec.xor (Bitvec.or A (Bitvec.xor B ((-1 : Bitvec w))))
         (Bitvec.or (Bitvec.xor A ((-1 : Bitvec w))) B)) ⊑
     some (Bitvec.xor A B)
-    := sorry
+    := by aesop_bitvec
 
 def statement46 :  some
       (Bitvec.xor (Bitvec.and A (Bitvec.xor B ((-1 : Bitvec w))))
         (Bitvec.and (Bitvec.xor A ((-1 : Bitvec w))) B)) ⊑
     some (Bitvec.xor A B)
-    := sorry
+    := by aesop_bitvec
 
 def statement47 :  some
       (Bitvec.xor (Bitvec.xor A (Bitvec.ofInt w c))
@@ -242,16 +242,16 @@ def statement47 :  some
     some
       (Bitvec.xor (Bitvec.and (Bitvec.xor A ((-1 : Bitvec w))) B)
         (Bitvec.ofInt w c))
-    := sorry
+    := by aesop_bitvec
 
 def statement48 :  some
       (Bitvec.xor (Bitvec.and A B)
         (Bitvec.xor A B)) ⊑
     some (Bitvec.or A B)
-    := sorry
+    := by aesop_bitvec
 
 def statement49 :  some
       (Bitvec.xor (Bitvec.and A (Bitvec.xor B ((-1 : Bitvec w))))
         (Bitvec.xor A ((-1 : Bitvec w)))) ⊑
     some (Bitvec.xor (Bitvec.and A B) ((-1 : Bitvec w)))
-    := sorry
+    := by aesop_bitvec
