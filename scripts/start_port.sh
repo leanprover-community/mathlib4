@@ -66,23 +66,28 @@ BASE_COMMIT="$(echo "Initial file copy from mathport" | git commit-tree "$(git w
 
 echo "Applying automated fixes"
 # Apply automated fixes
-(
-    cd $GIT_WORK_TREE;
-    sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
-    sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
-    python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
-    mv "$mathlib4_path.tmp" "$mathlib4_path"
+pushd $GIT_WORK_TREE;
+sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
+sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
-    # TODO: note the commit message claims we did this even if we didn't!
-    if [[ "$mathlib4_mod" =~ ^Mathlib. ]]; then
-        (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
-        mv -f Mathlib.lean.tmp Mathlib.lean
-    fi
-)
+python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
+mv "$mathlib4_path.tmp" "$mathlib4_path"
+
+if [[ "$mathlib4_mod" =~ ^Mathlib. ]]; then
+    which_all=Mathlib
+elif [[ "$mathlib4_mod" =~ ^Counterexamples. ]]; then
+    which_all=Counterexamples
+elif [[ "$mathlib4_mod" =~ ^Archive. ]]; then
+    which_all=Archive
+fi
+(echo "import $mathlib4_mod" ; cat $which_all.lean) | LC_ALL=C sort | uniq > $which_all.lean.tmp
+mv -f $which_all.lean.tmp $which_all.lean
+
+popd
 
 # Commit them
-git update-index --add Mathlib.lean
+git update-index --add $which_all.lean
 git update-index --add "$mathlib4_path"
 BASE_COMMIT="$(git commit-tree "$(git write-tree)" -p "$BASE_COMMIT" << EOF
 automated fixes
@@ -90,7 +95,7 @@ automated fixes
 Mathbin -> Mathlib
 fix certain import statements
 move "by" to end of line
-add import to Mathlib.lean
+add import to $which_all.lean
 EOF
 )"
 
