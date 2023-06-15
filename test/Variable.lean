@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Variable?
+import Mathlib.Tactic.Variable
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.LinearMap
