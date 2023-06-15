@@ -136,7 +136,8 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β)
   · have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
       rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
-      simp [mul_sub, coeff_C, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
+      simp [mul_sub, coeff_C, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero),
+        -map_add]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
   have h_sep : h.Separable := separable_gcd_right _ (IsSeparable.separable F β).map
@@ -163,10 +164,10 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     simp only [Algebra.smul_def, RingHom.map_add, RingHom.map_mul, RingHom.comp_apply]
     ring
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
-  trans EuclideanDomain.gcd (_ : E[X]) (_ : E[X])
-  · dsimp only [p]
+  trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
+  · dsimp only
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
-  · simpa [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, h]
+  · simp [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
 #align field.primitive_element_inf_aux Field.primitive_element_inf_aux
 
 end PrimitiveElementInf
