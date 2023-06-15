@@ -20,7 +20,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 ## Main Results
  - `IsIntegrallyClosed.eq_map_mul_C_of_dvd`: if `R` is integrally closed, `K = Frac(R)` and
-  `g : K[X]` divides a monic polynomial with coefficients in `R`, then `g * (C g.leading_coeff⁻¹)`
+  `g : K[X]` divides a monic polynomial with coefficients in `R`, then `g * (C g.leadingCoeff⁻¹)`
   has coefficients in `R`
  - `Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map`:
   A monic polynomial over an integrally closed domain is irreducible iff it is irreducible in a
@@ -79,7 +79,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
 variable [IsDomain R] [IsFractionRing R K]
 
 /-- If `K = Frac(R)` and `g : K[X]` divides a monic polynomial with coefficients in `R`, then
-    `g * (C g.leading_coeff⁻¹)` has coefficients in `R` -/
+    `g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
 theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]} (hf : f.Monic)
     {g : K[X]} (hg : g ∣ f.map (algebraMap R K)) :
     ∃ g' : R[X], g'.map (algebraMap R K) * (C <| leadingCoeff g) = g := by
@@ -159,7 +159,7 @@ open IsIntegrallyClosed
   iff it is irreducible in the fraction field. -/
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
-  /- The ← direction follows from `is_primitive.irreducible_of_irreducible_map_of_injective`.
+  /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
        For the → direction, it is enought to show that if `(p.map $ algebraMap R K) = a * b` and
        `a` is not a unit then `b` is a unit -/
   refine'
@@ -198,7 +198,7 @@ theorem isIntegrallyClosed_iff' :
     IsIntegrallyClosed R ↔
       ∀ p : R[X], p.Monic → (Irreducible p ↔ Irreducible (p.map <| algebraMap R K)) := by
   constructor
-  · intro hR p hp; letI := hR; exact Monic.irreducible_iff_irreducible_map_fraction_map hp
+  · intro hR p hp; exact Monic.irreducible_iff_irreducible_map_fraction_map hp
   · intro H
     refine'
       (isIntegrallyClosed_iff K).mpr fun {x} hx =>
