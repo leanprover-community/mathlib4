@@ -22,7 +22,7 @@ In this file we prove the existence and uniqueness of splitting fields.
 ## Main statements
 
 * `Polynomial.IsSplittingField.algEquiv`: Every splitting field of a polynomial `f` is isomorphic
-  to `splitting_field f` and thus, being a splitting field is unique up to isomorphism.
+  to `SplittingField f` and thus, being a splitting field is unique up to isomorphism.
 
 ## Implementation details
 We construct a `SplittingFieldAux` without worrying about whether the instances satisfy nice
