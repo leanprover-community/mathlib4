@@ -307,7 +307,8 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   simp
 #align set.finite.to_finset_image Set.Finite.toFinset_image
 
--- porting note: now `simp` can prove it but it needs an instance from the next section
+-- porting note: now `simp` can prove it but it needs the `fintypeRange` instance from the next
+-- section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
