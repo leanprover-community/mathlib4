@@ -2005,7 +2005,7 @@ theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
 
 In this section we define `Filter.monad`, a `Monad` structure on `Filter`s. This definition is not
 an instance because its `Seq` projection is not equal to the `Filter.seq` function we use in the
-`Applicative` instance on `Filter.
+`Applicative` instance on `Filter`.
 -/
 
 section

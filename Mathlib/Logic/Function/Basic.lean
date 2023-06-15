@@ -1000,7 +1000,7 @@ theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
 
 theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) := by
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
-  -- due to `@[macro_inline] possibly?
+  -- due to `@[macro_inline]` possibly?
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective
