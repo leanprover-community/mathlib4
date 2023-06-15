@@ -9,8 +9,8 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Category.BoolAlg
-import Mathlib.Order.Category.FinBddDistLat
+import Mathlib.Order.Category.BoolAlgCat
+import Mathlib.Order.Category.FinBddDistLatCat
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
@@ -146,4 +146,3 @@ def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   map X Y f :=
     Quiver.Hom.op <| (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
 #align Fintype_to_FinBoolAlg_op fintypeToFinBoolAlgOp
-
