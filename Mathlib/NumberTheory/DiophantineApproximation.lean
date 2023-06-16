@@ -34,32 +34,32 @@ then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
 ## Main statements
 
 The main results are three variants of Dirichlet's approximation theorem:
-* `real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
+* `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
   there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
-* `real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
+* `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
   a natural number `k`,
-* `real.exists_rat_abs_sub_le_and_denom_le`, which says that there is a rational number `q`
+* `Real.exists_rat_abs_sub_le_and_den_le`, which says that there is a rational number `q`
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
 
 and
-* `real.infinite_rat_abs_sub_lt_one_div_denom_sq_of_irrational`, which states that
+* `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
   for irrational `ξ`, the set `{q : ℚ | |ξ - q| < 1/q.den^2}` is infinite.
 
 We also show a converse,
-* `rat.finite_rat_abs_sub_lt_one_div_denom_sq`, which states that the set above is finite
+* `Rat.finite_rat_abs_sub_lt_one_div_den_sq`, which states that the set above is finite
   when `ξ` is a rational number.
 
 Both statements are combined to give an equivalence,
-`real.infinite_rat_abs_sub_lt_one_div_denom_sq_iff_irrational`.
+`Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`.
 
-There are two versions of Legendre's Theorem. One, `real.exists_rat_eq_convergent`, uses
-`real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `real.exists_continued_fraction_convergent_eq_rat`, uses
-`generalized_continued_fraction.convergents` of `generalized_continued_fraction.of ξ`.
+There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
+`Real.convergent`, a simple recursive definition of the convergents that is also defined
+in this file, whereas the other, `Real.exists_continued_fraction_convergent_eq_rat`, uses
+`GeneralizedContinuedFraction.convergents` of `GeneralizedContinuedFraction.of ξ`.
 
 ## Implementation notes
 
-We use the namespace `real` for the results on real numbers and `rat` for the results
+We use the namespace `Real` for the results on real numbers and `Rat` for the results
 on rational numbers. We introduce a secondary namespace `real.contfrac_legendre`
 to separate off a definition and some technical auxiliary lemmas used in the proof
 of Legendre's Theorem. For remarks on the proof of Legendre's Theorem, see below.
@@ -94,7 +94,7 @@ open Finset Int
 For any real number `ξ` and positive natural `n`, there are integers `j` and `k`,
 with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
 
-See also `real.exists_nat_abs_mul_sub_round_le`. -/
+See also `Real.exists_nat_abs_mul_sub_round_le`. -/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
@@ -327,13 +327,13 @@ open Int
 /-- We give a direct recursive definition of the convergents of the continued fraction
 expansion of a real number `ξ`. The main reason for that is that we want to have the
 convergents as rational numbers; the versions
-`(generalized_continued_fraction.of ξ).convergents` and
-`(generalized_continued_fraction.of ξ).convergents'` always give something of the
+`(GeneralizedContinuedFraction.of ξ).convergents` and
+`(GeneralizedContinuedFraction.of ξ).convergents'` always give something of the
 same type as `ξ`. We can then also use dot notation `ξ.convergent n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
-see `real.continued_fraction_convergent_eq_convergent`.
+see `Real.continued_fraction_convergent_eq_convergent`.
 (Note that we use the fact that `1/0 = 0` here to make it work for rational `ξ`.) -/
 noncomputable def convergent : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
@@ -373,13 +373,13 @@ theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
 #align real.convergent_of_int Real.convergent_of_int
 
 /-!
-Our `convergent`s agree with `generalized_continued_fraction.convergents`.
+Our `convergent`s agree with `GeneralizedContinuedFraction.convergents`.
 -/
 
 
 open GeneralizedContinuedFraction
 
-/-- The `n`th convergent of the `generalized_continued_fraction.of ξ`
+/-- The `n`th convergent of the `GeneralizedContinuedFraction.of ξ`
 agrees with `ξ.convergent n`. -/
 theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
@@ -584,7 +584,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This version uses `real.convergent`. -/
+This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
   refine' q.num_div_den ▸ exists_rat_eq_convergent' ⟨_, fun hd => _, _⟩
