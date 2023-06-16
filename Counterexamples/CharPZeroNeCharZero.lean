@@ -10,15 +10,15 @@ Authors: Damiano Testa, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
 
-/-! # `char_p R 0` and `char_zero R` need not coincide for semirings
+/-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 
 For rings, the two notions coincide.
 
-In fact, `char_p.of_char_zero` shows that `char_zero R` implies `char_p R 0` for any `char_zero`
-`add_monoid R` with `1`.
-The reverse implication holds for any `add_left_cancel_monoid R` with `1`, by `char_p_to_char_zero`.
+In fact, `CharP.ofCharZero` shows that `CharZero R` implies `CharP R 0` for any `CharZero`
+`AddMonoid R` with `1`.
+The reverse implication holds for any `AddLeftCancelMonoid R` with `1`, by `charP_to_charZero`.
 
-This file shows that there are semiring `R` for which `char_p R 0` holds and `char_zero R` does not.
+This file shows that there are semirings `R` for which `CharP R 0` holds and `CharZero R` does not.
 
 The example is `{0, 1}` with saturating addition.
 -/
@@ -36,8 +36,7 @@ theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
 #align counterexample.with_zero_unit_char_p_zero Counterexample.withZero_unit_charP_zero
 
 theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
-  h.Ne (by simp : 1 + 1 ≠ 0 + 1) (by simp)
+  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by simp)
 #align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 
 end Counterexample
-
