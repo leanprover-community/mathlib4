@@ -38,7 +38,7 @@ example (n : ℕ) : (n % 2 = 0) ∨ (n % 2 = 1) := by exact Nat.mod_two_eq_zero_
 theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
   rintro ⟨h1, h2⟩
   replace h3 : z ^ 3 = 1
-  · sorry --linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
+  · linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
   -- thanks polyrith!
   have key : z ^ n = 1 ∨ z ^ n = z ∨ z ^ n = z ^ 2 := by
     rw [← Nat.mod_add_div n 3]
@@ -77,13 +77,14 @@ theorem x_pow_sub_x_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
   rw [hp]
   apply IsUnitTrinomial.irreducible_of_coprime' ⟨0, 1, n, zero_lt_one, hn, -1, -1, 1, rfl⟩
   rintro z ⟨h1, h2⟩
-  apply @X_pow_sub_X_sub_one_irreducible_aux 2 z
+  apply @X_pow_sub_X_sub_one_irreducible_aux n z
   rw [trinomial_mirror zero_lt_one hn (by simp) (by simp)] at h2
   simp_rw [trinomial, aeval_add, aeval_mul, aeval_X_pow, aeval_C] at h1 h2
   simp_rw [Units.val_neg, Units.val_one, map_neg, map_one] at h1 h2
   replace h1 : z ^ n = z + 1 := by linear_combination h1
   replace h2 := mul_eq_zero_of_left h2 z
   rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ', Nat.sub_add_cancel hn.le] at h2
+  norm_cast at *
   rw [h1] at h2 ⊢
   exact ⟨rfl, by linear_combination -h2⟩
 #align polynomial.X_pow_sub_X_sub_one_irreducible Polynomial.x_pow_sub_x_sub_one_irreducible
