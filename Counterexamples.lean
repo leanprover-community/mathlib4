@@ -1,2 +1,4 @@
+import Counterexamples.Cyclotomic105
 import Counterexamples.Girard
+import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
