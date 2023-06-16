@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module ring_theory.polynomial.gauss_lemma
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
+! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
