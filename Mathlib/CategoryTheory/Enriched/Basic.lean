@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Types.Symmetric
-import Mathbin.CategoryTheory.Monoidal.Types.Coyoneda
-import Mathbin.CategoryTheory.Monoidal.Center
-import Mathbin.Tactic.ApplyFun
+import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+import Mathlib.CategoryTheory.Monoidal.Center
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Enriched categories
@@ -128,8 +128,7 @@ def TransportEnrichment (F : LaxMonoidalFunctor V W) (C : Type u₁) :=
   C
 #align category_theory.transport_enrichment CategoryTheory.TransportEnrichment
 
-instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C)
-    where
+instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
   id := fun X : C => F.ε ≫ F.map (eId V X)
   comp := fun X Y Z : C => F.μ _ _ ≫ F.map (eComp V X Y Z)
@@ -238,8 +237,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 #align category_theory.forget_enrichment.of_to CategoryTheory.ForgetEnrichment.of_to
 
-instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
-  by
+instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
   let I : enriched_category (Type v) (transport_enrichment (coyoneda_tensor_unit W) C) :=
     inferInstance
   exact enriched_category_Type_equiv_category C I
@@ -326,8 +324,7 @@ attribute [simp, reassoc] enriched_functor.map_comp
 
 /-- The identity enriched functor. -/
 @[simps]
-def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor V C C
-    where
+def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor V C C where
   obj X := X
   map X Y := 𝟙 _
 #align category_theory.enriched_functor.id CategoryTheory.EnrichedFunctor.id
@@ -339,8 +336,7 @@ instance : Inhabited (EnrichedFunctor V C C) :=
 @[simps]
 def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [EnrichedCategory V C]
     [EnrichedCategory V D] [EnrichedCategory V E] (F : EnrichedFunctor V C D)
-    (G : EnrichedFunctor V D E) : EnrichedFunctor V C E
-    where
+    (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
   map X Y := F.map _ _ ≫ G.map _ _
 #align category_theory.enriched_functor.comp CategoryTheory.EnrichedFunctor.comp
@@ -353,8 +349,7 @@ variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W]
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
 def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C] [EnrichedCategory W D]
-    (F : EnrichedFunctor W C D) : ForgetEnrichment W C ⥤ ForgetEnrichment W D
-    where
+    (F : EnrichedFunctor W C D) : ForgetEnrichment W C ⥤ ForgetEnrichment W D where
   obj X := ForgetEnrichment.of W (F.obj (ForgetEnrichment.to W X))
   map X Y f :=
     ForgetEnrichment.homOf W
@@ -443,8 +438,7 @@ open BraidedCategory
 the `V`-object of natural transformations from `F` to `G`.
 -/
 @[simps]
-def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max u₁ w
-    where
+def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max u₁ w where
   obj A := GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G
   map A A' f σ :=
     { app := fun X => f.unop ≫ σ.app X
@@ -469,8 +463,7 @@ is just the same thing as an honest functor.
 -/
 @[simps]
 def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Type v) C] {D : Type u₂}
-    [𝒟 : EnrichedCategory (Type v) D] : EnrichedFunctor (Type v) C D ≃ C ⥤ D
-    where
+    [𝒟 : EnrichedCategory (Type v) D] : EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
     { obj := fun X => F.obj X
       map := fun X Y f => F.map X Y f
