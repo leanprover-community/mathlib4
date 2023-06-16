@@ -8,7 +8,7 @@ Authors: Kevin Lacker, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # IMO 1962 Q4
@@ -45,20 +45,17 @@ def altFormula (x : ℝ) : ℝ :=
 #align imo1962_q4.alt_formula Imo1962Q4.altFormula
 
 theorem cos_sum_equiv {x : ℝ} :
-    (cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 - 1) / 4 = altFormula x :=
-  by
+    (cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 - 1) / 4 = altFormula x := by
   simp only [Real.cos_two_mul, cos_three_mul, alt_formula]
   ring
 #align imo1962_q4.cos_sum_equiv Imo1962Q4.cos_sum_equiv
 
-theorem alt_equiv {x : ℝ} : ProblemEquation x ↔ altFormula x = 0 :=
-  by
+theorem alt_equiv {x : ℝ} : ProblemEquation x ↔ altFormula x = 0 := by
   rw [problem_equation, ← cos_sum_equiv, div_eq_zero_iff, sub_eq_zero]
   norm_num
 #align imo1962_q4.alt_equiv Imo1962Q4.alt_equiv
 
-theorem finding_zeros {x : ℝ} : altFormula x = 0 ↔ cos x ^ 2 = 1 / 2 ∨ cos (3 * x) = 0 :=
-  by
+theorem finding_zeros {x : ℝ} : altFormula x = 0 ↔ cos x ^ 2 = 1 / 2 ∨ cos (3 * x) = 0 := by
   simp only [alt_formula, mul_assoc, mul_eq_zero, sub_eq_zero]
   constructor
   · rintro (h1 | h2)
@@ -72,8 +69,7 @@ theorem finding_zeros {x : ℝ} : altFormula x = 0 ↔ cos x ^ 2 = 1 / 2 ∨ cos
 /-
 Now we can solve for `x` using basic-ish trigonometry.
 -/
-theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 :=
-  by
+theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_sq]
   simp only [add_right_eq_self, div_eq_zero_iff]
   norm_num
@@ -84,8 +80,7 @@ theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * 
       linarith
 #align imo1962_q4.solve_cos2_half Imo1962Q4.solve_cos2_half
 
-theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 6 :=
-  by
+theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 6 := by
   rw [cos_eq_zero_iff]
   refine' exists_congr fun k => _
   constructor <;> intro <;> linarith
@@ -98,8 +93,7 @@ open imo1962_q4
 /-
 The final theorem is now just gluing together our lemmas.
 -/
-theorem imo1962_q4 {x : ℝ} : ProblemEquation x ↔ x ∈ solutionSet :=
-  by
+theorem imo1962_q4 {x : ℝ} : ProblemEquation x ↔ x ∈ solutionSet := by
   rw [alt_equiv, finding_zeros, solve_cos3x_0, solve_cos2_half]
   exact exists_or_distrib.symm
 #align imo1962_q4 imo1962_q4
@@ -130,8 +124,7 @@ theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
 /-
 Again, we now can solve for `x` using basic-ish trigonometry.
 -/
-theorem solve_cos2x_0 {x : ℝ} : cos (2 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 :=
-  by
+theorem solve_cos2x_0 {x : ℝ} : cos (2 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_eq_zero_iff]
   refine' exists_congr fun k => _
   constructor <;> intro <;> linarith
