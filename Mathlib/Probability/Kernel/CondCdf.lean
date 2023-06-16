@@ -948,12 +948,14 @@ theorem stronglyMeasurable_condCdf (ρ : Measure (α × ℝ)) (x : ℝ) :
 
 theorem integrable_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     Integrable (fun a => condCdf ρ a x) ρ.fst := by
-  refine' integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) _ fun t ht hρt => _
+  refine' integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) _ fun t _ _ => _
   · exact (stronglyMeasurable_condCdf ρ _).aestronglyMeasurable
   · have : ∀ y, (‖condCdf ρ y x‖₊ : ℝ≥0∞) ≤ 1 := by
       intro y
       rw [Real.nnnorm_of_nonneg (condCdf_nonneg _ _ _)]
-      exact_mod_cast condCdf_le_one _ _ _
+      -- Porting note: was exact_mod_cast condCdf_le_one _ _ _
+      simp only [ENNReal.coe_le_one_iff]
+      exact condCdf_le_one _ _ _
     refine'
       (set_lintegral_mono (measurable_condCdf _ _).ennnorm measurable_one fun y _ => this y).trans
         _
