@@ -369,29 +369,32 @@ theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kern
   · exact fun i j hij b => lintegral_mono fun c => h_mono hij _
   congr
   ext1 n
-  refine' SimpleFunc.induction _ _ (F n)
+  -- Porting note: Added `(P := _)`
+  refine' SimpleFunc.induction (P := fun f => (∫⁻ (a : β × γ), f a ∂(κ ⊗ₖ η) a =
+      ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) _ _ (F n)
   · intro c s hs
+    classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator, lintegral_indicator_const hs]
+      SimpleFunc.coe_zero, Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply κ η _ hs, ← lintegral_const_mul c _]
-    swap;
-    ·
-      exact
-        (measurable_kernel_prod_mk_left ((measurable_fst.snd.prod_mk measurable_snd) hs)).comp
-          measurable_prod_mk_left
+    swap
+    · exact (measurable_kernel_prod_mk_left ((measurable_fst.snd.prod_mk measurable_snd) hs)).comp
+        measurable_prod_mk_left
     congr
     ext1 b
     rw [lintegral_indicator_const_comp measurable_prod_mk_left hs]
     rfl
-  · intro f f' h_disj hf_eq hf'_eq
+  · intro f f' _ hf_eq hf'_eq
     simp_rw [SimpleFunc.coe_add, Pi.add_apply]
     change
       ∫⁻ x, (f : β × γ → ℝ≥0∞) x + f' x ∂(κ ⊗ₖ η) a =
         ∫⁻ b, ∫⁻ c : γ, f (b, c) + f' (b, c) ∂η (a, b) ∂κ a
     rw [lintegral_add_left (SimpleFunc.measurable _), hf_eq, hf'_eq, ← lintegral_add_left]
-    swap; · exact h_some_meas_integral f
+    swap
+    · exact h_some_meas_integral f
     congr with b
-    rw [← lintegral_add_left ((SimpleFunc.measurable _).comp measurable_prod_mk_left)]
+    rw [lintegral_add_left]
+    exact (SimpleFunc.measurable _).comp measurable_prod_mk_left
 #align probability_theory.kernel.lintegral_comp_prod' ProbabilityTheory.kernel.lintegral_comp_prod'
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
@@ -807,7 +810,8 @@ theorem comp_eq_snd_compProd (η : kernel β γ) [IsSFiniteKernel η] (κ : kern
     [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
   ext a s; intro hs
   rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply]
-  swap; · exact measurable_snd hs
+  swap
+  · exact measurable_snd hs
   simp only [Set.mem_setOf_eq, Set.setOf_mem_eq, prodMkLeft_apply' _ _ s]
 #align probability_theory.kernel.comp_eq_snd_comp_prod ProbabilityTheory.kernel.comp_eq_snd_compProd
 
