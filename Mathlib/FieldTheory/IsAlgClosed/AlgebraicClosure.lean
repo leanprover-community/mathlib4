@@ -191,8 +191,12 @@ instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
 #align algebraic_closure.step.algebra_succ AlgebraicClosure.Step.algebraSucc
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
-    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 :=
-  @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
+    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
+-- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
+-- but it timeouts.
+  obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
+-- Porting note: using `hx` instead of `by apply hx` timeouts.
+  exact ⟨x, by apply hx⟩
 #align algebraic_closure.to_step_succ.exists_root AlgebraicClosure.toStepSucc.exists_root
 
 /-- The canonical ring homomorphism to a step with a greater index. -/
