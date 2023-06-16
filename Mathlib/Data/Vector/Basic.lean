@@ -842,6 +842,17 @@ section Snoc
     rfl
 
 
+  theorem replicate_succ_to_snoc : replicate (n+1) val = (replicate n val).snoc val := by
+    induction n
+    case zero => rfl
+    case succ n ih =>
+      rw[replicate_succ]
+      conv => {
+        rhs; rw[replicate_succ]
+      }
+      rw[snoc_cons, ih]
+
+
   /-- Define `C v` by *reverse* induction on `v : Vector α n`.
       That is, break the vector down starting from the right-most element, using `snoc`
 
@@ -910,10 +921,12 @@ section Snoc
     rfl
 
   @[simp]
-  theorem mapAccumr₂_snoc : mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
-                            = let q := f x y c
-                              let r := mapAccumr₂ f xs ys q.1
-                              (r.1, r.2.snoc q.2) := by
+  theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (xs : Vector α n) (ys : Vector β n)
+                          (x : α) (y : β) :
+    mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
+        = let q := f x y c
+          let r := mapAccumr₂ f xs ys q.1
+          (r.1, r.2.snoc q.2) := by
     induction xs, ys using Vector.inductionOn₂
     . rfl
     . simp[*]

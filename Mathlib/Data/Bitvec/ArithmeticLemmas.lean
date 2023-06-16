@@ -30,7 +30,7 @@ namespace Vector
       satisfies a specific property with how it handles its state, then we can simplify
       the expression to only use a single element of the state `σ`, instead of a pair of states
    -/
-  @[simp, aesop 50%]
+  @[simp]
   theorem mapAccumr_fold_g_same (f : α → σ → σ × α) (h : ∀ x s, (f (f x s).snd s).fst = (f x s).fst)
                               : mapAccumr (mapAccumr_mapAccumr_fold.g f f) xs (s, s) = (
                                   let m := mapAccumr (fun x s => f (f x s).2 s) xs s
@@ -38,11 +38,30 @@ namespace Vector
                                 ) := by
     simp only
     induction xs using Vector.revInductionOn generalizing s
-    case nil =>
-      rfl
-    case snoc xs x ih =>
-      simp[h, ih]
+    case nil => rfl
+    case snoc xs x ih => simp[h, ih]
 
+
+  @[simp]
+  theorem mapAccumr₂_replicate_left :
+      mapAccumr₂ f (Vector.replicate n b) = mapAccumr (f b) := by
+    clear *-f
+    funext xs s
+    induction xs using Vector.revInductionOn generalizing s
+    case nil => rfl
+    case snoc xs x ih =>
+      rw[replicate_succ_to_snoc]
+      simp[ih]
+
+  @[simp]
+  theorem mapAccumr₂_replicate_right :
+      mapAccumr₂ f xs (Vector.replicate n b) = mapAccumr (fun x => f x b) xs := by
+    funext s
+    induction xs using Vector.revInductionOn generalizing s
+    case nil => rfl
+    case snoc xs x ih =>
+      rw[replicate_succ_to_snoc]
+      simp[ih]
 
   /-
     TODO:
@@ -88,10 +107,24 @@ section Unfold
       simp[sbb]
 end Unfold
 
-variable (x y : Bitvec n)
+variable (x : Bitvec n)
 
+theorem add_zero_left : add 0 x = x := by
+  simp[add, adc, Bitvec.carry, Bitvec.xor3]
+  suffices ∀ c, (Vector.mapAccumr₂ (fun x y c ↦ (x && y || x && c || y && c,
+                                                _root_.xor x (_root_.xor y c))) 0 x c).snd
+                = x
+    from this false
+  induction x using Vector.revInductionOn
+  case nil =>
+    intro; rfl
+  case snoc n xs x ih =>
+    simp[ih]
+    sorry
+
+
+@[simp]
 theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
-  clear *-x
   simp[sub, neg]
   suffices ∀ c, sbb 0 x c = Vector.mapAccumr (fun y c ↦ (y || c, _root_.xor y c)) x c
     by rw[this]
@@ -101,8 +134,8 @@ theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
   case snoc n xs x ih =>
     simp[zero_unfold_snoc, Bitvec.carry, ih]
 
+@[simp]
 theorem neg_neg_x : neg (neg x) = x := by
-  clear *-x
   simp[neg]
   suffices ∀ b, (Vector.mapAccumr (fun x s ↦ (_root_.xor x s || s, x)) x b).snd = x
   from this false
@@ -111,5 +144,6 @@ theorem neg_neg_x : neg (neg x) = x := by
     intro; rfl
   case snoc xs x ih =>
     simp[ih]
+
 
 end Bitvec
