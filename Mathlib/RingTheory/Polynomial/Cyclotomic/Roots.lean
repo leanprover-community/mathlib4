@@ -124,9 +124,13 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
 
 theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
     (⟨(cyclotomic n R).roots, roots_cyclotomic_nodup⟩ : Finset _) = primitiveRoots n R := by
-  ext
-  simp [cyclotomic_ne_zero n R, isRoot_cyclotomic_iff, mem_primitiveRoots,
-    NeZero.pos_of_neZero_natCast R]
+  ext a
+  -- Porting note: was
+  -- `simp [cyclotomic_ne_zero n R, isRoot_cyclotomic_iff, mem_primitiveRoots,`
+  -- `  NeZero.pos_of_neZero_natCast R]`
+  simp only [mem_primitiveRoots, NeZero.pos_of_neZero_natCast R]
+  convert isRoot_cyclotomic_iff (n := n) (μ := a)
+  simp [cyclotomic_ne_zero n R]
 #align polynomial.cyclotomic.roots_to_finset_eq_primitive_roots Polynomial.cyclotomic.roots_to_finset_eq_primitiveRoots
 
 theorem cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
