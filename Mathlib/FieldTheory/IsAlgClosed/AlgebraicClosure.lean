@@ -180,8 +180,9 @@ def toStepZero : k →+* Step k 0 :=
   RingHom.id k
 #align algebraic_closure.to_step_zero AlgebraicClosure.toStepZero
 
+set_option maxHeartbeats 210000 in
 /-- The canonical ring homomorphism to the next step. -/
-def toStepSucc (n : ℕ) : Step k n →+* Step k (n + 1) :=
+def toStepSucc (n : ℕ) : Step k n →+* (Step k (n + 1)) :=
   @toAdjoinMonic (Step k n) (Step.field k n)
 #align algebraic_closure.to_step_succ AlgebraicClosure.toStepSucc
 
