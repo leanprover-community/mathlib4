@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.QuadraticForm.Basic
-import Mathbin.Algebra.CharP.Two
-import Mathbin.Data.Zmod.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.Algebra.CharP.Two
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # `quadratic_form R M` and `subtype bilin_form.is_symm` are distinct notions in characteristic 2
@@ -54,8 +54,7 @@ This disproves a weaker version of `quadratic_form.associated_left_inverse`.
 theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [Semiring R] [AddCommMonoid M],
         ∀ [Module R M],
-          Set.InjOn (to_quadratic_form : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} :=
-  by
+          Set.InjOn (to_quadratic_form : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)
   apply B_ne_zero F
