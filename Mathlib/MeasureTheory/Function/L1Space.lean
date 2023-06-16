@@ -329,7 +329,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     aestronglyMeasurable_of_tendsto_ae _ F_measurable h_lim
   let b a := 2 * ENNReal.ofReal (bound a)
   /- `‖F n a‖ ≤ bound a` and `F n a --> f a` implies `‖f a‖ ≤ bound a`, and thus by the
-    triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a). -/
+    triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a)`. -/
   have hb : ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a - f a‖ ≤ b a := by
     intro n
     filter_upwards [all_ae_ofReal_F_le_bound h_bound n,

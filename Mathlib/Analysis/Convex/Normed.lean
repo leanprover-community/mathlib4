@@ -100,7 +100,7 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
   exact le_trans Hx' (dist_comm y x' ▸ dist_comm y' x' ▸ Hy')
 #align convex_hull_exists_dist_ge2 convexHull_exists_dist_ge2
 
-/-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s. -/
+/-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
   refine' (EMetric.diam_le fun x hx y hy => _).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
@@ -111,7 +111,7 @@ theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric
   exact EMetric.edist_le_diam_of_mem hx' hy'
 #align convex_hull_ediam convexHull_ediam
 
-/-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s. -/
+/-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.diam s := by
   simp only [Metric.diam, convexHull_ediam]
