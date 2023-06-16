@@ -21,7 +21,7 @@ then we use it to prove the statement for positive naturals.
 -/
 
 
-namespace imo1977_q6
+namespace Imo1977Q6
 
 theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   have h' : ∀ k n : ℕ, k ≤ n → k ≤ f n := by
@@ -39,15 +39,16 @@ theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ 
   exact Nat.eq_of_le_of_lt_succ (hf _) (hf_mono.lt_iff_lt.mp (h _))
 #align imo1977_q6.imo1977_q6_nat Imo1977Q6.imo1977_q6_nat
 
-end imo1977_q6
+end Imo1977Q6
 
-open imo1977_q6
+open Imo1977Q6
 
 theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   intro n
-  simpa using imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) _ n
-  · intro x; cases x
+  have := by
+    refine' imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) _ n
+    intro x; cases x
     · simp
     · simpa using h _
+  simpa
 #align imo1977_q6 imo1977_q6
-
