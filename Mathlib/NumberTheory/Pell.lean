@@ -566,22 +566,22 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) : StrictMono fun 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
     (a ^ m).y < (a ^ n).y ↔ m < n := by
-  refine' ⟨fun H => _, fun H => h.y_strict_mono H⟩
+  refine' ⟨fun H => _, fun H => h.y_strictMono H⟩
   contrapose! H
-  exact h.y_strict_mono.monotone H
+  exact h.y_strictMono.monotone H
 #align pell.is_fundamental.zpow_y_lt_iff_lt Pell.IsFundamental.zpow_y_lt_iff_lt
 
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
 theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
-  exact ⟨fun H => h.y_strict_mono.injective (congr_arg solution₁.y H), fun H => H ▸ rfl⟩
+  exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
 #align pell.is_fundamental.zpow_eq_one_iff Pell.IsFundamental.zpow_eq_one_iff
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/
 theorem zpow_ne_neg_zpow {a : Solution₁ d} (h : IsFundamental a) {n n' : ℤ} : a ^ n ≠ -a ^ n' := by
   intro hf
-  apply_fun solution₁.x at hf
+  apply_fun Solution₁.x at hf
   have H := x_zpow_pos h.x_pos n
   rw [hf, x_neg, lt_neg, neg_zero] at H
   exact lt_irrefl _ ((x_zpow_pos h.x_pos n').trans H)
@@ -647,7 +647,8 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
   refine'
     ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt _
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
-  ring_nf
+  -- Porting note: was `ring_nf`
+  suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
   rw [sub_neg, ← abs_of_pos hay, ← abs_of_pos h.2.1, ← abs_of_pos <| zero_lt_one.trans hax, ←
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
