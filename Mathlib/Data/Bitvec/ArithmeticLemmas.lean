@@ -7,7 +7,7 @@ import Mathlib.Data.Bitvec.ConstantLemmas
 namespace Vector
   variable (xs : Vector α n)
 
-  protected def mapAccumr_mapAccumr_fold.g (f₁ : β₂ → σ₁ → σ₁ × β₁) (f₂ : α → σ₂ → σ₂ × β₂) :=
+  protected abbrev mapAccumr_mapAccumr_fold.g (f₁ : β₂ → σ₁ → σ₁ × β₁) (f₂ : α → σ₂ → σ₂ × β₂) :=
     fun (x : α) ((s₁, s₂) : σ₁ × σ₂) =>
       let r₂ := f₂ x s₂
       let r₁ := f₁ r₂.snd s₁
@@ -22,10 +22,27 @@ namespace Vector
                                 ) := by
     induction xs using Vector.revInductionOn generalizing s₁ s₂
     case nil =>
-      simp
+      rfl
     case snoc xs x ih =>
       simp[ih]
-      constructor <;> rfl
+
+  /-- If nested `mapAccumr` with the same function `f` were folded into one, and `f`
+      satisfies a specific property with how it handles its state, then we can simplify
+      the expression to only use a single element of the state `σ`, instead of a pair of states
+   -/
+  @[simp, aesop 50%]
+  theorem mapAccumr_fold_g_same (f : α → σ → σ × α) (h : ∀ x s, (f (f x s).snd s).fst = (f x s).fst)
+                              : mapAccumr (mapAccumr_mapAccumr_fold.g f f) xs (s, s) = (
+                                  let m := mapAccumr (fun x s => f (f x s).2 s) xs s
+                                  ((m.1, m.1), m.2)
+                                ) := by
+    simp only
+    induction xs using Vector.revInductionOn generalizing s
+    case nil =>
+      rfl
+    case snoc xs x ih =>
+      simp[h, ih]
+
 
   /-
     TODO:
@@ -76,47 +93,23 @@ variable (x y : Bitvec n)
 theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
   clear *-x
   simp[sub, neg]
-  suffices ∀ xs x, sbb 0 xs x = Vector.mapAccumr (fun y c ↦ (y || c, _root_.xor y c)) xs x
-    by rw[this x false]
-  clear x
-  intro xs
-  induction xs using Vector.revInductionOn
+  suffices ∀ c, sbb 0 x c = Vector.mapAccumr (fun y c ↦ (y || c, _root_.xor y c)) x c
+    by rw[this]
+  induction x using Vector.revInductionOn
   case nil =>
     intro; rfl
   case snoc n xs x ih =>
     simp[zero_unfold_snoc, Bitvec.carry, ih]
 
 theorem neg_neg_x : neg (neg x) = x := by
-  clear y;
+  clear *-x
   simp[neg]
-
-
-
-
--- theorem add_impl_with_bitwise : x.add y =
-
--- @[simp]
--- theorem sub_eq_xor : x.sub y = x.xor y := by
---   ext i
---   simp
---   simp[sub, sbb, Bitvec.xor]
---   induction x, y using Vector.inductionOn₂
---   case x.nil =>
---     exact Fin.elim0 i
---   case x.cons x y xs ys ih =>
---     simp[Bitvec.xor3]
---     cases i using Fin.cases
---     . simp
---       rw[←Bool.xor_assoc]
---       suffices
---           (Vector.mapAccumr₂ (fun x y c ↦ (Bitvec.carry (!x) y c, _root_.xor x (_root_.xor y c))) xs ys false).fst = false
---       from by simp[this]
-
-
-
-
-
-
-#eval false ::ᵥ (1 : Bitvec 3)
+  suffices ∀ b, (Vector.mapAccumr (fun x s ↦ (_root_.xor x s || s, x)) x b).snd = x
+  from this false
+  induction x using Vector.revInductionOn
+  case nil =>
+    intro; rfl
+  case snoc xs x ih =>
+    simp[ih]
 
 end Bitvec
