@@ -998,8 +998,11 @@ instance (ρ : Measure (α × ℝ)) (a : α) : IsProbabilityMeasure (condCdf ρ 
 theorem measurable_measure_condCdf (ρ : Measure (α × ℝ)) :
     Measurable fun a => (condCdf ρ a).measure := by
   rw [Measure.measurable_measure]
-  refine' fun s hs =>
-    MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
+  refine' fun s hs => ?_
+  -- Porting note: supplied `C`
+  refine' MeasurableSpace.induction_on_inter
+    (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCdf ρ b) s)
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
     simp_rw [measure_condCdf_Iic ρ _ u]
@@ -1010,10 +1013,10 @@ theorem measurable_measure_condCdf (ρ : Measure (α × ℝ)) :
         (fun a => (condCdf ρ a).measure univ) - fun a => (condCdf ρ a).measure t := by
       ext1 a
       rw [measure_compl ht (measure_ne_top (condCdf ρ a).measure _), Pi.sub_apply]
-    simp_rw [this, measure_cond_cdf_univ ρ]
+    simp_rw [this, measure_condCdf_univ ρ]
     exact Measurable.sub measurable_const ht_cd_meas
   · intro f hf_disj hf_meas hf_cd_meas
-    simp_rw [measure_Union hf_disj hf_meas]
+    simp_rw [measure_iUnion hf_disj hf_meas]
     exact Measurable.ennreal_tsum hf_cd_meas
 #align probability_theory.measurable_measure_cond_cdf ProbabilityTheory.measurable_measure_condCdf
 
