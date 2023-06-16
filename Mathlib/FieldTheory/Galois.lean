@@ -456,8 +456,7 @@ theorem tFAE [FiniteDimensional F E] :
     List.TFAE
       [IsGalois F E, IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
         Fintype.card (E ≃ₐ[F] E) = finrank F E,
-        ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] :=
-  by
+        ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] := by
   tfae_have 1 → 2
   · exact fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
   tfae_have 1 → 3
