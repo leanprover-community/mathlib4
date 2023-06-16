@@ -8,7 +8,7 @@ Authors: Damiano Testa, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Basic
 
 /-! # `char_p R 0` and `char_zero R` need not coincide for semirings
 
