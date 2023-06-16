@@ -3,6 +3,7 @@ import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.Ruleset
 import Mathlib.Tactic
 import Aesop
+import Qq
 
 
 
@@ -59,12 +60,36 @@ namespace Bitvec.Tactic
 
   elab "bitblast_bitvec_get" : tactic => bitblast_bitvec_get
 
+  open Qq in
+  /--
+    If there is a variable `xs : Bitvec (n+1)` in the environment, then we can break this down
+    into an `x : Bool` and `xs : Bitvec n`
+  -/
+  @[aesop safe tactic (rule_sets [Mathlib.Data.Bitvec])]
+  def bitvec_elim_known_size : TacticM Unit := do
+    withMainContext do
+      let ctx ← getLCtx
+      for var in ctx do
+        let n : Q(Nat) ← mkFreshExprMVarQ q(Nat)
+        if (←isDefEq var.type q(Bitvec (Nat.succ $n))) || (←isDefEq var.type q(Bitvec 0)) then
+          let id := mkIdent var.userName
+          evalTactic <|<- `(tactic|
+            cases $id:ident using Vector.revCasesOn
+          )
+          return
+      throwError "No variable of type `Bitvec (n+1)` found in the local context"
+
+  elab "bitvec_elim_known_size" : tactic => bitvec_elim_known_size
+
   attribute [aesop safe 10 cases (rule_sets [Mathlib.Data.Bitvec])] Bool
 
   macro "aesop_bitvec" : tactic => `(tactic|
     aesop (add
-      norm simp [ Bitvec.add, Bitvec.adc, Bitvec.carry, Bitvec.xor3, Bitvec.neg,
-                  Bitvec.sub, Bitvec.sbb
+      norm simp [ Bitvec.add, Bitvec.adc,
+                  Bitvec.carry, Bitvec.xor3,
+                  Bitvec.sub, Bitvec.sbb,
+                  Bitvec.not, Bitvec.neg,
+                  Bitvec.xor
                 ]
     ) (
       rule_sets [Mathlib.Data.Bitvec]

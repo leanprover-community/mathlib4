@@ -1,6 +1,7 @@
 import Mathlib.Data.Bitvec.Tactic
 import Mathlib.Data.Bitvec.BitwiseLemmas
 import Mathlib.Data.Bitvec.ConstantLemmas
+import Mathlib.Data.Bitvec.ArithmeticLemmas
 
 -- A lot of this should probably go to a differet file here and not Mathlib
 inductive Refinement {α : Type u} : Option α → Option α → Prop
@@ -42,20 +43,19 @@ theorem refine_some_some (h : x = y) : some x ⊑ some y :=
 
 open Bitvec
 
-
-
-def statement12 :  some (Bitvec.sub x y) ⊑
+def statement12 (x y : Bitvec 1) :  some (Bitvec.sub x y) ⊑
     some (Bitvec.xor x y)
+  := by aesop_bitvec
+
+def statement13 :  some (Bitvec.sub ((-1 : Bitvec w)) x) ⊑
+    some (Bitvec.xor x ((-1 : Bitvec w)))
     := by aesop_bitvec
 
--- def statement13 :  some (Bitvec.sub ((-1 : Bitvec w)) x) ⊑
---     some (Bitvec.xor x ((-1 : Bitvec w)))
---     := by aesop_bitvec
 
 
--- def statement15 :  some (Bitvec.sub (Bitvec.sub x y) x) ⊑
---     some (Bitvec.sub 0 y)
---     := by aesop_bitvec
+def statement15 :  some (Bitvec.sub (Bitvec.sub x y) x) ⊑
+    some (Bitvec.sub 0 y)
+    := by aesop_bitvec
 
 -- def statement16 :  some
 --       (Bitvec.sub (Bitvec.or A B)
