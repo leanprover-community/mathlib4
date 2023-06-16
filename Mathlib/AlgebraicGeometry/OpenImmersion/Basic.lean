@@ -683,7 +683,7 @@ theorem locallyRingedSpace_toLocallyRingedSpace {X Y : LocallyRingedSpace} (f : 
 
 end ToLocallyRingedSpace
 
-theorem isIso_of_subset {X Y : PresheafedSpace.{v} C} (f : X ⟶ Y)
+theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
     [H : PresheafedSpace.IsOpenImmersion f] (U : Opens Y.carrier)
     (hU : (U : Set Y.carrier) ⊆ Set.range f.base) : IsIso (f.c.app <| op U) := by
   have : U = H.base_open.isOpenMap.functor.obj ((Opens.map f.base).obj U) := by
@@ -696,7 +696,7 @@ end PresheafedSpace.IsOpenImmersion
 
 namespace SheafedSpace.IsOpenImmersion
 
-instance (priority := 100) of_isIso {X Y : SheafedSpace.{v} C} (f : X ⟶ Y) [IsIso f] :
+instance (priority := 100) of_isIso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     SheafedSpace.IsOpenImmersion f :=
   @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ f
     (SheafedSpace.forgetToPresheafedSpace.map_isIso _)
@@ -796,7 +796,7 @@ instance sheafedSpace_pullback_snd_of_left :
   delta pullback.snd
   have : _ = limit.π (cospan f g) right := preservesLimitsIso_hom_π forget (cospan f g) right
   rw [← this]
-  have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan.{v} (cospan f g ⋙ forget)) right
+  have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan f g ⋙ forget)) right
   erw [Category.comp_id] at this
   rw [← this]
   dsimp
@@ -808,7 +808,7 @@ instance sheafedSpace_pullback_fst_of_right :
   delta pullback.fst
   have : _ = limit.π (cospan g f) left := preservesLimitsIso_hom_π forget (cospan g f) left
   rw [← this]
-  have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan.{v} (cospan g f ⋙ forget)) left
+  have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan g f ⋙ forget)) left
   erw [Category.comp_id] at this
   rw [← this]
   dsimp
@@ -861,7 +861,7 @@ section Prod
 
 -- Porting note : here `ι` should have same universe level as morphism of `C`, so needs explicit
 -- universe level now
-variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{v} C) [HasColimit F]
+variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F]
   (i : Discrete ι)
 
 theorem sigma_ι_openEmbedding : OpenEmbedding (colimit.ι F i).base := by
@@ -918,17 +918,11 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
             (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base :=
       e ▸ sigma_ι_openEmbedding F i
-    -- -- Porting note : added this to make the `convert` below slightly faster
-    -- have eq1 : (colimit.ι F i).base =
-    --   (colimit.ι (F ⋙ forgetToPresheafedSpace) i ≫
-    --     (preservesColimitIso forgetToPresheafedSpace F).inv).base
-    -- . rw [e]
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
       -- Porting note : just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
-      -- convert this using 6
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note : this instance created manually to make the `inferInstance` below work
@@ -959,7 +953,7 @@ namespace LocallyRingedSpace.IsOpenImmersion
 
 noncomputable section Pullback
 
-variable {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
