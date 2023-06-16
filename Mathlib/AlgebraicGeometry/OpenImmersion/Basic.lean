@@ -162,6 +162,7 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : is_open_immersion f] (
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
       TopCat.Presheaf.pushforwardObj_obj, Opens.map_comp_obj]
     -- Porting note : was `apply (config := { instances := False }) ...`
+    -- See https://github.com/leanprover/lean4/issues/2273
     have : IsIso (g.c.app (op <| (h.functor).obj U))
     · have : h.functor.obj U = hg.openFunctor.obj (hf.openFunctor.obj U) := by
         ext1
@@ -291,6 +292,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     convert_to IsIso (Y.presheaf.map (𝟙 _))
     · congr
     · -- Porting note : was `apply Subsingleton.helim; rw [this]`
+      -- See https://github.com/leanprover/lean4/issues/2273
       congr
       simp only [unop_op]
       congr
@@ -313,6 +315,7 @@ theorem ofRestrict_invApp {C : Type _} [Category C] (X : PresheafedSpace C) {Y :
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
 theorem to_iso (f : X ⟶ Y) [h : is_open_immersion f] [h' : Epi f.base] : IsIso f := by
   -- Porting Note : was `apply (config := { instances := False }) ...`
+  -- See https://github.com/leanprover/lean4/issues/2273
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U)
   . intro U
     have : U = op (h.openFunctor.obj ((Opens.map f.base).obj (unop U))) := by
@@ -841,6 +844,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
   { base_open := hf
     c_iso := fun U => by
       -- Porting note : was `apply (config := { instances := False }) ...`
+      -- See https://github.com/leanprover/lean4/issues/2273
       have h := TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward f.base).obj X.sheaf from ⟨f.c⟩)
       refine @h _ ?_
@@ -1083,6 +1087,7 @@ instance forgetToTopPreservesPullbackOfLeft :
     (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) ⋙
     PresheafedSpace.forget _
   -- Porting note : was `apply (config := { instances := False }) ...`
+  -- See https://github.com/leanprover/lean4/issues/2273
   have : PreservesLimit
       (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
         WalkingCospan.Hom.inl)
@@ -1131,9 +1136,11 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     IsIso (pullback.snd : pullback f g ⟶ _) := by
   -- Porting note : was `apply (config := { instances := False }) ...`
+  -- See https://github.com/leanprover/lean4/issues/2273
   have h1 := @ReflectsIsomorphisms.reflects (F := LocallyRingedSpace.forgetToSheafedSpace) _ _ _
   refine @h1 _ _ _ ?_; clear h1
   -- Porting note : was `apply (config := { instances := False }) ...`
+  -- See https://github.com/leanprover/lean4/issues/2273
   have h2 := @ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace (C := CommRingCat)) _ _ _
   refine @h2 _ _ _ ?_; clear h2
