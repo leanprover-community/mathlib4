@@ -165,34 +165,30 @@ open Bitvec (sub add xor neg)
 
 variable (x : Bitvec n)
 
-macro "bitvec_arith" : tactic => `(tactic|
-  simp[add, adc, Bitvec.carry, Bitvec.xor3, neg, sub, sbb]
-  <;> aesop_bitvec
-)
 
 @[simp]
 theorem add_zero_left : add 0 x = x := by
-  bitvec_arith
+  aesop_bitvec
 
 @[simp]
 theorem add_zero_right : add x 0 = x := by
-  bitvec_arith
+  aesop_bitvec
 
 @[simp]
 theorem add_comm : add x y = add y x := by
-  bitvec_arith
+  aesop_bitvec
 
 theorem add_neg_y : add x (neg y) = sub x y := by
-  bitvec_arith
+  aesop_bitvec
 
 
 @[simp]
 theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
-  bitvec_arith
+  aesop_bitvec
 
 @[simp]
 theorem neg_neg_x : neg (neg x) = x := by
-  simp[neg]
+  aesop_bitvec
 
 
 end Bitvec

@@ -62,9 +62,13 @@ namespace Bitvec.Tactic
   attribute [aesop safe 10 cases (rule_sets [Mathlib.Data.Bitvec])] Bool
 
   macro "aesop_bitvec" : tactic => `(tactic|
-    aesop (
-        rule_sets [Mathlib.Data.Bitvec]
-      )
+    aesop (add
+      norm simp [ Bitvec.add, Bitvec.adc, Bitvec.carry, Bitvec.xor3, Bitvec.neg,
+                  Bitvec.sub, Bitvec.sbb
+                ]
+    ) (
+      rule_sets [Mathlib.Data.Bitvec]
+    )
   )
 
 end Bitvec.Tactic

@@ -44,9 +44,9 @@ open Bitvec
 
 
 
--- def statement12 :  some (Bitvec.sub x y) ⊑
---     some (Bitvec.xor x y)
---     := by aesop_bitvec
+def statement12 :  some (Bitvec.sub x y) ⊑
+    some (Bitvec.xor x y)
+    := by aesop_bitvec
 
 -- def statement13 :  some (Bitvec.sub ((-1 : Bitvec w)) x) ⊑
 --     some (Bitvec.xor x ((-1 : Bitvec w)))
