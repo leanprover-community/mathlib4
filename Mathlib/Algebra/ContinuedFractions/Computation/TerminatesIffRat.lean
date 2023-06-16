@@ -23,10 +23,10 @@ rational number, that is `↑v = q` for some `q : ℚ`.
 ## Main Theorems
 
 - `generalized_continued_fraction.coe_of_rat` shows that
-  `generalized_continued_fraction.of v = generalized_continued_fraction.of q` for `v : α` given that
+  `GeneralizedContinuedFraction.of v = GeneralizedContinuedFraction.of q` for `v : α` given that
   `↑v = q` and `q : ℚ`.
-- `generalized_continued_fraction.terminates_iff_rat` shows that
-  `generalized_continued_fraction.of v` terminates if and only if `↑v = q` for some `q : ℚ`.
+- `GeneralizedContinuedFraction.terminates_iff_rat` shows that
+  `GeneralizedContinuedFraction.of v` terminates if and only if `↑v = q` for some `q : ℚ`.
 
 ## Tags
 
@@ -52,11 +52,11 @@ section RatOfTerminates
 /-!
 ### Terminating Continued Fractions Are Rational
 
-We want to show that the computation of a continued fraction `generalized_continued_fraction.of v`
+We want to show that the computation of a continued fraction `GeneralizedContinuedFraction.of v`
 terminates if and only if `v ∈ ℚ`. In this section, we show the implication from left to right.
 
 We first show that every finite convergent corresponds to a rational number `q` and then use the
-finite correctness proof (`of_correctness_of_terminates`) of `generalized_continued_fraction.of` to
+finite correctness proof (`of_correctness_of_terminates`) of `GeneralizedContinuedFraction.of` to
 show that `v = ↑q`.
 -/
 
@@ -152,14 +152,14 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(generalized_continued_fraction.of q : generalized_continued_fraction ℚ)
-      : generalized_continued_fraction K)
-  = generalized_continued_fraction.of v`
+    (↑(GeneralizedContinuedFraction.of q : GeneralizedContinuedFraction ℚ)
+      : GeneralizedContinuedFraction K)
+  = GeneralizedContinuedFraction.of v`
 ```
 in `generalized_continued_fraction.coe_of_rat`.
 
 To do this, we proceed bottom-up, showing the correspondence between the basic functions involved in
-the computation first and then lift the results step-by-step.
+the Computation first and then lift the results step-by-step.
 -/
 
 
@@ -167,7 +167,7 @@ the computation first and then lift the results step-by-step.
 variable {v : K} {q : ℚ} (v_eq_q : v = (↑q : K)) (n : ℕ)
 
 /-! First, we show the correspondence for the very basic functions in
-`generalized_continued_fraction.int_fract_pair`. -/
+`GeneralizedContinuedFraction.IntFractPair`. -/
 
 
 namespace IntFractPair
@@ -259,10 +259,10 @@ section TerminatesOfRat
 
 Finally, we show that the continued fraction of a rational number terminates.
 
-The crucial insight is that, given any `q : ℚ` with `0 < q < 1`, the numerator of `int.fract q` is
+The crucial insight is that, given any `q : ℚ` with `0 < q < 1`, the numerator of `Int.fract q` is
 smaller than the numerator of `q`. As the continued fraction computation recursively operates on
-the fractional part of a value `v` and `0 ≤ int.fract v < 1`, we infer that the numerator of the
-fractional part in the computation decreases by at least one in each step. As `0 ≤ int.fract v`,
+the fractional part of a value `v` and `0 ≤ Int.fract v < 1`, we infer that the numerator of the
+fractional part in the computation decreases by at least one in each step. As `0 ≤ Int.fract v`,
 this process must stop after finite number of steps, and the computation hence terminates.
 -/
 
@@ -348,7 +348,7 @@ theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
 
 end TerminatesOfRat
 
-/-- The continued fraction `generalized_continued_fraction.of v` terminates if and only if `v ∈ ℚ`.
+/-- The continued fraction `GeneralizedContinuedFraction.of v` terminates if and only if `v ∈ ℚ`.
 -/
 theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
   Iff.intro
