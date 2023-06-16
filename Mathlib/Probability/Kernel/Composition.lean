@@ -34,9 +34,9 @@ Kernels built from other kernels:
 * `comp_prod (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ)`: composition-product of 2
   s-finite kernels. We define a notation `κ ⊗ₖ η = comp_prod κ η`.
   `∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-* `map (κ : kernel α β) (f : β → γ) (hf : measurable f) : kernel α γ`
+* `map (κ : kernel α β) (f : β → γ) (hf : Measurable f) : kernel α γ`
   `∫⁻ c, g c ∂(map κ f hf a) = ∫⁻ b, g (f b) ∂(κ a)`
-* `comap (κ : kernel α β) (f : γ → α) (hf : measurable f) : kernel γ β`
+* `comap (κ : kernel α β) (f : γ → α) (hf : Measurable f) : kernel γ β`
   `∫⁻ b, g b ∂(comap κ f hf c) = ∫⁻ b, g b ∂(κ (f c))`
 * `comp (η : kernel β γ) (κ : kernel α β) : kernel α γ`: composition of 2 kernels.
   We define a notation `η ∘ₖ κ = comp η κ`.
@@ -55,9 +55,9 @@ Kernels built from other kernels:
 
 ## Notations
 
-* `κ ⊗ₖ η = probability_theory.kernel.comp_prod κ η`
-* `η ∘ₖ κ = probability_theory.kernel.comp η κ`
-* `κ ×ₖ η = probability_theory.kernel.prod κ η`
+* `κ ⊗ₖ η = ProbabilityTheory.kernel.compProd κ η`
+* `η ∘ₖ κ = ProbabilityTheory.kernel.comp η κ`
+* `κ ×ₖ η = ProbabilityTheory.kernel.prod κ η`
 
 -/
 
@@ -658,7 +658,7 @@ instance IsSFiniteKernel.prodMkLeft (κ : kernel α β) [IsSFiniteKernel κ] :
     IsSFiniteKernel (prodMkLeft γ κ) := by rw [prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod_mk_left ProbabilityTheory.kernel.IsSFiniteKernel.prodMkLeft
 
-/-- Define a `kernel (β × α) γ` from a `kernel (α × β) γ` by taking the comap of `prod.swap`. -/
+/-- Define a `kernel (β × α) γ` from a `kernel (α × β) γ` by taking the comap of `Prod.swap`. -/
 def swapLeft (κ : kernel (α × β) γ) : kernel (β × α) γ :=
   comap κ Prod.swap measurable_swap
 #align probability_theory.kernel.swap_left ProbabilityTheory.kernel.swapLeft
@@ -689,7 +689,7 @@ instance IsSFiniteKernel.swapLeft (κ : kernel (α × β) γ) [IsSFiniteKernel �
     IsSFiniteKernel (swapLeft κ) := by rw [swapLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.swap_left ProbabilityTheory.kernel.IsSFiniteKernel.swapLeft
 
-/-- Define a `kernel α (γ × β)` from a `kernel α (β × γ)` by taking the map of `prod.swap`. -/
+/-- Define a `kernel α (γ × β)` from a `kernel α (β × γ)` by taking the map of `Prod.swap`. -/
 noncomputable def swapRight (κ : kernel α (β × γ)) : kernel α (γ × β) :=
   map κ Prod.swap measurable_swap
 #align probability_theory.kernel.swap_right ProbabilityTheory.kernel.swapRight
