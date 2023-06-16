@@ -220,9 +220,12 @@ def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
 theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero, -denom, -num]
-  simp only [Matrix.mul, dot_product, Fin.sum_univ_succ, denom, Num, coe_coe, Subgroup.coe_mul,
-    general_linear_group.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
+  -- Porting note: was
+  -- field_simp [denom_ne_zero, -denom, -num]
+  -- but `field_simp` insists on unfolding denom and num.
+  rw [add_mul, mul_assoc, div_mul_cancel _ (denom_ne_zero _ _)]
+  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
+    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
 #align upper_half_plane.denom_cocycle UpperHalfPlane.denom_cocycle
@@ -233,7 +236,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   rw [denom_cocycle]
   field_simp [denom_ne_zero, -denom, -Num]
   simp only [Matrix.mul, dot_product, Fin.sum_univ_succ, Num, denom, coe_coe, Subgroup.coe_mul,
-    general_linear_group.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
+    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
 #align upper_half_plane.mul_smul' UpperHalfPlane.mul_smul'
