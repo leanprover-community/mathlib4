@@ -59,10 +59,10 @@ namespace Bitvec.Tactic
 
   elab "bitblast_bitvec_get" : tactic => bitblast_bitvec_get
 
+  attribute [aesop safe 10 cases (rule_sets [Mathlib.Data.Bitvec])] Bool
+
   macro "aesop_bitvec" : tactic => `(tactic|
-    aesop
-      ( add 90% cases Bool,
-      ) (
+    aesop (
         rule_sets [Mathlib.Data.Bitvec]
       )
   )
