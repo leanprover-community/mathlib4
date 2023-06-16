@@ -8,11 +8,11 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Algebra
-import Mathbin.Data.Zmod.Algebra
-import Mathbin.FieldTheory.Finite.Basic
-import Mathbin.FieldTheory.Galois
-import Mathbin.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 /-!
 # Galois fields
@@ -41,10 +41,8 @@ open Polynomial Finset
 open scoped Polynomial
 
 instance FiniteField.HasSub.Sub.Polynomial.isSplittingField (K F : Type _) [Field K] [Fintype K]
-    [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X)
-    where
-  Splits :=
-    by
+    [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
+  Splits := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
       FiniteField.X_pow_card_sub_X_natDegree_eq K Fintype.one_lt_card
     rw [← splits_id_iff_splits, splits_iff_card_roots, Polynomial.map_sub, Polynomial.map_pow,
@@ -88,13 +86,11 @@ instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
 instance : CharP (GaloisField p n) p :=
   (Algebra.charP_iff (ZMod p) (GaloisField p n) p).mp (by infer_instance)
 
-instance : Fintype (GaloisField p n) :=
-  by
+instance : Fintype (GaloisField p n) := by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 
-theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n :=
-  by
+theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n := by
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := (Fact.out (Nat.Prime p)).one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -104,8 +100,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   have nat_degree_eq : g_poly.natDegree = p ^ n :=
     FiniteField.X_pow_card_pow_sub_X_natDegree_eq _ h hp
   rw [nat_degree_eq] at key 
-  suffices g_poly.rootSet (GaloisField p n) = Set.univ
-    by
+  suffices g_poly.rootSet (GaloisField p n) = Set.univ by
     simp_rw [this, ← Fintype.ofEquiv_card (Equiv.Set.univ _)] at key 
     rw [@card_eq_pow_finrank (ZMod p), ZMod.card] at key 
     exact Nat.pow_right_injective (Nat.Prime.one_lt' p).out key
@@ -145,17 +140,14 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
     rw [hx, hy]
 #align galois_field.finrank GaloisField.finrank
 
-theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n :=
-  by
+theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b, ZMod.card, finrank p h]
 #align galois_field.card GaloisField.card
 
-theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) :=
-  by
+theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   have hp : 1 < p := (Fact.out (Nat.Prime p)).one_lt
-  have h1 : roots (X ^ p - X : (ZMod p)[X]) = finset.univ.val :=
-    by
+  have h1 : roots (X ^ p - X : (ZMod p)[X]) = finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X _
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
@@ -212,8 +204,7 @@ variable {K : Type _} [Field K] [Fintype K] {K' : Type _} [Field K'] [Fintype K'
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
 def algEquivOfCardEq (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
-    (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' :=
-  by
+    (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
   have : CharP K' p := by rw [← Algebra.charP_iff (ZMod p) K' p]; exact ZMod.charP p
   choose n a hK using FiniteField.card K p
@@ -227,15 +218,13 @@ def algEquivOfCardEq (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMo
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
-def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' :=
-  by
+def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'
   skip
   choose n hp hK using FiniteField.card K p
   choose n' hp' hK' using FiniteField.card K' p'
-  have hpp' : p = p' :=
-    by
+  have hpp' : p = p' := by
     -- := eq_prime_of_eq_prime_pow
     by_contra hne
     have h2 := Nat.coprime_pow_primes n n' hp hp' hne
