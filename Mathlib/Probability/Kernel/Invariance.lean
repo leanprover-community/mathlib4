@@ -18,12 +18,12 @@ kernel `μ.bind κ` is the same measure.
 
 ## Main definitions
 
-* `probability_theory.kernel.invariant`: invariance of a given measure with respect to a kernel.
+* `ProbabilityTheory.kernel.Invariant`: invariance of a given measure with respect to a kernel.
 
 ## Useful lemmas
 
-* `probability_theory.kernel.const_bind_eq_comp_const`, and
-  `probability_theory.kernel.comp_const_apply_eq_bind` established the relationship between
+* `ProbabilityTheory.kernel.const_bind_eq_comp_const`, and
+  `ProbabilityTheory.kernel.comp_const_apply_eq_bind` established the relationship between
   the push-forward measure and the composition of kernels.
 
 -/
@@ -37,7 +37,7 @@ namespace ProbabilityTheory
 
 variable {α β γ : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
-namespace Kernel
+namespace kernel
 
 /-! ### Push-forward of measures along a kernel -/
 
@@ -45,22 +45,22 @@ namespace Kernel
 @[simp]
 theorem bind_add (μ ν : Measure α) (κ : kernel α β) : (μ + ν).bind κ = μ.bind κ + ν.bind κ := by
   ext1 s hs
-  rw [measure.bind_apply hs (kernel.measurable _), lintegral_add_measure, measure.coe_add,
-    Pi.add_apply, measure.bind_apply hs (kernel.measurable _),
-    measure.bind_apply hs (kernel.measurable _)]
+  rw [Measure.bind_apply hs (kernel.measurable _), lintegral_add_measure, Measure.coe_add,
+    Pi.add_apply, Measure.bind_apply hs (kernel.measurable _),
+    Measure.bind_apply hs (kernel.measurable _)]
 #align probability_theory.kernel.bind_add ProbabilityTheory.kernel.bind_add
 
 @[simp]
 theorem bind_smul (κ : kernel α β) (μ : Measure α) (r : ℝ≥0∞) : (r • μ).bind κ = r • μ.bind κ := by
   ext1 s hs
-  rw [measure.bind_apply hs (kernel.measurable _), lintegral_smul_measure, measure.coe_smul,
-    Pi.smul_apply, measure.bind_apply hs (kernel.measurable _), smul_eq_mul]
+  rw [Measure.bind_apply hs (kernel.measurable _), lintegral_smul_measure, Measure.coe_smul,
+    Pi.smul_apply, Measure.bind_apply hs (kernel.measurable _), smul_eq_mul]
 #align probability_theory.kernel.bind_smul ProbabilityTheory.kernel.bind_smul
 
 theorem const_bind_eq_comp_const (κ : kernel α β) (μ : Measure α) :
     const α (μ.bind κ) = κ ∘ₖ const α μ := by
-  ext (a s hs) : 2
-  simp_rw [comp_apply' _ _ _ hs, const_apply, measure.bind_apply hs (kernel.measurable _)]
+  ext a s; intro hs
+  simp_rw [comp_apply' _ _ _ hs, const_apply, Measure.bind_apply hs (kernel.measurable _)]
 #align probability_theory.kernel.const_bind_eq_comp_const ProbabilityTheory.kernel.const_bind_eq_comp_const
 
 theorem comp_const_apply_eq_bind (κ : kernel α β) (μ : Measure α) (a : α) :
@@ -91,12 +91,10 @@ theorem Invariant.comp [IsSFiniteKernel κ] (hκ : Invariant κ μ) (hη : Invar
     Invariant (κ ∘ₖ η) μ := by
   cases' isEmpty_or_nonempty α with _ hα
   · exact Subsingleton.elim _ _
-  ·
-    simp_rw [invariant, ← comp_const_apply_eq_bind (κ ∘ₖ η) μ hα.some, comp_assoc, hη.comp_const,
+  · simp_rw [Invariant, ← comp_const_apply_eq_bind (κ ∘ₖ η) μ hα.some, comp_assoc, hη.comp_const,
       hκ.comp_const, const_apply]
 #align probability_theory.kernel.invariant.comp ProbabilityTheory.kernel.Invariant.comp
 
-end Kernel
+end kernel
 
 end ProbabilityTheory
-
