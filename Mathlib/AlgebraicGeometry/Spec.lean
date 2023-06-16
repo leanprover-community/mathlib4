@@ -347,6 +347,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat) (M : Submonoid R)
   erw [← localRingHom_comp_stalkIso]
   -- Porting note : `apply (config := { instances := false })` seems not to exist any more and
   -- `refine` complains about metavariables, so used a hack
+  -- See https://github.com/leanprover/lean4/issues/2273
   set f := _
   set g := _
   set h := _
