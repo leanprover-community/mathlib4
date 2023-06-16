@@ -69,9 +69,12 @@ def mathlibDepPath : FilePath :=
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
   ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("Archive", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("Counterexamples", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
-  ("Qq", LAKEPACKAGESDIR / "Qq")
+  ("Qq", LAKEPACKAGESDIR / "Qq"),
+  ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets")
 ]
 
 initialize pkgDirs : PackageDirs ← getPackageDirs
@@ -206,6 +209,10 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | ["Mathlib.lean"] => true
   | "MathlibExtras" :: _ => true
   | ["MathlibExtras.lean"] => true
+  | "Archive" :: _ => true
+  | ["Archive.lean"] => true
+  | "Counterexamples" :: _ => true
+  | ["Counterexamples.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
