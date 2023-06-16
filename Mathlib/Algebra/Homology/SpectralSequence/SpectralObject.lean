@@ -1670,17 +1670,24 @@ pp_extended_field_notation filtration'
 pp_extended_field_notation filtration
 pp_extended_field_notation filtrationι
 
-noncomputable def filtrationShortComplex {i j : ι} (φ : i ⟶ j) : ShortComplex C where
+noncomputable def filtrationπ (i j : ι) (φ : i ⟶ j) :
+    (X.filtration n₁).obj j ⟶ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk φ) :=
+  (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))).g
+
+noncomputable def filtrationShortComplex (i j : ι) (φ : i ⟶ j) : ShortComplex C where
   X₁ := (X.filtration n₁).obj i
   X₂ := (X.filtration n₁).obj j
   X₃ := (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk φ)
   f := (X.filtration n₁).map φ
-  g := (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))).g
+  g := X.filtrationπ n₀ n₁ n₂ hn₁ hn₂ _ _ φ
   zero := (X.imagesCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))).zero
 
-lemma filtrationShortComplex_shortExact {i j : ι} (φ : i ⟶ j) :
-    (X.filtrationShortComplex n₀ n₁ n₂ hn₁ hn₂ φ).ShortExact :=
+lemma filtrationShortComplex_shortExact (i j : ι) (φ : i ⟶ j) :
+    (X.filtrationShortComplex n₀ n₁ n₂ hn₁ hn₂ _ _ φ).ShortExact :=
   X.imagesCokernelSequenceE_shortExact n₀ n₁ n₂ hn₁ hn₂ ((Arrow₃.ιArrow ι).obj (Arrow.mk φ))
+
+instance : Epi (X.filtrationπ n₀ n₁ n₂ hn₁ hn₂ _ _ φ) :=
+  (X.filtrationShortComplex_shortExact n₀ n₁ n₂ hn₁ hn₂ _ _ φ).epi_g
 
 variable (ι)
 

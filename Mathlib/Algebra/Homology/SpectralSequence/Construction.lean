@@ -280,15 +280,50 @@ noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBounds
         ⟨0, X.isZero_filtration_obj_eq_bot Bounds.firstQuadrant _ _ (𝟙 _)⟩
       exists_isIso_filtration'_hom :=
         ⟨n + 1, X.isIso_filtrationι Bounds.firstQuadrant _ _ (homOfLE (by simp))⟩
-      π' := fun i pq hpq => by
-        --refine' _ ≫ (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1)
-        --  (by linarith) (by linarith) (cohomologicalStripes.stripe_eq n i pq hpq)
-        --  (ιℤt.mapArrow.obj (Arrow.mkOfLE pq.2 (pq.2+1))) rfl rfl).inv
-        sorry
-      epi_π' := sorry
-      comp_π' := sorry
-      exact' := sorry }
-
+      π' := fun i pq hpq => X.filtrationπ (n-1) n (n+1) (by linarith) (by linarith)
+          (ℤt.mk (i-1)) (ℤt.mk i) (homOfLE (by simp)) ≫ (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1)
+          _ _ (cohomologicalStripes.stripe_eq n i pq hpq)
+          (ιℤt.mapArrow.obj (Arrow.mkOfLE (i-1) i)) (by
+            obtain ⟨p, q⟩ := pq
+            dsimp [cohomologicalStripes] at hpq ⊢
+            simp only [Prod.mk.injEq] at hpq
+            congr 1
+            linarith) (by
+            obtain ⟨p, q⟩ := pq
+            dsimp [cohomologicalStripes] at hpq ⊢
+            simp only [Prod.mk.injEq] at hpq
+            congr 1
+            linarith)).inv
+      epi_π' := fun i pq hpq => epi_comp _ _
+      comp_π' := fun i j hij pq hpq => by
+        obtain rfl : i = j - 1 := by linarith
+        erw [(X.filtrationShortComplex (n-1) n (n+1) (by linarith) (by linarith)
+          _ _ _).zero_assoc, zero_comp]
+      exact' := fun i j hij pq hpq => by
+        obtain rfl : i = j - 1 := by linarith
+        refine' ShortComplex.exact_of_iso _
+          ((X.filtrationShortComplex_shortExact (n-1) n (n+1) (by linarith) (by linarith)
+            (ℤt.mk (j-1)) (ℤt.mk j) (homOfLE (by simp))).exact)
+        refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+          (X.toE₂CohomologicalSpectralSequencePageInfinityIso pq (n-1) n (n+1) _ _
+          (cohomologicalStripes.stripe_eq n j pq hpq)
+          (ιℤt.mapArrow.obj (Arrow.mkOfLE (j-1) j)) (by
+            obtain ⟨p, q⟩ := pq
+            dsimp [cohomologicalStripes] at hpq ⊢
+            simp only [Prod.mk.injEq] at hpq
+            congr 1
+            linarith) (by
+            obtain ⟨p, q⟩ := pq
+            dsimp [cohomologicalStripes] at hpq ⊢
+            simp only [Prod.mk.injEq] at hpq
+            congr 1
+            linarith)).symm _ _
+        . dsimp
+          simp only [id_comp, comp_id]
+          rfl
+        . dsimp
+          simp only [id_comp, Iso.cancel_iso_inv_right]
+          rfl }
 
 end SpectralObject
 
