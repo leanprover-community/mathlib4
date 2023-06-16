@@ -8,9 +8,9 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.IntervalCases
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Data.Nat.Multiplicity
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Multiplicity
 
 /-!
 # IMO 2019 Q4
@@ -40,10 +40,8 @@ namespace imo2019_q4
 theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n, (2 ^ n - 2 ^ i)) :
     n < 6 := by
   have prime_2 : Prime (2 : ℤ) := prime_iff_prime_int.mp prime_two
-  have h2 : n * (n - 1) / 2 < k :=
-    by
-    suffices multiplicity 2 (k ! : ℤ) = (n * (n - 1) / 2 : ℕ)
-      by
+  have h2 : n * (n - 1) / 2 < k := by
+    suffices multiplicity 2 (k ! : ℤ) = (n * (n - 1) / 2 : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
     rw [h, multiplicity.Finset.prod prime_2, ← sum_range_id, Nat.cast_sum]
@@ -53,13 +51,11 @@ theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
   apply ne_of_lt _ h.symm
-  suffices (∏ i in range n, 2 ^ n : ℤ) < ↑k !
-    by
+  suffices (∏ i in range n, 2 ^ n : ℤ) < ↑k ! by
     apply lt_of_le_of_lt _ this; apply prod_le_prod
     · intros; rw [sub_nonneg]; apply pow_le_pow; norm_num; apply le_of_lt; rwa [← mem_range]
     · intros; apply sub_le_self; apply pow_nonneg; norm_num
-  suffices 2 ^ (n * n) < (n * (n - 1) / 2)!
-    by
+  suffices 2 ^ (n * n) < (n * (n - 1) / 2)! by
     rw [prod_const, card_range, ← pow_mul]; rw [← Int.ofNat_lt] at this 
     clear h; convert this.trans _; norm_cast; rwa [Int.ofNat_lt, factorial_lt]
     refine' Nat.div_pos _ (by norm_num)
@@ -68,8 +64,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n
   refine' le_induction _ _ n hn; · norm_num
   intro n' hn' ih
   have h5 : 1 ≤ 2 * n' := by linarith
-  have : 2 ^ (2 + 2) ≤ (n' * (n' - 1) / 2).succ :=
-    by
+  have : 2 ^ (2 + 2) ≤ (n' * (n' - 1) / 2).succ := by
     change succ (6 * (6 - 1) / 2) ≤ _
     apply succ_le_succ; apply Nat.div_le_div_right
     exact mul_le_mul hn' (pred_le_pred hn') (zero_le _) (zero_le _)
@@ -85,8 +80,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n
 end imo2019_q4
 
 theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
-    (k ! : ℤ) = ∏ i in range n, (2 ^ n - 2 ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) :=
-  by
+    (k ! : ℤ) = ∏ i in range n, (2 ^ n - 2 ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor;
   swap
