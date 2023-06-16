@@ -827,8 +827,6 @@ section OfStalkIso
 
 variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
 
--- Porting note : `forget ↦ CategoryTheory.forget` because `forget` on its own is
--- `AlgebraicGeometry.SheafedSpace.forget`
 variable [ReflectsIsomorphisms (CategoryTheory.forget C)]
   [PreservesLimits (CategoryTheory.forget C)]
 
