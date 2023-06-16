@@ -8,7 +8,7 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Cyclotomic.Basic
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 /-!
 # Not all coefficients of cyclotomic polynomials are -1, 0, or 1
@@ -67,8 +67,7 @@ theorem cyclotomic_7 : cyclotomic 7 ℤ = 1 + X + X ^ 2 + X ^ 3 + X ^ 4 + X ^ 5 
   simp only [cyclotomic_prime, sum_range_succ, range_one, sum_singleton, pow_zero, pow_one]
 #align counterexample.cyclotomic_7 Counterexample.cyclotomic_7
 
-theorem cyclotomic_15 : cyclotomic 15 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 5 - X ^ 7 + X ^ 8 :=
-  by
+theorem cyclotomic_15 : cyclotomic 15 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 5 - X ^ 7 + X ^ 8 := by
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [proper_divisors_15, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_3, cyclotomic_5]
@@ -77,8 +76,7 @@ theorem cyclotomic_15 : cyclotomic 15 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 5 - X ^ 
 #align counterexample.cyclotomic_15 Counterexample.cyclotomic_15
 
 theorem cyclotomic_21 :
-    cyclotomic 21 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 6 - X ^ 8 + X ^ 9 - X ^ 11 + X ^ 12 :=
-  by
+    cyclotomic 21 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 6 - X ^ 8 + X ^ 9 - X ^ 11 + X ^ 12 := by
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [proper_divisors_21, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_3, cyclotomic_7]
@@ -93,8 +91,7 @@ theorem cyclotomic_35 :
               X ^ 18 +
             X ^ 19 -
           X ^ 23 +
-        X ^ 24 :=
-  by
+        X ^ 24 := by
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [proper_divisors_35, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_5, cyclotomic_7]
@@ -126,8 +123,7 @@ theorem cyclotomic_105 :
               X ^ 43 +
             X ^ 46 +
           X ^ 47 +
-        X ^ 48 :=
-  by
+        X ^ 48 := by
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [proper_divisors_105]
   repeat' rw [Finset.prod_insert _]
@@ -142,8 +138,7 @@ theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
 #align counterexample.coeff_cyclotomic_105 Counterexample.coeff_cyclotomic_105
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :
-    ¬∀ n i, coeff (cyclotomic n ℤ) i ∈ ({-1, 0, 1} : Set ℤ) :=
-  by
+    ¬∀ n i, coeff (cyclotomic n ℤ) i ∈ ({-1, 0, 1} : Set ℤ) := by
   intro h
   specialize h 105 7
   rw [coeff_cyclotomic_105] at h 
