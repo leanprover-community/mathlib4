@@ -88,8 +88,8 @@ namespace Bitvec.Tactic
       norm simp [ Bitvec.add, Bitvec.adc,
                   Bitvec.carry, Bitvec.xor3,
                   Bitvec.sub, Bitvec.sbb,
-                  Bitvec.not, Bitvec.neg,
-                  Bitvec.xor
+                  Bitvec.neg,
+                  Bitvec.not, Bitvec.and, Bitvec.or, Bitvec.xor
                 ]
     ) (
       rule_sets [Mathlib.Data.Bitvec]
