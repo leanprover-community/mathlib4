@@ -24,7 +24,7 @@ noncomputable section
 
 set_option linter.uppercaseLean3 false
 
-open Set Metric TopologicalSpace NNReal ENNReal lp
+open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
 universe u v w
 
@@ -147,40 +147,24 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f :
   have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
   · intro i
     apply LipschitzOnWith.extend_real -- use the nonlinear Hahn-Banach theorem here!
-    rw [lipschitzOnWith_iff_dist_le_mul] at hfl ⊢
-    intro x hx y hy
-    calc
-      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
-      _ ≤ K * dist x y := hfl x hx y hy
-  choose g hg using this
+    revert i
+    rw [← LipschitzOnWith.coordinate]
+    exact hfl
+  choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
   . exact ⟨fun _ ↦ 0, LipschitzWith.const' 0, by simp⟩
-  · let f_ext : α → ι → ℝ := fun x i ↦ g i x
-    -- Show that the extensions are uniformly bounded
-    have hf_extb : ∀ a : α, Memℓp (f_ext a) ∞
-    · intro a
-      let M : ℝ := ‖f a₀‖
-      use K * dist a a₀ + M
+  · -- Show that the extensions are uniformly bounded
+    have hf_extb : ∀ a : α, Memℓp (swap g a) ∞
+    . apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+      use ‖f a₀‖
       rintro - ⟨i, rfl⟩
-      rcases hg i with ⟨hgl, hgr⟩
-      calc
-        |g i a| = |g i a - f a₀ i + f a₀ i| := by simp
-        _ ≤ |g i a - f a₀ i| + |f a₀ i| := abs_add _ _
-        _ ≤ |g i a - g i a₀| + |g i a₀ - f a₀ i| + |f a₀ i| := by gcongr; apply abs_sub_le
-        _ = |g i a - g i a₀| + |f a₀ i| := by simp [hgr ha₀_in_s]
-        _ ≤ ↑K * dist a a₀ + |f a₀ i| := by
-            gcongr
-            exact lipschitzWith_iff_dist_le_mul.1 hgl a a₀
-        _ ≤ ↑K * dist a a₀ + M := by
-            gcongr
-            exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
+      simp_rw [←hgeq i ha₀_in_s]
+      exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
-    let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨f_ext i, hf_extb i⟩
+    let f_ext' : α → ℓ^∞(ι) := fun i ↦ ⟨swap g i, hf_extb i⟩
     refine ⟨f_ext', ?_, ?_⟩
-    · rw [lipschitzWith_iff_dist_le_mul]
-      intro x y
-      apply lp.norm_le_of_forall_le; positivity
-      exact fun i ↦ lipschitzWith_iff_dist_le_mul.mp (hg i).1 x y
+    · rw [LipschitzWith.coordinate]
+      exact hgl
     · intro a hyp
       ext i
-      exact (hg i).2 hyp
+      exact (hgeq i) hyp

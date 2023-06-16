@@ -63,7 +63,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 noncomputable section
 
-open scoped NNReal ENNReal BigOperators
+open scoped NNReal ENNReal BigOperators Function
 
 variable {α : Type _} {E : α → Type _} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
@@ -1220,3 +1220,39 @@ instance completeSpace : CompleteSpace (lp E p) :=
 end Topology
 
 end lp
+
+section Lipschitz
+
+lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → ℝ) {K : ℝ≥0}
+    (hg : ∀ i, LipschitzWith K (g · i)) (a₀ : α) (hga₀b : Memℓp (g a₀) ∞) (a : α) :
+    Memℓp (g a) ∞ := by
+  rcases hga₀b with ⟨M, hM⟩
+  use ↑K * dist a a₀ + M
+  rintro - ⟨i, rfl⟩
+  calc
+    |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ ↑K * dist a a₀ + M := by
+        gcongr
+        . exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
+        . exact hM ⟨i, rfl⟩
+
+theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
+    LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by
+  simp_rw [lipschitzOnWith_iff_dist_le_mul]
+  constructor
+  · intro hfl i x hx y hy
+    calc
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      _ ≤ K * dist x y := hfl x hx y hy
+  · intro hgl x hx y hy
+    apply lp.norm_le_of_forall_le; positivity
+    intro i
+    apply hgl i x hx y hy
+
+theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
+    LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
+  simp_rw [← lipschitz_on_univ]
+  apply LipschitzOnWith.coordinate
+
+end Lipschitz
