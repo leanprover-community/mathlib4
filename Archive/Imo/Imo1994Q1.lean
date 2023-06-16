@@ -8,13 +8,13 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Finset.Sort
-import Mathbin.Data.Fin.Interval
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.ByContra
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fin.Interval
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.ByContra
 
 /-!
 # IMO 1994 Q1
@@ -40,8 +40,7 @@ open Finset
 
 namespace imo1994_q1
 
-theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - (m + (m + 1 - ↑k)) % (m + 1) = ↑k :=
-  by
+theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - (m + (m + 1 - ↑k)) % (m + 1) = ↑k := by
   cases' k with k hk
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk 
   rcases hk with ⟨c, rfl⟩
@@ -59,16 +58,14 @@ open imo1994_q1
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
     (hadd : ∀ (a) (_ : a ∈ A) (b) (_ : b ∈ A), a + b ≤ n → a + b ∈ A) :
-    (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x :=
-  by
+    (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
   set a := order_emb_of_fin A hm
   -- We sort the elements of `A`
   have ha : ∀ i, a i ∈ A := fun i => order_emb_of_fin_mem A hm i
   set rev := Equiv.subLeft (Fin.last m)
   -- `i ↦ m-i`
   -- We reindex the sum by fin (m+1)
-  have : ∑ x in A, x = ∑ i : Fin (m + 1), a i :=
-    by
+  have : ∑ x in A, x = ∑ i : Fin (m + 1), a i := by
     convert sum_image fun x hx y hy => (OrderEmbedding.eq_iff_eq a).1
     rw [← coe_inj]; simp
   rw [this]; clear this
@@ -90,8 +87,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
       intro i j hij
       rwa [add_le_add_iff_right, a.map_rel_iff] at hij ⟩
   -- Proof that the `f i` are greater than `a (rev k)` for `i ≤ k`
-  have hf : map f (Icc 0 k) ⊆ map a.to_embedding (Ioc (rev k) (Fin.last m)) :=
-    by
+  have hf : map f (Icc 0 k) ⊆ map a.to_embedding (Ioc (rev k) (Fin.last m)) := by
     intro x hx
     simp only [Equiv.subLeft_apply] at h 
     simp only [mem_map, f, mem_Icc, mem_Ioc, Fin.zero_le, true_and_iff, Equiv.subLeft_apply,
