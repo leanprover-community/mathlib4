@@ -100,7 +100,8 @@ theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F 
   rw [IntermediateField.adjoin.finrank hα]
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
   exact Fintype.card_congr (algEquivEquivAlgHom F F⟮α⟯)
-#align is_galois.intermediate_field.adjoin_simple.card_aut_eq_finrank IsGalois.IntermediateField.AdjoinSimple.card_aut_eq_finrank
+#align is_galois.intermediate_field.adjoin_simple.card_aut_eq_finrank
+  IsGalois.IntermediateField.AdjoinSimple.card_aut_eq_finrank
 
 theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
@@ -308,7 +309,8 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
   gc K H := (IntermediateField.le_iff_le H K).symm
   le_l_u H := le_of_eq (IntermediateField.fixingSubgroup_fixedField H).symm
   choice_eq _ _ := rfl
-#align is_galois.galois_insertion_intermediate_field_subgroup IsGalois.galoisInsertionIntermediateFieldSubgroup
+#align is_galois.galois_insertion_intermediate_field_subgroup
+  IsGalois.galoisInsertionIntermediateFieldSubgroup
 
 /-- The Galois correspondence as a GaloisCoinsertion -/
 def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois F E] :
@@ -321,7 +323,8 @@ def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois
   gc K H := (IntermediateField.le_iff_le H K).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
-#align is_galois.galois_coinsertion_intermediate_field_subgroup IsGalois.galoisCoinsertionIntermediateFieldSubgroup
+#align is_galois.galois_coinsertion_intermediate_field_subgroup
+  IsGalois.galoisCoinsertionIntermediateFieldSubgroup
 
 end IsGalois
 
@@ -368,7 +371,8 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
 variable {F} {E}
 variable {p : F[X]}
 
-theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
+theorem of_separable_splitting_field_aux
+    [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type _) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ (p.map (algebraMap F E)).roots)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
@@ -451,7 +455,8 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
 theorem tFAE [FiniteDimensional F E] :
     List.TFAE
       [IsGalois F E, IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
-        Fintype.card (E ≃ₐ[F] E) = finrank F E, ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] :=
+        Fintype.card (E ≃ₐ[F] E) = finrank F E,
+        ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] :=
   by
   tfae_have 1 → 2
   · exact fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
