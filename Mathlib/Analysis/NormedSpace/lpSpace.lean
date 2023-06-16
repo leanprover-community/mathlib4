@@ -1223,6 +1223,10 @@ end lp
 
 section Lipschitz
 
+local notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
+
+open ENNReal
+
 lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → ℝ) {K : ℝ≥0}
     (hg : ∀ i, LipschitzWith K (g · i)) (a₀ : α) (hga₀b : Memℓp (g a₀) ∞) (a : α) :
     Memℓp (g a) ∞ := by
