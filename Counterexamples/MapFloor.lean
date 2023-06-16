@@ -60,9 +60,10 @@ namespace IntWithEpsilon
 
 instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
 
+-- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
 instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
 
-instance : Inhabited IntWithEpsilon := ⟨0⟩
+instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
 
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
