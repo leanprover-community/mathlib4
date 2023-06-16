@@ -441,10 +441,10 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 to the Pell equation `x^2 - d*y^2 = 1` if and only if `d` is not a square. -/
 theorem exists_iff_not_isSquare (h₀ : 0 < d) :
     (∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0) ↔ ¬IsSquare d := by
-  refine' ⟨_, exists_of_not_is_square h₀⟩
+  refine' ⟨_, exists_of_not_isSquare h₀⟩
   rintro ⟨x, y, hxy, hy⟩ ⟨a, rfl⟩
   rw [← sq, ← mul_pow, sq_sub_sq] at hxy
-  simpa [mul_self_pos.mp h₀, sub_eq_add_neg, eq_neg_self_iff] using Int.eq_of_mul_eq_one hxy
+  simpa [hy, mul_self_pos.mp h₀, sub_eq_add_neg, eq_neg_self_iff] using Int.eq_of_mul_eq_one hxy
 #align pell.exists_iff_not_is_square Pell.exists_iff_not_isSquare
 
 namespace Solution₁
@@ -453,16 +453,16 @@ namespace Solution₁
 to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
-  obtain ⟨x, y, prop, hy⟩ := exists_of_not_is_square h₀ hd
-  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun solution₁.y at H  <;>
-    simpa only [hy] using H
+  obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
+  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H  <;>
+    simp [hy] at H
 #align pell.solution₁.exists_nontrivial_of_not_is_square Pell.Solution₁.exists_nontrivial_of_not_isSquare
 
 /-- If `d` is a positive integer that is not a square, then there exists a solution
 to the Pell equation `x^2 - d*y^2 = 1` with `x > 1` and `y > 0`. -/
 theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, 1 < a.x ∧ 0 < a.y := by
-  obtain ⟨x, y, h, hy⟩ := exists_of_not_is_square h₀ hd
+  obtain ⟨x, y, h, hy⟩ := exists_of_not_isSquare h₀ hd
   refine' ⟨mk (|x|) (|y|) (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
   rw [x_mk, ← one_lt_sq_iff_one_lt_abs, eq_add_of_sub_eq h, lt_add_iff_pos_right]
   exact mul_pos h₀ (sq_pos_of_ne_zero y hy)
@@ -510,7 +510,7 @@ theorem d_nonsquare {a : Solution₁ d} (h : IsFundamental a) : ¬IsSquare d :=
 /-- If there is a fundamental solution, it is unique. -/
 theorem subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundamental b) : a = b := by
   have hx := le_antisymm (ha.2.2 hb.1) (hb.2.2 ha.1)
-  refine' solution₁.ext hx _
+  refine' Solution₁.ext hx _
   have : d * a.y ^ 2 = d * b.y ^ 2 := by rw [a.prop_y, b.prop_y, hx]
   exact (sq_eq_sq ha.2.1.le hb.2.1.le).mp (Int.eq_of_mul_eq_mul_left ha.d_pos.ne' this)
 #align pell.is_fundamental.subsingleton Pell.IsFundamental.subsingleton
@@ -518,7 +518,7 @@ theorem subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundam
 /-- If `d` is positive and not a square, then a fundamental solution exists. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, IsFundamental a := by
-  obtain ⟨a, ha₁, ha₂⟩ := exists_pos_of_not_is_square h₀ hd
+  obtain ⟨a, ha₁, ha₂⟩ := exists_pos_of_not_isSquare h₀ hd
   -- convert to `x : ℕ` to be able to use `Nat.find`
   have P : ∃ x' : ℕ, 1 < x' ∧ ∃ y' : ℤ, 0 < y' ∧ (x' : ℤ) ^ 2 - d * y' ^ 2 = 1 := by
     have hax := a.prop
@@ -529,7 +529,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   -- to avoid having to show that the predicate is decidable
   let x₁ := Nat.find P
   obtain ⟨hx, y₁, hy₀, hy₁⟩ := Nat.find_spec P
-  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact_mod_cast hx, hy₀, fun b hb => _⟩
+  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact_mod_cast hx, hy₀, fun {b} hb => _⟩
   rw [x_mk]
   have hb' := (Int.toNat_of_nonneg <| zero_le_one.trans hb.le).symm
   have hb'' := hb
