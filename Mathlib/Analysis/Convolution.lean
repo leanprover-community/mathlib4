@@ -1208,7 +1208,6 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
     exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _
   · exact eventually_of_forall fun t x _ => (L _).hasFDerivAt.comp x (h3 x t)
   · exact hcg.convolutionExists_right L hf hg.continuous x₀
--- · exact K'.indicator fun t => ‖L'‖ * ‖f t‖ * ⨆ x, ‖fderiv 𝕜 g x‖
 #align has_compact_support.has_fderiv_at_convolution_right HasCompactSupport.hasFDerivAt_convolution_right
 
 theorem HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
