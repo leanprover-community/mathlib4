@@ -8,8 +8,8 @@ Authors: Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.IntervalCases
-import Mathbin.Data.Nat.Modeq
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.Nat.ModEq
 
 /-!
 # IMO 1964 Q1
@@ -32,22 +32,19 @@ open Nat
 
 namespace Imo1964Q1
 
-theorem two_pow_three_mul_mod_seven (m : ℕ) : 2 ^ (3 * m) ≡ 1 [MOD 7] :=
-  by
+theorem two_pow_three_mul_mod_seven (m : ℕ) : 2 ^ (3 * m) ≡ 1 [MOD 7] := by
   rw [pow_mul]
   have h : 8 ≡ 1 [MOD 7] := modeq_of_dvd (by use -1; norm_num)
   convert h.pow _
   simp
 #align imo1964_q1.two_pow_three_mul_mod_seven Imo1964Q1.two_pow_three_mul_mod_seven
 
-theorem two_pow_three_mul_add_one_mod_seven (m : ℕ) : 2 ^ (3 * m + 1) ≡ 2 [MOD 7] :=
-  by
+theorem two_pow_three_mul_add_one_mod_seven (m : ℕ) : 2 ^ (3 * m + 1) ≡ 2 [MOD 7] := by
   rw [pow_add]
   exact (two_pow_three_mul_mod_seven m).mulRight _
 #align imo1964_q1.two_pow_three_mul_add_one_mod_seven Imo1964Q1.two_pow_three_mul_add_one_mod_seven
 
-theorem two_pow_three_mul_add_two_mod_seven (m : ℕ) : 2 ^ (3 * m + 2) ≡ 4 [MOD 7] :=
-  by
+theorem two_pow_three_mul_add_two_mod_seven (m : ℕ) : 2 ^ (3 * m + 2) ≡ 4 [MOD 7] := by
   rw [pow_add]
   exact (two_pow_three_mul_mod_seven m).mulRight _
 #align imo1964_q1.two_pow_three_mul_add_two_mod_seven Imo1964Q1.two_pow_three_mul_add_two_mod_seven
@@ -61,15 +58,13 @@ def ProblemPredicate (n : ℕ) : Prop :=
   7 ∣ 2 ^ n - 1
 #align imo1964_q1.problem_predicate Imo1964Q1.ProblemPredicate
 
-theorem aux (n : ℕ) : ProblemPredicate n ↔ 2 ^ n ≡ 1 [MOD 7] :=
-  by
+theorem aux (n : ℕ) : ProblemPredicate n ↔ 2 ^ n ≡ 1 [MOD 7] := by
   rw [Nat.ModEq.comm]
   apply (modeq_iff_dvd' _).symm
   apply Nat.one_le_pow'
 #align imo1964_q1.aux Imo1964Q1.aux
 
-theorem imo1964_q1a (n : ℕ) (hn : 0 < n) : ProblemPredicate n ↔ 3 ∣ n :=
-  by
+theorem imo1964_q1a (n : ℕ) (hn : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
   rw [aux]
   constructor
   · intro h
@@ -94,8 +89,7 @@ end Imo1964Q1
 
 open Imo1964Q1
 
-theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 :=
-  by
+theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
   let t := n % 3
   rw [← modeq_zero_iff_dvd, show n = 3 * (n / 3) + t from (Nat.div_add_mod n 3).symm]
   have ht : t < 3 := Nat.mod_lt _ (by decide)
