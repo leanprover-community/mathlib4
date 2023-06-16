@@ -404,10 +404,8 @@ open FiniteDimensional
 
 lemma finrank_eq_zero_of_not_finiteDimensional {F E : Type _} [Field F] [Field E] [Algebra F E]
   (h : ¬ FiniteDimensional F E) : finrank F E = 0 := by
-  apply finrank_eq_zero_of_not_exists_basis_finite
-  rintro ⟨s, b, hs⟩
-  apply h
-  exact FiniteDimensional.of_finite_basis b hs
+  contrapose! h
+  exact finiteDimensional_of_finrank (Nat.pos_of_ne_zero h)
 
 lemma degree_compositum_normal_aux {F E : Type _} [Field F] [Field E] [Algebra F E]
     (K L : IntermediateField F E) [Normal F K] :
