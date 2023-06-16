@@ -828,6 +828,10 @@ section Snoc
     rfl
 
   @[simp]
+  theorem snoc_nil : (nil.snoc x) = x ::ᵥ nil :=
+    rfl
+
+  @[simp]
   theorem reverse_cons : reverse (x ::ᵥ xs) = (reverse xs).snoc x := by
     cases xs
     simp only [reverse, cons, toList_mk, List.reverse_cons, snoc]
@@ -860,7 +864,7 @@ section Snoc
       and `snoc` defines the inductive step using `∀ x : α, C xs → C (xs.snoc x)`.
 
       This can be used as `induction v using Vector.revInductionOn`. -/
-      @[elab_as_elim]
+  @[elab_as_elim]
   def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
                       (nil : C nil)
                       (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x))
@@ -873,7 +877,7 @@ section Snoc
 
   /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
       `w : Vector β n`. -/
-      @[elab_as_elim]
+  @[elab_as_elim]
   def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _} {n : ℕ}
                       (v : Vector α n)
                       (w : Vector β n)
@@ -888,6 +892,21 @@ section Snoc
       nil
       (@fun n x y xs ys (r : C xs.reverse ys.reverse) => cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
+  /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
+      separately -/
+  @[elab_as_elim]
+  def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+                    (nil : C nil)
+                    (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x))
+                      : C v :=
+    revInductionOn v nil fun xs x _ => snoc xs x
+
+
+  @[simp]
+  theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
+    induction xs using Vector.inductionOn
+    . rfl
+    . simp[*]
 
   @[simp]
   theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
