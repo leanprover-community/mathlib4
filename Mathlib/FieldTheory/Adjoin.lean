@@ -483,8 +483,11 @@ def elabMaybeSingletonTerm : Elab.Term.TermElab := fun stx expectedType? =>
   match stx with
   | `(maybe_singleton% $t) => do
     let e ← Elab.Term.elabTerm t none
+    let e ← instantiateMVars e
     let ty ← instantiateMVars (← Meta.inferType e)
     if ty.isAppOfArity' ``Set 1 then
+      return e
+    else if e.isAppOfArity' ``EmptyCollection.emptyCollection 2 then
       return e
     else
       let e' ← `((singleton $(← Elab.Term.exprToSyntax e) : Set _))
@@ -525,15 +528,19 @@ where
   /-- Try delaborating the `S` argument as a `{x,y,z,...}` array, fail if not of this form. -/
   notation1 (F : Term) : Delab := do
     let xs ← withNaryArg 5 delabInsertArray
-    `($F⟮$(xs.toArray),*⟯)
+    if xs.isEmpty then
+      `($F⟮∅⟯)
+    else
+      `($F⟮$(xs.toArray),*⟯)
   /-- Delaboration if `notation1` fails. -/
   notation2 (F : Term) : Delab := do
     let S ← withNaryArg 5 delab
     `($F⟮$S⟯)
 
 /-
-example (α : E): α ∈ F⟮α⟯ := sorry
+example (α : E) : α ∈ F⟮α⟯ := sorry
 example (S : Set E) : α ∈ F⟮S⟯ := sorry
+example (α : E) : F⟮∅⟯ ≤ F⟮α⟯ := sorry
 -/
 end AdjoinNotation
 
