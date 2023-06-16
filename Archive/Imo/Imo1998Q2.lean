@@ -133,14 +133,13 @@ theorem A_fibre_over_contestant_card (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
-  apply Finset.card_image_of_injOn
-  sorry
+  -- porting note: used to be `tidy`
+  apply Finset.card_image_of_injOn; unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
-    agreedContestants r p =
-      ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image AgreedTriple.contestant :=
-  by
+    agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
+    AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
   · sorry
