@@ -370,8 +370,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom Rep.ihom
 
-@[simp]
-protected theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+@[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -381,8 +380,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-@[simps]
-protected def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
+@[simps] def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
