@@ -8,11 +8,11 @@ Authors: Kevin Lacker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Identities
-import Mathbin.Data.Int.NatPrime
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.NormCast
-import Mathbin.Data.Set.Finite
+import Mathlib.Algebra.GroupPower.Identities
+import Mathlib.Data.Int.NatPrime
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.NormCast
+import Mathlib.Data.Set.Finite
 
 /-!
 # IMO 1969 Q1
@@ -71,8 +71,7 @@ theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (h
 #align imo1969_q1.not_prime_of_int_mul' Imo1969Q1.not_prime_of_int_mul'
 
 /-- Every natural number of the form `n^4 + 4*m^4` is not prime. -/
-theorem polynomial_not_prime {m : ℕ} (h1 : 1 < m) (n : ℕ) : ¬Nat.Prime (n ^ 4 + 4 * m ^ 4) :=
-  by
+theorem polynomial_not_prime {m : ℕ} (h1 : 1 < m) (n : ℕ) : ¬Nat.Prime (n ^ 4 + 4 * m ^ 4) := by
   have h2 : 1 < (m : ℤ) := ofNat_lt.mpr h1
   refine' not_prime_of_int_mul' (left_factor_large (n : ℤ) h2) (right_factor_large (n : ℤ) h2) _
   exact_mod_cast factorization
