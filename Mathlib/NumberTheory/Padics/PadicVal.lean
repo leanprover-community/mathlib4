@@ -106,7 +106,7 @@ theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
   simp
 
-theorem maxPowDiv_eq_multiplicityGet {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : multiplicity.Finite p n) :
+theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Finite p n) :
     p.maxPowDiv n = (multiplicity p n).get h := by
   rw [PartENat.get_eq_iff_eq_coe.mpr]
   apply maxPowDiv_eq_multiplicity hp hn|>.symm
@@ -117,7 +117,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
   by_cases (1 < p ∧ 0 < n)
   · dsimp [padicValNat]
-    rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicityGet h.1 h.2]
+    rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
   · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
     apply h.elim
     · intro h

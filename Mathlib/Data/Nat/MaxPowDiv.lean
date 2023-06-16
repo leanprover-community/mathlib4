@@ -68,7 +68,8 @@ theorem zero {p : ℕ} : maxPowDiv p 0 = 0 := by
   rw [maxPowDiv.go_eq]
   simp
 
-theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) : p.maxPowDiv (p*n) = p.maxPowDiv n + 1 := by
+theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p.maxPowDiv (p*n) = p.maxPowDiv n + 1 := by
   have : 0 < p := lt_trans (b := 1) (by simp) hp
   dsimp [maxPowDiv]
   rw [maxPowDiv.go_eq, if_pos, mul_div_right _ this]
@@ -99,7 +100,8 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   · rw [if_neg h]
     simp
 
-theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) : pow ≤ p.maxPowDiv n := by
+theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
+    pow ≤ p.maxPowDiv n := by
   have ⟨c, hc⟩ := h
   have : 0 < c := by
     apply Nat.pos_of_ne_zero
