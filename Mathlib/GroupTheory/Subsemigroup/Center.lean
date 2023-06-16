@@ -80,9 +80,10 @@ theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b �
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
-theorem neg_mem_center [Ring M] {a : M} (ha : a ∈ Set.center M) : -a ∈ Set.center M := fun c => by
+theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
+    -a ∈ Set.center M := fun c => by
   rw [← neg_mul_comm, ha (-c), neg_mul_comm]
-#align set.neg_mem_center Set.neg_mem_center
+#align set.neg_mem_center Set.neg_mem_centerₓ
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
