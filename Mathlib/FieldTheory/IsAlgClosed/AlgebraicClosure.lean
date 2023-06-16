@@ -55,6 +55,7 @@ def MonicIrreducible : Type u :=
 /-- Sends a monic irreducible polynomial `f` to `f(x_f)` where `x_f` is a formal indeterminate. -/
 def evalXSelf (f : MonicIrreducible k) : MvPolynomial (MonicIrreducible k) k :=
   Polynomial.eval₂ MvPolynomial.C (X f) f
+set_option linter.uppercaseLean3 false in
 #align algebraic_closure.eval_X_self AlgebraicClosure.evalXSelf
 
 /-- The span of `f(x_f)` across monic irreducible polynomials `f` where `x_f` is an
@@ -82,6 +83,7 @@ theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f
   rw [toSplittingField, evalXSelf, ← AlgHom.coe_toRingHom, hom_eval₂, AlgHom.coe_toRingHom,
     MvPolynomial.aeval_X, dif_pos hf, ← algebraMap_eq, AlgHom.comp_algebraMap]
   exact map_rootOfSplits _ _ _
+set_option linter.uppercaseLean3 false in
 #align algebraic_closure.to_splitting_field_eval_X_self AlgebraicClosure.toSplittingField_evalXSelf
 
 theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
@@ -157,7 +159,7 @@ theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f)
 
 /-- The `n`th step of constructing `algebraic_closure`, together with its `field` instance. -/
 def stepAux (n : ℕ) : Σ α : Type u, Field α :=
-  Nat.recOn n ⟨k, inferInstance⟩ fun n ih => ⟨@AdjoinMonic ih.1 ih.2, @AdjoinMonic.field ih.1 ih.2⟩
+  Nat.recOn n ⟨k, inferInstance⟩ fun _ ih => ⟨@AdjoinMonic ih.1 ih.2, @AdjoinMonic.field ih.1 ih.2⟩
 #align algebraic_closure.step_aux AlgebraicClosure.stepAux
 
 /-- The `n`th step of constructing `algebraic_closure`. -/
