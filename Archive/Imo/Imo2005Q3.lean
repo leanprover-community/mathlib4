@@ -8,8 +8,8 @@ Authors: Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Tactic.Positivity
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Positivity
 
 /-!
 # IMO 2005 Q3
@@ -27,8 +27,7 @@ and then making use of `xyz ≥ 1` to show `(x^5-x^2)/(x^3*(x^2+y^2+z^2)) ≥ (x
 namespace imo2005_q3
 
 theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x * y * z ≥ 1) :
-    (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥ (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) :=
-  by
+    (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥ (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by
   have h₁ : 0 < x ^ 5 + y ^ 2 + z ^ 2 := by positivity
   have h₂ : 0 < x ^ 3 := by positivity
   have h₃ : 0 < x ^ 2 + y ^ 2 + z ^ 2 := by positivity
@@ -37,8 +36,7 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) -
         (x ^ 5 - x ^ 2) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =
       (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
-        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) :=
-    by
+        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) := by
     field_simp [h₁.ne', h₄.ne']
     ring
   have h₅ :
@@ -50,8 +48,7 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥
         (x ^ 5 - x ^ 2) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) :=
       by linarith [key, h₅]
-    _ ≥ (x ^ 5 - x ^ 2 * (x * y * z)) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) :=
-      by
+    _ ≥ (x ^ 5 - x ^ 2 * (x * y * z)) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by
       refine' (div_le_div_right h₄).mpr _; simp
       exact (le_mul_iff_one_le_right (pow_pos hx 2)).mpr h
     _ = (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by field_simp [h₂.ne', h₃.ne']; ring
@@ -64,18 +61,15 @@ open imo2005_q3
 theorem imo2005_q3 (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x * y * z ≥ 1) :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) + (y ^ 5 - y ^ 2) / (y ^ 5 + z ^ 2 + x ^ 2) +
         (z ^ 5 - z ^ 2) / (z ^ 5 + x ^ 2 + y ^ 2) ≥
-      0 :=
-  by
+      0 := by
   calc
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) + (y ^ 5 - y ^ 2) / (y ^ 5 + z ^ 2 + x ^ 2) +
           (z ^ 5 - z ^ 2) / (z ^ 5 + x ^ 2 + y ^ 2) ≥
         (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) + (y ^ 2 - z * x) / (y ^ 2 + z ^ 2 + x ^ 2) +
-          (z ^ 2 - x * y) / (z ^ 2 + x ^ 2 + y ^ 2) :=
-      by
+          (z ^ 2 - x * y) / (z ^ 2 + x ^ 2 + y ^ 2) := by
       linarith [key_insight x y z hx hy hz h, key_insight y z x hy hz hx (by linarith [h]),
         key_insight z x y hz hx hy (by linarith [h])]
-    _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) :=
-      by
+    _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) := by
       have h₁ : y ^ 2 + z ^ 2 + x ^ 2 = x ^ 2 + y ^ 2 + z ^ 2; ring
       have h₂ : z ^ 2 + x ^ 2 + y ^ 2 = x ^ 2 + y ^ 2 + z ^ 2; ring
       rw [h₁, h₂]; ring
