@@ -235,14 +235,18 @@ theorem coe_of_rat_eq :
   cases' gcf_v_eq : of v with h s; subst v
   -- Porting note: made coercion target explicit
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
-  simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
+  -- Porting note: was
+  -- simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
+  simp only [gcf_v_eq, Int.cast_inj, Rat.floor_cast, of_h_eq_floor, eq_self_iff_true,
+    Rat.cast_coe_int, and_self, coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl]
 #align generalized_continued_fraction.coe_of_rat_eq GeneralizedContinuedFraction.coe_of_rat_eq
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
   constructor <;> intro h <;> cases' h with n h <;> use n <;>
-        simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
-      cases (of q).s.get? n <;>
+    simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
+    cases h' : (of q).s.get? n <;>
+    simp only [h'] at h <;> -- Porting note: added
     trivial
 #align generalized_continued_fraction.of_terminates_iff_of_rat_terminates GeneralizedContinuedFraction.of_terminates_iff_of_rat_terminates
 
@@ -327,7 +331,6 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
       -- simp [Int.natAbs_of_nonneg this, sub_add_eq_sub_sub_swap, sub_right_comm]
       simp only [Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one, sub_add_eq_sub_sub_swap,
         sub_right_comm, sub_self, zero_sub]
-    have : ifp.fr.num ≤ -1 := by rwa [this] at ifp_fr_num_le_q_fr_num_sub_n
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
     have : 0 ≤ ifp.fr.num := Rat.num_nonneg_iff_zero_le.mpr this
     linarith
