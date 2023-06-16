@@ -24,9 +24,7 @@ noncomputable section
 
 set_option linter.uppercaseLean3 false
 
-open Set Metric TopologicalSpace NNReal ENNReal
-
-local notation "ℓ^∞(" ι ") " => lp (fun i : ι => ℝ ) ∞
+open Set Metric TopologicalSpace NNReal ENNReal lp
 
 universe u v w
 

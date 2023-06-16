@@ -325,6 +325,9 @@ def lp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : 
   neg_mem' := Memℓp.neg
 #align lp lp
 
+scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
+scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
+
 namespace lp
 
 -- Porting note: was `Coe`
