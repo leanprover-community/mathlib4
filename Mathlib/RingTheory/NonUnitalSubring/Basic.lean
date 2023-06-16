@@ -150,7 +150,7 @@ instance : NonUnitalSubringClass (NonUnitalSubring R) R
   neg_mem {s} := s.neg_mem'
 
 @[simp]
-theorem mem_carrier {s : NonUnitalSubring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
+theorem mem_carrier {s : NonUnitalSubring R} {x : R} : x ∈ s.toNonUnitalSubsemiring ↔ x ∈ s :=
   Iff.rfl
 
 @[simp]
@@ -317,10 +317,8 @@ theorem val_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
 theorem val_zero : ((0 : s) : R) = 0 :=
   rfl
 
--- TODO: can be generalized to `AddSubmonoidClass`
-@[simp]
-theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
-  ⟨fun h => Subtype.ext (h.trans s.val_zero.symm), fun h => h.symm ▸ s.val_zero⟩
+theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
+  simp
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
@@ -454,8 +452,8 @@ variable {R : Type u} {S : Type v} {T : Type _}
 
 /-! ## range -/
 
-/--
-The range of a ring homomorphism, as a `NonUnitalSubring` of the target. See Note [range copy pattern]. -/
+/-- The range of a ring homomorphism, as a `NonUnitalSubring` of the target.
+See Note [range copy pattern]. -/
 def range {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] (f : R →ₙ+* S) :
     NonUnitalSubring S :=
   ((⊤ : NonUnitalSubring R).map f).copy (Set.range f) Set.image_univ.symm
@@ -655,8 +653,7 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (Hs : ∀ (x) (hx : x ∈ s), p ⟨x, subset_closure hx⟩) (H0 : p 0)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x, p x → p (-x))
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p a :=
-  Subtype.recOn a fun b hb =>
-    by
+  Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
     refine'
       closure_induction hb (fun x hx => ⟨subset_closure hx, Hs x hx⟩) ⟨zero_mem (closure s), H0⟩ _ _
@@ -676,8 +673,7 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hneg_right : ∀ x y, p x y → p x (-y)) (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b :=
-  by
+    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
   refine' closure_induction hb _ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
   refine' closure_induction ha Hs (fun x _ => H0_left x) _ _ _
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
@@ -913,8 +909,8 @@ def eqLocus (f g : R →ₙ+* S) : NonUnitalSubring R :=
 theorem eqLocus_same (f : R →ₙ+* S) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
-/--
-If two ring homomorphisms are equal on a set, then they are equal on its `NonUnitalSubring` closure. -/
+/-- If two ring homomorphisms are equal on a set, then they are equal on its
+`NonUnitalSubring` closure. -/
 theorem eqOn_set_closure {f g : R →ₙ+* S} {s : Set R} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from closure_le.2 h
@@ -957,13 +953,11 @@ def inclusion {S T : NonUnitalSubring R} (h : S ≤ T) : S →ₙ+* T :=
 theorem range_subtype (s : NonUnitalSubring R) : (NonUnitalSubringClass.subtype s).range = s :=
   SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
-@[simp]
 theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
-  NonUnitalRingHom.srange_top_of_surjective (fst R S) <| Prod.fst_surjective
+  NonUnitalSubsemiring.range_fst
 
-@[simp]
 theorem range_snd : NonUnitalRingHom.srange (snd R S) = ⊤ :=
-  NonUnitalRingHom.srange_top_of_surjective (snd R S) <| Prod.snd_surjective
+  NonUnitalSubsemiring.range_snd
 
 end NonUnitalSubring
 
