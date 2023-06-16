@@ -128,14 +128,10 @@ theorem add_zero_right : add x 0 = x := by
 
 @[simp]
 theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
-  simp[sub, neg]
-  suffices ∀ c, sbb 0 x c = Vector.mapAccumr (fun y c ↦ (y || c, _root_.xor y c)) x c
-    by rw[this]
-  induction x using Vector.revInductionOn
-  case nil =>
-    intro; rfl
-  case snoc n xs x ih =>
-    simp[zero_unfold_snoc, Bitvec.carry, ih]
+  simp[sub, neg, sbb]
+  congr
+  funext y c
+  cases y <;> cases c <;> rfl
 
 @[simp]
 theorem neg_neg_x : neg (neg x) = x := by
