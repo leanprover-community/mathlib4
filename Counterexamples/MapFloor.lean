@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Hom.Ring
-import Mathbin.Data.Polynomial.Reverse
+import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Data.Polynomial.Reverse
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -70,8 +70,7 @@ instance : OrderedAddCommGroup ℤ[ε] := by
       ext <;>
     simp [← nsmul_eq_mul, ← zsmul_eq_mul]
 
-theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff :=
-  by
+theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailing_coeff]
   refine'
     ⟨_, fun h =>
@@ -129,8 +128,7 @@ theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
 /-- The floor of `n - ε` is `n - 1` but its image under `forget_epsilons` is `n`, whose floor is
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :
-    forgetEpsilons ⌊(n - ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ε)⌋ :=
-  by
+    forgetEpsilons ⌊(n - ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ε)⌋ := by
   suffices ⌊(n - ε : ℤ[ε])⌋ = n - 1 by simp [this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
   exact (if_neg <| by simp [this]).trans (by simp)
@@ -139,8 +137,7 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
 /-- The ceil of `n + ε` is `n + 1` but its image under `forget_epsilons` is `n`, whose ceil is
 itself. -/
 theorem lt_forgetEpsilons_ceil (n : ℤ) :
-    ⌈forgetEpsilons (n + ε)⌉ < forgetEpsilons ⌈(n + ε : ℤ[ε])⌉ :=
-  by
+    ⌈forgetEpsilons (n + ε)⌉ < forgetEpsilons ⌈(n + ε : ℤ[ε])⌉ := by
   rw [← neg_lt_neg_iff, ← map_neg, ← cast_neg, ← floor_neg, ← floor_neg, ← map_neg, neg_add', ←
     cast_neg]
   exact forget_epsilons_floor_lt _
