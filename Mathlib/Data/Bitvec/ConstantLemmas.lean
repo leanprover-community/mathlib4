@@ -2,14 +2,11 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 
 namespace Bitvec
+  open Bitvec (zero one not)
 
 /-- Every bit in `zero` is `0`/`false` -/
 @[simp]
-theorem get_zeroes_eq_false : get (Bitvec.zero n) i = false :=
-  get_replicate_val_eq_val
-
-@[simp]
-theorem get_zero_eq_false : get 0 i = false :=
+theorem get_zeroe_eq_false : get (zero n) i = false :=
   get_replicate_val_eq_val
 
 /-- Every bit in `ones` is `1`/`true` -/
@@ -21,45 +18,38 @@ theorem get_ones_eq_true : get (allOnes n) i = true :=
 
 section NegateConstants
   @[simp]
-  theorem not_zeroes : Bitvec.not (allOnes n) = 0 := by
+  theorem not_zeroes : not (allOnes n) = zero n := by
     ext; simp
 
   @[simp]
-  theorem not_ones : Bitvec.not 0 = (allOnes n) := by
+  theorem not_ones : not (zero n) = (allOnes n) := by
     ext; simp
 end NegateConstants
 
 
 section Zero
   @[simp]
-  theorem ofNat_zero_succ : (Bitvec.ofNat (n+1) 0) = false ::ᵥ (Bitvec.ofNat n 0) := by
-    induction n
-    case zero =>
-      rfl
-    case succ n ih =>
-      show Vector.append (Bitvec.ofNat (n+1) 0) (false ::ᵥ Vector.nil)
-            = false ::ᵥ (Bitvec.ofNat (n+1) 0)
-      rw[ih]
-      apply eq_of_heq
-      apply HEq.trans <| Vector.append_cons_left false (Bitvec.ofNat n 0) (false ::ᵥ Vector.nil)
-      congr
-
-  @[simp]
-  theorem ofNat_zero_eq_zero : (Bitvec.ofNat n 0) = 0 := by
+  theorem ofNat_zero_eq_zero : (Bitvec.ofNat n 0) = zero n := by
     simp only [OfNat.ofNat, Zero.zero, Bitvec.zero]
     induction n
     case zero =>
       rfl
     case succ n ih =>
-      rw[ofNat_zero_succ, Vector.replicate_succ, ih]
+      show (Bitvec.ofNat n 0).snoc false
+            = (Vector.replicate (n+1) false)
+      rw[Vector.replicate_succ_to_snoc, ih]
 
 
-  @[aesop 50%]
-  theorem zero_unfold : (0 : Bitvec <| n+1) = false ::ᵥ 0 := by
+  @[simp]
+  theorem zero_eq_bitvec_zero : 0 = (zero n) :=
     rfl
 
   @[aesop 50%]
-  theorem zero_unfold_snoc : (0 : Bitvec <| n+1) = Vector.snoc 0 false := by
+  theorem zero_unfold : (zero (n+1)) = false ::ᵥ 0 := by
+    rfl
+
+  @[aesop 50%]
+  theorem zero_unfold_snoc : (zero (n+1)) = Vector.snoc 0 false := by
     induction n
     . rfl
     . simp[zero_unfold, *]; congr
