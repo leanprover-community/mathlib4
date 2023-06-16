@@ -293,7 +293,6 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
   refine'
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b H => Set.not_infinite.mpr _ h,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
-  have := Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b)
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
