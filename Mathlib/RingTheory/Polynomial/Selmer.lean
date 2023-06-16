@@ -65,6 +65,7 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
     exact 2
     norm_cast at * -- porting note: did not need this in mathlib3
     rwa [key, add_self_eq_zero] at h2
+set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_X_sub_one_irreducible_aux Polynomial.X_pow_sub_X_sub_one_irreducible_aux
 
 theorem x_pow_sub_x_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
@@ -87,6 +88,7 @@ theorem x_pow_sub_x_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
   norm_cast at *
   rw [h1] at h2 ⊢
   exact ⟨rfl, by linear_combination -h2⟩
+set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_X_sub_one_irreducible Polynomial.x_pow_sub_x_sub_one_irreducible
 
 theorem x_pow_sub_x_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℚ[X]) := by
@@ -103,6 +105,7 @@ theorem x_pow_sub_x_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n
     rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h
   · exact hp.symm ▸ (trinomial_monic zero_lt_one hn).IsPrimitive
+set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_X_sub_one_irreducible_rat Polynomial.x_pow_sub_x_sub_one_irreducible_rat
 
 end Polynomial
