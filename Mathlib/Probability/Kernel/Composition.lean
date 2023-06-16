@@ -31,8 +31,8 @@ that convention because it fits better with the use of the name `comp` elsewhere
 ## Main definitions
 
 Kernels built from other kernels:
-* `comp_prod (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ)`: composition-product of 2
-  s-finite kernels. We define a notation `κ ⊗ₖ η = comp_prod κ η`.
+* `compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ)`: composition-product of 2
+  s-finite kernels. We define a notation `κ ⊗ₖ η = compProd κ η`.
   `∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
 * `map (κ : kernel α β) (f : β → γ) (hf : Measurable f) : kernel α γ`
   `∫⁻ c, g c ∂(map κ f hf a) = ∫⁻ b, g (f b) ∂(κ a)`
@@ -46,11 +46,11 @@ Kernels built from other kernels:
 
 ## Main statements
 
-* `lintegral_comp_prod`, `lintegral_map`, `lintegral_comap`, `lintegral_comp`, `lintegral_prod`:
+* `lintegral_compProd`, `lintegral_map`, `lintegral_comap`, `lintegral_comp`, `lintegral_prod`:
   Lebesgue integral of a function against a composition-product/map/comap/composition/product of
   kernels.
-* Instances of the form `<class>.<operation>` where class is one of `is_markov_kernel`,
-  `is_finite_kernel`, `is_s_finite_kernel` and operation is one of `comp_prod`, `map`, `comap`,
+* Instances of the form `<class>.<operation>` where class is one of `IsMarkovKernel`,
+  `IsFiniteKernel`, `IsSFiniteKernel` and operation is one of `compProd`, `map`, `comap`,
   `comp`, `prod`. These instances state that the three classes are stable by the various operations.
 
 ## Notations
@@ -78,16 +78,16 @@ section CompositionProduct
 ### Composition-Product of kernels
 
 We define a kernel composition-product
-`comp_prod : kernel α β → kernel (α × β) γ → kernel α (β × γ)`.
+`compProd : kernel α β → kernel (α × β) γ → kernel α (β × γ)`.
 -/
 
 
 variable {γ : Type _} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
 
 /-- Auxiliary function for the definition of the composition-product of two kernels.
-For all `a : α`, `comp_prod_fun κ η a` is a countably additive function with value zero on the empty
-set, and the composition-product of kernels is defined in `kernel.comp_prod` through
-`measure.of_measurable`. -/
+For all `a : α`, `compProdFun κ η a` is a countably additive function with value zero on the empty
+set, and the composition-product of kernels is defined in `kernel.compProd` through
+`Measure.ofMeasurable`. -/
 noncomputable def compProdFun (κ : kernel α β) (η : kernel (α × β) γ) (a : α) (s : Set (β × γ)) :
     ℝ≥0∞ :=
   ∫⁻ b, η (a, b) {c | (b, c) ∈ s} ∂κ a
@@ -157,7 +157,7 @@ theorem compProdFun_eq_tsum (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
   simp_rw [compProdFun_tsum_left κ η a s, compProdFun_tsum_right _ η a hs]
 #align probability_theory.kernel.comp_prod_fun_eq_tsum ProbabilityTheory.kernel.compProdFun_eq_tsum
 
-/-- Auxiliary lemma for `measurable_comp_prod_fun`. -/
+/-- Auxiliary lemma for `measurable_compProdFun`. -/
 theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ] (η : kernel (α × β) γ)
     [IsFiniteKernel η] (hs : MeasurableSet s) : Measurable fun a => compProdFun κ η a s := by
   simp only [compProdFun]
@@ -191,8 +191,8 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
 #align probability_theory.kernel.measurable_comp_prod_fun ProbabilityTheory.kernel.measurable_compProdFun
 
 /-- Composition-Product of kernels. It verifies
-`∫⁻ bc, f bc ∂(comp_prod κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-(see `lintegral_comp_prod`). -/
+`∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
+(see `lintegral_compProd`). -/
 noncomputable def compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : kernel α (β × γ) where
   val a :=
@@ -334,7 +334,7 @@ section Lintegral
 
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
-theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
+theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
   let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
@@ -395,7 +395,7 @@ theorem lintegral_comp_prod' (κ : kernel α β) [IsSFiniteKernel κ] (η : kern
     congr with b
     rw [lintegral_add_left]
     exact (SimpleFunc.measurable _).comp measurable_prod_mk_left
-#align probability_theory.kernel.lintegral_comp_prod' ProbabilityTheory.kernel.lintegral_comp_prod'
+#align probability_theory.kernel.lintegral_comp_prod' ProbabilityTheory.kernel.lintegral_compProd'
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
 theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
@@ -403,7 +403,7 @@ theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
     ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f (b, c) ∂η (a, b) ∂κ a := by
   let g := Function.curry f
   change ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, g b c ∂η (a, b) ∂κ a
-  rw [← lintegral_comp_prod']
+  rw [← lintegral_compProd']
   · simp_rw [Function.curry_apply]
   · simp_rw [Function.uncurry_curry]; exact hf
 #align probability_theory.kernel.lintegral_comp_prod ProbabilityTheory.kernel.lintegral_compProd
