@@ -563,7 +563,7 @@ theorem measurableSet_condCdfSet (ρ : Measure (α × ℝ)) : MeasurableSet (con
 theorem hasCondCdf_of_mem_condCdfSet {ρ : Measure (α × ℝ)} {a : α} (h : a ∈ condCdfSet ρ) :
     HasCondCdf ρ a := by
   rw [condCdfSet, mem_compl_iff] at h
-  have h_ss := subset_toMeasurable ρ.fst {b | ¬hasCondCdf ρ b}
+  have h_ss := subset_toMeasurable ρ.fst {b | ¬HasCondCdf ρ b}
   by_contra ha
   exact h (h_ss ha)
 #align probability_theory.has_cond_cdf_of_mem_cond_cdf_set ProbabilityTheory.hasCondCdf_of_mem_condCdfSet
@@ -695,7 +695,7 @@ theorem inf_gt_condCdfRat (ρ : Measure (α × ℝ)) (a : α) (t : ℚ) :
       dsimp only
       split_ifs
       exacts [le_rfl, zero_le_one]
-    split_ifs with h h
+    split_ifs with h
     · refine' le_antisymm _ (le_ciInf fun x => _)
       · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := by
           refine' ⟨t / 2, _, _⟩
@@ -760,8 +760,8 @@ theorem monotone_condCdf' (ρ : Measure (α × ℝ)) (a : α) : Monotone (condCd
     exact ⟨⟨r, hrx⟩⟩
   simp_rw [condCdf'_def]
   refine' le_ciInf fun r => (ciInf_le _ _).trans_eq _
-  · exact ⟨r.1, hxy.trans_lt r.prop⟩
   · exact bddBelow_range_condCdfRat_gt ρ a x
+  · exact ⟨r.1, hxy.trans_lt r.prop⟩
   · rfl
 #align probability_theory.monotone_cond_cdf' ProbabilityTheory.monotone_condCdf'
 
@@ -867,7 +867,7 @@ theorem ofReal_condCdf_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r 
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
 theorem measurable_condCdf (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun a => condCdf ρ a x := by
-  have : (fun a => condCdf ρ a x) = fun a => ⨅ r : { r' // x < ↑r' }, condCdfRat ρ a ↑r := by
+  have : (fun a => condCdf ρ a x) = fun a => ⨅ r : { r' : ℚ // x < r' }, condCdfRat ρ a ↑r := by
     ext1 a
     rw [← StieltjesFunction.iInf_rat_gt_eq]
     congr with q
