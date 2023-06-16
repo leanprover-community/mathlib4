@@ -22,7 +22,7 @@ same equality for the Bochner integral.
 
 ## Main statements
 
-* `probability_theory.integral_comp_prod`: the integral against the composition-product is
+* `ProbabilityTheory.integral_compProd`: the integral against the composition-product is
   `∫ z, f z ∂((κ ⊗ₖ η) a) = ∫ x, ∫ y, f (x, y) ∂(η (a, x)) ∂(κ a)`
 
 ## Implementation details
