@@ -22,11 +22,7 @@ in particular `Mon`, `SemiRing`, `Ring`, and `Algebra R`.)
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.Monoidal
+open CategoryTheory Limits Monoidal
 
 universe v u
 
@@ -43,19 +39,21 @@ by interpreting it as a functor `Mon_ (J ⥤ C)`,
 and noting that taking limits is a lax monoidal functor,
 and hence sends monoid objects to monoid objects.
 -/
-@[simps]
+@[simps!]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
   limLax.mapMon.obj (MonFunctorCategoryEquivalence.inverse.obj F)
+set_option linter.uppercaseLean3 false in
 #align Mon_.limit Mon_.limit
 
-/-- Implementation of `Mon_.has_limits`: a limiting cone over a functor `F : J ⥤ Mon_ C`.
+/-- Implementation of `Mon_.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon_ C`.
 -/
 @[simps]
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => { Hom := limit.π (F ⋙ Mon_.forget C) j }
-      naturality' := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
+    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
+      naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
+set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone Mon_.limitCone
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
@@ -63,45 +61,47 @@ def limitCone (F : J ⥤ Mon_ C) : Cone F where
 -/
 def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
-  Cones.ext (Iso.refl _) fun j => by tidy
+  Cones.ext (Iso.refl _) (by aesop_cat)
+set_option linter.uppercaseLean3 false in
 #align Mon_.forget_map_cone_limit_cone_iso Mon_.forgetMapConeLimitConeIso
 
-/-- Implementation of `Mon_.has_limits`:
+/-- Implementation of `Mon_.hasLimits`:
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 -/
 @[simps]
 def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
-    { Hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
-      mul_hom' := by
-        ext; dsimp; simp; dsimp
+    { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
+      mul_hom := by
+        dsimp
+        ext; simp; dsimp
         slice_rhs 1 2 =>
-          rw [← monoidal_category.tensor_comp, limit.lift_π]
-          dsimp }
+          rw [← MonoidalCategory.tensor_comp, limit.lift_π] }
   fac s h := by ext; simp
   uniq s m w := by
-    ext
-    dsimp; simp only [Mon_.forget_map, limit.lift_π, functor.map_cone_π_app]
+    ext1
+    refine' limit.hom_ext (fun j => _)
+    dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
     exact congr_arg Mon_.Hom.hom (w j)
+set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
 instance hasLimits : HasLimits (Mon_ C)
-    where HasLimitsOfShape J 𝒥 :=
-    {
-      HasLimit := fun F =>
-        has_limit.mk
-          { Cone := limit_cone F
-            IsLimit := limit_cone_is_limit F } }
+    where has_limits_of_shape _ _ :=
+    { has_limit := fun F =>
+        HasLimit.mk
+          { cone := limitCone F
+            isLimit := limitConeIsLimit F } }
+set_option linter.uppercaseLean3 false in
 #align Mon_.has_limits Mon_.hasLimits
 
-instance forgetPreservesLimits : PreservesLimits (Mon_.forget C)
-    where PreservesLimitsOfShape J 𝒥 :=
-    {
-      PreservesLimit := fun F : J ⥤ Mon_ C =>
-        preserves_limit_of_preserves_limit_cone (limit_cone_is_limit F)
-          (is_limit.of_iso_limit (limit.is_limit (F ⋙ Mon_.forget C))
-            (forget_map_cone_limit_cone_iso F).symm) }
+instance forgetPreservesLimits : PreservesLimits (Mon_.forget C) where
+  preservesLimitsOfShape :=
+    { preservesLimit := fun {F} =>
+        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+          (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C))
+            (forgetMapConeLimitConeIso F).symm) }
+set_option linter.uppercaseLean3 false in
 #align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
 
 end Mon_
-
