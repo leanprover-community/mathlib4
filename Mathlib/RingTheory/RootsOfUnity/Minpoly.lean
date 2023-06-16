@@ -8,8 +8,8 @@ Authors: Riccardo Brasca, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.RootsOfUnity.Basic
-import Mathbin.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 
 /-!
 # Minimal polynomial of roots of unity
@@ -49,8 +49,7 @@ section IsDomain
 variable [IsDomain K] [CharZero K]
 
 /-- The minimal polynomial of a root of unity `μ` divides `X ^ n - 1`. -/
-theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 :=
-  by
+theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · simp
   letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
@@ -61,8 +60,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 :=
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is separable. -/
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
-    Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) :=
-  by
+    Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
     simpa [Polynomial.map_pow, map_X, Polynomial.map_one, Polynomial.map_sub] using
       RingHom.map_dvd (map_ring_hom (Int.castRingHom (ZMod p))) (minpoly_dvd_X_pow_sub_one h)
@@ -94,8 +92,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) : minpoly ℤ μ ∣ exp
 `μ ^ p`, where `p` is a prime that does not divide `n`. Then `P` divides `Q ^ p` modulo `p`. -/
 theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣
-      map (Int.castRingHom (ZMod p)) (minpoly ℤ (μ ^ p)) ^ p :=
-  by
+      map (Int.castRingHom (ZMod p)) (minpoly ℤ (μ ^ p)) ^ p := by
   set Q := minpoly ℤ (μ ^ p)
   have hfrob :
     map (Int.castRingHom (ZMod p)) Q ^ p = map (Int.castRingHom (ZMod p)) (expand ℤ p Q) := by
@@ -132,8 +129,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have Pirr : Irreducible P := minpoly.irreducible (h.is_integral hpos)
   have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.1 hdiv).IsIntegral hpos)
   have PQprim : is_primitive (P * Q) := Pmonic.is_primitive.mul Qmonic.is_primitive
-  have prod : P * Q ∣ X ^ n - 1 :=
-    by
+  have prod : P * Q ∣ X ^ n - 1 := by
     rw [is_primitive.int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim
         (monic_X_pow_sub_C (1 : ℤ) (ne_of_gt hpos)).IsPrimitive,
       Polynomial.map_mul]
@@ -207,8 +203,7 @@ theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.coprime m n) :
 /-- `primitive_roots n K` is a subset of the roots of the minimal polynomial of a primitive
 `n`-th root of unity `μ`. -/
 theorem is_roots_of_minpoly [DecidableEq K] :
-    primitiveRoots n K ⊆ (map (Int.castRingHom K) (minpoly ℤ μ)).roots.toFinset :=
-  by
+    primitiveRoots n K ⊆ (map (Int.castRingHom K) (minpoly ℤ μ)).roots.toFinset := by
   by_cases hn : n = 0; · simp_all
   have hpos := Nat.pos_of_ne_zero hn
   intro x hx
