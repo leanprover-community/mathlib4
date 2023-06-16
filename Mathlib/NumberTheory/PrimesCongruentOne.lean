@@ -8,7 +8,7 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Primes congruent to one
@@ -27,14 +27,12 @@ open scoped Nat
 /-- For any positive `k : ℕ` there exists an arbitrarily large prime `p` such that
 `p ≡ 1 [MOD k]`. -/
 theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
-    ∃ p : ℕ, Nat.Prime p ∧ n < p ∧ p ≡ 1 [MOD k] :=
-  by
+    ∃ p : ℕ, Nat.Prime p ∧ n < p ∧ p ≡ 1 [MOD k] := by
   rcases(one_le_iff_ne_zero.2 hk0).eq_or_lt with (rfl | hk1)
   · rcases exists_infinite_primes (n + 1) with ⟨p, hnp, hp⟩
     exact ⟨p, hp, hnp, modeq_one⟩
   let b := k * n !
-  have hgt : 1 < (eval (↑b) (cyclotomic k ℤ)).natAbs :=
-    by
+  have hgt : 1 < (eval (↑b) (cyclotomic k ℤ)).natAbs := by
     rcases le_iff_exists_add'.1 hk1.le with ⟨k, rfl⟩
     have hb : 2 ≤ b := le_mul_of_le_of_one_le hk1 n.factorial_pos
     calc
@@ -43,8 +41,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
         sub_one_lt_nat_abs_cyclotomic_eval hk1 (succ_le_iff.1 hb).ne'
   let p := min_fac (eval (↑b) (cyclotomic k ℤ)).natAbs
   haveI hprime : Fact p.prime := ⟨min_fac_prime (ne_of_lt hgt).symm⟩
-  have hroot : is_root (cyclotomic k (ZMod p)) (cast_ring_hom (ZMod p) b) :=
-    by
+  have hroot : is_root (cyclotomic k (ZMod p)) (cast_ring_hom (ZMod p) b) := by
     rw [is_root.def, ← map_cyclotomic_int k (ZMod p), eval_map, coe_cast_ring_hom, ← Int.cast_ofNat,
       ← Int.coe_castRingHom, eval₂_hom, Int.coe_castRingHom, ZMod.int_cast_zmod_eq_zero_iff_dvd _ _]
     apply Int.dvd_natAbs.1
@@ -63,8 +60,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
 #align nat.exists_prime_gt_modeq_one Nat.exists_prime_gt_modEq_one
 
 theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
-    ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] :=
-  by
+    ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] := by
   refine' frequently_at_top.2 fun n => _
   obtain ⟨p, hp⟩ := exists_prime_gt_modeq_one n hk0
   exact ⟨p, ⟨hp.2.1.le, hp.1, hp.2.2⟩⟩
