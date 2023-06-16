@@ -111,16 +111,19 @@ variable (x : Bitvec n)
 
 theorem add_zero_left : add 0 x = x := by
   simp[add, adc, Bitvec.carry, Bitvec.xor3]
-  suffices ∀ c, (Vector.mapAccumr₂ (fun x y c ↦ (x && y || x && c || y && c,
-                                                _root_.xor x (_root_.xor y c))) 0 x c).snd
-                = x
-    from this false
   induction x using Vector.revInductionOn
   case nil =>
-    intro; rfl
+    rfl
   case snoc n xs x ih =>
     simp[ih]
-    sorry
+
+theorem add_zero_right : add x 0 = x := by
+  simp[add, adc, Bitvec.carry, Bitvec.xor3]
+  induction x using Vector.revInductionOn
+  case nil =>
+    rfl
+  case snoc n xs x ih =>
+    simp[ih]
 
 
 @[simp]
