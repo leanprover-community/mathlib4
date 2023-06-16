@@ -8,7 +8,7 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Kernel.Composition
+import Mathlib.Probability.Kernel.Composition
 
 /-!
 # Invariance of measures along a kernel
@@ -43,8 +43,7 @@ namespace Kernel
 
 
 @[simp]
-theorem bind_add (μ ν : Measure α) (κ : kernel α β) : (μ + ν).bind κ = μ.bind κ + ν.bind κ :=
-  by
+theorem bind_add (μ ν : Measure α) (κ : kernel α β) : (μ + ν).bind κ = μ.bind κ + ν.bind κ := by
   ext1 s hs
   rw [measure.bind_apply hs (kernel.measurable _), lintegral_add_measure, measure.coe_add,
     Pi.add_apply, measure.bind_apply hs (kernel.measurable _),
@@ -52,16 +51,14 @@ theorem bind_add (μ ν : Measure α) (κ : kernel α β) : (μ + ν).bind κ = 
 #align probability_theory.kernel.bind_add ProbabilityTheory.kernel.bind_add
 
 @[simp]
-theorem bind_smul (κ : kernel α β) (μ : Measure α) (r : ℝ≥0∞) : (r • μ).bind κ = r • μ.bind κ :=
-  by
+theorem bind_smul (κ : kernel α β) (μ : Measure α) (r : ℝ≥0∞) : (r • μ).bind κ = r • μ.bind κ := by
   ext1 s hs
   rw [measure.bind_apply hs (kernel.measurable _), lintegral_smul_measure, measure.coe_smul,
     Pi.smul_apply, measure.bind_apply hs (kernel.measurable _), smul_eq_mul]
 #align probability_theory.kernel.bind_smul ProbabilityTheory.kernel.bind_smul
 
 theorem const_bind_eq_comp_const (κ : kernel α β) (μ : Measure α) :
-    const α (μ.bind κ) = κ ∘ₖ const α μ :=
-  by
+    const α (μ.bind κ) = κ ∘ₖ const α μ := by
   ext (a s hs) : 2
   simp_rw [comp_apply' _ _ _ hs, const_apply, measure.bind_apply hs (kernel.measurable _)]
 #align probability_theory.kernel.const_bind_eq_comp_const ProbabilityTheory.kernel.const_bind_eq_comp_const
