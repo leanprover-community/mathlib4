@@ -198,6 +198,11 @@ noncomputable def singleFunctor₀ToHeartEquivalence :
     C ≌ (t : TStructure (DerivedCategory C)).Heart :=
   Functor.asEquivalence (singleFunctor₀ToHeart C)
 
+noncomputable def homologyιHeart (q : ℤ) :
+    t.homology q ⋙ t.ιHeart ≅ homologyFunctor C q ⋙ singleFunctor C 0 := by
+  refine' t.homologyCompιHeart q ≪≫ _
+  sorry
+
 end TStructure
 
 open DerivedCategory.TStructure

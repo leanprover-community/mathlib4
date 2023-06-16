@@ -64,6 +64,11 @@ instance [t.IsGE X 0] : (t.spectralSequence X H).IsFirstQuadrant := by
   dsimp only [spectralSequence]
   infer_instance
 
+noncomputable def spectralSequenceStronglyConvergesTo [t.IsGE X 0] :
+    (t.spectralSequence X H).StronglyConvergesTo (fun n => (H.shift n).obj X) :=
+  toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBoundsFirstQuadrant
+    ((t.spectralObject X).mapHomologicalFunctor H)
+
 end TStructure
 
 end Triangulated
