@@ -18,7 +18,7 @@ We gather several results about minimal polynomial of root of unity.
 
 ## Main results
 
-* `is_primitive_root.totient_le_degree_minpoly`: The degree of the minimal polynomial of a `n`-th
+* `IsPrimitiveRoot.totient_le_degree_minpoly`: The degree of the minimal polynomial of a `n`-th
   primitive root of unity is at least `totient n`.
 
 -/
@@ -204,7 +204,7 @@ theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.coprime m n) :
   exact minpoly.aeval ℤ (μ ^ m)
 #align is_primitive_root.pow_is_root_minpoly IsPrimitiveRoot.pow_isRoot_minpoly
 
-/-- `primitive_roots n K` is a subset of the roots of the minimal polynomial of a primitive
+/-- `primitiveRoots n K` is a subset of the roots of the minimal polynomial of a primitive
 `n`-th root of unity `μ`. -/
 theorem is_roots_of_minpoly [DecidableEq K] :
     primitiveRoots n K ⊆ (map (Int.castRingHom K) (minpoly ℤ μ)).roots.toFinset := by
