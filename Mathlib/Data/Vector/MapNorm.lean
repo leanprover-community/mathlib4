@@ -97,6 +97,20 @@ namespace Vector
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 
+      variable (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ)
+
+      protected abbrev mapAccumr_mapAccumr₂.g (x : α) (y : β) (s : σ₁ × σ₂) :=
+        let r₂ := f₂ x y s.snd
+        let r₁ := f₁ r₂.snd s.fst
+        ((r₁.fst, r₂.fst), r₁.snd)
+
+      @[simp]
+      theorem mapAccumr_mapAccumr₂ :
+          (mapAccumr f₁ (mapAccumr₂ f₂ xs ys s₂).snd s₁)
+          = let m := mapAccumr₂ (mapAccumr_mapAccumr₂.g f₁ f₂) xs ys (s₁, s₂);
+            (m.fst.fst, m.snd) := by
+        induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
+
       variable (zs : Vector γ n)
 
       -- @[simp]
@@ -116,15 +130,15 @@ namespace Vector
   -/
   section RedundantState
 
-    @[aesop safe 10]
-    theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
-        mapAccumr f xs s = (s, (mapAccumr (fun x _ => ((), (f x s).snd)) xs ()).snd) := by
-      induction xs using revInductionOn <;> simp_all
+    -- @[aesop safe 3]
+    -- theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+    --     mapAccumr f xs s = (s, (mapAccumr (fun x _ => ((), (f x s).snd)) xs ()).snd) := by
+    --   induction xs using revInductionOn <;> simp_all
 
-    @[aesop safe 10]
-    theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
-        mapAccumr₂ f xs ys s = (s, (mapAccumr₂ (fun x y _ => ((), (f x y s).snd)) xs ys ()).snd) := by
-      induction xs, ys using revInductionOn₂ <;> simp_all
+    -- @[aesop safe 3]
+    -- theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
+    --     mapAccumr₂ f xs ys s = (s, (mapAccumr₂ (fun x y _ => ((), (f x y s).snd)) xs ys ()).snd) := by
+    --   induction xs, ys using revInductionOn₂ <;> simp_all
 
   end RedundantState
 
