@@ -1,5 +1,6 @@
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.Vector.Snoc
 
 namespace Bitvec
   open Bitvec (zero one not)

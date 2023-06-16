@@ -2,7 +2,7 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.Tactic
 import Mathlib.Data.Bitvec.ConstantLemmas
-
+import Mathlib.Data.Vector.MapNorm
 
 namespace Vector
   variable (xs : Vector α n)
@@ -11,33 +11,13 @@ namespace Vector
   ## Fold nested instances of mapAccumrₓ
   -/
   section Fold
-
-    protected abbrev mapAccumr_mapAccumr_fold.g (f₁ : β₂ → σ₁ → σ₁ × β₁) (f₂ : α → σ₂ → σ₂ × β₂) :=
-      fun (x : α) ((s₁, s₂) : σ₁ × σ₂) =>
-        let r₂ := f₂ x s₂
-        let r₁ := f₁ r₂.snd s₁
-        ((r₁.fst, r₂.fst), r₁.snd)
-
-    /-- We can fold nested `mapAccumr`s into a single `mapAccumr` -/
-    @[simp]
-    theorem mapAccumr_mapAccumr_fold (f₁ : β₂ → σ₁ → σ₁ × β₁) (f₂ : α → σ₂ → σ₂ × β₂)
-                                : (mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁) = (
-                                    (mapAccumr (mapAccumr_mapAccumr_fold.g f₁ f₂) xs (s₁, s₂)).fst.fst,
-                                    (mapAccumr (mapAccumr_mapAccumr_fold.g f₁ f₂) xs (s₁, s₂)).snd
-                                  ) := by
-      induction xs using Vector.revInductionOn generalizing s₁ s₂
-      case nil =>
-        rfl
-      case snoc xs x ih =>
-        simp[ih]
-
     /-- If nested `mapAccumr` with the same function `f` were folded into one, and `f`
         satisfies a specific property with how it handles its state, then we can simplify
         the expression to only use a single element of the state `σ`, instead of a pair of states
      -/
     @[simp]
     theorem mapAccumr_fold_g_same (f : α → σ → σ × α) (h : ∀ x s, (f (f x s).snd s).fst = (f x s).fst)
-                                : mapAccumr (mapAccumr_mapAccumr_fold.g f f) xs (s, s) = (
+                                : mapAccumr (mapAccumr_mapAccumr.g f f) xs (s, s) = (
                                     let m := mapAccumr (fun x s => f (f x s).snd s) xs s
                                     ((m.fst, m.fst), m.snd)
                                   ) := by

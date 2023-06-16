@@ -116,12 +116,12 @@ namespace Vector
   -/
   section RedundantState
 
-    @[simp]
+    @[aesop safe 10]
     theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
         mapAccumr f xs s = (s, (mapAccumr (fun x _ => ((), (f x s).snd)) xs ()).snd) := by
       induction xs using revInductionOn <;> simp_all
 
-    @[simp]
+    @[aesop safe 10]
     theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
         mapAccumr₂ f xs ys s = (s, (mapAccumr₂ (fun x y _ => ((), (f x y s).snd)) xs ys ()).snd) := by
       induction xs, ys using revInductionOn₂ <;> simp_all
