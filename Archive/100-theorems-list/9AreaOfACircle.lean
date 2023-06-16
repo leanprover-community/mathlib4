@@ -8,10 +8,10 @@ Authors: James Arthur, Benjamin Davidson, Andrew Souther
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Sqrt
-import Mathbin.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
-import Mathbin.MeasureTheory.Integral.FundThmCalculus
-import Mathbin.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
+import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Freek № 9: The Area of a Circle
@@ -86,13 +86,11 @@ theorem measurableSet_disc : MeasurableSet (disc r) := by
 #align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
-theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 :=
-  by
+theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
   let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
   have hf : Continuous f := by continuity
-  suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2
-    by
+  suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : integrable_on f (Ioc (-r) r) := hf.integrable_on_Icc.mono_set Ioc_subset_Icc_self
     calc
       volume (disc r) = volume (regionBetween (fun x => -f x) f (Ioc (-r) r)) := by
@@ -103,16 +101,14 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 :=
       _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by simp [two_mul, integral_of_le]
       _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnreal_eq]
   obtain ⟨hle, heq | hlt⟩ := NNReal.coe_nonneg r, hle.eq_or_lt; · simp [← HEq]
-  have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x :=
-    by
+  have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by
     rintro x ⟨hx1, hx2⟩
     convert
       ((hasDerivAt_const x ((r : ℝ) ^ 2)).mul
             ((has_deriv_at_arcsin _ _).comp x
               ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
         ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
-    · have h : sqrt (1 - x ^ 2 / r ^ 2) * r = sqrt (r ^ 2 - x ^ 2) :=
-        by
+    · have h : sqrt (1 - x ^ 2 / r ^ 2) * r = sqrt (r ^ 2 - x ^ 2) := by
         rw [← sqrt_sq hle, ← sqrt_mul, sub_mul, sqrt_sq hle, mul_comm_div,
           div_self (pow_ne_zero 2 hlt.ne'), one_mul, mul_one]
         simpa [sqrt_sq hle, div_le_one (pow_pos hlt 2)] using sq_le_sq' hx1.le hx2.le
