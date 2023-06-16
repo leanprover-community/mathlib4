@@ -1252,7 +1252,7 @@ theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
   induction' x using RatFunc.induction_on with p q hq
   rw [num_div, denom_div _ hq]
   exact (isCoprime_mul_unit_left
-    ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).IsUnit.inv.map C) _ _).2
+    ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).isUnit.inv.map C) _ _).2
       (isCoprime_div_gcd_div_gcd hq)
 #align ratfunc.is_coprime_num_denom RatFunc.isCoprime_num_denom
 
