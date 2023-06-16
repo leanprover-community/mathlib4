@@ -178,6 +178,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_c_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecCApp_spec
 
 /-- The sheaf hom on all basic opens, commuting with restrictions. -/
+@[simps app]
 def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
       (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪).1 where
@@ -202,11 +203,18 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace
 
--- Porting Note: Needed to increase elaboration depth significantly
-set_option maxHeartbeats 600000 in
+-- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
+-- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
 theorem toΓSpecSheafedSpace_app_eq :
-    X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r :=
-  TopCat.Sheaf.extend_hom_app _ _ _ _ _
+    X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
+  have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
+    ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪)
+    isBasis_basic_opens X.toΓSpecCBasicOpens r
+  dsimp at this
+  rw [←this]
+  dsimp
+  congr
+
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
@@ -275,26 +283,29 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
         f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.1.base).obj (basicOpen r) ⟶ _).op =
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
-  ext1
-  apply Spec.basic_open_hom_ext
-  · intro r _
-    rw [LocallyRingedSpace.comp_val_c_app]
-    erw [to_open_comp_comap_assoc]
-    rw [category.assoc]
-    erw [to_Γ_Spec_SheafedSpace_app_spec, ← X.presheaf.map_comp]
-    convert h r
-  exact w
+  -- Porting note : `ext` did not pick `LocallyRingedSpace.Hom.ext` up
+  refine Hom.ext _ _ ?_
+  -- Porting note : need more hand holding here
+  change (X.toΓSpec.1 ≫ _).base = _ at w
+  apply Spec.basicOpen_hom_ext w
+  intro r U
+  -- Porting note : changed `rw` to `erw`
+  erw [LocallyRingedSpace.comp_val_c_app]
+  erw [toOpen_comp_comap_assoc]
+  rw [Category.assoc]
+  erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
+  convert h r using 1
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_ring_hom_ext AlgebraicGeometry.LocallyRingedSpace.comp_ring_hom_ext
 
 /-- `to_Spec_Γ _` is an isomorphism so these are mutually two-sided inverses. -/
 theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.1.c.app (op ⊤) = 𝟙 _ := by
-  unfold to_Spec_Γ
-  rw [← to_open_res _ (basic_open (1 : Γ.obj (op X))) ⊤ (eq_to_hom basic_open_one.symm)]
-  erw [category.assoc]
-  rw [nat_trans.naturality, ← category.assoc]
-  erw [X.to_Γ_Spec_SheafedSpace_app_spec 1, ← functor.map_comp]
-  convert eq_to_hom_map X.presheaf _; rfl
+  unfold toSpecΓ
+  rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm)]
+  erw [Category.assoc]
+  rw [NatTrans.naturality, ← Category.assoc]
+  erw [X.toΓSpecSheafedSpace_app_spec 1, ← Functor.map_comp]
+  convert eqToHom_map X.presheaf _; rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_Spec_left_triangle AlgebraicGeometry.LocallyRingedSpace.Γ_Spec_left_triangle
 
@@ -307,8 +318,8 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp [Spec.Top_map, LocallyRingedSpace.to_Γ_Spec_fun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalk_map _ x), ←
+      dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
+      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap _ x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalk_map_germ f.1 ⊤ ⟨x, trivial⟩).symm
