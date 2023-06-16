@@ -111,14 +111,6 @@ namespace Vector
                     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x))
                       : C v :=
     revInductionOn v nil fun xs x _ => snoc xs x
-
-
-  @[simp]
-  theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
-    induction xs using Vector.inductionOn
-    . rfl
-    . simp[*]
-
   end Induction
 
 
@@ -128,6 +120,15 @@ namespace Vector
   -/
 
   section Simp
+
+
+  @[simp]
+  theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
+    induction xs using Vector.inductionOn <;> simp_all
+
+  @[simp]
+  theorem map₂_snoc : map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
+    induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
   @[simp]
   theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
@@ -167,9 +168,7 @@ namespace Vector
         = let q := f x y c
           let r := mapAccumr₂ f xs ys q.1
           (r.1, r.2.snoc q.2) := by
-    induction xs, ys using Vector.inductionOn₂
-    . rfl
-    . simp[*]
+    induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
   end Simp
 end Vector
