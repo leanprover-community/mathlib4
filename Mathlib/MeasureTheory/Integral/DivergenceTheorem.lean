@@ -39,8 +39,8 @@ Porting note (Yury Kudryashov): I disabled some of these notations because I fai
 work with Lean 4.
 
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
-* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely `[a ∘
-  Fin.succAbove i, b ∘ Fin.succAbove i]`;
+* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely
+  `[a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]`;
 * `e i` : `i`-th basis vector `Pi.single i 1`;
 * `frontFace i`, `backFace i`: embeddings `ℝⁿ → ℝⁿ⁺¹` corresponding to the front face
   `{x | x i = b i}` and back face `{x | x i = a i}` of the box `[a, b]`, respectively.

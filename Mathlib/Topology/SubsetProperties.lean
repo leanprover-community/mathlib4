@@ -1112,7 +1112,7 @@ instance Prod.locallyCompactSpace (α : Type _) (β : Type _) [TopologicalSpace 
     LocallyCompactSpace (α × β) :=
   have := fun x : α × β => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
   locallyCompactSpace_of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
-#align locally_compact_space.prod Prod.locallyCompactSpace
+#align prod.locally_compact_space Prod.locallyCompactSpace
 
 section Pi
 
@@ -1129,7 +1129,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
     refine' ⟨(Set.univ : Set ι).pi n'', _, subset_trans (fun _ h => _) hsub, isCompact_univ_pi hc⟩
     · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
     · exact fun i _ => hsub' i (h i trivial)⟩
-#align locally_compact_space.pi_finite Pi.locallyCompactSpace_of_finite
+#align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
 
 /-- For spaces that are not Hausdorff. -/
 instance Pi.locallyCompactSpace [∀ i, CompactSpace (π i)] : LocallyCompactSpace (∀ i, π i) :=
@@ -1148,7 +1148,7 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (π i)] : LocallyCompactSpa
         exact hc i
       · rw [if_neg h]
         exact CompactSpace.isCompact_univ⟩
-#align locally_compact_space.pi Pi.locallyCompactSpace
+#align pi.locally_compact_space Pi.locallyCompactSpace
 
 instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace β] :
     LocallyCompactSpace (ι → β) :=
