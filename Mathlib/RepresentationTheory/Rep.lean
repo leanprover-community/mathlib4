@@ -145,18 +145,16 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesColimitsForget.{u} _ _
 
-/- Porting note: linter informs me the LHS simplifies to... itself.
-But fwiw I also can't get simp to use this lemma. -/
-@[simp, nolint simpNF]
+/- Porting note: linter complains `simp` unfolds some types in the LHS, so
+have removed `@[simp]`. -/
 theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_category.braiding_hom_apply Rep.MonoidalCategory.braiding_hom_apply
 
-/- Porting note: linter informs me the LHS simplifies to... itself.
-But fwiw I also can't get simp to use this lemma. -/
-@[simp, nolint simpNF]
+/- Porting note: linter complains `simp` unfolds some types in the LHS, so
+have removed `@[simp]`. -/
 theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
   rfl
@@ -376,11 +374,10 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_obj_ρ_apply Rep.ihom_obj_ρ_apply
 
-/- Porting note: the linter simplifies some of the LHSs of the `simps` lemmas to themselves. -/
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-@[simps] def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
+def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
@@ -408,7 +405,21 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv Rep.homEquiv
 
-attribute [nolint simpNF] Rep.homEquiv_apply_hom Rep.homEquiv_symm_apply_hom
+variable {A B C}
+
+/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
+simplify. -/
+theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
+  (homEquiv A B C f).hom = (TensorProduct.curry f.hom).flip := rfl
+set_option linter.uppercaseLean3 false in
+#align Rep.hom_equiv_apply_hom Rep.homEquiv_apply_hom
+
+/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
+simplify. -/
+theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
+  ((homEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip := rfl
+set_option linter.uppercaseLean3 false in
+#align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
 instance : MonoidalClosed (Rep k G) where
   closed := fun A =>
@@ -448,6 +459,8 @@ set_option maxHeartbeats 230000 in
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_coev_app_hom Rep.ihom_coev_app_hom
+
+variable (A B C)
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
