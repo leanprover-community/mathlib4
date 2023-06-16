@@ -143,7 +143,7 @@ Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2
 The same result for the case of a finite type `ι` is implemented in
 `LipschitzOnWith.extend_pi`.
 -/
-theorem LipschitzOnWith.extend_linf [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
+theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
     {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
   have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
