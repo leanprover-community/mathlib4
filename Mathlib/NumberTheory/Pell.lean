@@ -664,6 +664,8 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
 theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 0 < a.x)
     (hay : 0 ≤ a.y) : ∃ n : ℕ, a = a₁ ^ n := by
   lift a.x to ℕ using hax.le with ax hax'
+  -- Porting note: added
+  clear hax
   induction' ax using Nat.strong_induction_on with x ih generalizing a
   cases' hay.eq_or_lt with hy hy
   · -- case 1: `a = 1`
@@ -683,7 +685,8 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     have hxx₂ := h.mul_inv_x_lt_x hx₁ hy
     have hyy := h.mul_inv_y_nonneg hx₁ hy
     lift (a * a₁⁻¹).x to ℕ using hxx₁.le with x' hx'
-    obtain ⟨n, hn⟩ := ih x' (by exact_mod_cast hxx₂.trans_eq hax'.symm) hxx₁ hyy hx'
+    -- Porting note: `ih` has its arguments in a different order compared to lean 3.
+    obtain ⟨n, hn⟩ := ih x' (by exact_mod_cast hxx₂.trans_eq hax'.symm) hyy hx' hxx₁
     exact ⟨n + 1, by rw [pow_succ, ← hn, mul_comm a, ← mul_assoc, mul_inv_self, one_mul]⟩
 #align pell.is_fundamental.eq_pow_of_nonneg Pell.IsFundamental.eq_pow_of_nonneg
 
@@ -710,7 +713,7 @@ open Solution₁ IsFundamental
 theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃! a₁ : Solution₁ d,
       1 < a₁.x ∧ 0 < a₁.y ∧ ∀ a : Solution₁ d, ∃ n : ℤ, a = a₁ ^ n ∨ a = -a₁ ^ n := by
-  obtain ⟨a₁, ha₁⟩ := is_fundamental.exists_of_not_is_square h₀ hd
+  obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd
   refine' ⟨a₁, ⟨ha₁.1, ha₁.2.1, ha₁.eq_zpow_or_neg_zpow⟩, fun a (H : 1 < _ ∧ _) => _⟩
   obtain ⟨Hx, Hy, H⟩ := H
   obtain ⟨n₁, hn₁⟩ := H a₁
@@ -718,8 +721,8 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
   rcases hn₂ with (rfl | rfl)
   · rw [← zpow_mul, eq_comm, @eq_comm _ a₁, ← mul_inv_eq_one, ← @mul_inv_eq_one _ _ _ a₁, ←
       zpow_neg_one, neg_mul, ← zpow_add, ← sub_eq_add_neg] at hn₁
-    cases hn₁
-    · rcases Int.is_unit_iff.mp
+    cases' hn₁ with hn₁ hn₁
+    · rcases Int.isUnit_iff.mp
           (isUnit_of_mul_eq_one _ _ <|
             sub_eq_zero.mp <| (ha₁.zpow_eq_one_iff (n₂ * n₁ - 1)).mp hn₁) with
         (rfl | rfl)
@@ -740,8 +743,8 @@ theorem pos_generator_iff_fundamental (a : Solution₁ d) :
   refine' ⟨fun h => _, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
   have h₀ := d_pos_of_one_lt_x h.1
   have hd := d_nonsquare_of_one_lt_x h.1
-  obtain ⟨a₁, ha₁⟩ := is_fundamental.exists_of_not_is_square h₀ hd
-  obtain ⟨b, hb₁, hb₂⟩ := exists_unique_pos_generator h₀ hd
+  obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd
+  obtain ⟨b, -, hb₂⟩ := existsUnique_pos_generator h₀ hd
   rwa [hb₂ a h, ← hb₂ a₁ ⟨ha₁.1, ha₁.2.1, ha₁.eq_zpow_or_neg_zpow⟩]
 #align pell.pos_generator_iff_fundamental Pell.pos_generator_iff_fundamental
 
