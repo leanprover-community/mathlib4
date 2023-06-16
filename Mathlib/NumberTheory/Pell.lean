@@ -23,7 +23,7 @@ In this file, we aim at providing all of the essential theory of Pell's Equation
 (as opposed to the contents of `number_theory.pell_matiyasevic`, which is specific to the case
 $d = a^2 - 1$ for some $a > 1$).
 
-We begin by defining a type `pell.solution₁ d` for solutions of the equation,
+We begin by defining a type `Pell.Solution₁ d` for solutions of the equation,
 show that it has a natural structure as an abelian group, and prove some basic
 properties.
 
@@ -32,14 +32,14 @@ We then prove the following
 **Theorem.** Let $d$ be a positive integer that is not a square. Then the equation
 $x^2 - d y^2 = 1$ has a nontrivial (i.e., with $y \ne 0$) solution in integers.
 
-See `pell.exists_of_not_is_square` and `pell.solution₁.exists_nontrivial_of_not_is_square`.
+See `Pell.exists_of_not_isSquare` and `Pell.Solution₁.exists_nontrivial_of_not_isSquare`.
 
 We then define the *fundamental solution* to be the solution
 with smallest $x$ among all solutions satisfying $x > 1$ and $y > 0$.
 We show that every solution is a power (in the sense of the group structure mentioned above)
 of the fundamental solution up to a (common) sign,
-see `pell.is_fundamental.eq_zpow_or_neg_zpow`, and that a (positive) solution has this property
-if and only if it is fundamental, see `pell.pos_generator_iff_fundamental`.
+see `Pell.IsFundamental.eq_zpow_or_neg_zpow`, and that a (positive) solution has this property
+if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
@@ -65,15 +65,15 @@ namespace Pell
 We define a structure of a commutative multiplicative group with distributive negation
 on the set of all solutions to the Pell equation `x^2 - d*y^2 = 1`.
 
-The type of such solutions is `pell.solution₁ d`. It corresponds to a pair of integers `x` and `y`
+The type of such solutions is `Pell.Solution₁ d`. It corresponds to a pair of integers `x` and `y`
 and a proof that `(x, y)` is indeed a solution.
 
 The multiplication is given by `(x, y) * (x', y') = (x*y' + d*y*y', x*y' + y*x')`.
 This is obtained by mapping `(x, y)` to `x + y*√d` and multiplying the results.
-In fact, we define `pell.solution₁ d` to be `↥(unitary (ℤ√d))` and transport
+In fact, we define `Pell.Solution₁ d` to be `↥(unitary (ℤ√d))` and transport
 the "commutative group with distributive negation" structure from `↥(unitary (ℤ√d))`.
 
-We then set up an API for `pell.solution₁ d`.
+We then set up an API for `Pell.Solution₁ d`.
 -/
 
 
@@ -82,7 +82,7 @@ open Zsqrtd
 /-- An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
 it is contained in the submonoid of unitary elements.
 
-TODO: merge this result with `pell.is_pell_iff_mem_unitary`. -/
+TODO: merge this result with `Pell.isPell_iff_mem_unitary`. -/
 theorem is_pell_solution_iff_mem_unitary {d : ℤ} {a : ℤ√d} :
     a.re ^ 2 - d * a.im ^ 2 = 1 ↔ a ∈ unitary (ℤ√d) := by
   rw [← norm_eq_one_iff_mem_unitary, norm_def, sq, sq, ← mul_assoc]
@@ -90,7 +90,7 @@ theorem is_pell_solution_iff_mem_unitary {d : ℤ} {a : ℤ√d} :
 
 -- We use `solution₁ d` to allow for a more general structure `solution d m` that
 -- encodes solutions to `x^2 - d*y^2 = m` to be added later.
-/-- `pell.solution₁ d` is the type of solutions to the Pell equation `x^2 - d*y^2 = 1`.
+/-- `Pell.Solution₁ d` is the type of solutions to the Pell equation `x^2 - d*y^2 = 1`.
 We define this in terms of elements of `ℤ√d` of norm one.
 -/
 def Solution₁ (d : ℤ) : Type :=
