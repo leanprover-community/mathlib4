@@ -4,3 +4,4 @@ import Counterexamples.DirectSumIsInternal
 import Counterexamples.Girard
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.QuadraticForm
+import Counterexamples.SeminormLatticeNotDistrib
