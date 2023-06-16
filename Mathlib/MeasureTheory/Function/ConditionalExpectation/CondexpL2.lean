@@ -86,7 +86,8 @@ theorem aeStronglyMeasurable'_condexpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
 
 theorem integrableOn_condexpL2_of_measure_ne_top (hm : m ≤ m0) (hμs : μ s ≠ ∞) (f : α →₂[μ] E) :
     IntegrableOn (E := E) (condexpL2 E 𝕜 hm f) s μ :=
-  integrableOn_Lp_of_measure_ne_top (condexpL2 E 𝕜 hm f : α →₂[μ] E) fact_one_le_two_ennreal.elim hμs
+  integrableOn_Lp_of_measure_ne_top (condexpL2 E 𝕜 hm f : α →₂[μ] E) fact_one_le_two_ennreal.elim
+    hμs
 #align measure_theory.integrable_on_condexp_L2_of_measure_ne_top MeasureTheory.integrableOn_condexpL2_of_measure_ne_top
 
 theorem integrable_condexpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure μ] {f : α →₂[μ] E} :
@@ -210,7 +211,7 @@ theorem lintegral_nnnorm_condexpL2_indicator_le_real (hs : MeasurableSet s) (hμ
   refine' (lintegral_nnnorm_condexpL2_le ht hμt _).trans (le_of_eq _)
   have h_eq :
     ∫⁻ x in t, ‖(indicatorConstLp 2 hs hμs (1 : ℝ)) x‖₊ ∂μ =
-      ∫⁻ x in t, s.indicator (fun x => (1 : ℝ≥0∞)) x ∂μ := by
+      ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
     refine' lintegral_congr_ae (ae_restrict_of_ae _)
     refine' (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => _
     dsimp only
@@ -498,7 +499,7 @@ theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
   refine' EventuallyLE.trans_eq _ h.ae_eq_mk.symm
   refine' @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ _
   refine' ae_nonneg_of_forall_set_integral_nonneg_of_sigmaFinite _ _
-  · intro t ht hμt
+  · rintro t - -
     refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
     refine' Integrable.trim hm _ _
     · rw [integrable_congr h.ae_eq_mk.symm]
