@@ -576,16 +576,11 @@ section
 
 variable (R)
 
--- this needs to go elsewhere, or rather just generalize `Set.neg_mem_center`
-@[simp]
-theorem _root_.Set.neg_mem_center' {R : Type _} [NonUnitalNonAssocRing R] {a : R} (ha : a ∈ Set.center R) :
-    -a ∈ Set.center R := fun c => by rw [← neg_mul_comm, ha (-c), neg_mul_comm]
-
 /-- The center of a ring `R` is the set of elements that commute with everything in `R` -/
 def center : NonUnitalSubring R :=
   { NonUnitalSubsemiring.center R with
     carrier := Set.center R
-    neg_mem' := Set.neg_mem_center' }
+    neg_mem' := Set.neg_mem_center }
 
 theorem coe_center : ↑(center R) = Set.center R :=
   rfl
