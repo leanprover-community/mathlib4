@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 leanprover/lean4:nightly-2023-07-30
 =======
 semorrison/lean4:fix_2273
 >>>>>>> f6fc22f1b (feat: first draft of a functoriality tactic)
+=======
+semorrison/lean4:fix-2273-release
+>>>>>>> a33f9bf7c (.)
