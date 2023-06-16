@@ -8,7 +8,7 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic polynomials and `expand`.
@@ -39,8 +39,7 @@ namespace Polynomial
 @[simp]
 theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv : ¬p ∣ n)
     (R : Type _) [CommRing R] :
-    expand R p (cyclotomic n R) = cyclotomic (n * p) R * cyclotomic n R :=
-  by
+    expand R p (cyclotomic n R) = cyclotomic (n * p) R * cyclotomic n R := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · simp
   haveI := NeZero.of_pos hnpos
@@ -84,8 +83,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
 @[simp]
 theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p ∣ n) (R : Type _)
-    [CommRing R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R :=
-  by
+    [CommRing R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R := by
   rcases n.eq_zero_or_pos with (rfl | hzero)
   · simp
   haveI := NeZero.of_pos hzero
@@ -110,8 +108,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
 /-- If the `p ^ n`th cyclotomic polynomial is irreducible, so is the `p ^ m`th, for `m ≤ n`. -/
 theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
     [IsDomain R] {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (p ^ n) R)) :
-    Irreducible (cyclotomic (p ^ m) R) :=
-  by
+    Irreducible (cyclotomic (p ^ m) R) := by
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simpa using irreducible_X_sub_C (1 : R)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
@@ -134,8 +131,7 @@ section CharP
 /-- If `R` is of characteristic `p` and `¬p ∣ n`, then
 `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`. -/
 theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type _) {p n : ℕ} [hp : Fact (Nat.Prime p)]
-    [Ring R] [CharP R p] (hn : ¬p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ (p - 1) :=
-  by
+    [Ring R] [CharP R p] (hn : ¬p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ (p - 1) := by
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ (p - 1) by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
@@ -149,8 +145,7 @@ theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type _) {p n : ℕ} [hp : Fa
 /-- If `R` is of characteristic `p` and `p ∣ n`, then
 `cyclotomic (n * p) R = (cyclotomic n R) ^ p`. -/
 theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type _) {p n : ℕ} [hp : Fact (Nat.Prime p)] [Ring R]
-    [CharP R p] (hn : p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ p :=
-  by
+    [CharP R p] (hn : p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ p := by
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ p by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
@@ -164,8 +159,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type _) {p m : ℕ} [Fact (Nat.Prime p)
     (hm : ¬p ∣ m) : ∀ {k}, 0 < k → cyclotomic (p ^ k * m) R = cyclotomic m R ^ (p ^ k - p ^ (k - 1))
   | 1, _ => by
     rw [pow_one, Nat.sub_self, pow_zero, mul_comm, cyclotomic_mul_prime_eq_pow_of_not_dvd R hm]
-  | a + 2, _ =>
-    by
+  | a + 2, _ => by
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ]⟩
     rw [pow_succ, mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq a.succ_pos, ← pow_mul]
@@ -178,8 +172,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type _) {p m : ℕ} [Fact (Nat.Prime p)
  if and only if it is a primitive `m`-th root of unity. -/
 theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type _} [CommRing R]
     [IsDomain R] [hp : Fact (Nat.Prime p)] [hchar : CharP R p] {μ : R} [NeZero (m : R)] :
-    (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m :=
-  by
+    (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m := by
   rcases k.eq_zero_or_pos with (rfl | hk)
   · rw [pow_zero, one_mul, is_root_cyclotomic_iff]
   refine' ⟨fun h => _, fun h => _⟩
