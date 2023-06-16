@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Internal.FunctorCategory
-import Mathbin.CategoryTheory.Monoidal.Limits
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Limits of monoid objects.
@@ -70,8 +70,7 @@ def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 -/
 @[simps]
-def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F)
-    where
+def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
     { Hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
       mul_hom' := by
