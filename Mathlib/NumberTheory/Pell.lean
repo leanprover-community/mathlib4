@@ -544,8 +544,8 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
 
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
 solution `a` is stritcly increasing. -/
-theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) : StrictMono fun n : ℤ => (a ^ n).y :=
-  by
+theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
+    StrictMono fun n : ℤ => (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by
     intro n hn
     rw [← sub_pos, zpow_add, zpow_one, y_mul, add_sub_assoc]
