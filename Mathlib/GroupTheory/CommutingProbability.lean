@@ -19,6 +19,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Qify
 import Mathlib.Util.PiNotation
+import Mathlib.FieldTheory.Normal
 
 /-!
 # Commuting Probability
@@ -387,3 +388,62 @@ lemma mylem3 (A : Set G) (hA1 : 1 ∈ A) (hA2 : A⁻¹ = A) (k : ℕ) (g : G)
 #check Set.Finite
 
 end CommutingProbability
+
+instance compositum_normal {F E : Type _} [Field F] [Field E] [Algebra F E]
+    (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+    Normal F (K ⊔ L : IntermediateField F E) := by
+  let ϕ : Bool → IntermediateField F E := Bool.rec L K
+  have : ∀ i, Normal F (↥(ϕ i : IntermediateField F E)) :=
+    fun i => match i with
+    | true => inferInstance
+    | false => inferInstance
+  have h := IntermediateField.normal_iSup F E ϕ
+  rwa [iSup_bool_eq] at h
+
+open FiniteDimensional
+
+lemma finrank_eq_zero_of_not_finiteDimensional {F E : Type _} [Field F] [Field E] [Algebra F E]
+  (h : ¬ FiniteDimensional F E) : finrank F E = 0 := by
+  apply finrank_eq_zero_of_not_exists_basis_finite
+  rintro ⟨s, b, hs⟩
+  apply h
+  exact FiniteDimensional.of_finite_basis b hs
+
+lemma degree_compositum_normal_aux {F E : Type _} [Field F] [Field E] [Algebra F E]
+    (K L : IntermediateField F E) [Normal F K] :
+    finrank F (K ⊔ L : IntermediateField F E) ∣ finrank F K * finrank F L := by
+  by_cases hK : FiniteDimensional F K; swap
+  . rw [finrank_eq_zero_of_not_finiteDimensional hK, zero_mul]
+    apply dvd_zero
+  by_cases hL : FiniteDimensional F L; swap
+  . rw [finrank_eq_zero_of_not_finiteDimensional hL, mul_zero]
+    apply dvd_zero
+  obtain ⟨p, hp⟩ := Normal.exists_isSplittingField F K
+  let _ : Algebra L (K ⊔ L : IntermediateField F E) :=
+    RingHom.toAlgebra (IntermediateField.inclusion (show L ≤ K ⊔ L from le_sup_right))
+  have : Polynomial.IsSplittingField L (K ⊔ L : IntermediateField F E) (p.map (algebraMap F L))
+  . sorry
+
+lemma degree_compositum_normal {F E : Type _} [Field F] [Field E] [Algebra F E]
+    (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+    finrank F (K ⊔ L : IntermediateField F E) ∣ finrank F K * finrank F L := by
+  by_cases hK : FiniteDimensional F K; swap
+  . rw [finrank_eq_zero_of_not_finiteDimensional hK, zero_mul]
+    apply dvd_zero
+  by_cases hL : FiniteDimensional F L; swap
+  . rw [finrank_eq_zero_of_not_finiteDimensional hL, mul_zero]
+    apply dvd_zero
+  obtain ⟨p, hp⟩ := Normal.exists_isSplittingField F K
+  obtain ⟨q, hq⟩ := Normal.exists_isSplittingField F L
+  have : Polynomial.IsSplittingField F (K ⊔ L : IntermediateField F E) (p * q)
+  . sorry
+
+  -- have := Normal.of_isSplittingField
+
+-- ⨁ R i
+-- P is a (prime) ideal of ⨁ R i
+-- P ≃ ⨁ P i (isomorphism of (⨁ R i)-modules)
+-- (⨁ R i) / P ≃ ⨁ (R i / P i) (isomorphism of (⨁ R i)-algebras)
+
+-- (𝒩 : ∀ i, AddSubgroup (𝓜 i))
+-- (N : Submodule (⨁ 𝒜 i)) ≃
