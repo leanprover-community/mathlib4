@@ -194,8 +194,8 @@ noncomputable def IicSnd (r : ℝ) : Measure α :=
   (ρ.restrict (univ ×ˢ Iic r)).fst
 #align measure_theory.measure.Iic_snd MeasureTheory.Measure.IicSnd
 
-theorem IicSnd_apply (r : ℝ) {s : Set α} (hs : MeasurableSet s) : ρ.IicSnd r s = ρ (s ×ˢ Iic r) :=
-  by
+theorem IicSnd_apply (r : ℝ) {s : Set α} (hs : MeasurableSet s) :
+    ρ.IicSnd r s = ρ (s ×ˢ Iic r) := by
   rw [IicSnd, fst_apply hs,
     restrict_apply' (MeasurableSet.univ.prod (measurableSet_Iic : MeasurableSet (Iic r))), ←
     prod_univ, prod_inter_prod, inter_univ, univ_inter]
@@ -815,8 +815,8 @@ theorem condCdf_le_one (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) : condCdf �
 #align probability_theory.cond_cdf_le_one ProbabilityTheory.condCdf_le_one
 
 /-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
-theorem tendsto_condCdf_atBot (ρ : Measure (α × ℝ)) (a : α) : Tendsto (condCdf ρ a) atBot (𝓝 0) :=
-  by
+theorem tendsto_condCdf_atBot (ρ : Measure (α × ℝ)) (a : α) :
+    Tendsto (condCdf ρ a) atBot (𝓝 0) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x < q ∧ ↑q < x + 1 := fun x => exists_rat_btwn (lt_add_one x)
   let qs : ℝ → ℚ := fun x => (h_exists x).choose
   have hqs_tendsto : Tendsto qs atBot atBot := by
@@ -834,8 +834,8 @@ theorem tendsto_condCdf_atBot (ρ : Measure (α × ℝ)) (a : α) : Tendsto (con
 #align probability_theory.tendsto_cond_cdf_at_bot ProbabilityTheory.tendsto_condCdf_atBot
 
 /-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
-theorem tendsto_condCdf_atTop (ρ : Measure (α × ℝ)) (a : α) : Tendsto (condCdf ρ a) atTop (𝓝 1) :=
-  by
+theorem tendsto_condCdf_atTop (ρ : Measure (α × ℝ)) (a : α) :
+    Tendsto (condCdf ρ a) atTop (𝓝 1) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x - 1 < q ∧ ↑q < x := fun x => exists_rat_btwn (sub_one_lt x)
   let qs : ℝ → ℚ := fun x => (h_exists x).choose
   have hqs_tendsto : Tendsto qs atTop atTop := by
