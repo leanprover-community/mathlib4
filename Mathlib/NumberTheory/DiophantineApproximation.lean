@@ -233,7 +233,8 @@ open Set
 
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
-theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ} (h : |ξ - q| < 1 / (q.den : ℚ) ^ 2) :
+theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
+    (h : |ξ - q| < 1 / (q.den : ℚ) ^ 2) :
     q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.den := Nat.cast_pos.mpr q.pos
   replace h : |ξ * q.den - q.num| < 1 / q.den
