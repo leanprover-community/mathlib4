@@ -34,7 +34,7 @@ It involves making the substitution
 
 open Real
 
-namespace imo2006_q3
+namespace Imo2006Q3
 
 /-- Replacing `x` and `y` with their average increases the left side. -/
 theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
@@ -88,12 +88,12 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
   le_of_pow_le_pow _ (mul_nonneg (sqrt_nonneg _) (sq_nonneg _)) Nat.succ_pos' <|
     calc
       (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
-        rw [mul_pow, sq_abs, hz] <;> ring
+        rw [mul_pow, sq_abs, hz]; ring
       _ ≤ 32 * ((2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4) :=
         (mul_le_mul_of_nonneg_left this zero_lt_32.le)
       _ = (sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
-        rw [mul_pow, sq_sqrt zero_le_two, hz, ← pow_mul, ← mul_add, mul_pow, ← mul_comm_div, ←
-          mul_assoc, show 32 / 4 ^ 4 * 2 ^ 4 = (2 : ℝ) by norm_num, show 2 * 2 = 4 by rfl]
+        rw [mul_pow, sq_sqrt zero_le_two, hz, ← pow_mul, ← mul_add, mul_pow, ← mul_comm_div,
+          ← mul_assoc, show 32 / 4 ^ 4 * 2 ^ 4 = (2 : ℝ) by norm_num, show 2 * 2 = 4 by rfl]
 #align imo2006_q3.subst_wlog Imo2006Q3.subst_wlog
 
 /-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
@@ -127,10 +127,9 @@ theorem proof₁ {a b c : ℝ} :
 #align imo2006_q3.proof₁ Imo2006Q3.proof₁
 
 theorem proof₂ (M : ℝ)
-    (h :
-      ∀ a b c : ℝ,
-        |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
-          M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
+    (h : ∀ a b c : ℝ,
+      |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
+        M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
     9 * sqrt 2 / 32 ≤ M := by
   have h₁ :
     ∀ x : ℝ,
@@ -140,15 +139,15 @@ theorem proof₂ (M : ℝ)
     by intro; ring
   have h₂ : ∀ x : ℝ, (2 - 3 * x) ^ 2 + 2 ^ 2 + (2 + 3 * x) ^ 2 = 18 * x ^ 2 + 12 := by intro; ring
   have := h (2 - 3 * sqrt 2) 2 (2 + 3 * sqrt 2)
-  rw [lhs_identity, h₁, h₂, sq_sqrt zero_le_two, abs_neg, abs_eq_self.mpr, ← div_le_iff] at this 
+  rw [lhs_identity, h₁, h₂, sq_sqrt zero_le_two, abs_neg, abs_eq_self.mpr, ← div_le_iff] at this
   · convert this using 1; ring
   · apply pow_pos; norm_num
   · exact mul_nonneg (mul_nonneg (sq_nonneg _) zero_le_two) (sqrt_nonneg _)
 #align imo2006_q3.proof₂ Imo2006Q3.proof₂
 
-end imo2006_q3
+end Imo2006Q3
 
-open imo2006_q3
+open Imo2006Q3
 
 theorem imo2006_q3 (M : ℝ) :
     (∀ a b c : ℝ,
@@ -157,4 +156,3 @@ theorem imo2006_q3 (M : ℝ) :
       9 * sqrt 2 / 32 ≤ M :=
   ⟨proof₂ M, fun h _ _ _ => le_trans proof₁ <| mul_le_mul_of_nonneg_right h <| sq_nonneg _⟩
 #align imo2006_q3 imo2006_q3
-
