@@ -2421,6 +2421,7 @@ import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
+import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.ProbabilityMassFunction.Basic
