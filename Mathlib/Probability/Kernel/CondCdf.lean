@@ -500,21 +500,21 @@ theorem tendsto_preCdf_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
       exact measure_ne_top _ _
   have h_lintegral' : Tendsto (fun r => ∫⁻ a, preCdf ρ (-r) a ∂ρ.fst) atTop (𝓝 0) := by
     have h_lintegral_eq :
-      (fun r => ∫⁻ a, preCdf ρ (-r) a ∂ρ.fst) = fun r => ρ (univ ×ˢ Iic (-r)) := by
+      (fun r => ∫⁻ a, preCdf ρ (-r) a ∂ρ.fst) = fun r : ℚ => ρ (univ ×ˢ Iic (-r : ℝ)) := by
       ext1 n
       rw [← set_lintegral_univ, set_lintegral_preCdf_fst ρ _ MeasurableSet.univ,
-        measure.Iic_snd_univ]
+        Measure.IicSnd_univ]
       norm_cast
     rw [h_lintegral_eq]
-    have h_zero_eq_measure_Inter : (0 : ℝ≥0∞) = ρ (⋂ r : ℚ, univ ×ˢ Iic (-r)) := by
-      suffices (⋂ r : ℚ, Iic (-(r : ℝ))) = ∅ by rwa [← prod_iInter, this, prod_empty, measure_empty]
+    have h_zero_eq_measure_iInter : (0 : ℝ≥0∞) = ρ (⋂ r : ℚ, univ ×ˢ Iic (-r : ℝ)) := by
+      suffices (⋂ r : ℚ, Iic (-(r : ℝ))) = ∅ by rw [← prod_iInter, this, prod_empty, measure_empty]
       ext1 x
       simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
       simp_rw [neg_lt]
       exact exists_rat_gt _
-    rw [h_zero_eq_measure_Inter]
+    rw [h_zero_eq_measure_iInter]
     refine'
-      tendsto_measure_Inter (fun n => measurable_set.univ.prod measurableSet_Iic)
+      tendsto_measure_iInter (fun n => MeasurableSet.univ.prod measurableSet_Iic)
         (fun i j hij x => _) ⟨0, measure_ne_top ρ _⟩
     simp only [mem_prod, mem_univ, mem_Iic, true_and_iff]
     refine' fun hxj => hxj.trans (neg_le_neg _)
