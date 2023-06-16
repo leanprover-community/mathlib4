@@ -19,21 +19,21 @@ In this file we define Galois extensions as extensions which are both separable 
 
 ## Main definitions
 
-- `is_galois F E` where `E` is an extension of `F`
-- `fixed_field H` where `H : subgroup (E ≃ₐ[F] E)`
-- `fixing_subgroup K` where `K : intermediate_field F E`
-- `galois_correspondence` where `E/F` is finite dimensional and Galois
+- `IsGalois F E` where `E` is an extension of `F`
+- `FixedField H` where `H : subgroup (E ≃ₐ[F] E)`
+- `FixingSubgroup K` where `K : IntermediateField F E`
+- `intermediateFieldEquivSubgroup` where `E/F` is finite dimensional and Galois
 
 ## Main results
 
-- `intermediate_field.fixing_subgroup_fixed_field` : If `E/F` is finite dimensional (but not
-  necessarily Galois) then `fixing_subgroup (fixed_field H) = H`
-- `intermediate_field.fixed_field_fixing_subgroup`: If `E/F` is finite dimensional and Galois
-  then `fixed_field (fixing_subgroup K) = K`
+- `IntermediateField.fixingSubgroup_fixedField` : If `E/F` is finite dimensional (but not
+  necessarily Galois) then `FixingSubgroup (FixedField H) = H`
+- `IntermediateField.fixedField_fixingSubgroup`: If `E/F` is finite dimensional and Galois
+  then `FixedField (FixingSubgroup K) = K`
 
 Together, these two results prove the Galois correspondence.
 
-- `is_galois.tfae` : Equivalent characterizations of a Galois extension of finite degree
+- `IsGalois.tFAE` : Equivalent characterizations of a Galois extension of finite degree
 -/
 
 
@@ -196,7 +196,7 @@ def FixedPoints.intermediateField (M : Type _) [Monoid M] [MulSemiringAction M E
 
 namespace IntermediateField
 
-/-- The intermediate_field fixed by a subgroup -/
+/-- The intermediate field fixed by a subgroup -/
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 #align intermediate_field.fixed_field IntermediateField.fixedField
@@ -215,7 +215,7 @@ theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 #align intermediate_field.le_iff_le IntermediateField.le_iff_le
 
-/-- The fixing_subgroup of `K : intermediate_field F E` is isomorphic to `E ≃ₐ[K] E` -/
+/-- The fixingSubgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := ⟨ϕ, ϕ.1.map_mul, ϕ.1.map_add, fun x => ϕ.2 x⟩ -- porting note: used ⟨...⟩ notation
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
@@ -297,7 +297,7 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     rfl
 #align is_galois.intermediate_field_equiv_subgroup IsGalois.intermediateFieldEquivSubgroup
 
-/-- The Galois correspondence as a galois_insertion -/
+/-- The Galois correspondence as a GaloisInsertion -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
     GaloisInsertion
       (OrderDual.toDual ∘
@@ -310,7 +310,7 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
   choice_eq _ _ := rfl
 #align is_galois.galois_insertion_intermediate_field_subgroup IsGalois.galoisInsertionIntermediateFieldSubgroup
 
-/-- The Galois correspondence as a galois_coinsertion -/
+/-- The Galois correspondence as a GaloisCoinsertion -/
 def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois F E] :
     GaloisCoinsertion
       (OrderDual.toDual ∘
