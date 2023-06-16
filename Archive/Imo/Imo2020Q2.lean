@@ -8,7 +8,7 @@ Authors: Joseph Myers, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.MeanInequalities
+import Mathlib.Analysis.MeanInequalities
 
 /-!
 # IMO 2020 Q2
@@ -27,8 +27,7 @@ the official solutions.
 open Real
 
 theorem imo2020_q2 (a b c d : ℝ) (hd0 : 0 < d) (hdc : d ≤ c) (hcb : c ≤ b) (hba : b ≤ a)
-    (h1 : a + b + c + d = 1) : (a + 2 * b + 3 * c + 4 * d) * a ^ a * b ^ b * c ^ c * d ^ d < 1 :=
-  by
+    (h1 : a + b + c + d = 1) : (a + 2 * b + 3 * c + 4 * d) * a ^ a * b ^ b * c ^ c * d ^ d < 1 := by
   have hp : a ^ a * b ^ b * c ^ c * d ^ d ≤ a * a + b * b + c * c + d * d := by
     refine' geom_mean_le_arith_mean4_weighted _ _ _ _ _ _ _ _ h1 <;> linarith
   calc
@@ -45,8 +44,7 @@ theorem imo2020_q2 (a b c d : ℝ) (hd0 : 0 < d) (hdc : d ≤ c) (hcb : c ≤ b)
     _ ≤
         (a + 3 * b + 3 * c + 3 * d) * (a * a) + (3 * a + b + 3 * c + 3 * d) * (b * b) +
             (3 * a + 3 * b + c + 3 * d) * (c * c) +
-          (3 * a + 3 * b + 3 * c + d) * (d * d) :=
-      by
+          (3 * a + 3 * b + 3 * c + d) * (d * d) := by
       apply_rules [add_le_add] <;> refine' mul_le_mul_of_nonneg_right _ (mul_self_nonneg _) <;>
         linarith
     _ <
