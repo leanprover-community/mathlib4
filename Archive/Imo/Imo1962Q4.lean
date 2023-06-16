@@ -19,12 +19,13 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Real
 
 open scoped Real
 
-namespace imo1962_q4
+namespace Imo1962Q4
 
 noncomputable section
 
@@ -46,17 +47,17 @@ def altFormula (x : ℝ) : ℝ :=
 
 theorem cos_sum_equiv {x : ℝ} :
     (cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 - 1) / 4 = altFormula x := by
-  simp only [Real.cos_two_mul, cos_three_mul, alt_formula]
+  simp only [Real.cos_two_mul, cos_three_mul, altFormula]
   ring
 #align imo1962_q4.cos_sum_equiv Imo1962Q4.cos_sum_equiv
 
 theorem alt_equiv {x : ℝ} : ProblemEquation x ↔ altFormula x = 0 := by
-  rw [problem_equation, ← cos_sum_equiv, div_eq_zero_iff, sub_eq_zero]
+  rw [ProblemEquation, ← cos_sum_equiv, div_eq_zero_iff, sub_eq_zero]
   norm_num
 #align imo1962_q4.alt_equiv Imo1962Q4.alt_equiv
 
 theorem finding_zeros {x : ℝ} : altFormula x = 0 ↔ cos x ^ 2 = 1 / 2 ∨ cos (3 * x) = 0 := by
-  simp only [alt_formula, mul_assoc, mul_eq_zero, sub_eq_zero]
+  simp only [altFormula, mul_assoc, mul_eq_zero, sub_eq_zero]
   constructor
   · rintro (h1 | h2)
     · right
@@ -86,19 +87,21 @@ theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k
   constructor <;> intro <;> linarith
 #align imo1962_q4.solve_cos3x_0 Imo1962Q4.solve_cos3x_0
 
-end imo1962_q4
+end
 
-open imo1962_q4
+end Imo1962Q4
+
+open Imo1962Q4
 
 /-
 The final theorem is now just gluing together our lemmas.
 -/
 theorem imo1962_q4 {x : ℝ} : ProblemEquation x ↔ x ∈ solutionSet := by
   rw [alt_equiv, finding_zeros, solve_cos3x_0, solve_cos2_half]
-  exact exists_or_distrib.symm
+  exact exists_or.symm
 #align imo1962_q4 imo1962_q4
 
-namespace imo1962_q4
+namespace Imo1962Q4
 
 /-
 We now present a second solution.  The key to this solution is that, when the identity is
@@ -108,18 +111,17 @@ terms, `a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3)`, being equal to zero.
 /-- Someday, when there is a Grobner basis tactic, try to automate this proof. (A little tricky --
 the ideals are not the same but their Jacobson radicals are.) -/
 theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
-    a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 = 1 ↔
-      (2 * a ^ 2 - 1) * (4 * a ^ 3 - 3 * a) = 0 :=
+    a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
+      ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 :=
   calc
     a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 = 1 ↔
-        a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 - 1 = 0 :=
-      by rw [← sub_eq_zero]
+        a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 - 1 = 0 := by rw [← sub_eq_zero]
     _ ↔ 2 * a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3) = 0 := by
-      constructor <;> intro h <;> convert h <;> ring
-    _ ↔ a * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3) = 0 := by simp [(by norm_num : (2 : R) ≠ 0)]
-    _ ↔ (2 * a ^ 2 - 1) * (4 * a ^ 3 - 3 * a) = 0 := by
       constructor <;> intro h <;> convert h using 1 <;> ring
-#align imo1962_q4.formula imo1962_q4.formula
+    _ ↔ a * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3) = 0 := by simp
+    _ ↔ (2 * a ^ 2 - (1 : R)) * (4 * a ^ 3 - 3 * a) = 0 := by
+      constructor <;> intro h <;> convert h using 1 <;> ring
+#align imo1962_q4.formula Imo1962Q4.formula
 
 /-
 Again, we now can solve for `x` using basic-ish trigonometry.
@@ -128,11 +130,11 @@ theorem solve_cos2x_0 {x : ℝ} : cos (2 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k
   rw [cos_eq_zero_iff]
   refine' exists_congr fun k => _
   constructor <;> intro <;> linarith
-#align imo1962_q4.solve_cos2x_0 imo1962_q4.solve_cos2x_0
+#align imo1962_q4.solve_cos2x_0 Imo1962Q4.solve_cos2x_0
 
-end imo1962_q4
+end Imo1962Q4
 
-open imo1962_q4
+open Imo1962Q4
 
 /-
 Again, the final theorem is now just gluing together our lemmas.
@@ -143,4 +145,3 @@ theorem imo1962_q4' {x : ℝ} : ProblemEquation x ↔ x ∈ solutionSet :=
     _ ↔ cos (2 * x) = 0 ∨ cos (3 * x) = 0 := by simp [cos_two_mul, cos_three_mul, formula]
     _ ↔ x ∈ solutionSet := by rw [solve_cos2x_0, solve_cos3x_0, ← exists_or]; rfl
 #align imo1962_q4' imo1962_q4'
-
