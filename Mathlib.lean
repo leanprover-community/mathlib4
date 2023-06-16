@@ -91,6 +91,7 @@ import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -1745,6 +1746,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableDegree
@@ -2519,6 +2521,7 @@ import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
 import Mathlib.RingTheory.Polynomial.Opposites
@@ -2956,6 +2959,7 @@ import Mathlib.Topology.Sheaves.Init
 import Mathlib.Topology.Sheaves.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.LocallySurjective
+import Mathlib.Topology.Sheaves.Operations
 import Mathlib.Topology.Sheaves.PUnit
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
@@ -3011,6 +3015,7 @@ import Mathlib.Util.MemoFix
 import Mathlib.Util.PiNotation
 import Mathlib.Util.Pickle
 import Mathlib.Util.Qq
+import Mathlib.Util.Superscript
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
