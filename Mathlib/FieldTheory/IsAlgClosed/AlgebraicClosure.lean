@@ -167,9 +167,15 @@ def Step (n : ℕ) : Type u :=
   (stepAux k n).1
 #align algebraic_closure.step AlgebraicClosure.Step
 
+-- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
+theorem Step.zero : Step k 0 = k := rfl
+
 instance Step.field (n : ℕ) : Field (Step k n) :=
   (stepAux k n).2
 #align algebraic_closure.step.field AlgebraicClosure.Step.field
+
+-- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
+theorem Step.succ (n : ℕ) : Step k (n + 1) = AdjoinMonic (Step k n) := rfl
 
 instance Step.inhabited (n) : Inhabited (Step k n) :=
   ⟨37⟩
@@ -217,7 +223,7 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   map_one' := by
 -- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
 --                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
-    induction' h with a h ih;
+    induction' h with a h ih
     · exact Nat.leRecOn_self 1
     · rw [toStepOfLE'.succ k m a h]; simp [ih]
   map_mul' x y := by
@@ -229,13 +235,13 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
 -- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
 --                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
   map_zero' := by
-    induction' h with a h ih;
+    induction' h with a h ih
     · exact Nat.leRecOn_self 0
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
   map_add' x y := by
 -- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
 --                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
-    induction' h with a h ih;
+    induction' h with a h ih
     · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
 #align algebraic_closure.to_step_of_le AlgebraicClosure.toStepOfLE
@@ -255,13 +261,29 @@ instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
-theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z :=
-  Nat.recOn n (fun z => isIntegral_algebraMap) fun n ih z =>
-    isIntegral_trans ih _ (AdjoinMonic.isIntegral (Step k n) z : _)
+theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
+  induction' n with a h
+  · intro z
+    exact isIntegral_algebraMap
+  · change RingHom.IsIntegral _
+    rw [IsScalarTower.algebraMap_eq k (Step k a) (Step k (a + 1))]
+    have H1 := RingHom.algebraMap_toAlgebra (toStepOfLE k 0 a a.zero_le)
+    have H2 := RingHom.algebraMap_toAlgebra (toStepSucc k a)
+    simp_rw [Step.zero] at H1
+    have H3 : (toStepOfLE k 0 a a.zero_le).IsIntegral := fun z => h z
+    have H4 : (toStepSucc k a).IsIntegral := by
+      intro z
+      have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
+      rw [IsIntegral] at this
+      simp_rw [← Step.succ] at this
+      sorry-- `convert this` works with `2000000` heartbeats
+    sorry -- `convert RingHom.isIntegral_trans _ _ H3 H4` works with `2000000` heartbeats
+
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
+
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
-  ⟨fun i x h => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
+  ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
 #align algebraic_closure.to_step_of_le.directed_system AlgebraicClosure.toStepOfLE.directedSystem
 
 end AlgebraicClosure
