@@ -6,7 +6,7 @@ namespace Bitvec
 
 /-- Every bit in `zero` is `0`/`false` -/
 @[simp]
-theorem get_zeroe_eq_false : get (zero n) i = false :=
+theorem get_zero_eq_false : get (zero n) i = false :=
   get_replicate_val_eq_val
 
 /-- Every bit in `ones` is `1`/`true` -/
@@ -18,7 +18,7 @@ theorem get_ones_eq_true : get (allOnes n) i = true :=
 
 section NegateConstants
   @[simp]
-  theorem not_zeroes : not (allOnes n) = zero n := by
+  theorem not_zero : not (allOnes n) = zero n := by
     ext; simp
 
   @[simp]
