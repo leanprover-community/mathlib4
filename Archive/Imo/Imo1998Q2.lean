@@ -233,8 +233,8 @@ theorem A_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 
 end
 
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
-    (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ (b - 1) * a ≤ k * (2 * b) := by
-  rw [div_le_div_iff] <;> norm_cast <;> simp [ha, hb]
+    (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℚ) - 1) * a ≤ k * (2 * b) := by
+  rw [div_le_div_iff] <;> norm_cast; simp [ha, hb]
 #align imo1998_q2.clear_denominators Imo1998Q2.clear_denominators
 
 end Imo1998Q2
