@@ -19,7 +19,11 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 
 ## Main results
 
-- `polynomial.selmer_irreducible`: The Selmer polynomials `X ^ n - X - 1` are irreducible.
+- `Polynomial.x_pow_sub_x_sub_one_irreducible`: The Selmer polynomials `X ^ n - X - 1 : ℤ[X]` are
+irreducible.
+
+- `Polynomial.x_pow_sub_x_sub_one_irreducible_rat`: The Selmer polynomials `X ^ n - X - 1 : ℚ[X]`
+are irreducible.
 
 TODO: Show that the Selmer polynomials have full Galois group.
 -/
