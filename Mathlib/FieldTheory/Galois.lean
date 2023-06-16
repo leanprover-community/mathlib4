@@ -391,17 +391,22 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
   haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
-    apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.mk.inj H).2
-    exact Fintype.ofEquiv _ key_equiv
+    -- porting note: Used @
+    exact @Fintype.ofInjective _ _ (Fintype.ofEquiv _ key_equiv) (fun x => Sigma.mk f x)
+      (fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2)
   rw [Fintype.card_congr key_equiv, Fintype.card_sigma, IntermediateField.adjoin.finrank h]
   apply Finset.sum_const_nat
-  intro f hf
-  rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
-  · convert Fintype.card_congr _; rfl
+  intro f _
+  -- porting node: Switched to Nat.card with @'s
+  rw [←Nat.card_eq_fintype_card,
+      ←@IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h,
+      ←@Nat.card_eq_fintype_card (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f))
+        (@IntermediateField.fintypeOfAlgHomAdjoinIntegral K _ E _ _ x E _ (RingHom.toAlgebra f) h)]
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
   · refine' Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) _ h2
-    rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
-    exact sp.splits
+    rw [Polynomial.splits_map_iff]
+    -- porting note: Used @
+    exact @IsScalarTower.algebraMap_eq F K E _ _ _ _ (RingHom.toAlgebra f) _ _ ▸ sp.splits
 #align is_galois.of_separable_splitting_field_aux IsGalois.of_separable_splitting_field_aux
 
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
@@ -434,15 +439,13 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     rw [IntermediateField.adjoin_zero]
   intro K x hx hK
   -- simp only [P] at * -- porting note: removed this line
-  change _ = _ -- porting note: added this line
-  have := @finrank_mul_finrank F K K⟮x⟯ _ _ _ _ K⟮x⟯.module _ sorry _ -- porting note: added this line
+  change _ = _ -- porting note: added this line and the next line
+  have := @finrank_mul_finrank F K K⟮x⟯ _ _ _ _ K⟮x⟯.module _ K⟮x⟯.isScalarTower _
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, this]
   symm
   refine' LinearEquiv.finrank_eq _
   rfl
 #align is_galois.of_separable_splitting_field IsGalois.of_separable_splitting_field
-
-
 
 /-- Equivalent characterizations of a Galois extension of finite degree-/
 theorem tFAE [FiniteDimensional F E] :
