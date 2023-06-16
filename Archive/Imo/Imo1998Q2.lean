@@ -133,8 +133,9 @@ theorem A_fibre_over_contestant_card (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct).card =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
+  apply Finset.card_image_of_injOn
   -- porting note: used to be `tidy`
-  apply Finset.card_image_of_injOn; unfold Set.InjOn; intros; ext; all_goals aesop
+  unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
@@ -155,9 +156,11 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
     (agreedContestants r p).card =
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
+  -- porting note: used to be `tidy`
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  sorry
+  -- porting note: used to be `tidy`
+  unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_judge_pair_card Imo1998Q2.A_fibre_over_judgePair_card
 
 theorem A_card_upper_bound {k : ℕ}
