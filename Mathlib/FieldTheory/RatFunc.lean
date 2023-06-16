@@ -1248,7 +1248,7 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom RatFunc.num_div_denom
 
-theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.den := by
+theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
   induction' x using RatFunc.induction_on with p q hq
   rw [num_div, denom_div _ hq]
   exact (isCoprime_mul_unit_left
