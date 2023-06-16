@@ -8,7 +8,7 @@ Authors: Tian Chen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
 # IMO 2006 Q3
@@ -38,8 +38,7 @@ namespace imo2006_q3
 
 /-- Replacing `x` and `y` with their average increases the left side. -/
 theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
-    16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 3 :=
-  by
+    16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 3 := by
   conv_rhs => rw [pow_succ']
   refine' mul_le_mul_of_nonneg_right _ (sq_nonneg _)
   apply le_of_sub_nonneg
@@ -99,8 +98,7 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
 
 /-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
 theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
-    |x * y * z * s| ≤ sqrt 2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 :=
-  by
+    |x * y * z * s| ≤ sqrt 2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   wlog h' : 0 ≤ x * y generalizing x y z; swap
   · rw [div_mul_eq_mul_div, le_div_iff' zero_lt_32]
     exact subst_wlog h' hxyz
@@ -133,8 +131,7 @@ theorem proof₂ (M : ℝ)
       ∀ a b c : ℝ,
         |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
           M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
-    9 * sqrt 2 / 32 ≤ M :=
-  by
+    9 * sqrt 2 / 32 ≤ M := by
   have h₁ :
     ∀ x : ℝ,
       (2 - 3 * x - 2) * (2 - (2 + 3 * x)) * (2 + 3 * x - (2 - 3 * x)) *
