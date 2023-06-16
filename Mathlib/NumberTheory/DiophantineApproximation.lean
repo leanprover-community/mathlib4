@@ -8,13 +8,13 @@ Authors: Michael Geißer, Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
-import Mathbin.Algebra.ContinuedFractions.Computation.Translations
-import Mathbin.Combinatorics.Pigeonhole
-import Mathbin.Data.Int.Units
-import Mathbin.Data.Real.Irrational
-import Mathbin.RingTheory.Coprime.Lemmas
-import Mathbin.Tactic.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
+import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Data.Int.Units
+import Mathlib.Data.Real.Irrational
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation
@@ -96,8 +96,7 @@ with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
 
 See also `real.exists_nat_abs_mul_sub_round_le`. -/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
-    ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) :=
-  by
+    ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
   have hn : 0 < (n : ℝ) + 1 := by exact_mod_cast Nat.succ_pos _
   have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
@@ -106,8 +105,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   by_cases H : ∃ m ∈ D, f m = n
   · obtain ⟨m, hm, hf⟩ := H
     have hf' : ((n : ℤ) : ℝ) ≤ fract (ξ * m) * (n + 1) := hf ▸ floor_le (fract (ξ * m) * (n + 1))
-    have hm₀ : 0 < m :=
-      by
+    have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
         simp only [floor_eq_zero_iff, algebraMap.coe_zero, MulZeroClass.mul_zero, fract_zero,
           MulZeroClass.zero_mul, Set.left_mem_Ico, zero_lt_one]
@@ -124,8 +122,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
       mem_Ico.mpr
         ⟨floor_nonneg.mpr (mul_nonneg (fract_nonneg (ξ * x)) hn.le), Ne.lt_of_le (H x hx) (hfu' x)⟩
-    have : ∃ (x : ℤ) (hx : x ∈ D) (y : ℤ) (hy : y ∈ D), x < y ∧ f x = f y :=
-      by
+    have : ∃ (x : ℤ) (hx : x ∈ D) (y : ℤ) (hy : y ∈ D), x < y ∧ f x = f y := by
       obtain ⟨x, hx, y, hy, x_ne_y, hxy⟩ := exists_ne_map_eq_of_card_lt_of_maps_to hD hwd
       rcases lt_trichotomy x y with (h | h | h)
       exacts [⟨x, hx, y, hy, h, hxy⟩, False.elim (x_ne_y h), ⟨y, hy, x, hx, h, hxy.symm⟩]
@@ -143,8 +140,7 @@ For any real number `ξ` and positive natural `n`, there is a natural number `k`
 with `0 < k ≤ n` such that `|k*ξ - round(k*ξ)| ≤ 1/(n+1)`.
 -/
 theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
-    ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - round (↑k * ξ)| ≤ 1 / (n + 1) :=
-  by
+    ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - round (↑k * ξ)| ≤ 1 / (n + 1) := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk := to_nat_of_nonneg hk₀.le
   rw [← hk] at hk₀ hk₁ h 
@@ -155,8 +151,7 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
 such that `q.denom ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.denom)`. -/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
-    ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n :=
-  by
+    ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk₀' : (0 : ℝ) < k := int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by convert le_of_dvd hk₀ (Rat.den_dvd j k);
@@ -185,8 +180,7 @@ open Set
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
 a good rational approximation `q'` such that `|ξ - q'| < |ξ - q|`. -/
 theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
-    ∃ q' : ℚ, |ξ - q'| < 1 / q'.den ^ 2 ∧ |ξ - q'| < |ξ - q| :=
-  by
+    ∃ q' : ℚ, |ξ - q'| < 1 / q'.den ^ 2 ∧ |ξ - q'| < |ξ - q| := by
   have h := abs_pos.mpr (sub_ne_zero.mpr <| Irrational.ne_rat hξ q)
   obtain ⟨m, hm⟩ := exists_nat_gt (1 / |ξ - q|)
   have m_pos : (0 : ℝ) < m := (one_div_pos.mpr h).trans hm
@@ -208,8 +202,7 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
 /-- If `ξ` is an irrational real number, then there are infinitely many good
 rational approximations to `ξ`. -/
 theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : Irrational ξ) :
-    {q : ℚ | |ξ - q| < 1 / q.den ^ 2}.Infinite :=
-  by
+    {q : ℚ | |ξ - q| < 1 / q.den ^ 2}.Infinite := by
   refine' Or.resolve_left (Set.finite_or_infinite _) fun h => _
   obtain ⟨q, _, hq⟩ :=
     exists_min_image {q : ℚ | |ξ - q| < 1 / q.den ^ 2} (fun q => |ξ - q|) h
@@ -237,8 +230,7 @@ open Set
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
 theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ} (h : |ξ - q| < 1 / q.den ^ 2) :
-    q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 :=
-  by
+    q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.denom := nat.cast_pos.mpr q.pos
   replace h : |ξ * q.denom - q.num| < 1 / q.denom
   · rw [← mul_lt_mul_right hq₀] at h 
@@ -275,8 +267,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) : {q : ℚ | |ξ - q| < 
     intro a b hab
     simp only [Prod.mk.inj_iff] at hab 
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
-  have H : f '' s ⊆ ⋃ (y : ℕ) (hy : y ∈ Ioc 0 ξ.denom), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} :=
-    by
+  have H : f '' s ⊆ ⋃ (y : ℕ) (hy : y ∈ Ioc 0 ξ.denom), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
     simp only [mem_image, mem_set_of_eq] at hxy 
     obtain ⟨q, hq₁, hq₂⟩ := hxy
@@ -294,8 +285,7 @@ end Rat
 /-- The set of good rational approximations to a real number `ξ` is infinite if and only if
 `ξ` is irrational. -/
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
-    {q : ℚ | |ξ - q| < 1 / q.den ^ 2}.Infinite ↔ Irrational ξ :=
-  by
+    {q : ℚ | |ξ - q| < 1 / q.den ^ 2}.Infinite ↔ Irrational ξ := by
   refine'
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b H => set.not_infinite.mpr _ h,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
@@ -361,8 +351,7 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 
 /-- All convergents of `0` are zero. -/
 @[simp]
-theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 :=
-  by
+theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
   · simp only [convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
@@ -370,8 +359,7 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 :=
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
-theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ :=
-  by
+theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
   · simp only [convergent_zero, floor_int_cast]
   ·
@@ -389,8 +377,7 @@ open GeneralizedContinuedFraction
 /-- The `n`th convergent of the `generalized_continued_fraction.of ξ`
 agrees with `ξ.convergent n`. -/
 theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
-    (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n :=
-  by
+    (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
   · simp only [zeroth_convergent_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_coe_int]
   · rw [convergents_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
@@ -425,15 +412,13 @@ private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 
 variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
 
 -- The fractional part of `ξ` is positive.
-private theorem aux₁ : 0 < fract ξ :=
-  by
+private theorem aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
   obtain ⟨hcop, _, h⟩ := h
   refine' fract_pos.mpr fun hf => _
   rw [hf] at h 
-  have H : (2 * v - 1 : ℝ) < 1 :=
-    by
+  have H : (2 * v - 1 : ℝ) < 1 := by
     refine'
       (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt _ h))
     have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp [hv₀.ne']
@@ -446,16 +431,14 @@ private theorem aux₁ : 0 < fract ξ :=
   linarith only [hv, H]
 
 -- An auxiliary lemma for the inductive step.
-private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v :=
-  by
+private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
   rw [← one_div, lt_div_iff (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul, sub_mul,
     ← mul_assoc, ← mul_assoc, div_mul_cancel _ hv₀.ne', abs_sub_comm, abs_lt, lt_sub_iff_add_lt,
     sub_lt_iff_lt_add, mul_assoc] at h 
-  have hu₀ : 0 ≤ u - ⌊ξ⌋ * v :=
-    by
+  have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     refine' (zero_le_mul_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h 
@@ -463,8 +446,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v :=
       h.trans_le
         ((mul_le_mul_right <| hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
-  have hu₁ : u - ⌊ξ⌋ * v ≤ v :=
-    by
+  have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
     refine' le_of_mul_le_mul_right (le_of_lt_add_one _) hv₁
     replace h := h.2
     rw [← sub_lt_iff_lt_add, ← mul_assoc, ← sub_mul, ← add_lt_add_iff_right (v * (2 * v - 1) : ℝ),
@@ -484,8 +466,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v :=
 
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :
-    |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < ((u - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ :=
-  by
+    |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < ((u - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
   obtain ⟨hu₀, huv⟩ := aux₂ hv h
   have hξ₀ := aux₁ hv h
   set u' := u - ⌊ξ⌋ * v with hu'
@@ -498,8 +479,7 @@ private theorem aux₃ :
   replace h := h.2.2
   have h' : |fract ξ - u' / v| < (v * (2 * v - 1))⁻¹ := by
     rwa [hu'ℝ, add_div, mul_div_cancel _ Hv.ne', ← sub_sub, sub_right_comm] at h 
-  have H : (2 * u' - 1 : ℝ) ≤ (2 * v - 1) * fract ξ :=
-    by
+  have H : (2 * u' - 1 : ℝ) ≤ (2 * v - 1) * fract ξ := by
     replace h := (abs_lt.mp h).1
     have : (2 * (v : ℝ) - 1) * (-(v * (2 * v - 1))⁻¹ + u' / v) = 2 * u' - (1 + u') / v := by
       field_simp [Hv.ne', Hv'.ne']; ring
@@ -524,8 +504,7 @@ private theorem aux₃ :
         mul_le_mul_left Hu]
 
 -- The conditions `ass ξ u v` persist in the inductive step.
-private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) :=
-  by
+private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
   refine' ⟨_, fun huv => _, by exact_mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1
@@ -545,8 +524,7 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
 
 /-- The technical version of *Legendre's Theorem*. -/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
-    ∃ n, (u / v : ℚ) = ξ.convergent n :=
-  by
+    ∃ n, (u / v : ℚ) = ξ.convergent n := by
   induction' v using Nat.strong_induction_on with v ih generalizing ξ u
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
@@ -560,15 +538,13 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
-      have hξ₁ : ⌊ξ⌋ = u - 1 :=
-        by
+      have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
         exact ⟨(((sub_lt_sub_iff_left _).mpr one_half_lt_one).trans h₁).le, ht⟩
       cases' eq_or_ne ξ ⌊ξ⌋ with Hξ Hξ
       · rw [Hξ, hξ₁, cast_sub, cast_one, ← sub_eq_add_neg, sub_lt_sub_iff_left] at h₁ 
         exact False.elim (lt_irrefl _ <| h₁.trans one_half_lt_one)
-      · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 :=
-          by
+      · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 := by
           rw [floor_eq_iff, cast_one, le_inv zero_lt_one (fract_pos.mpr Hξ), inv_one,
             one_add_one_eq_two, inv_lt (fract_pos.mpr Hξ) zero_lt_two]
           refine' ⟨(fract_lt_one ξ).le, _⟩
@@ -594,8 +570,7 @@ if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * q.den ^ 2)) :
-    ∃ n, q = ξ.convergent n :=
-  by
+    ∃ n, q = ξ.convergent n := by
   refine' q.num_div_denom ▸ exists_rat_eq_convergent' ⟨_, fun hd => _, _⟩
   · exact coprime_iff_nat_coprime.mpr (nat_abs_of_nat q.denom ▸ q.cop)
   · rw [← q.denom_eq_one_iff.mp (nat.cast_eq_one.mp hd)] at h 
@@ -613,8 +588,7 @@ if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `generalized_contined_fraction.convergents`. -/
 theorem exists_continued_fraction_convergent_eq_rat {q : ℚ} (h : |ξ - q| < 1 / (2 * q.den ^ 2)) :
-    ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q :=
-  by
+    ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
   exact ⟨n, hn.symm ▸ continued_fraction_convergent_eq_convergent ξ n⟩
 #align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_convergent_eq_rat
