@@ -8,7 +8,7 @@ Authors: Tian Chen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pnat.Basic
+import Mathlib.Data.PNat.Basic
 
 /-!
 # IMO 1977 Q6
@@ -23,8 +23,7 @@ then we use it to prove the statement for positive naturals.
 
 namespace imo1977_q6
 
-theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n :=
-  by
+theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   have h' : ∀ k n : ℕ, k ≤ n → k ≤ f n := by
     intro k
     induction' k with k h_ind
@@ -44,8 +43,7 @@ end imo1977_q6
 
 open imo1977_q6
 
-theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n :=
-  by
+theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   intro n
   simpa using imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) _ n
   · intro x; cases x
