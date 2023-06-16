@@ -135,8 +135,8 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   convert
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
-  rw [← comp_apply]
-  erw [← Functor.map_comp]
+  -- Porting note : `rw [comp_apply]` to `erw [comp_apply]`
+  erw [← comp_apply, ← Functor.map_comp]
   congr
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.is_unit_res_to_Γ_Spec_map_basic_open AlgebraicGeometry.LocallyRingedSpace.isUnit_res_toΓSpecMapBasicOpen
@@ -237,10 +237,8 @@ theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_stalk_stalk_map_to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toStalk_stalkMap_to_Γ_Spec
 
---Porting Note: Had to increase Heartbeats
-set_option maxHeartbeats 1000000 in
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
-@[simps val_base]
+@[simps! val_base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
   val := X.toΓSpecSheafedSpace
   prop := by
@@ -252,19 +250,20 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rintro (t : S) ht
     obtain ⟨⟨r, s⟩, he⟩ := IsLocalization.surj p.asIdeal.primeCompl t
     dsimp at he
-    apply isUnit_of_mul_isUnit_left
+    set t' := _
+    change t * t' = _ at he
+    apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
     refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
-    rw [← toStalk_stalkMap_to_Γ_Spec, comp_apply]
-    erw [← he]
+    rw [← toStalk_stalkMap_to_Γ_Spec]
+    erw [comp_apply, ← he]
     rw [RingHom.map_mul]
-    --Porting Note: Doesn't compile anymore, causes a missing `MonoidHomClass`.
-    -- Not sure how this worked before
-    exact
-      ht.mul
-        ((IsLocalization.map_units S s : _).map
-          (PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x))
+    -- Porting note : `IsLocalization.map_units` and the goal needs to be simplified before Lean
+    -- realize it is useful
+    have := IsLocalization.map_units (R := Γ.obj (op X)) S s
+    dsimp at this ⊢
+    refine ht.mul <| this.map _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
