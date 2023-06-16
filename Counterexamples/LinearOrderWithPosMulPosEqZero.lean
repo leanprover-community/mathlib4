@@ -9,8 +9,8 @@ Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Monoid.Defs
-import Mathbin.Algebra.Order.Monoid.WithZero.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 
 /-!
 An example of a `linear_ordered_comm_monoid_with_zero` in which the product of two positive
@@ -116,8 +116,7 @@ instance : LinearOrderedCommMonoidWithZero Foo :=
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.foo.boom -/
 theorem not_mul_pos :
     ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
-        ∀ (a b : M) (ha : 0 < a) (hb : 0 < b), 0 < a * b :=
-  by
+        ∀ (a b : M) (ha : 0 < a) (hb : 0 < b), 0 < a * b := by
   intro h
   specialize
     h ε ε
