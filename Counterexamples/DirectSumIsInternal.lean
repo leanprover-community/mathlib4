@@ -41,10 +41,8 @@ def withSign (i : ℤˣ) : Submodule ℕ ℤ :=
             exact add_nonneg hx hy }
 #align counterexample.with_sign Counterexample.withSign
 
--- mathport name: «exprℤ≥0»
 local notation "ℤ≥0" => withSign 1
 
--- mathport name: «exprℤ≤0»
 local notation "ℤ≤0" => withSign (-1)
 
 theorem mem_withSign_one {x : ℤ} : x ∈ ℤ≥0 ↔ 0 ≤ x :=
