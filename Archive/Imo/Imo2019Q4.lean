@@ -31,33 +31,35 @@ individually.
 
 open scoped Nat BigOperators
 
-open Finset multiplicity
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Nat hiding zero_le Prime
 
-namespace imo2019_q4
+open Finset multiplicity
 
-theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n, (2 ^ n - 2 ^ i)) :
-    n < 6 := by
+namespace Imo2019Q4
+
+theorem upper_bound {k n : ℕ} (hk : k > 0)
+    (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
   have prime_2 : Prime (2 : ℤ) := prime_iff_prime_int.mp prime_two
   have h2 : n * (n - 1) / 2 < k := by
     suffices multiplicity 2 (k ! : ℤ) = (n * (n - 1) / 2 : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
+      simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
     rw [h, multiplicity.Finset.prod prime_2, ← sum_range_id, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
     rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime prime_2]
     rwa [multiplicity_pow_self_of_prime prime_2, multiplicity_pow_self_of_prime prime_2,
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
-  apply ne_of_lt _ h.symm
-  suffices (∏ i in range n, 2 ^ n : ℤ) < ↑k ! by
+  apply _root_.ne_of_lt _ h.symm
+  suffices (∏ i in range n, ↑2 ^ n : ℤ) < ↑k ! by
     apply lt_of_le_of_lt _ this; apply prod_le_prod
     · intros; rw [sub_nonneg]; apply pow_le_pow; norm_num; apply le_of_lt; rwa [← mem_range]
     · intros; apply sub_le_self; apply pow_nonneg; norm_num
   suffices 2 ^ (n * n) < (n * (n - 1) / 2)! by
-    rw [prod_const, card_range, ← pow_mul]; rw [← Int.ofNat_lt] at this 
-    clear h; convert this.trans _; norm_cast; rwa [Int.ofNat_lt, factorial_lt]
+    rw [prod_const, card_range, ← pow_mul]; rw [← Int.ofNat_lt] at this
+    clear h; convert this.trans _ using 1; norm_cast; rwa [Int.ofNat_lt, factorial_lt]
     refine' Nat.div_pos _ (by norm_num)
     refine' le_trans _ (mul_le_mul hn (pred_le_pred hn) (zero_le _) (zero_le _))
     norm_num
@@ -77,27 +79,26 @@ theorem upper_bound {k n : ℕ} (hk : k > 0) (h : (k ! : ℤ) = ∏ i in range n
   convert add_le_add_left (add_le_add_left h5 (2 * n')) (n' * n') using 1; ring
 #align imo2019_q4.upper_bound Imo2019Q4.upper_bound
 
-end imo2019_q4
+end Imo2019Q4
 
 theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
-    (k ! : ℤ) = ∏ i in range n, (2 ^ n - 2 ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
+    (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
-  constructor;
+  constructor
   swap
-  ·
-    rintro (h | h) <;> simp [Prod.ext_iff] at h  <;> rcases h with ⟨rfl, rfl⟩ <;>
-      norm_num [prod_range_succ, succ_mul]
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h  <;> rcases h with ⟨rfl, rfl⟩ <;>
+    norm_num [prod_range_succ, succ_mul]
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h
-  interval_cases
+  interval_cases n
   -- n = 1
-  · left; congr; norm_num at h ; rw [factorial_eq_one] at h ; apply antisymm h
+  · left; congr; norm_num at h; rw [factorial_eq_one] at h; apply antisymm h
     apply succ_le_of_lt hk
   -- n = 2
-  · right; congr; norm_num [prod_range_succ] at h ; norm_cast at h ; rw [← factorial_inj]
+  · right; congr; rw [prod_range_succ] at h; norm_num at h; norm_cast at h; rw [← factorial_inj]
     exact h; rw [h]; norm_num
-  all_goals exfalso; norm_num [prod_range_succ] at h ; norm_cast at h 
+  all_goals exfalso; (repeat rw [prod_range_succ] at h); norm_num at h; norm_cast at h
   -- n = 3
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> norm_num
   -- n = 4
@@ -105,4 +106,3 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- n = 5
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> norm_num
 #align imo2019_q4 imo2019_q4
-
