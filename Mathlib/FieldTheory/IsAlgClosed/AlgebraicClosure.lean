@@ -199,26 +199,50 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
   exact ⟨x, by apply hx⟩
 #align algebraic_closure.to_step_succ.exists_root AlgebraicClosure.toStepSucc.exists_root
 
+-- Porting note: the following two declarations were added during the port to be used in the
+-- definition of toStepOfLE
+private def toStepOfLE' (m n : ℕ) (h : m ≤ n) : Step k m → Step k n :=
+Nat.leRecOn h @fun a => toStepSucc k a
+
+private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
+    toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
+    (toStepSucc k n) ∘ toStepOfLE' k m n h := by
+  ext x
+  convert Nat.leRecOn_succ h x
+  exact h.trans n.le_succ
+
 /-- The canonical ring homomorphism to a step with a greater index. -/
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
-  toFun := Nat.leRecOn h fun n => toStepSucc k n
+  toFun := toStepOfLE' k m n h
   map_one' := by
-    induction' h with n h ih; · exact Nat.leRecOn_self 1
-    rw [Nat.leRecOn_succ h, ih, RingHom.map_one]
+-- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
+--                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
+    induction' h with a h ih;
+    · exact Nat.leRecOn_self 1
+    · rw [toStepOfLE'.succ k m a h]; simp [ih]
   map_mul' x y := by
-    induction' h with n h ih; · simp_rw [Nat.leRecOn_self]
-    simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]
+-- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
+--                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
+    induction' h with a h ih
+    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
+    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+-- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
+--                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
   map_zero' := by
-    induction' h with n h ih; · exact Nat.leRecOn_self 0
-    rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]
+    induction' h with a h ih;
+    · exact Nat.leRecOn_self 0
+    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
   map_add' x y := by
-    induction' h with n h ih; · simp_rw [Nat.leRecOn_self]
-    simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]
+-- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
+--                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
+    induction' h with a h ih;
+    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
+    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
 #align algebraic_closure.to_step_of_le AlgebraicClosure.toStepOfLE
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
-    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h fun n => toStepSucc k n :=
+    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n => toStepSucc k n :=
   rfl
 #align algebraic_closure.coe_to_step_of_le AlgebraicClosure.coe_toStepOfLE
 
@@ -228,7 +252,7 @@ instance Step.algebra (n) : Algebra k (Step k n) :=
 
 instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
   IsScalarTower.of_algebraMap_eq fun z =>
-    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (fun n => toStepSucc k n) z
+    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
 theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z :=
