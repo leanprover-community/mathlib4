@@ -165,11 +165,11 @@ theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
 #align gaussian_int.norm_nonneg GaussianInt.norm_nonneg
 
 @[simp]
-theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _] <;> simp
+theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
 #align gaussian_int.norm_eq_zero GaussianInt.norm_eq_zero
 
 theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
-  rw [lt_iff_le_and_ne, Ne.def, eq_comm, norm_eq_zero] <;> simp [norm_nonneg]
+  rw [lt_iff_le_and_ne, Ne.def, eq_comm, norm_eq_zero]; simp [norm_nonneg]
 #align gaussian_int.norm_pos GaussianInt.norm_pos
 
 theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
