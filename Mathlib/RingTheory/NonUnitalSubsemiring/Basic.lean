@@ -266,6 +266,11 @@ theorem coe_top : ((⊤ : NonUnitalSubsemiring R) : Set R) = Set.univ :=
   rfl
 #align non_unital_subsemiring.coe_top NonUnitalSubsemiring.coe_top
 
+/-- The ring equiv between the top element of `NonUnitalSubsemiring R` and `R`. -/
+@[simps!]
+def topEquiv : (⊤ : NonUnitalSubsemiring R) ≃+* R :=
+  { Subsemigroup.topEquiv, AddSubmonoid.topEquiv with }
+
 /-- The preimage of a non-unital subsemiring along a non-unital ring homomorphism is a
 non-unital subsemiring. -/
 def comap (f : F) (s : NonUnitalSubsemiring S) : NonUnitalSubsemiring R :=
@@ -856,15 +861,18 @@ end NonUnitalSubsemiring
 namespace NonUnitalRingHom
 
 variable {F : Type _} [NonUnitalNonAssocSemiring T] [NonUnitalRingHomClass F R S]
+  {S' : Type _} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
 open NonUnitalSubsemiringClass NonUnitalSubsemiring
 
 /-- Restriction of a non-unital ring homomorphism to a non-unital subsemiring of the codomain. -/
-def codRestrict (f : F) (s : NonUnitalSubsemiring S) (h : ∀ x, f x ∈ s) : R →ₙ+* s :=
-  { (f : R →ₙ* S).codRestrict s.toSubsemigroup h, (f : R →+ S).codRestrict s.toAddSubmonoid h with
-    toFun := fun n => ⟨f n, h n⟩ }
-#align non_unital_ring_hom.cod_restrict NonUnitalRingHom.codRestrict
+def codRestrict (f : F) (s : S') (h : ∀ x, f x ∈ s) : R →ₙ+* s where
+  toFun n := ⟨f n, h n⟩
+  map_mul' x y := Subtype.eq (map_mul f x y)
+  map_add' x y := Subtype.eq (map_add f x y)
+  map_zero' := Subtype.eq (map_zero f)
+#align non_unital_ring_hom.cod_restrict NonUnitalRingHom.codRestrictₓ
 
 /-- Restriction of a non-unital ring homomorphism to its range interpreted as a
 non-unital subsemiring.
