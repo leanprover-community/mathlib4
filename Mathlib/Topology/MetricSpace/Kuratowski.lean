@@ -119,9 +119,9 @@ def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α 
 #align Kuratowski_embedding kuratowskiEmbedding
 
 /--
-    The Kuratowski embedding is an isometry.
-    Theorem 2.1 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
-    https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
+The Kuratowski embedding is an isometry.
+Theorem 2.1 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
+https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
  -/
 protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
@@ -137,14 +137,14 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
 #align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
 
 /--
-    A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
-    extension to the whole space.
+A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
+extension to the whole space.
 
-    Theorem 2.2 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
-    https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
+Theorem 2.2 of Metric Embeddings and Lipschitz Extensions by Assaf Naor
+https://web.math.princeton.edu/~naor/homepage%20files/embeddings_extensions.pdf
 
-    The same result for the case of a finite type `ι` is implemented in
-    `LipschitzOnWith.extend_pi`.
+The same result for the case of a finite type `ι` is implemented in
+`LipschitzOnWith.extend_pi`.
 -/
 theorem LipschitzOnWith.extend_linf [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
     {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
