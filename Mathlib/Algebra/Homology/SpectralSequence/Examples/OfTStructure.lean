@@ -5,6 +5,7 @@ open CategoryTheory Category Limits Pretriangulated Triangulated ZeroObject Prea
 
 variable {C A : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+  [CategoryTheory.IsTriangulated C]
   [Category A] [Abelian A]
 
 namespace CategoryTheory

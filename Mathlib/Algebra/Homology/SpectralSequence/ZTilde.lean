@@ -67,11 +67,38 @@ lemma le_bot_mk_iff (a : ℤ) :
 lemma top_le_mk_iff (a : ℤ) :
     ⊤ ≤ ℤt.mk a ↔ False := none_le_some_iff a
 
+@[simp]
+lemma top_le_bot_iff  :
+    (⊤ : ℤt) ≤ ⊥ ↔ False := by
+  simp only [iff_false]
+  apply WithTop.not_top_le_coe
+
 lemma three_cases (x : ℤt) :
     x = ⊥ ∨ (∃ (n : ℤ), x = ℤt.mk n) ∨ x = ⊤ := by
   obtain (_|_|n) := x
   . exact Or.inr (Or.inr rfl)
   . exact Or.inl rfl
   . exact Or.inr (Or.inl ⟨n, rfl⟩)
+
+lemma le_bot_iff (a : ℤt) : a ≤ ⊥ ↔ a = ⊥ := by
+  constructor
+  . intro h
+    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+    . rfl
+    . simp at h
+    . simp at h
+  . rintro rfl
+    exact le_refl _
+
+lemma top_le_iff (a : ℤt) : ⊤ ≤ a ↔ a = ⊤ := by
+  constructor
+  . intro h
+    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+    . simp [le_bot_iff] at h
+      exact h.symm
+    . simp at h
+    . rfl
+  . rintro rfl
+    exact le_refl _
 
 end ℤt

@@ -48,6 +48,17 @@ lemma truncGEπ_map {a b : ι} (φ : a ⟶ b) :
   simp only [assoc, ← Functor.map_comp]
   congr 1
 
+instance : IsIso (F.truncLTι ⊤) := by
+  dsimp [truncLTι]
+  erw [Functor.map_id, id_comp]
+  infer_instance
+
+instance : IsIso (F.truncGEπ ⊥) := by
+  dsimp [truncGEπ]
+  erw [Functor.map_id, comp_id]
+  infer_instance
+
+
 @[simps]
 def triangleLTGE : ι ⥤ C ⥤ Triangle C where
   obj a := Triangle.functorMk (F.truncLTι a) (F.truncGEπ a) (F.truncGEδLT.app a)
@@ -123,10 +134,10 @@ def truncLTGELTSelfToTruncGELT :
     rw [← NatTrans.comp_app, truncLTmap_ι]
 
 class IsCompatible where
-  isIso_truncGEToTruncGEGE : IsIso F.truncGEToTruncGEGE
-  isIso_truncLTLTToTruncLT : IsIso F.truncLTLTToTruncLT
-  isIso_truncLTGELTSelfToTruncLTGE : IsIso F.truncLTGELTSelfToTruncLTGE
-  isIso_truncLTGELTSelfToTruncGELT : IsIso F.truncLTGELTSelfToTruncGELT
+  isIso_truncGEToTruncGEGE : IsIso F.truncGEToTruncGEGE := by infer_instance
+  isIso_truncLTLTToTruncLT : IsIso F.truncLTLTToTruncLT := by infer_instance
+  isIso_truncLTGELTSelfToTruncLTGE : IsIso F.truncLTGELTSelfToTruncLTGE := by infer_instance
+  isIso_truncLTGELTSelfToTruncGELT : IsIso F.truncLTGELTSelfToTruncGELT := by infer_instance
   truncGEπ_compatibility' (a : ι) (X : C) :
     (F.truncGE.obj a).map ((F.truncGEπ a).app X) =
       (F.truncGEπ a).app ((F.truncGE.obj a).obj X)
