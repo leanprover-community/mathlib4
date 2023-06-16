@@ -10,7 +10,7 @@ Authors: Kevin Lacker
 -/
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.Int.NatPrime
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormCast
 import Mathlib.Data.Set.Finite
 
@@ -24,9 +24,9 @@ the number $z = n^4 + a$ is not prime for any natural number $n$.
 
 open Int Nat
 
-namespace imo1969_q1
+namespace Imo1969Q1
 
-/-- `good_nats` is the set of natural numbers satisfying the condition in the problem
+/-- `goodNats` is the set of natural numbers satisfying the condition in the problem
 statement, namely the `a : ℕ` such that `n^4 + a` is not prime for any `n : ℕ`. -/
 def goodNats : Set ℕ :=
   {a : ℕ | ∀ n : ℕ, ¬Nat.Prime (n ^ 4 + a)}
@@ -62,7 +62,7 @@ The factorization is over the integers, but we need the nonprimality over the na
 
 
 theorem int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
-  exact_mod_cast lt_of_lt_of_le h le_nat_abs
+  exact_mod_cast lt_of_lt_of_le h le_natAbs
 #align imo1969_q1.int_large Imo1969Q1.int_large
 
 theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (hc : m * n = (c : ℤ)) :
@@ -74,7 +74,7 @@ theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (h
 theorem polynomial_not_prime {m : ℕ} (h1 : 1 < m) (n : ℕ) : ¬Nat.Prime (n ^ 4 + 4 * m ^ 4) := by
   have h2 : 1 < (m : ℤ) := ofNat_lt.mpr h1
   refine' not_prime_of_int_mul' (left_factor_large (n : ℤ) h2) (right_factor_large (n : ℤ) h2) _
-  exact_mod_cast factorization
+  apply factorization
 #align imo1969_q1.polynomial_not_prime Imo1969Q1.polynomial_not_prime
 
 /-- We define $a_{choice}(b) := 4*(2+b)^4$, so that we can take $m = 2+b$ in `polynomial_not_prime`.
@@ -87,19 +87,18 @@ theorem aChoice_good (b : ℕ) : aChoice b ∈ goodNats :=
   polynomial_not_prime (show 1 < 2 + b by linarith)
 #align imo1969_q1.a_choice_good Imo1969Q1.aChoice_good
 
-/-- `a_choice` is a strictly monotone function; this is easily proven by chaining together lemmas
-in the `strict_mono` namespace. -/
+/-- `aChoice` is a strictly monotone function; this is easily proven by chaining together lemmas
+in the `strictMono` namespace. -/
 theorem aChoice_strictMono : StrictMono aChoice :=
   ((strictMono_id.const_add 2).nat_pow (by decide : 0 < 4)).const_mul (by decide : 0 < 4)
 #align imo1969_q1.a_choice_strict_mono Imo1969Q1.aChoice_strictMono
 
-end imo1969_q1
+end Imo1969Q1
 
-open imo1969_q1
+open Imo1969Q1
 
-/-- We conclude by using the fact that `a_choice` is an injective function from the natural numbers
-to the set `good_nats`. -/
+/-- We conclude by using the fact that `aChoice` is an injective function from the natural numbers
+to the set `goodNats`. -/
 theorem imo1969_q1 : Set.Infinite {a : ℕ | ∀ n : ℕ, ¬Nat.Prime (n ^ 4 + a)} :=
-  Set.infinite_of_injective_forall_mem aChoice_strictMono.Injective aChoice_good
+  Set.infinite_of_injective_forall_mem aChoice_strictMono.injective aChoice_good
 #align imo1969_q1 imo1969_q1
-
