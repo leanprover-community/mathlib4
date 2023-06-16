@@ -216,6 +216,14 @@ protected def add (x y : Bitvec n) : Bitvec n :=
   tail (adc x y false)
 #align bitvec.add Bitvec.add
 
+/-- The sum of two bitvectors, returns `none` on overflow -/
+def add? (x y : Bitvec n) : Option (Bitvec n) :=
+  let a := adc x y false
+  if head a then
+    none
+  else
+    some <| tail a
+
 /-- Subtract with borrow -/
 def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
   let f x y c := (Bitvec.carry (not x) y c, Bitvec.xor3 x y c)
