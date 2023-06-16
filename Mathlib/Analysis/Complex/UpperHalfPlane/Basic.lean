@@ -60,6 +60,9 @@ open UpperHalfPlane
 -- Porting note: added to replace `deriving`
 instance : CoeOut ℍ ℂ := inferInstanceAs (CoeOut { point : ℂ // 0 < point.im } ℂ)
 
+@[ext]
+def ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
+
 namespace UpperHalfPlane
 
 instance : Inhabited ℍ :=
@@ -234,8 +237,8 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   ext1
   change _ / _ = (_ * (_ / _) + _) * _
   rw [denom_cocycle]
-  field_simp [denom_ne_zero, -denom, -Num]
-  simp only [Matrix.mul, dot_product, Fin.sum_univ_succ, Num, denom, coe_coe, Subgroup.coe_mul,
+  field_simp [denom_ne_zero, -denom, -num]
+  simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
   ring
@@ -245,8 +248,9 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
 instance : MulAction GL(2, ℝ)⁺ ℍ where
   smul := smulAux
   one_smul z := by
-    ext1; change _ / _ = _
-    simp [coeFn_coe_base']
+    ext1
+    change _ / _ = _
+    simp
   mul_smul := mul_smul'
 
 section ModularScalarTowers
@@ -280,13 +284,15 @@ instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
-theorem subgroup_on_gLPos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
+theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
-#align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_gLPos_smul_apply
+#align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
-instance subgroup_on_gLPos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ
-    where smul_assoc := by intro s g z; simp only [subgroup_on_GL_pos_smul_apply, coe_coe];
+instance subgroup_on_gLPos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
+  smul_assoc := by
+    intro s g z
+    simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_gLPos
 
