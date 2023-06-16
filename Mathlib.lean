@@ -2290,6 +2290,7 @@ import Mathlib.Order.Category.BoolAlgCat
 import Mathlib.Order.Category.CompleteLatCat
 import Mathlib.Order.Category.DistLatCat
 import Mathlib.Order.Category.FinBddDistLatCat
+import Mathlib.Order.Category.FinBoolAlgCat
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.FrmCat
 import Mathlib.Order.Category.HeytAlgCat
@@ -2543,6 +2544,7 @@ import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
