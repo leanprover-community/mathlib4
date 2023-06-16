@@ -120,6 +120,7 @@ elab "#show " stx:term : command =>
       return
     logInfo m!"{← showCmd e}"
 
+-- todo: mouseover on (inst)implicits doesn't work yet
 
 #show smoothManifoldWithCorners_of_contDiffOn
 #show extChartAt_source_mem_nhdsWithin
