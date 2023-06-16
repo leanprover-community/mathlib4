@@ -8,11 +8,11 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Data.Int.Parity
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Tactic.Ring
-import Mathbin.Tactic.NoncommRing
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # IMO 1998 Q2
@@ -119,8 +119,7 @@ theorem a_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
 
 theorem a_fibre_over_contestant (c : C) :
     (Finset.univ.filterₓ fun p : JudgePair J => p.Agree r c ∧ p.distinct) =
-      ((a r).filterₓ fun a : AgreedTriple C J => a.contestant = c).image Prod.snd :=
-  by
+      ((a r).filterₓ fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
   simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, true_and_iff, exists_prop]
   constructor
@@ -151,8 +150,7 @@ theorem a_fibre_over_judgePair_card {p : JudgePair J} (h : p.distinct) :
 
 theorem a_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.distinct → (agreedContestants r p).card ≤ k) :
-    (a r).card ≤ k * (Fintype.card J * Fintype.card J - Fintype.card J) :=
-  by
+    (a r).card ≤ k * (Fintype.card J * Fintype.card J - Fintype.card J) := by
   change _ ≤ k * (Finset.card _ * Finset.card _ - Finset.card _)
   rw [← Finset.offDiag_card]
   apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_off_diag_judge_pair r)
@@ -168,8 +166,7 @@ theorem add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
 #align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
-    2 * z * z + 2 * z + 1 ≤ x * x + y * y :=
-  by
+    2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by
     rw [← mul_le_mul_left (zero_lt_two' ℤ)]; convert this <;> ring
   have h' : (x + y) * (x + y) = 4 * z * z + 4 * z + 1 := by rw [h]; ring
@@ -183,8 +180,7 @@ section
 variable [Fintype J]
 
 theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
-    2 * z * z + 2 * z + 1 ≤ (Finset.univ.filterₓ fun p : JudgePair J => p.Agree r c).card :=
-  by
+    2 * z * z + 2 * z + 1 ≤ (Finset.univ.filterₓ fun p : JudgePair J => p.Agree r c).card := by
   let x := (finset.univ.filter fun j => r c j).card
   let y := (finset.univ.filter fun j => ¬r c j).card
   have h : (finset.univ.filter fun p : judge_pair J => p.Agree r c).card = x * x + y * y := by
@@ -196,8 +192,7 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
 #align imo1998_q2.judge_pairs_card_lower_bound Imo1998Q2.judge_pairs_card_lower_bound
 
 theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
-    2 * z * z ≤ (Finset.univ.filterₓ fun p : JudgePair J => p.Agree r c ∧ p.distinct).card :=
-  by
+    2 * z * z ≤ (Finset.univ.filterₓ fun p : JudgePair J => p.Agree r c ∧ p.distinct).card := by
   let s := finset.univ.filter fun p : judge_pair J => p.Agree r c
   let t := finset.univ.filter fun p : judge_pair J => p.distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
@@ -212,8 +207,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
 #align imo1998_q2.distinct_judge_pairs_card_lower_bound Imo1998Q2.distinct_judge_pairs_card_lower_bound
 
 theorem a_card_lower_bound [Fintype C] {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) :
-    2 * z * z * Fintype.card C ≤ (a r).card :=
-  by
+    2 * z * z * Fintype.card C ≤ (a r).card := by
   have h : ∀ a, a ∈ A r → Prod.fst a ∈ @Finset.univ C _ := by intros; apply Finset.mem_univ
   apply Finset.mul_card_image_le_card_of_maps_to h
   intro c hc
@@ -235,8 +229,7 @@ open imo1998_q2
 theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = a)
     (hJ : Fintype.card J = b) (ha : 0 < a) (hb : Odd b)
     (hk : ∀ p : JudgePair J, p.distinct → (agreedContestants r p).card ≤ k) :
-    (b - 1 : ℚ) / (2 * b) ≤ k / a :=
-  by
+    (b - 1 : ℚ) / (2 * b) ≤ k / a := by
   rw [clear_denominators ha hb.pos]
   obtain ⟨z, hz⟩ := hb; rw [hz] at hJ ; rw [hz]
   have h := le_trans (A_card_lower_bound r hJ) (A_card_upper_bound r hk)
