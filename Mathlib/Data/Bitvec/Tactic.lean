@@ -1,6 +1,7 @@
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.Ruleset
+import Mathlib.Data.Vector.Snoc
 import Mathlib.Tactic
 import Aesop
 import Qq
