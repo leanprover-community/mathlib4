@@ -91,7 +91,7 @@ theorem to_Γ_Spec_preim_basicOpen_eq (r : Γ.obj (op X)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_preim_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.to_Γ_Spec_preim_basicOpen_eq
 
-/-- `to_Γ_Spec_fun` is continuous. -/
+/-- `toΓSpecFun` is continuous. -/
 theorem to_Γ_Spec_continuous : Continuous X.toΓSpecFun := by
   apply isTopologicalBasis_basic_opens.continuous
   rintro _ ⟨r, rfl⟩
@@ -217,48 +217,54 @@ theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
 
+--Porting Note: Had to increase Heartbeats
+set_option maxHeartbeats 240000 in
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
     toStalk _ _ ≫ PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x = X.ΓToStalk x := by
   rw [PresheafedSpace.stalkMap]
   erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
-      ⟨X.to_Γ_Spec_fun x, by rw [basic_open_one] <;> trivial⟩]
-  rw [← category.assoc, category.assoc (to_open _ _)]
-  erw [stalk_functor_map_germ]
-  rw [← category.assoc (to_open _ _), X.to_Γ_Spec_SheafedSpace_app_spec 1]
-  unfold Γ_to_stalk
-  rw [← stalk_pushforward_germ _ X.to_Γ_Spec_base X.presheaf ⊤]
+      ⟨X.toΓSpecFun x, by rw [basicOpen_one] ; trivial⟩]
+  rw [← Category.assoc, Category.assoc (toOpen _ _)]
+  erw [stalkFunctor_map_germ]
+  rw [← Category.assoc (toOpen _ _), X.toΓSpecSheafedSpace_app_spec 1]
+  unfold ΓToStalk
+  rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
-  change (X.to_Γ_Spec_base _* X.presheaf).map le_top.hom.op ≫ _ = _
+  change (X.toΓSpecBase _* X.presheaf).map le_top.hom.op ≫ _ = _
   apply germ_res
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_stalk_stalk_map_to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toStalk_stalkMap_to_Γ_Spec
 
+--Porting Note: Had to increase Heartbeats
+set_option maxHeartbeats 1000000 in
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps val_base]
 def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
   val := X.toΓSpecSheafedSpace
-  Prop := by
+  prop := by
     intro x
-    let p : PrimeSpectrum (Γ.obj (op X)) := X.to_Γ_Spec_fun x
+    let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
     constructor
     -- show stalk map is local hom ↓
-    let S := (structure_sheaf _).presheaf.stalk p
+    let S := (structureSheaf _).presheaf.stalk p
     rintro (t : S) ht
-    obtain ⟨⟨r, s⟩, he⟩ := IsLocalization.surj p.as_ideal.prime_compl t
+    obtain ⟨⟨r, s⟩, he⟩ := IsLocalization.surj p.asIdeal.primeCompl t
     dsimp at he
     apply isUnit_of_mul_isUnit_left
     rw [he]
-    refine' IsLocalization.map_units S (⟨r, _⟩ : p.as_ideal.prime_compl)
+    refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
-    rw [← to_stalk_stalk_map_to_Γ_Spec, comp_apply]
+    rw [← toStalk_stalkMap_to_Γ_Spec, comp_apply]
     erw [← he]
     rw [RingHom.map_mul]
+    --Porting Note: Doesn't compile anymore, causes a missing `MonoidHomClass`.
+    -- Not sure how this worked before
     exact
       ht.mul
         ((IsLocalization.map_units S s : _).map
-          (PresheafedSpace.stalk_map X.to_Γ_Spec_SheafedSpace x))
+          (PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x))
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
