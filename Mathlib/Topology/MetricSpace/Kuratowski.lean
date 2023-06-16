@@ -135,7 +135,7 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
 #align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
 
 /--
-A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
+A function `f : α → ℓ^∞(ι, ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
 extension to the whole space.
 
 Theorem 2.2 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2015]
