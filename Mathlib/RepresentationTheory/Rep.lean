@@ -14,7 +14,6 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.CategoryTheory.Closed.FunctorCategory
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
@@ -66,6 +65,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
+-- porting note: was `V.ρ`
   Action.ρ V
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ
@@ -543,7 +543,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 
 noncomputable section
 
-/-- Auxilliary lemma for `to_Module_monoid_algebra`. -/
+/-- Auxiliary lemma for `to_Module_monoid_algebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
@@ -560,7 +560,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 
-/-- Auxilliary definition for `to_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `to_Module_monoid_algebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
     ModuleCat.of (MonoidAlgebra k G) V.ρ.asModule ⟶ ModuleCat.of (MonoidAlgebra k G) W.ρ.asModule :=
   { f.hom with
@@ -596,7 +596,7 @@ theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra_obj_ρ Rep.ofModuleMonoidAlgebra_obj_ρ
 
-/-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
@@ -605,7 +605,7 @@ def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv
 
-/-- Auxilliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
   refine' V.ρ.asModuleEquiv.symm.trans _
@@ -613,7 +613,7 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv
 
-/-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
   LinearEquiv.toModuleIso'
@@ -631,12 +631,15 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
       (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) := by
   dsimp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
+/- Porting note: rest of broken proof was
+  simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
+    Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
   erw [Representation.asModuleEquiv_symm_map_rho]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_comm Rep.unit_iso_comm
 
-/-- Auxilliary definition for `equivalenceModuleMonoidAlgebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
     (LinearEquiv.toModuleIso'
