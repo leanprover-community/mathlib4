@@ -7,3 +7,4 @@ import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
+import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
