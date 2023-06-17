@@ -1100,6 +1100,11 @@ lemma isIso₁_truncLE_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
   have H := someOctahedron rfl (t.triangleLEGE_distinguished n₀ n₁ h T.obj₁) hT mem
   exact t.isGE₂ _ H.mem n₁ (by dsimp ; infer_instance) (by dsimp ; infer_instance)
 
+lemma isIso₁_truncLT_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n : ℤ) (h₃ : t.IsGE T.obj₃ n) : IsIso ((t.truncLT n).map T.mor₁) := by
+  rw [← NatIso.isIso_map_iff (t.truncLEIsoTruncLT (n-1) n (by linarith))]
+  exact t.isIso₁_truncLE_map_of_GE T hT (n-1) n (by linarith) h₃
+
 lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
     IsIso ((t.truncGE n₁).map T.mor₂) := by
@@ -1219,6 +1224,11 @@ lemma isIso_truncGE_map_truncGEπ_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.triangleLEGE_distinguished (a-1) a (by linarith) X) (b-1) b (by linarith)
       (t.isLE_of_LE ((t.truncLE (a-1)).obj X) (a-1) (b-1) (by linarith))
 
+lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    IsIso ((t.truncLT a).map ((t.truncLTι b).app X)) :=
+  t.isIso₁_truncLT_map_of_GE _ (t.triangleLTGE_distinguished b X) a
+    (t.isGE_of_GE ((t.truncGE b).obj X) a b (by linarith))
+
 lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) :
     IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
@@ -1236,12 +1246,28 @@ lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) :
       exact t.isIso_truncGE_map_truncGEπ_app a b h X
     . simp at h
   . refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
-    . simp only [truncGEt_obj_top, Functor.id_obj, Functor.zero_obj]
-    . simp only [truncGEt_obj_top, abstractSpectralObject_truncGE, Functor.zero_obj]
+    all_goals
+      simp only [truncGEt_obj_top, Functor.zero_obj]
 
 lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : ℤt) (h : a ≤ b) :
     IsIso ((t.truncLTt.obj a).map ((t.abstractSpectralObject.truncLTι b).app X)) := by
-  sorry
+  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+  . refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+    all_goals
+      simp only [truncLTt_obj_bot, Functor.zero_obj]
+  . obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
+    . simp at h
+    . simp only [ℤt.mk_le_mk_iff] at h
+      dsimp
+      simp only [AbstractSpectralObject.truncLEι_mk]
+      exact t.isIso_truncLT_map_truncLTι_app a b h X
+    . dsimp
+      infer_instance
+  . simp only [ℤt.top_le_iff] at h
+    subst h
+    dsimp
+    simp only [AbstractSpectralObject.truncLTι_top_app]
+    infer_instance
 
 instance (D : Arrow ℤt) (X : C) :
   IsIso ((t.abstractSpectralObject.truncGEToTruncGEGE.app D).app X) :=
