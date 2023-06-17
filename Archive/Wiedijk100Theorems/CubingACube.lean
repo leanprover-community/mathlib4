@@ -8,9 +8,9 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Data.Set.Finite
-import Mathbin.Data.Set.Intervals.Disjoint
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Intervals.Disjoint
 
 /-!
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
@@ -38,8 +38,7 @@ variable {n : ℕ}
   Then `I ∩ K \ J` is nonempty. -/
 theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (h₁ : x₁ < y₁) (hy : y₁ < y₂)
     (h₂ : y₂ < x₂) (hz₁ : z₁ ≤ y₂) (hz₂ : y₁ ≤ z₂) (hw : w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂) :
-    ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ :=
-  by
+    ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ := by
   simp only [not_and, not_lt, mem_Ico] at hw 
   refine' ⟨max x₁ (min w y₂), _, _, _⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
@@ -193,8 +192,7 @@ theorem nontrivial_fin : Nontrivial (Fin n) :=
 #align theorems_100.«82».correct.nontrivial_fin Theorems100.«82».Correct.nontrivial_fin
 
 /-- The width of any cube in the partition cannot be 1. -/
-theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 :=
-  by
+theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   intro hi
   cases' exists_ne i with i' hi'
   let p := (cs i').b
@@ -211,11 +209,9 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 :=
 /-- The top of a cube (which is the bottom of the cube shifted up by its width) must be covered by
   bottoms of (other) cubes in the family. -/
 theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
-    (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom :=
-  by
+    (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
   intro p hp; cases' hp with hp0 hps; rw [tail_shift_up] at hps 
-  have : p ∈ (unit_cube : cube (n + 1)).to_set :=
-    by
+  have : p ∈ (unit_cube : cube (n + 1)).to_set := by
     simp only [to_set, forall_fin_succ, hp0, side_unit_cube, mem_set_of_eq, mem_Ico, head_shift_up]
     refine' ⟨⟨_, _⟩, _⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add; apply zero_le_b h; apply (cs i).hw'
@@ -253,14 +249,12 @@ def Valley (cs : ι → Cube (n + 1)) (c : Cube (n + 1)) : Prop :=
 variable {c : Cube (n + 1)} (h : Correct cs) (v : Valley cs c)
 
 /-- The bottom of the unit cube is a valley -/
-theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
-  by
+theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube := by
   refine' ⟨_, _, _⟩
   · intro v
     simp only [bottom, and_imp, mem_Union, mem_set_of_eq]
     intro h0 hv
-    have : v ∈ (unit_cube : cube (n + 1)).to_set :=
-      by
+    have : v ∈ (unit_cube : cube (n + 1)).to_set := by
       dsimp only [to_set, unit_cube, mem_set_of_eq]
       rw [forall_fin_succ, h0]; constructor; norm_num [side, unit_cube]; exact hv
     rw [← h.2, mem_Union] at this ; rcases this with ⟨i, hi⟩
@@ -300,8 +294,7 @@ theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) : (cs i).b j.succ + (cs i).w
 #align theorems_100.«82».t_le_t Theorems100.«82».t_le_t
 
 /-- Every cube in the valley must be smaller than it -/
-theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w :=
-  by
+theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
   have j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
@@ -309,8 +302,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w :=
 #align theorems_100.«82».w_lt_w Theorems100.«82».w_lt_w
 
 /-- There are at least two cubes in a valley -/
-theorem nontrivial_bcubes : (bcubes cs c).Nontrivial :=
-  by
+theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
@@ -367,8 +359,7 @@ theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
 #align theorems_100.«82».mi_strict_minimal Theorems100.«82».mi_strict_minimal
 
 /-- The top of `mi` cannot be 1, since there is a larger cube in the valley -/
-theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 :=
-  by
+theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   apply ne_of_lt; rcases(nontrivial_bcubes h v).exists_ne (mi h v) with ⟨i, hi, h2i⟩
   apply lt_of_lt_of_le _ h.b_add_w_le_one; exact i; exact 0
   rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
@@ -396,8 +387,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
     simp [bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
-  have hs : s.nonempty :=
-    by
+  have hs : s.nonempty := by
     rcases(nontrivial_bcubes h v).exists_ne i with ⟨i', hi', h2i'⟩
     exact ⟨i', hi', h2i'⟩
   rcases Set.exists_min_image s (w ∘ cs) (Set.toFinite _) hs with ⟨i', ⟨hi', h2i'⟩, h3i'⟩
@@ -422,16 +412,14 @@ variable (h v)
 
 /-- `mi` cannot lie on the boundary of the valley. Otherwise, the cube adjacent to it in the `j`-th
   direction will intersect one of the neighbouring cubes on the same boundary as `mi`. -/
-theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈ _) j :=
-  by
+theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈ _) j := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
   haveI := h.nontrivial_fin
   rcases exists_ne j with ⟨j', hj'⟩; swap
   intro hj
   rcases smallest_on_boundary hj with ⟨x, ⟨hx, h2x⟩, h3x⟩
   let p : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j then x else (cs i).b j₂.succ
-  have hp : p ∈ c.bottom :=
-    by
+  have hp : p ∈ c.bottom := by
     suffices ∀ j' : Fin n, ite (j' = j) x ((cs i).b j'.succ) ∈ c.side j'.succ by
       simpa [bottom, p, to_set, tail, side_tail]
     intro j₂
@@ -444,8 +432,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     apply mi_strict_minimal i_i' h2i'; apply hw
   rcases this with ⟨⟨x', hx'⟩⟩
   let p' : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j' then x' else (cs i).b j₂.succ
-  have hp' : p' ∈ c.bottom :=
-    by
+  have hp' : p' ∈ c.bottom := by
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [bottom, p', to_set, tail, side_tail]
     intro j₂
@@ -455,8 +442,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
-    have : (cs i).b ∈ (cs i').to_set :=
-      by
+    have : (cs i).b ∈ (cs i').to_set := by
       simp only [to_set, forall_fin_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_set_of_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [side_tail, p', hj'.symm, hj₂] using hi''.2 j
@@ -483,8 +469,7 @@ variable {h v}
 /-- The same result that `mi` cannot lie on the boundary of the valley written as inequalities. -/
 theorem mi_not_on_boundary' (j : Fin n) :
     c.tail.b j < (cs (mi h v)).tail.b j ∧
-      (cs (mi h v)).tail.b j + (cs (mi h v)).w < c.tail.b j + c.w :=
-  by
+      (cs (mi h v)).tail.b j + (cs (mi h v)).w < c.tail.b j + c.w := by
   have := mi_not_on_boundary h v j
   simp only [on_boundary, not_or] at this ; cases' this with h1 h2
   constructor
@@ -496,8 +481,7 @@ theorem mi_not_on_boundary' (j : Fin n) :
 
 /-- The top of `mi` gives rise to a new valley, since the neighbouring cubes extend further upward
   than `mi`. -/
-theorem valley_mi : Valley cs (cs (mi h v)).shiftUp :=
-  by
+theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
   refine' ⟨_, _, _⟩
   · intro p; apply h.shift_up_bottom_subset_bottoms mi_xm_ne_one
@@ -507,8 +491,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp :=
     rw [tail_shift_up] at h2p2 
     simp only [not_subset, tail_shift_up] at h2i' 
     rcases h2i' with ⟨p1, hp1, h2p1⟩
-    have : ∃ p3, p3 ∈ (cs i').tail.to_set ∧ p3 ∉ (cs i).tail.to_set ∧ p3 ∈ c.tail.to_set :=
-      by
+    have : ∃ p3, p3 ∈ (cs i').tail.to_set ∧ p3 ∉ (cs i).tail.to_set ∧ p3 ∈ c.tail.to_set := by
       simp only [to_set, not_forall, mem_set_of_eq] at h2p1 ; cases' h2p1 with j hj
       rcases Ico_lemma (mi_not_on_boundary' j).1 (by simp [hw]) (mi_not_on_boundary' j).2
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
@@ -533,8 +516,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp :=
       apply h2p3; convert hi''.2; rw [tail_cons]
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
     have hp' : p' ∈ (cs i').to_set := by simpa [to_set, forall_fin_succ, p', hi'.symm] using h1p3
-    have h2p' : p' ∈ (cs i'').to_set :=
-      by
+    have h2p' : p' ∈ (cs i'').to_set := by
       simp only [to_set, forall_fin_succ, p', cons_succ, cons_zero, mem_set_of_eq]
       refine' ⟨_, by simpa [to_set, p] using hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
@@ -569,8 +551,7 @@ def decreasingSequence (k : ℕ) : ℝ :=
 #align theorems_100.«82».decreasing_sequence Theorems100.«82».decreasingSequence
 
 theorem strictAnti_sequence_of_cubes : StrictAnti <| decreasingSequence h :=
-  strictAnti_nat_of_succ_lt fun k =>
-    by
+  strictAnti_nat_of_succ_lt fun k => by
     let v := (sequence_of_cubes h k).2; dsimp only [decreasing_sequence, sequence_of_cubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 #align theorems_100.«82».strict_anti_sequence_of_cubes Theorems100.«82».strictAnti_sequence_of_cubes
@@ -599,8 +580,7 @@ theorem cannot_cube_a_cube :
                     unitCube.to_set →-- whose union is the unit cube
                       InjOn
                       Cube.w s →-- such that the widths of all cubes are different
-                    False :=
-  by
+                    False := by
   -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj
   cases n
