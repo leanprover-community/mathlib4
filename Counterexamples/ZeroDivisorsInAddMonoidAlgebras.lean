@@ -15,11 +15,11 @@ import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
 /-!
-# Examples of zero-divisors in `add_monoid_algebra`s
+# Examples of zero-divisors in `AddMonoidAlgebra`s
 
-This file contains an easy source of zero-divisors in an `add_monoid_algebra`.
+This file contains an easy source of zero-divisors in an `AddMonoidAlgebra`.
 If `k` is a field and `G` is an additive group containing a non-zero torsion element, then
-`add_monoid_algebra k G` contains non-zero zero-divisors: this is lemma `zero_divisors_of_torsion`.
+`AddMonoidAlgebra k G` contains non-zero zero-divisors: this is lemma `zero_divisors_of_torsion`.
 
 There is also a version for periodic elements of an additive monoid: `zero_divisors_of_periodic`.
 
@@ -30,11 +30,11 @@ The formalized example generalizes in trivial ways the assumptions: the field `k
 nontrivial ring `R` and the additive group `G` with a torsion element can be any additive monoid
 `A` with a non-zero periodic element.
 
-Besides this example, we also address a comment in `data.finsupp.lex` to the effect that the proof
+Besides this example, we also address a comment in `Data.Finsupp.Lex` to the effect that the proof
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
 
-The specific statement is about `finsupp.lex.covariant_class_le_left` and its analogue
-`finsupp.lex.covariant_class_le_right`.  We do not need two separate counterexamples, since the
+The specific statement is about `Finsupp.Lex.covariantClass_lt_left` and its analogue
+`Finsupp.Lex.covariantClass_le_right`.  We do not need two separate counterexamples, since the
 operation is commutative.
 
 The example is very simple.  Let `F = {0, 1}` with order determined by `0 < 1` and absorbing
@@ -46,14 +46,17 @@ finitely supported function is lexicographic, matching the list notation.  The i
 -/
 
 
-open Finsupp AddMonoidAlgebra
+set_option linter.uppercaseLean3 false
+
+open Finsupp hiding single
+open AddMonoidAlgebra
 
 namespace Counterexample
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `2 ≤ n`,
-then `add_monoid_algebra R A` contains non-zero zero-divisors.  The elements are easy to write down:
-`[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `add_monoid_algebra R A` whose product
+then `AddMonoidAlgebra R A` contains non-zero zero-divisors.  The elements are easy to write down:
+`[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `AddMonoidAlgebra R A` whose product
 is zero.
 
 Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
@@ -62,9 +65,8 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
-  · exact sub_ne_zero.mpr (by simpa [single_eq_single_iff])
-  ·
-    rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
+  · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
+  · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
       sub_eq_zero, add_zero, ← succ_nsmul, Nat.sub_add_cancel (one_le_two.trans n2), na]
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
@@ -74,9 +76,9 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
 #align counterexample.single_zero_one Counterexample.single_zero_one
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
-monoid with a non-zero element `a` of finite order `oa`, then `add_monoid_algebra R A` contains
+monoid with a non-zero element `a` of finite order `oa`, then `AddMonoidAlgebra R A` contains
 non-zero zero-divisors.  The elements are easy to write down:
-`∑ i in finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `add_monoid_algebra R A`
+`∑ i in Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `AddMonoidAlgebra R A`
 whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
@@ -84,28 +86,27 @@ torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
     (o2 : 2 ≤ addOrderOf a) : ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine'
-    ⟨(Finset.range (addOrderOf a)).Sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
+    ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
       _⟩
   · apply_fun fun x : AddMonoidAlgebra R A => x 0
     refine' ne_of_eq_of_ne (_ : (_ : R) = 1) one_ne_zero
-    simp_rw [Finset.sum_apply']
-    refine' (Finset.sum_eq_single 0 _ _).trans _
+    dsimp only; rw [Finset.sum_apply']
+    refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne]
-      exact nsmul_ne_zero_of_lt_addOrderOf' b0 (finset.mem_range.mp hb)
-    ·
-      simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, le_zero_iff,
+      exact nsmul_ne_zero_of_lt_addOrderOf' b0 (Finset.mem_range.mp hb)
+    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, le_zero_iff,
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : AddMonoidAlgebra R A => x 0
     refine' sub_ne_zero.mpr (ne_of_eq_of_ne (_ : (_ : R) = 0) _)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
-          (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (nat.succ_le_iff.mp o2))
+          (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (Nat.succ_le_iff.mp o2))
       simp only [a0, single_eq_of_ne, Ne.def, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
-  · convert Commute.geom_sum₂_mul _ (addOrderOf a)
-    · ext; rw [single_zero_one, one_pow, mul_one]
+  · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
+    · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]
 #align counterexample.zero_divisors_of_torsion Counterexample.zero_divisors_of_torsion
@@ -122,48 +123,39 @@ inductive F
   deriving DecidableEq, Inhabited
 #align counterexample.F Counterexample.F
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- The same as `list.get_rest`, except that we take the "rest" from the first match, rather than
+/-- The same as `List.getRest`, except that we take the "rest" from the first match, rather than
 from the beginning, returning `[]` if there is no match.  For instance,
 ```lean
-#eval [1,2].drop_until [3,1,2,4,1,2]  -- [4, 1, 2]
+#eval dropUntil [1,2] [3,1,2,4,1,2]  -- [4, 1, 2]
 ```
 -/
 def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
-  | l, [] => []
-  | l, a::as => ((a::as).getRest l).getD (l.dropUntil as)
+  | _, [] => []
+  | l, a :: as => ((a::as).getRest l).getD (dropUntil l as)
 #align counterexample.list.drop_until Counterexample.List.dropUntil
 
-/-- `guard_decl_in_file na loc` makes sure that the declaration with name `na` is in the file with
-relative path `"src/" ++ "/".intercalate loc ++ ".lean"`.
+open Lean Elab in
+/-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
-#eval guard_decl_in_file `nat.nontrivial ["data", "nat", "basic"]  -- does nothing
+guard_decl Nat.nontrivial Mathlib.Data.Nat.Basic -- does nothing
 
-#eval guard_decl_in_file `nat.nontrivial ["not", "in", "here"]
--- fails giving the location 'data/nat/basic.lean'
+guard_decl Nat.nontrivial Not.In.Here
+-- the module Not.In.Here is not imported!
 ```
 
 This test makes sure that the comment referring to this example is in the file claimed in the
 doc-module to this counterexample. -/
-unsafe def guard_decl_in_file (na : Name) (loc : List String) : tactic Unit := do
-  let env ← tactic.get_env
-  let some fil ← pure <| env.decl_olean na |
-    throwError "the instance `{← na}` is not imported!"
-  let path : String := ⟨List.dropUntil "/src/".toList fil.toList⟩
-  let locdot : String := ".".intercalate loc
-  guard (fil ("src/" ++ "/".intercalate loc ++ ".lean")) <|>
-      throwError "instance `{(← na)}` is no longer in `{(← locdot)}`.
-        
-        Please, update the doc-module and this check with the correct location:
-        
-        '{← Path}'
-        "
-#align counterexample.guard_decl_in_file counterexample.guard_decl_in_file
+elab "guard_decl" na:ident mod:ident : command => do
+  let dcl ← resolveGlobalConstNoOverloadWithInfo na
+  let mdn := mod.getId
+  let env ← getEnv
+  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
-#eval guard_decl_in_file `finsupp.lex.covariant_class_le_left ["data", "finsupp", "lex"]
+guard_decl Finsupp.Lex.covariantClass_le_left Mathlib.Data.Finsupp.Lex
 
-#eval guard_decl_in_file `finsupp.lex.covariant_class_le_right ["data", "finsupp", "lex"]
+guard_decl Finsupp.Lex.covariantClass_le_right Mathlib.Data.Finsupp.Lex
 
 namespace F
 
@@ -174,11 +166,8 @@ instance : Zero F :=
 instance : One F :=
   ⟨F.one⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
 /-- A tactic to prove trivial goals by enumeration. -/
-unsafe def boom : tactic Unit :=
-  sorry
-#align counterexample.F.boom counterexample.F.boom
+macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
 
 /-- `val` maps `0 1 : F` to their counterparts in `ℕ`.
 We use it to lift the linear order on `ℕ`. -/
@@ -187,53 +176,31 @@ def val : F → ℕ
   | 1 => 1
 #align counterexample.F.val Counterexample.F.val
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
 instance : LinearOrder F :=
-  LinearOrder.lift' val
-    (by
-      run_tac
-        boom)
+  LinearOrder.lift' val (by boom)
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
 @[simp]
-theorem z01 : (0 : F) < 1 := by
-  run_tac
-    boom
+theorem z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/-- `F` would be a `comm_semiring`, using `min` as multiplication.  Again, we do not need this. -/
+/-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
   add := max
-  add_assoc := by
-    run_tac
-      boom
+  add_assoc := by boom
   zero := 0
-  zero_add := by
-    run_tac
-      boom
-  add_zero := by
-    run_tac
-      boom
-  add_comm := by
-    run_tac
-      boom
+  zero_add := by boom
+  add_zero := by boom
+  add_comm := by boom
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/-- The `covariant_class`es asserting monotonicity of addition hold for `F`. -/
+/-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
 instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
-  ⟨by
-    run_tac
-      boom⟩
+  ⟨by boom⟩
 #align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
 
 example : CovariantClass F F (Function.swap (· + ·)) (· ≤ ·) := by infer_instance
 
 /-- The following examples show that `F` has all the typeclasses used by
-`finsupp.lex.covariant_class_le_left`... -/
+`Finsupp.Lex.covariantClass_le_left`... -/
 example : LinearOrder F := by infer_instance
 
 example : AddMonoid F := by infer_instance
@@ -242,75 +209,60 @@ example : AddMonoid F := by infer_instance
 example : ¬CovariantClass F F (· + ·) (· < ·) := fun h =>
   lt_irrefl 1 <| (h.elim : Covariant F F (· + ·) (· < ·)) 1 z01
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
 @[simp]
-theorem f1 : ∀ a : F, 1 + a = 1 := by
-  run_tac
-    boom
+theorem f1 : ∀ a : F, 1 + a = 1 := by boom
 #align counterexample.F.f1 Counterexample.F.f1
 
 @[simp]
-theorem f011 : ofLex (single (0 : F) (1 : F)) 1 = 0 :=
+theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
   single_apply_eq_zero.mpr fun h => h
 #align counterexample.F.f011 Counterexample.F.f011
 
 @[simp]
-theorem f010 : ofLex (single (0 : F) (1 : F)) 0 = 1 :=
+theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
   single_eq_same
 #align counterexample.F.f010 Counterexample.F.f010
 
 @[simp]
-theorem f111 : ofLex (single (1 : F) (1 : F)) 1 = 1 :=
+theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
   single_eq_same
 #align counterexample.F.f111 Counterexample.F.f111
 
 @[simp]
-theorem f110 : ofLex (single (1 : F) (1 : F)) 0 = 0 :=
+theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 #align counterexample.F.f110 Counterexample.F.f110
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic counterexample.F.boom -/
-/-- Here we see that (not-necessarily strict) monotonicity of addition on `lex (F →₀ F)` is not
+/-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
-enough and is the content of `finsupp.lex.covariant_class_le_left`. -/
+enough and is the content of `Finsupp.Lex.covariantClass_le_left`. -/
 example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· ≤ ·) := by
   rintro ⟨h⟩
-  refine' not_lt.mpr (h (single (0 : F) (1 : F)) (_ : single 1 1 ≤ single 0 1)) ⟨1, _⟩
-  ·
-    exact
-      Or.inr
-        ⟨0, by
-          simp [(by
-              run_tac
-                boom :
-              ∀ j : F, j < 0 ↔ False)]⟩
-  ·
-    simp only [(by
-        run_tac
-          boom :
-        ∀ j : F, j < 1 ↔ j = 0),
-      ofLex_add, coe_add, Pi.toLex_apply, Pi.add_apply, forall_eq, f010, f1, eq_self_iff_true, f011,
-      f111, zero_add, and_self_iff]
+  refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
+    (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
+  · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
+  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDfinsupp_add,
+      toLex_add, ofLex_toLex, Dfinsupp.coe_add, toDfinsupp_coe, Pi.toLex_apply, Pi.add_apply,
+      forall_eq, f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
 
-example {α} [Zero α] : 2 • (single 0 1 : α →₀ F) = single 0 1 ∧ (single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨smul_single _ _ _, by simpa only [Ne.def, single_eq_zero] using z01.ne⟩
+example {α} [Zero α] :
+    2 • (Finsupp.single 0 1 : α →₀ F) = Finsupp.single 0 1 ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
+  ⟨smul_single _ _ _, by simp [Ne.def, Finsupp.single_eq_zero, z01.ne]⟩
 
 end F
 
-/-- A Type that does not have `unique_prods`. -/
+/-- A Type that does not have `UniqueProds`. -/
 example : ¬UniqueProds ℕ := by
   rintro ⟨h⟩
   refine' not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) _
-  suffices (∃ x : ℕ, (x = 0 ∨ x = 1) ∧ ¬x = 0) ∧ ∃ x : ℕ, (x = 0 ∨ x = 1) ∧ ¬x = 1 by
-    simpa [UniqueMul]
-  exact ⟨⟨1, by simp⟩, ⟨0, by simp⟩⟩
+  simp [UniqueMul, not_or]
+  exact ⟨⟨0, 1, by simp⟩, ⟨0, 0, by simp⟩⟩
 
-/-- Some Types that do not have `unique_sums`. -/
+/-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
   haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
@@ -321,4 +273,3 @@ example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩
 
 end Counterexample
-
