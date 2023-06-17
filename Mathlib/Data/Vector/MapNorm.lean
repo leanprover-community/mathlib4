@@ -5,6 +5,7 @@ Authors: Alex Keizer
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Snoc
+import Qq
 
 /-!
 
@@ -23,7 +24,7 @@ namespace Vector
     section Unary
       variable (xs : Vector α n)
 
-      @[aesop norm]
+      -- @[aesop norm]
       theorem map_to_mapAccumr (f : α → β) :
           map f xs = (mapAccumr (fun x _ => (⟨⟩, f x)) xs ()).snd := by
         induction xs using revInductionOn <;> simp_all
@@ -33,7 +34,7 @@ namespace Vector
     section Binary
       variable (xs : Vector α n) (ys : Vector β n)
 
-      @[aesop norm]
+      -- @[aesop norm]
       theorem map₂_to_mapAccumr₂ (f : α → β → γ) :
           map₂ f xs ys = (mapAccumr₂ (fun x y _ => (⟨⟩, f x y)) xs ys ()).snd := by
         induction xs, ys using revInductionOn₂ <;> simp_all
@@ -62,7 +63,22 @@ namespace Vector
                                       (m.fst.fst, m.snd) := by
         induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
+
+      @[simp]
+      theorem mapAccumr_map (f₂ : α → β) :
+          (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
+        induction xs using Vector.revInductionOn generalizing s <;> simp_all
+
+      @[simp]
+      theorem map_mapAccumr (f₁ : β → γ) :
+          (map f₁ (mapAccumr f₂ xs s).snd) = (mapAccumr (fun x s =>
+              let r := (f₂ x s); (r.fst, f₁ r.snd)
+            ) xs s).snd := by
+        induction xs using Vector.revInductionOn generalizing s <;> simp_all
+
     end Unary
+
+
 
     section Binary
       variable (xs : Vector α n) (ys : Vector β n)
@@ -111,14 +127,59 @@ namespace Vector
             (m.fst.fst, m.snd) := by
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
-      variable (zs : Vector γ n)
+      @[simp]
+      theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ)
+                                              (f₂ : α → β → σ₂ → σ₂ × γ) :
+          (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd xs s₁)
+          = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+                      let r₂ := f₂ x y s₂
+                      let r₁ := f₁ r₂.snd x s₁
+                      ((r₁.fst, r₂.fst), r₁.snd)
+                    )
+                  xs ys (s₁, s₂);
+          (m.fst.fst, m.snd) := by
+        induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
-      -- @[simp]
-      -- theorem mapAccumr₂_mapAccumr₂_left_left :
-      --     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂) xs s₁)
-      --     = let m := (mapAccumr)
+      @[simp]
+      theorem mapAccumr₂_mapAccumr₂_left_right  (f₁ : γ → β → σ₁ → σ₁ × φ)
+                                                (f₂ : α → β → σ₂ → σ₂ × γ) :
+          (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
+          = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+                      let r₂ := f₂ x y s₂
+                      let r₁ := f₁ r₂.snd y s₁
+                      ((r₁.fst, r₂.fst), r₁.snd)
+                    )
+                  xs ys (s₁, s₂);
+          (m.fst.fst, m.snd) := by
+        induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
+      @[simp]
+      theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ₁ × φ)
+                                                (f₂ : α → β → σ₂ → σ₂ × γ) :
+          (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
+          = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+                      let r₂ := f₂ x y s₂
+                      let r₁ := f₁ x r₂.snd s₁
+                      ((r₁.fst, r₂.fst), r₁.snd)
+                    )
+                  xs ys (s₁, s₂);
+          (m.fst.fst, m.snd) := by
+        induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
+
+      @[simp]
+      theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ)
+                                                (f₂ : α → β → σ₂ → σ₂ × γ) :
+          (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
+          = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
+                      let r₂ := f₂ x y s₂
+                      let r₁ := f₁ y r₂.snd s₁
+                      ((r₁.fst, r₂.fst), r₁.snd)
+                    )
+                  xs ys (s₁, s₂);
+          (m.fst.fst, m.snd) := by
+        induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
     end Binary
+
 
   end Fold
 
@@ -129,18 +190,152 @@ namespace Vector
   for all possible input bits, then the state is redundant and can be optimized out
   -/
   section RedundantState
+    @[simp]
+    theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+        mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
+      induction xs using revInductionOn <;> simp_all
 
-    -- @[aesop safe 3]
-    -- theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
-    --     mapAccumr f xs s = (s, (mapAccumr (fun x _ => ((), (f x s).snd)) xs ()).snd) := by
-    --   induction xs using revInductionOn <;> simp_all
+    @[simp]
+    theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
+        mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
+      induction xs, ys using revInductionOn₂ <;> simp_all
 
-    -- @[aesop safe 3]
-    -- theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
-    --     mapAccumr₂ f xs ys s = (s, (mapAccumr₂ (fun x y _ => ((), (f x y s).snd)) xs ys ()).snd) := by
-    --   induction xs, ys using revInductionOn₂ <;> simp_all
+    /-- If `f` takes a pair of states, but always returns the same value for both elements of the
+        pair, then we don't actually need the pair
+     -/
+    @[simp]
+    theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
+                                  (h : ∀ x s, let s' := (f x (s, s)).fst; s'.fst = s'.snd)
+                                : mapAccumr f xs (s, s) = (
+                                    let m := mapAccumr (fun x s => let r := f x (s, s);
+                                                                  (r.fst.fst, r.snd)
+                                                        ) xs s
+                                    ((m.fst, m.fst), m.snd)
+                                  ) := by
+      induction xs using Vector.revInductionOn generalizing s
+      case nil => rfl
+      case snoc xs x ih =>
+        specialize h x s
+        revert h
+        simp_all
+        rcases (f x (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
+        simp_all
+
+    /-- If `f` takes a pair of states, but always returns the same value for both elements of the
+        pair, then we don't actually need the pair
+     -/
+    @[simp]
+    theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
+                                  (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd)
+                                : mapAccumr₂ f xs ys (s, s) = (
+                                    let m := mapAccumr₂ (fun x y s => let r := f x y (s, s);
+                                                                      (r.fst.fst, r.snd)
+                                                        ) xs ys s
+                                    ((m.fst, m.fst), m.snd)
+                                  ) := by
+      induction xs, ys using Vector.revInductionOn₂ generalizing s
+      case nil => rfl
+      case snoc xs ys x y ih =>
+        specialize h x y s
+        revert h
+        simp_all
+        rcases (f x y (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
+        simp_all
 
   end RedundantState
+
+
+
+  /-
+  ### Bisimulation
+  When are two `mapAccumr` applications equal
+  -/
+  section Congr
+    section Unary
+      variable (xs : Vector α n) (f : α → σ → σ × β) (g : α → σ' → σ' × β)
+
+      @[simp, aesop 90%]
+      theorem mapAccumr_bisim_snd (R : σ → σ' → Prop)
+                                  (h : ∀ x s s', R s s' →
+                                        R (f x s).fst (g x s').fst ∧ (f x s).snd = (g x s').snd) :
+          ∀ s s', R s s' → (mapAccumr f xs s).snd = (mapAccumr g xs s').snd := by
+        induction xs using revInductionOn
+        case nil => intros; rfl
+        case snoc xs x ih =>
+          intros s s' hR;
+          rcases (h x s s' hR) with ⟨hR1, hR2⟩
+          specialize ih _ _ hR1
+          simp_all
+
+
+      -- @[simp, aesop 90%]
+      -- theorem mapAccumr_map_congr_fun (f : α → σ → σ × α) (h : ∀ xs c, (f xs c).snd = g xs) :
+      --     (mapAccumr f xs c).snd = map g xs := by
+      --   induction xs using revInductionOn generalizing c <;> simp[*]
+
+      -- @[simp, aesop 90%]
+      -- theorem mapAccumr_map_congr_fun' (f : α → σ → σ × α) (c : σ) (h : ∀ xs, (f xs c) = (c, g xs)) :
+      --     (mapAccumr f xs c).snd = map g xs := by
+      --   induction xs using revInductionOn generalizing c <;> simp[*]
+    end Unary
+
+    section Binary
+      variable (xs : Vector α n) (ys : Vector β n) (f : α → β → σ → σ × γ) (g : α → β → σ' → σ' × γ)
+
+      @[simp, aesop 90%]
+      theorem mapAccumr₂_bisim_snd (R : σ → σ' → Prop)
+                                  (h : ∀ x y s s', R s s' →
+                                        R (f x y s).fst (g x y s').fst ∧ (f x y s).snd = (g x y s').snd) :
+          ∀ s s', R s s' → (mapAccumr₂ f xs ys s).snd = (mapAccumr₂ g xs ys s').snd := by
+        induction xs, ys using revInductionOn₂
+        case nil => intros; rfl
+        case snoc xs ys x y ih =>
+          intros s s' hR;
+          rcases (h x y s s' hR) with ⟨hR1, hR2⟩
+          specialize ih _ _ hR1
+          simp_all
+
+      -- @[simp, aesop 90%]
+      -- theorem mapAccumr₂_congr_fun_snd (h : f = g) :
+      --     (Vector.mapAccumr₂ f xs ys c).snd = (Vector.mapAccumr₂ g xs ys c).snd := by
+      --   congr
+
+      -- @[simp, aesop 90%]
+      -- theorem mapAccumr₂_congr_fun_symm_snd (h : ∀ x y, f x y = g y x) :
+      --     (Vector.mapAccumr₂ f xs ys c).snd = (Vector.mapAccumr₂ g ys xs c).snd := by
+      --   induction xs, ys using Vector.revInductionOn₂ generalizing c <;> simp[*]
+
+    end Binary
+  end Congr
+
+
+  /-
+    TODO: this should probably go to a separate file
+  -/
+  namespace Tactic
+    open Lean.Elab.Tactic Qq
+
+    variable {α β γ σ : Q(Type u)}
+
+    protected def bisim_unary (_f : Q($α → $σ → $σ × $α))
+                              -- (g : Q())
+    : TacticM Unit := do
+      return
+
+    def bisim : TacticM Unit := do
+      withMainContext do
+        let (goal : Q(Prop)) ← getMainTarget
+        goal.check
+        match goal with
+          | ~q(Vector.mapAccumr $f $xs $s = Vector.mapAccumr $g $xs $s') =>
+              return
+          | _ => throwError  "Expected goal of form
+                                mapAccumr ?f ?xs ?s = mapAccumr ?g ?xs ?s'
+                              Found:
+                                {goal}
+                              "
+
+  end Tactic
 
 
 end Vector
