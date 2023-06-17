@@ -8,8 +8,8 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Trails
-import Mathbin.Tactic.DeriveFintype
+import Mathlib.Combinatorics.SimpleGraph.Trails
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # The Königsberg bridges problem
@@ -97,10 +97,8 @@ theorem degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <
 #align konigsberg.degree_eq_degree Konigsberg.degree_eq_degree
 
 /-- The Königsberg graph is not Eulerian. -/
-theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False :=
-  by
-  have : {v | Odd (graph.degree v)} = {verts.V1, verts.V2, verts.V3, verts.V4} :=
-    by
+theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
+  have : {v | Odd (graph.degree v)} = {verts.V1, verts.V2, verts.V3, verts.V4} := by
     ext w
     simp only [degree_eq_degree, Nat.odd_iff_not_even, Set.mem_setOf_eq, Set.mem_insert_iff,
       Set.mem_singleton_iff]
