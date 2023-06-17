@@ -27,10 +27,10 @@ The strategy here is roughly brute force, checking the possible multiples of 11.
 
 open Nat
 
-namespace imo1960_q1
+namespace Imo1960Q1
 
 def sumOfSquares (L : List ℕ) : ℕ :=
-  (L.map fun x => x * x).Sum
+  (L.map fun x => x * x).sum
 #align imo1960_q1.sum_of_squares Imo1960Q1.sumOfSquares
 
 def ProblemPredicate (n : ℕ) : Prop :=
@@ -66,7 +66,7 @@ theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 := by
 #align imo1960_q1.lt_1000 Imo1960Q1.lt_1000
 
 /-
-We do an exhaustive search to show that all results are covered by `solution_predicate`.
+We do an exhaustive search to show that all results are covered by `SolutionPredicate`.
 -/
 def SearchUpTo (c n : ℕ) : Prop :=
   n = c * 11 ∧ ∀ m : ℕ, m < n → ProblemPredicate m → SolutionPredicate m
@@ -84,7 +84,7 @@ theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
   obtain rfl : m = c := by linarith
-  rw [Nat.mul_div_cancel_left _ (by norm_num : 11 > 0), mul_comm] at h₂ 
+  rw [Nat.mul_div_cancel_left _ (by norm_num : 11 > 0), mul_comm] at h₂
   refine' (H' h₂).imp _ _ <;> · rintro rfl; norm_num
 #align imo1960_q1.search_up_to_step Imo1960Q1.searchUpTo_step
 
@@ -94,26 +94,25 @@ theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredi
 #align imo1960_q1.search_up_to_end Imo1960Q1.searchUpTo_end
 
 theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n := by
-  have := search_up_to_start
+  have := searchUpTo_start
   iterate 82
     replace :=
-      search_up_to_step this (by norm_num1 <;> rfl) (by norm_num1 <;> rfl) (by norm_num1 <;> rfl)
-        (by decide)
-  exact search_up_to_end this
+      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num)
+  exact searchUpTo_end this
 #align imo1960_q1.right_direction Imo1960Q1.right_direction
 
 /-
 Now we just need to prove the equivalence, for the precise problem statement.
 -/
 theorem left_direction (n : ℕ) (spn : SolutionPredicate n) : ProblemPredicate n := by
-  rcases spn with (rfl | rfl) <;> norm_num [problem_predicate, sum_of_squares]
+  -- Porting note: This is very slow
+  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> rfl
 #align imo1960_q1.left_direction Imo1960Q1.left_direction
 
-end imo1960_q1
+end Imo1960Q1
 
-open imo1960_q1
+open Imo1960Q1
 
 theorem imo1960_q1 (n : ℕ) : ProblemPredicate n ↔ SolutionPredicate n :=
   ⟨right_direction, left_direction n⟩
 #align imo1960_q1 imo1960_q1
-
