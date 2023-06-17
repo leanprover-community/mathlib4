@@ -254,7 +254,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
       simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
         AddMonoidHom.flipHom_apply] at sol
       exact sol
-  ext ai ax bi bx ci cx
+  ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]
   simp_rw [mulHom_of_of]

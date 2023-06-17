@@ -424,7 +424,7 @@ def imageToKernel' (w : f ≫ g = 0) : image f ⟶ kernel g :=
 theorem imageSubobjectIso_imageToKernel' (w : f ≫ g = 0) :
     (imageSubobjectIso f).hom ≫ imageToKernel' f g w =
       imageToKernel f g w ≫ (kernelSubobjectIso g).hom := by
-  apply equalizer.hom_ext
+  ext
   simp [imageToKernel']
 #align image_subobject_iso_image_to_kernel' imageSubobjectIso_imageToKernel'
 
@@ -451,10 +451,6 @@ def homologyIsoCokernelImageToKernel' (w : f ≫ g = 0) :
     simp only [Iso.hom_inv_id_assoc, cokernel.π_desc, cokernel.π_desc_assoc, Category.assoc,
       coequalizer_as_cokernel]
     exact (Category.comp_id _).symm
-  inv_hom_id := by
-    apply coequalizer.hom_ext
-    simp only [Iso.inv_hom_id_assoc, cokernel.π_desc, Category.comp_id, cokernel.π_desc_assoc,
-      Category.assoc]
 #align homology_iso_cokernel_image_to_kernel' homologyIsoCokernelImageToKernel'
 
 variable [HasEqualizers V]
@@ -464,7 +460,7 @@ variable [HasEqualizers V]
 def homologyIsoCokernelLift (w : f ≫ g = 0) : homology f g w ≅ cokernel (kernel.lift g f w) := by
   refine' homologyIsoCokernelImageToKernel' f g w ≪≫ _
   have p : factorThruImage f ≫ imageToKernel' f g w = kernel.lift g f w := by
-    apply equalizer.hom_ext
+    ext
     simp [imageToKernel']
   exact (cokernelEpiComp _ _).symm ≪≫ cokernelIsoOfEq p
 #align homology_iso_cokernel_lift homologyIsoCokernelLift

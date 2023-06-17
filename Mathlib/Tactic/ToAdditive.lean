@@ -911,7 +911,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}calling @[{thisAttr}]. The preferred method is to use {
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
-    warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
+    warnAttr stx Std.Tactic.Ext.extExtension (fun b n =>
+        (b.1.elements.any fun t => t.declName = n) || (b.2.elements.any fun t => t.declName = n))
       thisAttr `ext src tgt
     warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
     warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
