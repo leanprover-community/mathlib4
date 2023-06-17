@@ -8,10 +8,10 @@ Authors: Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Data.Real.Sqrt
-import Mathbin.Data.Real.Nnreal
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.NNReal
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2008 Q4
@@ -49,8 +49,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
                 w * x = y * z →
                   (f w ^ 2 + f x ^ 2) / (f (y ^ 2) + f (z ^ 2)) =
                     (w ^ 2 + x ^ 2) / (y ^ 2 + z ^ 2)) ↔
-      (∀ x > 0, f x = x) ∨ ∀ x > 0, f x = 1 / x :=
-  by
+      (∀ x > 0, f x = x) ∨ ∀ x > 0, f x = 1 / x := by
   constructor; swap
   -- proof that f(x) = x and f(x) = 1/x satisfy the condition
   · rintro (h | h)
@@ -66,14 +65,12 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   -- proof that the only solutions are f(x) = x or f(x) = 1/x
   intro H₂
   have h₀ : f 1 ≠ 0 := by specialize H₁ 1 zero_lt_one; exact ne_of_gt H₁
-  have h₁ : f 1 = 1 :=
-    by
+  have h₁ : f 1 = 1 := by
     specialize H₂ 1 1 1 1 zero_lt_one zero_lt_one zero_lt_one zero_lt_one rfl
     norm_num [← two_mul] at H₂ 
     rw [mul_div_mul_left (f 1 ^ 2) (f 1) two_ne_zero] at H₂ 
     rwa [← (div_eq_iff h₀).mpr (sq (f 1))]
-  have h₂ : ∀ x > 0, (f x - x) * (f x - 1 / x) = 0 :=
-    by
+  have h₂ : ∀ x > 0, (f x - x) * (f x - 1 / x) = 0 := by
     intro x hx
     have h1xss : 1 * x = sqrt x * sqrt x := by rw [one_mul, mul_self_sqrt (le_of_lt hx)]
     specialize H₂ 1 x (sqrt x) (sqrt x) zero_lt_one hx (sqrt_pos.mpr hx) (sqrt_pos.mpr hx) h1xss
