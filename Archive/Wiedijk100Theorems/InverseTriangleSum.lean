@@ -8,8 +8,8 @@ Authors: Jalex Stark, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Data.Real.Basic
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Real.Basic
 
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
@@ -31,8 +31,7 @@ open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
 theorem Theorem100.inverse_triangle_sum :
-    ∀ n, ∑ k in range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n :=
-  by
+    ∀ n, ∑ k in range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
   refine' sum_range_induction _ _ (if_pos rfl) _
   rintro (_ | n); · rw [if_neg, if_pos] <;> norm_num
   simp_rw [if_neg (Nat.succ_ne_zero _), Nat.succ_eq_add_one]
