@@ -309,7 +309,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    ext U
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
@@ -335,8 +335,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
         colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) := by
       apply CategoryTheory.Limits.colimit.hom_ext
       intro j
-      apply ContinuousMap.ext
-      intro x
+      ext x
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
       simp
     fapply PresheafedSpace.ext
