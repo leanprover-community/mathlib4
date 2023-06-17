@@ -8,9 +8,9 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.CardEmbedding
-import Mathbin.Probability.CondCount
-import Mathbin.Probability.Notation
+import Mathlib.Data.Fintype.CardEmbedding
+import Mathlib.Probability.CondCount
+import Mathlib.Probability.Notation
 
 /-!
 # Birthday Problem
@@ -31,8 +31,7 @@ local notation "‖" x "‖" => Fintype.card x
 
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
-    2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ :=
-  by
+    2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
   simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
   norm_num
 #align theorems_100.birthday Theorems100.birthday
@@ -71,13 +70,11 @@ theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
-theorem birthday_measure : ℙ {f : Fin 23 → Fin 365 | Function.Injective f} < 1 / 2 :=
-  by
+theorem birthday_measure : ℙ {f : Fin 23 → Fin 365 | Function.Injective f} < 1 / 2 := by
   -- most of this proof is essentially converting it to the same form as `birthday`.
   rw [fin_fin.measure_apply]
   generalize_proofs hfin
-  have : |hfin.to_finset| = 42200819302092359872395663074908957253749760700776448000000 :=
-    by
+  have : |hfin.to_finset| = 42200819302092359872395663074908957253749760700776448000000 := by
     trans ‖Fin 23 ↪ Fin 365‖
     · simp_rw [← Fintype.card_coe, Set.Finite.coeSort_toFinset, Set.coe_setOf]
       exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
