@@ -341,7 +341,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     by_cases hr' : natDegree r = 0
     · exact splits_of_natDegree_le_one _ (le_trans (le_of_eq hr') zero_le_one)
     obtain ⟨x, hx⟩ :=
-      exists_rootOfSplits _ (SplittingField.splits (r.comp q)) fun h =>
+      exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h =>
         hr'
           ((mul_eq_zero.mp
                 (natDegree_comp.symm.trans (natDegree_eq_of_degree_eq_some h))).resolve_right
@@ -358,12 +358,12 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     · cases' comp_eq_zero_iff.mp h₁ with h h
       · rw [h, MulZeroClass.zero_mul]
         exact splits_zero _
-      · exact False.ndrec _ (hq (by rw [h.2, natDegree_C]))
+      · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
     · cases' comp_eq_zero_iff.mp h₂ with h h
       · rw [h, MulZeroClass.mul_zero]
         exact splits_zero _
-      · exact False.ndrec _ (hq (by rw [h.2, natDegree_C]))
+      · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
   exact
