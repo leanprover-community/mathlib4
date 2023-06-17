@@ -22,7 +22,7 @@ of `y₁, y₂, ... , yₙ`, then `∑ (xᵢ - yᵢ)^2 ≤ ∑ (xᵢ - zᵢ)^2`
 
 # Solution
 
-Firstly, we expand the squares withing both sums and distribute into separate finite sums. Then,
+Firstly, we expand the squares within both sums and distribute into separate finite sums. Then,
 noting that `∑ yᵢ ^ 2 = ∑ zᵢ ^ 2`, it remains to prove that `∑ xᵢ * zᵢ ≤ ∑ xᵢ * yᵢ`, which is true
 by the Rearrangement Inequality
 -/
@@ -45,11 +45,11 @@ theorem imo1975_q1 :
   have hσy : ∑ i : ℕ in Finset.Icc 1 n, y i ^ 2 = ∑ i : ℕ in Finset.Icc 1 n, y (σ i) ^ 2 := by
     rw [← Equiv.Perm.sum_comp σ (Finset.Icc 1 n) _ hσ]
   -- let's cancel terms appearing on both sides
-  norm_num [hσy, mul_assoc, ← Finset.mul_sum]
+  rw [hσy, add_le_add_iff_right, ← neg_le_neg_iff, neg_sub, neg_sub, sub_le_sub_iff_right]
+  simp_rw [mul_assoc, ← Finset.mul_sum]; norm_num
   -- what's left to prove is a version of the rearrangement inequality
   apply MonovaryOn.sum_mul_comp_perm_le_sum_mul _ hσ
   -- finally we need to show that `x` and `y` 'vary' together on `[1, n]` and this is due to both of
   -- them being `decreasing`
   exact AntitoneOn.monovaryOn hx hy
 #align imo1975_q1 imo1975_q1
-
