@@ -33,7 +33,6 @@ local notation "‖" x "‖" => Fintype.card x
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
   simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
-  norm_num
 #align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
@@ -66,15 +65,18 @@ instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
 
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
-  erw [cond_count_univ, measure.count_apply_finite]
+  erw [condCount_univ, Measure.count_apply_finite]
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
 /-- **Birthday Problem**: first probabilistic interpretation. -/
-theorem birthday_measure : ℙ {f : Fin 23 → Fin 365 | Function.Injective f} < 1 / 2 := by
+theorem birthday_measure :
+    ℙ ({f | (Function.Injective f)} : Set ((Fin 23) → (Fin 365))) < 1 / 2 := by
   -- most of this proof is essentially converting it to the same form as `birthday`.
-  rw [fin_fin.measure_apply]
+  rw [FinFin.measure_apply]
   generalize_proofs hfin
-  have : |hfin.to_finset| = 42200819302092359872395663074908957253749760700776448000000 := by
+  have : |hfin.toFinset| = 42200819302092359872395663074908957253749760700776448000000 := by
     trans ‖Fin 23 ↪ Fin 365‖
     · simp_rw [← Fintype.card_coe, Set.Finite.coeSort_toFinset, Set.coe_setOf]
       exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
@@ -90,4 +92,3 @@ theorem birthday_measure : ℙ {f : Fin 23 → Fin 365 | Function.Injective f} <
 end MeasureTheory
 
 end Theorems100
-
