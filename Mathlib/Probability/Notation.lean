@@ -8,8 +8,8 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.ProbabilityMassFunction.Basic
-import Mathbin.MeasureTheory.Function.ConditionalExpectation.Basic
+import Mathlib.Probability.ProbabilityMassFunction.Basic
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-! # Notations for probability theory
 
