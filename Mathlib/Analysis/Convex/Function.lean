@@ -1098,7 +1098,7 @@ theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜
   have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
   simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
   rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
-  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ _root_.Set.univ) hxy' ha hb hab
+  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) hxy' ha hb hab
 
 theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
     ConvexOn 𝕜 univ f.symm := by
