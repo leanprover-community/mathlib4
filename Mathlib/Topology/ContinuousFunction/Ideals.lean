@@ -91,7 +91,7 @@ variable (R)
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
-  add_mem' := @fun f g hf hg x hx => by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
+  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
@@ -342,7 +342,7 @@ theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (ide
 
 variable (X)
 
-/-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
+/-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
@@ -365,7 +365,6 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   rw [Ideal.isMaximal_def]
   refine' (idealOpensGI X 𝕜).isCoatom_iff (fun I hI => _) s
   rw [← Ideal.isMaximal_def] at hI
-  skip
   exact idealOfSet_ofIdeal_isClosed inferInstance
 #align continuous_map.ideal_of_set_is_maximal_iff ContinuousMap.idealOfSet_isMaximal_iff
 
