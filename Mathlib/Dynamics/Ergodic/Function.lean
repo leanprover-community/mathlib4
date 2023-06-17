@@ -40,6 +40,13 @@ theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp₀ (h : QuasiErgodic f μ) (hgm :
     (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c :=
   h.ae_eq_const_of_ae_eq_comp_of_ae_range₀ (s := univ) univ_mem hgm hg_eq
 
+/-- If `f : α → α` is an ergodic map and `g : α → X` is a null-measurable function from `α` to
+a nonempty topological space with second countable topology that is a.e.-invariant under `f`, then
+`g` is a.e. constant. -/
+theorem Ergodic.ae_eq_const_of_ae_eq_comp₀ (h : Ergodic f μ) (hgm : NullMeasurable g μ)
+    (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c :=
+  h.quasiErgodic.ae_eq_const_of_ae_eq_comp₀ hgm hg_eq
+
 end SecondCountableTopology
 
 namespace QuasiErgodic
@@ -63,6 +70,26 @@ theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
 
 theorem eq_const_of_compQuasiMeasurePreserving_eq (h : QuasiErgodic f μ) {g : α →ₘ[μ] X}
     (hg_eq : g.compQuasiMeasurePreserving f h.1 = g) : ∃ c, g = .const α c :=
- _
+  have : g ∘ f =ᵐ[μ] g := (g.coeFn_compQuasiMeasurePreserving h.1).symm.trans
+    (hg_eq.symm ▸ .refl _ _)
+  let ⟨c, hc⟩ := h.ae_eq_const_of_ae_eq_comp_ae g.aestronglyMeasurable this
+  ⟨c, AEEqFun.ext <| hc.trans (AEEqFun.coeFn_const _ _).symm⟩
 
 end QuasiErgodic
+
+namespace Ergodic
+
+variable [MetrizableSpace X] [Nonempty X] {μ : MeasureTheory.Measure α} {f : α → α}
+
+/-- If `f : α → α` is a (quasi)ergodic map and `g : α → X` is an a.e. strongly measurable function
+from `α` to a nonempty topological space that is a.e.-invariant under `f`, then `g` is
+a.e. constant. -/
+theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : Ergodic f μ) (hgm : AEStronglyMeasurable g μ)
+    (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c :=
+  h.quasiErgodic.ae_eq_const_of_ae_eq_comp_ae hgm hg_eq
+
+theorem eq_const_of_compMeasurePreserving_eq (h : Ergodic f μ) {g : α →ₘ[μ] X}
+    (hg_eq : g.compMeasurePreserving f h.1 = g) : ∃ c, g = .const α c :=
+  h.quasiErgodic.eq_const_of_compQuasiMeasurePreserving_eq hg_eq
+
+end Ergodic
