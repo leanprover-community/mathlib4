@@ -722,7 +722,7 @@ theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Dis
 #align set.disjoint_univ_pi Set.disjoint_univ_pi
 
 theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjoint (s.pi t₁) (s.pi t₂) :=
-  disjoint_left.2 fun h h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
+  disjoint_left.2 fun _ h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
 #align set.disjoint.set_pi Set.Disjoint.set_pi
 
 section Nonempty
