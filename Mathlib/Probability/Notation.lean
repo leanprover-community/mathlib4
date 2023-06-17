@@ -19,14 +19,14 @@ measurable space `m0`, and another measurable space structure `m` with `hm : m �
 - `𝔼[X] = ∫ a, X a`
 - `𝔼[X|m]`: conditional expectation of `X` with respect to the measure `volume` and the
   measurable space `m`. The similar `P[X|m]` for a measure `P` is defined in
-  measure_theory.function.conditional_expectation.
-- `P⟦s|m⟧ = P[s.indicator (λ ω, (1 : ℝ)) | m]`, conditional probability of a set.
+  `MeasureTheory.Function.ConditionalExpectation.Basic`.
+- `P⟦s|m⟧ = P[s.indicator (fun ω => (1 : ℝ)) | m]`, conditional probability of a set.
 - `X =ₐₛ Y`: `X =ᵐ[volume] Y`
 - `X ≤ₐₛ Y`: `X ≤ᵐ[volume] Y`
-- `∂P/∂Q = P.rn_deriv Q`
+- `∂P/∂Q = P.rnDeriv Q`
 We note that the notation `∂P/∂Q` applies to three different cases, namely,
-`measure_theory.measure.rn_deriv`, `measure_theory.signed_measure.rn_deriv` and
-`measure_theory.complex_measure.rn_deriv`.
+`MeasureTheory.Measure.rnDeriv`, `MeasureTheory.SignedMeasure.rnDeriv` and
+`MeasureTheory.ComplexMeasure.rnDeriv`.
 
 - `ℙ` is a notation for `volume` on a measured space.
 -/
@@ -37,21 +37,21 @@ open MeasureTheory
 open scoped MeasureTheory
 
 -- We define notations `𝔼[f|m]` for the conditional expectation of `f` with respect to `m`.
-scoped[ProbabilityTheory]
-  notation "𝔼[" X "|" m "]" => MeasureTheory.condexp m MeasureTheory.MeasureSpace.volume X
+scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
+  MeasureTheory.condexp m MeasureTheory.MeasureSpace.volume X
 
 scoped[ProbabilityTheory] notation P "[" X "]" => ∫ x, X x ∂P
 
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, X a
 
-scoped[ProbabilityTheory]
-  notation P "⟦" s "|" m "⟧" => MeasureTheory.condexp m P (s.indicator fun ω => (1 : ℝ))
+scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
+  MeasureTheory.condexp m P (Set.indicator s fun ω => (1 : ℝ))
 
 scoped[ProbabilityTheory] notation:50 X " =ₐₛ " Y:50 => X =ᵐ[MeasureTheory.MeasureSpace.volume] Y
 
 scoped[ProbabilityTheory] notation:50 X " ≤ₐₛ " Y:50 => X ≤ᵐ[MeasureTheory.MeasureSpace.volume] Y
 
-scoped[ProbabilityTheory] notation "∂" P "/∂" Q:50 => P.rn_deriv Q
+set_option quotPrecheck false in
+scoped[ProbabilityTheory] notation "∂" _P "/∂" Q:50 => P.rnDeriv Q
 
 scoped[ProbabilityTheory] notation "ℙ" => MeasureTheory.MeasureSpace.volume
-
