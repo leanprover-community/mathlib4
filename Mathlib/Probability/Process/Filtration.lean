@@ -8,7 +8,7 @@ Authors: Kexing Ying, Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Function.ConditionalExpectation.Real
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 /-!
 # Filtrations
@@ -167,8 +167,7 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
   rfl
 #align measure_theory.filtration.Inf_def MeasureTheory.Filtration.sInf_def
 
-noncomputable instance : CompleteLattice (Filtration ι m)
-    where
+noncomputable instance : CompleteLattice (Filtration ι m) where
   le := (· ≤ ·)
   le_refl f i := le_rfl
   le_trans f g h h_fg h_gh i := (h_fg i).trans (h_gh i)
@@ -242,8 +241,7 @@ variable [Preorder ι]
 
 /-- Given a sequence of measurable sets `(sₙ)`, `filtration_of_set` is the smallest filtration
 such that `sₙ` is measurable with respect to the `n`-the sub-σ-algebra in `filtration_of_set`. -/
-def filtrationOfSet {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet (s i)) : Filtration ι m
-    where
+def filtrationOfSet {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet (s i)) : Filtration ι m where
   seq i := MeasurableSpace.generateFrom {t | ∃ j ≤ i, s j = t}
   mono' n m hnm := MeasurableSpace.generateFrom_mono fun t ⟨k, hk₁, hk₂⟩ => ⟨k, hk₁.trans hnm, hk₂⟩
   le' n := MeasurableSpace.generateFrom_le fun t ⟨k, hk₁, hk₂⟩ => hk₂ ▸ hsm k
@@ -269,8 +267,7 @@ variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
 of σ-algebras such that that sequence of functions is measurable with respect to
 the filtration. -/
-def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m
-    where
+def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
   mono' i j hij := biSup_mono fun k => ge_trans hij
   le' i := by
@@ -287,8 +284,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     (hsm : ∀ i, measurable_set[m] (s i)) :
     filtrationOfSet hsm =
       natural (fun i => (s i).indicator (fun ω => 1 : Ω → β)) fun i =>
-        stronglyMeasurable_one.indicator (hsm i) :=
-  by
+        stronglyMeasurable_one.indicator (hsm i) := by
   simp only [natural, filtration_of_set, measurable_space_supr_eq]
   ext1 i
   refine' le_antisymm (generate_from_le _) (generate_from_le _)
@@ -337,8 +333,7 @@ noncomputable def limitProcess (f : ι → Ω → E) (ℱ : Filtration ι m)
   else 0
 #align measure_theory.filtration.limit_process MeasureTheory.Filtration.limitProcess
 
-theorem stronglyMeasurable_limitProcess : strongly_measurable[⨆ n, ℱ n] (limitProcess f ℱ μ) :=
-  by
+theorem stronglyMeasurable_limitProcess : strongly_measurable[⨆ n, ℱ n] (limitProcess f ℱ μ) := by
   rw [limit_process]
   split_ifs with h h
   exacts [(Classical.choose_spec h).1, strongly_measurable_zero]
@@ -350,8 +345,7 @@ theorem stronglyMeasurable_limit_process' : strongly_measurable[m] (limitProcess
 
 theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type _} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ :=
-  by
+    (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limit_process]
   split_ifs with h
   · refine'

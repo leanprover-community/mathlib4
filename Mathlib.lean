@@ -2441,6 +2441,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.ProbabilityMassFunction.Uniform
+import Mathlib.Probability.Process.Filtration
 import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Maschke
