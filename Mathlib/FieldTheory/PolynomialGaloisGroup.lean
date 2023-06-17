@@ -69,7 +69,8 @@ instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
 instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
-  AlgEquiv.hasCoeToFun
+  -- Porting note: was AlgEquiv.hasCoeToFun
+  inferInstanceAs (CoeFun (p.SplittingField ≃ₐ[F] p.SplittingField) _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction
@@ -81,7 +82,7 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
     AlgEquiv.ext fun x =>
       (AlgHom.mem_equalizer σ.toAlgHom τ.toAlgHom x).mp
         ((SetLike.ext_iff.mp _ x).mpr Algebra.mem_top)
-  rw [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
+  rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 #align polynomial.gal.ext Polynomial.Gal.ext
 
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
@@ -90,8 +91,8 @@ def uniqueGalOfSplits (h : p.Splits (RingHom.id F)) : Unique p.Gal where
   uniq f :=
     AlgEquiv.ext fun x => by
       obtain ⟨y, rfl⟩ :=
-        algebra.mem_bot.mp
-          ((set_like.ext_iff.mp ((is_splitting_field.splits_iff _ p).mp h) x).mp Algebra.mem_top)
+        Algebra.mem_bot.mp
+          ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 #align polynomial.gal.unique_gal_of_splits Polynomial.Gal.uniqueGalOfSplits
 
