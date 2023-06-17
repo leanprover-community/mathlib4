@@ -19,7 +19,7 @@ We define the Legendre symbol $\Bigl(\frac{a}{p}\Bigr)$ as `legendreSym p a`.
 Note the order of arguments! The advantage of this form is that then `legendreSym p`
 is a multiplicative map.
 
-The Legendre symbol is used to define the Jacobi symbol, `jacobi_sym a b`, for integers `a`
+The Legendre symbol is used to define the Jacobi symbol, `jacobiSym a b`, for integers `a`
 and (odd) natural numbers `b`, which extends the Legendre symbol.
 
 ## Main results
@@ -28,10 +28,10 @@ We also prove the supplementary laws that give conditions for when `-1`
 is a square modulo a prime `p`:
 `legendreSym.at_neg_one` and `ZMod.exists_sq_eq_neg_one_iff` for `-1`.
 
-See `number_theory.legendre_symbol.quadratic_reciprocity` for the conditions when `2` and `-2`
+See `NumberTheory.LegendreSymbol.QuadraticReciprocity` for the conditions when `2` and `-2`
 are squares:
-`legendre_sym.at_two` and `zmod.exists_sq_eq_two_iff` for `2`,
-`legendre_sym.at_neg_two` and `zmod.exists_sq_eq_neg_two_iff` for `-2`.
+`legendreSym.at_two` and `ZMod.exists_sq_eq_two_iff` for `2`,
+`legendreSym.at_neg_two` and `ZMod.exists_sq_eq_neg_two_iff` for `-2`.
 
 ## Tags
 
@@ -280,7 +280,7 @@ section Values
 /-!
 ### The value of the Legendre symbol at `-1`
 
-See `jacobi_sym.at_neg_one` for the corresponding statement for the Jacobi symbol.
+See `jacobiSym.at_neg_one` for the corresponding statement for the Jacobi symbol.
 -/
 
 
