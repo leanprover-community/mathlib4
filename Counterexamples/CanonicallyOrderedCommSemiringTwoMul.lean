@@ -8,9 +8,9 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Basic
-import Mathbin.RingTheory.Subsemiring.Basic
-import Mathbin.Algebra.Order.Monoid.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-!
 
@@ -60,8 +60,7 @@ instance : Preorder K where
 
 end FromBhavik
 
-theorem mem_zMod_2 (a : ZMod 2) : a = 0 ∨ a = 1 :=
-  by
+theorem mem_zMod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
   rcases a with ⟨_ | _, _ | _ | _ | _⟩
   · exact Or.inl rfl
   · exact Or.inr rfl
@@ -78,8 +77,7 @@ variable {a b : ℕ × ZMod 2}
 except that we leave incomparable each pair of elements with the same first component.
 For instance, `∀ α, β ∈ ℤ/2ℤ`, the inequality `(1,α) ≤ (2,β)` holds,
 whereas, `∀ n ∈ ℤ`, the elements `(n,0)` and `(n,1)` are incomparable. -/
-instance preN2 : PartialOrder (ℕ × ZMod 2)
-    where
+instance preN2 : PartialOrder (ℕ × ZMod 2) where
   le x y := x = y ∨ x.1 < y.1
   le_refl a := Or.inl rfl
   le_trans x y z xy yz := by
@@ -106,8 +104,7 @@ instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
 
 /-- A strict inequality forces the first components to be different. -/
 @[simp]
-theorem lt_def : a < b ↔ a.1 < b.1 :=
-  by
+theorem lt_def : a < b ↔ a.1 < b.1 := by
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨rfl | a1, h1⟩
     · exact (not_or_distrib.mp h1).1.elim rfl
@@ -121,15 +118,13 @@ theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := 
   (add_right_inj a).mp h
 #align counterexample.Nxzmod_2.add_left_cancel Counterexample.Nxzmod2.add_left_cancel
 
-theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b :=
-  by
+theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
   rintro a b (rfl | ab) c
   · rfl
   · exact Or.inr (by simpa)
 #align counterexample.Nxzmod_2.add_le_add_left Counterexample.Nxzmod2.add_le_add_left
 
-theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b ≤ c :=
-  by
+theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b ≤ c := by
   rintro a b c (bc | bc)
   · exact le_of_eq ((add_right_inj a).mp bc)
   · exact Or.inr (by simpa using bc)
@@ -169,8 +164,7 @@ def L : Type :=
   { l : ℕ × ZMod 2 // l ≠ (0, 1) }
 #align counterexample.ex_L.L Counterexample.ExL.L
 
-theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a + b ≠ (0, 1) :=
-  by
+theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a + b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   cases b
@@ -180,8 +174,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
   · simp [(a + b).succ_ne_zero]
 #align counterexample.ex_L.add_L Counterexample.ExL.add_L
 
-theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) :=
-  by
+theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   cases b
@@ -204,8 +197,7 @@ theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
 #align counterexample.ex_L.mul_L Counterexample.ExL.mul_L
 
 /-- The subsemiring corresponding to the elements of `L`, used to transfer instances. -/
-def lSubsemiring : Subsemiring (ℕ × ZMod 2)
-    where
+def lSubsemiring : Subsemiring (ℕ × ZMod 2) where
   carrier := {l | l ≠ (0, 1)}
   zero_mem' := by decide
   one_mem' := by decide
@@ -234,8 +226,7 @@ instance orderBot : OrderBot L :=
   ⟨0, bot_le⟩
 #align counterexample.ex_L.order_bot Counterexample.ExL.orderBot
 
-theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c :=
-  by
+theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
   ·
@@ -244,8 +235,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c :=
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel'_right _ _).symm⟩
 #align counterexample.ex_L.exists_add_of_le Counterexample.ExL.exists_add_of_le
 
-theorem le_self_add : ∀ a b : L, a ≤ a + b :=
-  by
+theorem le_self_add : ∀ a b : L, a ≤ a + b := by
   rintro a ⟨⟨bn, b2⟩, hb⟩
   obtain rfl | h := Nat.eq_zero_or_pos bn
   · obtain rfl | rfl := mem_zmod_2 b2
@@ -254,8 +244,7 @@ theorem le_self_add : ∀ a b : L, a ≤ a + b :=
   · exact Or.inr ((lt_add_iff_pos_right _).mpr h)
 #align counterexample.ex_L.le_self_add Counterexample.ExL.le_self_add
 
-theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨ b = 0 :=
-  by
+theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨ b = 0 := by
   rintro ⟨⟨a, a2⟩, ha⟩ ⟨⟨b, b2⟩, hb⟩ ab1
   injection ab1 with ab
   injection ab with abn ab2
@@ -282,8 +271,7 @@ instance can : CanonicallyOrderedCommSemiring L :=
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/
-example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b :=
-  by
+example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
   refine' ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => _, rfl⟩
   obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L => j.1.2) h
   cases F
