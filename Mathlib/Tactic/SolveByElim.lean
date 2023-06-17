@@ -42,8 +42,12 @@ def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .
         -- deals with closing new typeclass goals by calling
         -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
         -- It seems we can't reuse that machinery down here in `MetaM`,
-        -- so we just settle for trying to close each subgoal using `inferInstance`.
-        goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+        -- so we just settle for trying to close each typeclass subgoal using `inferInstance`.
+        -- At this same time, we put any unsolved typeclass subgoals at the end of the list,
+        -- as this helps with backtracking search.
+        let (instances, goals) ← goals.partitionM fun g => do pure (← isClass? (← g.getType)).isSome
+        return goals ++
+          (← instances.filterM fun g => try g.inferInstance; pure false catch _ => pure true)
 
 /--
 `applyFirst lemmas goal` applies the first of the `lemmas`
