@@ -34,12 +34,8 @@ open scoped BigOperators
 
 namespace Imo2013Q1
 
-theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ :=
-  calc
-    0 < 2 := by decide
-    _ = 2 ^ 1 := (pow_one 2).symm
-    _ ≤ 2 ^ k.succ := (Nat.pow_le_pow_of_le_right zero_lt_two (Nat.le_add_left 1 k))
-    _ ≤ 2 * n + 2 ^ k.succ := Nat.le_add_left _ _
+-- porting note: simplified proof using `positivity`
+theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 #align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
@@ -74,15 +70,11 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     use m
     have hmpk : (m pk : ℚ) = 2 * t + 2 ^ pk.succ := by
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
-    have denom_ne_zero : 2 * (t : ℚ) + 2 ^ pk.succ ≠ 0 := by
-      norm_cast
-      exact ne_of_gt <| arith_lemma pk t
+    have denom_ne_zero : (2 * (t : ℚ) + 2 * 2 ^ pk) ≠ 0 := by positivity
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ]
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
-        have : (2 * (t : ℚ) + 2 * 2 ^ pk) ≠ 0 := by
-          sorry
         field_simp [t.cast_add_one_ne_zero]
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
