@@ -8,11 +8,11 @@ Authors: David Renshaw
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pnat.Basic
-import Mathbin.Data.Nat.Parity
-import Mathbin.Algebra.BigOperators.Pi
-import Mathbin.Tactic.Ring
-import Mathbin.Tactic.FieldSimp
+import Mathlib.Data.PNat.Basic
+import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # IMO 2013 Q1
@@ -44,8 +44,7 @@ theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ :=
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i : ℕ in Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
-      ∏ i : ℕ in Finset.range k, (1 + 1 / m i) :=
-  by
+      ∏ i : ℕ in Finset.range k, (1 + 1 / m i) := by
   suffices : ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i
   exact Finset.prod_congr rfl this
   intro i hi
@@ -57,8 +56,7 @@ end imo2013_q1
 open imo2013_q1
 
 theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
-    ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i in Finset.range k, (1 + 1 / m i) :=
-  by
+    ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i in Finset.range k, (1 + 1 / m i) := by
   revert n
   induction' k with pk hpk
   · intro n; use fun _ => 1; simp
@@ -82,8 +80,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     calc
       (1 : ℚ) + (2 ^ pk.succ - 1) / ↑n = 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [coe_coe n, ht, pow_succ]
-      _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) :=
-        by
+      _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
         field_simp [t.cast_add_one_ne_zero]
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
@@ -101,8 +98,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     calc
       (1 : ℚ) + (2 ^ pk.succ - 1) / ↑n = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
         rw [coe_coe n, ht, pow_succ]
-      _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) :=
-        by
+      _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
         field_simp [t.cast_add_one_ne_zero]
         ring
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
