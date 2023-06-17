@@ -14,12 +14,12 @@ import Mathlib.Algebra.Order.Monoid.Basic
 
 /-!
 
-A `canonically_ordered_comm_semiring` with two different elements `a` and `b` such that
+A `CanonicallyOrderedCommSemiring` with two different elements `a` and `b` such that
 `a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
 ordered semiring need not be injective.  In particular, multiplying by a strictly positive element
 need not be strictly monotone.
 
-Recall that a `canonically_ordered_comm_semiring` is a commutative semiring with a partial ordering
+Recall that a `CanonicallyOrderedCommSemiring` is a commutative semiring with a partial ordering
 that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is a `c`
 such that `a + c = b`.  There are several compatibility conditions among addition/multiplication
 and the order relation.  The point of the counterexample is to show that monotonicity of
@@ -29,6 +29,8 @@ Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
 -/
 
+
+set_option linter.uppercaseLean3 false
 
 namespace Counterexample
 
@@ -53,21 +55,21 @@ instance : Preorder K where
   le x y := x = y ∨ (x : ℚ) + 1 ≤ (y : ℚ)
   le_refl x := Or.inl rfl
   le_trans x y z xy yz := by
-    rcases xy with (rfl | _); · apply yz
-    rcases yz with (rfl | _); · right; apply xy
+    rcases xy with (rfl | xy); · apply yz
+    rcases yz with (rfl | yz); · right; apply xy
     right
     exact xy.trans (le_trans ((le_add_iff_nonneg_right _).mpr zero_le_one) yz)
 
 end FromBhavik
 
-theorem mem_zMod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
+theorem mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
   rcases a with ⟨_ | _, _ | _ | _ | _⟩
   · exact Or.inl rfl
   · exact Or.inr rfl
-#align counterexample.mem_zmod_2 Counterexample.mem_zMod_2
+#align counterexample.mem_zmod_2 Counterexample.mem_zmod_2
 
-theorem add_self_zMod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
-#align counterexample.add_self_zmod_2 Counterexample.add_self_zMod_2
+theorem add_self_zmod_2 (a : ZMod 2) : a + a = 0 := by rcases mem_zmod_2 a with (rfl | rfl) <;> rfl
+#align counterexample.add_self_zmod_2 Counterexample.add_self_zmod_2
 
 namespace Nxzmod2
 
@@ -81,9 +83,9 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
   le x y := x = y ∨ x.1 < y.1
   le_refl a := Or.inl rfl
   le_trans x y z xy yz := by
-    rcases xy with (rfl | _)
+    rcases xy with (rfl | xy)
     · exact yz
-    · rcases yz with (rfl | _)
+    · rcases yz with (rfl | yz)
       · exact Or.inr xy
       · exact Or.inr (xy.trans yz)
   le_antisymm := by
@@ -99,7 +101,7 @@ instance csrN2 : CommSemiring (ℕ × ZMod 2) := by infer_instance
 #align counterexample.Nxzmod_2.csrN2 Counterexample.Nxzmod2.csrN2
 
 instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
-  { Nxzmod2.csrN2 with add_left_cancel := fun a b c h => (add_right_inj a).mp h }
+  { Nxzmod2.csrN2 with add_left_cancel := fun a _ _ h => (add_right_inj a).mp h }
 #align counterexample.Nxzmod_2.csrN2_1 Counterexample.Nxzmod2.csrN21
 
 /-- A strict inequality forces the first components to be different. -/
@@ -107,14 +109,14 @@ instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
 theorem lt_def : a < b ↔ a.1 < b.1 := by
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨rfl | a1, h1⟩
-    · exact (not_or_distrib.mp h1).1.elim rfl
+    · exact (not_or.mp h1).1.elim rfl
     · exact a1
-  refine' ⟨Or.inr h, not_or_distrib.mpr ⟨fun k => _, not_lt.mpr h.le⟩⟩
-  rw [k] at h 
+  refine' ⟨Or.inr h, not_or.mpr ⟨fun k => _, not_lt.mpr h.le⟩⟩
+  rw [k] at h
   exact Nat.lt_asymm h h
 #align counterexample.Nxzmod_2.lt_def Counterexample.Nxzmod2.lt_def
 
-theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a b c h =>
+theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
   (add_right_inj a).mp h
 #align counterexample.Nxzmod_2.add_left_cancel Counterexample.Nxzmod2.add_left_cancel
 
@@ -131,14 +133,14 @@ theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b
 #align counterexample.Nxzmod_2.le_of_add_le_add_left Counterexample.Nxzmod2.le_of_add_le_add_left
 
 instance : ZeroLEOneClass (ℕ × ZMod 2) :=
-  ⟨by decide⟩
+  ⟨by dsimp only [LE.le]; decide⟩
 
 theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
-  fun a b c ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
+  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
 #align counterexample.Nxzmod_2.mul_lt_mul_of_pos_left Counterexample.Nxzmod2.mul_lt_mul_of_pos_left
 
 theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
-  fun a b c ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
+  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
 #align counterexample.Nxzmod_2.mul_lt_mul_of_pos_right Counterexample.Nxzmod2.mul_lt_mul_of_pos_right
 
 instance socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
@@ -167,31 +169,27 @@ def L : Type :=
 theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a + b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
-  cases b
-  · rcases mem_zmod_2 b2 with (rfl | rfl)
-    · simp [ha]
-    · simpa only
-  · simp [(a + b).succ_ne_zero]
+  match b with
+  | 0 =>
+    rcases mem_zmod_2 b2 with (rfl | rfl)
+    · simp [ha, -Prod.mk.injEq]
+    · cases hb rfl
+  | b + 1 =>
+    simp [(a + b).succ_ne_zero]
 #align counterexample.ex_L.add_L Counterexample.ExL.add_L
 
 theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
   rcases b with ⟨b, b2⟩
   cases b
-  · rcases mem_zmod_2 b2 with (rfl | rfl) <;>
-        rcases mem_zmod_2 a2 with
-          (rfl |
-            rfl) <;>-- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
-      -- it does not finish the proof and on that goal it asks to prove `false`
-      simp
+  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;> simp
+    -- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
+    -- it does not finish the proof and on that goal it asks to prove `false`
     exact hb rfl
   cases a
-  · rcases mem_zmod_2 b2 with (rfl | rfl) <;>
-        rcases mem_zmod_2 a2 with
-          (rfl |
-            rfl) <;>-- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
-      -- it does not finish the proof and on that goal it asks to prove `false`
-      simp
+  · rcases mem_zmod_2 b2 with (rfl | rfl) <;> rcases mem_zmod_2 a2 with (rfl | rfl) <;> simp
+    -- while this looks like a non-terminal `simp`, it (almost) isn't: there is only one goal where
+    -- it does not finish the proof and on that goal it asks to prove `false`
     exact ha rfl
   · simp [mul_ne_zero _ _, Nat.succ_ne_zero _]
 #align counterexample.ex_L.mul_L Counterexample.ExL.mul_L
@@ -201,8 +199,8 @@ def lSubsemiring : Subsemiring (ℕ × ZMod 2) where
   carrier := {l | l ≠ (0, 1)}
   zero_mem' := by decide
   one_mem' := by decide
-  add_mem' _ _ := add_L
-  mul_mem' _ _ := mul_L
+  add_mem' := add_L
+  mul_mem' := mul_L
 #align counterexample.ex_L.L_subsemiring Counterexample.ExL.lSubsemiring
 
 instance : OrderedCommSemiring L :=
@@ -222,15 +220,15 @@ theorem bot_le : ∀ a : L, 0 ≤ a := by
     exact Nat.succ_pos _
 #align counterexample.ex_L.bot_le Counterexample.ExL.bot_le
 
-instance orderBot : OrderBot L :=
-  ⟨0, bot_le⟩
+instance orderBot : OrderBot L where
+  bot := 0
+  bot_le := bot_le
 #align counterexample.ex_L.order_bot Counterexample.ExL.orderBot
 
 theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   rintro a ⟨b, _⟩ (⟨rfl, rfl⟩ | h)
   · exact ⟨0, (add_zero _).symm⟩
-  ·
-    exact
+  · exact
       ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk.inj_iff.1 H).1⟩,
         Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel'_right _ _).symm⟩
 #align counterexample.ex_L.exists_add_of_le Counterexample.ExL.exists_add_of_le
@@ -248,7 +246,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
   rintro ⟨⟨a, a2⟩, ha⟩ ⟨⟨b, b2⟩, hb⟩ ab1
   injection ab1 with ab
   injection ab with abn ab2
-  rw [mul_eq_zero] at abn 
+  rw [mul_eq_zero] at abn
   rcases abn with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · refine' Or.inl _
     rcases mem_zmod_2 a2 with (rfl | rfl)
@@ -264,9 +262,9 @@ instance can : CanonicallyOrderedCommSemiring L :=
   { (inferInstance : OrderBot L),
     (inferInstance :
       OrderedCommSemiring L) with
-    exists_add_of_le := exists_add_of_le
+    exists_add_of_le := @(exists_add_of_le)
     le_self_add := le_self_add
-    eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero }
+    eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero) }
 #align counterexample.ex_L.can Counterexample.ExL.can
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
@@ -279,4 +277,3 @@ example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
 end ExL
 
 end Counterexample
-
