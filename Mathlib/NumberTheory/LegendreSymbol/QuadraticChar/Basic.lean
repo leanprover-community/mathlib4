@@ -149,8 +149,8 @@ theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
 #align quadratic_char_zero quadraticChar_zero
 
 /-- For nonzero `a : F`, `quadraticChar F a = 1 ↔ IsSquare a`. -/
-theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) : quadraticChar F a = 1 ↔ IsSquare a :=
-  by
+theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
+    quadraticChar F a = 1 ↔ IsSquare a := by
   simp only [quadraticChar_apply, quadraticCharFun, ha, (by decide : (-1 : ℤ) ≠ 1), if_false,
     ite_eq_left_iff, imp_false, Classical.not_not]
 #align quadratic_char_one_iff_is_square quadraticChar_one_iff_isSquare
