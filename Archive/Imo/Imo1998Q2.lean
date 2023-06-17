@@ -235,10 +235,15 @@ end
 
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
-  rw [div_le_div_iff] <;> norm_cast
-  simp [ha, hb]
-  sorry
+  rw [div_le_div_iff]
+  · push_cast
+    convert @Nat.cast_le ℚ _ _ _ _
+    · aesop
+    · norm_cast
+  all_goals simp [ha, hb]
 #align imo1998_q2.clear_denominators Imo1998Q2.clear_denominators
+
+end
 
 end Imo1998Q2
 
@@ -254,7 +259,8 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
   rw [hC, hJ] at h
   -- We are now essentially done; we just need to bash `h` into exactly the right shape.
   have hl : k * ((2 * z + 1) * (2 * z + 1) - (2 * z + 1)) = k * (2 * (2 * z + 1)) * z := by
-    simp only [add_mul, two_mul, mul_comm, mul_assoc]; sorry
+    have : 0 < 2 * z + 1 := by aesop
+    simp only [mul_comm, add_mul, one_mul, nonpos_iff_eq_zero, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h
   cases' z with z
