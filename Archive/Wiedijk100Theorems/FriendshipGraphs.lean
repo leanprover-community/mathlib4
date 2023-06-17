@@ -188,25 +188,27 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
   · rw [sq, mul_eq_mul, ← mulVec_mulVec]
-    simp [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
-      card_neighborSet_eq_degree, hd v, Function.const_def]
+    simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
+      card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
+      mul_one, sum_const, Set.toFinset_card, Algebra.id.smul_eq_mul, Nat.cast_id]
 #align theorems_100.friendship.card_of_regular Theorems100.Friendship.card_of_regular
 
 /-- The size of a `d`-regular friendship graph is `1 mod (d-1)`, and thus `1 mod p` for a
   factor `p ∣ d-1`. -/
 theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegularOfDegree d) :
     (Fintype.card V : ZMod p) = 1 := by
-  have hpos : 0 < Fintype.card V := fintype.card_pos_iff.mpr inferInstance
+  have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
   simp only [add_left_eq_self, Nat.cast_add, Nat.cast_one]
-  have h := congr_arg (fun n => (↑n : ZMod p)) (card_of_regular hG hd)
+  have h := congr_arg (fun n : ℕ => (n : ZMod p)) (card_of_regular hG hd)
   revert h; simp [dmod]
 #align theorems_100.friendship.card_mod_p_of_regular Theorems100.Friendship.card_mod_p_of_regular
 
 end Nonempty
 
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
-    (G.adjMatrix R * fun _ _ => 1) = fun _ _ => d := by ext x; simp [← hd x, degree]
+    HMul.hMul (β := Matrix V V R) (G.adjMatrix R) (fun _ _ => 1) = fun _ _ => (d : R) := by
+  ext x; rw [← hd x, degree]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
 theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
