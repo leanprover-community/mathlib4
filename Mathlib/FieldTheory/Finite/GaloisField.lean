@@ -18,23 +18,24 @@ import Mathlib.FieldTheory.SplittingField.IsSplittingField
 # Galois fields
 
 If `p` is a prime number, and `n` a natural number,
-then `galois_field p n` is defined as the splitting field of `X^(p^n) - X` over `zmod p`.
+then `GaloisField p n` is defined as the splitting field of `X^(p^n) - X` over `ZMod p`.
 It is a finite field with `p ^ n` elements.
 
 ## Main definition
 
-* `galois_field p n` is a field with `p ^ n` elements
+* `GaloisField p n` is a field with `p ^ n` elements
 
 ## Main Results
 
-- `galois_field.alg_equiv_galois_field`: Any finite field is isomorphic to some Galois field
-- `finite_field.alg_equiv_of_card_eq`: Uniqueness of finite fields : algebra isomorphism
-- `finite_field.ring_equiv_of_card_eq`: Uniqueness of finite fields : ring isomorphism
+- `GaloisField.algEquivGaloisField`: Any finite field is isomorphic to some Galois field
+- `FiniteField.algEquivOfCardEq`: Uniqueness of finite fields : algebra isomorphism
+- `FiniteField.ringEquivOfCardEq`: Uniqueness of finite fields : ring isomorphism
 
 -/
 
 
 noncomputable section
+
 
 open Polynomial Finset
 
@@ -62,7 +63,6 @@ theorem galois_poly_separable {K : Type _} [Field K] (p q : ℕ) [CharP K p] (h 
   ring
 #align galois_poly_separable galois_poly_separable
 
--- Porting note: TODO
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 
 /-- A finite field with `p ^ n` elements.
@@ -79,7 +79,10 @@ instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
 
 namespace GaloisField
 
-variable (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
+variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
+
+-- Porting note: prevents diamond for `Algebra (ZMod p) (ZMod p)`
+attribute [-instance] ZMod.instAlgebraZModToCommSemiringCommRingToSemiring
 
 instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
 
@@ -96,14 +99,12 @@ instance : Fintype (GaloisField p n) := by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 
--- Porting note: TODO
-attribute [-instance] ZMod.instAlgebraZModToCommSemiringCommRingToSemiring
-
 theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n := by
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
-  have hp : 1 < p := hp.out.one_lt -- Porting note: do that better
+  have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
-  -- Porting note : TODO
+  -- Porting note : in the statment of `key`, replaced `g_poly` by its value otherwise the
+  -- proof fails
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))
       (SplittingField.splits (X ^ p ^ n - X : (ZMod p)[X]))
@@ -112,7 +113,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   rw [nat_degree_eq] at key
   suffices g_poly.rootSet (GaloisField p n) = Set.univ by
     simp_rw [this, ← Fintype.ofEquiv_card (Equiv.Set.univ _)] at key
-    -- Porting note: TODO
+    -- Porting note: prevents `card_eq_pow_finrank` from using a wrong instance for `Fintype`
     rw [@card_eq_pow_finrank (ZMod p) _ _ _ _ _ (_), ZMod.card] at key
     exact Nat.pow_right_injective (Nat.Prime.one_lt' p).out key
   rw [Set.eq_univ_iff_forall]
@@ -122,7 +123,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   rw [← SplittingField.adjoin_rootSet]
   simp_rw [Algebra.mem_adjoin_iff]
   intro x hx
-  -- We discharge the `p = 0` separately, to avoid typeclass issues on `zmod p`.
+  -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
   cases p; cases hp
   refine Subring.closure_induction hx ?_ ?_ ?_ ?_ ?_ ?_ <;> simp_rw [mem_rootSet_of_ne aux]
   · rintro x (⟨r, rfl⟩ | hx)
@@ -154,21 +155,21 @@ theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
 #align galois_field.card GaloisField.card
 
 theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
-  have hp : 1 < p :=  hp.out.one_lt -- Porting note: do that better
+  have hp : 1 < p :=  h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
-  -- We discharge the `p = 0` separately, to avoid typeclass issues on `zmod p`.
+  -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
   cases p; cases hp
   rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
 set_option linter.uppercaseLean3 false in
 #align galois_field.splits_zmod_X_pow_sub_X GaloisField.splits_zMod_x_pow_sub_x
 
--- Porting note: TODO
+-- Porting note: This instance is already disabled
 -- attribute [-instance] ZMod.algebra
 
-/-- A Galois field with exponent 1 is equivalent to `zmod` -/
+/-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
   let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
   let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
@@ -212,7 +213,7 @@ variable {K : Type _} [Field K] [Fintype K] {K' : Type _} [Field K'] [Fintype K'
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
-def algEquivOfCardEq (p : ℕ) [hp : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
+def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
   have : CharP K' p := by rw [← Algebra.charP_iff (ZMod p) K' p]; exact ZMod.charP p
@@ -221,7 +222,7 @@ def algEquivOfCardEq (p : ℕ) [hp : Fact p.Prime] [Algebra (ZMod p) K] [Algebra
   rw [hK, hK'] at hKK'
   have hGalK := GaloisField.algEquivGaloisField p n hK
   have hK'Gal := (GaloisField.algEquivGaloisField p n' hK').symm
-  rw [Nat.pow_right_injective hp.out.one_lt hKK'] at * -- Porting note: do that better
+  rw [Nat.pow_right_injective h_prime.out.one_lt hKK'] at *
   exact AlgEquiv.trans hGalK hK'Gal
 #align finite_field.alg_equiv_of_card_eq FiniteField.algEquivOfCardEq
 
