@@ -366,15 +366,15 @@ theorem PairwiseDisjoint.elim_set {s : Set ι} {f : ι → Set α} (hs : s.Pairw
 theorem PairwiseDisjoint.prod {f : ι → Set α} {g : ι' → Set β} (hs : s.PairwiseDisjoint f)
     (ht : t.PairwiseDisjoint g) :
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint fun i => f i.1 ×ˢ g i.2 :=
-  fun ⟨i, i'⟩ ⟨hi, hi'⟩ ⟨j, j'⟩ ⟨hj, hj'⟩ hij =>
-  disjoint_left.2 fun ⟨a, b⟩ ⟨hai, hbi⟩ ⟨haj, hbj⟩ =>
+  fun ⟨_, _⟩ ⟨hi, hi'⟩ ⟨_, _⟩ ⟨hj, hj'⟩ hij =>
+  disjoint_left.2 fun ⟨_, _⟩ ⟨hai, hbi⟩ ⟨haj, hbj⟩ =>
     hij <| Prod.ext (hs.elim_set hi hj _ hai haj) <| ht.elim_set hi' hj' _ hbi hbj
 #align set.pairwise_disjoint.prod Set.PairwiseDisjoint.prod
 
 theorem pairwiseDisjoint_pi {ι' α : ι → Type _} {s : ∀ i, Set (ι' i)} {f : ∀ i, ι' i → Set (α i)}
     (hs : ∀ i, (s i).PairwiseDisjoint (f i)) :
     ((univ : Set ι).pi s).PairwiseDisjoint fun I => (univ : Set ι).pi fun i => f _ (I i) :=
-  fun I hI J hJ hIJ =>
+  fun _ hI _ hJ hIJ =>
   disjoint_left.2 fun a haI haJ =>
     hIJ <|
       funext fun i =>
