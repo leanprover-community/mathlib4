@@ -52,22 +52,18 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
     ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
-  have hT : ∀ (j : J), TopologicalSpace.IsTopologicalBasis
-      ((fun j ↦ {W : Set (F.obj j)| IsClopen W}) j)
+  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
+      (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
+      (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
+  swap
   · intro i
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_clopen
-  have compat : ∀ (i j : J) (f : i ⟶ j) (V : Set ↑((F ⋙ toTopCat).obj j)),
-      V ∈ (fun j ↦ {W | IsClopen W}) j → (forget TopCat).map ((F ⋙ toTopCat).map f) ⁻¹' V ∈
-      (fun j ↦ {W | IsClopen W}) i
+  swap
   · rintro i j f V (hV : IsClopen _)
     exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).continuous,
       hV.2.preimage ((F ⋙ toTopCat).map f).continuous⟩
     -- Porting note: `<;> continuity` fails
-  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
-      (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) hT
-      (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) compat
-  -- Porting note: before, `hT` and `compat` were blank and created new goals proved afterwards.
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.1
