@@ -158,6 +158,7 @@ theorem integrable_iff_integrable_mul_pdf [IsFiniteMeasure ℙ] {X : Ω → E} [
     (hf : Measurable f) :
     Integrable (fun x => f (X x)) ℙ ↔ Integrable (fun x => f x * (pdf X ℙ μ x).toReal) μ := by
   -- porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← integrable_map_measure hf.aestronglyMeasurable (HasPDF.measurable X ℙ μ).aemeasurable,
     map_eq_withDensity_pdf X ℙ μ, integrable_withDensity_iff (measurable_pdf _ _ _) ae_lt_top]
 #align measure_theory.pdf.integrable_iff_integrable_mul_pdf MeasureTheory.pdf.integrable_iff_integrable_mul_pdf
