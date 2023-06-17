@@ -1261,12 +1261,40 @@ instance : IsIso (t.abstractSpectralObject.truncGEToTruncGEGE) := NatIso.isIso_o
 
 instance : IsIso (t.abstractSpectralObject.truncLTLTToTruncLT) := NatIso.isIso_of_isIso_app _
 
+lemma truncGEπ_compatibility (a : ℤt) (X : C) :
+  (t.abstractSpectralObject.truncGE.obj a).map ((t.abstractSpectralObject.truncGEπ a).app X) =
+    (t.abstractSpectralObject.truncGEπ a).app
+      ((t.abstractSpectralObject.truncGE.obj a).obj X) := by
+  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+  . rfl
+  . dsimp
+    simp only [AbstractSpectralObject.truncGEπ_mk]
+    apply from_truncGE_obj_ext
+    exact ((t.truncGEπ a).naturality ((t.truncGEπ a).app X)).symm
+  . apply IsZero.eq_of_src
+    dsimp
+    simp
+
+lemma truncLTι_compatibility (a : ℤt) (X : C) :
+    (t.abstractSpectralObject.truncLT.obj a).map ((t.abstractSpectralObject.truncLTι a).app X) =
+      (t.abstractSpectralObject.truncLTι a).app
+        ((t.abstractSpectralObject.truncLT.obj a).obj X) := by
+  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+  . apply IsZero.eq_of_src
+    dsimp
+    simp
+  . dsimp
+    simp only [AbstractSpectralObject.truncLEι_mk]
+    apply to_truncLT_obj_ext
+    exact ((t.truncLTι a).naturality ((t.truncLTι a).app X))
+  . rfl
+
 instance : t.abstractSpectralObject.IsCompatible where
   distinguished := AbstractSpectralObject.distinguished t
   isIso_truncLTGELTSelfToTruncLTGE := sorry
   isIso_truncLTGELTSelfToTruncGELT := sorry
-  truncGEπ_compatibility' := sorry
-  truncLTι_compatibility' := sorry
+  truncGEπ_compatibility' := t.truncGEπ_compatibility
+  truncLTι_compatibility' := t.truncLTι_compatibility
 
 @[simps!]
 noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=

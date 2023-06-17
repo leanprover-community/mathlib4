@@ -66,8 +66,8 @@ lemma liftCyclesAb_ι (x : S.X₂) (hx : S.g x = 0) :
   rw [← comp_apply, liftCycles_i, AddCommGroupCat.homEquivFromUliftℤ_symm_one]
 
 lemma ab_exact_iff :
-  S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0),
-    ∃ (x₁ : S.X₁), S.f x₁ = x₂ := by
+    S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0),
+      ∃ (x₁ : S.X₁), S.f x₁ = x₂ := by
   rw [exact_iff_epi_toCycles, AddCommGroupCat.epi_iff_surjective]
   constructor
   . intro h x₂ hx₂
