@@ -8,8 +8,8 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.RingDivision
-import Mathbin.Dynamics.PeriodicPts
+import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Dynamics.PeriodicPts
 
 /-!
 # IMO 2006 Q5
@@ -51,8 +51,7 @@ namespace imo2006_q5
 /-- If every entry in a cyclic list of integers divides the next, then they all have the same
 absolute value. -/
 theorem Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (· ∣ ·)) (hx : x ∈ l)
-    (hy : y ∈ l) : x.natAbs = y.natAbs :=
-  by
+    (hy : y ∈ l) : x.natAbs = y.natAbs := by
   rw [Cycle.chain_iff_pairwise] at hl 
   exact Int.natAbs_eq_of_dvd_dvd (hl x hx y hy) (hl y hy x hx)
 #align imo2006_q5.int.nat_abs_eq_of_chain_dvd Imo2006Q5.Int.natAbs_eq_of_chain_dvd
@@ -69,18 +68,15 @@ theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
 
 /-- The main lemma in the proof: if $P^k(t)=t$, then $P(P(t))=t$. -/
 theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
-    (ht : t ∈ periodicPts fun x => P.eval x) : IsPeriodicPt (fun x => P.eval x) 2 t :=
-  by
+    (ht : t ∈ periodicPts fun x => P.eval x) : IsPeriodicPt (fun x => P.eval x) 2 t := by
   -- The cycle [P(t) - t, P(P(t)) - P(t), ...]
   let C : Cycle ℤ := (periodic_orbit (fun x => P.eval x) t).map fun x => P.eval x - x
-  have HC : ∀ {n : ℕ}, ((fun x => P.eval x)^[n + 1]) t - ((fun x => P.eval x)^[n]) t ∈ C :=
-    by
+  have HC : ∀ {n : ℕ}, ((fun x => P.eval x)^[n + 1]) t - ((fun x => P.eval x)^[n]) t ∈ C := by
     intro n
     rw [Cycle.mem_map, Function.iterate_succ_apply']
     exact ⟨_, iterate_mem_periodic_orbit ht n, rfl⟩
   -- Elements in C are all divisible by one another.
-  have Hdvd : C.chain (· ∣ ·) :=
-    by
+  have Hdvd : C.chain (· ∣ ·) := by
     rw [Cycle.chain_map, periodic_orbit_chain' _ ht]
     intro n
     convert sub_dvd_eval_sub (((fun x => P.eval x)^[n + 1]) t) (((fun x => P.eval x)^[n]) t) P <;>
@@ -100,8 +96,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
           ((fun x => P.eval x)^[n + 1]) t - ((fun x => P.eval x)^[n]) t :=
       fun m n => Cycle.chain_iff_pairwise.1 HC' _ HC _ HC
     -- The sign of P^n(t) - t is the same as P(t) - t for positive n. Proven by induction on n.
-    have IH : ∀ n : ℕ, (((fun x => P.eval x)^[n + 1]) t - t).sign = (P.eval t - t).sign :=
-      by
+    have IH : ∀ n : ℕ, (((fun x => P.eval x)^[n + 1]) t - t).sign = (P.eval t - t).sign := by
       intro n
       induction' n with n IH
       · rfl
@@ -138,11 +133,9 @@ theorem Polynomial.iterate_comp_sub_x_ne {P : Polynomial ℤ} (hP : 1 < P.natDeg
 
 /-- We solve the problem for the specific case k = 2 first. -/
 theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
-    (P.comp P - X).roots.toFinset.card ≤ P.natDegree :=
-  by
+    (P.comp P - X).roots.toFinset.card ≤ P.natDegree := by
   -- Auxiliary lemmas on degrees.
-  have hPX : (P - X).natDegree = P.nat_degree :=
-    by
+  have hPX : (P - X).natDegree = P.nat_degree := by
     rw [nat_degree_sub_eq_left_of_nat_degree_lt]
     simpa using hP
   have hPX' : P - X ≠ 0 := by
@@ -164,11 +157,9 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     set b := P.eval a
     rw [sub_eq_zero] at hab 
     -- More auxiliary lemmas on degrees.
-    have hPab : (P + X - a - b).natDegree = P.nat_degree :=
-      by
+    have hPab : (P + X - a - b).natDegree = P.nat_degree := by
       rw [sub_sub, ← Int.cast_add]
-      have h₁ : (P + X).natDegree = P.nat_degree :=
-        by
+      have h₁ : (P + X).natDegree = P.nat_degree := by
         rw [nat_degree_add_eq_left_of_nat_degree_lt]
         simpa using hP
       rw [nat_degree_sub_eq_left_of_nat_degree_lt] <;> rwa [h₁]
@@ -210,8 +201,7 @@ open imo2006_q5
 
 /-- The general problem follows easily from the k = 2 case. -/
 theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0 < k) :
-    ((P.comp^[k]) X - X).roots.toFinset.card ≤ P.natDegree :=
-  by
+    ((P.comp^[k]) X - X).roots.toFinset.card ≤ P.natDegree := by
   apply (Finset.card_le_of_subset fun t ht => _).trans (imo2006_q5' hP)
   have hP' : P.comp P - X ≠ 0 := by simpa using polynomial.iterate_comp_sub_X_ne hP zero_lt_two
   replace ht := is_root_of_mem_roots (Multiset.mem_toFinset.1 ht)
