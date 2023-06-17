@@ -239,7 +239,8 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha 
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   haveI hy : y ≠ 0 := by
     rintro rfl
-    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero, pow_eq_zero_iff (by norm_num : 0 < 2)] at hxy
+    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero, pow_eq_zero_iff
+        (by norm_num : 0 < 2)] at hxy
   -- porting note: apparently something was not automatically inferred and now is.
     exact hx hxy
   exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy
