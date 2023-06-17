@@ -2133,6 +2133,7 @@ import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
