@@ -107,17 +107,17 @@ theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubal
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)
 #align star_subalgebra.topological_closure_mono StarSubalgebra.topologicalClosure_mono
 
-theorem map_topologicalClosure_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+theorem topologicalClosure_map_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) :
     (map φ s).topologicalClosure ≤ map φ s.topologicalClosure :=
   hφ.closure_image_subset _
 
-theorem topologicalClosure_map_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+theorem map_topologicalClosure_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : Continuous φ) :
     map φ s.topologicalClosure ≤ (map φ s).topologicalClosure :=
   image_closure_subset_closure_image hφ
 
-theorem map_topologicalClosure [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+theorem topologicalClosure_map [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
     (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : ClosedEmbedding φ) :
     (map φ s).topologicalClosure = map φ s.topologicalClosure :=
   SetLike.coe_injective <| hφ.closure_image_eq _
