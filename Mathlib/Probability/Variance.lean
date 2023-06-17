@@ -16,24 +16,24 @@ import Mathlib.MeasureTheory.Function.L2Space
 # Variance of random variables
 
 We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - 𝔼[X])^2]` (in the
-`probability_theory` locale).
+`ProbabilityTheory` locale).
 
 ## Main definitions
 
-* `probability_theory.evariance`: the variance of a real-valued random variable as a extended
+* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as a extended
   non-negative real.
-* `probability_theory.variance`: the variance of a real-valued random variable as a real number.
+* `ProbabilityTheory.variance`: the variance of a real-valued random variable as a real number.
 
 ## Main results
 
-* `probability_theory.variance_le_expectation_sq`: the inequality `Var[X] ≤ 𝔼[X^2]`.
-* `probability_theory.meas_ge_le_variance_div_sq`: Chebyshev's inequality, i.e.,
-      `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ennreal.of_real (Var[X] / c ^ 2)`.
-* `probability_theory.meas_ge_le_evariance_div_sq`: Chebyshev's inequality formulated with
+* `ProbabilityTheory.variance_le_expectation_sq`: the inequality `Var[X] ≤ 𝔼[X^2]`.
+* `ProbabilityTheory.meas_ge_le_variance_div_sq`: Chebyshev's inequality, i.e.,
+      `ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2)`.
+* `ProbabilityTheory.meas_ge_le_evariance_div_sq`: Chebyshev's inequality formulated with
   `evariance` without requiring the random variables to be L².
-* `probability_theory.indep_fun.variance_add`: the variance of the sum of two independent
+* `ProbabilityTheory.IndepFun.variance_add`: the variance of the sum of two independent
   random variables is the sum of the variances.
-* `probability_theory.indep_fun.variance_sum`: the variance of a finite sum of pairwise
+* `ProbabilityTheory.IndepFun.variance_sum`: the variance of a finite sum of pairwise
   independent random variables is the sum of the variances.
 -/
 
@@ -54,7 +54,7 @@ def evariance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Meas
   ∫⁻ ω, (‖X ω - μ[X]‖₊ : ℝ≥0∞) ^ 2 ∂μ
 #align probability_theory.evariance ProbabilityTheory.evariance
 
-/-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ennreal.to_real`
+/-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
 to `evariance`. -/
 def variance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ :=
   (evariance X μ).toReal
@@ -161,8 +161,8 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   ext1 ω
   rw [ENNReal.ofReal, ← ENNReal.coe_pow, ← ENNReal.coe_pow, ← ENNReal.coe_mul]
   congr
-  rw [← sq_abs, ← Real.rpow_two, Real.toNNReal_rpow_of_nonneg (abs_nonneg _), NNReal.rpow_two, ←
-    mul_pow, Real.toNNReal_mul_nnnorm _ (abs_nonneg _)]
+  rw [← sq_abs, ← Real.rpow_two, Real.toNNReal_rpow_of_nonneg (abs_nonneg _), NNReal.rpow_two,
+    ← mul_pow, Real.toNNReal_mul_nnnorm _ (abs_nonneg _)]
   conv_rhs => rw [← nnnorm_norm, norm_mul, norm_abs_eq_norm, ← norm_mul, nnnorm_norm, mul_sub]
   congr
   rw [mul_comm]
@@ -233,9 +233,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure (@MeasureTheory.Measure
     · exact integral_nonneg fun a => sq_nonneg _
     · intro h
       have A : Memℒp (X - fun ω : Ω => 𝔼[X]) 2 ℙ :=
-        (memℒp_two_iff_integrable_sq
-              (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2
-          h
+        (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
       have B : Memℒp (fun ω : Ω => 𝔼[X]) 2 ℙ := memℒp_const _
       apply hX
       convert A.add B
