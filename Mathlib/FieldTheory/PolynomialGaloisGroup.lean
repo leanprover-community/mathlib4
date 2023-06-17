@@ -196,8 +196,8 @@ theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x
   let ψ := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F p.SplittingField E)
   change ↑(ψ (ψ.symm _)) = ϕ x
   rw [AlgEquiv.apply_symm_apply ψ]
-  change ϕ (roots_equiv_roots p E ((roots_equiv_roots p E).symm x)) = ϕ x
-  rw [Equiv.apply_symm_apply (roots_equiv_roots p E)]
+  change ϕ (rootsEquivRoots p E ((rootsEquivRoots p E).symm x)) = ϕ x
+  rw [Equiv.apply_symm_apply (rootsEquivRoots p E)]
 #align polynomial.gal.restrict_smul Polynomial.Gal.restrict_smul
 
 variable (p E)
@@ -217,14 +217,15 @@ theorem galActionHom_injective [Fact (p.Splits (algebraMap F E))] :
     Function.Injective (galActionHom p E) := by
   rw [injective_iff_map_eq_one]
   intro ϕ hϕ
-  ext (x hx)
-  have key := equiv.perm.ext_iff.mp hϕ (roots_equiv_roots p E ⟨x, hx⟩)
+  ext (x)
+  intro hx
+  have key := Equiv.Perm.ext_iff.mp hϕ (rootsEquivRoots p E ⟨x, hx⟩)
   change
-    roots_equiv_roots p E (ϕ • (roots_equiv_roots p E).symm (roots_equiv_roots p E ⟨x, hx⟩)) =
-      roots_equiv_roots p E ⟨x, hx⟩
+    rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm (rootsEquivRoots p E ⟨x, hx⟩)) =
+      rootsEquivRoots p E ⟨x, hx⟩
     at key
   rw [Equiv.symm_apply_apply] at key
-  exact subtype.ext_iff.mp (Equiv.injective (roots_equiv_roots p E) key)
+  exact Subtype.ext_iff.mp (Equiv.injective (rootsEquivRoots p E) key)
 #align polynomial.gal.gal_action_hom_injective Polynomial.Gal.galActionHom_injective
 
 end RootsAction
@@ -274,26 +275,26 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro hx
   rw [rootSet_def, Polynomial.map_mul, Polynomial.roots_mul] at hx
   cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
-  · haveI : Fact (p.splits (algebraMap F (p * q).SplittingField)) :=
-      ⟨splits_of_splits_of_dvd _ hpq (splitting_field.splits (p * q)) (dvd_mul_right p q)⟩
+  · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
+      ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_right p q)⟩
     have key :
       x =
-        algebraMap p.splitting_field (p * q).SplittingField
-          ((roots_equiv_roots p _).invFun
+        algebraMap p.SplittingField (p * q).SplittingField
+          ((rootsEquivRoots p _).invFun
             ⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr h⟩) :=
-      subtype.ext_iff.mp (Equiv.apply_symm_apply (roots_equiv_roots p _) ⟨x, _⟩).symm
+      Subtype.ext_iff.mp (Equiv.apply_symm_apply (rootsEquivRoots p _) ⟨x, _⟩).symm
     rw [key, ← AlgEquiv.restrictNormal_commutes, ← AlgEquiv.restrictNormal_commutes]
-    exact congr_arg _ (alg_equiv.ext_iff.mp hfg.1 _)
-  · haveI : Fact (q.splits (algebraMap F (p * q).SplittingField)) :=
-      ⟨splits_of_splits_of_dvd _ hpq (splitting_field.splits (p * q)) (dvd_mul_left q p)⟩
+    exact congr_arg _ (AlgEquiv.ext_iff.mp hfg.1 _)
+  · haveI : Fact (q.Splits (algebraMap F (p * q).SplittingField)) :=
+      ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_left q p)⟩
     have key :
       x =
-        algebraMap q.splitting_field (p * q).SplittingField
-          ((roots_equiv_roots q _).invFun
+        algebraMap q.SplittingField (p * q).SplittingField
+          ((rootsEquivRoots q _).invFun
             ⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr h⟩) :=
-      subtype.ext_iff.mp (Equiv.apply_symm_apply (roots_equiv_roots q _) ⟨x, _⟩).symm
+      Subtype.ext_iff.mp (Equiv.apply_symm_apply (rootsEquivRoots q _) ⟨x, _⟩).symm
     rw [key, ← AlgEquiv.restrictNormal_commutes, ← AlgEquiv.restrictNormal_commutes]
-    exact congr_arg _ (alg_equiv.ext_iff.mp hfg.2 _)
+    exact congr_arg _ (AlgEquiv.ext_iff.mp hfg.2 _)
   · rwa [Ne.def, mul_eq_zero, map_eq_zero, map_eq_zero, ← mul_eq_zero]
 #align polynomial.gal.restrict_prod_injective Polynomial.Gal.restrictProd_injective
 
@@ -303,14 +304,14 @@ theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ 
     (p₁ * p₂).Splits (algebraMap F (q₁ * q₂).SplittingField) := by
   apply splits_mul
   · rw [←
-      (splitting_field.lift q₁
+      (SplittingField.lift q₁
           (splits_of_splits_of_dvd (algebraMap F (q₁ * q₂).SplittingField) (mul_ne_zero hq₁ hq₂)
-            (splitting_field.splits _) (dvd_mul_right q₁ q₂))).comp_algebraMap]
+            (SplittingField.splits _) (dvd_mul_right q₁ q₂))).comp_algebraMap]
     exact splits_comp_of_splits _ _ h₁
   · rw [←
-      (splitting_field.lift q₂
+      (SplittingField.lift q₂
           (splits_of_splits_of_dvd (algebraMap F (q₁ * q₂).SplittingField) (mul_ne_zero hq₁ hq₂)
-            (splitting_field.splits _) (dvd_mul_left q₂ q₁))).comp_algebraMap]
+            (SplittingField.splits _) (dvd_mul_left q₂ q₁))).comp_algebraMap]
     exact splits_comp_of_splits _ _ h₂
 #align polynomial.gal.mul_splits_in_splitting_field_of_mul Polynomial.Gal.mul_splits_in_splittingField_of_mul
 
@@ -323,13 +324,13 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     by_cases hr' : nat_degree r = 0
     · exact splits_of_nat_degree_le_one _ (le_trans (le_of_eq hr') zero_le_one)
     obtain ⟨x, hx⟩ :=
-      exists_root_of_splits _ (splitting_field.splits (r.comp q)) fun h =>
+      exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h =>
         hr'
           ((mul_eq_zero.mp
                 (nat_degree_comp.symm.trans (nat_degree_eq_of_degree_eq_some h))).resolve_right
             hq)
     rw [← aeval_def, aeval_comp] at hx
-    have h_normal : Normal F (r.comp q).SplittingField := splitting_field.normal (r.comp q)
+    have h_normal : Normal F (r.comp q).SplittingField := SplittingField.normal (r.comp q)
     have qx_int := Normal.isIntegral h_normal (aeval x q)
     exact
       splits_of_splits_of_dvd _ (minpoly.ne_zero qx_int) (Normal.splits h_normal _)
@@ -346,7 +347,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
       · rw [h, MulZeroClass.mul_zero]
         exact splits_zero _
       · exact False.ndrec _ (hq (by rw [h.2, nat_degree_C]))
-    have key := mul_splits_in_splitting_field_of_mul h₁ h₂ hp₁ hp₂
+    have key := mul_splits_in_SplittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
   exact
     WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_is_unit _)
@@ -369,8 +370,8 @@ variable {p q}
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
 theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=
-  haveI : IsGalois F p.splitting_field := IsGalois.of_separable_splitting_field hp
-  IsGalois.card_aut_eq_finrank F p.splitting_field
+  haveI : IsGalois F p.SplittingField := IsGalois.of_separable_splitting_field hp
+  IsGalois.card_aut_eq_finrank F p.SplittingField
 #align polynomial.gal.card_of_separable Polynomial.Gal.card_of_separable
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
@@ -380,12 +381,12 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   rw [gal.card_of_separable p_irr.separable]
   have hp : p.degree ≠ 0 := fun h =>
     Nat.Prime.ne_zero p_deg (nat_degree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))
-  let α : p.splitting_field :=
-    root_of_splits (algebraMap F p.splitting_field) (splitting_field.splits p) hp
+  let α : p.SplittingField :=
+    root_of_splits (algebraMap F p.SplittingField) (SplittingField.splits p) hp
   have hα : IsIntegral F α := Algebra.isIntegral_of_finite _ _ α
-  use FiniteDimensional.finrank F⟮⟯ p.splitting_field
+  use FiniteDimensional.finrank F⟮⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.nat_degree by
-    rw [← FiniteDimensional.finrank_mul_finrank F F⟮⟯ p.splitting_field,
+    rw [← FiniteDimensional.finrank_mul_finrank F F⟮⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by
     have key := (minpoly.irreducible hα).dvd_symm p_irr this
@@ -393,7 +394,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
     · exact nat_degree_le_of_dvd this p_irr.ne_zero
     · exact nat_degree_le_of_dvd key (minpoly.ne_zero hα)
   apply minpoly.dvd F α
-  rw [aeval_def, map_root_of_splits _ (splitting_field.splits p) hp]
+  rw [aeval_def, map_root_of_splits _ (SplittingField.splits p) hp]
 #align polynomial.gal.prime_degree_dvd_card Polynomial.Gal.prime_degree_dvd_card
 
 section Rationals
