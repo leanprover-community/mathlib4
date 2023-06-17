@@ -255,9 +255,10 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
   have ha : (a : ZMod p) ≠ 0 := by
     intro hf
     rw [(eq_zero_iff p a).mpr hf] at h
-    exact Int.zero_ne_neg_of_ne zero_ne_one h
+    -- porting note `zero_ne_neg_of_ne` not ported? but no noalign? fixed by `tauto`
+    tauto
   by_contra hf
-  cases' not_and_distrib.mp hf with hx hy
+  cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
     exact one_ne_zero h
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, eq_neg_self_iff] at h
@@ -266,7 +267,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 
 /-- If `legendre_sym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
-    (hxy : ↑p ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
+    (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2 ) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
   push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
