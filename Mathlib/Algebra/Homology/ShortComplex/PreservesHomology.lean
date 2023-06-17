@@ -92,8 +92,10 @@ variable (F : C ⥤ D)
 
 class PreservesHomology (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
   [PreservesZeroMorphisms F] where
-  preserves_kernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F
-  preserves_cokernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F
+  preserves_kernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F :=
+    by infer_instance
+  preserves_cokernels : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F :=
+    by infer_instance
 
 def PreservesHomology.preserves_kernel (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
     [PreservesZeroMorphisms F] [F.PreservesHomology] {X Y : C} (f : X ⟶ Y) :
