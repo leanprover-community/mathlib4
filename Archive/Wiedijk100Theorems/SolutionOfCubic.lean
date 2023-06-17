@@ -8,8 +8,8 @@ Authors: Jeoff Lee
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.LinearCombination
-import Mathbin.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.Tactic.LinearCombination
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # The Solution of a Cubic
@@ -54,8 +54,7 @@ variable (a b c d : K)
 
 variable {ω p q r s t : K}
 
-theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 :=
-  by
+theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
   convert hω.is_root_cyclotomic (Nat.succ_pos _)
   simp only [cyclotomic_prime, eval_geom_sum]
   simp [Finset.sum_range_succ]
@@ -64,8 +63,7 @@ theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 
 /-- The roots of a monic cubic whose quadratic term is zero and whose discriminant is nonzero. -/
 theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠ 0)
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
-    x ^ 3 + 3 * p * x - 2 * q = 0 ↔ x = s - t ∨ x = s * ω - t * ω ^ 2 ∨ x = s * ω ^ 2 - t * ω :=
-  by
+    x ^ 3 + 3 * p * x - 2 * q = 0 ↔ x = s - t ∨ x = s * ω - t * ω ^ 2 ∨ x = s * ω ^ 2 - t * ω := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
   rw [h₁]
@@ -88,15 +86,13 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
     (hp_nonzero : p ≠ 0) (hq : q = (9 * b * c - 2 * b ^ 3 - 27 * d) / 54)
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
-      x = s - t - b / 3 ∨ x = s * ω - t * ω ^ 2 - b / 3 ∨ x = s * ω ^ 2 - t * ω - b / 3 :=
-  by
+      x = s - t - b / 3 ∨ x = s * ω - t * ω ^ 2 - b / 3 ∨ x = s * ω ^ 2 - t * ω - b / 3 := by
   let y := x + b / 3
   have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
-  have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q :=
-    by
+  have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q := by
     dsimp only [y]
     rw [hp, hq]
     field_simp [h9, h54]; ring
@@ -113,8 +109,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - t - b / (3 * a) ∨
-        x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) :=
-  by
+        x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) := by
   have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
@@ -139,8 +134,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
     (hq : q = (9 * a * b * c - 2 * b ^ 3 - 27 * a ^ 2 * d) / (54 * a ^ 3)) (hs3 : s ^ 3 = 2 * q)
     (x : K) :
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
-      x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) :=
-  by
+      x = s - b / (3 * a) ∨ x = s * ω - b / (3 * a) ∨ x = s * ω ^ 2 - b / (3 * a) := by
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
   have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
@@ -157,8 +151,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
         simp only [hb2, hb3]; field_simp; ring
       _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
-  have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) :=
-    by
+  have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
     calc
       x ^ 3 - s ^ 3 = (x - s) * (x ^ 2 + x * s + s ^ 2) := by ring
