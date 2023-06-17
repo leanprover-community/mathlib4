@@ -8,10 +8,10 @@ Authors: Sebastian Monnet
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.Galois
-import Mathbin.Topology.Algebra.FilterBasis
-import Mathbin.Topology.Algebra.OpenSubgroup
-import Mathbin.Tactic.ByContra
+import Mathlib.FieldTheory.Galois
+import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Tactic.ByContra
 
 /-!
 # Krull topology
@@ -102,8 +102,7 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type _) [Field K] [Field 
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
 theorem IntermediateField.fixingSubgroup.bot {K L : Type _} [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ :=
-  by
+    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext f
   refine' ⟨fun _ => Subgroup.mem_top _, fun _ => _⟩
   rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
@@ -134,16 +133,14 @@ theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type _} [Field K] [Field
 
 /-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
 theorem IntermediateField.fixingSubgroup.antimono {K L : Type _} [Field K] [Field L] [Algebra K L]
-    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup :=
-  by
+    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup := by
   rintro σ hσ ⟨x, hx⟩
   exact hσ ⟨x, h12 hx⟩
 #align intermediate_field.fixing_subgroup.antimono IntermediateField.fixingSubgroup.antimono
 
 /-- Given a field extension `L/K`, `gal_basis K L` is the filter basis on `L ≃ₐ[K] L` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional -/
-def galBasis (K L : Type _) [Field K] [Field L] [Algebra K L] : FilterBasis (L ≃ₐ[K] L)
-    where
+def galBasis (K L : Type _) [Field K] [Field L] [Algebra K L] : FilterBasis (L ≃ₐ[K] L) where
   sets := Subgroup.carrier '' fixedByFinite K L
   Nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
@@ -189,8 +186,7 @@ def galGroupBasis (K L : Type _) [Field K] [Field L] [Algebra K L] : GroupFilter
     intro x hx
     change σ (g (σ⁻¹ x)) = x
     have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
-    have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x :=
-      by
+    have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
       rw [Subgroup.mem_carrier, IntermediateField.mem_fixingSubgroup_iff F g] at hg 
       exact hg (σ⁻¹ x) h_in_F
     rw [h_g_fix]
@@ -217,8 +213,7 @@ open scoped Topology Filter
   `L ≃ₐ[K] L`. -/
 theorem IntermediateField.fixingSubgroup_isOpen {K L : Type _} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsOpen (E.fixingSubgroup : Set (L ≃ₐ[K] L)) :=
-  by
+    IsOpen (E.fixingSubgroup : Set (L ≃ₐ[K] L)) := by
   have h_basis : E.fixing_subgroup.carrier ∈ galGroupBasis K L :=
     ⟨E.fixing_subgroup, ⟨E, ‹_›, rfl⟩, rfl⟩
   have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
@@ -277,8 +272,7 @@ section TotallyDisconnected
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
   totally disconnected. -/
 theorem krullTopology_totally_disconnected {K L : Type _} [Field K] [Field L] [Algebra K L]
-    (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) :=
-  by
+    (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
   apply isTotallyDisconnected_of_clopen_set
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
