@@ -387,7 +387,8 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
         α) =
       coeff α n (partialOddGF m) := by
   rw [partialOddGF]
-  -- Porting note: `convert` timeouts.
+  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
+  --               is improved.
   refine Eq.trans ?_
     (Eq.trans (partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial)
       (Eq.symm ?_))
@@ -440,7 +441,8 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
         α) =
       coeff α n (partialDistinctGF m) := by
   rw [partialDistinctGF]
-  -- Porting note: `convert` timeouts.
+  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
+  --               is improved.
   refine Eq.trans ?_
     (Eq.trans (partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
       (fun _ => {0, 1}) fun _ _ => Or.inl rfl) (Eq.symm ?_))
