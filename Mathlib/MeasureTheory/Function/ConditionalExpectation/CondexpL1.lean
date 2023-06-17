@@ -493,10 +493,10 @@ theorem condexpL1Clm_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1Clm F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =
     ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) _ _ _ g
   · intro c s hs hμs
-    rw [Lp.simpleFunc.coe_indicatorConst, lpMeasToLpTrimLie_symm_indicator hs hμs.ne c,
+    rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator hs hμs.ne c,
       condexpL1Clm_indicatorConstLp]
     exact condexpInd_of_measurable hs ((le_trim hm).trans_lt hμs).ne c
-  · intro f g hf hg hfg_disj hf_eq hg_eq
+  · intro f g hf hg _ hf_eq hg_eq
     rw [LinearIsometryEquiv.map_add]
     push_cast
     rw [map_add, hf_eq, hg_eq]
