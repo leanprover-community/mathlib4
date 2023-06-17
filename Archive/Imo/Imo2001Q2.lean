@@ -8,7 +8,7 @@ Authors: Tian Chen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # IMO 2001 Q2
@@ -42,8 +42,7 @@ theorem denom_pos (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : 0 < a ^ 4 + b ^ 4 + c
 #align imo2001_q2.denom_pos Imo2001Q2.denom_pos
 
 theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
-    a ^ 4 / (a ^ 4 + b ^ 4 + c ^ 4) ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + 8 * b ^ 3 * c ^ 3) :=
-  by
+    a ^ 4 / (a ^ 4 + b ^ 4 + c ^ 4) ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + 8 * b ^ 3 * c ^ 3) := by
   have hsqrt :=
     add_pos_of_nonneg_of_pos (sq_nonneg (a ^ 3))
       (mul_pos (mul_pos (bit0_pos zero_lt_four) (pow_pos hb 3)) (pow_pos hc 3))
