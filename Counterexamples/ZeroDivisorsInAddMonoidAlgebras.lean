@@ -8,11 +8,11 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GeomSum
-import Mathbin.Algebra.Group.UniqueProds
-import Mathbin.Algebra.MonoidAlgebra.Basic
-import Mathbin.Data.Finsupp.Lex
-import Mathbin.Data.Zmod.Basic
+import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Data.Finsupp.Lex
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Examples of zero-divisors in `add_monoid_algebra`s
@@ -60,8 +60,7 @@ Observe that such an element `a` *cannot* be invertible.  In particular, this le
 if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
-    ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
-  by
+    ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
   · exact sub_ne_zero.mpr (by simpa [single_eq_single_iff])
   ·
@@ -83,8 +82,7 @@ whose product is zero.
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
 torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
-    (o2 : 2 ≤ addOrderOf a) : ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
-  by
+    (o2 : 2 ≤ addOrderOf a) : ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine'
     ⟨(Finset.range (addOrderOf a)).Sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
       _⟩
@@ -277,8 +275,7 @@ theorem f110 : ofLex (single (1 : F) (1 : F)) 0 = 0 :=
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
 enough and is the content of `finsupp.lex.covariant_class_le_left`. -/
-example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· ≤ ·) :=
-  by
+example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· ≤ ·) := by
   rintro ⟨h⟩
   refine' not_lt.mpr (h (single (0 : F) (1 : F)) (_ : single 1 1 ≤ single 0 1)) ⟨1, _⟩
   ·
@@ -314,8 +311,7 @@ example : ¬UniqueProds ℕ := by
   exact ⟨⟨1, by simp⟩, ⟨0, by simp⟩⟩
 
 /-- Some Types that do not have `unique_sums`. -/
-example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) :=
-  by
+example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
   haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
