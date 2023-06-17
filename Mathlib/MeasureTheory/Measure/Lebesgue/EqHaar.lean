@@ -550,6 +550,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     exact (b.constr_basis ℕ v i).symm
   rw [A, add_haar_image_linearMap]
   -- Porting note: this used to be a big `rw`, but one intermediate `erw` was needed
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [b.addHaar_self]
   rw [mul_one, ← LinearMap.det_toMatrix b, ← Basis.toMatrix_eq_toMatrix_constr]
   rfl
