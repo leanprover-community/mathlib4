@@ -143,14 +143,10 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
-  -- porting note: this used to be `finish` TODO: golf to get rid ot the many `cases'`
-  · simp at h
-    cases' h with u h
-    cases' h with v h
-    cases' h with w h
-    cases' h with h
-    cases h
-    aesop
+  -- porting note: this used to be `finish`
+  · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
+    rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩
+    cases h; aesop
 #align imo1998_q2.A_fibre_over_judge_pair Imo1998Q2.A_fibre_over_judgePair
 
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
