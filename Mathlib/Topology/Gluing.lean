@@ -474,6 +474,7 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
   -- porting note: now it is `erw`, it was `rw`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
   change x = y at e
   subst e
@@ -501,6 +502,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
     -- porting note: another `rw ↦ erw`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
 set_option linter.uppercaseLean3 false in
@@ -518,6 +520,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
   · rintro ⟨x, rfl⟩
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
     -- porting note: another `rw ↦ erw`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
