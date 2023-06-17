@@ -88,12 +88,11 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
 #align set.pairwise_disjoint.bUnion Set.PairwiseDisjoint.biUnion
 
 /-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
-pairwise disjoint. Not to be confused with `set.pairwise_disjoint.prod`. -/
+pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
 theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
     (hs : s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i'))
     (ht : t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i')) :
-    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f :=
-  by
+    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f := by
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
