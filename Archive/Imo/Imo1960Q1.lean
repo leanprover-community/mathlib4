@@ -8,7 +8,7 @@ Authors: Kevin Lacker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits
 
 /-!
 # IMO 1960 Q1
@@ -49,8 +49,7 @@ theorem not_zero {n : ℕ} (h1 : ProblemPredicate n) : n ≠ 0 :=
   digits_ne_nil_iff_ne_zero.mp h2
 #align imo1960_q1.not_zero Imo1960Q1.not_zero
 
-theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n :=
-  by
+theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
   have h2 : 10 ^ 3 ≤ 10 * n := by
     rw [← h1.left]
     refine' Nat.base_pow_length_digits_le 10 n _ (not_zero h1)
@@ -58,8 +57,7 @@ theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n :=
   linarith
 #align imo1960_q1.ge_100 Imo1960Q1.ge_100
 
-theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 :=
-  by
+theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 := by
   have h2 : n < 10 ^ 3 := by
     rw [← h1.left]
     refine' Nat.lt_base_pow_length_digits _
@@ -79,8 +77,7 @@ theorem searchUpTo_start : SearchUpTo 9 99 :=
 #align imo1960_q1.search_up_to_start Imo1960Q1.searchUpTo_start
 
 theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en : n + 11 = n') {l}
-    (el : Nat.digits 10 n = l) (H' : c = sumOfSquares l → c = 50 ∨ c = 73) : SearchUpTo c' n' :=
-  by
+    (el : Nat.digits 10 n = l) (H' : c = sumOfSquares l → c = 50 ∨ c = 73) : SearchUpTo c' n' := by
   subst ec; subst en; subst el
   obtain ⟨rfl, H⟩ := H
   refine' ⟨by ring, fun m l p => _⟩
@@ -96,8 +93,7 @@ theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredi
   H.2 _ (by linarith [lt_1000 ppn]) ppn
 #align imo1960_q1.search_up_to_end Imo1960Q1.searchUpTo_end
 
-theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :=
-  by
+theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n := by
   have := search_up_to_start
   iterate 82
     replace :=
