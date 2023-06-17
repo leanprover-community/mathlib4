@@ -118,7 +118,8 @@ noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note : was an `apply (config := { synthAssignedInstances := false })`
+  -- Porting note : was an `apply (config := { instances := false })`
+  -- See https://github.com/leanprover/lean4/issues/2273
   suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
   . apply NatTrans.mono_of_mono_app
   intro U
