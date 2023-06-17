@@ -8,10 +8,10 @@ Authors: Mantas Bakšys
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Data.Nat.Interval
-import Mathbin.Algebra.Order.Rearrangement
-import Mathbin.Algebra.BigOperators.Ring
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # IMO 1975 Q1
@@ -39,8 +39,7 @@ variable (hx : AntitoneOn x (Finset.Icc 1 n))
 variable (hy : AntitoneOn y (Finset.Icc 1 n))
 
 theorem imo1975_q1 :
-    ∑ i in Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i in Finset.Icc 1 n, (x i - y (σ i)) ^ 2 :=
-  by
+    ∑ i in Finset.Icc 1 n, (x i - y i) ^ 2 ≤ ∑ i in Finset.Icc 1 n, (x i - y (σ i)) ^ 2 := by
   simp only [sub_sq, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   -- a finite sum is invariant if we permute the order of summation
   have hσy : ∑ i : ℕ in Finset.Icc 1 n, y i ^ 2 = ∑ i : ℕ in Finset.Icc 1 n, y (σ i) ^ 2 := by
