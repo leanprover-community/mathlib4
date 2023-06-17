@@ -8,10 +8,10 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.ArithmeticFunction
-import Mathbin.NumberTheory.LucasLehmer
-import Mathbin.Algebra.GeomSum
-import Mathbin.RingTheory.Multiplicity
+import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.Algebra.GeomSum
+import Mathlib.RingTheory.Multiplicity
 
 /-!
 # Perfect Numbers
@@ -49,8 +49,7 @@ theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
 theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Prime) :
-    Nat.Perfect (2 ^ k * mersenne (k + 1)) :=
-  by
+    Nat.Perfect (2 ^ k * mersenne (k + 1)) := by
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul, ← mul_assoc, ← pow_succ, ← sigma_one_apply, mul_comm,
     is_multiplicative_sigma.map_mul_of_coprime
       (nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)),
@@ -60,8 +59,7 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
     norm_num
 #align theorems_100.nat.perfect_two_pow_mul_mersenne_of_prime Theorems100.Nat.perfect_two_pow_mul_mersenne_of_prime
 
-theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 :=
-  by
+theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
   intro H
   simpa [H, mersenne, Nat.not_prime_one] using pr
 #align theorems_100.nat.ne_zero_of_prime_mersenne Theorems100.Nat.ne_zero_of_prime_mersenne
@@ -70,8 +68,7 @@ theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Pr
     Even (2 ^ k * mersenne (k + 1)) := by simp [ne_zero_of_prime_mersenne k pr, parity_simps]
 #align theorems_100.nat.even_two_pow_mul_mersenne_of_prime Theorems100.Nat.even_two_pow_mul_mersenne_of_prime
 
-theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m :=
-  by
+theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
   have h := multiplicity.finite_nat_iff.2 ⟨nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m
@@ -87,8 +84,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
 /-- **Perfect Number Theorem**: Euler's theorem that even perfect numbers can be factored as a
   power of two times a Mersenne prime. -/
 theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (perf : Nat.Perfect n) :
-    ∃ k : ℕ, Nat.Prime (mersenne (k + 1)) ∧ n = 2 ^ k * mersenne (k + 1) :=
-  by
+    ∃ k : ℕ, Nat.Prime (mersenne (k + 1)) ∧ n = 2 ^ k * mersenne (k + 1) := by
   have hpos := perf.2
   rcases eq_two_pow_mul_odd hpos with ⟨k, m, rfl, hm⟩
   use k
