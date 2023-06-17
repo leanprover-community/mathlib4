@@ -45,7 +45,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   have h₂ : ∀ x, f.symm x = x ^ p := by simp [NNReal.orderIsoRpow_symm_eq]
   refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
   simp only [←h₂]
-  exact (strictConcaveOn_orderIso_symm f h₁).2 (Set.mem_univ x) (Set.mem_univ y) hxy ha hb hab
+  exact (f.strictConcaveOn_symm h₁).2 (Set.mem_univ x) (Set.mem_univ y) hxy ha hb hab
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ≥0 univ fun x : ℝ≥0 ↦ x ^ p := by
