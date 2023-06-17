@@ -55,11 +55,10 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
   have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
       (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
       (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
-  swap
+  rotate_left
   · intro i
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_clopen
-  swap
   · rintro i j f V (hV : IsClopen _)
     exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).continuous,
       hV.2.preimage ((F ⋙ toTopCat).map f).continuous⟩
