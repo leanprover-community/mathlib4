@@ -144,12 +144,10 @@ The same result for the case of a finite type `ι` is implemented in
 theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f : α → ℓ^∞(ι)}
     {K : ℝ≥0} (hfl : LipschitzOnWith K f s): ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
+  rw [LipschitzOnWith.coordinate] at hfl
   have : ∀ i : ι, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s
   · intro i
-    apply LipschitzOnWith.extend_real -- use the nonlinear Hahn-Banach theorem here!
-    revert i
-    rw [← LipschitzOnWith.coordinate]
-    exact hfl
+    exact LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
   . exact ⟨fun _ ↦ 0, LipschitzWith.const' 0, by simp⟩
