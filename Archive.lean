@@ -12,3 +12,4 @@ import Archive.Imo.Imo2011Q5
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Wiedijk100Theorems.AreaOfACircle
+import Archive.Wiedijk100Theorems.Partition

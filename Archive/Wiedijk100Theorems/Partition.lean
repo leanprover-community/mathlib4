@@ -8,14 +8,14 @@ Authors: Bhavik Mehta, Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.PowerSeries.Basic
-import Mathbin.Combinatorics.Partition
-import Mathbin.Data.Nat.Parity
-import Mathbin.Data.Finset.NatAntidiagonal
-import Mathbin.Data.Fin.Tuple.NatAntidiagonal
-import Mathbin.Tactic.IntervalCases
-import Mathbin.Tactic.ApplyFun
-import Mathbin.Tactic.Congrm
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Combinatorics.Partition
+import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Congrm
 
 /-!
 # Euler's Partition Theorem
@@ -110,8 +110,7 @@ def cut {ι : Type _} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (i «expr ∉ » s) -/
 theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
-    f ∈ cut s n ↔ s.Sum f = n ∧ ∀ (i) (_ : i ∉ s), f i = 0 :=
-  by
+    f ∈ cut s n ↔ s.Sum f = n ∧ ∀ (i) (_ : i ∉ s), f i = 0 := by
   rw [cut, mem_filter, and_comm', and_congr_right]
   intro h
   simp only [mem_map, exists_prop, Function.Embedding.coeFn_mk, mem_pi]
@@ -129,8 +128,7 @@ theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
 #align theorems_100.mem_cut Theorems100.mem_cut
 
 theorem cut_equiv_antidiag (n : ℕ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = Nat.antidiagonal n :=
-  by
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = Nat.antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
@@ -143,8 +141,7 @@ theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
 
 /-- There is only one `cut` of 0. -/
 @[simp]
-theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} :=
-  by
+theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
   -- In general it's nice to prove things using `mem_cut` but in this case it's easier to just
   -- use the definition.
   rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
@@ -156,8 +153,7 @@ theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} :=
 #align theorems_100.cut_zero Theorems100.cut_zero
 
 @[simp]
-theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ :=
-  by
+theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
   apply eq_empty_of_forall_not_mem
   intro x hx
   rw [mem_cut, sum_empty] at hx 
@@ -168,8 +164,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
     cut (insert a s) n =
       (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
         (cut s p.snd).map
-          ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ :=
-  by
+          ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ := by
   ext f
   rw [mem_cut, mem_bUnion, sum_insert h]
   constructor
@@ -179,8 +174,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
     · rw [mem_cut]
       refine' ⟨_, _⟩
       · rw [sum_ite]
-        have : Filter (fun x => x ≠ a) s = s :=
-          by
+        have : Filter (fun x => x ≠ a) s = s := by
           apply filter_true_of_mem
           rintro i hi rfl
           apply h hi
@@ -206,8 +200,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr finset.sum _ (λ i, _)]] -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr * »(_, _)]] -/
 theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
-    (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) :=
-  by
+    (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
   revert n
   apply Finset.induction_on s
   · rintro ⟨_ | n⟩
@@ -264,8 +257,7 @@ theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
 #align theorems_100.constant_coeff_indicator Theorems100.constantCoeff_indicator
 
 theorem two_series (i : ℕ) [Semiring α] :
-    1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} :=
-  by
+    1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
   ext
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
     map_add]
@@ -275,8 +267,7 @@ theorem two_series (i : ℕ) [Semiring α] :
 #align theorems_100.two_series Theorems100.two_series
 
 theorem num_series' [Field α] (i : ℕ) :
-    (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} :=
-  by
+    (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} := by
   rw [PowerSeries.inv_eq_iff_mul_eq_one]
   · ext
     cases n
@@ -331,8 +322,7 @@ theorem partial_gf_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset �
           ((univ : Finset (Nat.Partition n)).filterₓ fun p =>
             (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
         α) =
-      (coeff α n) (∏ i : ℕ in s, indicatorSeries α ((· * i) '' c i)) :=
-  by
+      (coeff α n) (∏ i : ℕ in s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod_range, coeff_indicator, prod_boole, sum_boole]
   congr 1
   refine' Finset.card_congr (fun p _ i => Multiset.count i p.parts • i) _ _ _
@@ -399,8 +389,7 @@ theorem partialOddGf_prop [Field α] (n m : ℕ) :
           ((univ : Finset (Nat.Partition n)).filterₓ fun p =>
             ∀ j ∈ p.parts, j ∈ (range m).map mkOdd) :
         α) =
-      coeff α n (partialOddGf m) :=
-  by
+      coeff α n (partialOddGf m) := by
   rw [partial_odd_gf]
   convert partial_gf_prop α n ((range m).map mk_odd) _ (fun _ => Set.univ) fun _ _ => trivial using
     2
@@ -427,8 +416,7 @@ theorem partialOddGf_prop [Field α] (n m : ℕ) :
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr card (filter (λ p, (_ : exprProp())) _)]] -/
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem odd_gf_prop [Field α] (n m : ℕ) (h : n < m * 2) :
-    (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGf m) :=
-  by
+    (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGf m) := by
   rw [← partial_odd_gf_prop]
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr card (filter (λ p, (_ : exprProp())) _)]]"
@@ -458,8 +446,7 @@ theorem partialDistinctGf_prop [CommSemiring α] (n m : ℕ) :
           ((univ : Finset (Nat.Partition n)).filterₓ fun p =>
             p.parts.Nodup ∧ ∀ j ∈ p.parts, j ∈ (range m).map ⟨Nat.succ, Nat.succ_injective⟩) :
         α) =
-      coeff α n (partialDistinctGf m) :=
-  by
+      coeff α n (partialDistinctGf m) := by
   rw [partial_distinct_gf]
   convert
     partial_gf_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1})
@@ -484,8 +471,7 @@ theorem partialDistinctGf_prop [CommSemiring α] (n m : ℕ) :
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
 -/
 theorem distinct_gf_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
-    ((Nat.Partition.distincts n).card : α) = coeff α n (partialDistinctGf m) :=
-  by
+    ((Nat.Partition.distincts n).card : α) = coeff α n (partialDistinctGf m) := by
   erw [← partial_distinct_gf_prop]
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr card (filter (λ p, _) _)]]"
@@ -505,8 +491,7 @@ It's enough to not take the limit though, and just consider large enough `m`.
 -/
 theorem same_gf [Field α] (m : ℕ) :
     (partialOddGf m * (range m).Prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
-      partialDistinctGf m :=
-  by
+      partialDistinctGf m := by
   rw [partial_odd_gf, partial_distinct_gf]
   induction' m with m ih
   · simp
@@ -516,8 +501,7 @@ theorem same_gf [Field α] (m : ℕ) :
   set π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂
   set π₃ : PowerSeries α := ∏ i in range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih 
-  have h : constant_coeff α (1 - X ^ (2 * m + 1)) ≠ 0 :=
-    by
+  have h : constant_coeff α (1 - X ^ (2 * m + 1)) ≠ 0 := by
     rw [RingHom.map_sub, RingHom.map_pow, constant_coeff_one, constant_coeff_X,
       zero_pow (2 * m).succ_pos, sub_zero]
     exact one_ne_zero
@@ -545,8 +529,7 @@ theorem same_gf [Field α] (m : ℕ) :
 #align theorems_100.same_gf Theorems100.same_gf
 
 theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
-    coeff α n (partialOddGf m) = coeff α n (partialDistinctGf m) :=
-  by
+    coeff α n (partialOddGf m) = coeff α n (partialDistinctGf m) := by
   rw [← same_gf, coeff_mul_prod_one_sub_of_lt_order]
   rintro i -
   rw [order_X_pow]
@@ -554,8 +537,7 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
 theorem partition_theorem (n : ℕ) :
-    (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card :=
-  by
+    (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
   suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card by
     exact_mod_cast this
