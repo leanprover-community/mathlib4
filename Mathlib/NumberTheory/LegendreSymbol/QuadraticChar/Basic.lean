@@ -8,9 +8,9 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Parity
-import Mathbin.NumberTheory.LegendreSymbol.ZmodChar
-import Mathbin.FieldTheory.Finite.Basic
+import Mathlib.Data.Fintype.Parity
+import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Quadratic characters of finite fields
@@ -66,8 +66,7 @@ open MulChar
 variable {F : Type _} [Field F] [Fintype F] [DecidableEq F]
 
 /-- Some basic API lemmas -/
-theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 :=
-  by
+theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
   simp only [quadraticCharFun]
   by_cases ha : a = 0
   · simp only [ha, eq_self_iff_true, if_true]
@@ -87,8 +86,7 @@ theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
 
 /-- If `ring_char F = 2`, then `quadratic_char_fun F` takes the value `1` on nonzero elements. -/
 theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
-    quadraticCharFun F a = 1 :=
-  by
+    quadraticCharFun F a = 1 := by
   simp only [quadraticCharFun, ha, if_false, ite_eq_left_iff]
   exact fun h => False.ndrec _ (h (FiniteField.isSquare_of_char_two hF a))
 #align quadratic_char_fun_eq_one_of_char_two quadraticCharFun_eq_one_of_char_two
@@ -96,16 +94,14 @@ theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : 
 /-- If `ring_char F` is odd, then `quadratic_char_fun F a` can be computed in
 terms of `a ^ (fintype.card F / 2)`. -/
 theorem quadraticCharFun_eq_pow_of_char_ne_two (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
-    quadraticCharFun F a = if a ^ (Fintype.card F / 2) = 1 then 1 else -1 :=
-  by
+    quadraticCharFun F a = if a ^ (Fintype.card F / 2) = 1 then 1 else -1 := by
   simp only [quadraticCharFun, ha, if_false]
   simp_rw [FiniteField.isSquare_iff hF ha]
 #align quadratic_char_fun_eq_pow_of_char_ne_two quadraticCharFun_eq_pow_of_char_ne_two
 
 /-- The quadratic character is multiplicative. -/
 theorem quadraticCharFun_mul (a b : F) :
-    quadraticCharFun F (a * b) = quadraticCharFun F a * quadraticCharFun F b :=
-  by
+    quadraticCharFun F (a * b) = quadraticCharFun F a * quadraticCharFun F b := by
   by_cases ha : a = 0
   · rw [ha, MulZeroClass.zero_mul, quadraticCharFun_zero, MulZeroClass.zero_mul]
   -- now `a ≠ 0`
@@ -178,16 +174,14 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
-    quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 :=
-  by
+    quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 := by
   refine' ⟨fun h => _, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
   rw [h]
   norm_num
 #align quadratic_char_eq_neg_one_iff_not_one quadraticChar_eq_neg_one_iff_not_one
 
 /-- For `a : F`, `quadratic_char F a = -1 ↔ ¬ is_square a`. -/
-theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a :=
-  by
+theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a := by
   by_cases ha : a = 0
   · simp only [ha, isSquare_zero, MulChar.map_zero, zero_eq_neg, one_ne_zero, not_true]
   · rw [quadraticChar_eq_neg_one_iff_not_one ha, quadraticChar_one_iff_isSquare ha]
@@ -212,8 +206,7 @@ theorem quadraticChar_eq_pow_of_char_ne_two (hF : ringChar F ≠ 2) {a : F} (ha 
 #align quadratic_char_eq_pow_of_char_ne_two quadraticChar_eq_pow_of_char_ne_two
 
 theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
-    (quadraticChar F a : F) = a ^ (Fintype.card F / 2) :=
-  by
+    (quadraticChar F a : F) = a ^ (Fintype.card F / 2) := by
   by_cases ha : a = 0
   · have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card two_pos
     simp only [ha, zero_pow this, quadraticChar_apply, quadraticChar_zero, Int.cast_zero]
@@ -228,8 +221,7 @@ theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
 variable (F)
 
 /-- The quadratic character is quadratic as a multiplicative character. -/
-theorem quadraticChar_isQuadratic : (quadraticChar F).IsQuadratic :=
-  by
+theorem quadraticChar_isQuadratic : (quadraticChar F).IsQuadratic := by
   intro a
   by_cases ha : a = 0
   · left; rw [ha]; exact quadraticChar_zero
@@ -240,8 +232,7 @@ variable {F}
 
 /-- The quadratic character is nontrivial as a multiplicative character
 when the domain has odd characteristic. -/
-theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial :=
-  by
+theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
   rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
   have hu : IsUnit a := by by_contra hf; rw [map_nonunit _ hf] at ha ; norm_num at ha 
   refine' ⟨hu.unit, (_ : quadraticChar F a ≠ 1)⟩
@@ -251,8 +242,7 @@ theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).I
 
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
 theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
-    ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 :=
-  by
+    ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   ·
@@ -310,8 +300,7 @@ variable {F : Type _} [Field F] [Fintype F]
 
 /-- The value of the quadratic character at `-1` -/
 theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
-    quadraticChar F (-1) = χ₄ (Fintype.card F) :=
-  by
+    quadraticChar F (-1) = χ₄ (Fintype.card F) := by
   have h := quadraticChar_eq_pow_of_char_ne_two hF (neg_ne_zero.mpr one_ne_zero)
   rw [h, χ₄_eq_neg_one_pow (FiniteField.odd_card_of_char_ne_two hF)]
   set n := Fintype.card F / 2
