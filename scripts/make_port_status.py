@@ -31,7 +31,7 @@ import_re = re.compile(r"^import ([^ ]*)")
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
-    rel = pathlib.Path(*rel.parts[1:])
+    rel = Path(*rel.parts[1:])
     return str(rel.with_suffix('')).replace(os.sep, '.')
 
 paths = []
