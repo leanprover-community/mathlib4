@@ -318,7 +318,7 @@ theorem agree : f.range.carrier = { x | h x = g x } := by
 #align Group.surjective_of_epi_auxs.agree GroupCat.SurjectiveOfEpiAuxs.agree
 
 theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ GroupCat.of SX' from h := by
-  ext a
+  ext1 a
   change g (f a) = h (f a)
   have : f a ∈ { b | h b = g b } := by
     rw [←agree]

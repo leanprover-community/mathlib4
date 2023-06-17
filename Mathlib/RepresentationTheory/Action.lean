@@ -850,13 +850,11 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     { lift := fun s =>
         { hom := fun x i => (s.π.app ⟨i⟩).hom x
           comm := fun g => by
-            ext x
-            funext j
+            ext x j
             exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
       fac := fun s j => rfl
       uniq := fun s f h => by
-        ext x
-        funext j
+        ext x j
         dsimp at *
         rw [← h ⟨j⟩]
         rfl }

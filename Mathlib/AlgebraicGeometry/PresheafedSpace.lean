@@ -178,8 +178,7 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   id_comp _ := by
     dsimp
     ext
-    . apply NatTrans.ext
-      dsimp
+    . dsimp
       simp only [map_id, whiskerRight_id', assoc]
       erw [comp_id, comp_id]
     . dsimp
@@ -285,8 +284,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     { base := H.inv
       c := Presheaf.toPushforwardOfIso H α.hom }
   hom_inv_id := by
-    ext
-    apply NatTrans.ext
     ext U
     rw [NatTrans.comp_app]
     simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
@@ -295,8 +292,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
       ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
     simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
   inv_hom_id := by
-    ext
-    apply NatTrans.ext
     ext U
     dsimp
     rw [NatTrans.comp_app]
@@ -317,12 +312,10 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom := H.hom.c
   inv := Presheaf.pushforwardToOfIso ((forget _).mapIso H).symm H.inv.c
   hom_inv_id := by
-    apply NatTrans.ext
     ext U
     rw [NatTrans.comp_app]
     simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id U)
   inv_hom_id := by
-    apply NatTrans.ext
     ext U
     dsimp
     rw [NatTrans.comp_app, NatTrans.id_app]
@@ -438,8 +431,7 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
   /- another approach would be to prove the left hand side
        is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
-  apply NatTrans.ext
-  ext1 U
+  ext U
   dsimp [ofRestrict]
   erw [eqToHom_map, eqToHom_app]
   simp
@@ -527,15 +519,19 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
       c := whiskerRight f.c F }
   -- porting note: these proofs were automatic in mathlib3
   map_id X := by
-    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
-    ext
-    apply NatTrans.ext'
-    aesop_cat
+    dsimp
+    ext U
+    induction' U with U
+    dsimp
+    simp
+    rfl
   map_comp f g := by
-    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
-    ext
-    apply NatTrans.ext'
-    aesop_cat
+    dsimp
+    ext U
+    induction' U with U
+    dsimp
+    simp
+    rfl
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]
@@ -573,12 +569,6 @@ def onPresheaf {F G : C ⥤ D} (α : F ⟶ G) : G.mapPresheaf ⟶ F.mapPresheaf 
   app X :=
     { base := 𝟙 _
       c := whiskerLeft X.presheaf α ≫ eqToHom (Presheaf.Pushforward.id_eq _).symm }
-  -- porting note: this proof was automatic in mathlib3
-  naturality X Y f := by
-    -- Porting note: I don't understand why neither `ext` nor `aesop_cat` can apply `NatTrans.ext'`.
-    ext
-    apply NatTrans.ext
-    aesop_cat
 #align category_theory.nat_trans.on_presheaf CategoryTheory.NatTrans.onPresheaf
 
 -- TODO Assemble the last two constructions into a functor

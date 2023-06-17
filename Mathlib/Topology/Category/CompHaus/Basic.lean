@@ -321,9 +321,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     have H : h = g := by
       rw [← cancel_epi f]
       ext x
-      -- Porting note: `ext` doesn't apply these two lemmas.
-      apply ULift.ext
-      apply Subtype.ext
       dsimp
       -- Porting note: This `change` is not ideal.
       -- I think lean is having issues understanding when a `ContinuousMap` should be considered

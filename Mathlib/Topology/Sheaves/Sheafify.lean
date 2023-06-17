@@ -81,9 +81,7 @@ sending each section to its germs.
 def toSheafify : F ⟶ F.sheafify.1 where
   app U f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
-    ext x
-    apply Subtype.ext -- Porting note: Added `apply`
-    ext ⟨u, m⟩
+    ext x ⟨u, m⟩
     exact germ_res_apply F f.unop ⟨u, m⟩ x
 #align Top.presheaf.to_sheafify TopCat.Presheaf.toSheafify
 

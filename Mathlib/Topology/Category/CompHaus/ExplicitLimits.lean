@@ -84,10 +84,7 @@ lemma pullback.lift_snd {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a �
 lemma pullback.hom_ext {Z : CompHaus.{u}} (a b : Z ⟶ pullback f g)
     (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
     (hsnd : a ≫ pullback.snd f g = b ≫ pullback.snd f g) : a = b := by
-  ext z
-  apply_fun (fun q => q z) at hfst hsnd
-  apply Subtype.ext
-  apply Prod.ext
+  ext z <;> apply_fun (fun q => q z) at hfst hsnd
   · exact hfst
   · exact hsnd
 

@@ -121,8 +121,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
     { lift := lift.{_, v} f
       fac := fun s j => rfl
       uniq := fun s m w => by
-        ext x
-        funext j
+        ext x j
         exact congr_arg (fun g : s.pt ⟶ f j => (g : s.pt → f j) x) (w ⟨j⟩) }
 #align Module.has_limit.product_limit_cone ModuleCat.HasLimit.productLimitCone
 

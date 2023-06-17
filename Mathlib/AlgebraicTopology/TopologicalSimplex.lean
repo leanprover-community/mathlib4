@@ -94,13 +94,17 @@ def toTop : SimplexCategory ⥤ TopCat where
   map f := ⟨toTopMap f, by continuity⟩
   map_id := by
     intro Δ
-    ext f
+    -- Porting note: these next three lines could hopefully be a single ext if the lemmas
+    -- were applied in the right order.
+    ext1 f
     apply toTopObj.ext
     funext i
     change (Finset.univ.filter fun k => k = i).sum _ = _
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
-    ext h
+    -- Porting note: these next three lines could hopefully be a single ext if the lemmas
+    -- were applied in the right order.
+    ext1 h
     apply toTopObj.ext
     funext i
     dsimp

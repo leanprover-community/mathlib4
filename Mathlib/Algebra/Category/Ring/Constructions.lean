@@ -151,14 +151,14 @@ def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
   · dsimp
   · intros; dsimp
-  · intros f; ext; rfl
+  · intros f; ext
 set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
-  refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
+  refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext, ?_⟩⟩
   ext (x : X)
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
@@ -205,7 +205,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     rfl
   uniq s m h := by
     dsimp
-    ext (x : s.pt)
+    ext1 (x : s.pt)
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x

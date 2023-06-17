@@ -399,7 +399,6 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
-        apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
         rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]

@@ -42,8 +42,7 @@ def productConeIsLimit : IsLimit (productCone Z) where
     cases j
     aesop
   uniq s m w := by
-    ext x
-    funext i
+    ext x i
     exact LinearMap.congr_fun (w ⟨i⟩) x
 #align Module.product_cone_is_limit ModuleCat.productConeIsLimit
 

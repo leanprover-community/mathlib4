@@ -184,10 +184,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Augmented
 
--- porting note: added to ease the automation of the proofs in the definition
--- of `standardSimplex`
-attribute [local simp] SSet.standardSimplex
-
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete in
 -- porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by

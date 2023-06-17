@@ -22,6 +22,6 @@
   {"git":
    {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "7448fde12377334ce249a25a0ff60ee060a7ede1",
+    "rev": "622f5bc2c0c9e0700839b2311d1ac0cb9da78d32",
     "name": "std",
     "inputRev?": "whnf_ext"}}]}

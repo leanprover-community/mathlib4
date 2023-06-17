@@ -195,7 +195,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
     have h : p₁ m = p₂ m := by
       congr
       rw [← cancel_epi f]
-      ext a
+      ext1 a
       simp only [coe_of, comp_apply]
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
