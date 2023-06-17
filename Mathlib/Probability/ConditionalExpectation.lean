@@ -8,9 +8,9 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Notation
-import Mathbin.Probability.Independence.Basic
-import Mathbin.MeasureTheory.Function.ConditionalExpectation.Basic
+import Mathlib.Probability.Notation
+import Mathlib.Probability.Independence.Basic
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 
@@ -41,8 +41,7 @@ variable {Ω E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpa
 /-- If `m₁, m₂` are independent σ-algebras and `f` is `m₁`-measurable, then `𝔼[f | m₂] = 𝔼[f]`
 almost everywhere. -/
 theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinite (μ.trim hle₂)]
-    (hf : strongly_measurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f|m₂] =ᵐ[μ] fun x => μ[f] :=
-  by
+    (hf : strongly_measurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f|m₂] =ᵐ[μ] fun x => μ[f] := by
   by_cases hfint : integrable f μ
   swap; · rw [condexp_undef hfint, integral_undef hfint]; rfl
   have hfint₁ := hfint.trim hle₁ hf
@@ -63,14 +62,12 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
       integral_add' huint.integrable_on hvint.integrable_on]
   · have heq₁ :
       (fun f : Lp_meas E ℝ m₁ 1 μ => ∫ x, f x ∂μ) =
-        (fun f : Lp E 1 μ => ∫ x, f x ∂μ) ∘ Submodule.subtypeL _ :=
-      by
+        (fun f : Lp E 1 μ => ∫ x, f x ∂μ) ∘ Submodule.subtypeL _ := by
       refine' funext fun f => integral_congr_ae _
       simp_rw [Submodule.coe_subtypeL', Submodule.coeSubtype, ← coeFn_coeBase]
     have heq₂ :
       (fun f : Lp_meas E ℝ m₁ 1 μ => ∫ x in s, f x ∂μ) =
-        (fun f : Lp E 1 μ => ∫ x in s, f x ∂μ) ∘ Submodule.subtypeL _ :=
-      by
+        (fun f : Lp E 1 μ => ∫ x in s, f x ∂μ) ∘ Submodule.subtypeL _ := by
       refine' funext fun f => integral_congr_ae (ae_restrict_of_ae _)
       simp_rw [Submodule.coe_subtypeL', Submodule.coeSubtype, ← coeFn_coeBase]
       exact eventually_of_forall fun _ => rfl
