@@ -8,7 +8,7 @@ Authors: Matt Kempster
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Euclidean.Triangle
+import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Freek № 57: Heron's Formula
@@ -45,8 +45,7 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
     let b := dist p3 p2
     let c := dist p1 p3
     let s := (a + b + c) / 2
-    1 / 2 * a * b * sin (∠ p1 p2 p3) = √ (s * (s - a) * (s - b) * (s - c)) :=
-  by
+    1 / 2 * a * b * sin (∠ p1 p2 p3) = √ (s * (s - a) * (s - b) * (s - c)) := by
   intro a b c s
   let γ := ∠ p1 p2 p3
   obtain := (dist_pos.mpr h1).ne', (dist_pos.mpr h2).ne'
@@ -56,8 +55,7 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
   let numerator := (2 * a * b) ^ 2 - (a * a + b * b - c * c) ^ 2
   let denominator := (2 * a * b) ^ 2
   have split_to_frac : 1 - cos γ ^ 2 = numerator / denominator := by field_simp [cos_rule]
-  have numerator_nonneg : 0 ≤ numerator :=
-    by
+  have numerator_nonneg : 0 ≤ numerator := by
     have frac_nonneg : 0 ≤ numerator / denominator := by linarith [split_to_frac, cos_sq_le_one γ]
     cases div_nonneg_iff.mp frac_nonneg
     · exact h.left
