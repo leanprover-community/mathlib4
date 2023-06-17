@@ -130,6 +130,8 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = a ^ (p / 2) := by
       push_cast
       generalize (a : ZMod 2) = b; fin_cases b; tauto; simp
   · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
+    norm_cast
+    congr
     exact (card p).symm
 #align legendre_sym.eq_pow legendreSym.eq_pow
 
@@ -159,7 +161,7 @@ theorem at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulCha
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
 protected theorem mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
-  simp only [legendreSym, Int.cast_mul, map_mul]
+  simp [legendreSym, Int.cast_mul, map_mul, quadraticCharFun_mul]
 #align legendre_sym.mul legendreSym.mul
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
@@ -237,15 +239,13 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
 /-- The Legendre symbol `legendre_sym p a = 1` if there is a solution in `ℤ/pℤ`
 of the equation `x^2 - a*y^2 = 0` with `x ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
-    {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 :=
+    {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
   haveI hy : y ≠ 0 := by
     rintro rfl
-    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero,
-      pow_eq_zero_iff (by norm_num : 0 < 2)] at hxy
-    exacts [hx hxy, inferInstance]
-  -- why is the instance not inferred automatically?
-    eq_one_of_sq_sub_mul_sq_eq_zero
-    ha hy hxy
+    rw [zero_pow' 2 (by norm_num), MulZeroClass.mul_zero, sub_zero, pow_eq_zero_iff (by norm_num : 0 < 2)] at hxy
+  -- porting note: apparently something was not automatically inferred and now is.
+    exact hx hxy
+  exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy
 #align legendre_sym.eq_one_of_sq_sub_mul_sq_eq_zero' legendreSym.eq_one_of_sq_sub_mul_sq_eq_zero'
 
 /-- If `legendre_sym p a = -1`, then the only solution of `x^2 - a*y^2 = 0` in `ℤ/pℤ`
@@ -291,7 +291,7 @@ open ZMod
 
 /-- `legendre_sym p (-1)` is given by `χ₄ p`. -/
 theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
-  simp only [legendreSym, card p, quadraticChar_neg_one ((ring_char_zmod_n p).substr hp),
+  simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
 #align legendre_sym.at_neg_one legendreSym.at_neg_one
 
