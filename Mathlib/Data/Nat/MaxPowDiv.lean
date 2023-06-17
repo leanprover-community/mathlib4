@@ -12,8 +12,8 @@ import Mathlib.Data.Nat.Pow
 Here we introduce `p.maxPowDiv n` which returns the maximal `k : ℕ` for
 which `p ^ k ∣ n` with the convention that `maxPowDiv 1 n = 0` for all `n`.
 
-We prove enough about `maxPowDiv` in this file to show equality with `Nat.padicValNat`
-`Nat.padicValNat.padicValNat_eq_maxPowDiv`.
+We prove enough about `maxPowDiv` in this file to show equality with `Nat.padicValNat` in
+`padicValNat.padicValNat_eq_maxPowDiv`.
 
 The implementation of `maxPowDiv` improves on the speed of `padicValNat`.
 -/
