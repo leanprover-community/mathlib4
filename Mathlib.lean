@@ -2138,6 +2138,7 @@ import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
