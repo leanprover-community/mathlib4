@@ -292,8 +292,8 @@ where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
   (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
     fun x => by
-    dsimp
-    rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
+      dsimp
+      rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
 
 theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
     (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
