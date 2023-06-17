@@ -163,7 +163,10 @@ theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) =
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
 theorem quadraticChar_sq_one {a : F} (ha : a ≠ 0) : quadraticChar F a ^ 2 = 1 := by
-  rwa [pow_two, ← map_mul, ← pow_two, quadraticChar_sq_one']
+  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5164): was
+  -- rwa [pow_two, ← map_mul, ← pow_two, quadraticChar_sq_one']
+  erw [pow_two, ← map_mul (quadraticChar F) a, ← pow_two]
+  apply quadraticChar_sq_one' ha
 #align quadratic_char_sq_one quadraticChar_sq_one
 
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
