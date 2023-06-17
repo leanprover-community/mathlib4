@@ -113,14 +113,11 @@ def legendreSym (a : ℤ) : ℤ :=
 namespace legendreSym
 
 /-- We have the congruence `legendre_sym p a ≡ a ^ (p / 2) mod p`. -/
-theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = a ^ (p / 2) := by
+theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
-  have : CharZero (ZMod p) := by sorry
   · by_cases ha : (a : ZMod p) = 0
-    · rw [legendreSym, Int.cast_eq_zero.mp ha]
-      norm_cast
-      rw [quadraticChar_zero,
-        zero_pow (Nat.div_pos (@Fact.out p.Prime _).two_le (succ_pos 1))]
+    · rw [legendreSym, ha, quadraticChar_zero,
+        zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1))]
       norm_cast
     · have := (ringChar_zmod_n p).symm.trans hc
       -- p = 2
