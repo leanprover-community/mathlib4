@@ -143,7 +143,7 @@ theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
   quadraticCharFun_eq_zero_iff
 #align quadratic_char_eq_zero_iff quadraticChar_eq_zero_iff
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 #align quadratic_char_zero quadraticChar_zero
@@ -250,7 +250,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
   by_cases h₀ : a = 0
   · simp only [h₀, pow_eq_zero_iff, Nat.succ_pos', Int.ofNat_succ, Int.ofNat_zero, MulChar.map_zero,
       Set.setOf_eq_eq_singleton, Set.toFinset_card, Set.card_singleton]
-  · set s := {x : F | x ^ 2 = a}.toFinset with hs
+  · set s := {x : F | x ^ 2 = a}.toFinset
     by_cases h : IsSquare a
     · rw [(quadraticChar_one_iff_isSquare h₀).mpr h]
       rcases h with ⟨b, h⟩
@@ -260,8 +260,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
         simp only [Finset.mem_filter, Finset.mem_univ, true_and_iff, List.toFinset_cons,
           List.toFinset_nil, insert_emptyc_eq, Finset.mem_insert, Finset.mem_singleton]
         rw [← pow_two] at h
-        -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): added parens
-        simp only [hs, (Set.mem_toFinset), Set.mem_setOf_eq, h]
+        simp only [h, Set.toFinset_setOf, Finset.mem_univ, Finset.mem_filter, true_and]
         constructor
         · exact eq_or_eq_neg_of_sq_eq_sq _ _
         · rintro (h₂ | h₂) <;> rw [h₂]
