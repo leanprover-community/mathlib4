@@ -181,11 +181,20 @@ instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   mul_smul _ _ _ := by ext; rfl
 #align polynomial.gal.gal_action_aux Polynomial.Gal.galActionAux
 
+-- Porting note: split out from `galAction` below to allow using `smul_def` there.
+instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) where
+  smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
+
+-- Porting note: new
+theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p E) :
+    ϕ • x = rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x) :=
+  rfl
+
 /-- The action of `gal p` on the roots of `p` in `E`. -/
 instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet p E) where
-  smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
-  one_smul _ := by simp only [Equiv.apply_symm_apply, one_smul]
-  mul_smul _ _ _ := by simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
+  one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
+  mul_smul _ _ _ := by
+    simp only [smul_def, Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
 #align polynomial.gal.gal_action Polynomial.Gal.galAction
 
 variable {p E}
@@ -248,12 +257,19 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
       else
         @restrict F _ p _ _ _
           ⟨splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q)
-              hpq⟩ :=
-  by convert rfl
+              hpq⟩ := by
+  -- Porting note: added `unfold`
+  unfold restrictDvd
+  convert rfl
 #align polynomial.gal.restrict_dvd_def Polynomial.Gal.restrictDvd_def
 
 theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) :=
-  by classical simp only [restrictDvd_def, dif_neg hq, (restrict_surjective)]
+  by classical
+    -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
+    haveI := Fact.mk <|
+      splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq
+    simp only [restrictDvd_def, dif_neg hq]
+    exact restrict_surjective _ _
 #align polynomial.gal.restrict_dvd_surjective Polynomial.Gal.restrictDvd_surjective
 
 variable (p q)
