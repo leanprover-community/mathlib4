@@ -15,8 +15,8 @@ import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 This file contains results about Legendre symbols.
 
-We define the Legendre symbol $\Bigl(\frac{a}{p}\Bigr)$ as `legendre_sym p a`.
-Note the order of arguments! The advantage of this form is that then `legendre_sym p`
+We define the Legendre symbol $\Bigl(\frac{a}{p}\Bigr)$ as `legendreSym p a`.
+Note the order of arguments! The advantage of this form is that then `legendreSym p`
 is a multiplicative map.
 
 The Legendre symbol is used to define the Jacobi symbol, `jacobi_sym a b`, for integers `a`
@@ -26,7 +26,7 @@ and (odd) natural numbers `b`, which extends the Legendre symbol.
 
 We also prove the supplementary laws that give conditions for when `-1`
 is a square modulo a prime `p`:
-`legendre_sym.at_neg_one` and `zmod.exists_sq_eq_neg_one_iff` for `-1`.
+`legendreSym.at_neg_one` and `ZMod.exists_sq_eq_neg_one_iff` for `-1`.
 
 See `number_theory.legendre_symbol.quadratic_reciprocity` for the conditions when `2` and `-2`
 are squares:
@@ -47,7 +47,7 @@ namespace ZMod
 
 variable (p : ℕ) [Fact p.Prime]
 
-/-- Euler's Criterion: A unit `x` of `zmod p` is a square if and only if `x ^ (p / 2) = 1`. -/
+/-- Euler's Criterion: A unit `x` of `ZMod p` is a square if and only if `x ^ (p / 2) = 1`. -/
 theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x) ↔ x ^ (p / 2) = 1 := by
   by_cases hc : p = 2
   · subst hc
@@ -60,7 +60,7 @@ theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x)
     rwa [card p] at h₀
 #align zmod.euler_criterion_units ZMod.euler_criterion_units
 
-/-- Euler's Criterion: a nonzero `a : zmod p` is a square if and only if `x ^ (p / 2) = 1`. -/
+/-- Euler's Criterion: a nonzero `a : ZMod p` is a square if and only if `x ^ (p / 2) = 1`. -/
 theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ a ^ (p / 2) = 1 := by
   apply (iff_congr _ (by simp [Units.ext_iff])).mp (euler_criterion_units p (Units.mk0 a ha))
   simp only [Units.ext_iff, sq, Units.val_mk0, Units.val_mul]
@@ -72,7 +72,7 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
     refine' ⟨Units.mk0 y hy, _⟩; simp
 #align zmod.euler_criterion ZMod.euler_criterion
 
-/-- If `a : zmod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
+/-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
   cases' Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 hp_odd
@@ -96,7 +96,7 @@ open ZMod
 
 variable (p : ℕ) [Fact p.Prime]
 
-/-- The Legendre symbol of `a : ℤ` and a prime `p`, `legendre_sym p a`,
+/-- The Legendre symbol of `a : ℤ` and a prime `p`, `legendreSym p a`,
 is an integer defined as
 
 * `0` if `a` is `0` modulo `p`;
@@ -104,7 +104,7 @@ is an integer defined as
 * `-1` otherwise.
 
 Note the order of the arguments! The advantage of the order chosen here is
-that `legendre_sym p` is a multiplicative function `ℤ → ℤ`.
+that `legendreSym p` is a multiplicative function `ℤ → ℤ`.
 -/
 def legendreSym (a : ℤ) : ℤ :=
   quadraticChar (ZMod p) a
@@ -112,7 +112,7 @@ def legendreSym (a : ℤ) : ℤ :=
 
 namespace legendreSym
 
-/-- We have the congruence `legendre_sym p a ≡ a ^ (p / 2) mod p`. -/
+/-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
   · by_cases ha : (a : ZMod p) = 0
@@ -132,7 +132,7 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
     exact (card p).symm
 #align legendre_sym.eq_pow legendreSym.eq_pow
 
-/-- If `p ∤ a`, then `legendre_sym p a` is `1` or `-1`. -/
+/-- If `p ∤ a`, then `legendreSym p a` is `1` or `-1`. -/
 theorem eq_one_or_neg_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ∨ legendreSym p a = -1 :=
   quadraticChar_dichotomy ha
@@ -185,7 +185,7 @@ protected theorem mod (a : ℤ) : legendreSym p a = legendreSym p (a % p) := by
   simp only [legendreSym, int_cast_mod]
 #align legendre_sym.mod legendreSym.mod
 
-/-- When `p ∤ a`, then `legendre_sym p a = 1` iff `a` is a square mod `p`. -/
+/-- When `p ∤ a`, then `legendreSym p a = 1` iff `a` is a square mod `p`. -/
 theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 ↔ IsSquare (a : ZMod p) :=
   quadraticChar_one_iff_isSquare ha0
 #align legendre_sym.eq_one_iff legendreSym.eq_one_iff
@@ -194,7 +194,7 @@ theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact_mod_cast ha0
 #align legendre_sym.eq_one_iff' legendreSym.eq_one_iff'
 
-/-- `legendre_sym p a = -1` iff `a` is a nonsquare mod `p`. -/
+/-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
 theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) :=
   quadraticChar_neg_one_iff_not_isSquare
 #align legendre_sym.eq_neg_one_iff legendreSym.eq_neg_one_iff
@@ -222,7 +222,7 @@ section QuadraticForm
 
 namespace legendreSym
 
-/-- The Legendre symbol `legendre_sym p a = 1` if there is a solution in `ℤ/pℤ`
+/-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
 of the equation `x^2 - a*y^2 = 0` with `y ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
     {x y : ZMod p} (hy : y ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
@@ -233,7 +233,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
 #align legendre_sym.eq_one_of_sq_sub_mul_sq_eq_zero legendreSym.eq_one_of_sq_sub_mul_sq_eq_zero
 
-/-- The Legendre symbol `legendre_sym p a = 1` if there is a solution in `ℤ/pℤ`
+/-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
 of the equation `x^2 - a*y^2 = 0` with `x ≠ 0`. -/
 theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha : (a : ZMod p) ≠ 0)
     {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 - a * y ^ 2 = 0) : legendreSym p a = 1 := by
@@ -246,7 +246,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero' {p : ℕ} [Fact p.Prime] {a : ℤ} (ha 
   exact eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy
 #align legendre_sym.eq_one_of_sq_sub_mul_sq_eq_zero' legendreSym.eq_one_of_sq_sub_mul_sq_eq_zero'
 
-/-- If `legendre_sym p a = -1`, then the only solution of `x^2 - a*y^2 = 0` in `ℤ/pℤ`
+/-- If `legendreSym p a = -1`, then the only solution of `x^2 - a*y^2 = 0` in `ℤ/pℤ`
 is the trivial one. -/
 theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1)
     {x y : ZMod p} (hxy : x ^ 2 - a * y ^ 2 = 0) : x = 0 ∧ y = 0 := by
@@ -263,7 +263,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     exact one_ne_zero h
 #align legendre_sym.eq_zero_mod_of_eq_neg_one legendreSym.eq_zero_mod_of_eq_neg_one
 
-/-- If `legendre_sym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
+/-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
     (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2 ) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
@@ -288,7 +288,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 open ZMod
 
-/-- `legendre_sym p (-1)` is given by `χ₄ p`. -/
+/-- `legendreSym p (-1)` is given by `χ₄ p`. -/
 theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
   simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
@@ -296,7 +296,7 @@ theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := 
 
 namespace ZMod
 
-/-- `-1` is a square in `zmod p` iff `p` is not congruent to `3` mod `4`. -/
+/-- `-1` is a square in `ZMod p` iff `p` is not congruent to `3` mod `4`. -/
 theorem exists_sq_eq_neg_one_iff : IsSquare (-1 : ZMod p) ↔ p % 4 ≠ 3 := by
   rw [FiniteField.isSquare_neg_one_iff, card p]
 #align zmod.exists_sq_eq_neg_one_iff ZMod.exists_sq_eq_neg_one_iff
@@ -305,7 +305,7 @@ theorem mod_four_ne_three_of_sq_eq_neg_one {y : ZMod p} (hy : y ^ 2 = -1) : p % 
   exists_sq_eq_neg_one_iff.1 ⟨y, hy ▸ pow_two y⟩
 #align zmod.mod_four_ne_three_of_sq_eq_neg_one ZMod.mod_four_ne_three_of_sq_eq_neg_one
 
-/-- If two nonzero squares are negatives of each other in `zmod p`, then `p % 4 ≠ 3`. -/
+/-- If two nonzero squares are negatives of each other in `ZMod p`, then `p % 4 ≠ 3`. -/
 theorem mod_four_ne_three_of_sq_eq_neg_sq' {x y : ZMod p} (hy : y ≠ 0) (hxy : x ^ 2 = -y ^ 2) :
     p % 4 ≠ 3 :=
   @mod_four_ne_three_of_sq_eq_neg_one p _ (x / y)
