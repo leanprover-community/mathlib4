@@ -1,5 +1,7 @@
+import Archive.Examples.PropEncodable
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1960Q1
+import Archive.Imo.Imo1962Q1
 import Archive.Imo.Imo1962Q4
 import Archive.Imo.Imo1964Q1
 import Archive.Imo.Imo1969Q1
@@ -16,6 +18,8 @@ import Archive.Imo.Imo2006Q5
 import Archive.Imo.Imo2008Q4
 import Archive.Imo.Imo2011Q3
 import Archive.Imo.Imo2011Q5
+import Archive.Imo.Imo2013Q1
+import Archive.Imo.Imo2019Q1
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Wiedijk100Theorems.AreaOfACircle
@@ -24,3 +28,4 @@ import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
 import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
+import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
