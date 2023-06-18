@@ -24,14 +24,8 @@ theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
 theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
-theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <| by
-  constructor
-  · rw [iff_iff_not_or_and_or_not]
-    rw [not_and_or, not_or, not_not, not_or, not_not]
-    exact id
-  · rw [iff_iff_not_or_and_or_not]
-    rw [not_and_or, not_or, not_not, not_or, not_not]
-    exact id
+theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
+  _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
