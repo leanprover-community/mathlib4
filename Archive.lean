@@ -24,3 +24,4 @@ import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
 import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
+import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges

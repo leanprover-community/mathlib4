@@ -8,8 +8,8 @@ Authors: Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Ennreal
-import Mathbin.Data.Nat.Squarefree
+import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Divergence of the Prime Reciprocal Series
@@ -80,14 +80,12 @@ is less than 1/2.
 -/
 theorem sum_lt_half_of_not_tendsto
     (h : ¬Tendsto (fun n => ∑ p in {p ∈ range n | Nat.Prime p}, 1 / (p : ℝ)) atTop atTop) :
-    ∃ k, ∀ x, ∑ p in p x k, 1 / (p : ℝ) < 1 / 2 :=
-  by
+    ∃ k, ∀ x, ∑ p in p x k, 1 / (p : ℝ) < 1 / 2 := by
   have h0 :
     (fun n => ∑ p in {p ∈ range n | Nat.Prime p}, 1 / (p : ℝ)) = fun n =>
       ∑ p in range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 :=
     by simp only [sum_filter, filter_congr_decidable, sep_def]
-  have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 :=
-    by
+  have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 := by
     intro n; split_ifs
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg]
     · exact le_rfl
@@ -109,8 +107,7 @@ smaller than or equal to `k` leaves those `e` for which there is a prime `p > k`
 `e + 1`, or the union over those primes `p > k` of the sets of `e`s for which `e + 1` is a multiple
 of `p`.
 -/
-theorem range_sdiff_eq_bUnion {x k : ℕ} : range x \ m x k = u x k :=
-  by
+theorem range_sdiff_eq_bUnion {x k : ℕ} : range x \ m x k = u x k := by
   ext e
   simp only [mem_bUnion, not_and, mem_sdiff, sep_def, mem_filter, mem_range, U, M, P]
   push_neg
@@ -128,8 +125,7 @@ theorem range_sdiff_eq_bUnion {x k : ℕ} : range x \ m x k = u x k :=
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
 of reciprocals of primes in `(k, x]`.
 -/
-theorem card_le_mul_sum {x k : ℕ} : (card (u x k) : ℝ) ≤ x * ∑ p in p x k, 1 / p :=
-  by
+theorem card_le_mul_sum {x k : ℕ} : (card (u x k) : ℝ) ≤ x * ∑ p in p x k, 1 / p := by
   let P := {p ∈ range (x + 1) | k < p ∧ Nat.Prime p}
   let N p := {e ∈ range x | p ∣ e + 1}
   have h : card (Finset.biUnion P N) ≤ ∑ p in P, card (N p) := card_bUnion_le
@@ -144,8 +140,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (u x k) : ℝ) ≤ x * ∑ p in p x 
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to
 `k` is bounded by `2 ^ k`, the number of subsets of `[1, k]`.
 -/
-theorem card_le_two_pow {x k : ℕ} : card ({e ∈ m x k | Squarefree (e + 1)}) ≤ 2 ^ k :=
-  by
+theorem card_le_two_pow {x k : ℕ} : card ({e ∈ m x k | Squarefree (e + 1)}) ≤ 2 ^ k := by
   let M₁ := {e ∈ M x k | Squarefree (e + 1)}
   let f s := (Finset.prod s fun a => a) - 1
   let K := powerset (image Nat.succ (range k))
@@ -179,8 +174,7 @@ theorem card_le_two_pow {x k : ℕ} : card ({e ∈ m x k | Squarefree (e + 1)}) 
 The number of `e < x` for which `e + 1` is a product of powers of primes smaller than or equal to
 `k` is bounded by `2 ^ k * nat.sqrt x`.
 -/
-theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (m x k) ≤ 2 ^ k * Nat.sqrt x :=
-  by
+theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (m x k) ≤ 2 ^ k * Nat.sqrt x := by
   let M₁ := {e ∈ M x k | Squarefree (e + 1)}
   let M₂ := M (Nat.sqrt x) k
   let K := M₁ ×ˢ M₂
@@ -215,8 +209,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (m x k) ≤ 2 ^ k * Nat.sqrt
 #align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
 theorem Real.tendsto_sum_one_div_prime_atTop :
-    Tendsto (fun n => ∑ p in {p ∈ range n | Nat.Prime p}, 1 / (p : ℝ)) atTop atTop :=
-  by
+    Tendsto (fun n => ∑ p in {p ∈ range n | Nat.Prime p}, 1 / (p : ℝ)) atTop atTop := by
   -- Assume that the sum of the reciprocals of the primes converges.
   by_contra h
   -- Then there is a natural number `k` such that for all `x`, the sum of the reciprocals of primes
@@ -233,8 +226,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   let P := {p ∈ range (x + 1) | k < p ∧ Nat.Prime p}
   set U := U x k with hU
   -- This is indeed a partition, so `|U| + |M| = |range x| = x`.
-  have h2 : x = card U + card M :=
-    by
+  have h2 : x = card U + card M := by
     rw [← card_range x, hU, hM, ← range_sdiff_eq_bUnion]
     exact (card_sdiff_add_card_eq_card (Finset.filter_subset _ _)).symm
   -- But for the `x` we have chosen above, both `|U|` and `|M|` are less than or equal to `x / 2`,
