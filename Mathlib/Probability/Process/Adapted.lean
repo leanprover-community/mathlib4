@@ -8,8 +8,8 @@ Authors: Kexing Ying, Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Process.Filtration
-import Mathbin.Topology.Instances.Discrete
+import Mathlib.Probability.Process.Filtration
+import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Adapted and progressively measurable processes
@@ -130,8 +130,7 @@ namespace ProgMeasurable
 
 variable [MeasurableSpace ι]
 
-protected theorem adapted (h : ProgMeasurable f u) : Adapted f u :=
-  by
+protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   intro i
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
@@ -141,8 +140,7 @@ protected theorem adapted (h : ProgMeasurable f u) : Adapted f u :=
 
 protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
     (h : ProgMeasurable f u) (ht : ProgMeasurable f t) (ht_le : ∀ i ω, t i ω ≤ i) :
-    ProgMeasurable f fun i ω => u (t i ω) ω :=
-  by
+    ProgMeasurable f fun i ω => u (t i ω) ω := by
   intro i
   have :
     (fun p : ↥(Set.Iic i) × Ω => u (t (p.fst : ι) p.snd) p.snd) =
@@ -197,8 +195,7 @@ end ProgMeasurable
 
 theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
     (fltr : Filter γ) [fltr.ne_bot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
-    (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) : ProgMeasurable f u :=
-  by
+    (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) : ProgMeasurable f u := by
   intro i
   apply
     @stronglyMeasurable_of_tendsto (Set.Iic i × Ω) β γ (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _
