@@ -1,7 +1,21 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Topology.CountableInterFilter
 import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+/-!
+# Functions invariant under (quasi)ergodic map
+
+In this file we prove that an a.e. strongly measurable function `g : α → X` that is a.e. invariant
+under a (quasi)ergodic is a.e. equal to a constant. We prove several versions of this statement with
+slightly different measurability assumptions. We also formulate a version for
+`MeasureTheory.AEEqFun` functions with all a.e. equalities replaced with equalities in the quotient
+space.
+-/
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 
@@ -61,11 +75,7 @@ theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
     ∃ c, g =ᵐ[μ] const α c := by
   borelize X
   rcases hgm.isSeparable_ae_range with ⟨t, ht, hgt⟩
-  -- TODO: add `AEStronglyMeasurable.secondCountableTopology_ae_range`
-  have : SecondCountableTopology t
-  · letI := metrizableSpaceMetric X
-    have := ht.separableSpace
-    exact UniformSpace.secondCountable_of_separable t
+  haveI := ht.secondCountableTopology
   exact h.ae_eq_const_of_ae_eq_comp_of_ae_range₀ hgt hgm.aemeasurable.nullMeasurable hg_eq
 
 theorem eq_const_of_compQuasiMeasurePreserving_eq (h : QuasiErgodic f μ) {g : α →ₘ[μ] X}
