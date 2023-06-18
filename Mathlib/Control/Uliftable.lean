@@ -8,11 +8,11 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Monad.Basic
-import Mathbin.Control.Monad.Cont
-import Mathbin.Control.Monad.Writer
-import Mathbin.Logic.Equiv.Basic
-import Mathbin.Tactic.Interactive
+import Mathlib.Control.Monad.Basic
+import Mathlib.Control.Monad.Cont
+import Mathlib.Control.Monad.Writer
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Tactic.Interactive
 
 /-!
 # Universe lifting for type families
