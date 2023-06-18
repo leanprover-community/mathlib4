@@ -507,8 +507,6 @@ attribute [local simp] Presheaf.pushforwardObj
 
 namespace Functor
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
-
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
     giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
 def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
