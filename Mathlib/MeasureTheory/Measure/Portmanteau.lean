@@ -337,7 +337,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : 
     {μs : ι → FiniteMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp only [h, limsup_bot, bot_le]
+  · simp only [limsup_bot, bot_le]
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos _
   let δs := fun n : ℕ => (1 : ℝ) / (n + 1)
