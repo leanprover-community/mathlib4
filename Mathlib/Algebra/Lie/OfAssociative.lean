@@ -171,35 +171,35 @@ def toLieHom : A →ₗ⁅R⁆ B :=
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
-/-- Porting note: is a syntactic tautology
+/- Porting note: is a syntactic tautology
 @[simp]
 theorem toLieHom_coe : f.toLieHom = ↑f :=
   rfl
-#align alg_hom.to_lie_hom_coe AlgHom.toLieHom_coe
 -/
+#noalign alg_hom.to_lie_hom_coe
 
 @[simp]
-theorem coe_to_lieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
+theorem coe_toLieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
   rfl
-#align alg_hom.coe_to_lie_hom AlgHom.coe_to_lieHom
+#align alg_hom.coe_to_lie_hom AlgHom.coe_toLieHom
 
 theorem toLieHom_apply (x : A) : f.toLieHom x = f x :=
   rfl
 #align alg_hom.to_lie_hom_apply AlgHom.toLieHom_apply
 
 @[simp]
-theorem to_lieHom_id : (AlgHom.id R A : A →ₗ⁅R⁆ A) = LieHom.id :=
+theorem toLieHom_id : (AlgHom.id R A : A →ₗ⁅R⁆ A) = LieHom.id :=
   rfl
-#align alg_hom.to_lie_hom_id AlgHom.to_lieHom_id
+#align alg_hom.to_lie_hom_id AlgHom.toLieHom_id
 
 @[simp]
-theorem to_lieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C).comp (f : A →ₗ⁅R⁆ B) :=
+theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C).comp (f : A →ₗ⁅R⁆ B) :=
   rfl
-#align alg_hom.to_lie_hom_comp AlgHom.to_lieHom_comp
+#align alg_hom.to_lie_hom_comp AlgHom.toLieHom_comp
 
-theorem to_lieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
+theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
   ext a; exact LieHom.congr_fun h a
-#align alg_hom.to_lie_hom_injective AlgHom.to_lieHom_injective
+#align alg_hom.to_lie_hom_injective AlgHom.toLieHom_injective
 
 end AlgHom
 
