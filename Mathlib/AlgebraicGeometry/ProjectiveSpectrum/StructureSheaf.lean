@@ -22,26 +22,26 @@ this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 ## Notation
 - `R` is a commutative semiring;
 - `A` is a commutative ring and an `R`-algebra;
-- `𝒜 : ℕ → submodule R A` is the grading of `A`;
-- `U` is opposite object of some open subset of `projective_spectrum.Top`.
+- `𝒜 : ℕ → Submodule R A` is the grading of `A`;
+- `U` is opposite object of some open subset of `ProjectiveSpectrum.top`.
 
 ## Main definitions and results
 We define the structure sheaf as the subsheaf of all dependent function
-`f : Π x : U, homogeneous_localization 𝒜 x` such that `f` is locally expressible as ratio of two
+`f : Π x : U, HomogeneousLocalization 𝒜 x` such that `f` is locally expressible as ratio of two
 elements of the *same grading*, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b ∈ 𝒜 i), ∀ z ∈ V, f z = a / b`.
 
-* `algebraic_geometry.projective_spectrum.structure_sheaf.is_locally_fraction`: the predicate that
+* `AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isLocallyFraction`: the predicate that
   a dependent function is locally expressible as a ratio of two elements of the same grading.
-* `algebraic_geometry.projective_spectrum.structure_sheaf.sections_subring`: the dependent functions
+* `AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.sectionsSubring`: the dependent functions
   satisfying the above local property forms a subring of all dependent functions
-  `Π x : U, homogeneous_localization 𝒜 x`.
-* `algebraic_geometry.Proj.structure_sheaf`: the sheaf with `U ↦ sections_subring U` and natural
+  `Π x : U, HomogeneousLocalization 𝒜 x`.
+* `AlgebraicGeometry.Proj.StructureSheaf`: the sheaf with `U ↦ sectionsSubring U` and natural
   restriction map.
 
 Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
-* `algebraic_geometry.Proj.stalk_iso'`: for any `x : projective_spectrum 𝒜`, the stalk of
-  `Proj.structure_sheaf` at `x` is isomorphic to `homogeneous_localization 𝒜 x`.
-* `algebraic_geometry.Proj.to_LocallyRingedSpace`: `Proj` as a locally ringed space.
+* `AlgebraicGeometry.Proj.stalkIso'`: for any `x : ProjectiveSpectrum 𝒜`, the stalk of
+  `Proj.StructureSheaf` at `x` is isomorphic to `HomogeneousLocalization 𝒜 x`.
+* `AlgebraicGeometry.Proj.toLocallyRingedSpace`: `Proj` as a locally ringed space.
 
 ## References
 
@@ -177,8 +177,8 @@ open SectionSubring
 
 variable {𝒜}
 
-/-- The functions satisfying `is_locally_fraction` form a subring of all dependent functions
-`Π x : U, homogeneous_localization 𝒜 x`.-/
+/-- The functions satisfying `isLocallyFraction` form a subring of all dependent functions
+`Π x : U, HomogeneousLocalization 𝒜 x`.-/
 def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) : Subring (∀ x : U.unop, at x.1)
     where
   carrier := {f | (isLocallyFraction 𝒜).pred f}
@@ -192,7 +192,7 @@ def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) : Subring 
 end
 
 /-- The structure sheaf (valued in `Type`, not yet `CommRing`) is the subsheaf consisting of
-functions satisfying `is_locally_fraction`.-/
+functions satisfying `isLocallyFraction`.-/
 def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_sheaf_in_Type AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structureSheafInType
@@ -274,7 +274,7 @@ def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : Projective
 
 /-- The ring homomorphism from the stalk of the structure sheaf of `Proj` at a point corresponding
 to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
-formed by gluing the `open_to_localization` maps. -/
+formed by gluing the `openToLocalization` maps. -/
 def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ CommRingCat.of (at x) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
@@ -315,7 +315,7 @@ theorem HomogeneousLocalization.mem_basicOpen (x : ProjectiveSpectrum.top 𝒜) 
 
 /-- Given a point `x` corresponding to a homogeneous prime ideal, there is a (dependent) function
 such that, for any `f` in the homogeneous localization at `x`, it returns the obvious section in the
-basic open set `D(f.denom)`-/
+basic open set `D(f.den)`-/
 def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : at x, (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
   fun f =>
@@ -325,7 +325,7 @@ def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
 #align algebraic_geometry.section_in_basic_open AlgebraicGeometry.sectionInBasicOpen
 
 /-- Given any point `x` and `f` in the homogeneous localization at `x`, there is an element in the
-stalk at `x` obtained by `section_in_basic_open`. This is the inverse of `stalk_to_fiber_ring_hom`.
+stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.
 -/
 def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) :
     (at x) → (Proj.structureSheaf 𝒜).presheaf.stalk x := fun f =>
@@ -334,7 +334,7 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) :
     (sectionInBasicOpen _ x f)
 #align algebraic_geometry.homogeneous_localization_to_stalk AlgebraicGeometry.homogeneousLocalizationToStalk
 
-/-- Using `homogeneous_localization_to_stalk`, we construct a ring isomorphism between stalk at `x`
+/-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`
 and homogeneous localization at `x` for any point `x` in `Proj`.-/
 def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* CommRingCat.of (at x) :=
@@ -354,20 +354,14 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
       change Localization.mk _ _ = Localization.mk _ _ at eq3
       rw [Localization.mk_eq_mk', IsLocalization.eq] at eq3
       obtain ⟨⟨c, hc⟩, eq3⟩ := eq3
-      --simp only [← Subtype.val_eq_coe] at eq3
       have eq3' :
         ∀ (y : ProjectiveSpectrum.top 𝒜)
-          (hy :
-            y ∈
-              ProjectiveSpectrum.basicOpen 𝒜 b1 ⊓ ProjectiveSpectrum.basicOpen 𝒜 b2 ⊓
-                ProjectiveSpectrum.basicOpen 𝒜 c),
-          (Localization.mk a1
-                ⟨b1,
+          (hy : y ∈ ProjectiveSpectrum.basicOpen 𝒜 b1 ⊓ ProjectiveSpectrum.basicOpen 𝒜 b2 ⊓
+                ProjectiveSpectrum.basicOpen 𝒜 c), (Localization.mk a1 ⟨b1,
                   show b1 ∉ y.asHomogeneousIdeal by
                     rw [← ProjectiveSpectrum.mem_basicOpen]
                     exact leOfHom (Opens.infLELeft _ _ ≫ Opens.infLELeft _ _) hy⟩ :
-              Localization.AtPrime y.1.toIdeal) =
-            Localization.mk a2
+              Localization.AtPrime y.1.toIdeal) = Localization.mk a2
               ⟨b2, by
                 change b2 ∉ y.asHomogeneousIdeal
                 rw [← ProjectiveSpectrum.mem_basicOpen]
@@ -376,8 +370,8 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
         rw [Localization.mk_eq_mk', IsLocalization.eq]
         exact
           ⟨⟨c, show c ∉ y.asHomogeneousIdeal by
-                rw [← ProjectiveSpectrum.mem_basicOpen]
-                exact leOfHom (Opens.infLERight _ _) hy⟩, eq3⟩
+                  rw [← ProjectiveSpectrum.mem_basicOpen]
+                  exact leOfHom (Opens.infLERight _ _) hy⟩, eq3⟩
       refine'
         Presheaf.germ_ext (Proj.structureSheaf 𝒜).1
           (ProjectiveSpectrum.basicOpen _ b1 ⊓ ProjectiveSpectrum.basicOpen _ b2 ⊓
@@ -393,8 +387,7 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
       simp only at eq6 eq7
       erw [eq6, eq7, Quotient.eq'']
       change Localization.mk _ _ = Localization.mk _ _
-      exact
-        eq3' _
+      exact eq3' _
           ⟨⟨leOfHom
                 (Opens.infLELeft _ _ ≫
                   Opens.infLELeft _ _ ≫ Opens.infLELeft _ _ ≫ Opens.infLELeft _ _) y.2,
