@@ -2028,7 +2028,7 @@ Equiv.trans (Equiv.trans (sum_to_equiv C o) (Equiv.Set.ofEq (sum_to_range C o)))
 lemma GoodProducts.sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C o hsC).toFun =
     (Sum.elim (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1)
     (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)) := by
-  ext ⟨p,hp⟩ f
+  ext ⟨_,_⟩
   · rfl
   · rfl
 
@@ -2057,10 +2057,6 @@ lemma GoodProducts.linearIndependent_succ_iff :
     (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1) := by
   rw [ModProducts.smaller_linear_independent_iff, ← linearIndependent_equiv (equiv_smaller C o),
     eval_eq_comp_equiv]
-
-def C0 := {x | x ∈ C ∧ ∀ i, ord I i = o → x i = false}
-def C1 := {x | x ∈ C ∧ ∀ i, ord I i = o → x i = true}
-def C' := (C0 C o) ∩ (Res (C1 C o) o)
 
 /-- This is probably not true as stated. We should replace `Res C o` by another closed subset
     `C'` with `Support C' ⊆ {j | ord I j < o}`   -/
@@ -2106,6 +2102,110 @@ lemma exist_smaller_closed : ∃ (C₀ C₁ : Set (WithTop I → Bool))
     (e : {i // i ∈ C} ≃ₜ {i // i ∈ C₀} ⊕ {i // i ∈ C₀}),
     IsClosed C₀ ∧ Support C₀ ⊆ {j | ord I j < o} ∧
     IsClosed C₁ ∧ Support C₁ ⊆ {j | ord I j < o} := sorry
+
+
+variable {o} (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+
+def C0 := C ∩ {f | f (term I ho) = false} -- {x | x ∈ C ∧ ∀ i, ord I i = o → x i = false}
+def C1 := C ∩ {f | f (term I ho) = true} -- {x | x ∈ C ∧ ∀ i, ord I i = o → x i = true}
+-- def C' := (C0 C ho) ∩ (Res (C1 C o) o)
+
+lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
+  ext x
+  constructor
+  <;> intro hx
+  · dsimp [C0, C1] at hx
+    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+    rw [← and_or_left] at hx
+    exact hx.1
+  · dsimp [C0, C1]
+    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
+    rw [← and_or_left]
+    refine' ⟨hx,_⟩
+    by_cases h : x (term I ho) = false
+    · left
+      assumption
+    · right
+      simpa only [← Bool.not_eq_false]
+
+def SumEquiv : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)} ≃ {i // i ∈ C} := sorry
+
+lemma continuous_sumEquiv : Continuous (SumEquiv C ho) := sorry
+
+instance : CompactSpace ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) := sorry
+
+def SumHomeo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)} ≃ₜ {i // i ∈ C} :=
+  Continuous.homeoOfEquivCompactToT2 (continuous_sumEquiv C ho)
+
+noncomputable
+def LocConstLinearEquiv₁ : LocallyConstant {i // i ∈ C} ℤ ≃ₗ[ℤ]
+    LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) ℤ  :=
+    LocallyConstant.equivLinear (SumHomeo C ho).symm
+
+noncomputable
+def LocConstLinearEquiv₂ : LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) ℤ
+    ≃ₗ[ℤ] (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) ×
+    (LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ) := LocallyConstant.LinearSumEquivProd
+
+noncomputable
+def LocConstLinearEquiv : LocallyConstant {i // i ∈ C} ℤ  ≃ₗ[ℤ]
+    (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) × (LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ) :=
+  LinearEquiv.trans (LocConstLinearEquiv₁ _ _) (LocConstLinearEquiv₂ _ _)
+
+lemma GoodProducts.linearIndependent_iff_sum₁ : LinearIndependent ℤ (eval C) ↔
+    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (eval C)) :=
+  (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+
+lemma GoodProducts.linearIndependent_iff_sum₂ :
+    LinearIndependent ℤ (eval C) ↔
+    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (Sum.elim
+    (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1)
+    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)))  := by
+  rw [linearIndependent_iff_sum C o hsC]
+  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+
+lemma GoodProducts.linearIndependent_iff_sum₃ :
+    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (Sum.elim
+    (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
+    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)) := sorry
+
+lemma GoodProducts.linearIndependent_iff_sum₄ :
+    LinearIndependent ℤ (eval C) ↔
+    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (Sum.elim
+    (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
+    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)))  := by
+  rw [linearIndependent_iff_sum₃ C ho]
+  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+
+def ResHomeo1 : {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ (Res (C1 C ho) o)} := sorry
+
+noncomputable
+def LocConstResLinearEquiv : LocallyConstant {i // i ∈ (C1 C ho)} ℤ ≃ₗ[ℤ]
+    LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ :=
+  LocallyConstant.equivLinear (ResHomeo1 C ho)
+
+-- def GoodProducts.equiv0 : GoodProducts (C0 C ho) ≃ GoodProducts (Res C o) := sorry
+
+lemma GoodProducts.linearIndependent_of_sums_aux :
+    LinearIndependent ℤ (eval (C0 C ho)) → LinearIndependent ℤ (eval (Res (C1 C ho) o)) →
+    LinearIndependent ℤ (eval C) := by
+  intro h0 h1
+  -- have he := (linearIndependent_equiv (equiv0 C ho)).mpr h0
+  -- rw [← linearIndependent_equiv (equiv0 C ho)] at h0
+  have h := LinearIndependent.sum_prod (eval (C0 C ho)) (eval (Res (C1 C ho) o)) h0 h1
+  rw [linearIndependent_iff_sum₄ C ho]
+  rw [Sum.comp_elim]
+  -- apply LinearIndependent.sum_type
+  suffices hs : (LocConstLinearEquiv C ho) ∘ (fun (l : GoodProducts (C0 C ho))  ↦ l.val.eval C) =
+    (LinearIndependent.ProdInl ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
+    (LocallyConstant { i // i ∈ Res (C1 C ho) o } ℤ)).toFun ∘ (eval (C0 C ho)) -- ∧
+    -- (LocConstLinearEquiv C ho) ∘ (fun (l : StartingWithMax C o)  ↦ l.val.eval C) =
+    -- (LinearIndependent.ProdInr ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
+    -- (LocallyConstant { i // i ∈ Res (C1 C ho) o } ℤ)).toFun ∘ (eval (Res (C1 C ho) o))
+  -- · rw [hs.1, hs.2]
+  sorry
+  sorry
+
 
 end Successor
 
