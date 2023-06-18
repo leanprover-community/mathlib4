@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.Topology.CountableInterFilter
 import Mathlib.MeasureTheory.Function.AEEqFun
 
 /-!
@@ -19,33 +18,32 @@ space.
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 
-variable {α X : Type _} [MeasurableSpace α] [TopologicalSpace X]
+variable {α X : Type _} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
-/-- If `f : α → α` is a (quasi)ergodic map and `g : α → X` is a null-measurable function from `α` to
-a nonempty topological space with second countable topology that is a.e.-invariant under `f`, then
-`g` is a.e. constant. -/
-theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [T0Space X] [Nonempty X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] {μ : MeasureTheory.Measure α} {s : Set X}
-    [SecondCountableTopology s] (h : QuasiErgodic f μ) (hs : ∀ᵐ x ∂μ, g x ∈ s)
-    (hgm : NullMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c := by
-  refine exists_eventuallyEq_const_of_eventually_mem_of_forall_open hs fun U hU ↦ ?_
-  refine h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU.measurableSet) ?_
+/-- Let `f : α → α` be a (quasi)ergodic map. Let `g : α → X` is a null-measurable function from `α`
+to a nonempty space with a countable family of measurable sets separating points of a set `s` such
+that `f x ∈ s` for a.e. `x`. If `g` that is a.e.-invariant under `f`, then `g` is a.e. constant. -/
+theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [MeasurableSpace X]
+    {s : Set X} [HasCountableSeparatingOn X MeasurableSet s] (h : QuasiErgodic f μ)
+    (hs : ∀ᵐ x ∂μ, g x ∈ s) (hgm : NullMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) :
+    ∃ c, g =ᵐ[μ] const α c := by
+  refine exists_eventuallyEq_const_of_eventually_mem_of_forall_separating MeasurableSet hs ?_
+  refine fun U hU ↦ h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU) ?_b
   refine (hg_eq.mono fun x hx ↦ ?_).set_eq
   rw [← preimage_comp, mem_preimage, mem_preimage, hx]
 
-section SecondCountableTopology
+section CountableSeparatingOnUniv
 
-variable [SecondCountableTopology X] [T0Space X] [Nonempty X] [MeasurableSpace X]
-  [OpensMeasurableSpace X] {μ : MeasureTheory.Measure α} {f : α → α} {g : α → X}
+variable [Nonempty X] [MeasurableSpace X] [HasCountableSeparatingOn X MeasurableSet univ]
+  {f : α → α} {g : α → X}
 
 /-- If `f : α → α` is a (pre)ergodic map and `g : α → X` is a measurable function from `α` to a
 nonempty topological space with second countable topology that is invariant under `f`, then `g` is
 a.e. constant. -/
 theorem PreErgodic.ae_eq_const_of_ae_eq_comp (h : PreErgodic f μ) (hgm : Measurable g)
-    (hg_eq : g ∘ f = g) : ∃ c, g =ᵐ[μ] const α c := by
-  refine exists_eventuallyEq_const_of_forall_open fun U hU ↦ ?_
-  refine h.ae_mem_or_ae_nmem (s := g ⁻¹' U) (hgm hU.measurableSet) ?_
-  rw [← preimage_comp, hg_eq]
+    (hg_eq : g ∘ f = g) : ∃ c, g =ᵐ[μ] const α c :=
+  exists_eventuallyEq_const_of_forall_separating MeasurableSet fun U hU ↦
+    h.ae_mem_or_ae_nmem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
 
 /-- If `f : α → α` is a (quasi)ergodic map and `g : α → X` is a null-measurable function from `α` to
 a nonempty topological space with second countable topology that is a.e.-invariant under `f`, then
@@ -61,18 +59,17 @@ theorem Ergodic.ae_eq_const_of_ae_eq_comp₀ (h : Ergodic f μ) (hgm : NullMeasu
     (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c :=
   h.quasiErgodic.ae_eq_const_of_ae_eq_comp₀ hgm hg_eq
 
-end SecondCountableTopology
+end CountableSeparatingOnUniv
+
+variable [TopologicalSpace X] [MetrizableSpace X] [Nonempty X] {f : α → α}
 
 namespace QuasiErgodic
-
-variable [MetrizableSpace X] [Nonempty X] {μ : MeasureTheory.Measure α} {f : α → α}
 
 /-- If `f : α → α` is a (quasi)ergodic map and `g : α → X` is an a.e. strongly measurable function
 from `α` to a nonempty topological space that is a.e.-invariant under `f`, then `g` is
 a.e. constant. -/
 theorem ae_eq_const_of_ae_eq_comp_ae {g : α → X} (h : QuasiErgodic f μ)
-    (hgm : AEStronglyMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) :
-    ∃ c, g =ᵐ[μ] const α c := by
+    (hgm : AEStronglyMeasurable g μ) (hg_eq : g ∘ f =ᵐ[μ] g) : ∃ c, g =ᵐ[μ] const α c := by
   borelize X
   rcases hgm.isSeparable_ae_range with ⟨t, ht, hgt⟩
   haveI := ht.secondCountableTopology
@@ -88,8 +85,6 @@ theorem eq_const_of_compQuasiMeasurePreserving_eq (h : QuasiErgodic f μ) {g : �
 end QuasiErgodic
 
 namespace Ergodic
-
-variable [MetrizableSpace X] [Nonempty X] {μ : MeasureTheory.Measure α} {f : α → α}
 
 /-- If `f : α → α` is a (quasi)ergodic map and `g : α → X` is an a.e. strongly measurable function
 from `α` to a nonempty topological space that is a.e.-invariant under `f`, then `g` is

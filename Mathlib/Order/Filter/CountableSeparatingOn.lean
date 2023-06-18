@@ -22,7 +22,8 @@ existence of a countable separating family satisfying this predicate by searchin
 
 - `HasCountableSeparatingOn α p t`: a typeclass saying that there exists a countable set family
   `S : Set (Set α)` such that all `s ∈ S` satisfy the predicate `p` and any two distinct points
-  `x y ∈ t`, `x ≠ y`, can be separated by a set `s ∈ S`.
+  `x y ∈ t`, `x ≠ y`, can be separated by a set `s ∈ S`. For technical reasons, we formulate the
+  latter property as "for all `x y ∈ t`, if `x ∈ s ↔ y ∈ s` for all `s ∈ S`, then `x = y`".
 
 This typeclass is used in all lemmas in this file to avoid repeating them for open sets, closed
 sets, and measurable sets.
@@ -81,7 +82,24 @@ separating family of open sets and a separating family of closed sets.
 -/
 class HasCountableSeparatingOn (α : Type _) (p : Set α → Prop) (t : Set α) : Prop where
   exists_countable_separating : ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
-    t.Pairwise fun x y ↦ ∃ s ∈ S, Xor' (x ∈ s) (y ∈ s)
+    ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y
+
+theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
+    [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
+    HasCountableSeparatingOn α p₂ t₂ where
+  exists_countable_separating :=
+    let ⟨S, hSc, hSp, hSt⟩ := h.1
+    ⟨S, hSc, fun s hs ↦ hp s (hSp s hs), fun x hx y hy ↦ hSt x (ht hx) y (ht hy)⟩
+
+theorem HasCountableSeparatingOn.of_subtype {α : Type _} {p : Set α → Prop} {t : Set α}
+    {q : Set t → Prop} [h : HasCountableSeparatingOn t q univ]
+    (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
+  rcases h.1 with ⟨S, hSc, hSq, hS⟩
+  choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
+  refine ⟨⟨V '' S, hSc.image _, ball_image_iff.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
+  refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
+  rw [← hV U hU]
+  exact h _ (mem_image_of_mem _ hU)
 
 namespace Filter
 
@@ -107,11 +125,10 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
   · exact fun _ h ↦ h.1.1
   · intro x hx y hy
     simp only [mem_sInter, mem_inter_iff, mem_iInter, mem_compl_iff] at hx hy
-    by_contra hne
-    rcases hS hx.1.1 hy.1.1 hne with ⟨s, hsS, hs⟩
+    refine hS x hx.1.1 y hy.1.1 (fun s hsS ↦ ?_)
     cases hl s (hSp s hsS) with
-    | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩] at hs
-    | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl] at hs
+    | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
+    | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
       (inter_mem hs ((countable_sInter_mem (hSc.mono (inter_subset_left _ _))).2 fun _ h ↦ h.2))
       ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
@@ -185,10 +202,7 @@ theorem of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s 
   rcases h'.1 with ⟨S, hSc, hSp, hS⟩
   have H : ∀ᶠ x in l, ∀ s ∈ S, f x ∈ s ↔ g x ∈ s :=
     (eventually_countable_ball hSc).2 fun s hs ↦ (h _ (hSp _ hs))
-  filter_upwards [H, hf, hg] with x hx hxf hxg
-  contrapose! hx
-  rcases hS hxf hxg hx with ⟨s, hsS, h⟩
-  exact ⟨s, hsS, (xor_iff_not_iff _ _).1 h⟩
+  filter_upwards [H, hf, hg] with x hx hxf hxg using hS _ hxf _ hxg hx
 
 theorem of_forall_separating_mem_iff (p : Set β → Prop)
     [HasCountableSeparatingOn β p univ] (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) :
