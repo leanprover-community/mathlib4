@@ -8,7 +8,7 @@ Authors: Gihan Marasingha
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -172,26 +172,22 @@ inductive Derivable : Miustr → Prop
 -/
 
 
-example (h : Derivable "UMI") : Derivable "UMIU" :=
-  by
+example (h : Derivable "UMI") : Derivable "UMIU" := by
   change ("UMIU" : miustr) with [U, M] ++ [I, U]
   exact derivable.r1 h
 
 -- Rule 1
-example (h : Derivable "MIIU") : Derivable "MIIUIIU" :=
-  by
+example (h : Derivable "MIIU") : Derivable "MIIUIIU" := by
   change ("MIIUIIU" : miustr) with M :: [I, I, U] ++ [I, I, U]
   exact derivable.r2 h
 
 -- Rule 2
-example (h : Derivable "UIUMIIIMMM") : Derivable "UIUMUMMM" :=
-  by
+example (h : Derivable "UIUMIIIMMM") : Derivable "UIUMUMMM" := by
   change ("UIUMUMMM" : miustr) with [U, I, U, M] ++ U :: [M, M, M]
   exact derivable.r3 h
 
 -- Rule 3
-example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" :=
-  by
+example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
   change ("MIMIMIIM" : miustr) with [M, I, M, I, M] ++ [I, I, M]
   exact derivable.r4 h
 
@@ -201,28 +197,23 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" :=
 
 
 -- Rule 4
-private theorem MIU_der : Derivable "MIU" :=
-  by
+private theorem MIU_der : Derivable "MIU" := by
   change ("MIU" : miustr) with [M] ++ [I, U]
   apply derivable.r1
   -- reduce to deriving "MI",
   constructor
 
 -- which is the base of the inductive construction.
-example : Derivable "MIUIU" :=
-  by
+example : Derivable "MIUIU" := by
   change ("MIUIU" : miustr) with M :: [I, U] ++ [I, U]
   exact derivable.r2 MIU_der
 
 -- `"MIUIU"` can be derived as `"MIU"` can.
-example : Derivable "MUI" :=
-  by
-  have h₂ : derivable "MII" :=
-    by
+example : Derivable "MUI" := by
+  have h₂ : derivable "MII" := by
     change ("MII" : miustr) with M :: [I] ++ [I]
     exact derivable.r2 derivable.mk
-  have h₃ : derivable "MIIII" :=
-    by
+  have h₃ : derivable "MIIII" := by
     change ("MIIII" : miustr) with M :: [I, I] ++ [I, I]
     exact derivable.r2 h₂
   change ("MUI" : miustr) with [M] ++ U :: [I]
