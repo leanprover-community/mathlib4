@@ -109,7 +109,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter �
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
     μ (Eᶜ) ≤ L.liminf fun i => μs i (Eᶜ) := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp
+  · simp only [liminf_bot, le_top]
   have meas_Ec : μ (Eᶜ) = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
@@ -137,7 +137,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter �
     (E_mble : MeasurableSet E) (h : μ E ≤ L.liminf fun i => μs i E) :
     (L.limsup fun i => μs i (Eᶜ)) ≤ μ (Eᶜ) := by
   rcases L.eq_or_neBot with rfl | hne
-  · simp
+  · simp only [limsup_bot, bot_le]
   have meas_Ec : μ (Eᶜ) = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
