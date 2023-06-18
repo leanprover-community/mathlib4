@@ -8,7 +8,7 @@ Authors: Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # IMO 2019 Q1
@@ -26,8 +26,7 @@ Note that there is a much more compact proof of this fact in Isabelle/HOL
 
 
 theorem imo2019_q1 (f : ℤ → ℤ) :
-    (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c :=
-  by
+    (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c := by
   constructor; swap
   -- easy way: f(x)=0 and f(x)=2x+c work.
   · rintro (rfl | ⟨c, rfl⟩) <;> intros <;> simp only [Pi.zero_apply] <;> ring
@@ -35,16 +34,14 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   intro hf
   -- functional equation
   -- Using `h` for `(0, b)` and `(-1, b + 1)`, we get `f (b + 1) = f b + m`
-  obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m :=
-    by
+  obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m := by
     refine' ⟨(f 0 - f (-2)) / 2, fun b => _⟩
     refine' sub_eq_iff_eq_add'.1 (Int.eq_ediv_of_mul_eq_right two_ne_zero _)
     have h1 : f 0 + 2 * f b = f (f b) := by simpa using hf 0 b
     have h2 : f (-2) + 2 * f (b + 1) = f (f b) := by simpa using hf (-1) (b + 1)
     linarith
   -- Hence, `f` is an affine map, `f b = f 0 + m * b`
-  obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b :=
-    by
+  obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b := by
     refine' ⟨f 0, fun b => _⟩
     induction' b using Int.induction_on with b ihb b ihb
     · simp
