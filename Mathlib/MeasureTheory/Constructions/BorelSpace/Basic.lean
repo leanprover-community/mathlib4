@@ -220,8 +220,9 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def addBorelInstance (t : Term) : TacticM Unit := do
+/-- Add instances `borel $e : MeasurableSpace $e` and `⟨rfl⟩ : BorelSpace $e`. -/
+def addBorelInstance (e : Expr) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $t := borel $t
@@ -242,11 +243,11 @@ def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := do
+def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
-  let e ← Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance t) (borelToRefl t)
+  i?.elim (addBorelInstance e) (borelToRefl t)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
