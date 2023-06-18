@@ -102,14 +102,17 @@ lemma ofHom_id : ofHom (𝟙 X) = 1 := rfl
 
 variable {X Y}
 
-noncomputable instance : HasGradedHMul (newExt Y Z) (newExt X Y)
-    (newExt X Z) where
+-- the signs are there for consistency with the composition
+-- of Yoneda Ext, see Verdier, proposition III 3.2.5
+noncomputable instance : HasGradedHMul (newExt Y Z) (newExt X Y) (newExt X Z) where
   γhmul' p q r h α β :=
-    mk (α.hom •[show (p : ℤ) + q = r by rw [← h, Nat.cast_add]] β.hom)
+    mk (CochainComplex.ε (p * q) • β.hom •[show q + (p : ℤ) = r by
+      rw [← h, Nat.cast_add, add_comm]] α.hom)
 
 @[simp]
 lemma γhmul_hom {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
-  (α •[hpq] β).hom = α.hom •[by rw [← hpq, Nat.cast_add]] β.hom := rfl
+  (α •[hpq] β).hom =
+    CochainComplex.ε (p * q) • β.hom •[by rw [← hpq, Nat.cast_add, add_comm]] α.hom := rfl
 
 noncomputable example {p q n : ℕ} (α : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
     newExt X Z n := α •[hpq] β
@@ -121,13 +124,13 @@ noncomputable example (f : newExt Y Z n) (g : X ⟶ Y) : newExt X Z n :=
 lemma γhmul_add {p q n : ℕ} (α : newExt Y Z p) (β₁ β₂ : newExt X Y q) (hpq : p + q = n) :
     α •[hpq] (β₁ + β₂) = α •[hpq] β₁ + α •[hpq] β₂ := by
   apply hom_injective
-  apply ShiftedHom.γhmul_add
+  simp only [γhmul_hom, add_hom, ShiftedHom.add_γhmul, smul_add]
 
 @[simp]
 lemma add_γhmul {p q n : ℕ} (α₁ α₂ : newExt Y Z p) (β : newExt X Y q) (hpq : p + q = n) :
     (α₁ + α₂) •[hpq] β = α₁ •[hpq] β + α₂ •[hpq] β := by
   apply hom_injective
-  apply ShiftedHom.add_γhmul
+  simp only [γhmul_hom, add_hom, ShiftedHom.γhmul_add, smul_add]
 
 @[simp]
 lemma one_γhmul {n : ℕ} (β : newExt X Y n) :
@@ -135,7 +138,8 @@ lemma one_γhmul {n : ℕ} (β : newExt X Y n) :
   apply hom_injective
   dsimp
   rw [one_hom]
-  apply ShiftedHom.one_γhmul'
+  simp only [zero_mul, CochainComplex.ε_0, Int.ofNat_zero, one_smul]
+  apply ShiftedHom.γhmul_one'
 
 @[simp]
 lemma γhmul_one {n : ℕ} (α : newExt X Y n) :
@@ -143,7 +147,8 @@ lemma γhmul_one {n : ℕ} (α : newExt X Y n) :
   apply hom_injective
   dsimp
   rw [one_hom]
-  apply ShiftedHom.γhmul_one'
+  simp only [mul_zero, CochainComplex.ε_0, Int.ofNat_zero, one_smul]
+  apply ShiftedHom.one_γhmul'
 
 instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (newExt X₃ X₄)
     (newExt X₂ X₃) (newExt X₁ X₂) (newExt X₂ X₄) (newExt X₁ X₃)
@@ -151,14 +156,21 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (newExt X₃ X₄)
   γhmul_assoc p₁ p₂ p₃ α β γ p₁₂ p₂₃ p₁₂₃ h₁₂ h₂₃ h₁₂₃ := by
     apply hom_injective
     rw [γhmul_hom, γhmul_hom, γhmul_hom, γhmul_hom]
-    apply IsAssocGradedHMul.γhmul_assoc
+    simp only [ShiftedHom.zsmul_γhmul, ShiftedHom.γhmul_zsmul, smul_smul,
+      ← CochainComplex.ε_add]
+    congr 1
+    . congr 1
+      simp only [← h₁₂, ← h₂₃, Nat.cast_add, add_mul, mul_add]
+      abel
+    . symm
+      apply IsAssocGradedHMul.γhmul_assoc
 
 @[simp]
 lemma ofHom_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     ofHom (f ≫ g) = ofHom g •[add_zero 0] ofHom f := by
   apply hom_injective
   dsimp [ofHom]
-  simp only [Functor.map_comp, ShiftedHom.mk₀_comp]
+  simp only [Functor.map_comp, mul_zero, CochainComplex.ε_0, ShiftedHom.mk₀_comp, one_smul]
 
 end newExt
 
@@ -208,7 +220,8 @@ noncomputable def extClass : newExt S.X₃ S.X₁ 1 :=
 lemma extClass_γhmul : hS.extClass •[add_zero 1] (newExt.ofHom S.g) = 0 := by
   apply newExt.hom_injective
   dsimp [extClass]
-  erw [ShiftedHom.γhmul_mk₀]
+  simp only [mul_zero, CochainComplex.ε_0, one_smul]
+  erw [ShiftedHom.mk₀_γhmul]
   exact comp_dist_triangle_mor_zero₂₃ _ (hS.singleTriangle_distinguished)
 
 lemma γhmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := by
@@ -218,8 +231,10 @@ lemma γhmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := by
   dsimp
   rw [ShiftedHom.γhmul_eq]
   dsimp [newExt.ofHom, ShiftedHom.mk₀] at eq ⊢
-  simp only [assoc, Functor.map_comp, reassoc_of% eq, zero_comp]
+  simp only [mul_one, CochainComplex.ε_0, shiftFunctorZero'_eq_shiftFunctorZero, Functor.map_comp, assoc, one_smul,
+    reassoc_of% eq, zero_comp]
 
+/- needs refactor as the signs have been changed...
 lemma covariant_newExt_exact₁ {A : C} {n₁ : ℕ}
     (x₁ : newExt A S.X₁ n₁) (hx₁ : (newExt.ofHom S.f) •[zero_add n₁] x₁ = 0)
     (n₀ : ℕ) (h : 1 + n₀ = n₁) :
@@ -325,7 +340,7 @@ lemma contravariant_newExt_exact₃ {B : C} {n₁ : ℕ}
   refine' ⟨newExt.mk x₁, _⟩
   apply newExt.hom_injective
   simp only [newExt.γhmul_hom, ShiftedHom.γhmul_eq, extClass]
-  exact hy₁
+  exact hy₁-/
 
 end ShortExact
 
