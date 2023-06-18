@@ -8,8 +8,8 @@ Authors: Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Data.Set.Finite
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Set.Finite
 
 /-!
 # IMO 2008 Q2
@@ -35,8 +35,7 @@ set of rational solutions to the equation, and that `W` is infinite.
 namespace Imo2008Q2
 
 theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
-    ∃ a b c : ℝ, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ x = a / b ∧ y = b / c ∧ z = c / a :=
-  by
+    ∃ a b c : ℝ, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ x = a / b ∧ y = b / c ∧ z = c / a := by
   use x, 1, 1 / y
   obtain ⟨⟨hx, hy⟩, hz⟩ : (x ≠ 0 ∧ y ≠ 0) ∧ z ≠ 0 := by
     simpa [not_or] using trans_rel_right (· ≠ ·) h one_ne_zero
@@ -45,8 +44,7 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
 #align imo2008_q2.subst_abc Imo2008Q2.subst_abc
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
-    x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 :=
-  by
+    x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp
   have hm_ne_zero : m ≠ 0 := by contrapose! hy; field_simp; assumption
@@ -68,15 +66,13 @@ def rationalSolutions :=
               x * y * z = 1 ∧ x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1}
 #align imo2008_q2.rational_solutions Imo2008Q2.rationalSolutions
 
-theorem imo2008_q2b : Set.Infinite rationalSolutions :=
-  by
+theorem imo2008_q2b : Set.Infinite rationalSolutions := by
   let W :=
     {s : ℚ × ℚ × ℚ |
       ∃ x y z : ℚ,
         s = (x, y, z) ∧
           ∃ t : ℚ, t > 0 ∧ x = -(t + 1) / t ^ 2 ∧ y = t / (t + 1) ^ 2 ∧ z = -t * (t + 1)}
-  have hW_sub_S : W ⊆ rational_solutions :=
-    by
+  have hW_sub_S : W ⊆ rational_solutions := by
     intro s hs_in_W
     rw [rational_solutions]
     simp only [Set.mem_setOf_eq] at hs_in_W ⊢
@@ -90,8 +86,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions :=
     have h₃ : y ≠ 1 := by rw [hy_t]; field_simp; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]
     have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
-    have h₆ : x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1 :=
-      by
+    have h₆ : x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1 := by
       have hx1 : (x - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / t ^ 4 := by field_simp; rw [hx_t]; field_simp;
         ring
       have hy1 : (y - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / (t + 1) ^ 4 := by field_simp; rw [hy_t];
@@ -103,8 +98,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions :=
           by rw [hx1, hy1, hz1]; field_simp
         _ = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
     exact ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩
-  have hW_inf : Set.Infinite W :=
-    by
+  have hW_inf : Set.Infinite W := by
     let g : ℚ × ℚ × ℚ → ℚ := fun s => -s.2.2
     let K := g '' W
     have hK_not_bdd : ¬BddAbove K := by
