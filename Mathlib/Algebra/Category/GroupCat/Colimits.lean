@@ -312,22 +312,17 @@ agrees with the usual group-theoretical quotient.
 noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     cokernel f ≅ AddCommGroupCat.of (H ⧸ AddMonoidHom.range f) where
   hom := cokernel.desc f (mk' _) <| by
-        ext x
-        apply Quotient.sound
-        apply leftRel_apply.mpr
-        fconstructor
-        exact -x
-        simp only [add_zero, AddMonoidHom.map_neg]
-  inv :=
-    QuotientAddGroup.lift _ (cokernel.π f) <| by
-      rintro _ ⟨x, rfl⟩
-      exact cokernel.condition_apply f x
-  hom_inv_id := by
-    refine coequalizer.hom_ext ?_
-    simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
-    rfl
+    ext x
+    apply Quotient.sound
+    apply leftRel_apply.mpr
+    fconstructor
+    exact -x
+    simp only [add_zero, AddMonoidHom.map_neg]
+  inv := QuotientAddGroup.lift _ (cokernel.π f) <| by
+    rintro _ ⟨x, rfl⟩
+    exact cokernel.condition_apply f x
   inv_hom_id := by
-    ext x : 2
+    ext x
     exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 
