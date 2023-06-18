@@ -8,12 +8,12 @@ Authors: Mantas Bakšys
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Sqrt
-import Mathbin.Tactic.IntervalCases
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.NormCast
-import Mathbin.Tactic.NormNum
-import Mathbin.Tactic.RingExp
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.RingExp
 
 /-!
 # IMO 2021 Q1
@@ -50,18 +50,15 @@ open Real
 
 namespace imo2021_q1
 
-theorem lower_bound (n l : ℕ) (hl : 2 + sqrt (4 + 2 * n) ≤ 2 * l) : n + 4 * l ≤ 2 * l * l :=
-  by
-  suffices 2 * ((n : ℝ) + 4 * l) - 8 * l + 4 ≤ 2 * (2 * l * l) - 8 * l + 4
-    by
+theorem lower_bound (n l : ℕ) (hl : 2 + sqrt (4 + 2 * n) ≤ 2 * l) : n + 4 * l ≤ 2 * l * l := by
+  suffices 2 * ((n : ℝ) + 4 * l) - 8 * l + 4 ≤ 2 * (2 * l * l) - 8 * l + 4 by
     simp only [mul_le_mul_left, sub_le_sub_iff_right, add_le_add_iff_right, zero_lt_two] at this 
     exact_mod_cast this
   rw [← le_sub_iff_add_le', sqrt_le_iff, pow_two] at hl 
   convert hl.2 using 1 <;> ring
 #align imo2021_q1.lower_bound Imo2021Q1.lower_bound
 
-theorem upper_bound (n l : ℕ) (hl : (l : ℝ) ≤ sqrt (1 + n) - 1) : 2 * l * l + 4 * l ≤ 2 * n :=
-  by
+theorem upper_bound (n l : ℕ) (hl : (l : ℝ) ≤ sqrt (1 + n) - 1) : 2 * l * l + 4 * l ≤ 2 * n := by
   have h1 : ∀ n : ℕ, 0 ≤ 1 + (n : ℝ) := by intro n; exact_mod_cast Nat.zero_le (1 + n)
   rw [le_sub_iff_add_le', le_sqrt (h1 l) (h1 n), pow_two] at hl 
   rw [← add_le_add_iff_right 2, ← @Nat.cast_le ℝ]
@@ -69,8 +66,7 @@ theorem upper_bound (n l : ℕ) (hl : (l : ℝ) ≤ sqrt (1 + n) - 1) : 2 * l * 
   convert (mul_le_mul_left zero_lt_two).mpr hl using 1 <;> ring
 #align imo2021_q1.upper_bound Imo2021Q1.upper_bound
 
-theorem radical_inequality {n : ℕ} (h : 107 ≤ n) : sqrt (4 + 2 * n) ≤ 2 * (sqrt (1 + n) - 3) :=
-  by
+theorem radical_inequality {n : ℕ} (h : 107 ≤ n) : sqrt (4 + 2 * n) ≤ 2 * (sqrt (1 + n) - 3) := by
   have h1n : 0 ≤ 1 + (n : ℝ) := by norm_cast; exact Nat.zero_le _
   rw [sqrt_le_iff]
   constructor
@@ -94,8 +90,7 @@ theorem radical_inequality {n : ℕ} (h : 107 ≤ n) : sqrt (4 + 2 * n) ≤ 2 * 
 -- We will later make use of the fact that there exists (l : ℕ) such that
 -- n ≤ 2 * l * l - 4 * l and 2 * l * l + 4 * l ≤ 2 * n for n ≥ 107.
 theorem exists_numbers_in_interval (n : ℕ) (hn : 107 ≤ n) :
-    ∃ l : ℕ, n + 4 * l ≤ 2 * l * l ∧ 2 * l * l + 4 * l ≤ 2 * n :=
-  by
+    ∃ l : ℕ, n + 4 * l ≤ 2 * l * l ∧ 2 * l * l + 4 * l ≤ 2 * n := by
   rsuffices ⟨l, t⟩ : ∃ l : ℕ, 2 + sqrt (4 + 2 * n) ≤ 2 * (l : ℝ) ∧ (l : ℝ) ≤ sqrt (1 + n) - 1
   · exact ⟨l, lower_bound n l t.1, upper_bound n l t.2⟩
   let x := sqrt (1 + n) - 1
@@ -113,8 +108,7 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
         a < b ∧
           b < c ∧
             c ≤ 2 * n ∧
-              (∃ k : ℕ, a + b = k * k) ∧ (∃ l : ℕ, c + a = l * l) ∧ ∃ m : ℕ, b + c = m * m :=
-  by
+              (∃ k : ℕ, a + b = k * k) ∧ (∃ l : ℕ, c + a = l * l) ∧ ∃ m : ℕ, b + c = m * m := by
   -- If n ≥ 107, we do not explicitly construct the triplet but use an existence
   -- argument from lemma above.
   obtain p | p : 107 ≤ n ∨ n < 107 := le_or_lt 107 n
@@ -142,8 +136,7 @@ theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 10
     ∃ B : Finset ℕ,
       2 * 1 + 1 ≤ B.card ∧
         (∀ (a) (_ : a ∈ B) (b) (_ : b ∈ B), a ≠ b → ∃ k, a + b = k * k) ∧
-          ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n :=
-  by
+          ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares n hn
   refine' ⟨{a, b, c}, _, _, _⟩
   · suffices ({a, b, c} : Finset ℕ).card = 3 by rw [this]; exact le_rfl
@@ -178,8 +171,7 @@ theorem imo2021_q1 :
         ∀ (A) (_ : A ⊆ Finset.Icc n (2 * n)),
           (∃ (a : _) (_ : a ∈ A) (b : _) (_ : b ∈ A), a ≠ b ∧ ∃ k : ℕ, a + b = k * k) ∨
             ∃ (a : _) (_ : a ∈ Finset.Icc n (2 * n) \ A) (b : _) (_ : b ∈ Finset.Icc n (2 * n) \ A),
-              a ≠ b ∧ ∃ k : ℕ, a + b = k * k :=
-  by
+              a ≠ b ∧ ∃ k : ℕ, a + b = k * k := by
   intro n hn A hA
   -- For each n ∈ ℕ such that 100 ≤ n, there exists a pairwise unequal triplet {a, b, c} ⊆ [n, 2n]
   -- such that all pairwise sums are perfect squares. In practice, it will be easier to use
@@ -189,8 +181,7 @@ theorem imo2021_q1 :
   obtain ⟨B, hB, h₁, h₂⟩ := exists_finset_3_le_card_with_pairs_summing_to_squares n hn
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by intro c hcB;
     simpa only [Finset.mem_Icc] using h₂ c hcB
-  have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card :=
-    by
+  have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
     rw [← Finset.inter_distrib_left, Finset.sdiff_union_self_eq_union,
       finset.union_eq_left_iff_subset.mpr hA, (Finset.inter_eq_left_iff_subset _ _).mpr hBsub]
     exact nat.succ_le_iff.mp hB
