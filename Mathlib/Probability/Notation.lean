@@ -55,6 +55,3 @@ set_option quotPrecheck false in
 scoped[ProbabilityTheory] notation "∂" _P "/∂" Q:50 => P.rnDeriv Q
 
 scoped[ProbabilityTheory] notation "ℙ" => MeasureTheory.MeasureSpace.volume
-
--- Porting note: new notation that allows specifying hidden arguments to ℙ
-scoped[ProbabilityTheory] notation "ℙ(" Ω "," m ")" => @MeasureTheory.MeasureSpace.volume Ω m

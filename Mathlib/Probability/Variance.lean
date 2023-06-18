@@ -203,15 +203,15 @@ theorem variance_smul' {A : Type _} [CommSemiring A] [Algebra A ℝ] (c : A) (X 
 
 scoped notation "Var[" X "]" => ProbabilityTheory.variance X MeasureTheory.MeasureSpace.volume
 
-variable [m' : MeasureSpace Ω]
+variable [MeasureSpace Ω]
 
-theorem variance_def' [IsProbabilityMeasure ℙ(Ω,m')] {X : Ω → ℝ} (hX : Memℒp X 2) :
+theorem variance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Memℒp X 2) :
     Var[X] = 𝔼[X ^ 2] - 𝔼[X] ^ 2 := by
   rw [hX.variance_eq, sub_sq', integral_sub', integral_add']; rotate_left
   · exact hX.integrable_sq
-  · convert @integrable_const Ω ℝ (@MeasureSpace.toMeasurableSpace Ω _) ℙ _ _ (𝔼[X] ^ 2)
+  · convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · apply hX.integrable_sq.add
-    convert @integrable_const Ω ℝ (@MeasureSpace.toMeasurableSpace Ω _) ℙ _ _ (𝔼[X] ^ 2)
+    convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
   simp [integral_mul_right]
   have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
@@ -220,7 +220,7 @@ theorem variance_def' [IsProbabilityMeasure ℙ(Ω,m')] {X : Ω → ℝ} (hX : M
   ring_nf
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 
-theorem variance_le_expectation_sq [IsProbabilityMeasure ℙ(Ω,m')] {X : Ω → ℝ}
+theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}
     (hm : AEStronglyMeasurable X ℙ) : Var[X] ≤ 𝔼[X ^ 2] := by
   by_cases hX : Memℒp X 2
   · rw [variance_def' hX]
@@ -238,11 +238,11 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure ℙ(Ω,m')] {X : Ω →
       apply hX
       convert A.add B
       simp
-  · exact @ae_of_all _ (@MeasureSpace.toMeasurableSpace Ω _) _ _ fun x => sq_nonneg _
+  · exact @ae_of_all _ (_) _ _ fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq
 
-theorem evariance_def' [IsProbabilityMeasure ℙ(Ω,m')] {X : Ω → ℝ}
+theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}
     (hX : AEStronglyMeasurable X ℙ) : eVar[X] = (∫⁻ ω, ‖X ω‖₊ ^ 2) - ENNReal.ofReal (𝔼[X] ^ 2) := by
   by_cases hℒ : Memℒp X 2
   · rw [← hℒ.ofReal_variance_eq, variance_def' hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
@@ -284,9 +284,8 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
 
 /-- *Chebyshev's inequality* : one can control the deviation probability of a real random variable
 from its expectation in terms of the variance. -/
-theorem meas_ge_le_variance_div_sq [IsFiniteMeasure ℙ(Ω,m')]
-    {X : Ω → ℝ} (hX : Memℒp X 2) {c : ℝ} (hc : 0 < c) :
-    ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2) := by
+theorem meas_ge_le_variance_div_sq [@IsFiniteMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Memℒp X 2) {c : ℝ}
+    (hc : 0 < c) : ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2) := by
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero _ hc.ne.symm), hX.ofReal_variance_eq]
   convert @meas_ge_le_evariance_div_sq _ _ _ hX.1 c.toNNReal (by simp [hc]) using 1
   · simp only [Real.coe_toNNReal', max_le_iff, abs_nonneg, and_true_iff]
@@ -294,11 +293,10 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure ℙ(Ω,m')]
     rfl
 #align probability_theory.meas_ge_le_variance_div_sq ProbabilityTheory.meas_ge_le_variance_div_sq
 
--- Porting note: supplied correct arguments to `h`
+-- Porting note: supplied `MeasurableSpace Ω` argument of `h` by unification
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
-theorem IndepFun.variance_add [IsProbabilityMeasure ℙ(Ω,m')] {X Y : Ω → ℝ} (hX : Memℒp X 2)
-    (hY : Memℒp Y 2) (h : @IndepFun _ _ _ (@MeasureSpace.toMeasurableSpace Ω _) _ _ X Y ℙ) :
-    Var[X + Y] = Var[X] + Var[Y] :=
+theorem IndepFun.variance_add [@IsProbabilityMeasure Ω _ ℙ] {X Y : Ω → ℝ} (hX : Memℒp X 2)
+    (hY : Memℒp Y 2) (h : @IndepFun _ _ _ (_) _ _ X Y ℙ) : Var[X + Y] = Var[X] + Var[Y] :=
   calc
     Var[X + Y] = 𝔼[fun a => X a ^ 2 + Y a ^ 2 + 2 * X a * Y a] - 𝔼[X + Y] ^ 2 := by
       simp [variance_def' (hX.add hY), add_sq']
@@ -318,13 +316,12 @@ theorem IndepFun.variance_add [IsProbabilityMeasure ℙ(Ω,m')] {X Y : Ω → �
     _ = Var[X] + Var[Y] := by simp only [variance_def', hX, hY, Pi.pow_apply]; ring
 #align probability_theory.indep_fun.variance_add ProbabilityTheory.IndepFun.variance_add
 
--- Porting note: supplied correct arguments to `hs` and `h`
+-- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
-theorem IndepFun.variance_sum [IsProbabilityMeasure ℙ(Ω,m')] {ι : Type _} {X : ι → Ω → ℝ}
-    {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (@MeasureSpace.toMeasurableSpace Ω _) (X i) 2 ℙ)
-    (h : Set.Pairwise ↑s fun i j =>
-      @IndepFun _ _ _ (@MeasureSpace.toMeasurableSpace Ω _) _ _ (X i) (X j) ℙ) :
+theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type _} {X : ι → Ω → ℝ}
+    {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (_) (X i) 2 ℙ)
+    (h : Set.Pairwise ↑s fun i j => @IndepFun _ _ _ (_) _ _ (X i) (X j) ℙ) :
     Var[∑ i in s, X i] = ∑ i in s, Var[X i] := by
   classical
   induction' s using Finset.induction_on with k s ks IH
