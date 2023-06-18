@@ -870,7 +870,7 @@ protected theorem iSup_nonneg {ι : Sort _} {f : ι → ℝ} (hf : ∀ i, 0 ≤ 
 
 /--
 As `0` is the default value for `Real.sSup` of the empty set or sets which are not bounded above, it
-suffices to show that all elements of `S` are bounded by a nonnagative number to show that `sSup S`
+suffices to show that all elements of `S` are bounded by a nonnegative number to show that `sSup S`
 is bounded by this number.
 -/
 protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (ha : 0 ≤ a) : sSup S ≤ a := by

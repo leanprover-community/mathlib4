@@ -28,7 +28,7 @@ universe u v w
 /-
 coinductive Computation (α : Type u) : Type u
 | pure : α → Computation α
-| think : Computation α → Xomputation α
+| think : Computation α → Computation α
 -/
 /-- `Computation α` is the type of unbounded computations returning `α`.
   An element of `Computation α` is an infinite sequence of `Option α` such
@@ -629,7 +629,7 @@ theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
 set_option linter.uppercaseLean3 false in
 #align computation.eq_thinkN' Computation.eq_thinkN'
 
-/-- Recursor based on memberhip-/
+/-- Recursor based on membership-/
 def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
     (h2 : ∀ s, C s → C (think s)) : C s := by
   haveI T := terminates_of_mem M
@@ -914,7 +914,7 @@ theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (ma
 -- Parallel computation
 /-- `c₁ <|> c₂` calculates `c₁` and `c₂` simultaneously, returning
   the first one that gives a result. -/
-def orElse (c₁: Computation α) (c₂: Unit → Computation α): Computation α :=
+def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computation α :=
   @Computation.corec α (Computation α × Computation α)
     (fun ⟨c₁, c₂⟩ =>
       match destruct c₁ with

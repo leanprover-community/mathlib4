@@ -425,13 +425,13 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   right_inv g := by simp
 #align category_theory.adjunction.equiv_homset_right_of_nat_iso CategoryTheory.Adjunction.equivHomsetRightOfNatIso
 
-/-- Transport an adjunction along an natural isomorphism on the left. -/
+/-- Transport an adjunction along a natural isomorphism on the left. -/
 def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
 #align category_theory.adjunction.of_nat_iso_left CategoryTheory.Adjunction.ofNatIsoLeft
 
-/-- Transport an adjunction along an natural isomorphism on the right. -/
+/-- Transport an adjunction along a natural isomorphism on the right. -/
 def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }

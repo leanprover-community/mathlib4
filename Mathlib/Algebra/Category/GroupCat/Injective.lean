@@ -156,4 +156,3 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
 end AddCommGroupCat
-

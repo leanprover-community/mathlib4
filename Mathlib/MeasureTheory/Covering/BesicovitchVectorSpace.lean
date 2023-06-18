@@ -342,7 +342,7 @@ namespace SatelliteConfig
 ### Relating satellite configurations to separated points in the ball of radius `2`.
 
 We prove that the number of points in a satellite configuration is bounded by the maximal number
-of `1`-separated points in the ball of radius `2`. For this, start from a satellite congifuration
+of `1`-separated points in the ball of radius `2`. For this, start from a satellite configuration
 `c`. Without loss of generality, one can assume that the last ball is centered at `0` and of
 radius `1`. Define `c' i = c i` if `‖c i‖ ≤ 2`, and `c' i = (2/‖c i‖) • c i` if `‖c i‖ > 2`.
 It turns out that these points are `1 - δ`-separated, where `δ` is arbitrarily small if `τ` is

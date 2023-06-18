@@ -213,7 +213,6 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg_of_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
-      rw [not_le] at hi
       exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
 #align mem_ℓp.of_exponent_ge Memℓp.of_exponent_ge
 
@@ -1185,7 +1184,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Metric.Bounded (Set.range F
     exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
 #align lp.mem_ℓp_of_tendsto lp.memℓp_of_tendsto
 
-/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to a element `f` of
+/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to an element `f` of
 `lp E p`, then it converges to `f` in the `lp E p` topology. -/
 theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ℕ → ∀ a, E a) atTop (𝓝 f)) : Tendsto F atTop (𝓝 f) := by

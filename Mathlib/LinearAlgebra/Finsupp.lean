@@ -22,7 +22,7 @@ In this file we define `Finsupp.supported s` to be the set `{f : α →₀ M | f
 interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions of various maps:
 
 * `Finsupp.lsingle a : M →ₗ[R] ι →₀ M`: `Finsupp.single a` as a linear map;
-* `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `λ f, f a` as a linear map;
+* `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `fun f ↦ f a` as a linear map;
 * `Finsupp.lsubtypeDomain (s : Set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
   linear map;
 * `Finsupp.restrictDom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
@@ -37,8 +37,8 @@ interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions
 * `Finsupp.domLCongr`: a `LinearEquiv` version of `Finsupp.domCongr`;
 * `Finsupp.congr`: if the sets `s` and `t` are equivalent, then `supported M R s` is equivalent to
   `supported M R t`;
-* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using `e : α ≃
-  β` and `e' : M ≃ₗ[R] N`.
+* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using
+  `e : α ≃ β` and `e' : M ≃ₗ[R] N`.
 
 ## Tags
 

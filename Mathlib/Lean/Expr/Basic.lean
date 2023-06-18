@@ -24,10 +24,10 @@ namespace BinderInfo
 
 /-- The brackets corresponding to a given `BinderInfo`. -/
 def brackets : BinderInfo → String × String
-| BinderInfo.implicit => ("{", "}")
-| BinderInfo.strictImplicit => ("{{", "}}")
-| BinderInfo.instImplicit => ("[", "]")
-| _ => ("(", ")")
+  | BinderInfo.implicit => ("{", "}")
+  | BinderInfo.strictImplicit => ("{{", "}}")
+  | BinderInfo.instImplicit => ("[", "]")
+  | _ => ("(", ")")
 
 end BinderInfo
 
@@ -55,15 +55,15 @@ def fromComponents : List Name → Name := go .anonymous where
 
 /-- Update the last component of a name. -/
 def updateLast (f : String → String) : Name → Name
-| .str n s => .str n (f s)
-| n        => n
+  | .str n s => .str n (f s)
+  | n        => n
 
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
 def getString : Name → String
-| .str _ s => s
-| .num _ n => toString n
-| .anonymous => ""
+  | .str _ s => s
+  | .num _ n => toString n
+  | .anonymous => ""
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
@@ -207,14 +207,14 @@ def fvarId? : Expr → Option FVarId
   `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
-e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-where
-  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-    `depth - 1`. -/
-  aux (depth : Nat) : Expr → Nat → Bool
-  | .lam _ _ b _, n + 1  => aux depth b n
-  | e, 0  => !e.hasLooseBVar (depth - 1)
-  | _, _ => false
+  e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
+  where
+    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+      `depth - 1`. -/
+    aux (depth : Nat) : Expr → Nat → Bool
+    | .lam _ _ b _, n + 1  => aux depth b n
+    | e, 0  => !e.hasLooseBVar (depth - 1)
+    | _, _ => false
 
 open Meta
 
@@ -233,8 +233,8 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 /-- Construct the term of type `α` for a given integer
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
 def ofInt (α : Expr) : Int → MetaM Expr
-| Int.ofNat n => Expr.ofNat α n
-| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+  | Int.ofNat n => Expr.ofNat α n
+  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
 
 /--
   Return `some n` if `e` is one of the following
@@ -267,7 +267,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr): Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr  → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
@@ -282,7 +282,7 @@ def getRevArg? : Expr → Nat → Option Expr
   | _,       _   => none
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, returns the `i`th argument or none if out of bounds. -/
-def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=
+def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
   getRevArg? e (n - i - 1)
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.

@@ -723,7 +723,7 @@ theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsP
   ⟨Ideal.isPrime_of_prime, Ideal.prime_of_isPrime hP⟩
 #align ideal.prime_iff_is_prime Ideal.prime_iff_isPrime
 
-/-- In a Dedekind domain, the the prime ideals are the zero ideal together with the prime elements
+/-- In a Dedekind domain, the prime ideals are the zero ideal together with the prime elements
 of the monoid with zero `Ideal A`. -/
 theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime P :=
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>

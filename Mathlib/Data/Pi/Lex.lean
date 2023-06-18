@@ -29,7 +29,7 @@ This file defines the lexicographic order for Pi types. `a` is less than `b` if 
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Oigma.Order`: Lexicographic order on `Σₗ i, α i`.
+* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/

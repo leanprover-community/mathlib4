@@ -276,6 +276,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
+
 namespace CostructuredArrow
 
 /-- The obvious projection functor from costructured arrows. -/

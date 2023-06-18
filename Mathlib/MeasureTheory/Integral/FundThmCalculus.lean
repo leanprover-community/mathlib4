@@ -133,9 +133,9 @@ atom at one of the endpoints.
 ### Combining one-sided and two-sided derivatives
 
 There are some `intervalIntegral.FTCFilter` instances where the fact that it is one-sided or
-two-sided depends on the point, namely `(x, 𝓝[Set.Icc a b] x, 𝓝[Set.Icc a b] x)` (resp. `(x,
-𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x), with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`).  This results in a
-two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`. Other
+two-sided depends on the point, namely `(x, 𝓝[Set.Icc a b] x, 𝓝[Set.Icc a b] x)` (resp.
+`(x, 𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x)`, with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`). This results
+in a two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`. Other
 instances could be added when needed (in that case, one also needs to add instances for
 `Filter.IsMeasurablyGenerated` and `Filter.TendstoIxxClass`).
 
@@ -597,7 +597,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 -/
 
 
-/-- **Fundamental theorem of calculus-1**, strict diferentiability in both endpoints.
+/-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
 
 If `f : ℝ → E` is integrable on `a..b` and `f x` has finite limits `ca` and `cb` almost surely as
 `x` tends to `a` and `b`, respectively, then
@@ -874,7 +874,7 @@ macro "uniqueDiffWithinAt_Ici_Iic_univ" : tactic =>
 
 /-- Let `f` be a measurable function integrable on `a..b`. Choose `s ∈ {Iic a, Ici a, univ}`
 and `t ∈ {Iic b, Ici b, univ}`. Suppose that `f` tends to `ca` and `cb` almost surely at the filters
-`la` and `lb` from the table below. Then `fderivWithin ℝ (λ p, ∫ x in p.1..p.2, f x) (s ×ˢ t)`
+`la` and `lb` from the table below. Then `fderivWithin ℝ (fun p ↦ ∫ x in p.1..p.2, f x) (s ×ˢ t)`
 is equal to `(u, v) ↦ u • cb - v • ca`.
 
 | `s`     | `la`     | `t`     | `lb`     |

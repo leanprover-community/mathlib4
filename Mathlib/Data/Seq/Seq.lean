@@ -374,7 +374,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
 
 attribute [simp] BisimO
 
-/-- a relation is bisimiar if it meets the `BisimO` test-/
+/-- a relation is bisimilar if it meets the `BisimO` test-/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 #align stream.seq.is_bisimulation Stream'.Seq.IsBisimulation

@@ -126,7 +126,7 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
 def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [IsEquivalence F] :
     parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
   let app (j :WalkingParallelPair) :
-      (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j:=
+      (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j :=
     match j with
     | zero => Iso.refl _
     | one => Iso.refl _
@@ -135,7 +135,7 @@ def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D)
 
 end
 
-/-- If `s` is a limit kernel fork and `k : W ⟶ X` satisfies ``k ≫ f = 0`, then there is some
+/-- If `s` is a limit kernel fork and `k : W ⟶ X` satisfies `k ≫ f = 0`, then there is some
     `l : W ⟶ s.X` such that `l ≫ fork.ι s = k`. -/
 def KernelFork.IsLimit.lift' {s : KernelFork f} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = 0) : { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=

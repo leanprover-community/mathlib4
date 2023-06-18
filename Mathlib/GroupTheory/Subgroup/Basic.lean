@@ -108,7 +108,7 @@ export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
 class NegMemClass (S G : Type _) [Neg G] [SetLike S G] : Prop where
-/-- `s` is closed under negation -/
+  /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 #align neg_mem_class NegMemClass
 
@@ -196,7 +196,7 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
-@[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
+@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
 instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
   [SubgroupClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
@@ -204,7 +204,7 @@ instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
 #align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
-@[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
+@[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
 instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
   [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
@@ -308,7 +308,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align add_subgroup_class.coe_zsmul AddSubgroupClass.coe_zsmul
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
+@[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
 #align subgroup_class.inclusion SubgroupClass.inclusion
@@ -370,7 +370,7 @@ structure Subgroup (G : Type _) [Group G] extends Submonoid G where
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
 structure AddSubgroup (G : Type _) [AddGroup G] extends AddSubmonoid G where
-/-- `G` is closed under negation -/
+  /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
 
@@ -664,7 +664,7 @@ instance one : One H :=
 #align add_subgroup.has_zero AddSubgroup.zero
 
 /-- A subgroup of a group inherits an inverse. -/
-@[to_additive "A `AddSubgroup` of a `AddGroup` inherits an inverse."]
+@[to_additive "An `AddSubgroup` of an `AddGroup` inherits an inverse."]
 instance inv : Inv H :=
   ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
 #align subgroup.has_inv Subgroup.inv
@@ -736,7 +736,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := norm_cast)] -- Porting note: dsimp can provce this
+@[to_additive (attr := norm_cast)] -- Porting note: dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
@@ -804,7 +804,7 @@ theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
 #align add_subgroup.subtype_injective AddSubgroup.subtype_injective
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
-@[to_additive "The inclusion homomorphism from a additive subgroup `H` contained in `K` to `K`."]
+@[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 #align subgroup.inclusion Subgroup.inclusion
@@ -850,7 +850,7 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
 #align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symm_apply_coe
 #align add_subgroup.top_equiv_apply AddSubgroup.topEquiv_apply
 
-/-- The trivial subgroup `{1}` of an group `G`. -/
+/-- The trivial subgroup `{1}` of a group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
 instance : Bot (Subgroup G) :=
   ⟨{ (⊥ : Submonoid G) with inv_mem' := by simp}⟩
@@ -959,7 +959,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 #align add_subgroup.bot_or_exists_ne_zero AddSubgroup.bot_or_exists_ne_zero
 
 /-- The inf of two subgroups is their intersection. -/
-@[to_additive "The inf of two `add_subgroups`s is their intersection."]
+@[to_additive "The inf of two `AddSubgroup`s is their intersection."]
 instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
@@ -1975,7 +1975,7 @@ namespace AddSubgroup
 
 variable (H : AddSubgroup A)
 
-/-- A add_subgroup is characteristic if it is fixed by all automorphisms.
+/-- An `AddSubgroup` is characteristic if it is fixed by all automorphisms.
   Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
 structure Characteristic : Prop where
   /-- `H` is fixed by all automorphisms -/
@@ -2253,7 +2253,7 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
 
 variable (H)
 
-/-- In a group that satisifes the normalizer condition, every maximal subgroup is normal -/
+/-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
   normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
@@ -2330,7 +2330,7 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
 
 end Centralizer
 
-/-- Commutivity of a subgroup -/
+/-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
   is_comm : IsCommutative H (· * ·)
@@ -2338,7 +2338,7 @@ structure IsCommutative : Prop where
 
 attribute [class] IsCommutative
 
-/-- Commutivity of an additive subgroup -/
+/-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
   is_comm : _root_.IsCommutative H (· + ·)
@@ -3422,7 +3422,7 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
 #align monoid_hom.subgroup_comap_apply_coe MonoidHom.subgroupComap_apply_coe
 
 /-- The `MonoidHom` from a subgroup to its image. -/
-@[to_additive (attr := simps!) "the `add_monoid_hom` from an additive subgroup to its image"]
+@[to_additive (attr := simps!) "the `AddMonoidHom` from an additive subgroup to its image"]
 def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap
@@ -3509,7 +3509,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 #align add_subgroup.mem_sup AddSubgroup.mem_sup
 
 @[to_additive]
-theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s)(z : t), (y : C) * z = x :=
+theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
 #align subgroup.mem_sup' Subgroup.mem_sup'
 #align add_subgroup.mem_sup' AddSubgroup.mem_sup'
@@ -3613,7 +3613,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive "Elements of disjoint, normal subgroups commute."]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
--- Porting note: Goal was `Commute x y`. Removed ambiguity.
+    -- Porting note: Goal was `Commute x y`. Removed ambiguity.
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : _root_.Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x

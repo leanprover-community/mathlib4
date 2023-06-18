@@ -456,10 +456,7 @@ variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ 
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
   induction' k with k ih
-  · -- Porting note: was `simp [LinearMap.range_eq_top, hg]`
-    simp only [Nat.zero_eq, lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
-      Submodule.map_top, LinearMap.range_eq_top]
-    exact hg
+  · simpa [LinearMap.range_eq_top]
   · suffices
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by

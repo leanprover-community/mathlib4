@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 
 ! This file was ported from Lean 3 source module field_theory.normal
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
+! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -162,12 +162,11 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
 attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
 
-set_option maxHeartbeats 210000 in
+set_option maxHeartbeats 300000 in
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · have := hFEp.adjoin_roots
-    simp only [Polynomial.map_zero, roots_zero, Multiset.toFinset_zero, Finset.coe_empty,
-      Algebra.adjoin_empty] at this
+  · have := hFEp.adjoin_rootSet
+    simp only [rootSet_zero, Algebra.adjoin_empty] at this
     exact
       Normal.of_algEquiv
         (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
@@ -197,7 +196,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
         FiniteDimensional.finrank_pos
   let C := AdjoinRoot (minpoly F x)
   haveI Hx_irred := Fact.mk (minpoly.irreducible Hx)
--- Porting note: `heval` added since now Lean wants the proof explictely in several places.
+-- Porting note: `heval` added since now Lean wants the proof explicitly in several places.
   have heval : eval₂ (algebraMap F D) (AdjoinRoot.root q) (minpoly F x) = 0 := by
     rw [algebraMap_eq F E D, ← eval₂_map, hr, AdjoinRoot.algebraMap_eq, eval₂_mul,
       AdjoinRoot.eval₂_root, MulZeroClass.zero_mul]
@@ -241,7 +240,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   rw [← Finset.image_toFinset, Finset.coe_image]
   apply
     Eq.trans
-      (Algebra.adjoin_res_eq_adjoin_res F E C D hFEp.adjoin_roots AdjoinRoot.adjoinRoot_eq_top)
+      (Algebra.adjoin_res_eq_adjoin_res F E C D hFEp.adjoin_rootSet AdjoinRoot.adjoinRoot_eq_top)
   rw [Set.image_singleton, RingHom.algebraMap_toAlgebra, AdjoinRoot.lift_root]
 #align normal.of_is_splitting_field Normal.of_isSplittingField
 
@@ -369,7 +368,7 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
       (by simp only [AlgEquiv.trans_apply, AlgEquiv.restrictNormal_commutes])
 #align alg_equiv.restrict_normal_trans AlgEquiv.restrictNormal_trans
 
-/-- Restriction to an normal subfield as a group homomorphism -/
+/-- Restriction to a normal subfield as a group homomorphism -/
 def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃ₐ[F] E :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 #align alg_equiv.restrict_normal_hom AlgEquiv.restrictNormalHom

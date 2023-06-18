@@ -260,8 +260,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 
-/- N -/ syntax (name := opInduction) "op_induction" (ppSpace colGt term)? : tactic
-
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace colGt term)?
   (" with" (ppSpace binderIdent)+)? : tactic
 
@@ -305,8 +303,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
-
-/- S -/ syntax (name := explode) "#explode " ident : command
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 

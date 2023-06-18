@@ -21,7 +21,7 @@ This file contains several standard constructions on vector bundles:
 
 * `VectorBundle.prod`: for vector bundles `E₁` and `E₂` with scalar field `𝕜` over a common base,
   a vector bundle structure on their direct sum `E₁ ×ᵇ E₂` (the notation stands for
-  `λ x, E₁ x × E₂ x`).
+  `fun x ↦ E₁ x × E₂ x`).
 
 * `VectorBundle.pullback`: for a vector bundle `E` over `B`, a vector bundle structure on its
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).

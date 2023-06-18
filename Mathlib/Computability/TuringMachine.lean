@@ -2566,6 +2566,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
     refine'
       ⟨_, fun k' ↦ _, by
         -- Porting note: `rw [...]` to `erw [...]; rfl`.
+        -- https://github.com/leanprover-community/mathlib4/issues/5164
         erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
         rfl⟩
@@ -2754,7 +2755,7 @@ theorem tr_eval_dom (k) (L : List (Γ k)) :
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
     (H₂ : L₂ ∈ TM2.eval M k L) :
-    ∃ (S : ∀ k, List (Γ k))(L' : ListBlank (∀ k, Option (Γ k))),
+    ∃ (S : ∀ k, List (Γ k)) (L' : ListBlank (∀ k, Option (Γ k))),
       addBottom L' = L₁ ∧
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
