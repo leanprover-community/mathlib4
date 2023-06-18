@@ -48,6 +48,9 @@ namespace ProbabilityTheory
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
+-- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
+private lemma coe : ENNReal.toReal 2 = (2 : ℝ) := rfl
+
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `(X - 𝔼[X])^2`. -/
 def evariance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
@@ -66,7 +69,7 @@ theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX :
     evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
   rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, ← ENNReal.rpow_two] at this
-  simp only [Pi.sub_apply, ENNReal.toReal_bit0, ENNReal.one_toReal, one_div] at this
+  simp only [coe, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
@@ -79,8 +82,8 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
     refine' ⟨hXm.sub aestronglyMeasurable_const, _⟩
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [ENNReal.toReal_bit0, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
-    exact ENNReal.rpow_lt_top_of_nonneg (by simp) h.ne
+    simp only [coe, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
+    exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine' hX _
   convert this.add (memℒp_const <| μ[X])
   ext ω
@@ -120,21 +123,21 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
     rename_i ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_bit0, ENNReal.one_toReal,
-      Real.rpow_two, pow_bit0_abs]
+    simp only [Pi.sub_apply, Real.norm_eq_abs, coe, ENNReal.one_toReal,
+      Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq_of_integral_eq_zero MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero
 
 theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    variance X μ = μ[(X - fun ω => μ[X]) ^ 2] := by
+    variance X μ = μ[(X - fun _ => μ[X]) ^ 2] := by
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
     ENNReal.toReal_ofReal]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
     rename_i ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, ENNReal.toReal_bit0, ENNReal.one_toReal,
-      Real.rpow_two, pow_bit0_abs]
+    simp only [Pi.sub_apply, Real.norm_eq_abs, coe, ENNReal.one_toReal,
+      Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq MeasureTheory.Memℒp.variance_eq
 
@@ -202,20 +205,18 @@ scoped notation "Var[" X "]" => ProbabilityTheory.variance X MeasureTheory.Measu
 
 variable [MeasureSpace Ω]
 
--- Porting note: Replaced `ℙ : Measure Ω` with `@MeasureTheory.MeasureSpace.volume Ω _`
 theorem variance_def' [IsProbabilityMeasure (@MeasureTheory.MeasureSpace.volume Ω _)] {X : Ω → ℝ}
     (hX : Memℒp X 2) : Var[X] = 𝔼[X ^ 2] - 𝔼[X] ^ 2 := by
   rw [hX.variance_eq, sub_sq', integral_sub', integral_add']; rotate_left
   · exact hX.integrable_sq
-  · convert integrable_const (𝔼[X] ^ 2)
-    infer_instance
+  · convert @integrable_const Ω ℝ (@MeasureSpace.toMeasurableSpace Ω _) ℙ _ _ (𝔼[X] ^ 2)
   · apply hX.integrable_sq.add
-    convert integrable_const (𝔼[X] ^ 2)
-    infer_instance
+    convert @integrable_const Ω ℝ (@MeasureSpace.toMeasurableSpace Ω _) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [integral_mul_right, Pi.pow_apply, Pi.mul_apply, Pi.one_apply,
-    integral_const (integral ℙ X ^ 2), integral_mul_left (2 : ℝ), one_mul, variance, Pi.pow_apply,
-    measure_univ, ENNReal.one_toReal, Algebra.id.smul_eq_mul]
+  simp [integral_mul_right]
+  have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
+  conv_lhs => enter [2, 1, 2, a]; rw [this]
+  simp only [integral_mul_left (2 : ℝ)]
   ring_nf
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 
@@ -259,10 +260,10 @@ theorem evariance_def' [IsProbabilityMeasure (@MeasureTheory.MeasureSpace.volume
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
-      ENNReal.toReal_bit0, ENNReal.one_toReal, ENNReal.rpow_two, one_div, ENNReal.rpow_eq_top_iff,
+      coe, ENNReal.one_toReal, ENNReal.rpow_two, one_div, ENNReal.rpow_eq_top_iff,
       inv_lt_zero, inv_pos, zero_lt_bit0, zero_lt_one, and_true_iff, or_iff_not_imp_left,
-      not_and_or] at hℒ
-    exact hℒ fun _ => zero_le_two
+      not_and_or, zero_lt_two] at hℒ
+    exact_mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
 
 /-- *Chebyshev's inequality* for `ℝ≥0∞`-valued variance. -/
@@ -275,7 +276,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
       NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
   · rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [ENNReal.toReal_bit0, ENNReal.one_toReal, Pi.sub_apply, one_div]
+    simp only [coe, ENNReal.one_toReal, Pi.sub_apply, one_div]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
     simp_rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
