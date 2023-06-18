@@ -1151,6 +1151,55 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
       exact ⟨is, js⟩
 #align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_iUnion
 
+namespace Functions
+
+variable (op op' : L.Functions 2) (un : L.Functions 1) (c c' : L.Constants)
+
+/-- `op.assoc` is the `Sentence` saying that `op` is associative -/
+protected def assoc : L.Sentence :=
+  ∀' ∀' ∀' ((op.apply₂ &0 (op.apply₂ &1 &2)) =' (op.apply₂ (op.apply₂ &0 &1) &2))
+
+/-- `op.comm` is the `Sentence` saying that `op` is commutative -/
+protected def comm : L.Sentence :=
+  ∀' ∀' ((op.apply₂ &0 &1) =' (op.apply₂ &1 &0))
+
+/-- `op.leftId c` is the `Sentence` saying that `c` is a left identity for `op`,
+  i.e. `op c x = x` -/
+protected def leftId : L.Sentence :=
+  ∀' ((op.apply₂ c.term &0) =' &0)
+
+/-- `op.rightId c` is the `Sentence` saying that `c` is a right identity for `op`,
+  i.e. `op x c = x` -/
+protected def rightId : L.Sentence :=
+  ∀' ((op.apply₂ &0 c.term) =' &0)
+
+/-- `op.leftDistrib op'` is the `Sentence` saying that `op` distributes over `op'` on the left,
+  i.e. `op a (op' b c) = op (op' a b) (op' a c)` -/
+protected def leftDistrib : L.Sentence :=
+  ∀' ∀' ∀' ((op.apply₂ &0 (op'.apply₂ &1 &2)) ='
+    (op'.apply₂ (op.apply₂ &0 &1) (op.apply₂ &0 &2)))
+
+/-- `op.rightDistrib op'` is the `Sentence` saying that `op` distributes over `op'` on the right,
+  i.e. `op (op' a b) c = op (op' a c) (op' b c)` -/
+protected def rightDistrib : L.Sentence :=
+  ∀' ∀' ∀' ((op'.apply₂ (op.apply₂ &0 &1) &2) ='
+    (op'.apply₂ (op.apply₂ &0 &2) (op.apply₂ &1 &2)))
+
+/-- `op.leftInv un c` is the `Sentence` saying that `un` is a left inverse for `op`, with `c`
+  as the identity, i.e. `op (un a) a = c` -/
+protected def leftInv : L.Sentence :=
+  ∀' ((op.apply₂ (un.apply₁ &0) &0) =' c.term)
+
+/-- `op.rightInv un c` is the `Sentence` saying that `un` is a right inverse for `op`, with `c`
+  as the identity, i.e. `op a (un a) = c` -/
+protected def rightInv : L.Sentence :=
+  ∀' ((op.apply₂ &0 (un.apply₁ &0)) =' c.term)
+
+protected def leftNeZeroInv : L.Sentence :=
+  ∀' ()
+
+end Functions
+
 end Cardinality
 
 end Language
