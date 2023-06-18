@@ -149,14 +149,14 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
-      · rintro x (hx | hx)
-        exacts [Or.inl hx, ht₂ x hx]
+      · rintro x (_ | _)
+        exacts [Or.inl rfl, ht₂ x _]
     · refine' ⟨_, _, _⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, if_pos rfl, ht₁]
-      · rintro x (hx | hx)
-        exacts [Or.inr hx, ht₂ x hx]
+      · rintro x (_ | _)
+        exacts [Or.inr rfl, ht₂ x _]
 #align ballot.counted_succ_succ Ballot.counted_succ_succ
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
