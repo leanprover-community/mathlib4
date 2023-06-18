@@ -8,7 +8,7 @@ Authors: Gihan Marasingha
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -76,9 +76,9 @@ namespace Miu
 /-- The atoms of MIU can be represented as an enumerated type in Lean.
 -/
 inductive MiuAtom : Type
-  | M : miu_atom
-  | I : miu_atom
-  | U : miu_atom
+  | M : MiuAtom
+  | I : MiuAtom
+  | U : MiuAtom
   deriving DecidableEq
 #align miu.miu_atom Miu.MiuAtom
 
@@ -110,26 +110,27 @@ def MiuAtom.repr : MiuAtom → String
 /-- Using `miu_atom.repr`, we prove that ``miu_atom` is an instance of `has_repr`.
 -/
 instance : Repr MiuAtom :=
-  ⟨fun u => u.repr⟩
+  ⟨fun u _ => u.repr⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler has_mem[has_mem] miu_atom[miu.miu_atom] -/
 /-- For simplicity, an `miustr` is just a list of elements of type `miu_atom`.
 -/
 def Miustr :=
   List MiuAtom
-deriving Append,
-  «./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler has_mem[has_mem] miu_atom[miu.miu_atom]»
+deriving Append
 #align miu.miustr Miu.Miustr
+
+instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 
 /-- For display purposes, an `miustr` can be represented as a `string`.
 -/
 def Miustr.mrepr : Miustr → String
   | [] => ""
-  | c :: cs => c.repr ++ miustr.mrepr cs
+  | c :: cs => c.repr ++ Miustr.mrepr cs
 #align miu.miustr.mrepr Miu.Miustr.mrepr
 
 instance miurepr : Repr Miustr :=
-  ⟨fun u => u.mrepr⟩
+  ⟨fun u _ => u.mrepr⟩
 #align miu.miurepr Miu.miurepr
 
 /-- In the other direction, we set up a coercion from `string` to `miustr`.
@@ -137,7 +138,7 @@ instance miurepr : Repr Miustr :=
 def lcharToMiustr : List Char → Miustr
   | [] => []
   | c :: cs =>
-    let ms := lchar_to_miustr cs
+    let ms := lcharToMiustr cs
     match c with
     | 'M' => M :: ms
     | 'I' => I :: ms
@@ -154,17 +155,19 @@ instance stringCoeMiustr : Coe String Miustr :=
 -/
 
 
+-- Porting note: Added a lot of `(show Miustr from _)`
 /--
 The inductive type `derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
 corresponds to the one of Hofstadter's rules of inference.
 -/
 inductive Derivable : Miustr → Prop
-  | mk : derivable "MI"
-  | r1 {x} : derivable (x ++ [I]) → derivable (x ++ [I, U])
-  | r2 {x} : derivable (M :: x) → derivable (M :: x ++ x)
-  | r3 {x y} : derivable (x ++ [I, I, I] ++ y) → derivable (x ++ U :: y)
-  | r4 {x y} : derivable (x ++ [U, U] ++ y) → derivable (x ++ y)
+  | mk : Derivable "MI"
+  | r1 {x} : Derivable (x ++ (show Miustr from [I])) → Derivable (x ++ (show Miustr from [I, U]))
+  | r2 {x} : Derivable (M :: x) → Derivable (M :: x ++ x)
+  | r3 {x y} :
+    Derivable (x ++ (show Miustr from [I, I, I]) ++ y) → Derivable (x ++ (show Miustr from U :: y))
+  | r4 {x y} : Derivable (x ++ (show Miustr from [U, U]) ++ y) → Derivable (x ++ y)
 #align miu.derivable Miu.Derivable
 
 /-!
@@ -173,22 +176,22 @@ inductive Derivable : Miustr → Prop
 
 
 example (h : Derivable "UMI") : Derivable "UMIU" := by
-  change ("UMIU" : miustr) with [U, M] ++ [I, U]
+  change ("UMIU" : Miustr) with [U, M] ++ [I, U]
   exact derivable.r1 h
 
 -- Rule 1
 example (h : Derivable "MIIU") : Derivable "MIIUIIU" := by
-  change ("MIIUIIU" : miustr) with M :: [I, I, U] ++ [I, I, U]
+  change ("MIIUIIU" : Miustr) with M :: [I, I, U] ++ [I, I, U]
   exact derivable.r2 h
 
 -- Rule 2
 example (h : Derivable "UIUMIIIMMM") : Derivable "UIUMUMMM" := by
-  change ("UIUMUMMM" : miustr) with [U, I, U, M] ++ U :: [M, M, M]
+  change ("UIUMUMMM" : Miustr) with [U, I, U, M] ++ U :: [M, M, M]
   exact derivable.r3 h
 
 -- Rule 3
 example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
-  change ("MIMIMIIM" : miustr) with [M, I, M, I, M] ++ [I, I, M]
+  change ("MIMIMIIM" : Miustr) with [M, I, M, I, M] ++ [I, I, M]
   exact derivable.r4 h
 
 /-!
@@ -198,27 +201,26 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 
 -- Rule 4
 private theorem MIU_der : Derivable "MIU" := by
-  change ("MIU" : miustr) with [M] ++ [I, U]
+  change ("MIU" : Miustr) with [M] ++ [I, U]
   apply derivable.r1
   -- reduce to deriving "MI",
   constructor
 
 -- which is the base of the inductive construction.
 example : Derivable "MIUIU" := by
-  change ("MIUIU" : miustr) with M :: [I, U] ++ [I, U]
+  change ("MIUIU" : Miustr) with M :: [I, U] ++ [I, U]
   exact derivable.r2 MIU_der
 
 -- `"MIUIU"` can be derived as `"MIU"` can.
 example : Derivable "MUI" := by
   have h₂ : derivable "MII" := by
-    change ("MII" : miustr) with M :: [I] ++ [I]
+    change ("MII" : Miustr) with M :: [I] ++ [I]
     exact derivable.r2 derivable.mk
   have h₃ : derivable "MIIII" := by
-    change ("MIIII" : miustr) with M :: [I, I] ++ [I, I]
+    change ("MIIII" : Miustr) with M :: [I, I] ++ [I, I]
     exact derivable.r2 h₂
-  change ("MUI" : miustr) with [M] ++ U :: [I]
+  change ("MUI" : Miustr) with [M] ++ U :: [I]
   exact derivable.r3 h₃
 
 -- We prove our main goal using rule 3
 end Miu
-
