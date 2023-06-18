@@ -673,6 +673,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   have := congr_fun (congr_arg Subtype.val h_eq) ⟨p, hfp⟩
   dsimp at this
   -- Porting note : need to tell Lean what `S` is and need to change to `erw`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [IsLocalization.eq (S := Localization.AtPrime p.asIdeal)] at this
   cases' this with r hr
   exact ⟨r.1, hr, r.2⟩

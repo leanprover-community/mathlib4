@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
+! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -272,6 +272,14 @@ theorem toReal_eq_zero_iff (x : ℝ≥0∞) : x.toReal = 0 ↔ x = 0 ∨ x = ∞
   simp [ENNReal.toReal, toNNReal_eq_zero_iff]
 #align ennreal.to_real_eq_zero_iff ENNReal.toReal_eq_zero_iff
 
+theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toNNReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_nnreal_ne_zero ENNReal.toNNReal_ne_zero
+
+theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_real_ne_zero ENNReal.toReal_ne_zero
+
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untop'_eq_iff.trans <| by simp
 #align ennreal.to_nnreal_eq_one_iff ENNReal.toNNReal_eq_one_iff
@@ -279,6 +287,14 @@ theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
 theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
   rw [ENNReal.toReal, NNReal.coe_eq_one, ENNReal.toNNReal_eq_one_iff]
 #align ennreal.to_real_eq_one_iff ENNReal.toReal_eq_one_iff
+
+theorem toNNReal_ne_one : a.toNNReal ≠ 1 ↔ a ≠ 1 :=
+  a.toNNReal_eq_one_iff.not
+#align ennreal.to_nnreal_ne_one ENNReal.toNNReal_ne_one
+
+theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
+  a.toReal_eq_one_iff.not
+#align ennreal.to_real_ne_one ENNReal.toReal_ne_one
 
 @[simp] theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 #align ennreal.coe_ne_top ENNReal.coe_ne_top
@@ -1327,7 +1343,7 @@ instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 instance : DivInvMonoid ℝ≥0∞ where
 
-theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
+protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 #align ennreal.div_eq_inv_mul ENNReal.div_eq_inv_mul
 
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
@@ -2366,6 +2382,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
   · -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164
     erw [NNReal.iSup_of_not_bddAbove h, (WithTop.iSup_coe_eq_top f).mpr h, top_toNNReal]
 #align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
 
