@@ -102,7 +102,6 @@ Either of these will later be shown to be equivalent to the weak convergence of 
 of measures.
 -/
 
-
 variable {Ω : Type _} [MeasurableSpace Ω]
 
 theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
