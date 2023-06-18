@@ -226,6 +226,7 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
     (h2s : (support fun t => L (f t) (g (x₀ - t))) ⊆ s) (hf : IntegrableOn f s μ)
     (hmg : AEStronglyMeasurable g <| map (fun t => x₀ - t) (μ.restrict s)) :
     ConvolutionExistsAt f g x₀ L μ := by
+  -- porting note: can't `rw [ConvolutionExistsAt]`
   unfold ConvolutionExistsAt
   rw [← integrableOn_iff_integrable_of_support_subset h2s]
   set s' := (fun t => -t + x₀) ⁻¹' s
