@@ -57,6 +57,7 @@ namespace Presheaf
 
 -- Porting note: added an `ext` lemma,
 -- since `NatTrans.ext` can not see through the definition of `Presheaf`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by

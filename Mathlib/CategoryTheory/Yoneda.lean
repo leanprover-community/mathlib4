@@ -327,6 +327,7 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 
 -- Porting note: we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma yonedaPairingExt {x y : (yonedaPairing C).obj X} (w : ∀ Y, x.app Y = y.app Y) : x = y :=
   NatTrans.ext _ _ (funext w)
