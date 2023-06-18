@@ -111,7 +111,7 @@ theorem SupIndep.image [DecidableEq ι] {s : Finset ι'} {g : ι' → ι} (hs : 
   obtain ⟨i, hi, rfl⟩ := hi
   haveI : DecidableEq ι' := Classical.decEq _
   suffices hts : t ⊆ (s.erase i).image g
-  · refine' (sup_indep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
+  · refine' (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
     rw [sup_image]
   rintro j hjt
   obtain ⟨j, hj, rfl⟩ := mem_image.1 (ht hjt)
@@ -165,7 +165,8 @@ theorem supIndep_univ_fin_two (f : Fin 2 → α) :
 theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := by
   intro t _ i _ hi
   classical
-    rw [← Finset.sup_image]
+    have : (fun (a : { x // x ∈ s }) => f ↑a) = f ∘ (fun a : { x // x ∈ s } => ↑a) := rfl
+    rw [this, ← Finset.sup_image]
     refine' hs (image_subset_iff.2 fun (j : { x // x ∈ s }) _ => j.2) i.2 fun hi' => hi _
     rw [mem_image] at hi'
     obtain ⟨j, hj, hji⟩ := hi'
@@ -174,10 +175,10 @@ theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := 
 
 @[simp]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
-  refine' ⟨fun h t ht i his hit => _, sup_indep.attach⟩
+  refine' ⟨fun h t ht i his hit => _, SupIndep.attach⟩
   classical
-  convert h (filter_subset (fun i => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩) fun hi =>
-      hit <| by simpa using hi using 1
+  convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
+    fun hi => hit <| by simpa using hi using 1
   refine' eq_of_forall_ge_iff _
   simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and_iff, Function.comp_apply,
     Subtype.forall, Subtype.coe_mk]
@@ -219,7 +220,7 @@ theorem SupIndep.biUnion [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset �
 /-- Bind operation for `sup_indep`. -/
 theorem SupIndep.sigma {β : ι → Type _} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
     (hs : s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
-    (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.Sigma g).SupIndep f := by
+    (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
   rintro t ht ⟨i, b⟩ hi hit
   rw [Finset.disjoint_sup_right]
   rintro ⟨j, c⟩ hj
@@ -227,10 +228,10 @@ theorem SupIndep.sigma {β : ι → Type _} {s : Finset ι} {g : ∀ i, Finset (
   replace hj := ht hj
   rw [mem_sigma] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · exact (hg _ hj.1).PairwiseDisjoint hi.2 hj.2 (sigma_mk_injective.ne_iff.1 hbc)
-  · refine' (hs.pairwise_disjoint hi.1 hj.1 hij).mono _ _
-    · convert le_sup hi.2
-    · convert le_sup hj.2
+  · exact (hg _ hj.1).pairwiseDisjoint hi.2 hj.2 (sigma_mk_injective.ne_iff.1 hbc)
+  · refine' (hs.pairwiseDisjoint hi.1 hj.1 hij).mono _ _
+    · convert le_sup (α := α) hi.2; simp
+    · convert le_sup (α := α) hj.2; simp
 #align finset.sup_indep.sigma Finset.SupIndep.sigma
 
 theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
@@ -243,19 +244,19 @@ theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
   replace hj := hu hj
   rw [mem_product] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine' (ht.pairwise_disjoint hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 hij).mono _ _
-    · convert le_sup hi.1
-    · convert le_sup hj.1
-  · refine' (hs.pairwise_disjoint hi.1 hj.1 hij).mono _ _
-    · convert le_sup hi.2
-    · convert le_sup hj.2
+  · refine' (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 hij).mono _ _
+    · convert le_sup (α := α) hi.1; simp
+    · convert le_sup (α := α) hj.1; simp
+  · refine' (hs.pairwiseDisjoint hi.1 hj.1 hij).mono _ _
+    · convert le_sup (α := α) hi.2; simp
+    · convert le_sup (α := α) hj.2; simp
 #align finset.sup_indep.product Finset.SupIndep.product
 
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
       ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
   refine' ⟨_, fun h => h.1.product h.2⟩
-  simp_rw [sup_indep_iff_pairwise_disjoint]
+  simp_rw [supIndep_iff_pairwiseDisjoint]
   refine' fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩ <;>
       simp_rw [Function.onFun, Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
     intro i' hi' j' hj'
