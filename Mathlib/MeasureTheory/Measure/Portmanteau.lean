@@ -108,7 +108,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter �
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
     μ (Eᶜ) ≤ L.liminf fun i => μs i (Eᶜ) := by
-  rcases L.eq_or_neBot
+  rcases L.eq_or_neBot with rfl | hne
   · simp
   have meas_Ec : μ (Eᶜ) = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
