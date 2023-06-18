@@ -368,13 +368,22 @@ instance {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra
   rw [RingHom.comp_apply, RingHom.comp_apply]
   exact RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
   -- Porting Note: Original proof (without `by`) didn't work anymore, I think it couldn't figure
-  -- out `algebraMap_def`.
+  -- out `algebraMap_def`. Orignally:
   -- IsScalarTower.of_algebraMap_eq fun x =>
   --   RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
 
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosure k :=
-  { ofStep k n with commutes' := fun x => Ring.DirectLimit.of_f n.zero_le x }
+  { ofStep k n with commutes' := by {
+  --Porting Note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
+  -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
+      intro x
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+          MonoidHom.coe_coe]
+      convert @Ring.DirectLimit.of_f ℕ _ (Step k) _ (fun m n h => (toStepOfLE k m n h : _ → _))
+          0 n n.zero_le x
+    }
+  }
 #align algebraic_closure.of_step_hom AlgebraicClosure.ofStepHom
 
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) := fun z =>
