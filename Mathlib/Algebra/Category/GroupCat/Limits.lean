@@ -431,6 +431,9 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
+    -- Porting note: it would be nice to do the next two steps by a single `ext`,
+    -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
+    refine equalizer.hom_ext ?_
     ext x
     dsimp
     generalize_proofs _ h1 h2
