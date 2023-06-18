@@ -8,7 +8,7 @@ Authors: Kevin Lacker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits
 
 /-!
 # IMO 1962 Q1
@@ -43,8 +43,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
   n = 10 * c + 6 ∧ 6 * 10 ^ (digits 10 c).length + c = 4 * n
 #align imo1962_q1.problem_predicate' Imo1962Q1.ProblemPredicate'
 
-theorem without_digits {n : ℕ} (h1 : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n :=
-  by
+theorem without_digits {n : ℕ} (h1 : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
   cases n
   · have h2 : ¬problem_predicate 0 := by norm_num [problem_predicate]
@@ -61,16 +60,14 @@ Now we can eliminate possibilities for `(digits 10 c).length` until we get to th
 -/
 
 
-theorem case_0_digit {c n : ℕ} (h1 : (digits 10 c).length = 0) : ¬ProblemPredicate' c n :=
-  by
+theorem case_0_digit {c n : ℕ} (h1 : (digits 10 c).length = 0) : ¬ProblemPredicate' c n := by
   intro h2
   have h3 : 6 * 10 ^ 0 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 0 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
   linarith
 #align imo1962_q1.case_0_digit Imo1962Q1.case_0_digit
 
-theorem case_1_digit {c n : ℕ} (h1 : (digits 10 c).length = 1) : ¬ProblemPredicate' c n :=
-  by
+theorem case_1_digit {c n : ℕ} (h1 : (digits 10 c).length = 1) : ¬ProblemPredicate' c n := by
   intro h2
   have h3 : 6 * 10 ^ 1 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 1 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
@@ -78,8 +75,7 @@ theorem case_1_digit {c n : ℕ} (h1 : (digits 10 c).length = 1) : ¬ProblemPred
   linarith
 #align imo1962_q1.case_1_digit Imo1962Q1.case_1_digit
 
-theorem case_2_digit {c n : ℕ} (h1 : (digits 10 c).length = 2) : ¬ProblemPredicate' c n :=
-  by
+theorem case_2_digit {c n : ℕ} (h1 : (digits 10 c).length = 2) : ¬ProblemPredicate' c n := by
   intro h2
   have h3 : 6 * 10 ^ 2 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 2 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
@@ -87,8 +83,7 @@ theorem case_2_digit {c n : ℕ} (h1 : (digits 10 c).length = 2) : ¬ProblemPred
   linarith
 #align imo1962_q1.case_2_digit Imo1962Q1.case_2_digit
 
-theorem case_3_digit {c n : ℕ} (h1 : (digits 10 c).length = 3) : ¬ProblemPredicate' c n :=
-  by
+theorem case_3_digit {c n : ℕ} (h1 : (digits 10 c).length = 3) : ¬ProblemPredicate' c n := by
   intro h2
   have h3 : 6 * 10 ^ 3 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 3 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
@@ -96,8 +91,7 @@ theorem case_3_digit {c n : ℕ} (h1 : (digits 10 c).length = 3) : ¬ProblemPred
   linarith
 #align imo1962_q1.case_3_digit Imo1962Q1.case_3_digit
 
-theorem case_4_digit {c n : ℕ} (h1 : (digits 10 c).length = 4) : ¬ProblemPredicate' c n :=
-  by
+theorem case_4_digit {c n : ℕ} (h1 : (digits 10 c).length = 4) : ¬ProblemPredicate' c n := by
   intro h2
   have h3 : 6 * 10 ^ 4 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 4 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
@@ -110,8 +104,7 @@ theorem helper_5_digit {c : ℤ} (h : 6 * 10 ^ 5 + c = 4 * (10 * c + 6)) : c = 1
 #align imo1962_q1.helper_5_digit Imo1962Q1.helper_5_digit
 
 theorem case_5_digit {c n : ℕ} (h1 : (digits 10 c).length = 5) (h2 : ProblemPredicate' c n) :
-    c = 15384 :=
-  by
+    c = 15384 := by
   have h3 : 6 * 10 ^ 5 + c = 6 * 10 ^ (digits 10 c).length + c := by rw [h1]
   have h4 : 6 * 10 ^ 5 + c = 4 * (10 * c + 6) := by rw [h3, h2.right, h2.left]
   zify at *
@@ -122,8 +115,7 @@ theorem case_5_digit {c n : ℕ} (h1 : (digits 10 c).length = 5) (h2 : ProblemPr
 that normally would be automated.
 -/
 theorem case_more_digits {c n : ℕ} (h1 : (digits 10 c).length ≥ 6) (h2 : ProblemPredicate' c n) :
-    n ≥ 153846 :=
-  by
+    n ≥ 153846 := by
   have h3 : c ≠ 0 := by
     intro h4
     have h5 : (digits 10 c).length = 0 := by simp [h4]
@@ -145,8 +137,7 @@ theorem satisfied_by_153846 : ProblemPredicate 153846 := by
   norm_num [problem_predicate, digits_def', of_digits]
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
-theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 :=
-  by
+theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by
   cases' without_digits h1 with c h2
   have h3 : (digits 10 c).length < 6 ∨ (digits 10 c).length ≥ 6 := by apply lt_or_ge
   cases h3
