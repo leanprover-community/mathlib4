@@ -48,10 +48,10 @@ Additionally, he has an axiom:
 * `MI` is derivable.
 
 In Lean, it is natural to treat the rules of inference and the axiom on an equal footing via an
-inductive data type `derivable` designed so that `derivable x` represents the notion that the string
+inductive data type `Derivable` designed so that `Derivable x` represents the notion that the string
 `x` can be derived from the axiom by the rules of inference. The axiom is represented as a
-nonrecursive constructor for `derivable`. This mirrors the translation of Peano's axiom '0 is a
-natural number' into the nonrecursive constructor `zero` of the inductive type `nat`.
+nonrecursive constructor for `Derivable`. This mirrors the translation of Peano's axiom '0 is a
+natural number' into the nonrecursive constructor `zero` of the inductive type `Nat`.
 
 ## References
 
@@ -69,7 +69,7 @@ miu, derivable strings
 namespace Miu
 
 /-!
-### Declarations and instance derivations for `miu_atom` and `miustr`
+### Declarations and instance derivations for `MiuAtom` and `Miustr`
 -/
 
 
@@ -83,23 +83,23 @@ inductive MiuAtom : Type
 #align miu.miu_atom Miu.MiuAtom
 
 /-!
-The annotation `@[derive decidable_eq]` above assigns the attribute `derive` to `miu_atom`, through
-which Lean automatically derives that `miu_atom` is an instance of `decidable_eq`. The use of
-`derive` is crucial in this project and will lead to the automatic derivation of decidability.
+The annotation `deriving DecidableEq` above indicates that Lean will automatically derive that
+`MiuAtom` is an instance of `DecidableEq`. The use of `deriving` is crucial in this project and will
+lead to the automatic derivation of decidability.
 -/
 
 
 open MiuAtom
 
 /--
-We show that the type `miu_atom` is inhabited, giving `M` (for no particular reason) as the default
+We show that the type `MiuAtom` is inhabited, giving `M` (for no particular reason) as the default
 element.
 -/
 instance miuAtomInhabited : Inhabited MiuAtom :=
   Inhabited.mk M
 #align miu.miu_atom_inhabited Miu.miuAtomInhabited
 
-/-- `miu_atom.repr` is the 'natural' function from `miu_atom` to `string`.
+/-- `MiuAtom.repr` is the 'natural' function from `MiuAtom` to `String`.
 -/
 def MiuAtom.repr : MiuAtom → String
   | M => "M"
@@ -107,13 +107,12 @@ def MiuAtom.repr : MiuAtom → String
   | U => "U"
 #align miu.miu_atom.repr Miu.MiuAtom.repr
 
-/-- Using `miu_atom.repr`, we prove that ``miu_atom` is an instance of `has_repr`.
+/-- Using `MiuAtom.repr`, we prove that `MiuAtom` is an instance of `Repr`.
 -/
 instance : Repr MiuAtom :=
   ⟨fun u _ => u.repr⟩
 
-/- ./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler has_mem[has_mem] miu_atom[miu.miu_atom] -/
-/-- For simplicity, an `miustr` is just a list of elements of type `miu_atom`.
+/-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
 def Miustr :=
   List MiuAtom
@@ -122,7 +121,7 @@ deriving Append
 
 instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 
-/-- For display purposes, an `miustr` can be represented as a `string`.
+/-- For display purposes, an `Miustr` can be represented as a `String`.
 -/
 def Miustr.mrepr : Miustr → String
   | [] => ""
@@ -133,7 +132,7 @@ instance miurepr : Repr Miustr :=
   ⟨fun u _ => u.mrepr⟩
 #align miu.miurepr Miu.miurepr
 
-/-- In the other direction, we set up a coercion from `string` to `miustr`.
+/-- In the other direction, we set up a coercion from `String` to `Miustr`.
 -/
 def lcharToMiustr : List Char → Miustr
   | [] => []
@@ -157,7 +156,7 @@ instance stringCoeMiustr : Coe String Miustr :=
 
 -- Porting note: Added a lot of `(show Miustr from _)`
 /--
-The inductive type `derivable` has five constructors. The nonrecursive constructor `mk` corresponds
+The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
 corresponds to the one of Hofstadter's rules of inference.
 -/
@@ -177,50 +176,42 @@ inductive Derivable : Miustr → Prop
 
 example (h : Derivable "UMI") : Derivable "UMIU" := by
   change ("UMIU" : Miustr) with [U, M] ++ [I, U]
-  exact derivable.r1 h
+  exact Derivable.r1 h -- Rule 1
 
--- Rule 1
 example (h : Derivable "MIIU") : Derivable "MIIUIIU" := by
   change ("MIIUIIU" : Miustr) with M :: [I, I, U] ++ [I, I, U]
-  exact derivable.r2 h
+  exact Derivable.r2 h -- Rule 2
 
--- Rule 2
 example (h : Derivable "UIUMIIIMMM") : Derivable "UIUMUMMM" := by
   change ("UIUMUMMM" : Miustr) with [U, I, U, M] ++ U :: [M, M, M]
-  exact derivable.r3 h
+  exact Derivable.r3 h -- Rule 3
 
--- Rule 3
 example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
   change ("MIMIMIIM" : Miustr) with [M, I, M, I, M] ++ [I, I, M]
-  exact derivable.r4 h
+  exact Derivable.r4 h -- Rule 4
 
 /-!
 ### Derivability examples
 -/
 
 
--- Rule 4
 private theorem MIU_der : Derivable "MIU" := by
   change ("MIU" : Miustr) with [M] ++ [I, U]
-  apply derivable.r1
-  -- reduce to deriving "MI",
-  constructor
+  apply Derivable.r1 -- reduce to deriving "MI",
+  constructor -- which is the base of the inductive construction.
 
--- which is the base of the inductive construction.
 example : Derivable "MIUIU" := by
   change ("MIUIU" : Miustr) with M :: [I, U] ++ [I, U]
-  exact derivable.r2 MIU_der
+  exact Derivable.r2 MIU_der -- `"MIUIU"` can be derived as `"MIU"` can.
 
--- `"MIUIU"` can be derived as `"MIU"` can.
 example : Derivable "MUI" := by
-  have h₂ : derivable "MII" := by
+  have h₂ : Derivable "MII" := by
     change ("MII" : Miustr) with M :: [I] ++ [I]
-    exact derivable.r2 derivable.mk
-  have h₃ : derivable "MIIII" := by
+    exact Derivable.r2 Derivable.mk
+  have h₃ : Derivable "MIIII" := by
     change ("MIIII" : Miustr) with M :: [I, I] ++ [I, I]
-    exact derivable.r2 h₂
+    exact Derivable.r2 h₂
   change ("MUI" : Miustr) with [M] ++ U :: [I]
-  exact derivable.r3 h₃
+  exact Derivable.r3 h₃ -- We prove our main goal using rule 3
 
--- We prove our main goal using rule 3
 end Miu
