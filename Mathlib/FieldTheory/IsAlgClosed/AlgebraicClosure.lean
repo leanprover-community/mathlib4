@@ -311,10 +311,21 @@ instance algebraOfStep (n) : Algebra (Step k n) (AlgebraicClosure k) :=
   (ofStep k n).toAlgebra
 #align algebraic_closure.algebra_of_step AlgebraicClosure.algebraOfStep
 
-theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n :=
-  RingHom.ext fun x =>
-    show Ring.DirectLimit.of (Step k) (fun i j h => toStepOfLE k i j h) _ _ = _ by
-      convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
+theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
+  ext x
+  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  unfold ofStep
+  rw [RingHom.comp_apply]
+  dsimp [toStepOfLE]
+  rw [← hx]
+  change Ring.DirectLimit.of (Step k) (toStepOfLE' k) (n + 1) (_) =
+      Ring.DirectLimit.of (Step k) (toStepOfLE' k) n x
+  convert Ring.DirectLimit.of_f n.le_succ x
+--Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
+--in comparing `toStepOfLE'` with `toStepSucc`.
+  -- RingHom.ext fun x =>
+  --   show Ring.DirectLimit.of (Step k) (fun i j h => toStepOfLE k i j h) _ _ = _ by
+  --     convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
 #align algebraic_closure.of_step_succ AlgebraicClosure.ofStep_succ
 
 theorem exists_ofStep (z : AlgebraicClosure k) : ∃ n x, ofStep k n x = z :=
