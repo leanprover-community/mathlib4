@@ -8,7 +8,7 @@ Authors: Kevin Buzzard
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 2019 Q1
@@ -17,8 +17,8 @@ Determine all functions `f : ℤ → ℤ` such that, for all integers `a` and `b
 `f(2a) + 2f(b) = f(f(a+b))`.
 
 The desired theorem is that either:
-  -  `f = λ _, 0`
-  -  `∃ c, f = λ x, 2 * x + c`
+  - `f = fun _ ↦ 0`
+  - `∃ c, f = fun x ↦ 2 * x + c`
 
 Note that there is a much more compact proof of this fact in Isabelle/HOL
   - http://downthetypehole.de/paste/4YbGgqb4
@@ -29,10 +29,9 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
     (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c := by
   constructor; swap
   -- easy way: f(x)=0 and f(x)=2x+c work.
-  · rintro (rfl | ⟨c, rfl⟩) <;> intros <;> simp only [Pi.zero_apply] <;> ring
+  · rintro (rfl | ⟨c, rfl⟩) <;> intros <;> simp only [Pi.zero_apply]; ring
   -- hard way.
-  intro hf
-  -- functional equation
+  intro hf -- functional equation
   -- Using `h` for `(0, b)` and `(-1, b + 1)`, we get `f (b + 1) = f b + m`
   obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m := by
     refine' ⟨(f 0 - f (-2)) / 2, fun b => _⟩
@@ -47,11 +46,10 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
     · simp
     · simp [H, ihb, mul_add, add_assoc]
     · rw [← sub_eq_of_eq_add (H _)]
-      simp [ihb] <;> ring
+      simp [ihb]; ring
   -- Now use `hf 0 0` and `hf 0 1` to show that `m ∈ {0, 2}`
   have H3 : 2 * c = m * c := by simpa [H, mul_add] using hf 0 0
   obtain rfl | rfl : 2 = m ∨ m = 0 := by simpa [H, mul_add, H3] using hf 0 1
   · right; use c; ext b; simp [H, add_comm]
   · left; ext b; simpa [H, two_ne_zero] using H3
 #align imo2019_q1 imo2019_q1
-
