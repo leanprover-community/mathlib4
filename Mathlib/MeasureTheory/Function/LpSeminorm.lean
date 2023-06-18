@@ -220,7 +220,7 @@ theorem zero_memℒp : Memℒp (0 : α → E) p μ :=
     exact ENNReal.coe_lt_top⟩
 #align measure_theory.zero_mem_ℒp MeasureTheory.zero_memℒp
 
-theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := by convert zero_memℒp (E := E)
+theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := zero_memℒp (E := E)
 #align measure_theory.zero_mem_ℒp' MeasureTheory.zero_mem_ℒp'
 
 variable [MeasurableSpace α]

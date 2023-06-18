@@ -240,10 +240,10 @@ theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
   AEEqFun.coeFn_sub _ _
 #align measure_theory.Lp.coe_fn_sub MeasureTheory.Lp.coeFn_sub
 
-theorem mem_lp_const (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
+theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
   (memℒp_const c).snorm_mk_lt_top
-#align measure_theory.Lp.mem_Lp_const MeasureTheory.Lp.mem_lp_const
+#align measure_theory.Lp.mem_Lp_const MeasureTheory.Lp.const_mem_Lp
 
 instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (snorm f p μ)
 #align measure_theory.Lp.has_norm MeasureTheory.Lp.instNorm
@@ -467,19 +467,19 @@ variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜' E]
 
-theorem mem_Lp_const_smul (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
+theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_snorm_lt_top, snorm_congr_ae (AEEqFun.coeFn_smul _ _)]
   refine' (snorm_const_smul_le _ _).trans_lt _
   rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_lt_top_iff]
   exact Or.inl ⟨ENNReal.coe_lt_top, f.prop⟩
-#align measure_theory.Lp.mem_Lp_const_smul MeasureTheory.Lp.mem_Lp_const_smul
+#align measure_theory.Lp.mem_Lp_const_smul MeasureTheory.Lp.const_smul_mem_Lp
 
 variable (E p μ 𝕜)
 
 /-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
-  { Lp E p μ with smul_mem' := fun c f hf => by simpa using mem_Lp_const_smul c ⟨f, hf⟩ }
+  { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
 #align measure_theory.Lp.Lp_submodule MeasureTheory.Lp.LpSubmodule
 
 variable {E p μ 𝕜}
@@ -802,6 +802,36 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
 #align measure_theory.indicator_const_Lp_disjoint_union MeasureTheory.indicatorConstLp_disjoint_union
 
 end IndicatorConstLp
+
+section const
+
+variable (μ p)
+variable [IsFiniteMeasure μ] (c : E)
+
+/-- Constant function as an element of `MeasureTheory.Lp` for a finite measure. -/
+protected def Lp.const : Lp E p μ := ⟨AEEqFun.const α c, const_mem_Lp α μ c⟩
+
+lemma Lp.coeFn_const : Lp.const p μ c =ᵐ[μ] Function.const α c :=
+  AEEqFun.coeFn_const α c
+
+@[simp]
+lemma Lp.val_const : (Lp.const p μ c).1 = AEEqFun.const α c := rfl
+
+variable {μ p c}
+
+@[simp]
+lemma Memℒp.toLp_const (hc : Memℒp (Function.const α c) p μ := memℒp_const c) :
+  hc.toLp = Lp.const p μ c := rfl
+
+variable (μ p c)
+
+-- todo (after port): make it `simp`
+lemma indicatorConstLp_univ :
+    indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
+  rw [← Memℒp.toLp_const, indicatorConstLp]
+  simp only [Set.indicator_univ, Function.const]
+
+end const
 
 theorem Memℒp.norm_rpow_div {f : α → E} (hf : Memℒp f p μ) (q : ℝ≥0∞) :
     Memℒp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
