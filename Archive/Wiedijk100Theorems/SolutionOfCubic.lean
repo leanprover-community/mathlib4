@@ -55,9 +55,7 @@ variable (a b c d : K)
 variable {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
-  convert hω.is_root_cyclotomic (Nat.succ_pos _)
-  simp only [cyclotomic_prime, eval_geom_sum]
-  simp [Finset.sum_range_succ]
+  simpa [cyclotomic_prime, Finset.sum_range_succ] using hω.isRoot_cyclotomic (by decide)
 #align theorems_100.cube_root_of_unity_sum Theorems100.cube_root_of_unity_sum
 
 /-- The roots of a monic cubic whose quadratic term is zero and whose discriminant is nonzero. -/
@@ -75,10 +73,8 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
   have H := cube_root_of_unity_sum hω
   linear_combination
     hr + (-q + r + s ^ 3) * hs3 - (3 * x * s ^ 3 + (t * s) ^ 2 + t * s * p + p ^ 2) * ht +
-      (x ^ 2 * (s - t) + x * (-ω * (s ^ 2 + t ^ 2) + s * t * (3 + ω ^ 2 - ω)) -
-            (-(s ^ 3 - t ^ 3) * (ω - 1) + s ^ 2 * t * ω ^ 2 - s * t ^ 2 * ω ^ 2)) *
-          s ^ 3 *
-        H
+    (x ^ 2 * (s - t) + x * (-ω * (s ^ 2 + t ^ 2) + s * t * (3 + ω ^ 2 - ω)) -
+      (-(s ^ 3 - t ^ 3) * (ω - 1) + s ^ 2 * t * ω ^ 2 - s * t ^ 2 * ω ^ 2)) * s ^ 3 * H
 #align theorems_100.cubic_basic_eq_zero_iff Theorems100.cubic_basic_eq_zero_iff
 
 /-- Roots of a monic cubic whose discriminant is nonzero. -/
@@ -93,11 +89,9 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q := by
-    dsimp only [y]
     rw [hp, hq]
     field_simp [h9, h54]; ring
   rw [h₁, cubic_basic_eq_zero_iff hω hp_nonzero hr hs3 ht y]
-  dsimp only [y]
   simp_rw [eq_sub_iff_add_eq]
 #align theorems_100.cubic_monic_eq_zero_iff Theorems100.cubic_monic_eq_zero_iff
 
@@ -160,10 +154,9 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
         rw [hω.pow_eq_one, cube_root_of_unity_sum hω]; simp
       _ = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by ring
   rw [h₁, h₂, h₃, h₄ (x + b / (3 * a))]
-  ring_nf
+  ring_nf; trivial
 #align theorems_100.cubic_eq_zero_iff_of_p_eq_zero Theorems100.cubic_eq_zero_iff_of_p_eq_zero
 
 end Field
 
 end Theorems100
-
