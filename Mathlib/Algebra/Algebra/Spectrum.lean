@@ -432,6 +432,7 @@ end CommRing
 
 end AlgHom
 
+@[simp]
 theorem AlgEquiv.spectrum_eq {F R A B : Type _} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
     [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
