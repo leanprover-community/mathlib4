@@ -322,7 +322,7 @@ theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofSte
       Ring.DirectLimit.of (Step k) (toStepOfLE' k) n x
   convert Ring.DirectLimit.of_f n.le_succ x
 --Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
---in comparing `toStepOfLE'` with `toStepSucc`.
+--in comparing `toStepOfLE'` with `toStepSucc`. In the above, I made some things more explicit
   -- RingHom.ext fun x =>
   --   show Ring.DirectLimit.of (Step k) (fun i j h => toStepOfLE k i j h) _ _ = _ by
   --     convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
@@ -333,6 +333,8 @@ theorem exists_ofStep (z : AlgebraicClosure k) : ∃ n x, ofStep k n x = z :=
 #align algebraic_closure.exists_of_step AlgebraicClosure.exists_ofStep
 
 -- slow
+--Porting Note: Timed out at 800000
+set_option maxHeartbeats 900000
 theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AlgebraicClosure k, f.eval x = 0 := by
   have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
@@ -340,7 +342,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi :
   obtain ⟨n, p, rfl⟩ := this
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
-  obtain ⟨x, hx⟩ := to_step_succ.exists_root k hfm this
+  obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
   refine' ⟨ofStep k (n + 1) x, _⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #align algebraic_closure.exists_root AlgebraicClosure.exists_root
