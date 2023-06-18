@@ -359,10 +359,18 @@ theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
   rfl
 #align algebraic_closure.algebra_map_def AlgebraicClosure.algebraMap_def
 
+
 instance {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
-    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  IsScalarTower.of_algebraMap_eq fun x =>
-    RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
+    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
+  apply IsScalarTower.of_algebraMap_eq _
+  intro x
+  simp only [algebraMap_def]
+  rw [RingHom.comp_apply, RingHom.comp_apply]
+  exact RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
+  -- Porting Note: Original proof (without `by`) didn't work anymore, I think it couldn't figure
+  -- out `algebraMap_def`.
+  -- IsScalarTower.of_algebraMap_eq fun x =>
+  --   RingHom.congr_arg _ (IsScalarTower.algebraMap_apply R S k x : _)
 
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosure k :=
