@@ -15,6 +15,7 @@ import Archive.Imo.Imo2006Q5
 import Archive.Imo.Imo2008Q4
 import Archive.Imo.Imo2011Q3
 import Archive.Imo.Imo2011Q5
+import Archive.Imo.Imo2013Q1
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Wiedijk100Theorems.AreaOfACircle
@@ -22,3 +23,5 @@ import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
+import Archive.Wiedijk100Theorems.Partition
+import Archive.Wiedijk100Theorems.PerfectNumbers
