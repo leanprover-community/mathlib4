@@ -35,7 +35,7 @@ open scoped Classical
 
 namespace Theorems100
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+set_option maxHeartbeats 220000 in
 /-- **Erdős–Szekeres Theorem**: Given a sequence of more than `r * s` distinct values, there is an
 increasing sequence of length longer than `r` or a decreasing sequence of length longer than `s`.
 
@@ -67,32 +67,32 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   let ab : Fin n → ℕ × ℕ := by
     intro i
     apply
-      (max' ((inc_sequences_ending_in i).image card) (nonempty.image ⟨{i}, inc_i i⟩ _),
-        max' ((dec_sequences_ending_in i).image card) (nonempty.image ⟨{i}, dec_i i⟩ _))
+      (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
+        max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
   -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
   -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
   -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
   rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
-  · apply Or.imp _ _ hi
-    on_goal 1 => have : (ab i).1 ∈ _ := max'_mem _ _
-    on_goal 2 => have : (ab i).2 ∈ _ := max'_mem _ _
+  · refine Or.imp ?_ ?_ hi
+    on_goal 1 => have : (ab i).1 ∈ _ := by dsimp only; exact max'_mem _ _
+    on_goal 2 => have : (ab i).2 ∈ _ := by dsimp only; exact max'_mem _ _
     all_goals
       intro hi
-      rw [mem_image] at this 
+      rw [mem_image] at this
       obtain ⟨t, ht₁, ht₂⟩ := this
       refine' ⟨t, by rwa [ht₂], _⟩
-      rw [mem_filter] at ht₁ 
+      rw [mem_filter] at ht₁
       apply ht₁.2.2
   -- Show first that the pair of labels is unique.
-  have : injective ab := by
+  have : Injective ab := by
     apply injective_of_lt_imp_ne
     intro i j k q
     injection q with q₁ q₂
     -- We have two cases: `f i < f j` or `f j < f i`.
     -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 => apply ne_of_lt _ q₁; have : (ab i).1 ∈ _ := max'_mem _ _
-    on_goal 2 => apply ne_of_lt _ q₂; have : (ab i).2 ∈ _ := max'_mem _ _
+    on_goal 1 => apply ne_of_lt _ q₁; have : (ab i).1 ∈ _ := by dsimp only; exact max'_mem _ _
+    on_goal 2 => apply ne_of_lt _ q₂; have : (ab i).2 ∈ _ := by dsimp only; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -101,7 +101,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       -- In particular we take the subsequence `t` of length `a_i` which ends at `i`, by definition
       -- of `a_i`
       rcases this with ⟨t, ht₁, ht₂⟩
-      rw [mem_filter] at ht₁ 
+      rw [mem_filter] at ht₁
       -- Ensure `t` ends at `i`.
       have : t.max = i
       simp [ht₁.2.1]
@@ -112,9 +112,9 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         refine' ⟨_, _, _⟩
         · rw [mem_powerset]; apply subset_univ
         -- It ends at `j` since `i < j`.
-        · convert max_insert
+        · convert max_insert (a := j) (s := t)
           rw [ht₁.2.1, max_eq_left]
-          apply with_bot.coe_le_coe.mpr (le_of_lt ‹i < j›)
+          apply WithBot.coe_le_coe.mpr (le_of_lt ‹i < j›)
         -- To show it's increasing (i.e., `f` is monotone increasing on `t.insert j`), we do cases
         -- on what the possibilities could be - either in `t` or equals `j`.
         simp only [StrictMonoOn, StrictAntiOn, coe_insert, Set.mem_insert_iff, mem_coe]
@@ -122,7 +122,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
         · apply (irrefl _ ‹j < j›).elim
         · exfalso
-          apply not_le_of_lt (trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
+          apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
         · first
           | apply lt_of_le_of_lt _ ‹f i < f j›
           | apply lt_of_lt_of_le ‹f j < f i› _
@@ -138,15 +138,15 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
   -- Suppose all the labels are small.
   by_contra q
-  push_neg at q 
+  simp (config := { zeta := false, proj := false }) only [not_exists, not_or, Nat.not_lt] at q
   -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
   let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
   -- which we prove here.
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
-      Prod.mk.inj_iff]
+    simp (config := { zeta := false, proj := false }) only [mem_image, exists_prop, mem_range,
+      mem_univ, mem_product, true_and_iff, Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
     -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is a increasing and
@@ -158,17 +158,17 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
           refine' ⟨{i}, by solve_by_elim, card_singleton i⟩
     refine' ⟨_, _⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    · refine' ⟨(ab i).1 - 1, _, Nat.succ_pred_eq_of_pos z.1⟩
-      rw [tsub_lt_iff_right z.1]
+    · refine' ⟨Nat.pred (ab i).1, _, Nat.succ_pred_eq_of_pos z.1⟩
+      rw [Nat.pred_eq_sub_one, tsub_lt_iff_right z.1]
       apply Nat.lt_succ_of_le q.1
-    · refine' ⟨(ab i).2 - 1, _, Nat.succ_pred_eq_of_pos z.2⟩
-      rw [tsub_lt_iff_right z.2]
+    · refine' ⟨Nat.pred (ab i).2, _, Nat.succ_pred_eq_of_pos z.2⟩
+      rw [Nat.pred_eq_sub_one, tsub_lt_iff_right z.2]
       apply Nat.lt_succ_of_le q.2
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [Nat.succ_injective, card_image_of_injective, ‹injective ab›] using card_le_of_subset this
+  simpa (config := { zeta := false }) [Nat.succ_injective, card_image_of_injective, ‹Injective ab›]
+    using card_le_of_subset this
 #align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100
-
