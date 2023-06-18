@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Bitraversable.Lemmas
-import Mathbin.Control.Traversable.Lemmas
+import Mathlib.Control.Bitraversable.Lemmas
+import Mathlib.Control.Traversable.Lemmas
 
 /-!
 # Bitraversable instances
@@ -100,8 +100,7 @@ instance (priority := 10) Bitraversable.traversable {α} : Traversable (t α)
 #align bitraversable.traversable Bitraversable.traversable
 
 instance (priority := 10) Bitraversable.isLawfulTraversable [IsLawfulBitraversable t] {α} :
-    IsLawfulTraversable (t α) :=
-  by
+    IsLawfulTraversable (t α) := by
   constructor <;> intros <;> simp [traverse, comp_tsnd, functor_norm]
   · rfl
   · simp [tsnd_eq_snd_id]; rfl
@@ -127,8 +126,7 @@ def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m β) (f'
 instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse t _ F G _ _
 
 instance [IsLawfulTraversable F] [IsLawfulTraversable G] [IsLawfulBitraversable t] :
-    IsLawfulBitraversable (bicompl t F G) :=
-  by
+    IsLawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompl.bitraverse, bimap, traverse_id, bitraverse_id_id, comp_bitraverse,
       functor_norm]
