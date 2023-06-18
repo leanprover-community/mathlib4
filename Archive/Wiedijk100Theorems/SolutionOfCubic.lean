@@ -154,7 +154,8 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
         rw [hω.pow_eq_one, cube_root_of_unity_sum hω]; simp
       _ = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by ring
   rw [h₁, h₂, h₃, h₄ (x + b / (3 * a))]
-  ring_nf; trivial
+  ring_nf
+  trivial -- Porting note: Added `trivial`, because `ring_nf` reduced the goal to `True`
 #align theorems_100.cubic_eq_zero_iff_of_p_eq_zero Theorems100.cubic_eq_zero_iff_of_p_eq_zero
 
 end Field
