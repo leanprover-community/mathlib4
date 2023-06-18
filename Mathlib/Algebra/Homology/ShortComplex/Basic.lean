@@ -208,7 +208,8 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
 /-- A constructor for isomorphisms in the category `ShortComplex C`-/
 @[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
-    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom) (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) :
+    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by aesop_cat)
+    (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom := by aesop_cat) :
     S₁ ≅ S₂ where
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
   inv := homMk e₁.inv e₂.inv e₃.inv
@@ -218,7 +219,7 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
           ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
-  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃) (by aesop_cat) (by aesop_cat))
+  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃))
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]

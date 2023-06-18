@@ -291,7 +291,7 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
   toFun := (ue.denseInducing dr).extend f
   map_one' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 1
-    exacts[i.map_one.symm, f.map_one.symm]
+    exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]

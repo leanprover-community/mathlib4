@@ -30,7 +30,7 @@ require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 
-require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.10"
+require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.11"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
@@ -41,3 +41,9 @@ lean_exe cache where
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
+
+lean_lib Archive where
+  roots := #[`Archive]
+
+lean_lib Counterexamples where
+  roots := #[`Counterexamples]

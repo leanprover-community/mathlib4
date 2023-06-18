@@ -57,7 +57,7 @@ see their statements.
 * `le_of_tendsto_of_tendsto` : if `f` converges to `a`, `g` converges to `b`, and eventually
   `f x ≤ g x`, then `a ≤ b`
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
-  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a); we also provide primed versions
+  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
 
 ### Min, max, `sSup` and `sInf`
@@ -114,7 +114,7 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
 namespace Subtype
 
--- todo: add `OrderEmbedding.orderClosedtopology`
+-- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prod_map continuous_subtype_val
@@ -1072,7 +1072,7 @@ theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
 
-/-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
+/-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=

@@ -265,7 +265,7 @@ theorem ofFnRec_ofFn {C : List α → Sort _} (h : ∀ (n) (f : Fin n → α), C
 #align list.of_fn_rec_of_fn List.ofFnRec_ofFn
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
-    (∃ l : List α, P l) ↔ ∃ (n : _)(f : Fin n → α), P (List.ofFn f) :=
+    (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=
   equivSigmaTuple.symm.surjective.exists.trans Sigma.exists
 #align list.exists_iff_exists_tuple List.exists_iff_exists_tuple
 

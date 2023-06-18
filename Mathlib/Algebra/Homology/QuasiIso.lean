@@ -73,13 +73,13 @@ section
 variable {W : Type _} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
   [HasZeroObject W] [HasImageMaps W]
 
-/-- An homotopy equivalence is a quasi-isomorphism. -/
+/-- A homotopy equivalence is a quasi-isomorphism. -/
 theorem toQuasiIso {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso e.hom :=
   ⟨fun i => by
     refine' ⟨⟨(homologyFunctor W c i).map e.inv, _⟩⟩
     simp only [← Functor.map_comp, ← (homologyFunctor W c i).map_id]
     constructor <;> apply homology_map_eq_of_homotopy
-    exacts[e.homotopyHomInvId, e.homotopyInvHomId]⟩
+    exacts [e.homotopyHomInvId, e.homotopyInvHomId]⟩
 #align homotopy_equiv.to_quasi_iso HomotopyEquiv.toQuasiIso
 
 theorem toQuasiIso_inv {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) (i : ι) :

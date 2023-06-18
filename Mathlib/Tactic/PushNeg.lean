@@ -55,6 +55,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
     catch _ => return none
   let e_whnf ← whnfR e
   let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
+  let ex := (← instantiateMVars ex).cleanupAnnotations
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
       return mkSimpStep e (← mkAppM ``not_not_eq #[e])
@@ -148,7 +149,7 @@ def pushNegTarget : TacticM Unit := withMainContext do
   replaceMainGoal [← applySimpResultToTarget goal tgt (← pushNegCore tgt)]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
-def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
+def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type

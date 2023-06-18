@@ -378,7 +378,6 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   mapId a := Iso.refl _
   mapComp f g := Iso.refl _
   map₂ := Quot.lift (liftHom₂ F) fun η θ H => liftHom₂_congr F H
-  map₂_id := by aesop_cat
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by

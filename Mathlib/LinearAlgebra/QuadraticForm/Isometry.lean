@@ -66,7 +66,7 @@ instance : EquivLike (Q₁.Isometry Q₂) M₁ M₂ :=
     inv := fun f => ⇑(f : M₁ ≃ₗ[R] M₂).symm,
     left_inv := fun f => (f : M₁ ≃ₗ[R] M₂).left_inv
     right_inv := fun f => (f : M₁ ≃ₗ[R] M₂).right_inv
-    coe_injective' := fun f g => by cases f; cases g; simp (config:={contextual:=true}) }
+    coe_injective' := fun f g => by cases f; cases g; simp (config := {contextual := true}) }
 
 @[simp]
 theorem coe_toLinearEquiv (f : Q₁.Isometry Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=

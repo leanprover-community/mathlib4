@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
+! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -18,7 +18,7 @@ import Mathlib.Tactic.GCongr.Core
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
 i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
-and of the extended distance `edist` in a `EMetricSpace`.
+and of the extended distance `edist` in an `EMetricSpace`.
 In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
 and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
 
@@ -33,8 +33,8 @@ and prove basic properties of these operations, order, and conversions to/from `
 
   - `a + b` is defined so that `↑p + ↑q = ↑(p + q)` for `(p q : ℝ≥0)` and `a + ∞ = ∞ + a = ∞`;
 
-  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and `a *
-    ∞ = ∞ * a = ∞` for `a ≠ 0`;
+  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and
+    `a * ∞ = ∞ * a = ∞` for `a ≠ 0`;
 
   - `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
     `↑p - ↑q = ↑(p - q)`, `∞ - ↑p = ∞`, `↑p - ∞ = ∞ - ∞ = 0`; note that there is no negation, only
@@ -165,7 +165,7 @@ protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
-/-- `of_real x` returns `x` if it is nonnegative, `0` otherwise. -/
+/-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
 protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 #align ennreal.of_real ENNReal.ofReal
 
@@ -272,6 +272,14 @@ theorem toReal_eq_zero_iff (x : ℝ≥0∞) : x.toReal = 0 ↔ x = 0 ∨ x = ∞
   simp [ENNReal.toReal, toNNReal_eq_zero_iff]
 #align ennreal.to_real_eq_zero_iff ENNReal.toReal_eq_zero_iff
 
+theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toNNReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_nnreal_ne_zero ENNReal.toNNReal_ne_zero
+
+theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_real_ne_zero ENNReal.toReal_ne_zero
+
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untop'_eq_iff.trans <| by simp
 #align ennreal.to_nnreal_eq_one_iff ENNReal.toNNReal_eq_one_iff
@@ -279,6 +287,14 @@ theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
 theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
   rw [ENNReal.toReal, NNReal.coe_eq_one, ENNReal.toNNReal_eq_one_iff]
 #align ennreal.to_real_eq_one_iff ENNReal.toReal_eq_one_iff
+
+theorem toNNReal_ne_one : a.toNNReal ≠ 1 ↔ a ≠ 1 :=
+  a.toNNReal_eq_one_iff.not
+#align ennreal.to_nnreal_ne_one ENNReal.toNNReal_ne_one
+
+theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
+  a.toReal_eq_one_iff.not
+#align ennreal.to_real_ne_one ENNReal.toReal_ne_one
 
 @[simp] theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 #align ennreal.coe_ne_top ENNReal.coe_ne_top
@@ -1327,7 +1343,7 @@ instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 instance : DivInvMonoid ℝ≥0∞ where
 
-theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
+protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 #align ennreal.div_eq_inv_mul ENNReal.div_eq_inv_mul
 
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
@@ -1520,7 +1536,7 @@ protected theorem inv_lt_one : a⁻¹ < 1 ↔ 1 < a := by rw [inv_lt_iff_inv_lt,
 protected theorem one_lt_inv : 1 < a⁻¹ ↔ a < 1 := by rw [lt_inv_iff_lt_inv, inv_one]
 #align ennreal.one_lt_inv ENNReal.one_lt_inv
 
-/-- The inverse map `λ x, x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
+/-- The inverse map `fun x ↦ x⁻¹` is an order isomorphism between `ℝ≥0∞` and its `OrderDual` -/
 @[simps! apply]
 def _root_.OrderIso.invENNReal : ℝ≥0∞ ≃o ℝ≥0∞ᵒᵈ where
   map_rel_iff' := ENNReal.inv_le_inv
@@ -1624,7 +1640,7 @@ theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
-  exacts[or_not_of_imp h₁, not_or_of_imp h₂]
+  exacts [or_not_of_imp h₁, not_or_of_imp h₂]
 #align ennreal.inv_le_iff_le_mul ENNReal.inv_le_iff_le_mul
 
 @[simp 900]
@@ -1752,7 +1768,7 @@ protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
   rw [coe_ne_zero] at hz
   rw [← coe_two, ← coe_div, coe_lt_coe]
-  exacts[NNReal.half_lt_self hz, two_ne_zero' _]
+  exacts [NNReal.half_lt_self hz, two_ne_zero' _]
 #align ennreal.half_lt_self ENNReal.half_lt_self
 
 protected theorem half_le_self : a / 2 ≤ a :=
@@ -2366,13 +2382,14 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
   · -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164
     erw [NNReal.iSup_of_not_bddAbove h, (WithTop.iSup_coe_eq_top f).mpr h, top_toNNReal]
 #align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- porting note: `← sSnf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
+  -- porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
   -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 #align ennreal.to_nnreal_Sup ENNReal.toNNReal_sSup
@@ -2549,19 +2566,19 @@ end Set
 --       fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ≥0∞)` for `r : ℝ≥0`"
 -- #align tactic.positivity_coe_nnreal_ennreal tactic.positivity_coe_nnreal_ennreal
 
--- private theorem ennreal_of_real_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
+-- private theorem ennreal_ofReal_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
 --   ENNReal.ofReal_pos.2
--- #align tactic.ennreal_of_real_pos tactic.ennreal_of_real_pos
+-- #align tactic.ennreal_ofReal_pos tactic.ennreal_ofReal_pos
 
 -- /-- Extension for the `positivity` tactic: `ENNReal.ofReal` is positive if its input is. -/
 -- @[positivity]
--- unsafe def positivity_ennreal_of_real : expr → tactic strictness
+-- unsafe def positivity_ennreal_ofReal : expr → tactic strictness
 --   | q(ENNReal.ofReal $(r)) => do
 --     let positive p ← core r
---     positive <$> mk_app `` ennreal_of_real_pos [p]
+--     positive <$> mk_app `` ennreal_ofReal_pos [p]
 --   |-- This case is handled by `tactic.positivity_canon`
 --     e =>
 --     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `ENNReal.ofReal r`"
--- #align tactic.positivity_ennreal_of_real tactic.positivity_ennreal_of_real
+-- #align tactic.positivity_ennreal_ofReal tactic.positivity_ennreal_ofReal
 
 -- end Tactic
