@@ -55,6 +55,16 @@ variable {C}
 
 namespace Presheaf
 
+-- Porting note: added an `ext` lemma,
+-- since `NatTrans.ext` can not see through the definition of `Presheaf`.
+@[ext]
+lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
+    f = g := by
+  apply NatTrans.ext
+  ext U
+  induction U with | _ U => ?_
+  apply w
+
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
   CategoryTheory.ConcreteCategory.funLike
 
@@ -386,9 +396,8 @@ set_option linter.uppercaseLean3 false in
 theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros a b f
-    -- porting note : `ext` does not see this
-    refine NatTrans.ext _ _ (funext fun U => ?_)
-    . erw [NatTrans.congr f (Opens.op_map_id_obj U)]
+    ext U
+    . erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
       simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
         Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
