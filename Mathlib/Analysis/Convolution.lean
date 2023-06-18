@@ -124,7 +124,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * C) t := by
   -- porting note: had to add `f := _`
   refine' le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => _) (fun t ht => _) t
-  · apply_rules [L.le_op_norm₂_of_le₃, le_rfl]
+  · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
       refine' ⟨_, _, Set.neg_mem_neg.mpr (subset_closure hxt), hx, _⟩
@@ -234,7 +234,7 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
       ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t
   · refine' eventually_of_forall _
     refine' le_indicator (fun t ht => _) fun t ht => _
-    · apply_rules [L.le_op_norm₂_of_le₃, le_rfl]
+    · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
       refine' (le_ciSup_set hbg <| mem_preimage.mpr _)
       rwa [neg_sub, sub_add_cancel]
     · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
@@ -747,7 +747,7 @@ theorem BddAbove.continuous_convolution_right_of_integrable [SecondCountableTopo
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
   have : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t : G ∂μ, ‖L (f t) (g (x - t))‖ ≤ ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖ := by
     refine' eventually_of_forall fun x => eventually_of_forall fun t => _
-    apply_rules [L.le_op_norm₂_of_le₃, le_rfl, le_ciSup hbg (x - t)]
+    apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
   refine' continuousAt_of_dominated _ this _ _
   · exact eventually_of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
@@ -1155,7 +1155,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     · refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
         ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
       simp only [← mul_assoc ‖L₄‖]
-      apply_rules [ContinuousLinearMap.le_op_norm₂_of_le₃, le_rfl]
+      apply_rules [ContinuousLinearMap.le_of_op_norm₂_le_of_le, le_rfl]
     exact integral_nonneg fun x => norm_nonneg _
 #align convolution_assoc convolution_assoc
 

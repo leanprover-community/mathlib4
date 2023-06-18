@@ -616,7 +616,7 @@ theorem le_op_norm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_op_norm₂
 
 -- porting note: new theorem
-theorem le_op_norm₂_of_le₃ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
+theorem le_of_op_norm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
     {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c)  :
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_op_norm_le_of_le (f.le_of_op_norm_le_of_le hf hx) hy
