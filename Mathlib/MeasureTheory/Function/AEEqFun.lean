@@ -206,6 +206,10 @@ theorem induction_on₃ {α' β' : Type _} [MeasurableSpace α'] [TopologicalSpa
   induction_on f fun f hf => induction_on₂ f' f'' <| H f hf
 #align measure_theory.ae_eq_fun.induction_on₃ MeasureTheory.AEEqFun.induction_on₃
 
+/-!
+### Composition of an a.e. equal function with a (quasi) measure preserving function
+-/
+
 section compQuasiMeasurePreserving
 
 variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
