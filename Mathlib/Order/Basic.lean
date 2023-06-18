@@ -1186,6 +1186,7 @@ type synonym `α ×ₗ β = α × β`.
 
 namespace Prod
 
+-- Porting note: new instance
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
