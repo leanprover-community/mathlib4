@@ -765,6 +765,15 @@ theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
   · exact norm_indicatorConstLp hp_pos hp_top
 #align measure_theory.norm_indicator_const_Lp' MeasureTheory.norm_indicatorConstLp'
 
+theorem norm_indicatorConstLp_le :
+    ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * (μ s).toReal ^ (1 / p.toReal) := by
+  rw [indicatorConstLp, Lp.norm_toLp]
+  refine toReal_le_of_le_ofReal (by positivity) ?_
+  refine (snorm_indicator_const_le _ _).trans_eq ?_
+  rw [← coe_nnnorm, ENNReal.ofReal_mul (NNReal.coe_nonneg _), ENNReal.ofReal_coe_nnreal,
+    ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
+  exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
+
 @[simp]
 theorem indicatorConst_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
@@ -837,16 +846,8 @@ theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
   rw [ENNReal.toReal_mul, ENNReal.coe_toReal, ← ENNReal.toReal_rpow, coe_nnnorm]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toReal ^ (1 / p.toReal) := by
-  by_cases h0 : p = 0 ∨ μ = 0
-  · calc
-      ‖Lp.const p μ c‖ = 0 := by rcases h0 with rfl | rfl <;> simp
-      _ ≤ ‖c‖ * (μ Set.univ).toReal ^ (1 / p.toReal) := by
-        apply mul_nonneg <;> try positivity
-        apply Real.rpow_nonneg_of_nonneg <;> try positivity
-        
-        -- mul_nonneg (norm_nonneg _) (Real.rpow_nonneg_of_nonneg _ _)
-  · push_neg at h0
-    exact (Lp.norm_const h0.1 h0.2).le
+  rw [← indicatorConstLp_univ]
+  exact norm_indicatorConstLp_le
 
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
 @[simps] protected def Lp.constₗ (𝕜 : Type _) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] :
@@ -857,9 +858,16 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * (μ Set.univ).toR
 
 variable (𝕜 : Type _) [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-@[simps] protected def Lp.constL [Fact (1 ≤ p)] : E →L[𝕜] Lp E p μ :=
-  (Lp.constₗ p μ 𝕜).mkContinuous (μ Set.univ).toReal <| fun c ↦ by
-    exact _
+@[simps! apply]
+protected def Lp.constL [Fact (1 ≤ p)] : E →L[𝕜] Lp E p μ :=
+  (Lp.constₗ p μ 𝕜).mkContinuous ((μ Set.univ).toReal ^ (1 / p.toReal)) <| fun _ ↦
+    (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
+
+/- TODO: next theorem fails to generate a `Norm` instance
+theorem Lp.norm_constL_le [Fact (1 ≤ p)] :
+    ‖(Lp.constL p μ 𝕜 : E →L[𝕜] Lp E p μ)‖ ≤ (μ Set.univ).toReal ^ (1 / p.toReal) :=
+  LinearMap.mkContinuous_norm_le _
+-/
 
 end const
 
