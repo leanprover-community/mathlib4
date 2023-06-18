@@ -26,7 +26,7 @@ of a set satisfying it.
 -/
 
 
-namespace imo1962_q1
+namespace Imo1962Q1
 
 open Nat
 
@@ -45,14 +45,14 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 
 theorem without_digits {n : ℕ} (h1 : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
-  cases n
-  · have h2 : ¬problem_predicate 0 := by norm_num [problem_predicate]
+  cases' n with n
+  · have h2 : ¬ProblemPredicate 0 := by rw [ProblemPredicate]; norm_num
     contradiction
-  · rw [problem_predicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
-      List.concat_eq_append'] at h1 
+  · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
+      List.concat_eq_append] at h1
     constructor
     · rw [← h1.left, div_add_mod (n + 1) 10]
-    · rw [← h1.right, of_digits_append, of_digits_digits, of_digits_singleton, add_comm, mul_comm]
+    · rw [← h1.right, ofDigits_append, ofDigits_digits, ofDigits_singleton, add_comm, mul_comm]
 #align imo1962_q1.without_digits Imo1962Q1.without_digits
 
 /-!
@@ -134,13 +134,13 @@ Now we combine these cases to show that 153846 is the smallest solution.
 
 
 theorem satisfied_by_153846 : ProblemPredicate 153846 := by
-  norm_num [problem_predicate, digits_def', of_digits]
+  dsimp [ProblemPredicate, digits_def', ofDigits]; norm_num
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
 theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by
   cases' without_digits h1 with c h2
   have h3 : (digits 10 c).length < 6 ∨ (digits 10 c).length ≥ 6 := by apply lt_or_ge
-  cases h3
+  cases' h3 with h3 h3
   case inr => exact case_more_digits h3 h2
   case inl =>
     interval_cases h : (digits 10 c).length
@@ -151,15 +151,14 @@ theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 
     · exfalso; exact case_4_digit h h2
     · have h4 : c = 15384 := case_5_digit h h2
       have h5 : n = 10 * 15384 + 6 := h4 ▸ h2.left
-      norm_num at h5 
+      norm_num at h5
       exact h5.ge
 #align imo1962_q1.no_smaller_solutions Imo1962Q1.no_smaller_solutions
 
-end imo1962_q1
+end Imo1962Q1
 
-open imo1962_q1
+open Imo1962Q1
 
 theorem imo1962_q1 : IsLeast {n | ProblemPredicate n} 153846 :=
   ⟨satisfied_by_153846, no_smaller_solutions⟩
 #align imo1962_q1 imo1962_q1
-
