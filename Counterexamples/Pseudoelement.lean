@@ -8,8 +8,8 @@ Authors: Riccardo Brasca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Abelian.Pseudoelements
-import Mathbin.Algebra.Category.Module.Biproducts
+import Mathlib.CategoryTheory.Abelian.Pseudoelements
+import Mathlib.Algebra.Category.Module.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
@@ -53,8 +53,7 @@ def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
 #align counterexample.y Counterexample.y
 
 /-- `biprod.fst ≫ x` is pseudoequal to `biprod.fst y`. -/
-theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) :=
-  by
+theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) := by
   refine' ⟨of ℤ ℚ, of_hom id, of_hom id, category_struct.id.epi (of ℤ ℚ), _, _⟩
   · exact (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(a : ℚ), by simp⟩
   · dsimp [x, y]
@@ -62,8 +61,7 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
 #align counterexample.fst_x_pseudo_eq_fst_y Counterexample.fst_x_pseudo_eq_fst_y
 
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
-theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) :=
-  by
+theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
   refine' ⟨of ℤ ℚ, of_hom id, 2 • of_hom id, category_struct.id.epi (of ℤ ℚ), _, _⟩
   · refine' (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(a / 2 : ℚ), _⟩
     simp only [two_smul, add_apply, of_hom_apply, id_coe, id.def]
@@ -73,8 +71,7 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
 #align counterexample.snd_x_pseudo_eq_snd_y Counterexample.snd_x_pseudo_eq_snd_y
 
 /-- `x` is not pseudoequal to `y`. -/
-theorem x_not_pseudo_eq : ¬PseudoEqual _ x y :=
-  by
+theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   intro h
   replace h := Module.eq_range_of_pseudoequal h
   dsimp [x, y] at h 
