@@ -31,7 +31,8 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   -- easy way: f(x)=0 and f(x)=2x+c work.
   · rintro (rfl | ⟨c, rfl⟩) <;> intros <;> simp only [Pi.zero_apply]; ring
   -- hard way.
-  intro hf -- functional equation
+  intro hf
+  -- functional equation
   -- Using `h` for `(0, b)` and `(-1, b + 1)`, we get `f (b + 1) = f b + m`
   obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m := by
     refine' ⟨(f 0 - f (-2)) / 2, fun b => _⟩
