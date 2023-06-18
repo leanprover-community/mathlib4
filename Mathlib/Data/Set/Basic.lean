@@ -1583,9 +1583,10 @@ lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint 
 #align set.disjoint_univ Set.disjoint_univ
 
 lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
+#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
+
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 #align set.disjoint_sdiff_right Set.disjoint_sdiff_right
-#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
