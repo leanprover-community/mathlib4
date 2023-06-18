@@ -1,3 +1,4 @@
+import Archive.Examples.PropEncodable
 import Archive.Imo.Imo1960Q1
 import Archive.Imo.Imo1962Q4
 import Archive.Imo.Imo1964Q1
