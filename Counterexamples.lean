@@ -1,3 +1,4 @@
+import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 import Counterexamples.CharPZeroNeCharZero
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
@@ -6,3 +7,4 @@ import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
+import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
