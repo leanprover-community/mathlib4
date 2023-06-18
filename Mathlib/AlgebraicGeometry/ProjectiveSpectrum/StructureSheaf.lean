@@ -8,10 +8,10 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.ProjectiveSpectrum.Topology
-import Mathbin.Topology.Sheaves.LocalPredicate
-import Mathbin.RingTheory.GradedAlgebra.HomogeneousLocalization
-import Mathbin.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+import Mathlib.Topology.Sheaves.LocalPredicate
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 
 /-!
 # The structure sheaf on `projective_spectrum 𝒜`.
@@ -85,8 +85,7 @@ variable (𝒜)
 The predicate `is_fraction` is "prelocal", in the sense that if it holds on `U` it holds on any open
 subset `V` of `U`.
 -/
-def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x
-    where
+def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
   pred U f := IsFraction f
   res := by rintro V U i f ⟨j, r, s, w⟩ <;> exact ⟨j, r, s, fun y => w (i y)⟩
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_fraction_prelocal AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isFractionPrelocal
@@ -116,8 +115,7 @@ theorem oneMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
 
 theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : unop U, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
-    (isLocallyFraction 𝒜).pred (a + b) := fun x =>
-  by
+    (isLocallyFraction 𝒜).pred (a + b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, wb⟩
   refine'
@@ -138,8 +136,7 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.add_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.addMem'
 
 theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : unop U, at x.1)
-    (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x =>
-  by
+    (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, w⟩
   choose nin hy using w
   refine' ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, fun y => ⟨nin y, _⟩⟩
@@ -149,8 +146,7 @@ theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : u
 
 theorem mulMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x : unop U, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) (hb : (isLocallyFraction 𝒜).pred b) :
-    (isLocallyFraction 𝒜).pred (a * b) := fun x =>
-  by
+    (isLocallyFraction 𝒜).pred (a * b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, wb⟩
   refine'
@@ -204,8 +200,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
 structure presheaf.-/
 @[simps]
-def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜)
-    where
+def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
   obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
   map U V i :=
     { toFun := (structureSheafInType 𝒜).1.map i
@@ -251,8 +246,7 @@ theorem res_apply (U V : Opens (ProjectiveSpectrum.top 𝒜)) (i : V ⟶ U)
 #align algebraic_geometry.res_apply AlgebraicGeometry.res_apply
 
 /-- `Proj` of a graded ring as a `SheafedSpace`-/
-def Proj.toSheafedSpace : SheafedSpace CommRingCat
-    where
+def Proj.toSheafedSpace : SheafedSpace CommRingCat where
   carrier := TopCat.of (ProjectiveSpectrum 𝒜)
   Presheaf := (Proj.structureSheaf 𝒜).1
   IsSheaf := (Proj.structureSheaf 𝒜).2
@@ -262,8 +256,7 @@ def Proj.toSheafedSpace : SheafedSpace CommRingCat
 implemented as a subtype of dependent functions to localizations at homogeneous prime ideals, and
 evaluates the section on the point corresponding to a given homogeneous prime ideal. -/
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
-    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x)
-    where
+    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) where
   toFun s := (s.1 ⟨x, hx⟩ : _)
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -338,8 +331,7 @@ and homogeneous localization at `x` for any point `x` in `Proj`.-/
 def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).Presheaf.stalk x ≃+* CommRingCat.of (at x) :=
   RingEquiv.ofBijective (stalkToFiberRingHom _ x)
-    ⟨fun z1 z2 eq1 =>
-      by
+    ⟨fun z1 z2 eq1 => by
       obtain ⟨u1, memu1, s1, rfl⟩ := (Proj.structure_sheaf 𝒜).Presheaf.germ_exist x z1
       obtain ⟨u2, memu2, s2, rfl⟩ := (Proj.structure_sheaf 𝒜).Presheaf.germ_exist x z2
       obtain ⟨v1, memv1, i1, ⟨j1, ⟨a1, a1_mem⟩, ⟨b1, b1_mem⟩, hs1⟩⟩ := s1.2 ⟨x, memu1⟩
@@ -371,8 +363,7 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
               ⟨b2,
                 show b2 ∉ y.asHomogeneousIdeal by
                   rw [← ProjectiveSpectrum.mem_basicOpen] <;>
-                    exact le_of_hom (opens.inf_le_left _ _ ≫ opens.inf_le_right _ _) hy⟩ :=
-        by
+                    exact le_of_hom (opens.inf_le_left _ _ ≫ opens.inf_le_right _ _) hy⟩ := by
         intro y hy
         rw [Localization.mk_eq_mk', IsLocalization.eq]
         exact
@@ -410,8 +401,7 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
                 y.2⟩,
             le_of_hom (opens.inf_le_left _ _ ≫ opens.inf_le_left _ _ ≫ opens.inf_le_right _ _) y.2⟩,
       Function.surjective_iff_hasRightInverse.mpr
-        ⟨homogeneousLocalizationToStalk 𝒜 x, fun f =>
-          by
+        ⟨homogeneousLocalizationToStalk 𝒜 x, fun f => by
           rw [homogeneous_localization_to_stalk]
           erw [stalk_to_fiber_ring_hom_germ 𝒜 (ProjectiveSpectrum.basicOpen 𝒜 f.denom) ⟨x, _⟩
               (section_in_basic_open _ x f)]
