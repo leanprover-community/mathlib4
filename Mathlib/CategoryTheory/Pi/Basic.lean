@@ -57,11 +57,6 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
   rfl
 #align category_theory.pi.comp_apply CategoryTheory.Pi.comp_apply
 
--- Porting note: need to add an additional `ext` lemma.
-@[ext]
-lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
-  funext (w ·)
-
 /--
 The evaluation functor at `i : I`, sending an `I`-indexed family of objects to the object over `i`.
 -/
