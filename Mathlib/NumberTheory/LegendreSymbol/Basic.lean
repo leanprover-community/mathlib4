@@ -252,8 +252,8 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
   have ha : (a : ZMod p) ≠ 0 := by
     intro hf
     rw [(eq_zero_iff p a).mpr hf] at h
-    -- porting note `zero_ne_neg_of_ne` not ported? but no noalign? fixed by `tauto`
-    tauto
+    -- porting note: `zero_ne_neg_of_ne` not ported. Fixed by using `linarith` instead
+    linarith
   by_contra hf
   cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
