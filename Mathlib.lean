@@ -1186,6 +1186,7 @@ import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Control.LawfulFix
 import Mathlib.Control.Monad.Basic
+import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
@@ -1220,6 +1221,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
+import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Dfinsupp.Interval
@@ -1492,6 +1494,7 @@ import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Order.Basic
@@ -2443,7 +2446,9 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.ProbabilityMassFunction.Uniform
+import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Filtration
+import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
