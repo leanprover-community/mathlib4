@@ -97,11 +97,11 @@ theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
   · refine' (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono _ _
-    · convert le_iSup₂ i hi.1; rfl
-    · convert le_iSup₂ i hj.1; rfl
+    · convert le_iSup₂ (α := α) i hi.1; rfl
+    · convert le_iSup₂ (α := α) i hj.1; rfl
   · refine' (hs hi.1 hj.1 hij).mono _ _
-    · convert le_iSup₂ i' hi.2; rfl
-    · convert le_iSup₂ j' hj.2; rfl
+    · convert le_iSup₂ (α := α) i' hi.2; rfl
+    · convert le_iSup₂ (α := α) j' hj.2; rfl
 #align set.pairwise_disjoint.prod_left Set.PairwiseDisjoint.prod_left
 
 end CompleteLattice
