@@ -267,7 +267,7 @@ private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
     ext1 x
     rw [RingHom.comp_apply]
-    simp [toStepOfLE]
+    simp only [toStepOfLE, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change _ = (_ ∘ _) x
     rw [toStepOfLE'.succ k 0 n h]
 
