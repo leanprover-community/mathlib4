@@ -261,24 +261,40 @@ instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
+--Porting Note: Added to make `Step.isIntegral` faster
+private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
+    toStepOfLE k 0 (n + 1) (h.trans n.le_succ) =
+    (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
+    ext1 x
+    rw [RingHom.comp_apply]
+    simp [toStepOfLE]
+    change _ = (_ ∘ _) x
+    rw [toStepOfLE'.succ k 0 n h]
+
+--Porting Note: Can probably still be optimized -
+--Only the last `convert h` times out with 500000 Heartbeats
+set_option maxHeartbeats 700000
 theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
   induction' n with a h
   · intro z
     exact isIntegral_algebraMap
-  · change RingHom.IsIntegral _
-    rw [IsScalarTower.algebraMap_eq k (Step k a) (Step k (a + 1))]
-    have H1 := RingHom.algebraMap_toAlgebra (toStepOfLE k 0 a a.zero_le)
-    have H2 := RingHom.algebraMap_toAlgebra (toStepSucc k a)
-    simp_rw [Step.zero] at H1
-    have H3 : (toStepOfLE k 0 a a.zero_le).IsIntegral := fun z => h z
-    have H4 : (toStepSucc k a).IsIntegral := by
-      intro z
+  · intro z
+    change RingHom.IsIntegralElem _ _
+    revert z
+    change RingHom.IsIntegral _
+    unfold algebraMap
+    unfold Algebra.toRingHom
+    unfold algebra
+    unfold RingHom.toAlgebra
+    unfold RingHom.toAlgebra'
+    simp only
+    rw [toStepOfLE.succ k a a.zero_le]
+    apply @RingHom.isIntegral_trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
+        (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
+    · intro z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
-      rw [IsIntegral] at this
-      simp_rw [← Step.succ] at this
-      sorry-- `convert this` works with `2000000` heartbeats
-    sorry -- `convert RingHom.isIntegral_trans _ _ H3 H4` works with `2000000` heartbeats
-
+      convert this
+    · convert h --Porting Note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
 
@@ -348,7 +364,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi :
 #align algebraic_closure.exists_root AlgebraicClosure.exists_root
 
 instance instIsAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
-  IsAlgClosed.of_exists_root _ fun f => exists_root k
+  IsAlgClosed.of_exists_root _ fun _ => exists_root k
 #align algebraic_closure.is_alg_closed AlgebraicClosure.instIsAlgClosed
 
 instance {R : Type _} [CommSemiring R] [alg : Algebra R k] : Algebra R (AlgebraicClosure k) :=
