@@ -54,7 +54,7 @@ def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b �
   HasReverse.reverse'
 #align quiver.reverse Quiver.reverse
 
-/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity.`-/
+/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f
@@ -80,7 +80,6 @@ theorem reverse_inj [h : HasInvolutiveReverse V] {a b : V}
 theorem eq_reverse_iff [h : HasInvolutiveReverse V] {a b : V} (f : a ⟶ b)
     (g : b ⟶ a) : f = reverse g ↔ reverse f = g := by
   rw [←reverse_inj, reverse_reverse]
-
 #align quiver.eq_reverse_iff Quiver.eq_reverse_iff
 
 section MapReverse
@@ -256,7 +255,7 @@ end Push
 /-- A quiver is preconnected iff there exists a path between any pair of
 vertices.
 Note that if `V` doesn't `HasReverse`, then the definition is stronger than
-simply having a preconnected underlying `simple_graph`, since a path in one
+simply having a preconnected underlying `SimpleGraph`, since a path in one
 direction doesn't induce one in the other.
 -/
 def IsPreconnected (V) [Quiver.{u + 1} V] :=

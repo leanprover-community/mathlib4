@@ -17,8 +17,10 @@ This file defines instances for `Module`, `MulAction` and related structures on 
 
 These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
--/
 
+We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
+`AddMonoidHom.smul`, respectively.
+-/
 
 variable {R S A B : Type _}
 
@@ -30,8 +32,7 @@ variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
 
 variable [DistribMulAction R B] [DistribMulAction S B]
 
-instance distribMulAction : DistribMulAction R (A →+ B)
-    where
+instance distribMulAction : DistribMulAction R (A →+ B) where
   smul r f :=
     { toFun := (fun a => r • (f a))
       map_zero' := by simp only [map_zero, smul_zero]
@@ -42,7 +43,8 @@ instance distribMulAction : DistribMulAction R (A →+ B)
   smul_zero r := ext fun _ => smul_zero _
 #align add_monoid_hom.distrib_mul_action AddMonoidHom.distribMulAction
 
--- porting note: coe_smul became a syntactic tautology, removed
+@[simp] theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl
+#align add_monoid_hom.coe_smul AddMonoidHom.coe_smul
 
 theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
   rfl
@@ -62,6 +64,23 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
 #align add_monoid_hom.is_central_scalar AddMonoidHom.isCentralScalar
 
 end
+
+/-- Scalar multiplication on the left as an additive monoid homomorphism. -/
+@[simps (config := .asFn)]
+protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A where
+  toFun := (c • ·)
+  map_zero' := smul_zero c
+  map_add' := smul_add c
+
+/-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
+to have addition on `M →+ M`. -/
+protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M where
+  toFun := .smulLeft
+  map_zero' := AddMonoidHom.ext <| zero_smul _
+  map_add' _ _ := AddMonoidHom.ext <| add_smul _ _
+
+@[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
+    ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
 
 instance module [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
   { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _

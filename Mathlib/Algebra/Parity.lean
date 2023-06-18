@@ -26,10 +26,10 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/Even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
-* TODO: Consider moving the definition and lemmas about `odd` to a separate file.
+* TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
 * TODO: The "old" definition of `Even a` asked for the existence of an element `c` such that
   `a = 2 * c`.  For this reason, several fixes introduce an extra `two_mul` or `← two_mul`.
   It might be the case that by making a careful choice of `simp` lemma, this can be avoided.
@@ -102,7 +102,7 @@ attribute
   IsSquare.exists_sq
 #align even.exists_two_nsmul Even.exists_two_nsmul
 
-@[to_additive Even.nsmul]
+@[to_additive]
 theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
@@ -219,7 +219,7 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.is_square_zpow Even.isSquare_zpow
 #align even.zsmul' Even.zsmul'
 
--- `odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
@@ -521,5 +521,5 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 
 end Powers
 
-/-- Simp attribute for lemmas about `even` -/
+/-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps

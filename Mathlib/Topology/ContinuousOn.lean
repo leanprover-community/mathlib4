@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.continuous_on
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit d4f691b9e5f94cfc64639973f3544c95f8d5d494
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,7 +74,7 @@ theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
 
 theorem nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=
-  ((nhds_basis_opens a).inf_principal s).eq_binfᵢ
+  ((nhds_basis_opens a).inf_principal s).eq_biInf
 #align nhds_within_eq nhdsWithin_eq
 
 theorem nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
@@ -128,25 +128,15 @@ theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 #align mem_nhds_within_iff_eventually_eq mem_nhdsWithin_iff_eventuallyEq
 
-theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t := by
-  simp_rw [Filter.ext_iff, mem_nhdsWithin_iff_eventually, eventuallyEq_set]
-  constructor
-  · intro h
-    filter_upwards [(h t).mpr (eventually_of_forall fun x => id),
-      (h s).mp (eventually_of_forall fun x => id)]
-    exact fun x => Iff.intro
-  · refine' fun h u => eventually_congr (h.mono fun x h => _)
-    rw [h]
+theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
+  set_eventuallyEq_iff_inf_principal.symm
 #align nhds_within_eq_iff_eventually_eq nhdsWithin_eq_iff_eventuallyEq
 
-theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x := by
-  simp_rw [Filter.le_def, mem_nhdsWithin_iff_eventually]
-  constructor
-  · exact fun h => (h t <| eventually_of_forall fun x => id).mono fun x => id
-  · exact fun h u hu => (h.and hu).mono fun x hx h => hx.2 <| hx.1 h
+theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
+  set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 #align nhds_within_le_iff nhdsWithin_le_iff
 
--- porting note: golfed, droped an unneeded assumption
+-- porting note: golfed, dropped an unneeded assumption
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
@@ -218,18 +208,18 @@ theorem nhdsWithin_le_nhds {a : α} {s : Set α} : 𝓝[s] a ≤ 𝓝 a := by
   exact univ_mem
 #align nhds_within_le_nhds nhdsWithin_le_nhds
 
-theorem nhdsWithin_eq_nhds_within' {a : α} {s t u : Set α} (hs : s ∈ 𝓝 a) (h₂ : t ∩ s = u ∩ s) :
+theorem nhdsWithin_eq_nhdsWithin' {a : α} {s t u : Set α} (hs : s ∈ 𝓝 a) (h₂ : t ∩ s = u ∩ s) :
     𝓝[t] a = 𝓝[u] a := by rw [nhdsWithin_restrict' t hs, nhdsWithin_restrict' u hs, h₂]
-#align nhds_within_eq_nhds_within' nhdsWithin_eq_nhds_within'
+#align nhds_within_eq_nhds_within' nhdsWithin_eq_nhdsWithin'
 
 theorem nhdsWithin_eq_nhdsWithin {a : α} {s t u : Set α} (h₀ : a ∈ s) (h₁ : IsOpen s)
     (h₂ : t ∩ s = u ∩ s) : 𝓝[t] a = 𝓝[u] a := by
   rw [nhdsWithin_restrict t h₀ h₁, nhdsWithin_restrict u h₀ h₁, h₂]
 #align nhds_within_eq_nhds_within nhdsWithin_eq_nhdsWithin
 
--- porting note: new lemma; todo: make it `@[simp]`
-theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
+@[simp] theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
   inf_eq_left.trans le_principal_iff
+#align nhds_within_eq_nhds nhdsWithin_eq_nhds
 
 theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s) : 𝓝[s] a = 𝓝 a :=
   nhdsWithin_eq_nhds.2 <| h.mem_nhds ha
@@ -252,6 +242,22 @@ theorem nhdsWithin_union (a : α) (s t : Set α) : 𝓝[s ∪ t] a = 𝓝[s] a �
   rw [← inf_sup_left, sup_principal]
 #align nhds_within_union nhdsWithin_union
 
+theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
+    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
+  Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
+    simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+#align nhds_within_bUnion nhdsWithin_biUnion
+
+theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
+    𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
+  rw [sUnion_eq_biUnion, nhdsWithin_biUnion hS]
+#align nhds_within_sUnion nhdsWithin_sUnion
+
+theorem nhdsWithin_iUnion {ι} [Finite ι] (s : ι → Set α) (a : α) :
+    𝓝[⋃ i, s i] a = ⨆ i, 𝓝[s i] a := by
+  rw [← sUnion_range, nhdsWithin_sUnion (finite_range s), iSup_range]
+#align nhds_within_Union nhdsWithin_iUnion
+
 theorem nhdsWithin_inter (a : α) (s t : Set α) : 𝓝[s ∩ t] a = 𝓝[s] a ⊓ 𝓝[t] a := by
   delta nhdsWithin
   rw [inf_left_comm, inf_assoc, inf_principal, ← inf_assoc, inf_idem]
@@ -267,9 +273,9 @@ theorem nhdsWithin_inter_of_mem {a : α} {s t : Set α} (h : s ∈ 𝓝[t] a) : 
   exact nhdsWithin_le_of_mem h
 #align nhds_within_inter_of_mem nhdsWithin_inter_of_mem
 
--- porting note: new lemma
 theorem nhdsWithin_inter_of_mem' {a : α} {s t : Set α} (h : t ∈ 𝓝[s] a) : 𝓝[s ∩ t] a = 𝓝[s] a := by
   rw [inter_comm, nhdsWithin_inter_of_mem h]
+#align nhds_within_inter_of_mem' nhdsWithin_inter_of_mem'
 
 @[simp]
 theorem nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by
@@ -308,20 +314,20 @@ theorem nhdsWithin_prod {α : Type _} [TopologicalSpace α] {β : Type _} [Topol
 
 theorem nhdsWithin_pi_eq' {ι : Type _} {α : ι → Type _} [∀ i, TopologicalSpace (α i)] {I : Set ι}
     (hI : I.Finite) (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
-    𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_hi : i ∈ I), 𝓟 (s i)) := by
-  simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_infᵢ, pi_def, comap_principal, ←
-    infᵢ_principal_finite hI, ← infᵢ_inf_eq]
+    𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
+  simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
+    iInf_principal_finite hI, ← iInf_inf_eq]
 #align nhds_within_pi_eq' nhdsWithin_pi_eq'
 
 theorem nhdsWithin_pi_eq {ι : Type _} {α : ι → Type _} [∀ i, TopologicalSpace (α i)] {I : Set ι}
     (hI : I.Finite) (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
     𝓝[pi I s] x =
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
-        ⨅ (i) (_hi : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
-  simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← infᵢ_principal_finite hI, comap_inf,
+        ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
+  simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
     comap_principal, eval]
-  rw [infᵢ_split _ fun i => i ∈ I, inf_right_comm]
-  simp only [infᵢ_inf_eq]
+  rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
+  simp only [iInf_inf_eq]
 #align nhds_within_pi_eq nhdsWithin_pi_eq
 
 theorem nhdsWithin_pi_univ_eq {ι : Type _} {α : ι → Type _} [Finite ι] [∀ i, TopologicalSpace (α i)]
@@ -354,7 +360,7 @@ theorem Filter.Tendsto.if_nhdsWithin {f g : α → β} {p : α → Prop} [Decida
 
 theorem map_nhdsWithin (f : α → β) (a : α) (s : Set α) :
     map f (𝓝[s] a) = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (f '' (t ∩ s)) :=
-  ((nhdsWithin_basis_open a s).map f).eq_binfᵢ
+  ((nhdsWithin_basis_open a s).map f).eq_biInf
 #align map_nhds_within map_nhdsWithin
 
 theorem tendsto_nhdsWithin_mono_left {f : α → β} {a : α} {s t : Set α} {l : Filter β} (hst : s ⊆ t)
@@ -374,7 +380,7 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds {f : α → β} {a : α} {s : Set α}
 
 theorem eventually_mem_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α} {l : Filter β}
     (h : Tendsto f l (𝓝[s] a)) : ∀ᶠ i in l, f i ∈ s := by
-  simp_rw [nhdsWithin_eq, tendsto_infᵢ, mem_setOf_eq, tendsto_principal, mem_inter_iff,
+  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_setOf_eq, tendsto_principal, mem_inter_iff,
     eventually_and] at h
   exact (h univ ⟨mem_univ a, isOpen_univ⟩).2
 #align eventually_mem_of_tendsto_nhds_within eventually_mem_of_tendsto_nhdsWithin
@@ -610,8 +616,7 @@ theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (
 
 theorem continuousOn_iff' {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s :=
-    by
+  have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isOpen_induced_iff, Set.restrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
@@ -639,8 +644,7 @@ theorem ContinuousOn.mono_rng {α β : Type _} {t₁ : TopologicalSpace α} {t�
 
 theorem continuousOn_iff_isClosed {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsClosed t → ∃ u, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
-  have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s :=
-    by
+  have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isClosed_induced_iff, Set.restrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
@@ -651,6 +655,14 @@ theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : 
     (hf : ContinuousOn f s) (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) :=
   fun ⟨x, y⟩ ⟨hx, hy⟩ => ContinuousWithinAt.prod_map (hf x hx) (hg y hy)
 #align continuous_on.prod_map ContinuousOn.prod_map
+
+theorem continuous_of_cover_nhds {ι : Sort _} {f : α → β} {s : ι → Set α}
+    (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
+    Continuous f :=
+  continuous_iff_continuousAt.mpr fun x ↦ let ⟨i, hi⟩ := hs x; by
+    rw [ContinuousAt, ← nhdsWithin_eq_nhds.2 hi]
+    exact hf _ _ (mem_of_mem_nhds hi)
+#align continuous_of_cover_nhds continuous_of_cover_nhds
 
 theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 #align continuous_on_empty continuousOn_empty
@@ -935,10 +947,10 @@ theorem Function.LeftInverse.map_nhds_eq {f : α → β} {g : β → α} {x : β
     (h.leftInvOn univ).map_nhdsWithin_eq (h x) (by rwa [image_univ]) hg.continuousWithinAt
 #align function.left_inverse.map_nhds_eq Function.LeftInverse.map_nhds_eq
 
-theorem ContinuousWithinAt.preimage_mem_nhds_within' {f : α → β} {x : α} {s : Set α} {t : Set β}
+theorem ContinuousWithinAt.preimage_mem_nhdsWithin' {f : α → β} {x : α} {s : Set α} {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : t ∈ 𝓝[f '' s] f x) : f ⁻¹' t ∈ 𝓝[s] x :=
   h.tendsto_nhdsWithin (mapsTo_image _ _) ht
-#align continuous_within_at.preimage_mem_nhds_within' ContinuousWithinAt.preimage_mem_nhds_within'
+#align continuous_within_at.preimage_mem_nhds_within' ContinuousWithinAt.preimage_mem_nhdsWithin'
 
 theorem Filter.EventuallyEq.congr_continuousWithinAt {f g : α → β} {s : Set α} {x : α}
     (h : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) : ContinuousWithinAt f s x ↔ ContinuousWithinAt g s x :=
@@ -1032,11 +1044,11 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr <| fun x _ => by
     delta ContinuousWithinAt
-    simp only [TopologicalSpace.nhds_generateFrom, tendsto_infᵢ, tendsto_principal, mem_setOf_eq,
+    simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
     exact forall_congr' fun t => forall_swap
 
--- porting note: droped an unneeded assumption
+-- porting note: dropped an unneeded assumption
 theorem continuousOn_open_of_generateFrom {β : Type _} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=
@@ -1072,7 +1084,7 @@ theorem Embedding.continuousOn_iff {f : α → β} {g : β → γ} (hg : Embeddi
 
 theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
+  rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 #align embedding.map_nhds_within_eq Embedding.map_nhdsWithin_eq
 
@@ -1204,7 +1216,7 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
     convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
-    ext x
+    rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 #align is_open.ite' IsOpen.ite'
 
@@ -1290,4 +1302,3 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
-

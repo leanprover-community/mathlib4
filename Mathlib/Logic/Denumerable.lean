@@ -127,7 +127,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
   rfl
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
-/-- If `α` is denumerable, then so is `option α`. -/
+/-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n
@@ -256,15 +256,12 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
-        show _ < _ from -- lean4#2073
         calc
           (y : ℕ) ≤ (y : ℕ) + Nat.find hx := le_add_of_nonneg_right (Nat.zero_le _)
           _ < (y : ℕ) + Nat.find hx + 1 := Nat.lt_succ_self _
-
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
 theorem lt_succ_self (x : s) : x < succ x :=
-  show _ < _ from -- lean4#2073
   calc
     -- Porting note: replaced `x + _`, added type annotations
     (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add
@@ -339,10 +336,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
-    have h₂ :
-      (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) :=
-      by
+    have h₂ : (range (succ (ofNat s n))).filter (· ∈ s) =
+        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by

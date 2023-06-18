@@ -32,8 +32,8 @@ theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     List.toFinset_union _ _
 #align nat.factors_mul_to_finset Nat.factors_mul_toFinset
 
-theorem pow_succ_factors_toFinset (n k : ℕ) : (n ^ (k + 1)).factors.toFinset = n.factors.toFinset :=
-  by
+theorem pow_succ_factors_toFinset (n k : ℕ) :
+    (n ^ (k + 1)).factors.toFinset = n.factors.toFinset := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   induction' k with k ih

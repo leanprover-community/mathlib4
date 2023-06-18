@@ -12,7 +12,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Qq.Match
+import Qq
 
 /-!
 The `tauto` tactic.
@@ -20,7 +20,7 @@ The `tauto` tactic.
 
 namespace Mathlib.Tactic.Tauto
 
-open Lean Elab.Tactic Parser.Tactic Lean.Meta
+open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId
 open Qq
 
 initialize registerTraceClass `tauto
@@ -166,11 +166,12 @@ def tautoCore : TacticM Unit := do
     allGoals (
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       distribNot <;>
-      liftMetaTactic (casesMatching · casesMatcher (recursive := true)) <;>
+      liftMetaTactic (casesMatching casesMatcher (recursive := true) (throwOnNoMatch := false)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
       (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
-      liftMetaTactic (constructorMatching · coreConstructorMatcher (recursive := true)) <;>
+      liftMetaTactic (constructorMatching · coreConstructorMatcher
+        (recursive := true) (throwOnNoMatch := false)) <;>
       do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
     if gs == gs' then failure -- no progress

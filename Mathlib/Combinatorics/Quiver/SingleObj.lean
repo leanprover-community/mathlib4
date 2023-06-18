@@ -18,7 +18,7 @@ Single object quiver with a given arrows type.
 
 ## Main definitions
 
-Given a type `α`, `SingleObj α` is the `unit` type, whose single object is called `star α`, with
+Given a type `α`, `SingleObj α` is the `Unit` type, whose single object is called `star α`, with
 `Quiver` structure such that `star α ⟶ star α` is the type `α`.
 An element `x : α` can be reinterpreted as an element of `star α ⟶ star α` using
 `toHom`.
@@ -30,7 +30,7 @@ itself using `pathEquivList`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
--- Porting note: Removed.
+-- Porting note: Removed `deriving Unique`.
 @[nolint unusedArguments]
 def SingleObj (_ : Type _) : Type :=
   Unit
@@ -70,14 +70,13 @@ def hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
 /-- Equip `SingleObj α` with an involutive reverse operation. -/
 @[reducible]
 def hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
-    HasInvolutiveReverse (SingleObj α)
-    where
+    HasInvolutiveReverse (SingleObj α) where
   toHasReverse := hasReverse rev
   inv' := h
 #align quiver.single_obj.has_involutive_reverse Quiver.SingleObj.hasInvolutiveReverse
 
 /-- The type of arrows from `star α` to itself is equivalent to the original type `α`. -/
-@[simps]
+@[simps!]
 def toHom : α ≃ (star α ⟶ star α) :=
   Equiv.refl _
 #align quiver.single_obj.to_hom Quiver.SingleObj.toHom
@@ -88,8 +87,7 @@ def toHom : α ≃ (star α ⟶ star α) :=
 arrows types.
 -/
 @[simps]
-def toPrefunctor : (α → β) ≃ SingleObj α ⥤q SingleObj β
-    where
+def toPrefunctor : (α → β) ≃ SingleObj α ⥤q SingleObj β where
   toFun f := ⟨id, f⟩
   invFun f a := f.map (toHom a)
   left_inv _ := rfl
@@ -138,19 +136,16 @@ def listToPath : List α → Path (star α) (star α)
 #align quiver.single_obj.list_to_path Quiver.SingleObj.listToPath
 
 theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
-    listToPath (pathToList p) = p.cast rfl ext :=
-  by
+    listToPath (pathToList p) = p.cast rfl ext := by
   induction' p with y z p a ih
-  rfl
-  dsimp at *; rw [ih]
+  · rfl
+  · dsimp at *; rw [ih]
 #align quiver.single_obj.path_to_list_to_path Quiver.SingleObj.listToPath_pathToList
 
-theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l :=
-  by
+theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := by
   induction' l with a l ih
-  rfl
-  change a :: pathToList (listToPath l) = a :: l; rw [ih]
-
+  · rfl
+  · change a :: pathToList (listToPath l) = a :: l; rw [ih]
 #align quiver.single_obj.list_to_path_to_list Quiver.SingleObj.pathToList_listToPath
 
 /-- Paths in `SingleObj α` quiver correspond to lists of elements of type `α`. -/

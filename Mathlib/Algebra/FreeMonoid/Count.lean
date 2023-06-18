@@ -32,7 +32,7 @@ def countp : FreeAddMonoid α →+ ℕ where
   map_add' := List.countp_append _
 #align free_add_monoid.countp FreeAddMonoid.countp
 
-theorem countp_of (x : α): countp p (of x) = if p x = true then 1 else 0 := by
+theorem countp_of (x : α) : countp p (of x) = if p x = true then 1 else 0 := by
   simp [countp, List.countp, List.countp.go]
 #align free_add_monoid.countp_of FreeAddMonoid.countp_of
 
@@ -57,7 +57,7 @@ end FreeAddMonoid
 
 namespace FreeMonoid
 
-/-- `list.countp` as a bundled multiplicative monoid homomorphism. -/
+/-- `List.countp` as a bundled multiplicative monoid homomorphism. -/
 def countp : FreeMonoid α →* Multiplicative ℕ :=
     AddMonoidHom.toMultiplicative (FreeAddMonoid.countp p)
 #align free_monoid.countp FreeMonoid.countp

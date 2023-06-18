@@ -36,16 +36,15 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  { show Monoid (IsUnit.submonoid M) by
-      infer_instance with
-    inv := fun x ↦ ⟨_, x.prop.unit⁻¹.isUnit⟩
-    mul_left_inv := fun x ↦ by
-      exact Subtype.mk_eq_mk.2 ((Units.val_mul _ _).trans x.prop.unit.inv_val) }
+  { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
+    inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
+    mul_left_inv := fun x ↦
+      Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { show Group (IsUnit.submonoid M) by infer_instance
-      with mul_comm := fun a b ↦ by convert mul_comm a b }
+  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+    mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
 theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
@@ -87,8 +86,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
   refine' le_antisymm S.leftInv_leftInv_le _
   intro x hx
-  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) :=
-    by
+  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]
     rfl
   rw [this]
@@ -130,23 +128,22 @@ theorem fromLeftInv_mul (x : S.leftInv) : (S.fromLeftInv x : M) * x = 1 := by
 #align add_submonoid.from_left_neg_add AddSubmonoid.fromLeftNeg_add
 
 @[to_additive]
-theorem leftInv_le_is_unit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
+theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx⟩ ↦
   ⟨⟨x, y, hx, mul_comm x y ▸ hx⟩, rfl⟩
-#align submonoid.left_inv_le_is_unit Submonoid.leftInv_le_is_unit
-#align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_is_addUnit
+#align submonoid.left_inv_le_is_unit Submonoid.leftInv_le_isUnit
+#align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_isAddUnit
 
 @[to_additive]
 theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) : (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 :=
-  by rw [← IsUnit.mul_right_inj (leftInv_le_is_unit _ a.prop), S.mul_fromLeftInv, eq_comm]
+  by rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 #align submonoid.from_left_inv_eq_iff Submonoid.fromLeftInv_eq_iff
 #align add_submonoid.from_left_neg_eq_iff AddSubmonoid.fromLeftNeg_eq_iff
 
 /-- The `MonoidHom` from `S.leftInv` to `S` sending an element to its right inverse in `S`. -/
 @[to_additive (attr := simps)
-    "The `add_monoid_hom` from `S.leftNeg` to `S` sending an element to its
+    "The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to its
     right additive inverse in `S`."]
-noncomputable def fromCommLeftInv : S.leftInv →* S
-    where
+noncomputable def fromCommLeftInv : S.leftInv →* S where
   toFun := S.fromLeftInv
   map_one' := S.fromLeftInv_one
   map_mul' x y :=
@@ -199,7 +196,6 @@ theorem leftInvEquiv_symm_fromLeftInv (x : S.leftInv) :
 @[to_additive]
 theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := by
   simpa only [leftInvEquiv_apply, fromCommLeftInv] using fromLeftInv_mul S x
-
 #align submonoid.left_inv_equiv_mul Submonoid.leftInvEquiv_mul
 #align add_submonoid.left_neg_equiv_add AddSubmonoid.leftNegEquiv_add
 

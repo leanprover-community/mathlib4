@@ -239,13 +239,11 @@ theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z
       calc
         y ≤ y ⊔ z := le_sup_left
         _ ≤ x ⊔ z := hsup
-
     calc
       y ≤ (x ⊔ z) ⊓ y := le_inf h le_rfl
       _ = x ⊔ z ⊓ y := sup_inf_assoc_of_le _ hxy
       _ ≤ x ⊔ z ⊓ x := sup_le_sup_left (by rw [inf_comm, @inf_comm _ _ z]; exact hinf) _
       _ ≤ x := sup_le le_rfl inf_le_right
-
 #align eq_of_le_of_inf_le_of_sup_le eq_of_le_of_inf_le_of_sup_le
 
 theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
@@ -273,7 +271,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type _} [PartialOrder β] [Preord
         cases' lt_or_eq_of_le (inf_le_inf_right K (le_of_lt hAB)) with h h
         · exact Or.inl h
         · exact Or.inr ⟨h, sup_lt_sup_of_lt_of_inf_le_inf hAB (le_of_eq h.symm)⟩)
-    (InvImage.wf _ (Prod.lex ⟨_, h₁⟩ ⟨_, h₂⟩).wf)
+    (InvImage.wf _ (h₁.prod_lex h₂))
 #align well_founded_lt_exact_sequence wellFounded_lt_exact_sequence
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
@@ -310,7 +308,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
     exact inf_le_inf_left _ h
 #align inf_Icc_order_iso_Icc_sup infIccOrderIsoIccSup
 #align inf_Icc_order_iso_Icc_sup_apply_coe infIccOrderIsoIccSup_apply_coe
-#align inf_Icc_order_iso_Icc_sup_symm_apply_coe infIccOrderIsoIccSup_symmApply_coe
+#align inf_Icc_order_iso_Icc_sup_symm_apply_coe infIccOrderIsoIccSup_symm_apply_coe
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
@@ -346,7 +344,7 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
       ⟨d.1, Ioo_subset_Icc_self d.2⟩
 #align inf_Ioo_order_iso_Ioo_sup infIooOrderIsoIooSup
 #align inf_Ioo_order_iso_Ioo_sup_apply_coe infIooOrderIsoIooSup_apply_coe
-#align inf_Ioo_order_iso_Ioo_sup_symm_apply_coe infIooOrderIsoIooSup_symmApply_coe
+#align inf_Ioo_order_iso_Ioo_sup_symm_apply_coe infIooOrderIsoIooSup_symm_apply_coe
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=

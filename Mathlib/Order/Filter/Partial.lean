@@ -58,12 +58,11 @@ open Filter
 
 /-- The forward map of a filter under a relation. Generalization of `Filter.map` to relations. Note
 that `Rel.core` generalizes `Set.preimage`. -/
-def rmap (r : Rel α β) (l : Filter α) : Filter β
-    where
+def rmap (r : Rel α β) (l : Filter α) : Filter β where
   sets := { s | r.core s ∈ l }
   univ_sets := by simp
-  sets_of_superset := @fun s t hs st => mem_of_superset hs (Rel.core_mono _ st)
-  inter_sets := @fun s t hs ht => by
+  sets_of_superset hs st := mem_of_superset hs (Rel.core_mono _ st)
+  inter_sets hs ht := by
     simp only [Set.mem_setOf_eq]
     convert inter_mem hs ht
     rw [←Rel.core_inter]
@@ -89,26 +88,25 @@ theorem rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap 
   funext <| rmap_rmap _ _
 #align filter.rmap_compose Filter.rmap_compose
 
-/-- Generic "limit of a relation" predicate. `Rtendsto r l₁ l₂` asserts that for every
+/-- Generic "limit of a relation" predicate. `RTendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-core of `a` is an `l₁`-neighborhood. One generalization of
-`filter.Tendsto` to relations. -/
-def Rtendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
+`Filter.Tendsto` to relations. -/
+def RTendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.rmap r ≤ l₂
-#align filter.rtendsto Filter.Rtendsto
+#align filter.rtendsto Filter.RTendsto
 
 theorem rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
-    Rtendsto r l₁ l₂ ↔ ∀ s ∈ l₂, r.core s ∈ l₁ :=
+    RTendsto r l₁ l₂ ↔ ∀ s ∈ l₂, r.core s ∈ l₁ :=
   Iff.rfl
 #align filter.rtendsto_def Filter.rtendsto_def
 
 /-- One way of taking the inverse map of a filter under a relation. One generalization of
 `Filter.comap` to relations. Note that `Rel.core` generalizes `Set.preimage`. -/
-def rcomap (r : Rel α β) (f : Filter β) : Filter α
-    where
+def rcomap (r : Rel α β) (f : Filter β) : Filter α where
   sets := Rel.image (fun s t => r.core s ⊆ t) f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := @fun _ _ ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := @fun _ _ ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
     ⟨a' ∩ b', inter_mem ha₁ hb₁, (r.core_inter a' b').subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 #align filter.rcomap Filter.rcomap
 
@@ -133,9 +131,9 @@ theorem rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s =
 #align filter.rcomap_compose Filter.rcomap_compose
 
 theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
-    Rtendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
+    RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
-  change (∀ s : Set β, s ∈ l₂.sets → r.core s ∈ l₁) ↔ l₁ ≤ rcomap r l₂
+  simp_rw [←l₂.mem_sets]
   simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
   · exact fun h s t tl₂ => mem_of_superset (h t tl₂)
   · exact fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
@@ -146,12 +144,11 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
 -- and only if `s ∈ f'`. But the intersection of two sets satisfying the lhs may be empty.
 /-- One way of taking the inverse map of a filter under a relation. Generalization of `Filter.comap`
 to relations. -/
-def rcomap' (r : Rel α β) (f : Filter β) : Filter α
-    where
+def rcomap' (r : Rel α β) (f : Filter β) : Filter α where
   sets := Rel.image (fun s t => r.preimage s ⊆ t) f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := @fun _ _ ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := @fun _ _ ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
     ⟨a' ∩ b', inter_mem ha₁ hb₁,
       (@Rel.preimage_inter _ _ r _ _).trans (Set.inter_subset_inter ha₂ hb₂)⟩
 #align filter.rcomap' Filter.rcomap'
@@ -171,7 +168,8 @@ theorem rcomap'_sets (r : Rel α β) (f : Filter β) :
 theorem rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap' r (rcomap' s l) = rcomap' (r.comp s) l :=
   Filter.ext fun t => by
-    simp [rcomap'_sets, Rel.image, Rel.preimage_comp]; constructor
+    simp only [mem_rcomap', Rel.preimage_comp]
+    constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, (Rel.preimage_mono _ hv).trans h⟩
     rintro ⟨t, tsets, ht⟩
@@ -183,27 +181,27 @@ theorem rcomap'_compose (r : Rel α β) (s : Rel β γ) : rcomap' r ∘ rcomap' 
   funext <| rcomap'_rcomap' _ _
 #align filter.rcomap'_compose Filter.rcomap'_compose
 
-/-- Generic "limit of a relation" predicate. `Rtendsto' r l₁ l₂` asserts that for every
+/-- Generic "limit of a relation" predicate. `RTendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-preimage of `a` is an `l₁`-neighborhood. One generalization of
 `Filter.Tendsto` to relations. -/
-def Rtendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
+def RTendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' r
-#align filter.rtendsto' Filter.Rtendsto'
+#align filter.rtendsto' Filter.RTendsto'
 
 theorem rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
-    Rtendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
-  unfold Rtendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
+    RTendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.preimage s ∈ l₁ := by
+  unfold RTendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
   · exact fun h s hs => h _ _ hs Set.Subset.rfl
   · exact fun h s t ht => mem_of_superset (h t ht)
 #align filter.rtendsto'_def Filter.rtendsto'_def
 
 theorem tendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
-    Tendsto f l₁ l₂ ↔ Rtendsto (Function.graph f) l₁ l₂ := by
+    Tendsto f l₁ l₂ ↔ RTendsto (Function.graph f) l₁ l₂ := by
   simp [tendsto_def, Function.graph, rtendsto_def, Rel.core, Set.preimage]
 #align filter.tendsto_iff_rtendsto Filter.tendsto_iff_rtendsto
 
 theorem tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
-    Tendsto f l₁ l₂ ↔ Rtendsto' (Function.graph f) l₁ l₂ := by
+    Tendsto f l₁ l₂ ↔ RTendsto' (Function.graph f) l₁ l₂ := by
   simp [tendsto_def, Function.graph, rtendsto'_def, Rel.preimage_def, Set.preimage]
 #align filter.tendsto_iff_rtendsto' Filter.tendsto_iff_rtendsto'
 
@@ -221,37 +219,37 @@ theorem mem_pmap (f : α →. β) (l : Filter α) (s : Set β) : s ∈ l.pmap f 
   Iff.rfl
 #align filter.mem_pmap Filter.mem_pmap
 
-/-- Generic "limit of a partial function" predicate. `Ptendsto r l₁ l₂` asserts that for every
+/-- Generic "limit of a partial function" predicate. `PTendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-core of `a` is an `l₁`-neighborhood. One generalization of
 `Filter.Tendsto` to partial function. -/
-def Ptendsto (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
+def PTendsto (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.pmap f ≤ l₂
-#align filter.ptendsto Filter.Ptendsto
+#align filter.ptendsto Filter.PTendsto
 
 theorem ptendsto_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
-    Ptendsto f l₁ l₂ ↔ ∀ s ∈ l₂, f.core s ∈ l₁ :=
+    PTendsto f l₁ l₂ ↔ ∀ s ∈ l₂, f.core s ∈ l₁ :=
   Iff.rfl
 #align filter.ptendsto_def Filter.ptendsto_def
 
 theorem ptendsto_iff_rtendsto (l₁ : Filter α) (l₂ : Filter β) (f : α →. β) :
-    Ptendsto f l₁ l₂ ↔ Rtendsto f.graph' l₁ l₂ :=
+    PTendsto f l₁ l₂ ↔ RTendsto f.graph' l₁ l₂ :=
   Iff.rfl
 #align filter.ptendsto_iff_rtendsto Filter.ptendsto_iff_rtendsto
 
-theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) : pmap (PFun.res f s) l = map f (l ⊓ 𝓟 s) :=
-  by
+theorem pmap_res (l : Filter α) (s : Set α) (f : α → β) :
+    pmap (PFun.res f s) l = map f (l ⊓ 𝓟 s) := by
   ext t
   simp only [PFun.core_res, mem_pmap, mem_map, mem_inf_principal, imp_iff_not_or]
   rfl
 #align filter.pmap_res Filter.pmap_res
 
 theorem tendsto_iff_ptendsto (l₁ : Filter α) (l₂ : Filter β) (s : Set α) (f : α → β) :
-    Tendsto f (l₁ ⊓ 𝓟 s) l₂ ↔ Ptendsto (PFun.res f s) l₁ l₂ := by
-  simp only [Tendsto, Ptendsto, pmap_res]
+    Tendsto f (l₁ ⊓ 𝓟 s) l₂ ↔ PTendsto (PFun.res f s) l₁ l₂ := by
+  simp only [Tendsto, PTendsto, pmap_res]
 #align filter.tendsto_iff_ptendsto Filter.tendsto_iff_ptendsto
 
 theorem tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
-    Tendsto f l₁ l₂ ↔ Ptendsto (PFun.res f Set.univ) l₁ l₂ := by
+    Tendsto f l₁ l₂ ↔ PTendsto (PFun.res f Set.univ) l₁ l₂ := by
   rw [← tendsto_iff_ptendsto]
   simp [principal_univ]
 #align filter.tendsto_iff_ptendsto_univ Filter.tendsto_iff_ptendsto_univ
@@ -262,26 +260,26 @@ def pcomap' (f : α →. β) (l : Filter β) : Filter α :=
   Filter.rcomap' f.graph' l
 #align filter.pcomap' Filter.pcomap'
 
-/-- Generic "limit of a partial function" predicate. `Ptendsto' r l₁ l₂` asserts that for every
+/-- Generic "limit of a partial function" predicate. `PTendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-preimage of `a` is an `l₁`-neighborhood. One generalization of
 `Filter.Tendsto` to partial functions. -/
-def Ptendsto' (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
+def PTendsto' (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' f.graph'
-#align filter.ptendsto' Filter.Ptendsto'
+#align filter.ptendsto' Filter.PTendsto'
 
 theorem ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
-    Ptendsto' f l₁ l₂ ↔ ∀ s ∈ l₂, f.preimage s ∈ l₁ :=
+    PTendsto' f l₁ l₂ ↔ ∀ s ∈ l₂, f.preimage s ∈ l₁ :=
   rtendsto'_def _ _ _
 #align filter.ptendsto'_def Filter.ptendsto'_def
 
 theorem ptendsto_of_ptendsto' {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} :
-    Ptendsto' f l₁ l₂ → Ptendsto f l₁ l₂ := by
+    PTendsto' f l₁ l₂ → PTendsto f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   exact fun h s sl₂ => mem_of_superset (h s sl₂) (PFun.preimage_subset_core _ _)
 #align filter.ptendsto_of_ptendsto' Filter.ptendsto_of_ptendsto'
 
 theorem ptendsto'_of_ptendsto {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} (h : f.Dom ∈ l₁) :
-    Ptendsto f l₁ l₂ → Ptendsto' f l₁ l₂ := by
+    PTendsto f l₁ l₂ → PTendsto' f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   intro h' s sl₂
   rw [PFun.preimage_eq]

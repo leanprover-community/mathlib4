@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.order.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -65,7 +65,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.coe_nat_abs Int.coe_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-by rw [←coe_natAbs, Int.cast_ofNat]
+  by rw [←coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
@@ -89,6 +89,13 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 
 @[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
 #align int.abs_coe_nat Int.abs_coe_nat
+
+theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
+  have : (1 : ℤ) ≠ -1 := by decide
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm]
+  rw [Int.sign_eq_one_iff_pos]
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+#align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-! ### succ and pred -/
 
@@ -272,6 +279,8 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
+-- porting note: this should be a doc comment, but the lemma isn't here any more!
+/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
 attribute [local simp] Int.zero_emod
@@ -281,8 +290,8 @@ attribute [local simp] Int.zero_emod
 @[simp]
 theorem neg_emod_two (i : ℤ) : -i % 2 = i % 2 := by
   apply Int.emod_eq_emod_iff_emod_sub_eq_zero.mpr
-  convert Int.mul_emod_right 2 (-i)
-  simp only [two_mul, sub_eq_add_neg]
+  convert Int.mul_emod_right 2 (-i) using 2
+  rw [two_mul, sub_eq_add_neg]
 #align int.neg_mod_two Int.neg_emod_two
 
 /-! ### properties of `/` and `%` -/
@@ -544,6 +553,5 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 
 end Int
 
--- Porting note assert_not_exists not ported yet.
 -- We should need only a minimal development of sets in order to get here.
--- assert_not_exists set.range
+assert_not_exists Set.range

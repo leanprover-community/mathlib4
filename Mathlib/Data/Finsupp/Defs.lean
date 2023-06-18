@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 
 ! This file was ported from Lean 3 source module data.finsupp.defs
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
+! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -129,8 +129,9 @@ instance funLike : FunLike (α →₀ M) α fun _ => M :=
 
 /-- Helper instance for when there are too many metavariables to apply the `FunLike` instance
 directly. -/
-instance : CoeFun (α →₀ M) fun _ => α → M :=
+instance coeFun : CoeFun (α →₀ M) fun _ => α → M :=
   inferInstance
+#align finsupp.has_coe_to_fun Finsupp.coeFun
 
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
@@ -164,6 +165,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
 
 instance zero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
+#align finsupp.has_zero Finsupp.zero
 
 @[simp]
 theorem coe_zero : ⇑(0 : α →₀ M) = 0 :=
@@ -179,8 +181,9 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
   rfl
 #align finsupp.support_zero Finsupp.support_zero
 
-instance : Inhabited (α →₀ M) :=
+instance inhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
+#align finsupp.inhabited Finsupp.inhabited
 
 @[simp]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
@@ -226,8 +229,9 @@ theorem nonzero_iff_exists {f : α →₀ M} : f ≠ 0 ↔ ∃ a : α, f a ≠ 0
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero
 
-instance [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
+instance decidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
+#align finsupp.decidable_eq Finsupp.decidableEq
 
 theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
   f.fun_support_eq.symm ▸ f.support.finite_toSet
@@ -235,8 +239,8 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
-theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 :=
-  by
+theorem support_subset_iff {s : Set α} {f : α →₀ M} :
+    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -258,7 +262,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 /--
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
-@[simps]
+@[simps!]
 noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
@@ -313,11 +317,11 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 #align finsupp.single_apply_left Finsupp.single_apply_left
 
-theorem single_eq_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
+theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
-#align finsupp.single_eq_indicator Finsupp.single_eq_indicator
+#align finsupp.single_eq_set_indicator Finsupp.single_eq_set_indicator
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -331,7 +335,7 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b :=
-  by classical rw [single_eq_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
+  by classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
@@ -359,11 +363,11 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
 #align finsupp.support_single_ne_zero Finsupp.support_single_ne_zero
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _, exact Subset.refl _]
+  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 #align finsupp.support_single_subset Finsupp.support_single_subset
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (a = x) with (rfl | hx) <;> [simp, simp [single_eq_of_ne hx]]
+  rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
 #align finsupp.single_apply_mem Finsupp.single_apply_mem
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
@@ -378,7 +382,7 @@ theorem single_injective (a : α) : Function.Injective (single a : M → α →�
 #align finsupp.single_injective Finsupp.single_injective
 
 theorem single_apply_eq_zero {a x : α} {b : M} : single a b x = 0 ↔ x = a → b = 0 := by
-  simp [single_eq_indicator]
+  simp [single_eq_set_indicator]
 #align finsupp.single_apply_eq_zero Finsupp.single_apply_eq_zero
 
 theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a ∧ b ≠ 0 := by
@@ -401,7 +405,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
   constructor
   · intro eq
-    by_cases a₁ = a₂
+    by_cases h : a₁ = a₂
     · refine' Or.inl ⟨h, _⟩
       rwa [h, (single_injective a₂).eq_iff] at eq
     · rw [FunLike.ext_iff] at eq
@@ -434,17 +438,19 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 #align finsupp.support_single_disjoint Finsupp.support_single_disjoint
 
 @[simp]
-theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [FunLike.ext_iff, single_eq_indicator]
+theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
+  simp [FunLike.ext_iff, single_eq_set_indicator]
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
   classical simp only [single_apply, eq_comm]
 #align finsupp.single_swap Finsupp.single_swap
 
-instance [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
+instance nontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
   inhabit α
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
+#align finsupp.nontrivial Finsupp.nontrivial
 
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm
@@ -466,7 +472,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _)(_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -480,7 +486,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _)(b : _)(_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 
@@ -905,8 +911,8 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
 #align finsupp.single_of_emb_domain_single Finsupp.single_of_embDomain_single
 
 @[simp]
-theorem embDomain_single (f : α ↪ β) (a : α) (m : M) : embDomain f (single a m) = single (f a) m :=
-  by
+theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
+    embDomain f (single a m) = single (f a) m := by
   classical
     ext b
     by_cases h : b ∈ Set.range f
@@ -962,6 +968,7 @@ variable [AddZeroClass M]
 
 instance add : Add (α →₀ M) :=
   ⟨zipWith (· + ·) (add_zero 0)⟩
+#align finsupp.has_add Finsupp.add
 
 @[simp]
 theorem coe_add (f g : α →₀ M) : ⇑(f + g) = f + g :=
@@ -999,6 +1006,7 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
+#align finsupp.add_zero_class Finsupp.addZeroClass
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -1132,7 +1140,7 @@ then they are equal.
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
 extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
 verify `f (single a 1) = g (single a 1)`. -/
-@[ext]
+@[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
   addHom_ext fun x => FunLike.congr_fun (H x)
@@ -1203,14 +1211,17 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
 
 instance addMonoid : AddMonoid (α →₀ M) :=
   FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+#align finsupp.add_monoid Finsupp.addMonoid
 
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+#align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
-instance [NegZeroClass G] : Neg (α →₀ G) :=
+instance neg [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
+#align finsupp.has_neg Finsupp.neg
 
 @[simp]
 theorem coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g :=
@@ -1231,8 +1242,9 @@ theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
   mapRange_neg (map_neg f) v
 #align finsupp.map_range_neg' Finsupp.mapRange_neg'
 
-instance [SubNegZeroMonoid G] : Sub (α →₀ G) :=
+instance sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
+#align finsupp.has_sub Finsupp.sub
 
 @[simp]
 theorem coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ :=
@@ -1261,12 +1273,14 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
-instance [AddGroup G] : AddGroup (α →₀ G) :=
+instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+#align finsupp.add_group Finsupp.addGroup
 
-instance [AddCommGroup G] : AddCommGroup (α →₀ G) :=
+instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
+#align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
     (hu : u ≠ 0) (hv : v ≠ 0) :

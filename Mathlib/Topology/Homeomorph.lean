@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 
 ! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -42,9 +42,9 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
     extends α ≃ β where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun -- porting note: todo: := by continuity
+  continuous_toFun : Continuous toFun := by continuity
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun -- porting note: todo: := by continuity
+  continuous_invFun : Continuous invFun := by continuity
 #align homeomorph Homeomorph
 
 @[inherit_doc]
@@ -65,6 +65,8 @@ instance : EquivLike (α ≃ₜ β) α β where
   right_inv := fun h => h.right_inv
   coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
 
+instance : CoeFun (α ≃ₜ β) fun _ ↦ α → β := ⟨FunLike.coe⟩
+
 @[simp]
 theorem homeomorph_mk_coe (a : Equiv α β) (b c) : (Homeomorph.mk a b c : α → β) = a :=
   rfl
@@ -77,19 +79,15 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
   toEquiv := h.toEquiv.symm
 #align homeomorph.symm Homeomorph.symm
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (h : α ≃ₜ β) : α → β :=
-  h
-#align homeomorph.simps.apply Homeomorph.Simps.apply
+@[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
+#align homeomorph.symm_symm Homeomorph.symm_symm
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
 #align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
-initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=
@@ -107,7 +105,7 @@ theorem ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
 #align homeomorph.ext Homeomorph.ext
 
 /-- Identity map as a homeomorphism. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 protected def refl (α : Type _) [TopologicalSpace α] : α ≃ₜ α where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
@@ -137,13 +135,13 @@ theorem refl_symm : (Homeomorph.refl α).symm = Homeomorph.refl α :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous (h : α ≃ₜ β) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous_symm (h : α ≃ₜ β) : Continuous h.symm :=
   h.continuous_invFun
 #align homeomorph.continuous_symm Homeomorph.continuous_symm
@@ -188,7 +186,7 @@ def changeInv (f : α ≃ₜ β) (g : β → α) (hg : Function.RightInverse g f
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv
+    right_inv := by convert f.right_inv using 1
     continuous_toFun := f.continuous
     continuous_invFun := by convert f.symm.continuous }
 #align homeomorph.change_inv Homeomorph.changeInv
@@ -391,7 +389,7 @@ theorem comap_nhds_eq (h : α ≃ₜ β) (y : β) : comap h (𝓝 y) = 𝓝 (h.s
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 #align homeomorph.comap_nhds_eq Homeomorph.comap_nhds_eq
 
-/-- If an bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
+/-- If a bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : α ≃ β) (h₁ : Continuous e) (h₂ : IsOpenMap e) : α ≃ₜ β where
   continuous_toFun := h₁
   continuous_invFun := by
@@ -450,8 +448,7 @@ theorem comp_isOpenMap_iff' (h : α ≃ₜ β) {f : β → γ} : IsOpenMap (f �
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 
 /-- If two sets are equal, then they are homeomorphic. -/
-def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t
-    where
+def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t where
   continuous_toFun := continuous_inclusion h.subset
   continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
@@ -511,23 +508,23 @@ def prodAssoc : (α × β) × γ ≃ₜ α × β × γ where
 #align homeomorph.prod_assoc Homeomorph.prodAssoc
 
 /-- `α × {*}` is homeomorphic to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
-def prodPunit : α × PUnit ≃ₜ α where
+@[simps! (config := { fullyApplied := false }) apply]
+def prodPUnit : α × PUnit ≃ₜ α where
   toEquiv := Equiv.prodPUnit α
   continuous_toFun := continuous_fst
   continuous_invFun := continuous_id.prod_mk continuous_const
-#align homeomorph.prod_punit Homeomorph.prodPunit
+#align homeomorph.prod_punit Homeomorph.prodPUnit
 
 /-- `{*} × α` is homeomorphic to `α`. -/
 def punitProd : PUnit × α ≃ₜ α :=
-  (prodComm _ _).trans (prodPunit _)
+  (prodComm _ _).trans (prodPUnit _)
 #align homeomorph.punit_prod Homeomorph.punitProd
 
 @[simp] theorem coe_punitProd : ⇑(punitProd α) = Prod.snd := rfl
 #align homeomorph.coe_punit_prod Homeomorph.coe_punitProd
 
 /-- If both `α` and `β` have a unique element, then `α ≃ₜ β`. -/
-@[simps]
+@[simps!]
 def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
   { Equiv.equivOfUnique α β with
     continuous_toFun := continuous_const
@@ -537,7 +534,7 @@ def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
 end
 
 /-- If each `β₁ i` is homeomorphic to `β₂ i`, then `Π i, β₁ i` is homeomorphic to `Π i, β₂ i`. -/
-@[simps apply toEquiv]
+@[simps! apply toEquiv]
 def piCongrRight {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) : (∀ i, β₁ i) ≃ₜ ∀ i, β₂ i where
   continuous_toFun := continuous_pi fun i => (F i).continuous.comp <| continuous_apply i
@@ -589,32 +586,30 @@ def sigmaProdDistrib : (Σi, σ i) × β ≃ₜ Σi, σ i × β :=
 end Distrib
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
-@[simps (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α
-    where
+@[simps! (config := { fullyApplied := false })]
+def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
   toEquiv := Equiv.funUnique ι α
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
 #align homeomorph.fun_unique Homeomorph.funUnique
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
-@[simps (config := { fullyApplied := false })]
-def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1
-    where
+@[simps! (config := { fullyApplied := false })]
+def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 #align homeomorph.pi_fin_two Homeomorph.piFinTwo
 
 /-- Homeomorphism between `α² = Fin 2 → α` and `α × α`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def finTwoArrow : (Fin 2 → α) ≃ₜ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align homeomorph.fin_two_arrow Homeomorph.finTwoArrow
 
 /-- A subset of a topological space is homeomorphic to its image under a homeomorphism.
 -/
-@[simps]
+@[simps!]
 def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
   -- porting note: todo: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
@@ -623,7 +618,7 @@ def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
 #align homeomorph.image Homeomorph.image
 
 /-- `Set.univ α` is homeomorphic to `α`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def Set.univ (α : Type _) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
   toEquiv := Equiv.Set.univ α
   continuous_toFun := continuous_subtype_val
@@ -631,7 +626,7 @@ def Set.univ (α : Type _) [TopologicalSpace α] : (univ : Set α) ≃ₜ α whe
 #align homeomorph.set.univ Homeomorph.Set.univ
 
 /-- `s ×ˢ t` is homeomorphic to `s × t`. -/
-@[simps]
+@[simps!]
 def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
@@ -646,7 +641,7 @@ variable {ι : Type _}
 
 /-- The topological space `Π i, β i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not.-/
-@[simps]
+@[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type _) [∀ i, TopologicalSpace (β i)]
     [DecidablePred p] : (∀ i, β i) ≃ₜ (∀ i : { x // p x }, β i) × ∀ i : { x // ¬p x }, β i
     where
@@ -663,7 +658,7 @@ variable [DecidableEq ι] (i : ι)
 
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
-@[simps]
+@[simps!]
 def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
     (∀ j, β j) ≃ₜ β i × ∀ j : { j // j ≠ i }, β j
     where
@@ -677,9 +672,11 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
       exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
+variable (β)
+
 /-- A product of copies of a topological space can be split as the binary product of one copy and
   the product of all the remaining copies. -/
-@[simps]
+@[simps!]
 def funSplitAt : (ι → β) ≃ₜ β × ({ j // j ≠ i } → β) :=
   piSplitAt i _
 #align homeomorph.fun_split_at Homeomorph.funSplitAt
@@ -712,7 +709,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f
 /-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 
 This is not true when T2 is weakened to T1
-(see `continuous.homeo_of_equiv_compact_to_t2.t1_counterexample`). -/
+(see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
 @[simps toEquiv] -- porting note: was `@[simps]`
 def homeoOfEquivCompactToT2 [CompactSpace α] [T2Space β] {f : α ≃ β} (hf : Continuous f) : α ≃ₜ β :=
   { f with

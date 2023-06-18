@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
 /-!
-# Preimage of a `finset` under an injective map.
+# Preimage of a `Finset` under an injective map.
 -/
 
 
@@ -111,7 +111,7 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
-    s ⊆ t.map f ↔ ∃ (u : _)(_ : u ⊆ t), s = u.map f := by
+    s ⊆ t.map f ↔ ∃ (u : _) (_ : u ⊆ t), s = u.map f := by
   classical
     refine' ⟨fun h => ⟨_, preimage_subset h, _⟩, _⟩
     · rw [map_eq_image, image_preimage, filter_true_of_mem]
@@ -150,7 +150,6 @@ theorem prod_preimage' [CommMonoid β] (f : α → γ) [DecidablePred fun x => x
     (∏ x in preimage s f hf, g (f x)) = ∏ x in image f (preimage s f hf), g x :=
       Eq.symm <| prod_image <| by simpa only [mem_preimage, InjOn] using hf
     _ = ∏ x in s.filter fun x => x ∈ Set.range f, g x := by rw [image_preimage]
-
 #align finset.prod_preimage' Finset.prod_preimage'
 #align finset.sum_preimage' Finset.sum_preimage'
 

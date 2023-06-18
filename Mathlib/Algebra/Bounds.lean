@@ -148,16 +148,16 @@ variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
-theorem csupᵢ_mul (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
-  (OrderIso.mulRight a).map_csupᵢ hf
-#align csupr_mul csupᵢ_mul
-#align csupr_add csupᵢ_add
+theorem ciSup_mul (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
+  (OrderIso.mulRight a).map_ciSup hf
+#align csupr_mul ciSup_mul
+#align csupr_add ciSup_add
 
 @[to_additive]
-theorem csupᵢ_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
-  simp only [div_eq_mul_inv, csupᵢ_mul hf]
-#align csupr_div csupᵢ_div
-#align csupr_sub csupᵢ_sub
+theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
+  simp only [div_eq_mul_inv, ciSup_mul hf]
+#align csupr_div ciSup_div
+#align csupr_sub ciSup_sub
 
 end Right
 
@@ -167,10 +167,10 @@ variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
-theorem mul_csupᵢ (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
-  (OrderIso.mulLeft a).map_csupᵢ hf
-#align mul_csupr mul_csupᵢ
-#align add_csupr add_csupᵢ
+theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciSup hf
+#align mul_csupr mul_ciSup
+#align add_csupr add_ciSup
 
 end Left
 

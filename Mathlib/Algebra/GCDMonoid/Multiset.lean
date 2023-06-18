@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module algebra.gcd_monoid.multiset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -97,7 +97,7 @@ variable [DecidableEq α]
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
@@ -200,7 +200,7 @@ variable [DecidableEq α]
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold gcd
     rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
     apply (associated_normalize _).gcd_eq_left

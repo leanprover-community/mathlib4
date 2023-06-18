@@ -65,7 +65,7 @@ structure UFNode (α : Type _) where
   rank : Nat
 
 inductive UFModel.Agrees (arr : Array α) (f : α → β) : ∀ {n}, (Fin n → β) → Prop
-| mk : Agrees arr f fun i ↦ f (arr.get i)
+  | mk : Agrees arr f fun i ↦ f (arr.get i)
 
 namespace UFModel.Agrees
 
@@ -108,7 +108,7 @@ theorem set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   cases H
   refine mk' (by simp) fun j hj₁ hj₂ ↦ ?_
   suffices f (Array.set arr i x)[j] = m' ⟨j, hj₂⟩ by simp_all [Array.get_set]
-  by_cases i = j
+  by_cases h : i = j
   · subst h; rw [Array.get_set_eq, ← hm₂]
   · rw [arr.get_set_ne _ _ _ h, hm₁ ⟨j, _⟩ (Ne.symm h)]; rfl
 

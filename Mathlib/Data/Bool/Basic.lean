@@ -36,8 +36,8 @@ theorem decide_False {h} : @decide False h = false :=
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  { exact decide_eq_false $ λ j => by cases j }
-  { exact decide_eq_true $ rfl }
+  · exact decide_eq_false $ λ j => by cases j
+  · exact decide_eq_true $ rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -74,21 +74,18 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
   by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_or Bool.decide_or
 
-@[simp]
-theorem decide_eq {p q : Prop} [Decidable p] [Decidable q] : decide p = decide q ↔ (p ↔ q) :=
-  ⟨fun h ↦ (coe_decide p).symm.trans <| by simp [h], decide_congr⟩
-#align bool.to_bool_eq Bool.decide_eq
+#align bool.to_bool_eq decide_eq_decide
 
 theorem not_false' : ¬false := fun.
 #align bool.not_ff Bool.not_false'
 
 -- Porting note: new theorem
-theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) :=
-by cases a <;> cases b <;> simp
+theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
+  cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
 theorem beq_eq_decide_eq [DecidableEq α]
-  (a b : α) : (a == b) = decide (a = b) := rfl
+    (a b : α) : (a == b) = decide (a = b) := rfl
 
 -- Porting note: new theorem
 theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
@@ -115,12 +112,12 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   | .inr h => ⟨_, h⟩ ⟩
 #align bool.exists_bool Bool.exists_bool
 
-/-- If `p b` is decidable for all `b : bool`, then `∀ b, p b` is decidable -/
+/-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
 instance decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
   decidable_of_decidable_of_iff forall_bool.symm
 #align bool.decidable_forall_bool Bool.decidableForallBool
 
-/-- If `p b` is decidable for all `b : bool`, then `∃ b, p b` is decidable -/
+/-- If `p b` is decidable for all `b : Bool`, then `∃ b, p b` is decidable -/
 instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∃ b, p b) :=
   decidable_of_decidable_of_iff exists_bool.symm
 #align bool.decidable_exists_bool Bool.decidableExistsBool
@@ -307,11 +304,11 @@ theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 /-! ### De Morgan's laws for booleans-/
 
 @[simp]
-theorem not_and : ∀ a b : Bool, !(a && b) = (!a || !b) := by decide
+theorem not_and : ∀ a b : Bool, (!(a && b)) = (!a || !b) := by decide
 #align bool.bnot_band Bool.not_and
 
 @[simp]
-theorem not_or : ∀ a b : Bool, !(a || b) = (!a && !b) := by decide
+theorem not_or : ∀ a b : Bool, (!(a || b)) = (!a && !b) := by decide
 #align bool.bnot_bor Bool.not_or
 
 theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
@@ -326,8 +323,8 @@ instance linearOrder : LinearOrder Bool where
   le_trans := by unfold LE.le; decide
   le_antisymm := by unfold LE.le Preorder.toLE; decide
   le_total := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; decide
-  decidable_le := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
-  decidable_eq := inferInstance
+  decidableLE := by unfold LE.le Preorder.toLE PartialOrder.toPreorder; exact inferInstance
+  decidableEq := inferInstance
   max := or
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
@@ -373,12 +370,12 @@ theorem right_le_or : ∀ x y : Bool, y ≤ (x || y) := by decide
 theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 #align bool.bor_le Bool.or_le
 
-/-- convert a `bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
+/-- convert a `Bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
 def toNat (b : Bool) : Nat :=
   cond b 1 0
 #align bool.to_nat Bool.toNat
 
-/-- convert a `ℕ` to a `bool`, `0 -> false`, everything else -> `true` -/
+/-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
@@ -407,7 +404,7 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff
 
 /-- **Kaminski's Equation** -/

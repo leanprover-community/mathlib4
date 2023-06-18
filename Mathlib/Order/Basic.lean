@@ -4,17 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Spread
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -28,7 +23,7 @@ classes and allows to transfer order instances.
 * `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
   `IsTotal α (≤)`.
 
-### Transfering orders
+### Transferring orders
 
 - `Order.Preimage`, `Preorder.lift`: Transfers a (pre)order on `β` to an order on `α`
   using a function `f : α → β`.
@@ -37,8 +32,8 @@ classes and allows to transfer order instances.
 
 ### Extra class
 
-* `HasSup`: type class for the `⊔` notation
-* `HasInf`: type class for the `⊓` notation
+* `Sup`: type class for the `⊔` notation
+* `Inf`: type class for the `⊓` notation
 * `HasCompl`: type class for the `ᶜ` notation
 * `DenselyOrdered`: An order with no gap, i.e. for any two elements `a < b` there exists `c` such
   that `a < c < b`.
@@ -383,6 +378,10 @@ theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a 
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 #align lt_iff_le_and_ne lt_iff_le_and_ne
 
+theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
+  rw [lt_iff_le_and_ne, not_and, Classical.not_not, eq_comm]
+#align eq_iff_not_lt_of_le eq_iff_not_lt_of_le
+
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
     a = b ↔ a ≤ b ∧ ¬a < b :=
@@ -403,11 +402,17 @@ theorem eq_or_gt_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : b = a ∨ a 
   h.lt_or_eq.symm.imp Eq.symm id
 #align eq_or_gt_of_le eq_or_gt_of_le
 
+theorem gt_or_eq_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a < b ∨ b = a :=
+  (eq_or_gt_of_le h).symm
+#align gt_or_eq_of_le gt_or_eq_of_le
+
 alias Decidable.eq_or_lt_of_le ← LE.le.eq_or_lt_dec
 
 alias eq_or_lt_of_le ← LE.le.eq_or_lt
 
 alias eq_or_gt_of_le ← LE.le.eq_or_gt
+
+alias gt_or_eq_of_le ← LE.le.gt_or_eq
 
 -- Porting note: no `decidable_classical` linter
 -- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
@@ -616,12 +621,18 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
-  | { le := A_le, lt := A_lt, decidable_le := A_decidable_le,
-      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def, .. },
-    { le := B_le, lt := B_lt, decidable_le := B_decidable_le,
-      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def, .. } => by
+  | { le := A_le, lt := A_lt,
+      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
+      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
+    { le := B_le, lt := B_lt,
+      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
+      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
+      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h
-    obtain rfl : A_decidable_le = B_decidable_le := Subsingleton.elim _ _
+    obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
+    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
+    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -630,7 +641,10 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
       funext a b
       exact (A_max_def _ _).trans (B_max_def _ _).symm
     cases this
-    congr <;> exact Subsingleton.elim _ _
+    have : A_compare = B_compare := by
+      funext a b
+      exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
+    congr
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective
 
 theorem Preorder.ext {α} {A B : Preorder α}
@@ -709,8 +723,8 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
-  decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
+  decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
+  decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
@@ -859,6 +873,16 @@ theorem update_le_update_iff :
 #align update_le_update_iff update_le_update_iff
 
 @[simp]
+theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
+  simp [update_le_update_iff]
+#align update_le_update_iff' update_le_update_iff'
+
+@[simp]
+theorem update_lt_update_iff : update x i a < update x i b ↔ a < b :=
+  lt_iff_lt_of_le_iff_le' update_le_update_iff' update_le_update_iff'
+#align update_lt_update_iff update_lt_update_iff
+
+@[simp]
 theorem le_update_self_iff : x ≤ update x i a ↔ x i ≤ a := by simp [le_update_iff]
 #align le_update_self_iff le_update_self_iff
 
@@ -941,28 +965,28 @@ theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
 
 end MinMaxRec
 
-/-! ### `HasSup` and `HasInf` -/
+/-! ### `Sup` and `Inf` -/
 
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
 @[notation_class, ext]
-class HasSup (α : Type u) where
+class Sup (α : Type u) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
-#align has_sup HasSup
+#align has_sup Sup
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
 @[notation_class, ext]
-class HasInf (α : Type u) where
+class Inf (α : Type u) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
-#align has_inf HasInf
+#align has_inf Inf
 
 @[inherit_doc]
-infixl:68 " ⊔ " => HasSup.sup
+infixl:68 " ⊔ " => Sup.sup
 
 @[inherit_doc]
-infixl:69 " ⊓ " => HasInf.inf
+infixl:69 " ⊓ " => Inf.inf
 
 /-! ### Lifts of order instances -/
 
@@ -985,19 +1009,37 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 #align partial_order.lift PartialOrder.lift
 
+theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
+    [DecidableEq α] (f : α → β) (inj : Injective f)
+    [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
+    compare (f a) (f b) =
+      @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
+  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  simp only [h, compareOfLessAndEq]
+  split_ifs <;> try (first | rfl | contradiction)
+  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+    contradiction
+  · have : f a = f b := by rename_i h; exact congrArg f h
+    contradiction
+
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[HasSup α]` and `[HasInf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
-`max` fields. See note [reducible non-instances]. -/
+`max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
+fields. See note [reducible non-instances]. -/
 @[reducible]
-def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α → β) (inj : Injective f)
+def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
-  { PartialOrder.lift f inj with
+  letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
+  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-    decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-    decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1009,12 +1051,14 @@ def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α �
       intros x y
       apply inj
       rw [apply_ite f]
-      exact (hsup _ _).trans (max_def _ _) }
-#align linear_order.lift LinearOrder.lift
+      exact (hsup _ _).trans (max_def _ _)
+    compare_eq_compareOfLessAndEq := fun a b ↦
+      compare_of_injective_eq_compareOfLessAndEq a b f inj }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
-for a version that takes `[HasSup α]` and `[HasInf α]`, then uses them as `max` and `min`.
+for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`. See
+`LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
 See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
@@ -1023,6 +1067,55 @@ def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective 
     (fun _ _ ↦ (apply_ite f _ _ _).trans (max_def _ _).symm) fun _ _ ↦
     (apply_ite f _ _ _).trans (min_def _ _).symm
 #align linear_order.lift' LinearOrder.lift'
+
+/-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
+function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
+them for `max` and `min` fields. It also takes `[Ord α]` as an argument and uses them for `compare`
+fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
+`LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
+fields. See note [reducible non-instances]. -/
+@[reducible]
+def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] (f : α → β)
+    (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
+    (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
+    (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
+  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  { PartialOrder.lift f inj with
+    le_total := fun x y ↦ le_total (f x) (f y)
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
+    min := (· ⊓ ·)
+    max := (· ⊔ ·)
+    min_def := by
+      intros x y
+      apply inj
+      rw [apply_ite f]
+      exact (hinf _ _).trans (min_def _ _)
+    max_def := by
+      intros x y
+      apply inj
+      rw [apply_ite f]
+      exact (hsup _ _).trans (max_def _ _)
+    compare_eq_compareOfLessAndEq := fun a b ↦
+      (compare_f a b).trans <| compare_of_injective_eq_compareOfLessAndEq a b f inj }
+
+/-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
+function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
+as an argument and uses them for `compare` fields. See `LinearOrder.lift` for a version that
+autogenerates `compare` fields, and `LinearOrder.liftWithOrd` for one that doesn't auto-generate
+`min` and `max` fields. fields. See note [reducible non-instances]. -/
+@[reducible]
+def LinearOrder.liftWithOrd' {α β} [LinearOrder β] [Ord α] (f : α → β)
+    (inj : Injective f)
+    (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
+  @LinearOrder.liftWithOrd α β _ ⟨fun x y ↦ if f x ≤ f y then y else x⟩
+    ⟨fun x y ↦ if f x ≤ f y then x else y⟩ _ f inj
+    (fun _ _ ↦ (apply_ite f _ _ _).trans (max_def _ _).symm)
+    (fun _ _ ↦ (apply_ite f _ _ _).trans (min_def _ _).symm)
+    compare_f
 
 /-! ### Subtype of an order -/
 
@@ -1261,9 +1354,9 @@ instance linearOrder: LinearOrder PUnit where
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidable_eq := inferInstance
-  decidable_le := fun _ _ ↦ Decidable.isTrue trivial
-  decidable_lt := fun _ _ ↦ Decidable.isFalse id
+  decidableEq := inferInstance
+  decidableLE := fun _ _ ↦ Decidable.isTrue trivial
+  decidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
@@ -1335,5 +1428,5 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
-  decidable_le := Classical.decRel _
+  decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder

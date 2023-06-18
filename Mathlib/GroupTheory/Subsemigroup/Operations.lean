@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
   `S` and `T`.
 * `Subsemigroup.prodEquiv`: semigroup isomorphism between `s.prod t` and `s × t`;
 
-### Operations on `mul_hom`s
+### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
 * `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;
@@ -90,9 +90,9 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
       mul_mem' := S.add_mem' }
   left_inv _ := rfl
   right_inv _ := rfl
-  map_rel_iff':= Iff.rfl
+  map_rel_iff' := Iff.rfl
 #align subsemigroup.to_add_subsemigroup Subsemigroup.toAddSubsemigroup
-#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symmApply_coe
+#align subsemigroup.to_add_subsemigroup_symm_apply_coe Subsemigroup.toAddSubsemigroup_symm_apply_coe
 #align subsemigroup.to_add_subsemigroup_apply_coe Subsemigroup.toAddSubsemigroup_apply_coe
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
@@ -140,7 +140,7 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   map_rel_iff' := Iff.rfl
 #align add_subsemigroup.to_subsemigroup AddSubsemigroup.toSubsemigroup
 #align add_subsemigroup.to_subsemigroup_apply_coe AddSubsemigroup.toSubsemigroup_apply_coe
-#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symmApply_coe
+#align add_subsemigroup.to_subsemigroup_symm_apply_coe AddSubsemigroup.toSubsemigroup_symm_apply_coe
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
@@ -333,11 +333,11 @@ theorem map_sup (S T : Subsemigroup M) (f : M →ₙ* N) : (S ⊔ T).map f = S.m
 #align add_subsemigroup.map_sup AddSubsemigroup.map_sup
 
 @[to_additive]
-theorem map_supᵢ {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
-    (supᵢ s).map f = ⨆ i, (s i).map f :=
-  (gc_map_comap f).l_supᵢ
-#align subsemigroup.map_supr Subsemigroup.map_supᵢ
-#align add_subsemigroup.map_supr AddSubsemigroup.map_supᵢ
+theorem map_iSup {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup M) :
+    (iSup s).map f = ⨆ i, (s i).map f :=
+  (gc_map_comap f).l_iSup
+#align subsemigroup.map_supr Subsemigroup.map_iSup
+#align add_subsemigroup.map_supr AddSubsemigroup.map_iSup
 
 @[to_additive]
 theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
@@ -346,11 +346,11 @@ theorem comap_inf (S T : Subsemigroup N) (f : M →ₙ* N) : (S ⊓ T).comap f =
 #align add_subsemigroup.comap_inf AddSubsemigroup.comap_inf
 
 @[to_additive]
-theorem comap_infᵢ {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
-    (infᵢ s).comap f = ⨅ i, (s i).comap f :=
-  (gc_map_comap f).u_infᵢ
-#align subsemigroup.comap_infi Subsemigroup.comap_infᵢ
-#align add_subsemigroup.comap_infi AddSubsemigroup.comap_infᵢ
+theorem comap_iInf {ι : Sort _} (f : M →ₙ* N) (s : ι → Subsemigroup N) :
+    (iInf s).comap f = ⨅ i, (s i).comap f :=
+  (gc_map_comap f).u_iInf
+#align subsemigroup.comap_infi Subsemigroup.comap_iInf
+#align add_subsemigroup.comap_infi AddSubsemigroup.comap_iInf
 
 @[to_additive (attr := simp)]
 theorem map_bot (f : M →ₙ* N) : (⊥ : Subsemigroup M).map f = ⊥ :=
@@ -408,11 +408,11 @@ theorem comap_inf_map_of_injective (S T : Subsemigroup M) : (S.map f ⊓ T.map f
 #align add_subsemigroup.comap_inf_map_of_injective AddSubsemigroup.comap_inf_map_of_injective
 
 @[to_additive]
-theorem comap_infᵢ_map_of_injective (S : ι → Subsemigroup M) :
-    (⨅ i, (S i).map f).comap f = infᵢ S :=
-  (gciMapComap hf).u_infᵢ_l _
-#align subsemigroup.comap_infi_map_of_injective Subsemigroup.comap_infᵢ_map_of_injective
-#align add_subsemigroup.comap_infi_map_of_injective AddSubsemigroup.comap_infᵢ_map_of_injective
+theorem comap_iInf_map_of_injective (S : ι → Subsemigroup M) :
+    (⨅ i, (S i).map f).comap f = iInf S :=
+  (gciMapComap hf).u_iInf_l _
+#align subsemigroup.comap_infi_map_of_injective Subsemigroup.comap_iInf_map_of_injective
+#align add_subsemigroup.comap_infi_map_of_injective AddSubsemigroup.comap_iInf_map_of_injective
 
 @[to_additive]
 theorem comap_sup_map_of_injective (S T : Subsemigroup M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
@@ -421,11 +421,11 @@ theorem comap_sup_map_of_injective (S T : Subsemigroup M) : (S.map f ⊔ T.map f
 #align add_subsemigroup.comap_sup_map_of_injective AddSubsemigroup.comap_sup_map_of_injective
 
 @[to_additive]
-theorem comap_supᵢ_map_of_injective (S : ι → Subsemigroup M) :
-    (⨆ i, (S i).map f).comap f = supᵢ S :=
-  (gciMapComap hf).u_supᵢ_l _
-#align subsemigroup.comap_supr_map_of_injective Subsemigroup.comap_supᵢ_map_of_injective
-#align add_subsemigroup.comap_supr_map_of_injective AddSubsemigroup.comap_supᵢ_map_of_injective
+theorem comap_iSup_map_of_injective (S : ι → Subsemigroup M) :
+    (⨆ i, (S i).map f).comap f = iSup S :=
+  (gciMapComap hf).u_iSup_l _
+#align subsemigroup.comap_supr_map_of_injective Subsemigroup.comap_iSup_map_of_injective
+#align add_subsemigroup.comap_supr_map_of_injective AddSubsemigroup.comap_iSup_map_of_injective
 
 @[to_additive]
 theorem map_le_map_iff_of_injective {S T : Subsemigroup M} : S.map f ≤ T.map f ↔ S ≤ T :=
@@ -480,11 +480,11 @@ theorem map_inf_comap_of_surjective (S T : Subsemigroup N) :
 #align add_subsemigroup.map_inf_comap_of_surjective AddSubsemigroup.map_inf_comap_of_surjective
 
 @[to_additive]
-theorem map_infᵢ_comap_of_surjective (S : ι → Subsemigroup N) :
-    (⨅ i, (S i).comap f).map f = infᵢ S :=
-  (giMapComap hf).l_infᵢ_u _
-#align subsemigroup.map_infi_comap_of_surjective Subsemigroup.map_infᵢ_comap_of_surjective
-#align add_subsemigroup.map_infi_comap_of_surjective AddSubsemigroup.map_infᵢ_comap_of_surjective
+theorem map_iInf_comap_of_surjective (S : ι → Subsemigroup N) :
+    (⨅ i, (S i).comap f).map f = iInf S :=
+  (giMapComap hf).l_iInf_u _
+#align subsemigroup.map_infi_comap_of_surjective Subsemigroup.map_iInf_comap_of_surjective
+#align add_subsemigroup.map_infi_comap_of_surjective AddSubsemigroup.map_iInf_comap_of_surjective
 
 @[to_additive]
 theorem map_sup_comap_of_surjective (S T : Subsemigroup N) :
@@ -494,11 +494,11 @@ theorem map_sup_comap_of_surjective (S T : Subsemigroup N) :
 #align add_subsemigroup.map_sup_comap_of_surjective AddSubsemigroup.map_sup_comap_of_surjective
 
 @[to_additive]
-theorem map_supᵢ_comap_of_surjective (S : ι → Subsemigroup N) :
-    (⨆ i, (S i).comap f).map f = supᵢ S :=
-  (giMapComap hf).l_supᵢ_u _
-#align subsemigroup.map_supr_comap_of_surjective Subsemigroup.map_supᵢ_comap_of_surjective
-#align add_subsemigroup.map_supr_comap_of_surjective AddSubsemigroup.map_supᵢ_comap_of_surjective
+theorem map_iSup_comap_of_surjective (S : ι → Subsemigroup N) :
+    (⨆ i, (S i).comap f).map f = iSup S :=
+  (giMapComap hf).l_iSup_u _
+#align subsemigroup.map_supr_comap_of_surjective Subsemigroup.map_iSup_comap_of_surjective
+#align add_subsemigroup.map_supr_comap_of_surjective AddSubsemigroup.map_iSup_comap_of_surjective
 
 @[to_additive]
 theorem comap_le_comap_iff_of_surjective {S T : Subsemigroup N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
@@ -596,8 +596,8 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   map_mul' _ _ := rfl
 #align subsemigroup.top_equiv Subsemigroup.topEquiv
 #align add_subsemigroup.top_equiv AddSubsemigroup.topEquiv
-#align subsemigroup.top_equiv_symm_apply_coe Subsemigroup.topEquiv_symmApply_coe
-#align add_subsemigroup.top_equiv_symm_apply_coe AddSubsemigroup.topEquiv_symmApply_coe
+#align subsemigroup.top_equiv_symm_apply_coe Subsemigroup.topEquiv_symm_apply_coe
+#align add_subsemigroup.top_equiv_symm_apply_coe AddSubsemigroup.topEquiv_symm_apply_coe
 #align add_subsemigroup.top_equiv_apply AddSubsemigroup.topEquiv_apply
 
 @[to_additive (attr := simp)]
@@ -643,7 +643,8 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
 #align add_subsemigroup.prod AddSubsemigroup.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align subsemigroup.coe_prod Subsemigroup.coe_prod
 #align add_subsemigroup.coe_prod AddSubsemigroup.coe_prod
@@ -984,8 +985,8 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
 #align add_equiv.of_left_inverse AddEquiv.ofLeftInverse
 #align mul_equiv.of_left_inverse_apply MulEquiv.ofLeftInverse_apply
 #align add_equiv.of_left_inverse_apply AddEquiv.ofLeftInverse_apply
-#align mul_equiv.of_left_inverse_symm_apply MulEquiv.ofLeftInverse_symmApply
-#align add_equiv.of_left_inverse_symm_apply AddEquiv.ofLeftInverse_symmApply
+#align mul_equiv.of_left_inverse_symm_apply MulEquiv.ofLeftInverse_symm_apply
+#align add_equiv.of_left_inverse_symm_apply AddEquiv.ofLeftInverse_symm_apply
 
 /-- A `MulEquiv` `φ` between two semigroups `M` and `N` induces a `MulEquiv` between
 a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
@@ -1004,7 +1005,7 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHo
 #align add_equiv.subsemigroup_map AddEquiv.subsemigroupMap
 #align mul_equiv.subsemigroup_map_apply_coe MulEquiv.subsemigroupMap_apply_coe
 #align add_equiv.subsemigroup_map_apply_coe AddEquiv.subsemigroupMap_apply_coe
-#align mul_equiv.subsemigroup_map_symm_apply_coe MulEquiv.subsemigroupMap_symmApply_coe
-#align add_equiv.subsemigroup_map_symm_apply_coe AddEquiv.subsemigroupMap_symmApply_coe
+#align mul_equiv.subsemigroup_map_symm_apply_coe MulEquiv.subsemigroupMap_symm_apply_coe
+#align add_equiv.subsemigroup_map_symm_apply_coe AddEquiv.subsemigroupMap_symm_apply_coe
 
 end MulEquiv

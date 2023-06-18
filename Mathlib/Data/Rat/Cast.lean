@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.rat.cast
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
+! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -104,16 +104,14 @@ theorem cast_mk_of_ne_zero (a b : ℤ) (b0 : (b : α) ≠ 0) : (a /. b : α) = a
 @[norm_cast]
 theorem cast_add_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m + n : ℚ) : α) = m + n
-  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
-    by
+  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', add_def'' d₁0' d₂0']
     suffices (n₁ * (d₂ * ((d₂ : α)⁻¹ * (d₁ : α)⁻¹)) + n₂ * (d₁ * (d₂ : α)⁻¹) * (d₁ : α)⁻¹ : α)
-        = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹
-      by
+        = n₁ * (d₁ : α)⁻¹ + n₂ * (d₂ : α)⁻¹ by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, left_distrib, right_distrib, mul_inv_rev, d₁0, d₂0, mul_assoc]
       all_goals simp [d₁0, d₂0]
@@ -139,15 +137,13 @@ theorem cast_sub_of_ne_zero {m n : ℚ} (m0 : (m.den : α) ≠ 0) (n0 : (n.den :
 @[norm_cast]
 theorem cast_mul_of_ne_zero :
     ∀ {m n : ℚ}, (m.den : α) ≠ 0 → (n.den : α) ≠ 0 → ((m * n : ℚ) : α) = m * n
-  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) =>
-    by
+  | ⟨n₁, d₁, h₁, c₁⟩, ⟨n₂, d₂, h₂, c₂⟩ => fun (d₁0 : (d₁ : α) ≠ 0) (d₂0 : (d₂ : α) ≠ 0) => by
     have d₁0' : (d₁ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₁0 ; exact d₁0 Nat.cast_zero
     have d₂0' : (d₂ : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d₂0 ; exact d₂0 Nat.cast_zero
     rw [num_den', num_den', mul_def' d₁0' d₂0']
-    suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹))
-      by
+    suffices (n₁ * (n₂ * (d₂ : α)⁻¹ * (d₁ : α)⁻¹) : α) = n₁ * ((d₁ : α)⁻¹ * (n₂ * (d₂ : α)⁻¹)) by
       rw [cast_mk_of_ne_zero, cast_mk_of_ne_zero, cast_mk_of_ne_zero]
       · simpa [division_def, mul_inv_rev, d₁0, d₂0, mul_assoc]
       all_goals simp [d₁0, d₂0]
@@ -174,8 +170,7 @@ theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 @[norm_cast]
 theorem cast_inv_of_ne_zero :
   ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
-  | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) =>
-    by
+  | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
     have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0 ; exact n0 Int.cast_zero
     have _ : (d : ℤ) ≠ 0 :=
       Int.coe_nat_ne_zero.2 fun e => by rw [e] at d0 ; exact d0 Nat.cast_zero
@@ -189,8 +184,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
   have : (n⁻¹.den : ℤ) ∣ n.num := by
     conv in n⁻¹.den => rw [← @num_den n, inv_def']
     apply den_dvd
-  have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h =>
-    by
+  have : (n⁻¹.den : α) = 0 → (n.num : α) = 0 := fun h => by
     let ⟨k, e⟩ := this
     have := congr_arg ((↑) : ℤ → α) e ; rwa [Int.cast_mul, Int.cast_ofNat, h, zero_mul] at this
   rw [division_def, cast_mul_of_ne_zero md (mt this nn), cast_inv_of_ne_zero nn nd, division_def]
@@ -198,8 +192,7 @@ theorem cast_div_of_ne_zero {m n : ℚ} (md : (m.den : α) ≠ 0) (nn : (n.num :
 
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
-  | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ =>
-    by
+  | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
     refine' ⟨fun h => _, congr_arg _⟩
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
@@ -308,18 +301,18 @@ theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
--- @[mono]
+@[mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
   simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
 #align rat.cast_strict_mono Rat.cast_strictMono
 
--- @[mono]
+@[mono]
 theorem cast_mono : Monotone ((↑) : ℚ → K) :=
   cast_strictMono.monotone
 #align rat.cast_mono Rat.cast_mono
 
 /-- Coercion from `ℚ` as an order embedding. -/
-@[simps]
+@[simps!]
 def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
@@ -338,7 +331,6 @@ theorem cast_lt {m n : ℚ} : (m : K) < n ↔ m < n :=
 @[simp]
 theorem cast_nonneg {n : ℚ} : 0 ≤ (n : K) ↔ 0 ≤ n := by
       norm_cast
-
 #align rat.cast_nonneg Rat.cast_nonneg
 
 @[simp]
@@ -425,7 +417,7 @@ end LinearOrderedField
 
 -- Porting note: statement made more explicit
 @[norm_cast]
-theorem cast_id (n : ℚ) : (RatCast.ratCast n ) = n := by rfl
+theorem cast_id (n : ℚ) : Rat.cast n = n := rfl
 #align rat.cast_id Rat.cast_id
 
 @[simp]
@@ -498,24 +490,6 @@ theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : 
 instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
 #align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
-
-namespace MulOpposite
-
-variable [DivisionRing α]
-
-@[simp, norm_cast]
-theorem op_ratCast (r : ℚ) : op (r : α) = (↑r : αᵐᵒᵖ) := by
-  rw [cast_def, div_eq_mul_inv, op_mul, op_inv, op_natCast, op_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.op_rat_cast MulOpposite.op_ratCast
-
-@[simp, norm_cast]
-theorem unop_ratCast (r : ℚ) : unop (r : αᵐᵒᵖ) = r := by
-  rw [cast_def, div_eq_mul_inv, unop_mul, unop_inv, unop_natCast, unop_intCast,
-    (Commute.cast_int_right _ r.num).eq, cast_def, div_eq_mul_inv]
-#align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
-
-end MulOpposite
 
 section SMul
 

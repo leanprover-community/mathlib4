@@ -33,7 +33,7 @@ defined.
 There is an apparent duplication of many `Fintype` instances in this module,
 however they follow a pattern: if a `Fintype` instance depends on `Decidable`
 instances or other `Fintype` instances, then we need to "lower" the instance
-to be a `Finite` instance by removing the `decidable` instances and switching
+to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
 `open Classical` or the `classical` tactic the instances relying only
@@ -140,14 +140,15 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
-   
+
   · refine' h.elim fun f => _
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ FunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
 instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
-  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by convert FunLike.congr_fun h
+  Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
+    convert FunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
 instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=

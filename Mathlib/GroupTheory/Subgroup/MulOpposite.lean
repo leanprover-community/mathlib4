@@ -44,7 +44,7 @@ def opposite : Subgroup G ≃ Subgroup Gᵐᵒᵖ
 #align add_subgroup.opposite AddSubgroup.opposite
 
 /-- Bijection between a subgroup `H` and its opposite. -/
-@[to_additive (attr := simps) "Bijection between an additive subgroup `H` and its opposite."]
+@[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
 def oppositeEquiv (H : Subgroup G) : H ≃ opposite H :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 #align subgroup.opposite_equiv Subgroup.oppositeEquiv

@@ -17,13 +17,13 @@ import Mathlib.Topology.Support
 /-!
 # Monoid actions continuous in the second variable
 
-In this file we define class `HasContinuousConstSMul`. We say `HasContinuousConstSMul Γ T` if
+In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul Γ T` if
 `Γ` acts on `T` and for each `γ`, the map `x ↦ γ • x` is continuous. (This differs from
-`HasContinuousSMul`, which requires simultaneous continuity in both variables.)
+`ContinuousSMul`, which requires simultaneous continuity in both variables.)
 
 ## Main definitions
 
-* `HasContinuousConstSMul Γ T` : typeclass saying that the map `x ↦ γ • x` is continuous on `T`;
+* `ContinuousConstSMul Γ T` : typeclass saying that the map `x ↦ γ • x` is continuous on `T`;
 * `ProperlyDiscontinuousSMul`: says that the scalar multiplication `(•) : Γ → T → T`
   is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -45,40 +45,38 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 
 open Topology Pointwise Filter Set TopologicalSpace
 
-attribute [local instance] MulAction.orbitRel
-
-/-- Class `HasContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
+/-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative
 actions, including (semi)modules and algebras.
 
-Note that both `HasContinuousConstSMul α α` and `HasContinuousConstSMul αᵐᵒᵖ α` are
-weaker versions of `HasContinuousMul α`. -/
-class HasContinuousConstSMul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] : Prop where
+Note that both `ContinuousConstSMul α α` and `ContinuousConstSMul αᵐᵒᵖ α` are
+weaker versions of `ContinuousMul α`. -/
+class ContinuousConstSMul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] : Prop where
   /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
-#align has_continuous_const_smul HasContinuousConstSMul
+#align has_continuous_const_smul ContinuousConstSMul
 
-/-- Class `HasContinuousConstVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
+/-- Class `ContinuousConstVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of additive actions,
 including (semi)modules and algebras.
 
-Note that both `HasContinuousConstVAdd α α` and `HasContinuousConstVAdd αᵐᵒᵖ α` are
-weaker versions of `HasContinuousVAdd α`. -/
-class HasContinuousConstVAdd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] : Prop where
+Note that both `ContinuousConstVAdd α α` and `ContinuousConstVAdd αᵐᵒᵖ α` are
+weaker versions of `ContinuousVAdd α`. -/
+class ContinuousConstVAdd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] : Prop where
   /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
-#align has_continuous_const_vadd HasContinuousConstVAdd
+#align has_continuous_const_vadd ContinuousConstVAdd
 
-attribute [to_additive] HasContinuousConstSMul
+attribute [to_additive] ContinuousConstSMul
 
-export HasContinuousConstSMul (continuous_const_smul)
-export HasContinuousConstVAdd (continuous_const_vadd)
+export ContinuousConstSMul (continuous_const_smul)
+export ContinuousConstVAdd (continuous_const_vadd)
 
 variable {M α β : Type _}
 
 section SMul
 
-variable [TopologicalSpace α] [SMul M α] [HasContinuousConstSMul M α]
+variable [TopologicalSpace α] [SMul M α] [ContinuousConstSMul M α]
 
 @[to_additive]
 theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : Tendsto f l (𝓝 a))
@@ -109,7 +107,7 @@ theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive] -- porting note: todo: restore `continuity`
+@[to_additive (attr := continuity)]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
@@ -118,38 +116,39 @@ theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
 action is."]
-instance HasContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
-    HasContinuousConstSMul Mᵐᵒᵖ α :=
+instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
+    ContinuousConstSMul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
-#align has_continuous_const_smul.op HasContinuousConstSMul.op
-#align has_continuous_const_vadd.op HasContinuousConstVAdd.op
+#align has_continuous_const_smul.op ContinuousConstSMul.op
+#align has_continuous_const_vadd.op ContinuousConstVAdd.op
 
 @[to_additive]
-instance MulOpposite.hasContinuousConstSMul : HasContinuousConstSMul M αᵐᵒᵖ :=
+instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
   ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
-#align mul_opposite.has_continuous_const_smul MulOpposite.hasContinuousConstSMul
-#align add_opposite.has_continuous_const_vadd AddOpposite.hasContinuousConstVAdd
+#align mul_opposite.has_continuous_const_smul MulOpposite.continuousConstSMul
+#align add_opposite.has_continuous_const_vadd AddOpposite.continuousConstVAdd
 
 @[to_additive]
-instance : HasContinuousConstSMul M αᵒᵈ := ‹HasContinuousConstSMul M α›
+instance : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
 
 @[to_additive]
-instance OrderDual.hasContinuousConstSMul' : HasContinuousConstSMul Mᵒᵈ α :=
-  ‹HasContinuousConstSMul M α›
-#align order_dual.has_continuous_const_smul' OrderDual.hasContinuousConstSMul'
-#align order_dual.has_continuous_const_vadd' OrderDual.hasContinuousConstVAdd'
+instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
+  ‹ContinuousConstSMul M α›
+#align order_dual.has_continuous_const_smul' OrderDual.continuousConstSMul'
+#align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'
 
 @[to_additive]
-instance [SMul M β] [HasContinuousConstSMul M β] : HasContinuousConstSMul M (α × β) :=
+instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
+    ContinuousConstSMul M (α × β) :=
   ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
 instance {ι : Type _} {γ : ι → Type _} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
-    [∀ i, HasContinuousConstSMul M (γ i)] : HasContinuousConstSMul M (∀ i, γ i) :=
+    [∀ i, ContinuousConstSMul M (γ i)] : ContinuousConstSMul M (∀ i, γ i) :=
   ⟨fun _ => continuous_pi fun i => (continuous_apply i).const_smul _⟩
 
 @[to_additive]
-theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [HasContinuousConstSMul α β] (a : α)
+theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [ContinuousConstSMul α β] (a : α)
     {s : Set β} (hs : IsCompact s) : IsCompact (a • s) :=
   hs.image (continuous_id.const_smul a)
 #align is_compact.smul IsCompact.smul
@@ -161,17 +160,17 @@ section Monoid
 
 variable [TopologicalSpace α]
 
-variable [Monoid M] [MulAction M α] [HasContinuousConstSMul M α]
+variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
-instance Units.hasContinuousConstSMul : HasContinuousConstSMul Mˣ α
+instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α
     where continuous_const_smul m := (continuous_const_smul (m : M) : _)
-#align units.has_continuous_const_smul Units.hasContinuousConstSMul
-#align add_units.has_continuous_const_vadd AddUnits.hasContinuousConstVAdd
+#align units.has_continuous_const_smul Units.continuousConstSMul
+#align add_units.has_continuous_const_vadd AddUnits.continuousConstVAdd
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
-  ((Set.mapsTo_image _ _).closure <| continuous_id.const_smul c).image_subset
+  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 #align smul_closure_subset smul_closure_subset
 #align vadd_closure_subset vadd_closure_subset
 
@@ -182,11 +181,19 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 #align smul_closure_orbit_subset smul_closure_orbit_subset
 #align vadd_closure_orbit_subset vadd_closure_orbit_subset
 
+theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N β]
+    [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
+    IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
+  simp only [Set.setOf_forall]
+  exact isClosed_iInter fun c => isClosed_iInter fun x =>
+    isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
+#align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
+
 end Monoid
 
 section Group
 
-variable {G : Type _} [TopologicalSpace α] [Group G] [MulAction G α] [HasContinuousConstSMul G α]
+variable {G : Type _} [TopologicalSpace α] [Group G] [MulAction G α] [ContinuousConstSMul G α]
 
 @[to_additive]
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
@@ -285,7 +292,7 @@ end Group
 section GroupWithZero
 
 variable {G₀ : Type _} [TopologicalSpace α] [GroupWithZero G₀] [MulAction G₀ α]
-  [HasContinuousConstSMul G₀ α]
+  [ContinuousConstSMul G₀ α]
 
 theorem tendsto_const_smul_iff₀ {f : β → α} {l : Filter β} {a : α} {c : G₀} (hc : c ≠ 0) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
@@ -332,7 +339,7 @@ theorem interior_smul₀ {c : G₀} (hc : c ≠ 0) (s : Set α) : interior (c �
 #align interior_smul₀ interior_smul₀
 
 theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
-    [HasContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
+    [ContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · rcases eq_empty_or_nonempty s with (rfl | hs)
     · simp
@@ -359,7 +366,7 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
 normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
 theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
-    [T1Space M] [Module 𝕜 M] [HasContinuousConstSMul 𝕜 M] (c : 𝕜) :
+    [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) :
     IsClosedMap fun x : M => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
   · simp only [zero_smul]
@@ -368,7 +375,7 @@ theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid
 #align is_closed_map_smul₀ isClosedMap_smul₀
 
 theorem IsClosed.smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
-    [T1Space M] [Module 𝕜 M] [HasContinuousConstSMul 𝕜 M] (c : 𝕜) {s : Set M} (hs : IsClosed s) :
+    [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) {s : Set M} (hs : IsClosed s) :
     IsClosed (c • s) :=
   isClosedMap_smul₀ c s hs
 #align is_closed.smul₀ IsClosed.smul₀
@@ -383,13 +390,13 @@ theorem HasCompactSupport.comp_smul {β : Type _} [Zero β] {f : α → β} (h :
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 #align has_compact_support.comp_smul HasCompactSupport.comp_smul
 
-attribute [to_additive HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
+attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
 
 end GroupWithZero
 
 namespace IsUnit
 
-variable [Monoid M] [TopologicalSpace α] [MulAction M α] [HasContinuousConstSMul M α]
+variable [Monoid M] [TopologicalSpace α] [MulAction M α] [ContinuousConstSMul M α]
 
 nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
@@ -476,10 +483,11 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
   quotient. -/
 @[to_additive "The quotient map by a group action is open, i.e. the quotient by a group
 action is an open quotient. "]
-theorem isOpenMap_quotient_mk'_mul [HasContinuousConstSMul Γ T] :
+theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
+    letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
-  exact isOpen_unionᵢ fun γ => isOpenMap_smul γ U hU
+  exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 #align is_open_map_quotient_mk_mul isOpenMap_quotient_mk'_mul
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
@@ -487,8 +495,9 @@ theorem isOpenMap_quotient_mk'_mul [HasContinuousConstSMul Γ T] :
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2
 space is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
-    [LocallyCompactSpace T] [HasContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
+    [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
+  letI := MulAction.orbitRel Γ T
   set Q := Quotient (MulAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'
@@ -506,14 +515,14 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
   let V₀ := V₀₀ ∩ L₀
   have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
-    refine f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
+    refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
-    f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
+    f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
   refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
-  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_interᵢ₂.mp x_in_U₀₀ γ H, mem_interᵢ₂.mp h.1 γ H⟩
+  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
     simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
@@ -523,18 +532,18 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
 /-- The quotient of a second countable space by a group action is second countable. -/
 @[to_additive "The quotient of a second countable space by an additive group action is second
 countable."]
-theorem HasContinuousConstSMul.secondCountableTopology [SecondCountableTopology T]
-    [HasContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
+theorem ContinuousConstSMul.secondCountableTopology [SecondCountableTopology T]
+    [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
   TopologicalSpace.Quotient.secondCountableTopology isOpenMap_quotient_mk'_mul
-#align has_continuous_const_smul.second_countable_topology HasContinuousConstSMul.secondCountableTopology
-#align has_continuous_const_vadd.second_countable_topology HasContinuousConstVAdd.secondCountableTopology
+#align has_continuous_const_smul.second_countable_topology ContinuousConstSMul.secondCountableTopology
+#align has_continuous_const_vadd.second_countable_topology ContinuousConstVAdd.secondCountableTopology
 
 section nhds
 
 section MulAction
 
 variable {G₀ : Type _} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
-  [HasContinuousConstSMul G₀ α]
+  [ContinuousConstSMul G₀ α]
 
 -- porting note: generalize to a group action + `IsUnit`
 /-- Scalar multiplication preserves neighborhoods. -/
@@ -557,7 +566,7 @@ end MulAction
 section DistribMulAction
 
 variable {G₀ : Type _} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G₀ α] [TopologicalSpace α]
-  [HasContinuousConstSMul G₀ α]
+  [ContinuousConstSMul G₀ α]
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by

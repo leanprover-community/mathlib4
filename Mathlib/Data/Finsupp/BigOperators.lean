@@ -60,7 +60,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
-    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M)(_ : f ∈ l), x ∈ f.support := by
+    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
   simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
   induction' l with hd tl IH
   · simp
@@ -69,14 +69,14 @@ theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι
 #align list.mem_foldr_sup_support_iff List.mem_foldr_sup_support_iff
 
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
-    x ∈ (s.map Finsupp.support).sup ↔ ∃ (f : ι →₀ M)(_ : f ∈ s), x ∈ f.support :=
+    x ∈ (s.map Finsupp.support).sup ↔ ∃ (f : ι →₀ M) (_ : f ∈ s), x ∈ f.support :=
   Quot.inductionOn s fun _ ↦ by
     simpa only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.sup_coe, List.foldr_map]
     using List.mem_foldr_sup_support_iff
 #align multiset.mem_sup_map_support_iff Multiset.mem_sup_map_support_iff
 
 theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} :
-    x ∈ s.sup Finsupp.support ↔ ∃ (f : ι →₀ M)(_ : f ∈ s), x ∈ f.support :=
+    x ∈ s.sup Finsupp.support ↔ ∃ (f : ι →₀ M) (_ : f ∈ s), x ∈ f.support :=
   Multiset.mem_sup_map_support_iff
 #align finset.mem_sup_support_iff Finset.mem_sup_support_iff
 
@@ -93,7 +93,7 @@ theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     · rw [← List.foldr_map, ← Finset.bot_eq_empty, List.foldr_sup_eq_sup_toFinset,
         Finset.disjoint_sup_right]
       intro f hf
-      simp only [List.mem_toFinset, List.mem_map'] at hf
+      simp only [List.mem_toFinset, List.mem_map] at hf
       obtain ⟨f, hf, rfl⟩ := hf
       exact hl.left _ hf
 #align list.support_sum_eq List.support_sum_eq
@@ -128,5 +128,4 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
         List.pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint hn]
       intro x y hxy
       exact symmetric_disjoint hxy
-
 #align finset.support_sum_eq Finset.support_sum_eq

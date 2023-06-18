@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit cea83e192eae2d368ab2b500a0975667da42c920
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.AList
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Part
 
 /-!
@@ -47,6 +47,14 @@ theorem coe_nodupKeys {l : List (Sigma β)} : @NodupKeys α β l ↔ l.NodupKeys
   Iff.rfl
 #align multiset.coe_nodupkeys Multiset.coe_nodupKeys
 
+lemma nodup_keys {m : Multiset (Σ a, β a)} : m.keys.Nodup ↔ m.NodupKeys := by
+  rcases m with ⟨l⟩; rfl
+
+alias nodup_keys ↔ _ NodupKeys.nodup_keys
+
+protected lemma NodupKeys.nodup {m : Multiset (Σ a, β a)} (h : m.NodupKeys) : m.Nodup :=
+  h.nodup_keys.of_map _
+
 end Multiset
 
 /-! ### Finmap -/
@@ -54,7 +62,7 @@ end Multiset
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
   a quotient of `AList β` by permutation of the underlying list. -/
 structure Finmap (β : α → Type v) : Type max u v where
-  /-- The underlying `Multiset` of an `Finmap` -/
+  /-- The underlying `Multiset` of a `Finmap` -/
   entries : Multiset (Sigma β)
   /-- There are no duplicate keys in `entries` -/
   nodupKeys : entries.NodupKeys
@@ -65,7 +73,6 @@ def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 #align alist.to_finmap AList.toFinmap
 
--- mathport name: to_finmap
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
@@ -90,13 +97,14 @@ namespace Finmap
 
 open AList
 
+lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
+
 /-! ### Lifting from AList -/
 
 /-- Lift a permutation-respecting function on `AList` to `Finmap`. -/
 -- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
-    (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ :=
-  by
+    (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
   refine'
     (Quotient.liftOn s.entries
       (fun (l : List (Sigma β)) => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
@@ -107,7 +115,6 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     revert this
     rcases s.entries with ⟨l⟩
     exact id
-
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
@@ -182,7 +189,7 @@ theorem mem_toFinmap {a : α} {s : AList β} : a ∈ toFinmap s ↔ a ∈ s :=
 
 /-- The set of keys of a finite map. -/
 def keys (s : Finmap β) : Finset α :=
-  ⟨s.entries.keys, induction_on s keys_nodup⟩
+  ⟨s.entries.keys, s.nodupKeys.nodup_keys⟩
 #align finmap.keys Finmap.keys
 
 @[simp]
@@ -248,9 +255,9 @@ section
 
 variable [DecidableEq α]
 
-instance hasDecidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
+instance decidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
   | _, _ => decidable_of_iff _ ext_iff
-#align finmap.has_decidable_eq Finmap.hasDecidableEq
+#align finmap.has_decidable_eq Finmap.decidableEq
 
 /-! ### lookup -/
 
@@ -283,6 +290,19 @@ theorem lookup_eq_none {a} {s : Finmap β} : lookup a s = none ↔ a ∉ s :=
   induction_on s fun _ => AList.lookup_eq_none
 #align finmap.lookup_eq_none Finmap.lookup_eq_none
 
+lemma mem_lookup_iff {s : Finmap β} {a : α} {b : β a} :
+    b ∈ s.lookup a ↔ Sigma.mk a b ∈ s.entries := by
+  rcases s with ⟨⟨l⟩, hl⟩; exact List.mem_dlookup_iff hl
+
+lemma lookup_eq_some_iff {s : Finmap β} {a : α} {b : β a} :
+    s.lookup a = b ↔ Sigma.mk a b ∈ s.entries := mem_lookup_iff
+
+@[simp] lemma sigma_keys_lookup (s : Finmap β) :
+    s.keys.sigma (fun i => (s.lookup i).toFinset) = ⟨s.entries, s.nodup_entries⟩ := by
+  ext x
+  have : x ∈ s.entries → x.1 ∈ s.keys := Multiset.mem_map_of_mem _
+  simpa [lookup_eq_some_iff]
+
 @[simp]
 theorem lookup_singleton_eq {a : α} {b : β a} : (singleton a b).lookup a = some b := by
   rw [singleton, lookup_toFinmap, AList.singleton, AList.lookup, dlookup_cons_eq]
@@ -301,14 +321,43 @@ theorem mem_of_lookup_eq_some {a : α} {b : β a} {s : Finmap β} (h : s.lookup 
 #align finmap.mem_of_lookup_eq_some Finmap.mem_of_lookup_eq_some
 
 theorem ext_lookup {s₁ s₂ : Finmap β} : (∀ x, s₁.lookup x = s₂.lookup x) → s₁ = s₂ :=
-  induction_on₂ s₁ s₂ fun s₁ s₂ h =>
-    by
+  induction_on₂ s₁ s₂ fun s₁ s₂ h => by
     simp only [AList.lookup, lookup_toFinmap] at h
     rw [AList.toFinmap_eq]
     apply lookup_ext s₁.nodupKeys s₂.nodupKeys
     intro x y
     rw [h]
 #align finmap.ext_lookup Finmap.ext_lookup
+
+/-- An equivalence between `Finmap β` and pairs `(keys : Finset α, lookup : ∀ a, Option (β a))` such
+that `(lookup a).isSome ↔ a ∈ keys`. -/
+@[simps apply_coe_fst apply_coe_snd]
+def keysLookupEquiv :
+    Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
+  toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
+  invFun f := mk (f.1.1.sigma <| fun i => (f.1.2 i).toFinset).val <| by
+    refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
+    simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
+    rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
+    simpa using hx.symm.trans hy
+  left_inv f := ext <| by simp
+  right_inv := fun ⟨(s, f), hf⟩ => by
+    dsimp only at hf
+    ext
+    · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
+    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+
+@[simp] lemma keysLookupEquiv_symm_apply_keys :
+    ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
+      (keysLookupEquiv.symm f).keys = f.1.1 :=
+  keysLookupEquiv.surjective.forall.2 $ fun _ => by
+    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
+
+@[simp] lemma keysLookupEquiv_symm_apply_lookup :
+    ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
+      (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
+  keysLookupEquiv.surjective.forall.2 $ fun _ _ => by
+    simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
 /-! ### replace -/
 
@@ -348,20 +397,15 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∨ f y z)
-    (by
-      intros
-      simp [or_right_comm])
-    false
+  s.foldl (fun x y z => x || f y z)
+    (fun _ _ _ _ => by simp_rw [Bool.or_assoc, Bool.or_comm, imp_true_iff]) false
 #align finmap.any Finmap.any
 
+-- TODO: should this really return `false` if `s` is empty?
 /-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∧ f y z)
-    (by
-      intros
-      simp [and_right_comm])
-    false
+  s.foldl (fun x y z => x && f y z)
+    (fun _ _ _ _ => by simp_rw [Bool.and_assoc, Bool.and_comm, imp_true_iff]) true
 #align finmap.all Finmap.all
 
 /-! ### erase -/
@@ -482,19 +526,15 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 #align finmap.to_finmap_cons Finmap.toFinmap_cons
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
-    a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs :=
-  by
-  induction' xs with x xs <;> [skip, cases x] <;>
-      -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
-      simp only [toFinmap_cons, *, not_mem_empty, exists_or, not_mem_nil, toFinmap_nil,
-        exists_false, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff];
-      apply or_congr _ Iff.rfl
-  rename_i tail_ih fst_i snd_i
-  conv =>
-    lhs
-    rw [← and_true_iff (a = fst_i)]
-  apply and_congr_right
-  rintro ⟨⟩
+    a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
+  -- Porting note: golfed
+  induction' xs with x xs
+  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
+  cases' x with fst_i snd_i
+  -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
+  simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
+  refine (or_congr_left <| and_iff_left_of_imp ?_).symm
+  rintro rfl
   simp only [exists_eq, heq_iff_eq]
 #align finmap.mem_list_to_finmap Finmap.mem_list_toFinmap
 
@@ -553,8 +593,7 @@ theorem lookup_union_right {a} {s₁ s₂ : Finmap β} : a ∉ s₁ → lookup a
 #align finmap.lookup_union_right Finmap.lookup_union_right
 
 theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂) :
-    lookup a (s₁ ∪ s₂) = lookup a s₁ :=
-  by
+    lookup a (s₁ ∪ s₂) = lookup a s₁ := by
   by_cases h' : a ∈ s₁
   · rw [lookup_union_left h']
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
@@ -583,15 +622,15 @@ theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁
 @[simp]
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
   induction_on s₁ fun s₁ => by
-    rw [← empty_toFinmap];
-      simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    rw [← empty_toFinmap]
+    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
 #align finmap.empty_union Finmap.empty_union
 
 @[simp]
 theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
   induction_on s₁ fun s₁ => by
-    rw [← empty_toFinmap];
-      simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    rw [← empty_toFinmap]
+    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
 #align finmap.union_empty Finmap.union_empty
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :

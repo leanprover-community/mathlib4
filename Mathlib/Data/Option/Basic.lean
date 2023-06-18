@@ -12,7 +12,7 @@ import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Common
 
 /-!
 # Option of a type
@@ -59,7 +59,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-fun _ _ _=> mem_unique
+  fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
@@ -103,11 +103,6 @@ theorem joinM_eq_join : joinM = @join α :=
 theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 #align option.bind_eq_bind Option.bind_eq_bind
-
---Porting note: New lemma used to prove a theorem in Data.List.Basic
-theorem map_eq_bind (f : α → β) (o : Option α) :
-  Option.map f o = Option.bind o (some ∘ f) := by
-  cases o <;> rfl
 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
@@ -286,7 +281,6 @@ theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases
 
 @[simp]
 theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
-
 #align option.orelse_none' Option.orElse_none'
 
 #align option.orelse_none Option.orElse_none
@@ -322,7 +316,7 @@ theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
-  by_cases p <;> simp [_root_.guard, h]
+  by_cases h : p <;> simp [_root_.guard, h]
 #align option.guard_eq_some' Option.guard_eq_some'
 
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
@@ -339,7 +333,7 @@ theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a 
 
 #align option.lift_or_get_some_some Option.liftOrGet_some_some
 
-/-- Given an element of `a : option α`, a default element `b : β` and a function `α → β`, apply this
+/-- Given an element of `a : Option α`, a default element `b : β` and a function `α → β`, apply this
 function to `a` if it comes from `α`, and return `b` otherwise. -/
 def casesOn' : Option α → β → (α → β) → β
   | none, n, _ => n
@@ -366,6 +360,9 @@ theorem casesOn'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α
 theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
+
+-- porting note: workaround for leanprover/lean4#2049
+compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by

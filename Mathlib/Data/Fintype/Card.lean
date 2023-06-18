@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.fintype.card
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -20,14 +20,14 @@ import Mathlib.Tactic.Positivity
 
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Fintype.truncEquivFin`: A fintype `α` is computably equivalent to `Fin (card α)`. The
-  `trunc`-free, noncomputable version is `Fintype.equivFin`.
+  `Trunc`-free, noncomputable version is `Fintype.equivFin`.
 * `Fintype.truncEquivOfCardEq` `Fintype.equivOfCardEq`: Two fintypes of same cardinality are
   equivalent. See above.
-* `Fin.equiv_iff_eq`: `fin m ≃ fin n` iff `m = n`.
+* `Fin.equiv_iff_eq`: `Fin m ≃ Fin n` iff `m = n`.
 * `Infinite.natEmbedding`: An embedding of `ℕ` into an infinite type.
 
 We also provide the following versions of the pigeonholes principle.
-* `Fintype.exists_ne_map_eq_of_card_lt` and `isEpty_of_card_lt`: Finitely many pigeons and
+* `Fintype.exists_ne_map_eq_of_card_lt` and `isEmpty_of_card_lt`: Finitely many pigeons and
   pigeonholes. Weak formulation.
 * `Finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
   Weak formulation.
@@ -42,7 +42,7 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 ## Instances
 
 We provide `Infinite` instances for
-* specific types: `ℕ`, `ℤ`
+* specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
 
 -/
@@ -117,7 +117,6 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
-
 #align fintype.trunc_fin_bijection Fintype.truncFinBijection
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
@@ -182,7 +181,7 @@ noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ 
   (truncEquivFinOfCardEq h).out
 #align fintype.equiv_fin_of_card_eq Fintype.equivFinOfCardEq
 
-/-- Two `fintype`s with the same cardinality are (computably) in bijection.
+/-- Two `Fintype`s with the same cardinality are (computably) in bijection.
 
 See `Fintype.equivOfCardEq` for the noncomputable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
@@ -475,7 +474,6 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
       Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
-
 #align fintype.card_lt_of_injective_of_not_mem Fintype.card_lt_of_injective_of_not_mem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
@@ -548,6 +546,8 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
+
+instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
 
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
@@ -791,7 +791,7 @@ def truncOfCardLe [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
   (Fintype.truncEquivFin α).bind fun ea =>
     (Fintype.truncEquivFin β).map fun eb =>
-      ea.toEmbedding.trans ((Fin.castLe h).toEmbedding.trans eb.symm.toEmbedding)
+      ea.toEmbedding.trans ((Fin.castLE h).toEmbedding.trans eb.symm.toEmbedding)
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLe
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
@@ -866,8 +866,7 @@ theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x
 theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintype { x // p x }]
     [Fintype { x // ¬p x }] [Fintype { x // q x }] [Fintype { x // ¬q x }]
     (h : Fintype.card { x // p x } = Fintype.card { x // q x }) :
-    Fintype.card { x // ¬p x } = Fintype.card { x // ¬q x } :=
-  by
+    Fintype.card { x // ¬p x } = Fintype.card { x // ¬q x } := by
   cases nonempty_fintype α
   simp only [Fintype.card_subtype_compl, h]
 #align fintype.card_compl_eq_card_compl Fintype.card_compl_eq_card_compl
@@ -951,7 +950,7 @@ open Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
-One can obtain the relevant typeclasses via `cases fintype_or_infinite α; resetI`.
+One can obtain the relevant typeclasses via `cases fintypeOrInfinite α; resetI`.
 -/
 noncomputable def fintypeOrInfinite (α : Type _) : PSum (Fintype α) (Infinite α) :=
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
@@ -990,7 +989,6 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
         _ = s.toFinset.card := s.toFinset_card.symm
         _ < Fintype.card α :=
           Finset.card_lt_card <| by rwa [Set.toFinset_ssubset_univ, Set.ssubset_univ_iff]
-
 #align infinite.of_injective_to_set Infinite.of_injective_to_set
 
 /-- If `s : Set α` is a proper subset of `α` and `f : s → α` is surjective, then `α` is infinite. -/
@@ -1036,6 +1034,12 @@ instance [Nonempty α] : Infinite (Multiset α) :=
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) (surjective_quot_mk _)
+
+instance String.infinite : Infinite String :=
+  Infinite.of_injective (String.mk) <| by
+    intro _ _ h
+    cases h with
+    | refl => rfl
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective
@@ -1102,7 +1106,7 @@ noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
 #align infinite.nat_embedding Infinite.natEmbedding
 
 /-- See `Infinite.exists_superset_card_eq` for a version that, for a `s : Finset α`,
-provides a superset `t : finset α`, `s ⊆ t` such that `t.card` is fixed. -/
+provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
 theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩
 #align infinite.exists_subset_card_eq Infinite.exists_subset_card_eq
@@ -1110,8 +1114,7 @@ theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Fi
 /-- See `Infinite.exists_subset_card_eq` for a version that provides an arbitrary
 `s : Finset α` for any cardinality. -/
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.card ≤ n) :
-    ∃ t : Finset α, s ⊆ t ∧ t.card = n :=
-  by
+    ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
   induction' n with n IH generalizing s
   · exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
   · cases' hn.eq_or_lt with hn' hn'
@@ -1168,7 +1171,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
-      { elems := univ.bunionᵢ fun y : β => (f ⁻¹' {y}).toFinset
+      { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }
     exact key.false
 #align finite.exists_infinite_fiber Finite.exists_infinite_fiber

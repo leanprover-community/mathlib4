@@ -66,6 +66,10 @@ structure Ideal (P) [LE P] extends LowerSet P where
   directed' : DirectedOn (· ≤ ·) carrier
 #align order.ideal Order.Ideal
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections Ideal (+toLowerSet, -carrier)
+
 /-- A subset of a preorder `P` is an ideal if it is
   - nonempty
   - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
@@ -151,9 +155,9 @@ theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
 #align order.ideal.coe_subset_coe Order.Ideal.coe_subset_coe
 
 -- @[simp] -- Porting note: simp can prove this
-theorem coe_sSubset_coe : (s : Set P) ⊂ t ↔ s < t :=
+theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
-#align order.ideal.coe_ssubset_coe Order.Ideal.coe_sSubset_coe
+#align order.ideal.coe_ssubset_coe Order.Ideal.coe_ssubset_coe
 
 @[trans]
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
@@ -221,9 +225,9 @@ theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
   fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
 #align order.ideal.is_proper.ne_top Order.Ideal.IsProper.ne_top
 
-theorem IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
+theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
-#align is_coatom.is_proper Order.Ideal.IsCoatom.isProper
+#align is_coatom.is_proper IsCoatom.isProper
 
 theorem isProper_iff_ne_top : IsProper I ↔ I ≠ ⊤ :=
   ⟨fun h ↦ h.ne_top, fun h ↦ isProper_of_ne_top h⟩
@@ -237,9 +241,9 @@ theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
 #align order.ideal.is_maximal.is_coatom' Order.Ideal.IsMaximal.isCoatom'
 
-theorem IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
+theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
   { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
-#align is_coatom.is_maximal Order.Ideal.IsCoatom.isMaximal
+#align is_coatom.is_maximal IsCoatom.isMaximal
 
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
   ⟨fun h ↦ h.isCoatom, fun h ↦ IsCoatom.isMaximal h⟩
@@ -356,7 +360,7 @@ section SemilatticeSupDirected
 variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : HasInf (Ideal P) :=
+instance : Inf (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -364,12 +368,11 @@ instance : HasInf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : HasSup (Ideal P) :=
+instance : Sup (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
-        cases inter_nonempty I J
-        rename_i w h
+        cases' inter_nonempty I J with w h
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
       directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y,  ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,
@@ -435,32 +438,32 @@ instance : InfSet (Ideal P) :=
     { toLowerSet := ⨅ s ∈ S, toLowerSet s
       nonempty' :=
         ⟨⊥, by
-          rw [LowerSet.carrier_eq_coe, LowerSet.coe_infᵢ₂, Set.mem_interᵢ₂]
+          rw [LowerSet.carrier_eq_coe, LowerSet.coe_iInf₂, Set.mem_iInter₂]
           exact fun s _ ↦ s.bot_mem⟩
       directed' := fun a ha b hb ↦
         ⟨a ⊔ b,
           ⟨by
-            rw [LowerSet.carrier_eq_coe, LowerSet.coe_infᵢ₂, Set.mem_interᵢ₂] at ha hb⊢
+            rw [LowerSet.carrier_eq_coe, LowerSet.coe_iInf₂, Set.mem_iInter₂] at ha hb⊢
             exact fun s hs ↦ sup_mem (ha _ hs) (hb _ hs), le_sup_left, le_sup_right⟩⟩ }⟩
 
 variable {S : Set (Ideal P)}
 
 @[simp]
-theorem coe_infₛ : (↑(infₛ S) : Set P) = ⋂ s ∈ S, ↑s :=
-  LowerSet.coe_infᵢ₂ _
-#align order.ideal.coe_Inf Order.Ideal.coe_infₛ
+theorem coe_sInf : (↑(sInf S) : Set P) = ⋂ s ∈ S, ↑s :=
+  LowerSet.coe_iInf₂ _
+#align order.ideal.coe_Inf Order.Ideal.coe_sInf
 
 @[simp]
-theorem mem_infₛ : x ∈ infₛ S ↔ ∀ s ∈ S, x ∈ s := by
-  simp_rw [← SetLike.mem_coe, coe_infₛ, mem_interᵢ₂]
-#align order.ideal.mem_Inf Order.Ideal.mem_infₛ
+theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
+  simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
+#align order.ideal.mem_Inf Order.Ideal.mem_sInf
 
 instance : CompleteLattice (Ideal P) :=
   { (inferInstance : Lattice (Ideal P)),
     completeLatticeOfInf (Ideal P) fun S ↦ by
-      refine' ⟨fun s hs ↦ _, fun s hs ↦ by rwa [← coe_subset_coe, coe_infₛ, subset_interᵢ₂_iff]⟩
-      rw [← coe_subset_coe, coe_infₛ]
-      exact binterᵢ_subset_of_mem hs with }
+      refine' ⟨fun s hs ↦ _, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
+      rw [← coe_subset_coe, coe_sInf]
+      exact biInter_subset_of_mem hs with }
 
 end SemilatticeSupOrderBot
 
@@ -476,7 +479,6 @@ theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
     _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left
-
 #align order.ideal.eq_sup_of_le_sup Order.Ideal.eq_sup_of_le_sup
 
 theorem coe_sup_eq : ↑(I ⊔ J) = { x | ∃ i ∈ I, ∃ j ∈ J, x = i ⊔ j } :=

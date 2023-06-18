@@ -26,7 +26,7 @@ this is a small category at the next higher level.
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open NatTrans Category CategoryTheory.Functor
@@ -57,7 +57,7 @@ namespace NatTrans
 -- Porting note: the behaviour of `ext` has changed here.
 -- We need to provide a copy of the `NatTrans.ext` lemma,
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
--- or the `ext` will not retrieve it from the cache.
+-- or `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
 
@@ -139,7 +139,7 @@ open NatTrans
 
 namespace Functor
 
-/-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
+/-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
 @[simps]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=

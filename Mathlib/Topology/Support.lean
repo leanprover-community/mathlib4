@@ -181,7 +181,7 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
     (hf : Continuous f) : IsCompact (range f) := by
   cases' range_eq_image_mulTSupport_or f with h2 h2 <;> rw [h2]
-  exacts[h.image hf, (h.image hf).insert 1]
+  exacts [h.image hf, (h.image hf).insert 1]
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 
@@ -320,14 +320,14 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
     refine'
       ⟨is, (n ∩ ⋂ j ∈ js, mulTSupport (f j)ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn _) _,
         inter_subset_right _ _, fun z hz => _⟩
-    · exact (binterᵢ_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
+    · exact (biInter_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
         (Set.not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
-    · exact (binterᵢ_finset_mem is).mpr fun i hi => (ho i).mem_nhds (Finset.mem_filter.mp hi).2
+    · exact (biInter_finset_mem is).mpr fun i hi => (ho i).mem_nhds (Finset.mem_filter.mp hi).2
     · have hzn : z ∈ n := by
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_interᵢ, and_imp] at hz
+      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter, and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩
@@ -340,4 +340,3 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
 #align locally_finite.exists_finset_nhd_support_subset LocallyFinite.exists_finset_nhd_support_subset
 
 end LocallyFinite
-

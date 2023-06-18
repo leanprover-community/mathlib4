@@ -13,7 +13,7 @@ import Mathlib.Init.Data.Nat.Bitwise
 /-! # A recursion principle based on even and odd numbers. -/
 
 -- porting note: TODO:
--- Remove dependence on deprecated defintions bit0, bit1.
+-- Remove dependence on deprecated definitions bit0, bit1.
 set_option linter.deprecated false
 
 namespace Nat
