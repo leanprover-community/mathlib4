@@ -220,7 +220,7 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel $e : MeasurableSpace $e` and `⟨rfl⟩ : BorelSpace $e`. -/
+/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
 def addBorelInstance (e : Expr) : TacticM Unit := do
   let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
@@ -229,9 +229,10 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
       haveI : BorelSpace $t := ⟨rfl⟩
       ?_)
 
-/-- Given a type `$t`, an assumption `i : MeasurableSpace $t`, and an instance `[BorelSpace $t]`,
-replace `i` with `borel $t`. -/
-def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
+/-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
+replace `i` with `borel e`. -/
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $t _ _ _)
   liftMetaTactic fun m => return [← subst m i]
@@ -247,7 +248,7 @@ def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
   let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance e) (borelToRefl t)
+  i?.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
