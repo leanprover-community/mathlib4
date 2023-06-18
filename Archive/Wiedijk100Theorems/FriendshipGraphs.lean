@@ -268,10 +268,9 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   linarith
 #align theorems_100.friendship.false_of_three_le_degree Theorems100.Friendship.false_of_three_le_degree
 
--- Porting note: without `nonrec`, `interval_cases` fails.
 /-- If `d ≤ 1`, a `d`-regular friendship graph has at most one vertex, which is
   trivially a politician. -/
-nonrec theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
+theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
     ExistsPolitician G := by
   have sq : d * d = d := by interval_cases d <;> norm_num
   have h := card_of_regular hG hd
@@ -317,8 +316,7 @@ theorem existsPolitician_of_degree_eq_two (hd : G.IsRegularOfDegree 2) : ExistsP
   exact ⟨hvw.symm, Finset.mem_univ _⟩
 #align theorems_100.friendship.exists_politician_of_degree_eq_two Theorems100.Friendship.existsPolitician_of_degree_eq_two
 
--- Porting note: without `nonrec`, `interval_cases` fails.
-nonrec theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
+theorem existsPolitician_of_degree_le_two (hd : G.IsRegularOfDegree d) (h : d ≤ 2) :
     ExistsPolitician G := by
   interval_cases d
   iterate 2 apply existsPolitician_of_degree_le_one hG hd; norm_num
