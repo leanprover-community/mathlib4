@@ -152,7 +152,6 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
     (agreedContestants r p).card =
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
-  -- porting note: used to be `tidy`
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
   -- porting note: used to be `tidy`
