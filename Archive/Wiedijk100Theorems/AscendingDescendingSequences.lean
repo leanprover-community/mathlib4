@@ -8,7 +8,7 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Powerset
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Erdős–Szekeres theorem
@@ -48,8 +48,7 @@ which is a contradiction if there are more than `r * s` elements.
 -/
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
     (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t :=
-  by
+      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
@@ -143,8 +142,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
   let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
   -- which we prove here.
-  have : image ab univ ⊆ ran :=
-    by
+  have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
     simp only [mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
