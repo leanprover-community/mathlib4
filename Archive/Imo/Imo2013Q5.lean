@@ -8,10 +8,10 @@ Authors: David Renshaw
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GeomSum
-import Mathbin.Data.Rat.Defs
-import Mathbin.Data.Real.Basic
-import Mathbin.Tactic.Positivity
+import Mathlib.Algebra.GeomSum
+import Mathlib.Data.Rat.Defs
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Positivity
 
 /-!
 # IMO 2013 Q5
@@ -37,15 +37,12 @@ open scoped BigOperators
 namespace imo2013_q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
-    (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y :=
-  by
+    (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   by_contra' hxy
   have hxmy : 0 < x - y := sub_pos.mpr hxy
-  have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n :=
-    by
+  have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n := by
     intro n hn
-    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i) :=
-      by
+    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i) := by
       intro i hi
       have hx' : 1 ≤ x ^ i := one_le_pow_of_one_le hx.le i
       have hy' : 1 ≤ y ^ (n - 1 - i) := one_le_pow_of_one_le hy.le (n - 1 - i)
@@ -74,27 +71,23 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
 /-- Like le_of_all_pow_lt_succ, but with a weaker assumption for y.
 -/
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
-    (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y :=
-  by
+    (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   refine' le_of_all_pow_lt_succ hx _ h
   by_contra' hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   let y' := (x + 1) / 2
-  have h_y'_lt_x : y' < x :=
-    by
+  have h_y'_lt_x : y' < x := by
     have hh : (x + 1) / 2 < x * 2 / 2 := by linarith
     calc
       y' < x * 2 / 2 := hh
       _ = x := by field_simp
-  have h1_lt_y' : 1 < y' :=
-    by
+  have h1_lt_y' : 1 < y' := by
     have hh' : 1 * 2 / 2 < (x + 1) / 2 := by linarith
     calc
       1 = 1 * 2 / 2 := by field_simp
       _ < y' := hh'
   have h_y_lt_y' : y < y' := hy''.trans_lt h1_lt_y'
-  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n :=
-    by
+  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n := by
     intro n hn
     calc
       x ^ n - 1 < y ^ n := h n hn
@@ -124,8 +117,7 @@ theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
 theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
-    (x - 1 : ℝ) < f x :=
-  by
+    (x - 1 : ℝ) < f x := by
   have hx0 :=
     calc
       (x - 1 : ℝ) < ⌊x⌋₊ := by exact_mod_cast Nat.sub_one_lt_floor x
@@ -157,8 +149,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
 theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
     (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) :
-    f (a ^ n) = a ^ n :=
-  by
+    f (a ^ n) = a ^ n := by
   have hh0 : (a : ℝ) ^ n ≤ f (a ^ n) := by exact_mod_cast H5 (a ^ n) (one_lt_pow ha1 hn.ne')
   have hh1 :=
     calc
@@ -170,8 +161,7 @@ theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
 theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
-    (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) : f x = x :=
-  by
+    (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) : f x = x := by
   -- Choose n such that 1 + x < a^n.
   obtain ⟨N, hN⟩ := pow_unbounded_of_one_lt (1 + x) ha1
   have h_big_enough : (1 : ℚ) < a ^ N - x := lt_sub_iff_add_lt.mpr hN
@@ -200,8 +190,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H_fixed_point : ∃ a, 1 < a ∧ f a = a) :
     ∀ x, 0 < x → f x = x := by
   obtain ⟨a, ha1, hae⟩ := H_fixed_point
-  have H3 : ∀ x : ℚ, 0 < x → ∀ n : ℕ, 0 < n → ↑n * f x ≤ f (n * x) :=
-    by
+  have H3 : ∀ x : ℚ, 0 < x → ∀ n : ℕ, 0 < n → ↑n * f x ≤ f (n * x) := by
     intro x hx n hn
     cases n
     · exact (lt_irrefl 0 hn).elim
@@ -216,11 +205,9 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       _ = f ((↑pn + 1) * x + 1 * x) := by rw [one_mul]
       _ = f ((↑pn + 1 + 1) * x) := (congr_arg f (add_mul (↑pn + 1) 1 x).symm)
       _ = f (↑(pn + 2) * x) := by norm_cast
-  have H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n :=
-    by
+  have H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n := by
     intro n hn
-    have hf1 : 1 ≤ f 1 :=
-      by
+    have hf1 : 1 ≤ f 1 := by
       have a_pos : (0 : ℝ) < a := rat.cast_pos.mpr (zero_lt_one.trans ha1)
       suffices : ↑a * 1 ≤ ↑a * f 1; exact (mul_le_mul_left a_pos).mp this
       calc
@@ -234,11 +221,9 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       _ ≤ (n : ℝ) * f 1 := (mul_le_mul_of_nonneg_left hf1 (Nat.cast_nonneg _))
       _ ≤ f (n * 1) := (H3 1 zero_lt_one n hn)
       _ = f n := by rw [mul_one]
-  have H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x :=
-    by
+  have H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x := by
     intro x hx
-    have hxnm1 : ∀ n : ℕ, 0 < n → (x : ℝ) ^ n - 1 < f x ^ n :=
-      by
+    have hxnm1 : ∀ n : ℕ, 0 < n → (x : ℝ) ^ n - 1 < f x ^ n := by
       intro n hn
       calc
         (x : ℝ) ^ n - 1 < f (x ^ n) := by
@@ -247,16 +232,14 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     have hx' : 1 < (x : ℝ) := by exact_mod_cast hx
     have hxp : 0 < x := by positivity
     exact le_of_all_pow_lt_succ' hx' (f_pos_of_pos hxp H1 H4) hxnm1
-  have h_f_commutes_with_pos_nat_mul : ∀ n : ℕ, 0 < n → ∀ x : ℚ, 0 < x → f (n * x) = n * f x :=
-    by
+  have h_f_commutes_with_pos_nat_mul : ∀ n : ℕ, 0 < n → ∀ x : ℚ, 0 < x → f (n * x) = n * f x := by
     intro n hn x hx
     have h2 : f (n * x) ≤ n * f x := by
       cases n
       · exfalso; exact Nat.lt_asymm hn hn
       cases n
       · simp only [one_mul, Nat.cast_one]
-      have hfneq : f n.succ.succ = n.succ.succ :=
-        by
+      have hfneq : f n.succ.succ = n.succ.succ := by
         have :=
           fixed_point_of_gt_1 (nat.one_lt_cast.mpr (Nat.succ_lt_succ n.succ_pos)) H1 H2 H4 H5 ha1
             hae
@@ -287,8 +270,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
         (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
       _ = f (x2denom * (x2num / x2denom)) := by rw [hrat_expand2]
       _ = f x2num := by congr; field_simp; ring
-  have h_fx2num_fixed : f x2num = x2num :=
-    by
+  have h_fx2num_fixed : f x2num = x2num := by
     have hx2num_gt_one : (1 : ℚ) < (2 * x.num : ℤ) := by norm_cast;
       linarith [rat.num_pos_iff_pos.mpr hx]
     have hh := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
