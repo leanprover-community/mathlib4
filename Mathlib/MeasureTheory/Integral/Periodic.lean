@@ -19,11 +19,11 @@ import Mathlib.Topology.Algebra.Order.Floor
 In this file we prove that the half-open interval `Ioc t (t + T)` in `ℝ` is a fundamental domain of
 the action of the subgroup `ℤ ∙ T` on `ℝ`.
 
-A consequence is `add_circle.measure_preserving_mk`: the covering map from `ℝ` to the "additive
+A consequence is `AddCircle.measurePreserving_mk`: the covering map from `ℝ` to the "additive
 circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving, with respect to the restriction of Lebesgue measure to
 `Ioc t (t + T)` (upstairs) and with respect to Haar measure (downstairs).
 
-Another consequence (`function.periodic.interval_integral_add_eq` and related declarations) is that
+Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related declarations) is that
 `∫ x in t..t + T, f x = ∫ x in s..s + T, f x` for any (not necessarily measurable) function with
 period `T`.
 -/
@@ -162,7 +162,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
   have := lintegral_map_equiv f (measurable_equiv_Ioc T t).symm
   swap; exact volume
   simp only [measurable_equiv_Ioc, equiv_Ioc, QuotientAddGroup.equivIocMod, MeasurableEquiv.symm_mk,
-    MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this 
+    MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this
   rw [← (AddCircle.measurePreserving_mk T t).map_eq]
   convert this.symm using 1
   -- TODO : there is no "set_lintegral_eq_subtype"?
@@ -185,7 +185,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
   have := integral_map_equiv (measurable_equiv_Ioc T t).symm f
   simp only [measurable_equiv_Ioc, equiv_Ioc, QuotientAddGroup.equivIocMod, MeasurableEquiv.symm_mk,
-    MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk, coe_coe] at this 
+    MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk, coe_coe] at this
   rw [← (AddCircle.measurePreserving_mk T t).map_eq, set_integral_eq_subtype m, ← this]
   have : (coe : Ioc t (t + T) → AddCircle T) = (coe : ℝ → AddCircle T) ∘ (coe : _ → ℝ) := by ext1 x;
     rfl
@@ -396,4 +396,3 @@ end RealValued
 end Periodic
 
 end Function
-
