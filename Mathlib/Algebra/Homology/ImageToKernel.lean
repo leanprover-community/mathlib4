@@ -445,6 +445,9 @@ def homologyIsoCokernelImageToKernel' (w : f ≫ g = 0) :
   inv := cokernel.map _ _ (imageSubobjectIso f).inv (kernelSubobjectIso g).inv
       (by simp only [imageToKernel'_kernelSubobjectIso])
   hom_inv_id := by
+    -- Just calling `ext` here uses the higher priority `homology.ext`,
+    -- which precomposes with `homology.π`.
+    -- As we are trying to work in terms of `cokernel`, it is better to use `coequalizer.hom_ext`.
     apply coequalizer.hom_ext
     simp only [Iso.hom_inv_id_assoc, cokernel.π_desc, cokernel.π_desc_assoc, Category.assoc,
       coequalizer_as_cokernel]

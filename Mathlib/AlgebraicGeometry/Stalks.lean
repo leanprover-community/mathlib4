@@ -104,6 +104,7 @@ set_option linter.uppercaseLean3 false in
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = stalkMap (X.ofRestrict h) x := by
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun V => ?_
   induction V with | h V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
@@ -147,6 +148,7 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
       (stalkMap β (α.base x) : Z.stalk (β.base (α.base x)) ⟶ Y.stalk (α.base x)) ≫
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun U => ?_
   induction U with | h U => ?_
   cases U
@@ -165,8 +167,10 @@ either side of the equality.
 theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
     (h₁ : α = β) (x x' : X) (h₂ : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h₂]) =
-      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' :=
-  stalk_hom_ext _ fun U hx => by subst h₁; subst h₂; simp
+      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' := by
+  ext
+  substs h₁ h₂
+  simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr AlgebraicGeometry.PresheafedSpace.stalkMap.congr
 
@@ -225,6 +229,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
   induction j with | h j => ?_
   dsimp

@@ -119,6 +119,7 @@ instance : Category.{v₁} (Mat_ C) where
     rw [Finset.sum_comm]
 
 -- porting note: added because `DMatrix.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
@@ -413,11 +414,11 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
-  refine' biproduct.hom_ext _ _ (fun i => _)
+  ext i : 1
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
     embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
     ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
-  refine' biproduct.hom_ext' _ _ (fun j => _)
+  ext j : 1
   simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,
     biproduct.ι_desc, ← F.map_comp]
   congr 1
@@ -445,7 +446,7 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   map_id X := by
     dsimp
     ext i j
-    by_cases h : i = j
+    by_cases h : j = i
     . subst h; simp
     . simp [h]
 set_option linter.uppercaseLean3 false in
@@ -577,6 +578,7 @@ section
 variable {R : Type u} [Semiring R]
 
 -- porting note: added because `Matrix.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
   Matrix.ext_iff.mp h

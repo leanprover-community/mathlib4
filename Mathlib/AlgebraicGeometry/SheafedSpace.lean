@@ -90,6 +90,13 @@ instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
+-- Porting note: adding an ext lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext high]
+theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+    (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
+  PresheafedSpace.ext α β w h
+
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
