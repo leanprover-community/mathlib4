@@ -203,50 +203,44 @@ open IntermediateField
 
 variable (K)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem norm_eq_norm_adjoin [FiniteDimensional K L] [IsSeparable K L] (x : L) :
-    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K(x) L := by
-  letI := isSeparable_tower_top_of_isSeparable K K⟮⟯ L
-  let pbL := Field.powerBasisOfFiniteOfSeparable K⟮⟯ L
+    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
+  letI := isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
+  let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (IsSeparable.isIntegral K x)
-  rw [← adjoin_simple.algebra_map_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
-    smul_left_mul_matrix_algebra_map, det_block_diagonal, norm_eq_matrix_det pbx.basis]
+  rw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
+    smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
   congr
-  rw [← PowerBasis.finrank, adjoin_simple.algebra_map_gen K x]
+  rw [← PowerBasis.finrank, AdjoinSimple.algebraMap_gen K x]
 #align algebra.norm_eq_norm_adjoin Algebra.norm_eq_norm_adjoin
 
 variable {K}
 
 section IntermediateField
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
+theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
     norm K (AdjoinSimple.gen K x) = 1 := by
   rw [norm_eq_one_of_not_exists_basis]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine' isIntegral_of_mem_of_FG K⟮⟯.toSubalgebra _ x _
+  refine isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (of_fintype_basis b)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.norm_gen_eq_one IntermediateField.AdjoinSimple.norm_gen_eq_one
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-theorem IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
+theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : (minpoly K x).Splits (algebraMap K F)) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
-      ((minpoly K x).map (algebraMap K F)).roots.Prod := by
-  have injKxL := (algebraMap K⟮⟯ L).Injective
+      ((minpoly K x).map (algebraMap K F)).roots.prod := by
+  have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx]
-  have hx' : IsIntegral K (adjoin_simple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, adjoin_simple.algebra_map_gen]
-    infer_instance
-  rw [← adjoin.power_basis_gen hx, power_basis.norm_gen_eq_prod_roots] <;>
-      rw [adjoin.power_basis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
-    try simp only [adjoin_simple.algebra_map_gen _ _]
+  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
+    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
+  rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
+  rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
+  try simp only [AdjoinSimple.algebraMap_gen _ _]
   exact hf
 #align intermediate_field.adjoin_simple.norm_gen_eq_prod_roots IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots
 
@@ -260,21 +254,23 @@ variable (F) (E : Type _) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :
-    algebraMap R F (norm R pb.gen) = (@Finset.univ pb.AlgHom.Fintype).Prod fun σ => σ pb.gen := by
+    algebraMap R F (norm R pb.gen) =
+      (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
   letI := Classical.decEq F
-  rw [pb.norm_gen_eq_prod_roots hE, Fintype.prod_equiv pb.lift_equiv', Finset.prod_mem_multiset,
-    Finset.prod_eq_multiset_prod, Multiset.toFinset_val, multiset.dedup_eq_self.mpr,
-    Multiset.map_id]
+  rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
+  rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
+    (fun σ => σ pb.gen) (fun x => x) ?_]
+  rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
+    Multiset.dedup_eq_self.mpr, Multiset.map_id]
   · exact nodup_roots hfx.map
   · intro x; rfl
-  · intro σ; rw [pb.lift_equiv'_apply_coe, id.def]
+  · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
 #align algebra.norm_eq_prod_embeddings_gen Algebra.norm_eq_prod_embeddings_gen
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
-    algebraMap K F (norm K x) = ((minpoly K x).map (algebraMap K F)).roots.Prod ^ finrank K⟮⟯ L :=
-  by
+    algebraMap K F (norm K x) =
+      ((minpoly K x).map (algebraMap K F)).roots.prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 #align algebra.norm_eq_prod_roots Algebra.norm_eq_prod_roots
 
@@ -329,7 +325,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := isIntegral_of_isScalarTower hx
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).Injective, norm_eq_prod_roots]
+  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
   · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
@@ -338,6 +334,8 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
   · apply IsAlgClosed.splits_codomain
   · infer_instance
 #align algebra.is_integral_norm Algebra.isIntegral_norm
+
+#exit
 
 variable {F} (L)
 
