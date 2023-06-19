@@ -383,7 +383,8 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
 
-attribute [local semireducible] Spec.toLocallyRingedSpace
+-- Porting Note: Commented
+--attribute [local semireducible] Spec.toLocallyRingedSpace
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
@@ -431,39 +432,53 @@ theorem adjunction_unit_app {X : Scheme} :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app AlgebraicGeometry.ΓSpec.adjunction_unit_app
 
-attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
+-- Porting Note: Commented
+--attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
 -- Porting Note: Had to increase Heartbeats
-set_option maxHeartbeats 220000 in
+set_option maxHeartbeats 250000 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit :=
   IsIso.of_iso_inv (NatIso.op SpecΓIdentity) -- Porting Note: Had to make this explicit
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
-  apply (config := { instances := false }) nat_iso.is_iso_of_is_iso_app
+  -- Porting Note: Next line was
+  -- `apply (config := { instances := false }) nat_iso.is_iso_of_is_iso_app`
+  apply @NatIso.isIso_of_isIso_app _ _ _ _ _ _ ΓSpec.adjunction.counit ?_
   intro R
   rw [adjunction_counit_app]
   infer_instance
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
+-- Porting Note: Had to increase Heartbeats
+set_option maxHeartbeats 600000 in
 -- This is just
 -- `(Γ_Spec.adjunction.unit.app X).1.c.app (op ⊤) = Spec_Γ_identity.hom.app (X.presheaf.obj (op ⊤))`
 -- But lean times out when trying to unify the types of the two sides.
 theorem adjunction_unit_app_app_top (X : Scheme) :
     @Eq
-      ((Scheme.spec.obj (op <| X.presheaf.obj (op ⊤))).presheaf.obj (op ⊤) ⟶
-        ((ΓSpec.adjunction.Unit.app X).1.base _* X.presheaf).obj (op ⊤))
-      ((ΓSpec.adjunction.Unit.app X).val.c.app (op ⊤))
-      (SpecΓIdentity.Hom.app (X.presheaf.obj (op ⊤))) := by
-  have := congr_app Γ_Spec.adjunction.left_triangle X
+      ((Scheme.Spec.obj (op <| X.presheaf.obj (op ⊤))).presheaf.obj (op ⊤) ⟶
+        ((ΓSpec.adjunction.unit.app X).1.base _* X.presheaf).obj (op ⊤))
+      ((ΓSpec.adjunction.unit.app X).val.c.app (op ⊤))
+      (SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤))) := by
+  have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  rw [← is_iso.eq_comp_inv] at this
-  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
-    Γ_Spec.adjunction_counit_app] at this
-  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
+  -- Porting Notes: Slightly changed some rewrites.
+  -- Originally:
+  --  rw [← is_iso.eq_comp_inv] at this
+  --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
+  --    Γ_Spec.adjunction_counit_app] at this
+  --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
+  rw [← IsIso.eq_comp_inv] at this
+  simp only [adjunction_counit_app, locallyRingedSpaceAdjunction_counit, NatTrans.op_app, unop_op,
+    Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj, Spec.toLocallyRingedSpace_obj, Γ_obj,
+    Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
+    Spec.sheafedSpaceObj_presheaf, SpecΓIdentity_inv_app, Category.id_comp] at this
+  rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
   exact this
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
@@ -475,8 +490,9 @@ end ΓSpec
 instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
   ΓSpec.locallyRingedSpaceAdjunction.rightAdjointPreservesLimits
 
-instance Spec.preservesLimits : Limits.PreservesLimits Scheme.spec :=
+instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
   ΓSpec.adjunction.rightAdjointPreservesLimits
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
 /-- Spec is a full functor. -/
@@ -485,6 +501,7 @@ instance : Full Spec.toLocallyRingedSpace :=
 
 instance Spec.full : Full Scheme.Spec :=
   rFullOfCounitIsIso ΓSpec.adjunction
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
@@ -493,6 +510,7 @@ instance : Faithful Spec.toLocallyRingedSpace :=
 
 instance Spec.faithful : Faithful Scheme.Spec :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
 instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
@@ -506,6 +524,7 @@ instance : Reflective Spec.toLocallyRingedSpace :=
 
 instance Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry
