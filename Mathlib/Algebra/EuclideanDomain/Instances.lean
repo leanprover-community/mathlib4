@@ -46,13 +46,7 @@ instance (priority := 100) Field.toEuclideanDomain {K : Type _} [Field K] : Eucl
 { toCommRing := Field.toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by
-    -- Porting note: was `by_cases h : b = 0 <;> simp [h, mul_div_cancel']`
-    by_cases h : b = 0 <;> dsimp only
-    · dsimp only
-      rw [h, zero_mul, mul_zero, zero_div, zero_add, sub_zero]
-    · dsimp only
-      rw [mul_div_cancel' _ h]
-      simp only [ne_eq, h, not_false_iff, mul_div_cancel, sub_self, add_zero]
+    by_cases h : b = 0 <;> simp [h, mul_div_cancel']
   r := fun a b => a = 0 ∧ b ≠ 0,
   r_wellFounded :=
     WellFounded.intro fun a =>
