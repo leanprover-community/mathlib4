@@ -113,16 +113,17 @@ variable {R}
 -- Can't be a `simp` lemma because it depends on a choice of basis
 theorem trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
     trace R S s = Matrix.trace (Algebra.leftMulMatrix b s) := by
-  rw [trace_apply, LinearMap.trace_eq_matrix_trace _ b, ← to_matrix_lmul_eq]; rfl
+  rw [trace_apply, LinearMap.trace_eq_matrix_trace _ b, ← toMatrix_lmul_eq]; rfl
 #align algebra.trace_eq_matrix_trace Algebra.trace_eq_matrix_trace
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`. -/
 theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Fintype.card ι • x := by
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
-  convert Finset.sum_const _
-  ext i
-  simp [-coe_lmul_eq_mul]
+  convert Finset.sum_const x
+-- Porting note: was `simp [-coe_lmul_eq_mul]`.
+  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, Matrix.scalar_apply_eq]
+
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
@@ -325,7 +326,7 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
   rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).Injective, trace_eq_sum_roots]
   · refine' (IsIntegral.multiset_sum _).nsmul _
     intro y hy
-    rw [mem_roots_map (minpoly.ne_zero hx')] at hy 
+    rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢
     exact minpoly.aeval_of_isScalarTower R x y hy
@@ -600,4 +601,3 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
 #align trace_form_nondegenerate traceForm_nondegenerate
 
 end DetNeZero
-
