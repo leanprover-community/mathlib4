@@ -68,7 +68,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     apply
       (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
         max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
-  -- Porting note: it costs many resources to unfold this function so we obscure the definition.
+  -- Porting note: it costs many resources to unfold `ab'` so we obscure the definition:
   generalize hab : ab' = ab
   -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
   -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
