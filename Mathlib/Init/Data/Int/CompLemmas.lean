@@ -11,12 +11,12 @@ Authors: Leonardo de Moura
 
 import Mathlib.Init.Data.Int.Order
 
-namespace Int
-
 /-!
 # Auxiliary lemmas for proving that two int numerals are different
 -/
 
+
+namespace Int
 
 /-! 1. Lemmas for reducing the problem to the case where the numerals are positive -/
 
