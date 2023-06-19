@@ -766,6 +766,15 @@ instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
     top_le_sup_compl := fun p _ => Classical.em p }
 #align Prop.boolean_algebra Prop.booleanAlgebra
 
+instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
+    BooleanAlgebra (α × β) where
+  __ := Prod.heytingAlgebra
+  __ := Prod.distribLattice α β
+  himp_eq x y := by ext <;> simp [himp_eq]
+  sdiff_eq x y := by ext <;> simp [sdiff_eq]
+  inf_compl_le_bot x := by constructor <;> simp
+  top_le_sup_compl x := by constructor <;> simp
+
 instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) :=
   { Pi.sdiff, Pi.heytingAlgebra, @Pi.distribLattice ι α _ with

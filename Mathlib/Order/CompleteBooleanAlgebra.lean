@@ -213,6 +213,11 @@ theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓
   simpa only [inf_comm] using iSup_inf_eq f a
 #align inf_supr_eq inf_iSup_eq
 
+instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
+  __ := Prod.completeLattice α β
+  inf_sSup_le_iSup_inf a s := by
+    simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
+
 theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) : (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a :=
   by simp only [iSup_inf_eq]
 #align bsupr_inf_eq iSup₂_inf_eq
@@ -314,6 +319,11 @@ theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔
   @inf_iSup_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_iInf_eq
 
+instance Prod.coframe (α β) [Coframe α] [Coframe β] : Coframe (α × β) where
+  __ := Prod.completeLattice α β
+  iInf_sup_le_sup_sInf a s := by
+    simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
+
 theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
   @iSup₂_inf_eq αᵒᵈ _ _ _ _ _
 #align binfi_sup_eq iInf₂_sup_eq
@@ -372,6 +382,13 @@ instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :
     CompleteDistribLattice αᵒᵈ :=
   { OrderDual.frame, OrderDual.coframe with }
 
+instance Prod.completeDistribLattice (α β)
+    [CompleteDistribLattice α] [CompleteDistribLattice β] :
+    CompleteDistribLattice (α × β) where
+  __ := Prod.completeLattice α β
+  __ := Prod.frame α β
+  __ := Prod.coframe α β
+
 instance Pi.completeDistribLattice {ι : Type _} {π : ι → Type _}
     [∀ i, CompleteDistribLattice (π i)] : CompleteDistribLattice (∀ i, π i) :=
   { Pi.frame, Pi.coframe with }
@@ -385,6 +402,12 @@ instance OrderDual.completelyDistribLattice (α) [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
   __ := OrderDual.completeLattice α
   iInf_iSup_eq _ := iSup_iInf_eq (α := α)
+
+instance Prod.completelyDistribLattice (α β)
+    [CompletelyDistribLattice α] [CompletelyDistribLattice β] :
+    CompletelyDistribLattice (α × β) where
+  __ := Prod.completeLattice α β
+  iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
 instance Pi.completelyDistribLattice {ι : Type _} {π : ι → Type _}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
@@ -400,6 +423,12 @@ It is only completely distributive if it is also atomic.
 -/
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 #align complete_boolean_algebra CompleteBooleanAlgebra
+
+instance Prod.completeBooleanAlgebra (α β)
+    [CompleteBooleanAlgebra α] [CompleteBooleanAlgebra β] :
+    CompleteBooleanAlgebra (α × β) where
+  __ := Prod.booleanAlgebra α β
+  __ := Prod.completeDistribLattice α β
 
 instance Pi.completeBooleanAlgebra {ι : Type _} {π : ι → Type _}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) :=
@@ -453,6 +482,12 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
     CompletelyDistribLattice α, CompleteBooleanAlgebra α where
   iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
+
+instance Prod.completeAtomicBooleanAlgebra (α β)
+    [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :
+    CompleteAtomicBooleanAlgebra (α × β) where
+  __ := Prod.booleanAlgebra α β
+  __ := Prod.completelyDistribLattice α β
 
 instance Pi.completeAtomicBooleanAlgebra {ι : Type _} {π : ι → Type _}
     [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
@@ -573,6 +608,8 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
       .. } <;>
   intros <;>
   first|trivial
+
+instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=
