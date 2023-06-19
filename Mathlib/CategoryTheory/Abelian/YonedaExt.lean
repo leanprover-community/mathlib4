@@ -165,6 +165,14 @@ lemma isZero_Z_X_of_le (a : ℤ) (ha : a ≤ -n-2) : IsZero (E.Z.X a) := by
     linarith
   exact E.K.isZero_of_isStrictlyGE 0 _ (by linarith)
 
+lemma isZero_Z_X_of_ge (a : ℤ) (ha : 1 ≤ a) : IsZero (E.Z.X a) := by
+  dsimp [Z, Z.X]
+  obtain (ha'|rfl) := ha.lt_or_eq
+  . rw [if_neg (by linarith)]
+    exact E.K.isZero_of_isStrictlyLE (n+2) _ (by linarith)
+  . simp only [ite_true]
+    exact isZero_zero _
+
 noncomputable def ZToX₁ : E.Z ⟶ (HomologicalComplex.single C (ComplexShape.up ℤ) 0).obj X₁ :=
   (HomologicalComplex.toSingleEquiv X₁ E.Z (-1) 0 (by simp)).symm
     ⟨(Z.XIso E 0 (n+1) (by linarith) (by linarith)).hom ≫ E.K.d (n+1) (n+2) ≫ E.iso₁.hom, by
@@ -177,6 +185,34 @@ noncomputable def ZToX₂ (n' : ℤ) (hn' : n' + n + 1 = 0) :
       apply IsZero.eq_of_src
       apply E.isZero_Z_X_of_le
       linarith⟩
+
+lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
+    IsZero (E.Z.newHomology d) := by
+  by_cases 0 < d
+  . apply ShortComplex.isZero_homology_of_isZero_X₂
+    dsimp
+    apply isZero_Z_X_of_ge
+    linarith
+  . have hd' : d + 1 ≠ 1 := fun _ => hd (by linarith)
+    refine' IsZero.of_iso (E.hK (d+n+1)) (ShortComplex.homologyMapIso
+      ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d-1) d (d+1)
+        (by simp) (by simp)).app E.Z ≪≫ _ ≪≫
+        ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d+n) (d+n+1) (d+n+2)
+          (by simp) (by simp only [CochainComplex.next] ; linarith)).app E.K).symm))
+    refine' ShortComplex.isoMk (Z.XIso E _ _ (by linarith) (by linarith))
+      (Z.XIso E _ _ rfl (by linarith)) (Z.XIso E _ _ (by linarith) hd') _ _
+    . simp [E.Z_d_eq (d-1) d (d+n) (d+n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
+    . simp [E.Z_d_eq d (d+1) (d+n+1) (d+n+2) (by linarith) (by linarith) (by linarith) hd']
+
+lemma ZToX₁_quasi_iso (n : ℤ) :
+    IsIso ((HomologicalComplex.newHomologyFunctor _ _ n).map E.ZToX₁) := by
+  by_cases n ≠ 0
+  . refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
+      IsZero.eq_of_src (ShortComplex.isZero_homology_of_isZero_X₂ _ _) _ _⟩
+    dsimp
+    rw [if_neg h]
+    exact isZero_zero _
+  . sorry
 
 end IteratedExtCategory
 
