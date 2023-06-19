@@ -81,7 +81,7 @@ theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup
 #align nat.Ioo_eq_range' Nat.Ioo_eq_range'
 
 theorem Iio_eq_range : Iio = range := by
-  ext (b x)
+  ext b x
   rw [mem_Iio, mem_range]
 #align nat.Iio_eq_range Nat.Iio_eq_range
 

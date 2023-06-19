@@ -115,17 +115,17 @@ def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] 
   toFun f i j := f (stdBasis R (fun _ => R) i 1) j
   invFun := Matrix.vecMulLinear
   right_inv M := by
-    ext (i j)
+    ext i j
     simp only [Matrix.vecMul_stdBasis, Matrix.vecMulLinear_apply]
   left_inv f := by
     apply (Pi.basisFun R m).ext
     intro j; ext i
     simp only [Pi.basisFun_apply, Matrix.vecMul_stdBasis, Matrix.vecMulLinear_apply]
   map_add' f g := by
-    ext (i j)
+    ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
   map_smul' c f := by
-    ext (i j)
+    ext i j
     simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, Matrix.smul_apply]
 #align linear_map.to_matrix_right' LinearMap.toMatrixRight'
 
@@ -288,17 +288,17 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
   toFun f := of fun i j => f (stdBasis R (fun _ => R) j 1) i
   invFun := Matrix.mulVecLin
   right_inv M := by
-    ext (i j)
+    ext i j
     simp only [Matrix.mulVec_stdBasis, Matrix.mulVecLin_apply, of_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
     simp only [Pi.basisFun_apply, Matrix.mulVec_stdBasis, Matrix.mulVecLin_apply, of_apply]
   map_add' f g := by
-    ext (i j)
+    ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
   map_smul' c f := by
-    ext (i j)
+    ext i j
     simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
 #align linear_map.to_matrix' LinearMap.toMatrix'
 
