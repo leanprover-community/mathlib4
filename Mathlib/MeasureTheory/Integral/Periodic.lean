@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 
 ! This file was ported from Lean 3 source module measure_theory.integral.periodic
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
+! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
+import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -33,14 +34,12 @@ open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgro
 
 open scoped MeasureTheory NNReal ENNReal
 
-attribute [-instance] QuotientAddGroup.measurableSpace Quotient.instMeasurableSpace
-
 noncomputable instance AddCircle.measurableSpace {a : ℝ} : MeasurableSpace (AddCircle a) :=
-  borel (AddCircle a)
+  QuotientAddGroup.measurableSpace _
 #align add_circle.measurable_space AddCircle.measurableSpace
 
 instance AddCircle.borelSpace {a : ℝ} : BorelSpace (AddCircle a) :=
-  ⟨rfl⟩
+  QuotientAddGroup.borelSpace
 #align add_circle.borel_space AddCircle.borelSpace
 
 @[measurability]
