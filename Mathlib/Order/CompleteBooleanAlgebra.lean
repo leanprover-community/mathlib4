@@ -22,7 +22,7 @@ We distinguish two different distributivity properties:
  1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
   This is required by `Frame`, `CompleteDistribLattice`, and `CompleteBooleanAlgebra`
   (`Coframe`, etc., require the dual property).
- 2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨅ s, ⨆ i, f i (s i)`
+ 2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
   (infinite `⨅` distributes over infinite `⨆`).
   This stronger property is called "completely distributive",
   and is required by `CompletelyDistribLattice`.
