@@ -488,7 +488,7 @@ be discharged in this way, the tactic fails. -/
 syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic
-  | `(tactic| rel [$hyps,*]) => do
+  | `(tactic| rel [$hyps,*]) => withMainContext do
     let hyps ← hyps.getElems.mapM (elabTerm · none)
     let g ← getMainGoal
     g.withContext do
