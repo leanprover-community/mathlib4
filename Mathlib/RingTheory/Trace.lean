@@ -153,8 +153,6 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _
   rw [Finset.sum_apply
       i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
   apply Finset.sum_apply
-
-
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _} [Finite ι]
