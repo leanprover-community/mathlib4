@@ -249,8 +249,7 @@ for `n ≥ card s`. -/
 theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ ∀ k < n, nth p k < x} := by
   by_cases hn : ∀ hf : (setOf p).Finite, n < hf.toFinset.card
   · exact (isLeast_nth hn).csInf_eq.symm
-  · -- porting note: TODO: was push_neg at hn
-    simp only [not_forall, not_lt] at hn
+  · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
     refine' ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => _).trans sInf_empty).symm
