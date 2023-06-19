@@ -663,7 +663,8 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
-      -- Porting note: `change` → `convert_to` and `PadicSeq p` type annotation
+      -- Porting note: `change` → `convert_to` (`change` times out!)
+      -- and add `PadicSeq p` type annotation
       convert_to PadicSeq.norm (q' - const _ (q' N) : PadicSeq p) < ε
       cases' Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
@@ -968,26 +969,26 @@ variable {p : ℕ} [hp : Fact p.Prime]
 -- Porting note : remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
-isComplete := fun f => by
-  have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
-    have h := isCauSeq f ε (by exact_mod_cast hε)
-    dsimp [norm] at h
+  isComplete := fun f => by
+    have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
+      have h := isCauSeq f ε (by exact_mod_cast hε)
+      dsimp [norm] at h
+      exact_mod_cast h
+    -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
+    -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
+    cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
+    exists q
+    intro ε hε
+    cases' exists_rat_btwn hε with ε' hε'
+    norm_cast  at hε'
+    cases' hq ε' hε'.1 with N hN
+    exists N
+    intro i hi
+    have h := hN i hi
+    change norm (f i - q) < ε
+    refine lt_trans ?_ hε'.2
+    dsimp [norm]
     exact_mod_cast h
-  -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
-  -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
-  cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
-  exists q
-  intro ε hε
-  cases' exists_rat_btwn hε with ε' hε'
-  norm_cast  at hε'
-  cases' hq ε' hε'.1 with N hN
-  exists N
-  intro i hi
-  have h := hN i hi
-  change norm (f i - q) < ε
-  refine lt_trans ?_ hε'.2
-  dsimp [norm]
-  exact_mod_cast h
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :

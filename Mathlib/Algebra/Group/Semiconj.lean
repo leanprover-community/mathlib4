@@ -104,7 +104,7 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-monoid (or, more generally, on a `AddZeroClass` type) is reflexive."]
+monoid (or, more generally, on an `AddZeroClass` type) is reflexive."]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 #align semiconj_by.reflexive SemiconjBy.reflexive

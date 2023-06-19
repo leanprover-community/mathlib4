@@ -543,7 +543,7 @@ macro (name := abel) "abel" : tactic =>
 
 /--
 The tactic `abel` evaluates expressions in abelian groups.
-This is the conv tactic version, which rewrites a target which is a abel equality to `True`.
+This is the conv tactic version, which rewrites a target which is an abel equality to `True`.
 
 See also the `abel` tactic.
 -/

@@ -205,9 +205,7 @@ set_option linter.uppercaseLean3 false in
 /-- The limit cone in order to glue the sections obtained via `get_section`. -/
 def gluedLimitCone : Limits.Cone (Ran.diagram G.op ℱ.val (op U)) :=
   { pt := X -- porting note: autoporter got this wrong
-    π :=
-      { app := fun Y => getSection hu ℱ hS hx Y
-        naturality := fun Y Z f => by aesop_cat } }
+    π := { app := fun Y => getSection hu ℱ hS hx Y } }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_limit_cone CategoryTheory.RanIsSheafOfCoverLifting.gluedLimitCone
 

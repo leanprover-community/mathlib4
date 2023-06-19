@@ -456,7 +456,7 @@ end Prod
 /-! ### Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
-`λ x, (x, x)`.
+`fun x ↦ (x, x)`.
 -/
 
 
@@ -478,7 +478,7 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=

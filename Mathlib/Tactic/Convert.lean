@@ -127,7 +127,7 @@ The syntax for `convert_to` is the same as for `convert`, and it has variations 
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
 syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)?: tactic
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
