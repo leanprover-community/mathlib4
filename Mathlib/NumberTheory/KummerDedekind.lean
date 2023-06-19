@@ -204,6 +204,8 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     · exact Ideal.Quotient.mk_surjective
 #align quot_adjoin_equiv_quot_map quotAdjoinEquivQuotMap
 
+-- Porting note: Heartbeats are only needed to pass the global linter (lint mathlib)
+set_option synthInstance.maxHeartbeats 30000 in
 @[simp]
 theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
