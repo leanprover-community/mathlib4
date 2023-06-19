@@ -254,10 +254,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     intro p
     simp only [addWellApproximable, ← blimsup_or_eq_sup, ← and_or_left, ← sup_eq_union, sq]
     congr
-    refine' funext fun n => propext <| iff_self_and.mpr fun _ => _
-    -- `tauto` can finish from here but unfortunately it's very slow.
-    simp only [(em (p ∣ n)).symm, (em (p * p ∣ n)).symm, or_and_left, or_true_iff, true_and_iff,
-      or_assoc]
+    ext n
+    tauto
   have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊) → E =ᵐ[μ] C p := by
     rintro p ⟨hA, hB⟩
     rw [hE₁ p]
