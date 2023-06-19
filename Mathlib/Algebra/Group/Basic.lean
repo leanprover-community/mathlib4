@@ -1062,8 +1062,7 @@ it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` a
 satisfied. We allow restricting to a subset specified by a predicate `p`."]
 theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
-    (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c :=
-  by
+    (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
   apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
