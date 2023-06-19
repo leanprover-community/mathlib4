@@ -29,13 +29,13 @@ Typically, the norm is defined specifically for finite field extensions.
 The current definition is as general as possible and the assumption that we have
 fields or that the extension is finite is added to the lemmas as needed.
 
-We only define the norm for left multiplication (`algebra.left_mul_matrix`,
-i.e. `linear_map.mul_left`).
+We only define the norm for left multiplication (`Algebra.leftMulMatrix`,
+i.e. `LinearMap.mulLeft`).
 For now, the definitions assume `S` is commutative, so the choice doesn't
 matter anyway.
 
 See also `algebra.trace`, which is defined similarly as the trace of
-`algebra.left_mul_matrix`.
+`Algebra.leftMulMatrix`.
 
 ## References
 
@@ -122,7 +122,7 @@ protected theorem norm_algebraMap {L : Type _} [Ring L] [Algebra K L] (x : K) :
 
 section EqProdRoots
 
-/-- Given `pb : power_basis K S`, then the norm of `pb.gen` is
+/-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
 `(-1) ^ pb.dim * coeff (minpoly K pb.gen) 0`. -/
 theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
     norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
@@ -130,8 +130,8 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
     Fintype.card_fin]
 #align algebra.power_basis.norm_gen_eq_coeff_zero_minpoly Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly
 
-/-- Given `pb : power_basis R S`, then the norm of `pb.gen` is
-`((minpoly R pb.gen).map (algebra_map R F)).roots.prod`. -/
+/-- Given `pb : PowerBasis R S`, then the norm of `pb.gen` is
+`((minpoly R pb.gen).map (algebraMap R F)).roots.prod`. -/
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     (hf : (minpoly R pb.gen).Splits (algebraMap R F)) :
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).map (algebraMap R F)).roots.prod := by
@@ -179,7 +179,7 @@ theorem norm_ne_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     norm R x ≠ 0 ↔ x ≠ 0 := not_iff_not.mpr norm_eq_zero_iff
 #align algebra.norm_ne_zero_iff Algebra.norm_ne_zero_iff
 
-/-- This is `algebra.norm_eq_zero_iff` composed with `algebra.norm_apply`. -/
+/-- This is `Algebra.norm_eq_zero_iff` composed with `Algebra.norm_apply`. -/
 @[simp]
 theorem norm_eq_zero_iff' [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     LinearMap.det (LinearMap.mul R S x) = 0 ↔ x = 0 := norm_eq_zero_iff
