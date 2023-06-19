@@ -205,11 +205,11 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
   have μs : ∀ n, μ (s n) = 0 := fun n => A _ _ _ (u_pos n)
   have B : {x | f x ≤ g x}ᶜ ⊆ ⋃ n, s n := by
     intro x hx
-    simp at hx
+    simp only [Set.mem_compl_iff, Set.mem_setOf, not_le] at hx
     have L1 : ∀ᶠ n in atTop, g x + u n ≤ f x := by
       have : Tendsto (fun n => g x + u n) atTop (𝓝 (g x + (0 : ℝ≥0))) :=
         tendsto_const_nhds.add (ENNReal.tendsto_coe.2 u_lim)
-      simp at this
+      simp only [ENNReal.coe_zero, add_zero] at this
       exact eventually_le_of_tendsto_lt hx this
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
       haveI : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
@@ -330,8 +330,8 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_set_integral_nonneg {f : α 
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) : 0 ≤ᵐ[μ] f := by
   let t := hf.sigmaFiniteSet
-  suffices : 0 ≤ᵐ[μ.restrict t] f
-  exact ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
+  suffices 0 ≤ᵐ[μ.restrict t] f from
+    ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine'
     ae_nonneg_of_forall_set_integral_nonneg_of_sigmaFinite (fun s hs hμts => _) fun s hs hμts => _
@@ -442,8 +442,8 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_set_integral_eq_zero {f : �
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → (∫ x in s, f x ∂μ) = 0)
     (hf : AEFinStronglyMeasurable f μ) : f =ᵐ[μ] 0 := by
   let t := hf.sigmaFiniteSet
-  suffices : f =ᵐ[μ.restrict t] 0
-  exact ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
+  suffices f =ᵐ[μ.restrict t] 0 from
+    ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine' ae_eq_zero_of_forall_set_integral_eq_of_sigmaFinite _ _
   · intro s hs hμs
