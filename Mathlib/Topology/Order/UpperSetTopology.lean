@@ -167,6 +167,12 @@ section maps
 
 variable [Preorder α] [Preorder β]
 
+lemma upperSetTopology_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  (hf : Monotone f) : coinduced f t₁ ≤ upperSetTopology' β := by
+  intro s hs
+  rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+  exact (IsUpperSet.preimage hs hf)
+
 open Topology
 
 lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
@@ -176,12 +182,9 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
-  . intro hf
-    simp only [le_Prop_eq]
-    intro s hs
-    rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+  . intro hf s hs
     rw [IsOpen_iff_IsUpperSet] at hs
-    exact (IsUpperSet.preimage hs hf)
+    exact upperSetTopology_coinduced hf _ hs
   tfae_have 2 → 1
   . intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
