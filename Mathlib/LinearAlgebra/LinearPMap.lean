@@ -453,10 +453,9 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
   ⟨fun f => by
-    ext x
+    ext x y hxy
     · rfl
-    · intros y hxy
-      simp only [neg_apply, neg_neg]
+    · simp only [neg_apply, neg_neg]
       cases x
       congr⟩
 
@@ -475,29 +474,25 @@ theorem add_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule
 
 instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
   ⟨fun f g h => by
-    ext x
+    ext x y hxy
     · simp only [add_domain, inf_assoc]
-    · intro y hxy
-      simp only [add_apply, hxy, add_assoc]⟩
+    · simp only [add_apply, hxy, add_assoc]⟩
 
 instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) :=
   ⟨fun f g => by
-    ext x
+    ext x y hxy
     · simp only [add_domain, inf_comm]
-    · intro y hxy
-      simp only [add_apply, hxy, add_comm]⟩
+    · simp only [add_apply, hxy, add_comm]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
   ⟨fun f => by
-    ext x
+    ext x y hxy
     · simp [add_domain]
-    · intro y hxy
-      simp only [add_apply, hxy, zero_apply, zero_add],
+    · simp only [add_apply, hxy, zero_apply, zero_add],
   fun f => by
-    ext x
+    ext x y hxy
     · simp [add_domain]
-    · intro y hxy
-      simp only [add_apply, hxy, zero_apply, add_zero]⟩
+    · simp only [add_apply, hxy, zero_apply, add_zero]⟩
 
 end Add
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
 ! This file was ported from Lean 3 source module field_theory.ratfunc
-! leanprover-community/mathlib commit 67237461d7cbf410706a6a06f4d40cbb594c32dc
+! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1247,6 +1247,14 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
   · refine' algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp _)
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom RatFunc.num_div_denom
+
+theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
+  induction' x using RatFunc.induction_on with p q hq
+  rw [num_div, denom_div _ hq]
+  exact (isCoprime_mul_unit_left
+    ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).isUnit.inv.map C) _ _).2
+      (isCoprime_div_gcd_div_gcd hq)
+#align ratfunc.is_coprime_num_denom RatFunc.isCoprime_num_denom
 
 @[simp]
 theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
