@@ -535,6 +535,18 @@ theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (�
     exact ht.image _ continuous_sigmaMk.continuousOn
 #align sigma.is_preconnected_iff Sigma.isPreconnected_iff
 
+/-- A continuous map from a connected space to a disjoint union `Σ i, Y i` can be lifted to one of
+the components `Y i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
+`ContinuousMap`s. -/
+theorem Continuous.exists_lift_sigma {f : X → Σ i, Y i} (hf : Continuous f) :
+    ∃ (i : ι) (g : X → Y i), Continuous g ∧ f = Sigma.mk i ∘ g := by
+  obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i)
+  · rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
+    exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
+  rcases range_subset_range_iff_exists_comp.1 hi with ⟨g, rfl⟩
+  refine ⟨i, g, ?_, rfl⟩
+  rwa [← embedding_sigmaMk.continuous_iff] at hf
+
 theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
     IsConnected s ↔
       (∃ t, IsConnected t ∧ s = Sum.inl '' t) ∨ ∃ t, IsConnected t ∧ s = Sum.inr '' t := by
@@ -824,17 +836,6 @@ instance (priority := 100) PreirreducibleSpace.preconnectedSpace (α : Type u) [
 instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [TopologicalSpace α]
     [IrreducibleSpace α] : ConnectedSpace α where toNonempty := IrreducibleSpace.toNonempty
 #align irreducible_space.connected_space IrreducibleSpace.connectedSpace
-
-/-- A continuous map from a connected space to a `Σ`-type can be lifted to one of the
-components `π i`. -/
-theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
-    {f : α → Σ i, π i} (hf : Continuous f) :
-    ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
-  rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
-  choose g hgs hgf using range_subset_iff.1 hs.subset
-  replace hgf : f = Sigma.mk i ∘ g := (funext hgf).symm
-  refine ⟨i, g, ?_, hgf⟩
-  rwa [hgf, ← embedding_sigmaMk.continuous_iff] at hf
 
 theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
     IsOpen s → IsOpen t → s ∪ t = univ → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
