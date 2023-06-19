@@ -49,7 +49,7 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 add_decl_doc Submodule.toAddSubmonoid
 #align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
-/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
+/-- Reinterpret a `Submodule` as a `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 #align submodule.to_sub_mul_action Submodule.toSubMulAction
 
@@ -87,6 +87,9 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 #align submodule.coe_set_mk Submodule.coe_set_mk
+
+@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+  rfl
 
 -- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
@@ -343,12 +346,10 @@ instance addCommMonoid : AddCommMonoid p :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul := (· • ·)
-    -- Porting note: this used to be `ext <;> simp [add_smul, smul_add]` but `simp` tries
-    -- to prove it for the un-coerced version
-    smul_zero := fun a => Subtype.ext (smul_zero a)
-    zero_smul := fun a => Subtype.ext (zero_smul S (a : M))
-    add_smul := fun a b x => Subtype.ext (add_smul a b (x : M))
-    smul_add := fun a x y => Subtype.ext (smul_add a (x : M) (y : M)) }
+    smul_zero := fun a => by ext; simp
+    zero_smul := fun a => by ext; simp
+    add_smul := fun a b x => by ext; simp [add_smul]
+    smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
 instance module : Module R p :=
@@ -379,7 +380,7 @@ theorem injective_subtype : Injective p.subtype :=
 #align submodule.injective_subtype Submodule.injective_subtype
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
+-- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum

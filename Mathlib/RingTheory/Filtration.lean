@@ -375,7 +375,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   constructor
   · rintro H
     apply H.stablizes_of_iSup_eq
-        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_H : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
+        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
       congr 1

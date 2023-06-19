@@ -485,7 +485,7 @@ theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
   tfae_have 1 → 4
   · simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
-    exacts[isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
+    exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
   tfae_have 4 → 2
   · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
   tfae_have 2 ↔ 10
@@ -664,7 +664,7 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
 
 theorem biInter_basis_nhds [T1Space α] {ι : Sort _} {p : ι → Prop} {s : ι → Set α} {x : α}
-    (h : (𝓝 x).HasBasis p s) : (⋂ (i) (_h : p i), s i) = {x} := by
+    (h : (𝓝 x).HasBasis p s) : (⋂ (i) (_ : p i), s i) = {x} := by
   simp only [eq_singleton_iff_unique_mem, mem_iInter]
   refine' ⟨fun i hi => mem_of_mem_nhds <| h.mem_of_mem hi, fun y hy => _⟩
   contrapose! hy
@@ -716,9 +716,9 @@ theorem Dense.diff_singleton [T1Space α] {s : Set α} (hs : Dense s) (x : α) [
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
-  induction t using Finset.induction_on -- with x s _ ih hd
-  case empty =>  simpa using hs
-  case insert ih =>
+  induction t using Finset.induction_on with
+  | empty =>  simpa using hs
+  | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
 #align dense.diff_finset Dense.diff_finset
@@ -754,8 +754,8 @@ theorem ContinuousAt.eventually_ne [TopologicalSpace β] [T1Space β] {g : α �
 /-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
 `f` admits *some* limit at `a`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
-    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a :=
-  show Tendsto f (𝓝 a) (𝓝 <| f a) by rwa [eq_of_tendsto_nhds h]
+    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a := by
+  rwa [ContinuousAt, eq_of_tendsto_nhds h]
 #align continuous_at_of_tendsto_nhds continuousAt_of_tendsto_nhds
 
 @[simp]
@@ -1279,7 +1279,7 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 /-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
-`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhd_of_compact'` where we
+`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space α] {ι : Type _} [Nonempty ι] {V : ι → Set α}
@@ -1766,7 +1766,7 @@ This lemma is not an instance to avoid a loop. -/
 theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α] : NormalSpace α := by
   have key : ∀ {s t : Set α}, IsClosed t → Disjoint s t →
     ∃ U : Set (countableBasis α), (s ⊆ ⋃ u ∈ U, ↑u) ∧ (∀ u ∈ U, Disjoint (closure ↑u) t) ∧
-      ∀ n : ℕ, IsClosed (⋃ (u ∈ U) (_h : Encodable.encode u ≤ n), closure (u : Set α)) := by
+      ∀ n : ℕ, IsClosed (⋃ (u ∈ U) (_ : Encodable.encode u ≤ n), closure (u : Set α)) := by
     intro s t hc hd
     rw [disjoint_left] at hd
     have : ∀ x ∈ s, ∃ U ∈ countableBasis α, x ∈ U ∧ Disjoint (closure U) t := by
@@ -1785,8 +1785,8 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
   refine' ⟨fun s t hs ht hd => _⟩
   rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
   rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
-  refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_hv : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
-    ⋃ v ∈ V, ↑v \ ⋃ (u ∈ U) (_hu : Encodable.encode u ≤ Encodable.encode v), closure ↑u,
+  refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
+    ⋃ v ∈ V, ↑v \ ⋃ (u ∈ U) (_ : Encodable.encode u ≤ Encodable.encode v), closure ↑u,
     isOpen_biUnion fun u _ => (isOpen_of_mem_countableBasis u.2).sdiff (hVc _),
     isOpen_biUnion fun v _ => (isOpen_of_mem_countableBasis v.2).sdiff (hUc _),
     fun x hx => ?_, fun x hx => ?_, ?_⟩
@@ -1803,7 +1803,7 @@ theorem normalSpaceOfT3SecondCountable [SecondCountableTopology α] [T3Space α]
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
     cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
-    exacts[⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
+    exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable normalSpaceOfT3SecondCountable
 
 end Normality
@@ -1858,7 +1858,7 @@ instance [T5Space α] : T5Space (SeparationQuotient α) where
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply T5Space.completely_normal <;> rw [← preimage_mk_closure]
-    exacts[hd₁.preimage mk, hd₂.preimage mk]
+    exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
 

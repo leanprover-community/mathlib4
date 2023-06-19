@@ -314,7 +314,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type _} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
-    ∃ (a b : R)(h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
+    ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, MulZeroClass.mul_zero, sub_zero] at h_det

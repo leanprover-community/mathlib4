@@ -30,7 +30,7 @@ open Parser.Tactic.Conv
 `slice a b` reassociates as needed, and zooms in on the `a`-th through `b`-th morphisms.
 Thus if the current focus is `(a ≫ b) ≫ ((c ≫ d) ≫ e)`, then `slice 2 3` zooms to `b ≫ c`.
  -/
-syntax (name := slice) "slice " num num : conv
+syntax (name := slice) "slice " num ppSpace num : conv
 
 /--
 `evalSlice`
@@ -56,13 +56,13 @@ def evalSlice (a b : Nat) : TacticM Unit := do
     evalTactic (← `(conv| rw [Category.assoc]))
 
 /-- `slice` is implemented by `evalSlice`. -/
-elab "slice " a:num b:num : conv => evalSlice a.getNat b.getNat
+elab "slice " a:num ppSpace b:num : conv => evalSlice a.getNat b.getNat
 
 /--
 `slice_lhs a b => tac` zooms to the left hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
-syntax (name := sliceLHS) "slice_lhs " num num " => " convSeq : tactic
+syntax (name := sliceLHS) "slice_lhs " num ppSpace num " => " convSeq : tactic
 macro_rules
   | `(tactic| slice_lhs $a $b => $seq) =>
     `(tactic| conv => lhs; slice $a $b; ($seq:convSeq))
@@ -71,7 +71,7 @@ macro_rules
 `slice_rhs a b => tac` zooms to the right hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
-syntax (name := sliceRHS) "slice_rhs " num num " => " convSeq : tactic
+syntax (name := sliceRHS) "slice_rhs " num ppSpace num " => " convSeq : tactic
 macro_rules
   | `(tactic| slice_rhs $a $b => $seq) =>
     `(tactic| conv => rhs; slice $a $b; ($seq:convSeq))

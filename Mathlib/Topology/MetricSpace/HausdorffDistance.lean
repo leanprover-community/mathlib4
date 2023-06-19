@@ -1311,7 +1311,7 @@ theorem cthickening_eq_iInter_cthickening' {δ : ℝ} (s : Set ℝ) (hsδ : s �
 #align metric.cthickening_eq_Inter_cthickening' Metric.cthickening_eq_iInter_cthickening'
 
 theorem cthickening_eq_iInter_cthickening {δ : ℝ} (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : δ < ε), cthickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : δ < ε), cthickening ε E := by
   apply cthickening_eq_iInter_cthickening' (Ioi δ) rfl.subset
   simp_rw [inter_eq_right_iff_subset.mpr Ioc_subset_Ioi_self]
   exact fun _ hε => nonempty_Ioc.mpr hε
@@ -1329,14 +1329,14 @@ theorem cthickening_eq_iInter_thickening' {δ : ℝ} (δ_nn : 0 ≤ δ) (s : Set
 #align metric.cthickening_eq_Inter_thickening' Metric.cthickening_eq_iInter_thickening'
 
 theorem cthickening_eq_iInter_thickening {δ : ℝ} (δ_nn : 0 ≤ δ) (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : δ < ε), thickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : δ < ε), thickening ε E := by
   apply cthickening_eq_iInter_thickening' δ_nn (Ioi δ) rfl.subset
   simp_rw [inter_eq_right_iff_subset.mpr Ioc_subset_Ioi_self]
   exact fun _ hε => nonempty_Ioc.mpr hε
 #align metric.cthickening_eq_Inter_thickening Metric.cthickening_eq_iInter_thickening
 
 theorem cthickening_eq_iInter_thickening'' (δ : ℝ) (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : max 0 δ < ε), thickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : max 0 δ < ε), thickening ε E := by
   rw [← cthickening_max_zero, cthickening_eq_iInter_thickening]
   exact le_max_left _ _
 #align metric.cthickening_eq_Inter_thickening'' Metric.cthickening_eq_iInter_thickening''
@@ -1358,7 +1358,7 @@ theorem closure_eq_iInter_cthickening' (E : Set α) (s : Set ℝ)
 
 /-- The closure of a set equals the intersection of its closed thickenings of positive radii. -/
 theorem closure_eq_iInter_cthickening (E : Set α) :
-    closure E = ⋂ (δ : ℝ) (_h : 0 < δ), cthickening δ E := by
+    closure E = ⋂ (δ : ℝ) (_ : 0 < δ), cthickening δ E := by
   rw [← cthickening_zero]
   exact cthickening_eq_iInter_cthickening E
 #align metric.closure_eq_Inter_cthickening Metric.closure_eq_iInter_cthickening
@@ -1373,7 +1373,7 @@ theorem closure_eq_iInter_thickening' (E : Set α) (s : Set ℝ) (hs₀ : s ⊆ 
 
 /-- The closure of a set equals the intersection of its (open) thickenings of positive radii. -/
 theorem closure_eq_iInter_thickening (E : Set α) :
-    closure E = ⋂ (δ : ℝ) (_h : 0 < δ), thickening δ E := by
+    closure E = ⋂ (δ : ℝ) (_ : 0 < δ), thickening δ E := by
   rw [← cthickening_zero]
   exact cthickening_eq_iInter_thickening rfl.ge E
 #align metric.closure_eq_Inter_thickening Metric.closure_eq_iInter_thickening

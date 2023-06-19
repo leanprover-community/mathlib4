@@ -373,7 +373,7 @@ theorem RespectsIso.inverseImage {P : MorphismProperty D} (h : RespectsIso P) (F
     intro X Y Z e f hf
     dsimp [MorphismProperty.inverseImage]
     rw [F.map_comp]
-  exacts[h.1 (F.mapIso e) (F.map f) hf, h.2 (F.mapIso e) (F.map f) hf]
+  exacts [h.1 (F.mapIso e) (F.map f) hf, h.2 (F.mapIso e) (F.map f) hf]
 #align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
 
 theorem StableUnderComposition.inverseImage {P : MorphismProperty D} (h : StableUnderComposition P)
@@ -493,6 +493,14 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
 
 instance (W : MorphismProperty C) (D : Type _) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
+
+-- Porting note: add another `@[ext]` lemma
+-- since `ext` can't see through the definition to use `NatTrans.ext`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
+    {α β : F₁ ⟶ F₂} (h : α.app = β.app) : α = β :=
+  NatTrans.ext _ _ h
 
 /-- A constructor for `W.FunctorsInverting D` -/
 def FunctorsInverting.mk {W : MorphismProperty C} {D : Type _} [Category D] (F : C ⥤ D)
@@ -615,7 +623,7 @@ variable [ConcreteCategory C]
 
 open Function
 
-attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
 variable (C)
 

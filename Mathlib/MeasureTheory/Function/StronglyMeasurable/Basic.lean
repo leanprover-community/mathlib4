@@ -1003,7 +1003,7 @@ section sequence
 
 variable [Zero β] [TopologicalSpace β] (hf : FinStronglyMeasurable f μ)
 
-/-- A sequence of simple functions such that `∀ x, Tendsto (λ n, hf.approx n x) atTop (𝓝 (f x))`
+/-- A sequence of simple functions such that `∀ x, Tendsto (fun n ↦ hf.approx n x) atTop (𝓝 (f x))`
 and `∀ n, μ (support (hf.approx n)) < ∞`. These properties are given by
 `FinStronglyMeasurable.tendsto_approx` and `FinStronglyMeasurable.fin_support_approx`. -/
 protected noncomputable def approx : ℕ → α →ₛ β :=
@@ -1652,7 +1652,7 @@ one can select a strongly measurable function as the almost everywhere limit. -/
 theorem _root_.exists_stronglyMeasurable_limit_of_tendsto_ae [PseudoMetrizableSpace β]
     {f : ℕ → α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) atTop (𝓝 l)) :
-    ∃ (f_lim : α → β)(hf_lim_meas : StronglyMeasurable f_lim),
+    ∃ (f_lim : α → β) (hf_lim_meas : StronglyMeasurable f_lim),
       ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x)) := by
   borelize β
   obtain ⟨g, _, hg⟩ :

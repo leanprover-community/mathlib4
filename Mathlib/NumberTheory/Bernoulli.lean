@@ -53,13 +53,11 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 ## Main theorems
 
-`sum_bernoulli : ∑ k in finset.range n, (n.choose k : ℚ) * bernoulli k = 0`
+`sum_bernoulli : ∑ k in Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
 
 
-open Nat BigOperators
-
-open Finset Nat Finset.Nat PowerSeries
+open Nat BigOperators Finset Finset.Nat PowerSeries
 
 variable (A : Type _) [CommRing A] [Algebra ℚ A]
 
@@ -288,7 +286,8 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero_iff, if_false, _root_.inv_one, zero_add, one_ne_zero,
     MulZeroClass.mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
-  cases' n with n; · simp
+  cases' n with n
+  · simp
   rw [if_neg n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => by exact_mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
@@ -323,7 +322,7 @@ theorem sum_range_pow (n p : ℕ) :
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1
     let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
-    -- key step: use `power_series.coeff_mul` and then rewrite sums
+    -- key step: use `PowerSeries.coeff_mul` and then rewrite sums
     simp only [coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
     intros m h
