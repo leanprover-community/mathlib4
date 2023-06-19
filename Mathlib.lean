@@ -1730,6 +1730,7 @@ import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
 import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
+import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.Dynamics.Ergodic.Conservative
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving

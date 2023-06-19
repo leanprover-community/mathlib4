@@ -8,10 +8,10 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.MeasureTheory.Group.AddCircle
-import Mathbin.Dynamics.Ergodic.Ergodic
-import Mathbin.MeasureTheory.Covering.DensityTheorem
-import Mathbin.Data.Set.Pointwise.Iterate
+import Mathlib.MeasureTheory.Group.AddCircle
+import Mathlib.Dynamics.Ergodic.Ergodic
+import Mathlib.MeasureTheory.Covering.DensityTheorem
+import Mathlib.Data.Set.Pointwise.Iterate
 
 /-!
 # Ergodic maps of the additive circle
@@ -46,8 +46,7 @@ rational angles with denominators tending to infinity, then it must be almost em
 theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     (hs : NullMeasurableSet s volume) {ι : Type _} {l : Filter ι} [l.ne_bot] {u : ι → AddCircle T}
     (hu₁ : ∀ i, (u i +ᵥ s : Set _) =ᵐ[volume] s) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
-    s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ :=
-  by
+    s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ := by
   /- Sketch of proof:
     Assume `T = 1` for simplicity and let `μ` be the Haar measure. We may assume `s` has positive
     measure since otherwise there is nothing to prove. In this case, by Lebesgue's density theorem,
@@ -78,8 +77,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   · let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_at_top 0).mono fun j hj => div_pos hT₀ <| by positivity
-    have hδ₁ : tendsto δ l (𝓝[>] 0) :=
-      by
+    have hδ₁ : tendsto δ l (𝓝[>] 0) := by
       refine' tendsto_nhds_within_iff.mpr ⟨_, hδ₀⟩
       replace hu₂ : tendsto (fun j => T⁻¹ * 2 * n j) l at_top :=
         (tendsto_coe_nat_at_top_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
@@ -88,8 +86,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
     have hw : ∀ᶠ j in l, d ∈ closed_ball d (1 * δ j) := hδ₀.mono fun j hj => by simp [hj.le]
     exact hd _ δ hδ₁ hw
-  suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T
-    by
+  suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
     replace hd := hd.congr' this
     rwa [tendsto_const_nhds_iff, ENNReal.div_eq_one_iff hT₁ ENNReal.ofReal_ne_top] at hd 
   refine' (hu₂.eventually_gt_at_top 0).mono fun j hj => _
@@ -97,8 +94,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast; exact nat.succ_le_iff.mpr hj
   have hI₀ : μ (I j) ≠ 0 := (measure_closed_ball_pos _ d <| by positivity).Ne.symm
   have hI₁ : μ (I j) ≠ ⊤ := measure_ne_top _ _
-  have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T :=
-    by
+  have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
     rw [volume_closed_ball, mul_div, mul_div_mul_left T _ two_ne_zero,
       min_eq_right (div_le_self hT₀.le huj'), mul_comm, ← nsmul_eq_mul, ← ENNReal.ofReal_nsmul,
       nsmul_eq_mul, mul_div_cancel']
@@ -110,8 +106,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
 
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
   { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
-    ae_empty_or_univ := fun s hs hs' =>
-      by
+    ae_empty_or_univ := fun s hs hs' => by
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.nat_abs ^ j) * T)
       replace hn : 1 < n.nat_abs; · rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn 
       have hu₀ : ∀ j, addOrderOf (u j) = n.nat_abs ^ j := fun j =>
@@ -130,8 +125,7 @@ theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n 
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
 #align add_circle.ergodic_nsmul AddCircle.ergodic_nsmul
 
-theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x :=
-  by
+theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
   set f : AddCircle T → AddCircle T := fun y => n • y + x
   let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
   have he : measure_preserving e volume volume := measure_preserving_add_left volume _
