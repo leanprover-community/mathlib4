@@ -266,38 +266,6 @@ lemma ofZeros_f' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
-/-
-/-- the obvious left homology data of the short complex `c.pt ⟶ X ⟶ Y` when `c` is a limit
-kernel fork of the morphism `f : X ⟶ Y`. -/
-@[simps]
-noncomputable def kernelSequence' {X Y : C} (f : X ⟶ Y) (c : KernelFork f) (hc : IsLimit c)
-    [HasZeroObject C] :
-    LeftHomologyData (ShortComplex.mk c.ι f (KernelFork.condition c)) where
-  K := c.pt
-  H := 0
-  i := c.ι
-  π := 0
-  wi := KernelFork.condition _
-  hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by simp))
-  wπ := Subsingleton.elim _ _
-  hπ := by
-    refine' CokernelCofork.IsColimit.ofIsZeroOfEpi _ _ _
-    . dsimp
-      convert (inferInstance : Epi (𝟙 c.pt))
-      haveI := mono_of_isLimit_fork hc
-      rw [← cancel_mono c.ι]
-      simp only [Fork.ofι_pt, parallelPair_obj_zero, Functor.const_obj_obj,
-        Fork.IsLimit.lift_ι, Fork.ι_ofι, id_comp, comp_id]
-    . apply isZero_zero
-
-/-- for any morphism `f : X ⟶ Y`, this is the obvious left homology data of the short
-complex `kernel f ⟶ X ⟶ Y`. -/
-@[simps!]
-noncomputable def kernelSequence {X Y : C} (f : X ⟶ Y) [HasKernel f] [HasZeroObject C] :
-    LeftHomologyData (ShortComplex.mk (kernel.ι f) f (kernel.condition f)) := by
-  let h := kernelSequence' f _ (kernelIsKernel f)
-  exact h-/
-
 end LeftHomologyData
 
 class HasLeftHomology : Prop :=

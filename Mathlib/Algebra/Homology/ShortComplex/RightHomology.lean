@@ -15,6 +15,14 @@ that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morph
 `p : X₂ ⟶ Q` and `ι : H ⟶ Q` such that `Q` identifies to the cokernel of `f` and `H`
 to the kernel of the induced map `g' : Q ⟶ X₃`.
 
+When such a `S.RightHomologyData` exists, we shall say that `[S.HasRightHomology]`
+and we define `S.rightHomology` to be the `H` field of a chosen right homology data.
+Similarly, we define `S.opcycles` to be the `Q` field.
+
+In `Homology.lean`, when `S` has two compatible left and right homology data
+(i.e. they give the same `H` up to a canonical isomorphism), we shall define
+`[S.HasHomology]` and `S.homology` (TODO).
+
 -/
 
 namespace CategoryTheory
@@ -52,6 +60,7 @@ initialize_simps_projections RightHomologyData (-hp, -hι)
 
 namespace RightHomologyData
 
+/-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
 noncomputable def ofHasCokernelOfHasKernel [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
   S.RightHomologyData :=
@@ -69,12 +78,12 @@ attribute [reassoc (attr := simp)] wp wι
 variable {S}
 variable (h : S.RightHomologyData) {A : C}
 
-instance : Epi h.p :=
-  ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hp⟩
+instance : Epi h.p := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hp⟩
 
-instance : Mono h.ι :=
-  ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
+instance : Mono h.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
 
+/-- Any morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends
+to a morphism `Q ⟶ A` -/
 def descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.Q ⟶ A :=
 h.hp.desc (CokernelCofork.ofπ k hk)
 
@@ -83,6 +92,8 @@ lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) :
   h.p ≫ h.descQ k hk = k :=
 h.hp.fac _ WalkingParallelPair.one
 
+/-- The morphism from the (right) homology attached to a morphism
+`k : S.X₂ ⟶ A` such that `S.f ≫ k = 0`. -/
 @[simp]
 def descH (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.H ⟶ A :=
   h.ι ≫ h.descQ k hk
@@ -91,16 +102,13 @@ def descH (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.H ⟶ A :=
 `h.Q` is a cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
 def g' : h.Q ⟶ S.X₃ := h.descQ S.g S.zero
 
-@[reassoc (attr := simp)]
-lemma p_g' : h.p ≫ h.g' = S.g :=
-p_descQ _ _ _
+@[reassoc (attr := simp)] lemma p_g' : h.p ≫ h.g' = S.g := p_descQ _ _ _
 
-@[reassoc (attr := simp)]
-lemma ι_g' : h.ι ≫ h.g' = 0 := h.wι
+@[reassoc (attr := simp)] lemma ι_g' : h.ι ≫ h.g' = 0 := h.wι
 
 @[reassoc]
 lemma ι_descQ_eq_zero_of_boundary (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
-  h.ι ≫ h.descQ k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
+    h.ι ≫ h.descQ k (by rw [hx, S.zero_assoc, zero_comp]) = 0 := by
   rw [show 0 = h.ι ≫ h.g' ≫ x by simp]
   congr 1
   simp only [← cancel_epi h.p, hx, p_descQ, p_g'_assoc]
@@ -109,17 +117,28 @@ lemma ι_descQ_eq_zero_of_boundary (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k
 `ι : h.H ⟶ h.Q` is a kernel of `h.g' : h.Q ⟶ S.X₃`. -/
 def hι' : IsLimit (KernelFork.ofι h.ι h.ι_g') := h.hι
 
-def liftH (k : A ⟶ h.Q) (hk : k ≫ h.g' = 0) :
-  A ⟶ h.H :=
-h.hι.lift (KernelFork.ofι k hk)
+/-- The morphism `A ⟶ H` induced by a morphism `k : A ⟶ Q` such that `k ≫ g' = 0` -/
+def liftH (k : A ⟶ h.Q) (hk : k ≫ h.g' = 0) : A ⟶ h.H :=
+  h.hι.lift (KernelFork.ofι k hk)
 
 @[reassoc (attr := simp)]
-lemma liftH_ι (k : A ⟶ h.Q) (hk : k ≫ h.g' = 0) :
-  h.liftH k hk ≫ h.ι = k :=
-h.hι.fac (KernelFork.ofι k hk) WalkingParallelPair.zero
+lemma liftH_ι (k : A ⟶ h.Q) (hk : k ≫ h.g' = 0) : h.liftH k hk ≫ h.ι = k :=
+  h.hι.fac (KernelFork.ofι k hk) WalkingParallelPair.zero
+
+lemma isIso_p (hf : S.f = 0) : IsIso h.p :=
+  ⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
+    simp only [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩
+
+lemma isIso_ι (hg : S.g = 0) : IsIso h.ι := by
+  have ⟨φ, hφ⟩ := KernelFork.IsLimit.lift' h.hι' (𝟙 _)
+    (by rw [← cancel_epi h.p, id_comp, p_g', comp_zero, hg])
+  dsimp at hφ
+  exact ⟨φ, by rw [← cancel_mono h.ι, assoc, hφ, comp_id, id_comp], hφ⟩
 
 variable (S)
 
+/-- When the first map `S.f` is zero, this is the right homology data on `S` given
+by any limit kernel fork of `S.g` -/
 @[simps]
 def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   S.RightHomologyData where
@@ -137,10 +156,14 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_g',
     ofIsLimitKernelFork_p, id_comp]
 
+/-- When the first map `S.f` is zero, this is the right homology data on `S` given by
+the chosen `kernel S.g` -/
 @[simps!]
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.RightHomologyData :=
 ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
+/-- When the second map `S.g` is zero, this is the right homology data on `S` given
+by any colimit cokernel cofork of `S.g` -/
 @[simps]
 def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
   S.RightHomologyData where
@@ -157,10 +180,14 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).g' = 0 :=
 by rw [← cancel_epi (ofIsColimitCokernelCofork S hg c hc).p, p_g', hg, comp_zero]
 
+/-- When the second map `S.g` is zero, this is the right homology data on `S` given
+by the chosen `cokernel S.f` -/
 @[simp]
 noncomputable def ofHasCokernel [HasCokernel S.f] (hg : S.g = 0) : S.RightHomologyData :=
 ofIsColimitCokernelCofork S hg _ (cokernelIsCokernel _)
 
+/-- When both `S.f` and `S.g` are zero, the middle object `S.X₂`
+gives a right homology data on S -/
 @[simps]
 def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.RightHomologyData where
   Q := S.X₂
@@ -179,33 +206,6 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
-/-@[simps]
-noncomputable def cokernelSequence' {X Y : C} (f : X ⟶ Y) (c : CokernelCofork f)
-    (hc : IsColimit c) [HasZeroObject C] :
-    RightHomologyData (ShortComplex.mk f c.π c.condition) where
-  Q := c.pt
-  H := 0
-  p := c.π
-  ι := 0
-  wp := c.condition
-  hp := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp))
-  wι := Subsingleton.elim _ _
-  hι := by
-    refine' KernelFork.IsLimit.ofIsZeroOfMono _ _ _
-    . dsimp
-      convert (inferInstance : Mono (𝟙 c.pt))
-      haveI := epi_of_isColimit_cofork hc
-      rw [← cancel_epi c.π]
-      simp only [parallelPair_obj_one, Functor.const_obj_obj, id_comp,
-        Cofork.IsColimit.π_desc, Cofork.π_ofπ, comp_id]
-    . apply isZero_zero
-
-@[simps!]
-noncomputable def cokernelSequence {X Y : C} (f : X ⟶ Y) [HasCokernel f] [HasZeroObject C] :
-    RightHomologyData (ShortComplex.mk f (cokernel.π f) (cokernel.condition f)) := by
-  let h := cokernelSequence' f _ (cokernelIsCokernel f)
-  exact h-/
-
 end RightHomologyData
 
 class HasRightHomology : Prop :=
@@ -218,8 +218,7 @@ variable {S}
 
 namespace HasRightHomology
 
-lemma mk' (h : S.RightHomologyData) : HasRightHomology S :=
-⟨Nonempty.intro h⟩
+lemma mk' (h : S.RightHomologyData) : HasRightHomology S := ⟨Nonempty.intro h⟩
 
 instance of_hasCokernel_of_hasKernel
     [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
@@ -1073,22 +1072,6 @@ noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
     S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
   (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
-
-namespace RightHomologyData
-
-variable {S}
-
-lemma isIso_p (h : RightHomologyData S) (hf : S.f = 0) : IsIso h.p :=
-  ⟨⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
-    rw [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩⟩
-
-lemma isIso_ι (h : RightHomologyData S) (hg : S.g = 0) : IsIso h.ι := by
-  have ⟨φ, hφ⟩ := KernelFork.IsLimit.lift' h.hι' (𝟙 _)
-    (by rw [← cancel_epi h.p, id_comp, p_g', comp_zero, hg])
-  dsimp at hφ
-  exact ⟨φ, by rw [← cancel_mono h.ι, assoc, hφ, id_comp, comp_id], hφ⟩
-
-end RightHomologyData
 
 lemma isIso_rightHomologyι (hg : S.g = 0) [S.HasRightHomology] :
     IsIso S.rightHomologyι := RightHomologyData.isIso_ι _ hg
