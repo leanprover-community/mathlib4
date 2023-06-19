@@ -194,7 +194,7 @@ theorem coeff_hermite_explicit :
       rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
       Int.negSucc_eq]
       -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring
+      ring_nf
       simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
       norm_cast
       simp only [← add_assoc, add_comm]
