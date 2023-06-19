@@ -72,9 +72,9 @@ instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
 -- porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
-  rfl
+  rfl-/
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.PresheafedSpace.as_coe AlgebraicGeometry.PresheafedSpace.as_coe-/
+#noalign algebraic_geometry.PresheafedSpace.as_coe
 
 -- porting note: removed @[simp] as the `simpVarHead` linter complains
 -- @[simp]
@@ -181,7 +181,7 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
     . dsimp
       simp only [map_id, whiskerRight_id', assoc]
       erw [comp_id, comp_id]
-    . dsimp
+    · dsimp
       simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.category_of_PresheafedSpaces AlgebraicGeometry.PresheafedSpace.categoryOfPresheafedSpaces
@@ -235,7 +235,7 @@ instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :
 -- porting note: removed as this is a syntactic tauto
 --theorem coe_to_fun_eq {X Y : PresheafedSpace.{v, v, u} C} (f : X ⟶ Y) : (f : ↑X → ↑Y) = f.base :=
 --  rfl
---#align algebraic_geometry.PresheafedSpace.coe_to_fun_eq AlgebraicGeometry.PresheafedSpace.coe_to_fun_eq
+#noalign algebraic_geometry.PresheafedSpace.coe_to_fun_eq
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
@@ -459,18 +459,18 @@ def restrictTopIso (X : PresheafedSpace C) : X.restrict (Opens.openEmbedding ⊤
   inv := X.toRestrictTop
   hom_inv_id := by
     ext
-    . dsimp
+    · dsimp
       erw [comp_c, toRestrictTop_c, whiskerRight_id',
         comp_id, ofRestrict_top_c, eqToHom_map, eqToHom_trans, eqToHom_refl]
       rfl
-    . rfl
+    · rfl
   inv_hom_id := by
     ext
-    . dsimp
+    · dsimp
       erw [comp_c, ofRestrict_top_c, toRestrictTop_c, eqToHom_map, whiskerRight_id', comp_id,
         eqToHom_trans, eqToHom_refl]
       rfl
-    . rfl
+    · rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_top_iso AlgebraicGeometry.PresheafedSpace.restrictTopIso
 
