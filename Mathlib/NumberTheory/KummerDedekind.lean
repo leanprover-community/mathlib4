@@ -24,7 +24,7 @@ with a formula).
 
 ## Main definitions
 
- * `normalized_factors_map_equiv_normalized_factors_min_poly_mk` : The bijection in the
+ * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` : The bijection in the
     Kummer-Dedekind theorem. This is the pairing between the prime factors of `I * S` and the prime
     factors of `f mod I`.
 
@@ -32,18 +32,18 @@ with a formula).
 
  * `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
     theorem.
- * `ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebra_map R S)` is irreducible if
-    `(map I^.quotient.mk (minpoly R pb.gen))` is irreducible, where `pb` is a power basis of `S`
-    over `R`.
+ * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
+    `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
+    of `S` over `R`.
 
 ## TODO
 
  * Prove the Kummer-Dedekind theorem in full generality.
 
- * Prove the converse of `ideal.irreducible_map_of_irreducible_minpoly`.
+ * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
- * Prove that `normalized_factors_map_equiv_normalized_factors_min_poly_mk` can be expressed as
-    `normalized_factors_map_equiv_normalized_factors_min_poly_mk g = ⟨I, G(α)⟩` for `g` a prime
+ * Prove that `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` can be expressed as
+    `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk g = ⟨I, G(α)⟩` for `g` a prime
     factor of `f mod I` and `G` a lift of `g` to `R[X]`.
 
 ## References
@@ -251,7 +251,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
 #align kummer_dedekind.normalized_factors_map_equiv_normalized_factors_min_poly_mk KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
 
 /-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
-    bijection `factors_equiv'` defined in the first half preserves multiplicities. -/
+    bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}
     (hJ : J ∈ normalizedFactors (I.map (algebraMap R S))) :
