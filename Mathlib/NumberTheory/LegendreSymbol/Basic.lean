@@ -8,8 +8,8 @@ Authors: Chris Hughes, Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 import Mathlib.Init.Data.Int.CompLemmas
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
 # Legendre symbol
