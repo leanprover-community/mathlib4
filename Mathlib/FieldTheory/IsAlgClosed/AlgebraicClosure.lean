@@ -187,7 +187,6 @@ def toStepZero : k →+* Step k 0 :=
   RingHom.id k
 #align algebraic_closure.to_step_zero AlgebraicClosure.toStepZero
 
-set_option maxHeartbeats 210000 in
 /-- The canonical ring homomorphism to the next step. -/
 def toStepSucc (n : ℕ) : Step k n →+* (Step k (n + 1)) :=
   @toAdjoinMonic (Step k n) (Step.field k n)
@@ -272,9 +271,6 @@ private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     change _ = (_ ∘ _) x
     rw [toStepOfLE'.succ k 0 n h]
 
---Porting Note: Can probably still be optimized -
---Only the last `convert h` times out with 500000 Heartbeats
-set_option maxHeartbeats 700000
 theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
   induction' n with a h
   · intro z
@@ -297,7 +293,6 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
       convert this
     · convert h --Porting Note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
-
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
   ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
@@ -350,9 +345,6 @@ theorem exists_ofStep (z : AlgebraicClosure k) : ∃ n x, ofStep k n x = z :=
   Ring.DirectLimit.exists_of z
 #align algebraic_closure.exists_of_step AlgebraicClosure.exists_ofStep
 
--- slow
---Porting Note: Timed out at 800000
-set_option maxHeartbeats 900000
 theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AlgebraicClosure k, f.eval x = 0 := by
   have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
