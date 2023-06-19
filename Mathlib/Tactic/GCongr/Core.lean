@@ -488,10 +488,10 @@ be discharged in this way, the tactic fails. -/
 syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic
-  | `(tactic| rel [$hyps,*]) => withMainContext do
-    let hyps ← hyps.getElems.mapM (elabTerm · none)
+  | `(tactic| rel [$hyps,*]) => do
     let g ← getMainGoal
     g.withContext do
+    let hyps ← hyps.getElems.mapM (elabTerm · none)
     let .app (.app _rel lhs) rhs ← withReducible g.getType'
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do
