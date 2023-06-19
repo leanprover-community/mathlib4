@@ -50,10 +50,14 @@ namespace CategoryTheory.Limits.Types
 
 attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
+set_option pp.universes true
+
+#check Pi.π
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
-theorem pi_lift_π_apply {β : Type u} (f : β → Type u) {P : Type u} (s : ∀ b, P ⟶ f b) (b : β)
-    (x : P) : (Pi.π f b : (∏ f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
+theorem pi_lift_π_apply {β : Type v} (f : β → TypeMax.{v, u}) {P : TypeMax.{v, u}}
+    (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
+    (Pi.π.{v, max v u, max v u} f b : (∏ f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
 #align category_theory.limits.types.pi_lift_π_apply CategoryTheory.Limits.Types.pi_lift_π_apply
 
