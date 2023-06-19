@@ -513,7 +513,7 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
+instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
