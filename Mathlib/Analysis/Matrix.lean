@@ -256,6 +256,8 @@ variable [SeminormedAddCommGroup α]
 
 theorem linfty_op_norm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
+  -- porting note: added
+  change ‖fun i => (PiLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
 #align matrix.linfty_op_norm_def Matrix.linfty_op_norm_def
 
@@ -436,7 +438,10 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two]
+  -- porting note: added, along with `PiLp.equiv_symm_apply` below
+  change ‖(PiLp.equiv 2 _).symm <| fun i => (PiLp.equiv 2 _).symm <| fun j => A i j‖₊ = _
+  simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
+    PiLp.equiv_symm_apply]
 #align matrix.frobenius_nnnorm_def Matrix.frobenius_nnnorm_def
 
 theorem frobenius_norm_def (A : Matrix m n α) :
@@ -458,6 +463,7 @@ theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, �
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
   rw [frobenius_nnnorm_def, frobenius_nnnorm_def, Finset.sum_comm]
+  simp_rw [Matrix.transpose_apply]  -- porting note: added
 #align matrix.frobenius_nnnorm_transpose Matrix.frobenius_nnnorm_transpose
 
 @[simp]
@@ -530,8 +536,11 @@ end SeminormedAddCommGroup
 theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
     ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   refine' (frobenius_nnnorm_diagonal _).trans _
-  simp_rw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top, NNReal.sqrt_eq_rpow]
-  simp only [ENNReal.toReal_div, ENNReal.one_toReal]
+  -- porting note: change to erw, since `fun x => 1` no longer matches `Function.const`
+  erw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top]
+  simp_rw [NNReal.sqrt_eq_rpow]
+  -- porting note: added `ENNReal.toReal_ofNat`
+  simp only [ENNReal.toReal_div, ENNReal.one_toReal, ENNReal.toReal_ofNat]
 #align matrix.frobenius_nnnorm_one Matrix.frobenius_nnnorm_one
 
 section IsROrC
