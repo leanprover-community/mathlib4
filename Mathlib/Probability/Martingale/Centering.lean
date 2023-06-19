@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Martingale.Basic
+import Mathlib.Probability.Martingale.Basic
 
 /-!
 # Centering lemma for stochastic processes
@@ -79,8 +79,7 @@ theorem martingalePart_add_predictablePart (ℱ : Filtration ℕ m0) (μ : Measu
 
 theorem martingalePart_eq_sum :
     martingalePart f ℱ μ = fun n =>
-      f 0 + ∑ i in Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) :=
-  by
+      f 0 + ∑ i in Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) := by
   rw [martingale_part, predictable_part]
   ext1 n
   rw [Finset.eq_sum_range_sub f n, ← add_sub, ← Finset.sum_sub_distrib]
@@ -91,8 +90,7 @@ theorem adapted_martingalePart (hf : Adapted ℱ f) : Adapted ℱ (martingalePar
 #align measure_theory.adapted_martingale_part MeasureTheory.adapted_martingalePart
 
 theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ) :
-    Integrable (martingalePart f ℱ μ n) μ :=
-  by
+    Integrable (martingalePart f ℱ μ n) μ := by
   rw [martingale_part_eq_sum]
   exact
     (hf_int 0).add
@@ -100,14 +98,12 @@ theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ
 #align measure_theory.integrable_martingale_part MeasureTheory.integrable_martingalePart
 
 theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrable (f n) μ)
-    [SigmaFiniteFiltration μ ℱ] : Martingale (martingalePart f ℱ μ) ℱ μ :=
-  by
+    [SigmaFiniteFiltration μ ℱ] : Martingale (martingalePart f ℱ μ) ℱ μ := by
   refine' ⟨adapted_martingale_part hf, fun i j hij => _⟩
   -- ⊢ μ[martingale_part f ℱ μ j | ℱ i] =ᵐ[μ] martingale_part f ℱ μ i
   have h_eq_sum :
     μ[martingale_part f ℱ μ j|ℱ i] =ᵐ[μ]
-      f 0 + ∑ k in Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) :=
-    by
+      f 0 + ∑ k in Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
     rw [martingale_part_eq_sum]
     refine' (condexp_add (hf_int 0) _).trans _
     · exact integrable_finset_sum' _ fun i hij => ((hf_int _).sub (hf_int _)).sub integrable_condexp
@@ -119,8 +115,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
       · exact (hf 0).mono (ℱ.mono (zero_le i))
     · exact eventuallyEq_sum fun k hkj => condexp_sub ((hf_int _).sub (hf_int _)) integrable_condexp
   refine' h_eq_sum.trans _
-  have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 :=
-    by
+  have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
     intro k hk
     have : μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] μ[f (k + 1) - f k|ℱ i] :=
       condexp_condexp_of_le (ℱ.mono hk) (ℱ.le k)
@@ -130,8 +125,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     ∀ k,
       k < i →
         μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ]
-          f (k + 1) - f k - μ[f (k + 1) - f k|ℱ k] :=
-    by
+          f (k + 1) - f k - μ[f (k + 1) - f k|ℱ k] := by
     refine' fun k hk => eventually_eq.sub _ _
     · rw [condexp_of_strongly_measurable]
       · exact ((hf (k + 1)).mono (ℱ.mono (Nat.succ_le_of_lt hk))).sub ((hf k).mono (ℱ.mono hk.le))
@@ -152,14 +146,12 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
 -- The following two lemmas demonstrate the essential uniqueness of the decomposition
 theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
     (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (n + 1)) (hg0 : g 0 = 0)
-    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : martingalePart (f + g) ℱ μ n =ᵐ[μ] f n :=
-  by
+    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : martingalePart (f + g) ℱ μ n =ᵐ[μ] f n := by
   set h := f - martingale_part (f + g) ℱ μ with hhdef
   have hh : h = predictable_part (f + g) ℱ μ - g := by
     rw [hhdef, sub_eq_sub_iff_add_eq_add, add_comm (predictable_part (f + g) ℱ μ),
       martingale_part_add_predictable_part]
-  have hhpred : adapted ℱ fun n => h (n + 1) :=
-    by
+  have hhpred : adapted ℱ fun n => h (n + 1) := by
     rw [hh]
     exact adapted_predictable_part.sub hg
   have hhmgle : martingale h ℱ μ :=
@@ -176,8 +168,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
 
 theorem predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → Ω → E}
     (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (n + 1)) (hg0 : g 0 = 0)
-    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : predictablePart (f + g) ℱ μ n =ᵐ[μ] g n :=
-  by
+    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) : predictablePart (f + g) ℱ μ n =ᵐ[μ] g n := by
   filter_upwards [martingale_part_add_ae_eq hf hg hg0 hgint n] with ω hω
   rw [← add_right_inj (f n ω)]
   conv_rhs =>
@@ -189,16 +180,14 @@ section Difference
 
 theorem predictablePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
-    ∀ᵐ ω ∂μ, ∀ i, |predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω| ≤ R :=
-  by
+    ∀ᵐ ω ∂μ, ∀ i, |predictablePart f ℱ μ (i + 1) ω - predictablePart f ℱ μ i ω| ≤ R := by
   simp_rw [predictable_part, Finset.sum_apply, Finset.sum_range_succ_sub_sum]
   exact ae_all_iff.2 fun i => ae_bdd_condexp_of_ae_bdd <| ae_all_iff.1 hbdd i
 #align measure_theory.predictable_part_bdd_difference MeasureTheory.predictablePart_bdd_difference
 
 theorem martingalePart_bdd_difference {R : ℝ≥0} {f : ℕ → Ω → ℝ} (ℱ : Filtration ℕ m0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
-    ∀ᵐ ω ∂μ, ∀ i, |martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω| ≤ ↑(2 * R) :=
-  by
+    ∀ᵐ ω ∂μ, ∀ i, |martingalePart f ℱ μ (i + 1) ω - martingalePart f ℱ μ i ω| ≤ ↑(2 * R) := by
   filter_upwards [hbdd, predictable_part_bdd_difference ℱ hbdd] with ω hω₁ hω₂ i
   simp only [two_mul, martingale_part, Pi.sub_apply]
   have :
