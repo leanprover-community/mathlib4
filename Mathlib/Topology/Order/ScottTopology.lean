@@ -10,6 +10,8 @@ import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.UpperSetTopology
 import Mathlib.Topology.Order.LowerTopology
 
 /-!
@@ -74,15 +76,6 @@ def inaccessible_by_directed_joins (u : Set α) : Prop :=
   ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
 /--
-The set of upper sets forms a topology
--/
-def upperSetTopology : TopologicalSpace α :=
-{ IsOpen := IsUpperSet,
-  isOpen_univ := isUpperSet_univ,
-  isOpen_inter := fun _ _ => IsUpperSet.inter,
-  isOpen_sUnion := fun _ h => isUpperSet_sUnion h, }
-
-/--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
 the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
 subset of `u`.
@@ -133,7 +126,7 @@ ScottHausdorffTopology.IsOpen s := by
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
 -/
-def ScottTopology' : TopologicalSpace α := upperSetTopology ⊔ ScottHausdorffTopology
+def ScottTopology' : TopologicalSpace α := upperSetTopology' α ⊔ ScottHausdorffTopology
 
 end preorder
 
@@ -212,6 +205,35 @@ variable {α}
 def withScottTopologyHomeomorph : WithScottTopology α ≃ₜ α :=
   WithScottTopology.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
+end preorder
+
+section morphisms
+
+variable [Preorder α] [Preorder β]
+
+open TopologicalSpace
+
+lemma upperSetTopology_coinduced' {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  (hf : Monotone f) : coinduced f t₁ ≤ @ScottTopology' β _ := by
+  rw [ScottTopology']
+  exact le_sup_of_le_left (UpperSetTopology.upperSetTopology_coinduced hf)
+
+lemma Monotone_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  {t₂ : TopologicalSpace β} [ScottTopology β] (hf : Monotone f) : coinduced f t₁ ≤ t₂ := by
+  rw [ScottTopology.topology_eq β]
+  apply upperSetTopology_coinduced' hf
+
+lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  {t₂ : TopologicalSpace β} [ScottTopology β] {f : α → β} (hf : Monotone f)  : Continuous f := by
+  rw [continuous_iff_coinduced_le]
+  apply Monotone_coinduced hf
+
+end morphisms
+
+section preorder
+
+variable [Preorder α] [TopologicalSpace α] [ScottTopology α]
+
 lemma isOpen_iff_upper_and_Scott_Hausdorff_Open {u : Set α} : IsOpen u
 ↔ (IsUpperSet u ∧ ScottHausdorffTopology.IsOpen u) := by erw [topology_eq α]; rfl
 
@@ -269,8 +291,11 @@ lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
+
+TODO Infer this from `UpperSetTopology.closure_singleton`
 -/
-@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
+@[simp] lemma closure_singleton {a : α} : closure {a} = Iic a :=
+by
   rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
   refine' subset_antisymm _ _
   . apply closure_minimal subset_lowerClosure
@@ -385,14 +410,6 @@ lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
 end complete_lattice
 
 variable [Preorder α]
-
-lemma UpperSet_le_Scott [TopologicalSpace α] [ScottTopology α] :
-upperSetTopology ≤ ‹TopologicalSpace α› := by
-  rw [ScottTopology.topology_eq α, ScottTopology']
-  apply le_sup_left
-
-lemma ScottOpen_implies_UpperSetOpen {s : Set α} :
-  IsOpen (WithScottTopology.ofScott ⁻¹' s) → upperSetTopology.IsOpen s := UpperSet_le_Scott _
 
 lemma Scott_Hausdorff_le_Scott [TopologicalSpace α] [ScottTopology α] :
 ScottHausdorffTopology ≤ ‹TopologicalSpace α› := by
