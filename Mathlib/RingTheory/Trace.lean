@@ -133,7 +133,7 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
 @[simp]
 theorem trace_algebraMap (x : K) : trace K L (algebraMap K L x) = finrank K L • x := by
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
-  · rw [trace_algebra_map_of_basis H.some_spec.some, finrank_eq_card_basis H.some_spec.some]
+  · rw [trace_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · simp [trace_eq_zero_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis_finset H]
 #align algebra.trace_algebra_map Algebra.trace_algebraMap
 
@@ -147,15 +147,20 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _
   rw [trace_eq_matrix_trace (b.smul c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
   refine' Finset.sum_congr rfl fun i _ => _
-  simp only [AlgHom.map_sum, smul_left_mul_matrix, Finset.sum_apply,
-    Matrix.diag,-- The unifier is not smart enough to apply this one by itself:
-      Finset.sum_apply
-      i _ fun y => left_mul_matrix b (left_mul_matrix c x y y)]
+  simp only [AlgHom.map_sum, smul_leftMulMatrix, Finset.sum_apply,
+    Matrix.diag]
+-- Porting note: the `rw` was inside `simp only`, but it doesn't work anymore.
+  rw [Finset.sum_apply
+      i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
+  apply Finset.sum_apply
+
+
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type _} [Finite ι]
     [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
-    (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by ext;
+    (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
+  ext
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]
 #align algebra.trace_comp_trace_of_basis Algebra.trace_comp_trace_of_basis
 
@@ -175,11 +180,11 @@ theorem trace_comp_trace [Algebra K T] [Algebra L T] [IsScalarTower K L T] [Fini
 theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T]
     (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd := by
   nontriviality R
-  let f := (lmul R S).toLinearMap.Prod_map (lmul R T).toLinearMap
-  have : (lmul R (S × T)).toLinearMap = (prod_map_linear R S T S T R).comp f :=
+  let f := (lmul R S).toLinearMap.prodMap (lmul R T).toLinearMap
+  have : (lmul R (S × T)).toLinearMap = (prodMapLinear R S T S T R).comp f :=
     LinearMap.ext₂ Prod.mul_def
   simp_rw [trace, this]
-  exact trace_prod_map' _ _
+  exact trace_prodMap' _ _
 #align algebra.trace_prod_apply Algebra.trace_prod_apply
 
 theorem trace_prod [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T] :
@@ -194,7 +199,8 @@ variable (R S)
 /-- The `trace_form` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
-  (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)).toBilin
+-- Porting note: dot notation `().toBilin` does not work anymore.
+  LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
 #align algebra.trace_form Algebra.traceForm
 
 variable {S}
@@ -205,17 +211,17 @@ theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 #align algebra.trace_form_apply Algebra.traceForm_apply
 
-theorem traceForm_isSymm : (traceForm R S).IsSymm := fun x y => congr_arg (trace R S) (mul_comm _ _)
+theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace R S) (mul_comm _ _)
 #align algebra.trace_form_is_symm Algebra.traceForm_isSymm
 
 theorem traceForm_toMatrix [DecidableEq ι] (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
-  rw [BilinForm.toMatrix_apply, trace_form_apply]
+  rw [BilinForm.toMatrix_apply, traceForm_apply]
 #align algebra.trace_form_to_matrix Algebra.traceForm_toMatrix
 
 theorem traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    BilinForm.toMatrix h.Basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (↑i + ↑j : ℕ)) :=
-  by ext; rw [trace_form_to_matrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
+    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) :=
+  by ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 #align algebra.trace_form_to_matrix_power_basis Algebra.traceForm_toMatrix_powerBasis
 
 end TraceForm
@@ -237,17 +243,17 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
   have d_pos' : 0 < (minpoly K pb.gen).natDegree := by simpa
   haveI : Nonempty (Fin pb.dim) := ⟨⟨0, d_pos⟩⟩
   rw [trace_eq_matrix_trace pb.basis, trace_eq_neg_charpoly_coeff, charpoly_leftMulMatrix, ←
-    pb.nat_degree_minpoly, Fintype.card_fin, ← next_coeff_of_pos_nat_degree _ d_pos']
+    pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_pos_natDegree _ d_pos']
 #align power_basis.trace_gen_eq_next_coeff_minpoly PowerBasis.trace_gen_eq_nextCoeff_minpoly
 
 /-- Given `pb : power_basis K S`, then the trace of `pb.gen` is
 `((minpoly K pb.gen).map (algebra_map K F)).roots.sum`. -/
 theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
-    algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).map (algebraMap K F)).roots.Sum := by
+    algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).map (algebraMap K F)).roots.sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg, ←
-    next_coeff_map (algebraMap K F).Injective,
-    sum_roots_eq_next_coeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
+    nextCoeff_map (algebraMap K F).injective,
+    sum_roots_eq_nextCoeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
       ((splits_id_iff_splits _).2 hf),
     neg_neg]
 #align power_basis.trace_gen_eq_sum_roots PowerBasis.trace_gen_eq_sum_roots
@@ -256,33 +262,29 @@ namespace IntermediateField.AdjoinSimple
 
 open IntermediateField
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
-    Algebra.trace K K⟮⟯ (AdjoinSimple.gen K x) = 0 := by
+    Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine' isIntegral_of_mem_of_FG K⟮⟯.toSubalgebra _ x _
+  refine' isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra _ x _
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K F)) :
-    algebraMap K F (trace K K⟮⟯ (AdjoinSimple.gen K x)) =
-      ((minpoly K x).map (algebraMap K F)).roots.Sum := by
-  have injKxL := (algebraMap K⟮⟯ L).Injective
+    algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
+      ((minpoly K x).map (algebraMap K F)).roots.sum := by
+  have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, trace_gen_eq_zero hx]
-  have hx' : IsIntegral K (adjoin_simple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, adjoin_simple.algebra_map_gen]
-    infer_instance
-  rw [← adjoin.power_basis_gen hx, (adjoin.power_basis hx).trace_gen_eq_sum_roots] <;>
-      rw [adjoin.power_basis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
-    try simp only [adjoin_simple.algebra_map_gen _ _]
-  exact hf
+  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
+    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
+  rw [← adjoin.powerBasis_gen hx, (adjoin.powerBasis hx).trace_gen_eq_sum_roots] <;>
+      rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
+    try simp only [AdjoinSimple.algebraMap_gen _ _]
+  · exact hf
+  · rfl
 #align intermediate_field.adjoin_simple.trace_gen_eq_sum_roots IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots
 
 end IntermediateField.AdjoinSimple
@@ -291,25 +293,26 @@ open IntermediateField
 
 variable (K)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
-    Algebra.trace K L x = finrank K⟮⟯ L • trace K K⟮⟯ (AdjoinSimple.gen K x) := by
-  rw [← @trace_trace _ _ K K⟮⟯ _ _ _ _ _ _ _ _ x]
-  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [trace_algebra_map, LinearMap.map_smul_of_tower]
+    Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
+-- Porting note: `conv` was `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
+-- and it was after the first `rw`.
+  conv =>
+    lhs
+    rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  rw [← @trace_trace _ _ K K⟮x⟯ _ _ _ _ _ _ _ _ _, trace_algebraMap, LinearMap.map_smul_of_tower]
 #align trace_eq_trace_adjoin trace_eq_trace_adjoin
 
 variable {K}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (Algebra.trace K L x) =
-      finrank K⟮⟯ L • ((minpoly K x).map (algebraMap K _)).roots.Sum := by
+      finrank K⟮x⟯ L • ((minpoly K x).map (algebraMap K _)).roots.sum := by
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
-    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF, IsScalarTower.algebraMap_smul]
+    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
+-- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
+  simp only [eq_natCast, map_natCast, nsmul_eq_mul]
 #align trace_eq_sum_roots trace_eq_sum_roots
 
 end EqSumRoots
@@ -323,7 +326,7 @@ open Polynomial
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := isIntegral_of_isScalarTower hx
-  rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).Injective, trace_eq_sum_roots]
+  rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
   · refine' (IsIntegral.multiset_sum _).nsmul _
     intro y hy
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
