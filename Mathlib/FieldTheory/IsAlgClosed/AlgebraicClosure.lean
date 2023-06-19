@@ -369,7 +369,8 @@ instance instIsAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 #align algebraic_closure.is_alg_closed AlgebraicClosure.instIsAlgClosed
 
-instance {R : Type _} [CommSemiring R] [alg : Algebra R k] : Algebra R (AlgebraicClosure k) :=
+instance algebra {R : Type _} [CommSemiring R] [alg : Algebra R k] :
+    Algebra R (AlgebraicClosure k) :=
   ((ofStep k 0).comp (@algebraMap _ _ _ _ alg)).toAlgebra
 
 theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
