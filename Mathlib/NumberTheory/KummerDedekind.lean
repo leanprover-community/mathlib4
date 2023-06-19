@@ -8,8 +8,8 @@ Authors: Anne Baanen, Paul Lezeau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.DedekindDomain.Ideal
-import Mathbin.RingTheory.IsAdjoinRoot
+import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
@@ -64,8 +64,7 @@ local notation:max R "<" x ">" => adjoin R ({x} : Set S)
 
 /-- Let `S / R` be a ring extension and `x : S`, then the conductor of `R<x>` is the
     biggest ideal of `S` contained in `R<x>`. -/
-def conductor (x : S) : Ideal S
-    where
+def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
   zero_mem' b := by simpa only [MulZeroClass.zero_mul] using Subalgebra.zero_mem _
   add_mem' a b ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
@@ -100,8 +99,7 @@ variable {I : Ideal R}
   then `p * (I * S) ⊆ I * R<x>` for any `p` in `C ∩ R` -/
 theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :
-    algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) :=
-  by
+    algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) := by
   rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_total] at hz' 
   obtain ⟨l, H, H'⟩ := hz'
   rw [Finsupp.total_apply] at H' 
@@ -110,8 +108,7 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     ∀ {a : R},
       a ∈ I →
         l a • algebraMap R S a * algebraMap R S p ∈
-          algebraMap R<x> S '' I.map (algebraMap R R<x>) :=
-    by
+          algebraMap R<x> S '' I.map (algebraMap R R<x>) := by
     intro a ha
     rw [Algebra.id.smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
     refine'
@@ -138,8 +135,7 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
 theorem comap_map_eq_map_adjoin_of_coprime_conductor
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) :
-    (I.map (algebraMap R S)).comap (algebraMap R<x> S) = I.map (algebraMap R R<x>) :=
-  by
+    (I.map (algebraMap R S)).comap (algebraMap R<x> S) = I.map (algebraMap R R<x>) := by
   apply le_antisymm
   · -- This is adapted from [Neukirch1992]. Let `C = (conductor R x)`. The idea of the proof
     -- is that since `I` and `C ∩ R` are coprime, we have
@@ -151,8 +147,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       simp only [← add_mul, ← RingHom.map_add (algebraMap R S), hpq, map_one, one_mul]
     suffices
       z ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>) ↔
-        (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>)
-      by
+        (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
       obtain ⟨a, ha⟩ :=
         (Set.mem_image _ _ _).mp
@@ -184,8 +179,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
     R<x> ⧸ I.map (algebraMap R R<x>) ≃+* S ⧸ I.map (algebraMap R S) :=
   RingEquiv.ofBijective
     (Ideal.Quotient.lift (I.map (algebraMap R R<x>))
-      ((I.map (algebraMap R S)).Quotient.mk.comp (algebraMap R<x> S)) fun r hr =>
-      by
+      ((I.map (algebraMap R S)).Quotient.mk.comp (algebraMap R<x> S)) fun r hr => by
       have : algebraMap R S = (algebraMap R<x> S).comp (algebraMap R R<x>) := by ext; rfl
       rw [RingHom.comp_apply, Ideal.Quotient.eq_zero_iff_mem, this, ← Ideal.map_map]
       exact Ideal.mem_map_of_mem _ hr)
@@ -200,8 +194,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
         -- which in turn follows from the fact that `I * S + (conductor R x) = S`.
         refine' Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => _
         obtain ⟨z, hz⟩ := Ideal.Quotient.mk_surjective y
-        have : z ∈ conductor R x ⊔ I.map (algebraMap R S) :=
-          by
+        have : z ∈ conductor R x ⊔ I.map (algebraMap R S) := by
           suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this]
           rw [Ideal.eq_top_iff_one] at hx ⊢
           replace hx := Ideal.mem_map_of_mem (algebraMap R S) hx
@@ -281,8 +274,7 @@ theorem multiplicity_factors_map_eq_multiplicity (hI : IsMaximal I) (hI' : I ≠
     (hJ : J ∈ normalizedFactors (I.map (algebraMap R S))) :
     multiplicity J (I.map (algebraMap R S)) =
       multiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
-        (map I.Quotient.mk (minpoly R x)) :=
-  by
+        (map I.Quotient.mk (minpoly R x)) := by
   rw [normalized_factors_map_equiv_normalized_factors_min_poly_mk, Equiv.coe_trans,
     Function.comp_apply,
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity,
@@ -296,8 +288,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
       Multiset.map
         (fun f =>
           ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f : Ideal S))
-        (normalizedFactors (Polynomial.map I.Quotient.mk (minpoly R x))).attach :=
-  by
+        (normalizedFactors (Polynomial.map I.Quotient.mk (minpoly R x))).attach := by
   ext J
   -- WLOG, assume J is a normalized factor
   by_cases hJ : J ∈ normalized_factors (I.map (algebraMap R S));
@@ -348,8 +339,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     normalize (map I.Quotient.mk (minpoly R x)) ∈
       normalized_factors (map I.Quotient.mk (minpoly R x)) :=
     by simp [normalized_factors_irreducible hf]
-  suffices ∃ y, normalized_factors (I.map (algebraMap R S)) = {y}
-    by
+  suffices ∃ y, normalized_factors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h :=
       normalized_factors_prod
