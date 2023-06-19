@@ -8,13 +8,13 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.FieldTheory.PrimitiveElement
-import Mathbin.LinearAlgebra.Determinant
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathbin.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathbin.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathbin.FieldTheory.Galois
+import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.Galois
 
 /-!
 # Norm for (finite) ring extensions
@@ -85,8 +85,7 @@ theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis
 
 variable {R}
 
-theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 :=
-  by
+theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 := by
   refine' norm_eq_one_of_not_exists_basis _ (mt _ h) _
   rintro ⟨s, ⟨b⟩⟩
   exact Module.Finite.of_basis b
@@ -100,8 +99,7 @@ theorem norm_eq_matrix_det [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (s :
 
 /-- If `x` is in the base ring `K`, then the norm is `x ^ [L : K]`. -/
 theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
-    norm R (algebraMap R S x) = x ^ Fintype.card ι :=
-  by
+    norm R (algebraMap R S x) = x ^ Fintype.card ι := by
   haveI := Classical.decEq ι
   rw [norm_apply, ← det_to_matrix b, lmul_algebra_map]
   convert @det_diagonal _ _ _ _ _ fun i : ι => x
@@ -115,8 +113,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
 -/
 @[simp]
 protected theorem norm_algebraMap {L : Type _} [Ring L] [Algebra K L] (x : K) :
-    norm K (algebraMap K L x) = x ^ finrank K L :=
-  by
+    norm K (algebraMap K L x) = x ^ finrank K L := by
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [norm_algebra_map_of_basis H.some_spec.some, finrank_eq_card_basis H.some_spec.some]
   · rw [norm_eq_one_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis, pow_zero]
@@ -138,8 +135,7 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
 `((minpoly R pb.gen).map (algebra_map R F)).roots.prod`. -/
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     (hf : (minpoly R pb.gen).Splits (algebraMap R F)) :
-    algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).map (algebraMap R F)).roots.Prod :=
-  by
+    algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).map (algebraMap R F)).roots.Prod := by
   haveI := Module.nontrivial R F
   have := minpoly.monic pb.is_integral_gen
   rw [power_basis.norm_gen_eq_coeff_zero_minpoly, ← pb.nat_degree_minpoly, RingHom.map_mul, ←
@@ -156,8 +152,7 @@ section EqZeroIff
 variable [Finite ι]
 
 @[simp]
-theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R (0 : S) = 0 :=
-  by
+theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R (0 : S) = 0 := by
   nontriviality
   rw [norm_apply, coe_lmul_eq_mul, map_zero, LinearMap.det_zero' (Module.Free.chooseBasis R S)]
 #align algebra.norm_zero Algebra.norm_zero
@@ -193,8 +188,7 @@ theorem norm_eq_zero_iff' [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fi
 #align algebra.norm_eq_zero_iff' Algebra.norm_eq_zero_iff'
 
 theorem norm_eq_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
-    Algebra.norm R x = 0 ↔ x = 0 :=
-  by
+    Algebra.norm R x = 0 ↔ x = 0 := by
   haveI : Module.Free R S := Module.Free.of_basis b
   haveI : Module.Finite R S := Module.Finite.of_basis b
   exact norm_eq_zero_iff
@@ -215,8 +209,7 @@ variable (K)
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem norm_eq_norm_adjoin [FiniteDimensional K L] [IsSeparable K L] (x : L) :
-    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮⟯ L :=
-  by
+    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮⟯ L := by
   letI := isSeparable_tower_top_of_isSeparable K K⟮⟯ L
   let pbL := Field.powerBasisOfFiniteOfSeparable K⟮⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (IsSeparable.isIntegral K x)
@@ -233,8 +226,7 @@ section IntermediateField
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
-    norm K (AdjoinSimple.gen K x) = 1 :=
-  by
+    norm K (AdjoinSimple.gen K x) = 1 := by
   rw [norm_eq_one_of_not_exists_basis]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
@@ -247,13 +239,11 @@ theorem IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegra
 theorem IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : (minpoly K x).Splits (algebraMap K F)) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
-      ((minpoly K x).map (algebraMap K F)).roots.Prod :=
-  by
+      ((minpoly K x).map (algebraMap K F)).roots.Prod := by
   have injKxL := (algebraMap K⟮⟯ L).Injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx]
-  have hx' : IsIntegral K (adjoin_simple.gen K x) :=
-    by
+  have hx' : IsIntegral K (adjoin_simple.gen K x) := by
     rwa [← isIntegral_algebraMap_iff injKxL, adjoin_simple.algebra_map_gen]
     infer_instance
   rw [← adjoin.power_basis_gen hx, power_basis.norm_gen_eq_prod_roots] <;>
@@ -272,8 +262,7 @@ variable (F) (E : Type _) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :
-    algebraMap R F (norm R pb.gen) = (@Finset.univ pb.AlgHom.Fintype).Prod fun σ => σ pb.gen :=
-  by
+    algebraMap R F (norm R pb.gen) = (@Finset.univ pb.AlgHom.Fintype).Prod fun σ => σ pb.gen := by
   letI := Classical.decEq F
   rw [pb.norm_gen_eq_prod_roots hE, Fintype.prod_equiv pb.lift_equiv', Finset.prod_mem_multiset,
     Finset.prod_eq_multiset_prod, Multiset.toFinset_val, multiset.dedup_eq_self.mpr,
@@ -294,8 +283,7 @@ theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
-      ((@Finset.univ pb.AlgHom.Fintype).Prod fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F :=
-  by
+      ((@Finset.univ pb.AlgHom.Fintype).Prod fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
@@ -319,8 +307,7 @@ variable (K)
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ`  of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlgClosed E] (x : L) :
-    algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x :=
-  by
+    algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x
   rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.power_basis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.power_basis hx) (IsAlgClosed.splits_codomain _)]
@@ -330,8 +317,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlg
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
-    algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x :=
-  by
+    algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
@@ -343,8 +329,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
 #align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
-    [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) :=
-  by
+    [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := isIntegral_of_isScalarTower hx
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).Injective, norm_eq_prod_roots]
   · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
@@ -360,8 +345,7 @@ variable {F} (L)
 
 -- TODO. Generalize this proof to rings
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) :
-    norm K (norm L x) = norm K x :=
-  by
+    norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F
   · haveI := hKF
     let A := AlgebraicClosure K
