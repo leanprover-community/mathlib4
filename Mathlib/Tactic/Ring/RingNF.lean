@@ -167,7 +167,7 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let r ← M.run s cfg <| rewrite tgt
-  if r.expr.isConstOf ``True then
+  if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
