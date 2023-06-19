@@ -324,14 +324,18 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
       dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap _ x), ←
+      --Porting Note: Had to add the next four lines
+      rw [comp_apply, comp_apply]
+      dsimp [toΓSpecBase]
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      dsimp [toΓSpecFun]
+      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
-      exact (PresheafedSpace.stalk_map_germ f.1 ⊤ ⟨x, trivial⟩).symm
-      infer_instance
+      exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
     · intro r
-      rw [LocallyRingedSpace.comp_val_c_app, ← category.assoc]
-      erw [Y.to_Γ_Spec_SheafedSpace_app_spec, f.1.c.naturality]
+      rw [LocallyRingedSpace.comp_val_c_app, ← Category.assoc]
+      erw [Y.toΓSpecSheafedSpace_app_spec, f.1.c.naturality]
       rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.identity_to_Γ_Spec AlgebraicGeometry.identityToΓSpec
