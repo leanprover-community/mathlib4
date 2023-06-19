@@ -795,7 +795,7 @@ theorem append_assoc (s t u : WSeq α) : append (append s t) u = append s (appen
   Seq.append_assoc _ _ _
 #align stream.wseq.append_assoc Stream'.WSeq.append_assoc
 
-/-- auxilary defintion of tail over weak sequences-/
+/-- auxiliary definition of tail over weak sequences-/
 @[simp]
 def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -807,7 +807,7 @@ theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.au
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
 #align stream.wseq.destruct_tail Stream'.WSeq.destruct_tail
 
-/-- auxilary defintion of drop over weak sequences-/
+/-- auxiliary definition of drop over weak sequences-/
 @[simp]
 def drop.aux : ℕ → Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | 0 => Computation.pure
@@ -1513,7 +1513,7 @@ theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ʷ t) : map f s ~ʷ ma
   liftRel_map _ _ h fun {_ _} => congr_arg _
 #align stream.wseq.map_congr Stream'.WSeq.map_congr
 
-/-- auxilary defintion of `destruct_append` over weak sequences-/
+/-- auxiliary definition of `destruct_append` over weak sequences-/
 @[simp]
 def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => destruct t
@@ -1534,7 +1534,7 @@ theorem destruct_append (s t : WSeq α) :
   · exact ⟨s, t, rfl, rfl⟩
 #align stream.wseq.destruct_append Stream'.WSeq.destruct_append
 
-/-- auxilary defintion of `destruct_join` over weak sequences-/
+/-- auxiliary definition of `destruct_join` over weak sequences-/
 @[simp]
 def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -1817,10 +1817,10 @@ instance monad : Monad WSeq where
   this type of construction.
 
 instance lawfulMonad : LawfulMonad WSeq :=
-{ id_map := @map_id,
-  bind_pure_comp := @bind_ret,
-  pure_bind := @ret_bind,
-  bind_assoc := @bind_assoc }
+  { id_map := @map_id,
+    bind_pure_comp := @bind_ret,
+    pure_bind := @ret_bind,
+    bind_assoc := @bind_assoc }
 -/
 end WSeq
 

@@ -126,13 +126,13 @@ private theorem one_smul' [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i,
 private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : ⨁ i, A i)
     (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
   suffices
-    (-- `λ a b c, (a * b) • c` as a bundled hom
+    (-- `fun a b c ↦ (a * b) • c` as a bundled hom
               smulAddMonoidHom
               A M).compHom.comp
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `λ a b c, a • (b • c)` as a bundled hom
+    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
       FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
   ext (ai ax bi bx ci cx) : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
@@ -211,13 +211,13 @@ namespace GradedModule
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSmul 𝓐 𝓜]
 
-set_option maxHeartbeats 300000 in -- Porting note: needs more Hearbeats to elaborate
+set_option maxHeartbeats 300000 in -- Porting note: needs more Heartbeats to elaborate
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
 def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
-{ Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
-  smul := fun a b => DirectSum.decompose 𝓐 a • b }
+  { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
+    smul := fun a b => DirectSum.decompose 𝓐 a • b }
 #align graded_module.is_module GradedModule.isModule
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.

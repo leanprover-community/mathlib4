@@ -292,7 +292,7 @@ namespace Presieve
 /--
 The main theorem of this file: Given a coverage `K` on `C`,
 a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
-the assocaited Grothendieck topology.
+the associated Grothendieck topology.
 -/
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (toGrothendieck _ K) P ↔

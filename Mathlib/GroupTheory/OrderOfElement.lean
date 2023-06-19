@@ -438,7 +438,7 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
   refine' (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 _) hd)
   by_cases h : p ∣ orderOf x
-  exacts[hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
+  exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
 #align add_commute.add_order_of_add_eq_right_of_forall_prime_mul_dvd AddCommute.addOrderOf_add_eq_right_of_forall_prime_mul_dvd
 
@@ -522,10 +522,9 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   suffices s.Infinite by exact this.mono hs
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
-    have H := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
-    contrapose! H -- Porting note: `contrapose! this` errored, so renamed `this ↦ H`
-    rw [not_not] at H -- Porting note: why is `contrapose!` not taking care of this?
-    exact Set.injOn_of_injective H _
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
+    contrapose! this
+    exact Set.injOn_of_injective this _
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
@@ -698,7 +697,7 @@ theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `addOrderOf_pos' but with one fewer explicit
+@[to_additive "This is the same as `addOrderOf_pos'` but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
   orderOf_pos' (exists_pow_eq_one x)

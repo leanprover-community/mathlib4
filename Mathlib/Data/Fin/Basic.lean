@@ -111,26 +111,26 @@ section from_ad_hoc
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
 lemma size_positive : Fin n → 0 < n
-| ⟨x, h⟩ =>
-  match Nat.eq_or_lt_of_le (Nat.zero_le x) with
-  | Or.inl h_eq => h_eq ▸ h
-  | Or.inr h_lt => Nat.lt_trans h_lt h
+  | ⟨x, h⟩ =>
+    match Nat.eq_or_lt_of_le (Nat.zero_le x) with
+    | Or.inl h_eq => h_eq ▸ h
+    | Or.inr h_lt => Nat.lt_trans h_lt h
 
 lemma mod_def : ∀ (a m : Fin n),
-  a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma add_def : ∀ (a b : Fin n),
-  a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma mul_def : ∀ (a b : Fin n),
-  a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma sub_def : ∀ (a b : Fin n),
-  a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
@@ -375,8 +375,8 @@ For example, the following definition is not accepted by the termination checker
 unless we declare the `WellFoundedRelation` instance:
 ```lean
 def factorial {n : ℕ} : Fin n → ℕ
-| ⟨0, _⟩ := 1
-| ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
+  | ⟨0, _⟩ := 1
+  | ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
 ```
 -/
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
@@ -393,7 +393,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 -- porting note: `fin.val_zero` previously existed in core with statement
--- `(0 : Fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- `(0 : Fin (succ n)).val = 0`, which was less general than the primed mathlib lemma. We unprime
 -- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
@@ -984,10 +984,6 @@ theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n :=
   simp
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
--- HACK: CovariantClass lemma times out sigh
--- Investigate this during lean4#2210 cleanup.
-attribute [nolint simpNF] lt_add_one_iff add_one_lt_iff
-
 @[simp]
 theorem le_zero_iff {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.eq_of_veq $ by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
@@ -1061,7 +1057,7 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
-/-- `cast eq i` embeds `i` into a equal `Fin` type, see also `Equiv.finCongr`. -/
+/-- `cast eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
 def cast (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
@@ -1189,7 +1185,7 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the succesor of the cast. See `Fin.succ_cast_eq` for rewriting in
+/-- The cast of the successor is the successor of the cast. See `Fin.succ_cast_eq` for rewriting in
 the reverse direction. -/
 @[simp]
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
@@ -1259,7 +1255,7 @@ theorem castLT_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLT (cast
 #align fin.cast_lt_cast_succ Fin.castLT_castSucc
 
 --@[simp] Porting note: simp can prove it
-theorem castSucc_lt_castSucc_iff {a b : Fin n}: Fin.castSucc a < Fin.castSucc b ↔ a < b :=
+theorem castSucc_lt_castSucc_iff {a b : Fin n} : Fin.castSucc a < Fin.castSucc b ↔ a < b :=
   (@castSucc n).lt_iff_lt
 #align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
 
@@ -1869,7 +1865,7 @@ theorem addCases_right {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, 
 
 end Rec
 
-theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
+theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} :
     ((· < ·) ⇒ r) f f ↔ ∀ i : Fin n, r (f (castSucc i)) (f i.succ) := by
   constructor
   · intro H i
@@ -1879,33 +1875,33 @@ theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] 
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, _root_.trans (ihj hlt) (H j)]
-#align fin.lift_fun_iff_succ Fin.lift_fun_iff_succ
+      exacts [H j, _root_.trans (ihj hlt) (H j)]
+#align fin.lift_fun_iff_succ Fin.liftFun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
 for all `i`. -/
 theorem strictMono_iff_lt_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
     StrictMono f ↔ ∀ i : Fin n, f (castSucc i) < f i.succ :=
-  lift_fun_iff_succ (· < ·)
+  liftFun_iff_succ (· < ·)
 #align fin.strict_mono_iff_lt_succ Fin.strictMono_iff_lt_succ
 
 /-- A function `f` on `Fin (n + 1)` is monotone if and only if `f i ≤ f (i + 1)` for all `i`. -/
 theorem monotone_iff_le_succ {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
     Monotone f ↔ ∀ i : Fin n, f (castSucc i) ≤ f i.succ :=
-  monotone_iff_forall_lt.trans <| lift_fun_iff_succ (· ≤ ·)
+  monotone_iff_forall_lt.trans <| liftFun_iff_succ (· ≤ ·)
 #align fin.monotone_iff_le_succ Fin.monotone_iff_le_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly antitone if and only if `f (i + 1) < f i`
 for all `i`. -/
 theorem strictAnti_iff_succ_lt {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
     StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (castSucc i) :=
-  lift_fun_iff_succ (· > ·)
+  liftFun_iff_succ (· > ·)
 #align fin.strict_anti_iff_succ_lt Fin.strictAnti_iff_succ_lt
 
 /-- A function `f` on `Fin (n + 1)` is antitone if and only if `f (i + 1) ≤ f i` for all `i`. -/
 theorem antitone_iff_succ_le {α : Type _} [Preorder α] {f : Fin (n + 1) → α} :
     Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
-  antitone_iff_forall_lt.trans <| lift_fun_iff_succ (· ≥ ·)
+  antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 #align fin.antitone_iff_succ_le Fin.antitone_iff_succ_le
 
 section AddGroup
@@ -2158,7 +2154,7 @@ theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)
 
 theorem exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
   cases' h.lt_or_lt with hlt hlt
-  exacts[⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
+  exacts [⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
 #align fin.exists_succ_above_eq Fin.exists_succAbove_eq
 
 @[simp]

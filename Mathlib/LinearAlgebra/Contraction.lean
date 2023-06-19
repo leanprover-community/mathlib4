@@ -126,7 +126,7 @@ theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q
 theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (p : P) :
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
-  ext m;
+  ext m
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
     RingHom.id_apply, LinearMap.smul_apply]
   rw [smul_comm]
@@ -333,4 +333,3 @@ theorem homTensorHomEquiv_apply (x : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q)) :
 end CommRing
 
 end HomTensorHom
-

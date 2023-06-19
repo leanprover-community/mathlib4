@@ -134,7 +134,7 @@ theorem mapDomain_sum {k' G' : Type _} [Semiring k'] {f : G → G'} {s : MonoidA
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   Finsupp.mapDomain_sum
 
-/-- A non-commutative version of `MonoidAlgebra.lift`: given a additive homomorphism `f : k →+ R`
+/-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
 `MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
@@ -437,8 +437,8 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ in f.support, ∑ a₂ in g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p in f.support ×ᶠ g.support, F p := Finset.sum_product.symm
-        _ = ∑ p in (f.support ×ᶠ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p in f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p in (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
         _ = ∑ p in s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
           (sum_congr
@@ -806,7 +806,7 @@ instance algebra {A : Type _} [CommSemiring k] [Semiring A] [Algebra k A] [Monoi
       refine Finsupp.ext fun _ => ?_
       simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
 
-/-- `Finsupp.single 1` as a `AlgHom` -/
+/-- `Finsupp.single 1` as an `AlgHom` -/
 @[simps! apply]
 def singleOneAlgHom {A : Type _} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     A →ₐ[k] MonoidAlgebra A G :=
@@ -852,7 +852,7 @@ variable [CommSemiring k] [Monoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNCRingHom` as a `AlgHom`, for when `f` is an `AlgHom` -/
+/-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
@@ -1083,7 +1083,7 @@ open Finsupp MulOpposite
 
 variable [Semiring k]
 
-/-- The opposite of an `MonoidAlgebra R I` equivalent as a ring to
+/-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply]
 protected noncomputable def opRingEquiv [Monoid G] :
@@ -1222,8 +1222,8 @@ theorem mapDomain_single {G' : Type _} {f : G → G'} {a : G} {b : k} :
     mapDomain f (single a b) = single (f a) b :=
   Finsupp.mapDomain_single
 
-/-- A non-commutative version of `AddMonoidAlgebra.lift`: given a additive homomorphism `f : k →+
-R` and a map `g : Multiplicative G → R`, returns the additive
+/-- A non-commutative version of `AddMonoidAlgebra.lift`: given an additive homomorphism
+`f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive
 homomorphism from `AddMonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
@@ -1700,7 +1700,7 @@ end AddMonoidAlgebra
 We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just contruct the ring isomorphisms using `RingEquiv.refl _`.
+but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
 
@@ -1896,7 +1896,7 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
       simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
 #align add_monoid_algebra.algebra AddMonoidAlgebra.algebra
 
-/-- `Finsupp.single 0` as a `AlgHom` -/
+/-- `Finsupp.single 0` as an `AlgHom` -/
 @[simps! apply]
 def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     k →ₐ[R] AddMonoidAlgebra k G :=
@@ -1923,7 +1923,7 @@ variable [CommSemiring k] [AddMonoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNCRingHom` as a `AlgHom`, for when `f` is an `AlgHom` -/
+/-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra A G →ₐ[k] B :=
   {

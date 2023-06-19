@@ -89,9 +89,7 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
 theorem factorization_eq_factors_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.factors : Multiset ℕ) := by
   ext p
-  -- porting note: previously closed with `simp`
-  simp only [Multiset.toFinsupp_apply, Multiset.mem_coe, Multiset.coe_nodup, Multiset.coe_count]
-  rw [@factors_count_eq n p] -- porting note: TODO: why doesn't `factors_count_eq` take here?
+  simp
 #align nat.factorization_eq_factors_multiset Nat.factorization_eq_factors_multiset
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :

@@ -823,8 +823,6 @@ theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
 @[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
 #align exists_eq_right' exists_eq_right'
 
-theorem exists_comm {p : α → β → Prop} : (∃ a b, p a b) ↔ ∃ b a, p a b :=
-  ⟨fun ⟨a, b, h⟩ ↦ ⟨b, a, h⟩, fun ⟨b, a, h⟩ ↦ ⟨a, b, h⟩⟩
 #align exists_comm exists_comm
 
 theorem exists₂_comm {κ₁ : ι₁ → Sort _} {κ₂ : ι₂ → Sort _} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
@@ -1135,7 +1133,7 @@ theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
 #align ite_eq_iff ite_eq_iff
 
 theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
-eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
+  eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
   ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦

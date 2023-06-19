@@ -252,7 +252,7 @@ theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type _} {ε : TypeV
           (g₀ : last ε → β)
           (g₁ : β → δ) :
    appendFun f₁ g₁ ⊚ splitFun f₀ g₀
-      = splitFun (α':=γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
+      = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
   :=
   (splitFun_comp _ _ _ _).symm
 #align typevec.append_fun_comp_split_fun TypeVec.appendFun_comp_splitFun
@@ -408,7 +408,7 @@ section Liftp'
 
 open Nat
 
-/-- `repeat n t` is a `n-length` type vector that contains `n` occurences of `t` -/
+/-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
 def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t

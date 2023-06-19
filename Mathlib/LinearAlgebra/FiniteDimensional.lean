@@ -504,7 +504,7 @@ theorem exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card [FiniteDimensio
   -- and setting the value of `f` at `x₀` to ensure `∑ e in t, f e = 0`.
   let f : V → K := fun z => if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
   refine' ⟨f, _, _, _⟩
-  -- After this, it's a matter of verifiying the properties,
+  -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · show (∑ e : V in t, f e • e) = 0
     -- We prove this by splitting off the `x₀` term of the sum,
@@ -606,8 +606,7 @@ noncomputable def basisSingleton (ι : Type _) [Unique ι] (h : finrank K V = 1)
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel _ h
       right_inv := fun f => by
-        ext a
-        rw [Subsingleton.elim a default] -- porting note: added
+        ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel _ h }
@@ -971,7 +970,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 variable [FiniteDimensional K V]
 
-/-- The linear equivalence corresponging to an injective endomorphism. -/
+/-- The linear equivalence corresponding to an injective endomorphism. -/
 noncomputable def ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) : V ≃ₗ[K] V :=
   LinearEquiv.ofBijective f ⟨h_inj, LinearMap.injective_iff_surjective.mp h_inj⟩
 #align linear_equiv.of_injective_endo LinearEquiv.ofInjectiveEndo

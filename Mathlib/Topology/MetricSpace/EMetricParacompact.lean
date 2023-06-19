@@ -9,6 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Tactic.GCongr
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
 
@@ -52,7 +53,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι
+  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
@@ -154,8 +155,8 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]
         _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]
-        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
-          (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
+        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) := by
+          gcongr 2 * (_ + ?_); exact hpow_le (add_le_add hm le_rfl)
         _ = 3 * 2⁻¹ ^ m := by
           rw [mul_add, h2pow, ← two_add_one_eq_three, add_mul, one_mul]
     -- Finally, we glue `Hgt` and `Hle`

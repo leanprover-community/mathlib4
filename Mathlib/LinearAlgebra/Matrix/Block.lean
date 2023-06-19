@@ -21,7 +21,7 @@ matrices built out of blocks.
 
 ## Main definitions
 
- * `Matrix.BlockTriangular` expresses that a `o` by `o` matrix is block triangular,
+ * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
    if the rows and columns are ordered according to some order `b : o → α`
 
 ## Main results

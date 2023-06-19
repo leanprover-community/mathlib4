@@ -41,7 +41,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
-  /-- Scalara multiplication distributes across multiplication -/
+  /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 #align mul_semiring_action MulSemiringAction
 

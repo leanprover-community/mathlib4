@@ -74,18 +74,16 @@ The functor `restrictedYoneda` is isomorphic to the identity functor when evalua
 embedding.
 -/
 def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u₁) ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun P =>
-      NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
-        funext fun x => by
-          dsimp
-          have : x.app X (CategoryStruct.id (Opposite.unop X)) =
-              (x.app X (𝟙 (Opposite.unop X)))
-               := by rfl
-          rw [this]
-          rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
-          simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id])
-    @fun _ _ _ => rfl
+  NatIso.ofComponents fun P =>
+    NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
+      funext fun x => by
+        dsimp
+        have : x.app X (CategoryStruct.id (Opposite.unop X)) =
+            (x.app X (𝟙 (Opposite.unop X)))
+              := by rfl
+        rw [this]
+        rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
+        simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
 /-- (Implementation). The equivalence of homsets which helps construct the left adjoint to

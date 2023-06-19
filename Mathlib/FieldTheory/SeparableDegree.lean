@@ -55,7 +55,7 @@ def IsSeparableContraction (f : F[X]) (g : F[X]) : Prop :=
   g.Separable ∧ ∃ m : ℕ, expand F (q ^ m) g = f
 #align polynomial.is_separable_contraction Polynomial.IsSeparableContraction
 
-/-- The condition of having a separable contration. -/
+/-- The condition of having a separable contraction. -/
 def HasSeparableContraction (f : F[X]) : Prop :=
   ∃ g : F[X], IsSeparableContraction q f g
 #align polynomial.has_separable_contraction Polynomial.HasSeparableContraction

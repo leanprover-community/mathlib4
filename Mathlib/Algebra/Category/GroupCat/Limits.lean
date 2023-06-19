@@ -471,7 +471,7 @@ agrees with the `subtype` map.
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGroupCat.of f.ker) (AddSubgroup.subtype f.ker) :=
-  Over.isoMk (kernelIsoKer f) <| by simp
+  Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
 

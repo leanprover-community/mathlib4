@@ -18,7 +18,7 @@ import Mathlib.RingTheory.Int.Basic
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
- - `nat.squarefree_iff_nodup_factors`: A positive natural number `x` is squarefree iff
+ - `Nat.squarefree_iff_nodup_factors`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
@@ -67,10 +67,7 @@ theorem squarefree_iff_factorization_le_one {n : ℕ} (hn : n ≠ 0) :
 
 theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     n = m ↔ ∀ p, Prime p → (p ∣ n ↔ p ∣ m) := by
-  refine'
-    ⟨by
-      rintro rfl
-      simp, fun h => eq_of_factorization_eq hn.ne_zero hm.ne_zero fun p => _⟩
+  refine' ⟨by rintro rfl; simp, fun h => eq_of_factorization_eq hn.ne_zero hm.ne_zero fun p => _⟩
   by_cases hp : p.Prime
   · have h₁ := h _ hp
     rw [← not_iff_not, hp.dvd_iff_one_le_factorization hn.ne_zero, not_le, lt_one_iff,
@@ -88,10 +85,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
-  refine'
-    ⟨fun h => _, by
-      rintro ⟨hn, rfl⟩
-      simpa⟩
+  refine' ⟨fun h => _, by rintro ⟨hn, rfl⟩; simpa⟩
   rcases eq_or_ne n 0 with (rfl | -)
   · simp [zero_pow hk.bot_lt] at h
   refine' ⟨h.squarefree_of_dvd (dvd_pow_self _ hk), by_contradiction fun h₁ => _⟩
@@ -102,7 +96,7 @@ theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
 #align nat.squarefree_pow_iff Nat.squarefree_pow_iff
 
 theorem squarefree_and_prime_pow_iff_prime {n : ℕ} : Squarefree n ∧ IsPrimePow n ↔ Prime n := by
-  refine' Iff.symm ⟨fun hn => ⟨hn.squarefree, hn.isPrimePow⟩, _⟩
+  refine' ⟨_, fun hn => ⟨hn.squarefree, hn.isPrimePow⟩⟩
   rw [isPrimePow_nat_iff]
   rintro ⟨h, p, k, hp, hk, rfl⟩
   rw [squarefree_pow_iff hp.ne_one hk.ne'] at h
@@ -127,7 +121,7 @@ termination_by  _ n k => sqrt n + 2 - k
 #align nat.min_sq_fac_aux Nat.minSqFacAux
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
-  such `p` (that is, `n` is squarefree). See also `squarefree_iff_min_sq_fac`. -/
+  such `p` (that is, `n` is squarefree). See also `Nat.squarefree_iff_minSqFac`. -/
 def minSqFac (n : ℕ) : Option ℕ :=
   if 2 ∣ n then
     let n' := n / 2
@@ -135,7 +129,7 @@ def minSqFac (n : ℕ) : Option ℕ :=
   else minSqFacAux n 3
 #align nat.min_sq_fac Nat.minSqFac
 
-/-- The correctness property of the return value of `min_sq_fac`.
+/-- The correctness property of the return value of `minSqFac`.
   * If `none`, then `n` is squarefree;
   * If `some d`, then `d` is a minimal square factor of `n` -/
 def MinSqFacProp (n : ℕ) : Option ℕ → Prop

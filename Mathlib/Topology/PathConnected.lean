@@ -110,7 +110,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refes to a new lemma below
+-- porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -251,8 +251,8 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.path_extend {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ᶠ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
-    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ᶠ l₁) l₂ :=
+    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 #align filter.tendsto.path_extend Filter.Tendsto.path_extend
 
@@ -277,7 +277,7 @@ theorem extend_one : γ.extend 1 = y := by simp
 @[simp]
 theorem extend_extends' {X : Type _} [TopologicalSpace X] {a b : X} (γ : Path a b)
     (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
-  Icc_extend_coe _ γ t
+  IccExtend_val _ γ t
 #align path.extend_extends' Path.extend_extends'
 
 @[simp]
@@ -1071,7 +1071,7 @@ theorem IsPathConnected.exists_path_through_family {X : Type _} [TopologicalSpac
 
 theorem IsPathConnected.exists_path_through_family' {X : Type _} [TopologicalSpace X] {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
   rcases h.exists_path_through_family p hp with ⟨γ, hγ⟩
   rcases hγ with ⟨h₁, h₂⟩
   simp only [range, mem_setOf_eq] at h₂
@@ -1177,7 +1177,7 @@ theorem exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
 #align path_connected_space.exists_path_through_family PathConnectedSpace.exists_path_through_family
 
 theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
-    ∃ (γ : Path (p 0) (p n))(t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
+    ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family' p fun _i => True.intro with ⟨γ, t, -, h⟩
   exact ⟨γ, t, h⟩

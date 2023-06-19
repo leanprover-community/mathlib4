@@ -79,12 +79,12 @@ def codom := { y | ∃ x, r x y }
 #align rel.codom Rel.codom
 
 theorem codom_inv : r.inv.codom = r.dom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.codom_inv Rel.codom_inv
 
 theorem dom_inv : r.inv.dom = r.codom := by
-  ext (x y)
+  ext x
   rfl
 #align rel.dom_inv Rel.dom_inv
 

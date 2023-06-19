@@ -37,7 +37,7 @@ attribute [local ext] Subtype.ext_val
 
 section
 
--- implementation details of `has_image` for `AddCommGroupCat`; use the API, not these
+-- implementation details of `IsImage` for `AddCommGroupCat`; use the API, not these
 /-- the image of a morphism in `AddCommGroupCat` is just the bundling of `AddMonoidHom.range f` -/
 def image : AddCommGroupCat :=
   AddCommGroupCat.of (AddMonoidHom.range f)

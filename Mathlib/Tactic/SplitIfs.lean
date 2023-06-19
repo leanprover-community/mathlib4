@@ -128,7 +128,7 @@ ite-expression.
 `split_ifs at *` splits all ite-expressions in all hypotheses as well as the goal.
 `split_ifs with h₁ h₂ h₃` overrides the default names for the hypotheses.
 -/
-syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " (colGt binderIdent)+)? : tactic
+syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
 | `(tactic| split_ifs $[$loc:location]? $[with $withArg*]?) =>
