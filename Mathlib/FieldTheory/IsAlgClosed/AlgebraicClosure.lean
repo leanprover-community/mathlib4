@@ -274,7 +274,7 @@ private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
 
 --Porting Note: Can probably still be optimized -
 --Only the last `convert h` times out with 500000 Heartbeats
-set_option maxHeartbeats 700000
+set_option maxHeartbeats 700000 in
 theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
   induction' n with a h
   · intro z
@@ -297,7 +297,6 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
       convert this
     · convert h --Porting Note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
-
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
   ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
@@ -352,7 +351,7 @@ theorem exists_ofStep (z : AlgebraicClosure k) : ∃ n x, ofStep k n x = z :=
 
 -- slow
 --Porting Note: Timed out at 800000
-set_option maxHeartbeats 900000
+set_option maxHeartbeats 900000 in
 theorem exists_root {f : Polynomial (AlgebraicClosure k)} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AlgebraicClosure k, f.eval x = 0 := by
   have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
