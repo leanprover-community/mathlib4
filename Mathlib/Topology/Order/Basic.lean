@@ -57,7 +57,7 @@ see their statements.
 * `le_of_tendsto_of_tendsto` : if `f` converges to `a`, `g` converges to `b`, and eventually
   `f x ≤ g x`, then `a ≤ b`
 * `le_of_tendsto`, `ge_of_tendsto` : if `f` converges to `a` and eventually `f x ≤ b`
-  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a); we also provide primed versions
+  (resp., `b ≤ f x`), then `a ≤ b` (resp., `b ≤ a`); we also provide primed versions
   that assume the inequalities to hold for all `x`.
 
 ### Min, max, `sSup` and `sInf`

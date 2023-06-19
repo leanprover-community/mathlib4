@@ -48,7 +48,7 @@ vectors.
 * `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
 * `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;
-* linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
+* `linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
   `linearIndependent_fin_succ`: type-specific tests for linear independence of families of vector
   fields;
 * `linearIndependent_insert`, `linearIndependent_union`, `linearIndependent_pair`,
@@ -1210,7 +1210,8 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
   -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
-  simp [(· ∘ ·)]
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  simp only [(· ∘ ·)]
   erw [range_comp f ((↑) : s → ι)]
   simp
 #align linear_independent_insert' linearIndependent_insert'
@@ -1239,6 +1240,7 @@ theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: `rw` → `erw`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
 #align linear_independent_fin_snoc linearIndependent_fin_snoc
 

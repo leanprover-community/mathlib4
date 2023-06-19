@@ -184,7 +184,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
   · cases' ab with a b
-    --Porting note: both cases were `simp [Language.con]
+    --Porting note: both cases were `simp [Language.con]`
     . simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
     . simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
