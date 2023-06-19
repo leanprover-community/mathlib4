@@ -73,31 +73,30 @@ protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
   Pi.seminormedAddCommGroup
 #align matrix.seminormed_add_comm_group Matrix.seminormedAddCommGroup
 
+
 attribute [local instance] Matrix.seminormedAddCommGroup
 
+-- porting note: new (along with all the uses of this lemma below)
+theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
+
+-- porting note: new  (along with all the uses of this lemma below)
+theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j => A i j‖₊ := rfl
+
 theorem norm_le_iff {r : ℝ} (hr : 0 ≤ r) {A : Matrix m n α} : ‖A‖ ≤ r ↔ ∀ i j, ‖A i j‖ ≤ r := by
-  -- Porting note: was `by simp [pi_norm_le_iff_of_nonneg hr]`
-  rw [pi_norm_le_iff_of_nonneg hr]
-  simp_rw [pi_norm_le_iff_of_nonneg hr]
+  simp_rw [norm_def, pi_norm_le_iff_of_nonneg hr]
 #align matrix.norm_le_iff Matrix.norm_le_iff
 
 theorem nnnorm_le_iff {r : ℝ≥0} {A : Matrix m n α} : ‖A‖₊ ≤ r ↔ ∀ i j, ‖A i j‖₊ ≤ r := by
-  -- Porting note: was `by simp [pi_nnnorm_le_iff]`
-  rw [pi_nnnorm_le_iff]
-  simp_rw [pi_nnnorm_le_iff]
+  simp_rw [nnnorm_def, pi_nnnorm_le_iff]
 #align matrix.nnnorm_le_iff Matrix.nnnorm_le_iff
 
 theorem norm_lt_iff {r : ℝ} (hr : 0 < r) {A : Matrix m n α} : ‖A‖ < r ↔ ∀ i j, ‖A i j‖ < r := by
-  -- Porting note: was `by simp [pi_norm_lt_iff hr]`
-  rw [pi_norm_lt_iff hr]
-  simp_rw [pi_norm_lt_iff hr]
+  simp_rw [norm_def, pi_norm_lt_iff hr]
 #align matrix.norm_lt_iff Matrix.norm_lt_iff
 
 theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
     ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r := by
-  -- Porting note: was `by simp [pi_nnnorm_lt_iff hr]`
-  rw [pi_nnnorm_lt_iff hr]
-  simp_rw [pi_nnnorm_lt_iff hr]
+  simp_rw [nnnorm_def, pi_nnnorm_lt_iff hr]
 #align matrix.nnnorm_lt_iff Matrix.nnnorm_lt_iff
 
 theorem norm_entry_le_entrywise_sup_norm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖ ≤ ‖A‖ :=
@@ -111,9 +110,7 @@ theorem nnnorm_entry_le_entrywise_sup_nnnorm (A : Matrix m n α) {i : m} {j : n}
 @[simp]
 theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
     ‖A.map f‖₊ = ‖A‖₊ := by
-  -- Porting note: was `by simp [Pi.nnnorm_def, Matrix.map_apply, hf]`
-  rw [Pi.nnnorm_def, Pi.nnnorm_def]
-  simp only [Pi.nnnorm_def, Matrix.map_apply, hf]
+  simp only [nnnorm_def, Pi.nnnorm_def, Matrix.map_apply, hf]
 #align matrix.nnnorm_map_eq Matrix.nnnorm_map_eq
 
 @[simp]
@@ -148,9 +145,7 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
 
 @[simp]
 theorem nnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
-  -- Porting note: was `by simp [Pi.nnnorm_def]`
-  rw [Pi.nnnorm_def]
-  simp [Pi.nnnorm_def]
+  simp [nnnorm_def, Pi.nnnorm_def]
 #align matrix.nnnorm_col Matrix.nnnorm_col
 
 @[simp]
@@ -160,9 +155,7 @@ theorem norm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
 
 @[simp]
 theorem nnnorm_row (v : n → α) : ‖row v‖₊ = ‖v‖₊ := by
-  -- Porting note: was `by simp [Pi.nnnorm_def]`
-  rw [Pi.nnnorm_def]
-  simp [Pi.nnnorm_def]
+  simp [nnnorm_def, Pi.nnnorm_def]
 #align matrix.nnnorm_row Matrix.nnnorm_row
 
 @[simp]
@@ -172,9 +165,7 @@ theorem norm_row (v : n → α) : ‖row v‖ = ‖v‖ :=
 
 @[simp]
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
-  simp_rw [Pi.nnnorm_def]
-  -- Porting note: added
-  erw [Pi.nnnorm_def]
+  simp_rw [nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
   refine' le_antisymm (Finset.sup_le fun j hj => _) _
   · obtain rfl | hij := eq_or_ne i j
