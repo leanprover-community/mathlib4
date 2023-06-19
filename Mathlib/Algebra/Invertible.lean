@@ -44,7 +44,7 @@ users can choose which instances to use at the point of use.
 
 For example, here's how you can use an `Invertible 1` instance:
 ```lean
-variables {α : Type _} [monoid α]
+variables {α : Type _} [Monoid α]
 
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
@@ -180,7 +180,7 @@ def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs :
 theorem Invertible.congr [Ring α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
   ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
 
-/-- An `invertible` element is a unit. -/
+/-- An `Invertible` element is a unit. -/
 @[simps]
 def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
     αˣ where
@@ -189,6 +189,7 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] :
   val_inv := by simp
   inv_val := by simp
 #align unit_of_invertible unitOfInvertible
+#align coe_unit_of_invertible unitOfInvertible_val
 
 theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
@@ -413,7 +414,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
--- Porting note: removed `simp` attibute as `simp` can prove it
+-- Porting note: removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
@@ -435,7 +436,7 @@ def Invertible.map {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [MulOn
   mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
 #align invertible.map Invertible.map
 
-/-- Note that the `invertible (f r)` argument can be satisfied by using `letI := invertible.map f r`
+/-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
 theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid S]
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :

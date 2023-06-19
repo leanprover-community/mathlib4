@@ -208,7 +208,7 @@ theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
   rw [thickening_eq_biUnion_ball]
   convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
   exact s.biUnion_of_singleton.symm
-  ext (x y)
+  ext x
   simp_rw [singleton_mul_ball, mul_one]
 #align mul_ball_one mul_ball_one
 #align add_ball_zero add_ball_zero

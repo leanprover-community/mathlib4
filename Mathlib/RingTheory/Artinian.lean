@@ -27,7 +27,7 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodule of `M`.
 
-* `IsArtinian R M` is the proposition that `M` is a Artinian `R`-module. It is a class,
+* `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module. It is a class,
   implemented as the predicate that the `<` relation on submodules is well founded.
 * `IsArtinianRing R` is the proposition that `R` is a left Artinian ring.
 
@@ -216,7 +216,7 @@ theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) �
   (wellFounded_submodule_lt R M).recursion I hgt
 #align is_artinian.induction IsArtinian.induction
 
-/-- For any endomorphism of a Artinian module, there is some nontrivial iterate
+/-- For any endomorphism of an Artinian module, there is some nontrivial iterate
 with disjoint kernel and range. -/
 theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
     ∃ n : ℕ, n ≠ 0 ∧ LinearMap.ker (f ^ n) ⊔ LinearMap.range (f ^ n) = ⊤ := by
@@ -304,24 +304,6 @@ end IsArtinian
 
 end CommRing
 
--- TODO: Prove this for artinian modules
--- /--
--- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--- -/
--- universe w
--- variables {N : Type w} [add_comm_group N] [module R N]
--- noncomputable def is_noetherian.equiv_punit_of_prod_injective [is_noetherian R M]
---   (f : M × N →ₗ[R] M) (i : injective f) : N ≃ₗ[R] punit.{w+1} :=
--- begin
---   apply nonempty.some,
---   obtain ⟨n, w⟩ := is_noetherian.disjoint_partial_sups_eventually_bot (f.tailing i)
---     (f.tailings_disjoint_tailing i),
---   specialize w n (le_refl n),
---   apply nonempty.intro,
---   refine (f.tailing_linear_equiv i n).symm.trans _,
---   rw w,
---   exact submodule.bot_equiv_punit,
--- end
 /-- A ring is Artinian if it is Artinian as a module over itself.
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for

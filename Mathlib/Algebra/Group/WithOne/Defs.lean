@@ -25,8 +25,8 @@ information about these structures (which are not that standard in informal math
 ## Porting notes
 
 In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`with_one` and `with_zero` are marked as `irreducible` at the end of `algebra.group.with_one.defs`,
-so proofs that use `option α` instead of `with_one α` no longer typecheck. In Lean 4, both types are
+`WithOne` and `WithZero` are marked as `Irreducible` at the end of `algebra.group.with_one.defs`,
+so proofs that use `Option α` instead of `WithOne α` no longer typecheck. In Lean 4, both types are
 plain `def`s, so we don't need these `id`s.
 -/
 

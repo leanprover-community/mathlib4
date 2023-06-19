@@ -30,7 +30,7 @@ variable {α : Type u} {β : Type v} [UniformSpace α]
   sequences, because if `a : ℕ → α` then the filter of sets containing
   cofinitely many of the `a n` is Cauchy iff `a` is a Cauchy sequence. -/
 def Cauchy (f : Filter α) :=
-  NeBot f ∧ f ×ᶠ f ≤ 𝓤 α
+  NeBot f ∧ f ×ˢ f ≤ 𝓤 α
 #align cauchy Cauchy
 
 /-- A set `s` is called *complete*, if any Cauchy filter `f` such that `s ∈ f`
@@ -65,12 +65,12 @@ theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
 #align cauchy.ultrafilter_of Cauchy.ultrafilter_of
 
 theorem cauchy_map_iff {l : Filter β} {f : β → α} :
-    Cauchy (l.map f) ↔ NeBot l ∧ Tendsto (fun p : β × β => (f p.1, f p.2)) (l ×ᶠ l) (𝓤 α) := by
+    Cauchy (l.map f) ↔ NeBot l ∧ Tendsto (fun p : β × β => (f p.1, f p.2)) (l ×ˢ l) (𝓤 α) := by
   rw [Cauchy, map_neBot_iff, prod_map_map_eq, Tendsto]
 #align cauchy_map_iff cauchy_map_iff
 
 theorem cauchy_map_iff' {l : Filter β} [hl : NeBot l] {f : β → α} :
-    Cauchy (l.map f) ↔ Tendsto (fun p : β × β => (f p.1, f p.2)) (l ×ᶠ l) (𝓤 α) :=
+    Cauchy (l.map f) ↔ Tendsto (fun p : β × β => (f p.1, f p.2)) (l ×ˢ l) (𝓤 α) :=
   cauchy_map_iff.trans <| and_iff_right hl
 #align cauchy_map_iff' cauchy_map_iff'
 
@@ -96,7 +96,7 @@ theorem Filter.Tendsto.cauchy_map {l : Filter β} [NeBot l] {f : β → α} {a :
 #align filter.tendsto.cauchy_map Filter.Tendsto.cauchy_map
 
 theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauchy f) (hg : Cauchy g) :
-    Cauchy (f ×ᶠ g) := by
+    Cauchy (f ×ˢ g) := by
   refine' ⟨hf.1.prod hg.1, _⟩
   simp only [uniformity_prod, le_inf_iff, ← map_le_iff_le_comap, ← prod_map_map_eq]
   exact
@@ -141,7 +141,7 @@ nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf 
     (hm : UniformContinuous m) : Cauchy (map m f) :=
   ⟨hf.1.map _,
     calc
-      map m f ×ᶠ map m f = map (Prod.map m m) (f ×ᶠ f) := Filter.prod_map_map_eq
+      map m f ×ˢ map m f = map (Prod.map m m) (f ×ˢ f) := Filter.prod_map_map_eq
       _ ≤ Filter.map (Prod.map m m) (𝓤 α) := map_mono hf.right
       _ ≤ 𝓤 β := hm⟩
 #align cauchy.map Cauchy.map
@@ -151,7 +151,7 @@ nonrec theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (h
     Cauchy (comap m f) :=
   ⟨‹_›,
     calc
-      comap m f ×ᶠ comap m f = comap (Prod.map m m) (f ×ᶠ f) := prod_comap_comap_eq
+      comap m f ×ˢ comap m f = comap (Prod.map m m) (f ×ˢ f) := prod_comap_comap_eq
       _ ≤ comap (Prod.map m m) (𝓤 β) := comap_mono hf.right
       _ ≤ 𝓤 α := hm⟩
 #align cauchy.comap Cauchy.comap

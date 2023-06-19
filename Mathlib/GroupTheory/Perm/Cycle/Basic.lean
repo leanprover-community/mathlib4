@@ -31,7 +31,7 @@ In the following, `f : Equiv.Perm β`.
 * `Equiv.Perm.IsCycleOn`: `f` is a cycle on a set `s` when any two points of `s` are related by
   repeated applications of `f`.
 
-The following two definitions require that `β` is a `fintype`:
+The following two definitions require that `β` is a `Fintype`:
 
 * `Equiv.Perm.cycleOf`: `f.cycleOf x` is the cycle of `f` that `x` belongs to.
 * `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations that
@@ -691,7 +691,7 @@ theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : 
   ⟨fun h => FunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 #align equiv.perm.is_cycle.pow_eq_one_iff' Equiv.Perm.IsCycle.pow_eq_one_iff'
 
--- TODO: Define a `set`-valued support to get rid of the `finite β` assumption
+-- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
     f ^ n = 1 ↔ ∀ x, f x ≠ x → (f ^ n) x = x :=
   ⟨fun h _ hx => (hf.pow_eq_one_iff' hx).1 h, fun h =>
@@ -699,7 +699,7 @@ theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n :
     (hf.pow_eq_one_iff' hx).2 (h _ hx)⟩
 #align equiv.perm.is_cycle.pow_eq_one_iff'' Equiv.Perm.IsCycle.pow_eq_one_iff''
 
--- TODO: Define a `set`-valued support to get rid of the `finite β` assumption
+-- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b : ℕ} :
     f ^ a = f ^ b ↔ ∃ x, f x ≠ x ∧ (f ^ a) x = (f ^ b) x := by
   classical
@@ -1230,7 +1230,7 @@ end CycleOf
 
 variable [DecidableEq α]
 
-/-- Given a list `l : list α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
+/-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
 def cycleFactorsAux [Fintype α] :
     ∀ (l : List α) (f : Perm α),
@@ -1343,7 +1343,7 @@ section CycleFactorsFinset
 
 variable [Fintype α] (f : Perm α)
 
-/-- Factors a permutation `f` into a `finset` of disjoint cyclic permutations that multiply to `f`.
+/-- Factors a permutation `f` into a `Finset` of disjoint cyclic permutations that multiply to `f`.
 -/
 def cycleFactorsFinset : Finset (Perm α) :=
   (truncCycleFactors f).lift
@@ -1952,7 +1952,7 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
 The diagonals are given by the cycle `f`.
 -/
 theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
-    s ×ᶠ s =
+    s ×ˢ s =
       (range s.card).disjiUnion
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
         (product_self_eq_disj_Union_perm_aux hf) := by

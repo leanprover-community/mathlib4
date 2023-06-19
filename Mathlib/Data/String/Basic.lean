@@ -19,6 +19,11 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
+-- TODO: upstream to std or remove
+theorem Iterator.hasNext_cons_addChar (c : Char) (cs : List Char) (i : Pos) :
+    hasNext ⟨⟨c :: cs⟩, i + c⟩ = hasNext ⟨⟨cs⟩, i⟩ := by
+  simp [hasNext, Nat.add_lt_add_iff_lt_right]
+
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
   if s₂.hasNext then
@@ -140,7 +145,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
   · simp only at h
   · rename_i c cs
     simp only [toList, List.cons.injEq]
-    constructor <;> [rfl, simp [drop_eq]]
+    constructor <;> [rfl; simp [drop_eq]]
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]

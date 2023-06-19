@@ -32,7 +32,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.lift.initialSeg`.
-  For a version regiserting that it is a principal segment embedding if `u < v`, see
+  For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.lift.principalSeg`.
 * `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
   `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
@@ -919,7 +919,7 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 
 @[simp]
 theorem card_nat (n : ℕ) : card.{u} n = n := by
-  induction n <;> [rfl, simp only [card_add, card_one, Nat.cast_succ, *]]
+  induction n <;> [rfl; simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
@@ -961,8 +961,8 @@ instance add_swap_covariantClass_le :
                 intro a b
                 constructor <;> intro H
                 · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo], assumption]
-                · cases H <;> constructor <;> [rwa [fo], assumption]⟩
+                    [rwa [← fo]; assumption]
+                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
 #align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
@@ -988,11 +988,7 @@ instance linearOrder : LinearOrder Ordinal :=
         rw [← typein_top f, ← typein_top g, le_iff_lt_or_eq, le_iff_lt_or_eq,
                  typein_lt_typein, typein_lt_typein]
         rcases trichotomous_of (Sum.Lex r₁ r₂) g.top f.top with (h | h | h) <;>
-                [exact Or.inl (Or.inl h),
-                · left
-                  right
-                  rw [h],
-                  exact Or.inr (Or.inl h)]
+          [exact Or.inl (Or.inl h); (left; right; rw [h]); exact Or.inr (Or.inl h)]
     decidableLE := Classical.decRel _ }
 
 instance wellFoundedLT : WellFoundedLT Ordinal :=
@@ -1229,7 +1225,7 @@ noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
     apply enum_le_enum'
 #align ordinal.enum_iso_out Ordinal.enumIsoOut
 
-/-- `o.out.α` is an `order_bot` whenever `0 < o`. -/
+/-- `o.out.α` is an `OrderBot` whenever `0 < o`. -/
 def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
   bot_le := enum_zero_le' ho
 #align ordinal.out_order_bot_of_pos Ordinal.outOrderBotOfPos
@@ -1350,7 +1346,7 @@ theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }
   rfl
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
-theorem ord_eq (α) : ∃ (r : α → α → Prop)(wo : IsWellOrder α r), ord (#α) = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord (#α) = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq

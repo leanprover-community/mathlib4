@@ -159,7 +159,7 @@ variable (S₁ S₂ S₃)
 
 /-- The function from multivariable polynomials in a sum of two types,
 to multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
@@ -186,7 +186,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.sum_to_iter_Xr MvPolynomial.sumToIter_Xr
 
 /-- The function from multivariable polynomials in one type,
-with coefficents in multivariable polynomials in another type,
+with coefficients in multivariable polynomials in another type,
 to multivariable polynomials in the sum of the two types.
 
 See `sumRingEquiv` for the ring isomorphism.
@@ -251,7 +251,7 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
 
 /-- The ring isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
   apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
@@ -265,7 +265,7 @@ def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPol
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with

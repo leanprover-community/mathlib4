@@ -25,13 +25,13 @@ a linearly ordered abelian group and `R` is a field, in which case `HahnSeries �
 valued field, with value group `Γ`.
 
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
-in the file `ring_theory/laurent_series`.
+in the file `RingTheory/LaurentSeries`.
 
 ## Main Definitions
   * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
   * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
-  * If `R` is a (comm_)(semi)ring, then so is `HahnSeries Γ R`.
+  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
@@ -42,7 +42,7 @@ in the file `ring_theory/laurent_series`.
   `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
   topologically.
   * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
-    `ring_theory/laurent_series`.
+    `RingTheory/LaurentSeries`.
 
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
@@ -1161,7 +1161,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [StrictOrderedSemiring Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -1220,7 +1220,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
 @[simp]
-theorem ofPowerSeries_x_pow {R} [CommSemiring R] (n : ℕ) :
+theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   rw [RingHom.map_pow]
   induction' n with n ih
@@ -1228,7 +1228,7 @@ theorem ofPowerSeries_x_pow {R} [CommSemiring R] (n : ℕ) :
     rfl
   . rw [pow_succ, pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
       Nat.cast_succ, add_comm]
-#align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_x_pow
+#align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
@@ -1297,7 +1297,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [StrictOrderedSemiring Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`
+/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=

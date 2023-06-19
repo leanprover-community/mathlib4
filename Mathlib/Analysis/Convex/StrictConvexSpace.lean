@@ -178,8 +178,8 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
 #align norm_combo_lt_of_ne norm_combo_lt_of_ne
 
-/-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ +
-‖y‖`. -/
+/-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
+-/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
   simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
   rcases h with ⟨hx, hy, hne⟩
@@ -224,7 +224,7 @@ theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x�
 #align not_same_ray_iff_norm_add_lt not_sameRay_iff_norm_add_lt
 
 theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
-  ⟨SameRay.norm_sub (F := E), fun h =>
+  ⟨SameRay.norm_sub, fun h =>
     Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
 #align same_ray_iff_norm_sub sameRay_iff_norm_sub
 

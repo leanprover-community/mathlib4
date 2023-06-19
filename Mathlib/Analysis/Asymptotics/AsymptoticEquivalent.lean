@@ -197,7 +197,7 @@ variable {α β : Type _} [NormedField β] {t u v w : α → β} {l : Filter α}
 theorem isEquivalent_iff_exists_eq_mul :
     u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
   rw [IsEquivalent, isLittleO_iff_exists_eq_mul]
-  constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine' ⟨φ + 1, _, _⟩, refine' ⟨φ - 1, _, _⟩]
+  constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine' ⟨φ + 1, _, _⟩; refine' ⟨φ - 1, _, _⟩]
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
     exact hφ.add tendsto_const_nhds
   · convert h.add (EventuallyEq.refl l v) <;> simp [add_mul]
@@ -262,10 +262,8 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
   refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ _)
   have key :=
     calc
-      ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ :=
-        mul_le_mul_of_nonneg_right hφx.le (norm_nonneg <| u x)
-      _ ≤ c / 2 / C * (C * ‖v x‖) :=
-        (mul_le_mul_of_nonneg_left hCuvx (div_pos (div_pos hc zero_lt_two) hC).le)
+      ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr
+      _ ≤ c / 2 / C * (C * ‖v x‖) := by gcongr
       _ = c / 2 * ‖v x‖ := by
         field_simp [hC.ne.symm]
         ring
@@ -274,8 +272,8 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
       simp [sub_smul, sub_add]
     _ ≤ ‖(φ x - 1) • u x‖ + ‖u x - v x‖ := (norm_add_le _ _)
     _ = ‖φ x - 1‖ * ‖u x‖ + ‖u x - v x‖ := by rw [norm_smul]
-    _ ≤ c / 2 * ‖v x‖ + ‖u x - v x‖ := (add_le_add_right key _)
-    _ ≤ c / 2 * ‖v x‖ + c / 2 * ‖v x‖ := (add_le_add_left huvx _)
+    _ ≤ c / 2 * ‖v x‖ + ‖u x - v x‖ := by gcongr
+    _ ≤ c / 2 * ‖v x‖ + c / 2 * ‖v x‖ := by gcongr; exact huvx
     _ = c * ‖v x‖ := by ring
 #align asymptotics.is_equivalent.smul Asymptotics.IsEquivalent.smul
 

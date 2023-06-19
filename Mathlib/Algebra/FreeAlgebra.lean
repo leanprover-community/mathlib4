@@ -309,7 +309,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
-        -- Porting note: it is necessary to declare fa and fb explicitely otherwise Lean refuses
+        -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b

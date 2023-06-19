@@ -22,8 +22,8 @@ In this file we define `Finsupp.supported s` to be the set `{f : α →₀ M | f
 interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions of various maps:
 
 * `Finsupp.lsingle a : M →ₗ[R] ι →₀ M`: `Finsupp.single a` as a linear map;
-* `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `λ f, f a` as a linear map;
-* `Finsupp.lsubtypeDomain (s : set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
+* `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `fun f ↦ f a` as a linear map;
+* `Finsupp.lsubtypeDomain (s : Set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
   linear map;
 * `Finsupp.restrictDom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
 * `Finsupp.lsum`: `Finsupp.sum` or `Finsupp.liftAddHom` as a `LinearMap`;
@@ -37,8 +37,8 @@ interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions
 * `Finsupp.domLCongr`: a `LinearEquiv` version of `Finsupp.domCongr`;
 * `Finsupp.congr`: if the sets `s` and `t` are equivalent, then `supported M R s` is equivalent to
   `supported M R t`;
-* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using `e : α ≃
-  β` and `e' : M ≃ₗ[R] N`.
+* `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using
+  `e : α ≃ β` and `e' : M ≃ₗ[R] N`.
 
 ## Tags
 
@@ -724,7 +724,7 @@ variable (α) (M) (v)
 /-- `Finsupp.totalOn M v s` interprets `p : α →₀ R` as a linear combination of a
 subset of the vectors in `v`, mapping it to the span of those vectors.
 
-The subset is indicated by a set `s : set α` of indices.
+The subset is indicated by a set `s : Set α` of indices.
 -/
 protected def totalOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
   LinearMap.codRestrict _ ((Finsupp.total _ _ _ v).comp (Submodule.subtype (supported R R s)))
@@ -1047,19 +1047,10 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 protected def Fintype.total : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v :=
     { toFun := fun f => ∑ i, f i • v i
-      map_add' := fun f g => by
-        simp_rw [← Finset.sum_add_distrib, ← add_smul]
-        rfl
-      map_smul' := fun r f => by
-        simp_rw [Finset.smul_sum, smul_smul]
-        rfl }
-  map_add' u v := by
-    ext
-    simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by
-    ext g
-    -- Porting note: `smul_comm _ r` → `fun x => smul_comm (g x) r (v x)`
-    simp [Finset.smul_sum, fun x => smul_comm (g x) r (v x)]
+      map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
+      map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl }
+  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
 #align fintype.total Fintype.total
 
 variable {S}

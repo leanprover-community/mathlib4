@@ -32,29 +32,29 @@ Note that the corresponding result holds for the canonically isomorphic ring `R 
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 
 Bimodules are thus just a special case of `Module`s and most of their properties follow from the
-theory of `Module`s`. In particular a two-sided Submodule of a bimodule is simply a term of type
-`submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
+theory of `Module`s. In particular a two-sided Submodule of a bimodule is simply a term of type
+`Submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
 
 This file is a place to collect results which are specific to bimodules.
 
 ## Main definitions
 
- * `subbimodule.mk`
- * `subbimodule.smul_mem`
- * `subbimodule.smul_mem'`
- * `subbimodule.to_submodule`
- * `subbimodule.to_submodule'`
+ * `Subbimodule.mk`
+ * `Subbimodule.smul_mem`
+ * `Subbimodule.smul_mem'`
+ * `Subbimodule.toSubmodule`
+ * `Subbimodule.toSubmodule'`
 
 ## Implementation details
 
 For many definitions and lemmas it is preferable to set things up without opposites, i.e., as:
-`[module S M] [smul_comm_class R S M]` rather than `[module Sᵐᵒᵖ M] [smul_comm_class R Sᵐᵒᵖ M]`.
+`[Module S M] [SMulCommClass R S M]` rather than `[Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]`.
 The corresponding results for opposites then follow automatically and do not require taking
 advantage of the fact that `(Sᵐᵒᵖ)ᵐᵒᵖ` is defeq to `S`.
 
 ## TODO
 
-Develop the theory of two-sided ideals, which have type `submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
+Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
 
 -/
 
@@ -83,7 +83,7 @@ variable [SMulCommClass A B M]
 individually, rather than jointly via their tensor product.
 
 Note that `R` plays no role but it is convenient to make this generalisation to support the cases
-`R = ℕ` and `R = ℤ` which both show up naturally. See also `base_change`. -/
+`R = ℕ` and `R = ℤ` which both show up naturally. See also `Subbimodule.baseChange`. -/
 @[simps]
 def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p)
     (hB : ∀ (b : B) {m : M}, m ∈ p → b • m ∈ p) : Submodule (A ⊗[R] B) M :=
@@ -155,4 +155,3 @@ def toSubbimoduleNat (p : Submodule (R ⊗[ℤ] S) M) : Submodule (R ⊗[ℕ] S)
 end Ring
 
 end Subbimodule
-

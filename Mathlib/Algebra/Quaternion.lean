@@ -37,7 +37,7 @@ We also define the following algebraic structures on `ℍ[R]`:
 
 ## Notation
 
-The following notation is available with `open_locale Quaternion`.
+The following notation is available with `open Quaternion` or `open scoped Quaternion`.
 
 * `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R c₁ c₂`
 * `ℍ[R]` : quaternions over `R`.
@@ -315,7 +315,7 @@ theorem sub_self_re : a - a.re = a.im :=
 * `j * j = c₂`;
 * `i * j = k`, `j * i = -k`;
 * `k * k = -c₁ * c₂`;
-* `i * k = c₁ * j`, `k * i = `-c₁ * j`;
+* `i * k = c₁ * j`, `k * i = -c₁ * j`;
 * `j * k = -c₂ * i`, `k * j = c₂ * i`.  -/
 instance : Mul ℍ[R,c₁,c₂] :=
   ⟨fun a b =>
@@ -780,7 +780,7 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,-1]
 
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
+protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
 -- porting note: added shortcut

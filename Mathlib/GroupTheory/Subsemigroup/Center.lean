@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 
 ! This file was ported from Lean 3 source module group_theory.subsemigroup.center
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -148,7 +148,7 @@ variable (M) [Semigroup M]
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
-  mul_mem':= Set.mul_mem_center
+  mul_mem' := Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
 #align add_subsemigroup.center AddSubsemigroup.center
 
@@ -194,5 +194,4 @@ end
 end Subsemigroup
 
 -- Guard against import creep
--- Porting note: Not implemented yet
--- assert_not_exists finset
+assert_not_exists Finset

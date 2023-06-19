@@ -439,7 +439,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     simp only [inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
     refine' ⟨fun h i _ => _, fun h => ⟨fun i hi1 => _, fun i hi2 => _⟩⟩
     · split_ifs with h_1 h_2 h_2
-      exacts[⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
+      exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
         ⟨Set.mem_univ _, Set.mem_univ _⟩]
     · specialize h i (Or.inl hi1)
       rw [if_pos hi1] at h
@@ -720,7 +720,7 @@ theorem generate_inter {s : Set (Set α)} (hs : IsPiSystem s) {t₁ t₂ : Set �
   generates is equal to the σ-algebra it generates.
   This result is known as the π-λ theorem.
   A collection of sets closed under binary intersection is called a π-system (often requiring
-  additionnally that is is non-empty, but we drop this condition in the formalization).
+  additionally that it is non-empty, but we drop this condition in the formalization).
 -/
 theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
     generateFrom s = (generate s).toMeasurableSpace fun t₁ t₂ => generate_inter hs :=
