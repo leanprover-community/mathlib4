@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.CategoryTheory.Monoidal.CommMon_
-import Mathbin.CategoryTheory.Monoidal.Types.Symmetric
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.CategoryTheory.Monoidal.CommMon_
+import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 
 /-!
 # `Mon_ (Type u) ≌ Mon.{u}`
@@ -28,8 +28,7 @@ open CategoryTheory
 
 namespace monTypeEquivalenceMon
 
-instance monMonoid (A : Mon_ (Type u)) : Monoid A.pt
-    where
+instance monMonoid (A : Mon_ (Type u)) : Monoid A.pt where
   one := A.one PUnit.unit
   mul x y := A.mul (x, y)
   one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
@@ -39,8 +38,7 @@ instance monMonoid (A : Mon_ (Type u)) : Monoid A.pt
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
-def functor : Mon_ (Type u) ⥤ MonCat.{u}
-    where
+def functor : Mon_ (Type u) ⥤ MonCat.{u} where
   obj A := ⟨A.pt⟩
   map A B f :=
     { toFun := f.Hom
@@ -50,8 +48,7 @@ def functor : Mon_ (Type u) ⥤ MonCat.{u}
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
-def inverse : MonCat.{u} ⥤ Mon_ (Type u)
-    where
+def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
   obj A :=
     { pt := A
       one := fun _ => 1
@@ -69,8 +66,7 @@ open monTypeEquivalenceMon
 /-- The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
 -/
-def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u}
-    where
+def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
   Functor := Functor
   inverse := inverse
   unitIso :=
@@ -114,16 +110,14 @@ instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.pt :=
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
-def functor : CommMon_ (Type u) ⥤ CommMonCat.{u}
-    where
+def functor : CommMon_ (Type u) ⥤ CommMonCat.{u} where
   obj A := ⟨A.pt⟩
   map A B f := MonTypeEquivalenceMon.functor.map f
 #align CommMon_Type_equivalence_CommMon.functor CommMonTypeEquivalenceCommMon.functor
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
-def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u)
-    where
+def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
       mul_comm' := by ext ⟨x, y⟩; exact CommMonoid.mul_comm y x }
@@ -137,8 +131,7 @@ open commMonTypeEquivalenceCommMon
 /-- The category of internal commutative monoid objects in `Type`
 is equivalent to the category of "native" bundled commutative monoids.
 -/
-def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonCat.{u}
-    where
+def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonCat.{u} where
   Functor := Functor
   inverse := inverse
   unitIso :=
