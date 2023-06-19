@@ -125,8 +125,8 @@ lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.π ≫ h.descH k hk = k
   h.hπ.fac (CokernelCofork.ofπ k hk) WalkingParallelPair.one
 
 lemma isIso_i (hg : S.g = 0) : IsIso h.i :=
-  ⟨⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
-    by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩⟩
+  ⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
+    by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩
 
 lemma isIso_π (hf : S.f = 0) : IsIso h.π := by
   have ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
