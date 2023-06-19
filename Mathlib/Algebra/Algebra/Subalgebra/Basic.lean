@@ -365,13 +365,14 @@ instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScal
 
 instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
     Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
+  { toSMul := (Subalgebra.module' S).toSMul
+    toRingHom := (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
         Algebra.algebraMap_eq_smul_one]
-      exact algebraMap_mem S
-          _ with
+      exact algebraMap_mem S _
     commutes' := fun c x => Subtype.eq <| Algebra.commutes _ _
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
+
 #align subalgebra.algebra' Subalgebra.algebra'
 
 instance algebra : Algebra R S := S.algebra'
