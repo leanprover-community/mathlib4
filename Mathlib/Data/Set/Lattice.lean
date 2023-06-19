@@ -185,6 +185,12 @@ instance : CompleteBooleanAlgebra (Set α) :=
     iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
     inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
 
+-- This instance will later follow from the more general theorem
+-- that every complete atomic Boolean algebra is completely distributive,
+-- but we add it here to shorten the import graph.
+instance : CompletelyDistribLattice (Set α) where
+  iInf_iSup_eq f := by ext; simp [Classical.skolem]
+
 section GaloisConnection
 
 variable {f : α → β}
