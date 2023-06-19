@@ -396,30 +396,27 @@ theorem liftR_map_last [lawful: LawfulMvFunctor F]
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
   let h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
-  have h' : h = fun x => ⟨(f x, g x), hh x⟩ := rfl
   let b : (α ::: ι) ⟹ _ := @diagSub n α ::: h
-  have b' : b = (@diagSub n α ::: h) := rfl
   let c :
     (Subtype_ α.repeatEq ::: { x // uncurry R x }) ⟹
       ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) ::: Subtype (uncurry R)) :=
     ofSubtype _ ::: id
-  have c' : c = (ofSubtype _ ::: _root_.id) := rfl;
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
       ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
-    dsimp [c', b']
+    dsimp
     apply eq_of_drop_last_eq
     · dsimp
       simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, id_comp,
         dropFun_toSubtype]
       erw [toSubtype_of_subtype_assoc, id_comp]
-      clear liftR_map_last q mvf lawful F x R f g hh h h' b b' c c';
+      clear liftR_map_last q mvf lawful F x R f g hh h b c
       ext (i x) : 2
       induction i with
       | fz => rfl
       | fs _ ih =>
         apply ih
-    simp only [h', lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
+    simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
       lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
     dsimp
     ext1
@@ -462,7 +459,8 @@ namespace Mathlib.Tactic.MvBisim
 
 open Lean Elab Term Tactic Meta Qq
 
-syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace binderIdent)+)? : tactic
+/-- tactic for proof by bisimulation -/
+syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
   | `(tactic| mv_bisim $e $[ with $ids:binderIdent*]?) =>
@@ -477,64 +475,39 @@ elab_rules : tactic
       | none => `_
     withMainContext do
       let e ← Tactic.elabTerm e none
-      let ⟨u, α, e⟩ ← inferTypeQ e
-      -- let f ← liftMetaTacticAux fun g => do
-      --   let (#[f], g) ← g.generalize #[{ expr := e, xName? := binderName ids[3]? }] | unreachable!
-      --   return (f, [g])
-      -- let some (t, l, r) ← matchEq? (← getMainTarget) | throwError "goal is not an equality"
-      -- let v₀ ← liftMetaTacticAux fun g => do
-      --   let g₁ ← g.assertExt (binderName ids[1]?) t l (binderName ids[4]?)
-      --   let (v₀, g₂) ← g₁.intro1P
-      --   let (_, g₃) ← g₂.intro1P
-      --   return (v₀, [g₃])
-      -- let v₁ ← liftMetaTacticAux fun g => do
-      --   let g₁ ← g.assertExt (binderName ids[2]?) t r (binderName ids[5]?)
-      --   let (v₁, g₂) ← g₁.intro1P
-      --   let (_, g₃) ← g₂.intro1P
-      --   return (v₁, [g₃])
-      -- withMainContext do
-      --   let x₀ ← mkEq (mkFVar v₀) l
-      --   let x₁ ← mkEq (mkFVar v₁) r
-      --   let xx ← mkAppM ``And #[x₀, x₁]
-      --   let ex₁ ← mkLambdaFVars #[mkFVar f] xx
-      --   let ex₂ ← mkAppM ``Exists #[ex₁]
-      --   let ex₃ ← mkLambdaFVars #[mkFVar v₀, mkFVar v₁] ex₂
-      --   let R ← liftMetaTacticAux fun g => do
-      --     let g₁ ← g.define (binderName ids[0]?) (← mkArrow t (← mkArrow t (mkSort .zero))) ex₃
-      --     let (R, g₂) ← g₁.intro1P
-      --     return (R, [g₂])
-
--- /-- tactic for proof by bisimulation -/
--- unsafe def mv_bisim (e : parse texpr) (ids : parse with_ident_list) : tactic Unit := do
---   let e ← to_expr e
---   let expr.pi n bi d b ←
---     retrieve do
---         generalize e
---         target
---   let q(@Eq $(t) $(l) $(r)) ← pure b
---   let x ← mk_local_def `n d
---   let v₀ ← mk_local_def `a t
---   let v₁ ← mk_local_def `b t
---   let x₀ ← mk_app `` Eq [v₀, l.instantiate_var x]
---   let x₁ ← mk_app `` Eq [v₁, r.instantiate_var x]
---   let xx ← mk_app `` And [x₀, x₁]
---   let ex ← lambdas [x] xx
---   let ex ← mk_app `` Exists [ex] >>= lambdas [v₀, v₁]
---   let R ← pose `R none ex
---   refine ``(Cofix.bisim₂ $(R) _ _ _ ⟨_, rfl, rfl⟩)
---   let f (a b : Name) : Name := if a = `_ then b else a
---   let ids := (ids ++ List.replicate 5 `_).zipWith f [`a, `b, `x, `Ha, `Hb]
---   let (ids₀, w :: ids₁) ← pure <| List.splitAt 2 ids
---   intro_lst ids₀
---   let h ← intro1
---   let [(_, [w, h], _)] ← cases_core h [w]
---   cases h ids₁
---   pure ()
--- #align mvqpf.mv_bisim mvqpf.mv_bisim
+      let f ← liftMetaTacticAux fun g => do
+        let (#[fv], g) ← g.generalize #[{ expr := e, xName? := binderName ids[3]? }] | unreachable!
+        return (mkFVar fv, [g])
+      withMainContext do
+        let some (t, l, r) ← matchEq? (← getMainTarget) | throwError "goal is not an equality"
+        let ex ←
+          withLocalDecl (binderName ids[1]?) .default t fun v₀ =>
+            withLocalDecl (binderName ids[2]?) .default t fun v₁ => do
+              let x₀ ← mkEq v₀ l
+              let x₁ ← mkEq v₁ r
+              let xx ← mkAppM ``And #[x₀, x₁]
+              let ex₁ ← mkLambdaFVars #[f] xx
+              let ex₂ ← mkAppM ``Exists #[ex₁]
+              mkLambdaFVars #[v₀, v₁] ex₂
+        let R ← liftMetaTacticAux fun g => do
+          let g₁ ← g.define (binderName ids[0]?) (← mkArrow t (← mkArrow t (mkSort .zero))) ex
+          let (Rv, g₂) ← g₁.intro1P
+          return (mkFVar Rv, [g₂])
+        withMainContext do
+          let sR ← exprToSyntax R
+          evalTactic <| ← `(tactic| refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩)
+          liftMetaTactic fun g => do
+            let (_, g₁) ← g.intro (binderName ids[1]?)
+            let (_, g₂) ← g₁.intro (binderName ids[2]?)
+            let (ev, g₃) ← g₂.intro `_
+            let #[{ mvarId := g₄, fields := #[_, .fvar av], .. }] ←
+              g₃.cases ev #[{ varNames := [binderName ids[3]?, `_] }] | unreachable!
+            let #[{ mvarId := g₅, .. }] ←
+              g₄.cases av #[{ varNames := [binderName ids[4]?, binderName ids[5]?] }] |
+              unreachable!
+            return [g₅]
 
 end Mathlib.Tactic.MvBisim
-
-#exit
 
 namespace MvQPF
 
@@ -544,8 +517,6 @@ open MvFunctor (LiftP LiftR)
 
 variable {n : ℕ} {F : TypeVec.{u} (n + 1) → Type u} [mvf : MvFunctor F] [q : MvQPF F]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
     Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) := by
   mv_bisim x₀ with R a b x Ha Hb
@@ -555,31 +526,29 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   intro a; refine' ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
-theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β)))
-    (x : β) :
+theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
+    (g : β → F (α.append1 (Sum (Cofix F α) β))) (x : β) :
     Cofix.dest (Cofix.corec' g x) =
       appendFun id (Sum.elim _root_.id (Cofix.corec' g)) <$$> g x := by
   rw [Cofix.corec', Cofix.dest_corec]; dsimp
-  congr! <;> ext (i | i) <;> erw [corec_roll] <;> dsimp [Cofix.corec']
-  · mv_bisim i
-    rw [Ha, Hb, cofix.dest_corec]
-    dsimp [(· ∘ ·)]
-    repeat' rw [MvFunctor.map_map, ← appendFun_comp_id]
+  congr!; ext (i | i) <;> erw [corec_roll] <;> dsimp [Cofix.corec']
+  · mv_bisim i with R a b x Ha Hb
+    rw [Ha, Hb, Cofix.dest_corec]
+    dsimp [Function.comp]
+    repeat rw [MvFunctor.map_map, ← appendFun_comp_id]
     apply liftR_map_last'
-    dsimp [(· ∘ ·), R]
+    dsimp [Function.comp]
     intros
     exact ⟨_, rfl, rfl⟩
   · congr with y
     erw [appendFun_id_id]
-    simp [MvFunctor.id_map]
+    simp [MvFunctor.id_map, Sum.elim]
 #align mvqpf.cofix.dest_corec' MvQPF.Cofix.dest_corec'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α.append1 X)) (x : β)
-    (h :
-      ∀ (X Y) (f : Cofix F α → X) (f' : β → X) (k : X → Y),
-        g (k ∘ f) (k ∘ f') x = (id ::: k) <$$> g f f' x) :
+    (h : ∀ (X Y) (f : Cofix F α → X) (f' : β → X) (k : X → Y),
+      g (k ∘ f) (k ∘ f') x = (id ::: k) <$$> g f f' x) :
     Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 #align mvqpf.cofix.dest_corec₁ MvQPF.Cofix.dest_corec₁
