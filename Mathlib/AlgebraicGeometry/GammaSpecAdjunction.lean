@@ -219,14 +219,18 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
 theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
-    toOpen _ (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
+    toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
       X.toToΓSpecMapBasicOpen r :=
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
 
---Porting Note: Had to increase Heartbeats
-set_option maxHeartbeats 240000 in
+-- Porting note : added this helper lemma to help compile `toStalk_stalkMap_to_Γ_Spec`
+theorem toΓSpecSheafedSpace_app_spec_comp {Z} (r : Γ.obj (op X)) (f : _ ⟶ Z) :
+    toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) ≫ f =
+      X.toToΓSpecMapBasicOpen r ≫ f := by
+  rw [←Category.assoc, toΓSpecSheafedSpace_app_spec]
+
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
@@ -236,7 +240,8 @@ theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one] ; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  rw [← Category.assoc (toOpen _ _), X.toΓSpecSheafedSpace_app_spec 1]
+  -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  rw [toΓSpecSheafedSpace_app_spec_comp]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
