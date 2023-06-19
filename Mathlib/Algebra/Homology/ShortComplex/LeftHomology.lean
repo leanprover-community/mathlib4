@@ -66,7 +66,7 @@ namespace LeftHomologyData
 @[simps]
 noncomputable def ofHasKernelOfHasCokernel
     [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.LeftHomologyData where
+    S.LeftHomologyData where
   K := kernel S.g
   H := cokernel (kernel.lift S.g S.f S.zero)
   i := kernel.ι _

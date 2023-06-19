@@ -61,8 +61,9 @@ namespace RightHomologyData
 
 /-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
-noncomputable def ofHasCokernelOfHasKernel [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.RightHomologyData :=
+noncomputable def ofHasCokernelOfHasKernel
+    [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    S.RightHomologyData :=
 { Q := cokernel S.f,
   H := kernel (cokernel.desc S.f S.g S.zero),
   p := cokernel.π _,
