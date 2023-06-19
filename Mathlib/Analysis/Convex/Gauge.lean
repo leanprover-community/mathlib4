@@ -449,25 +449,57 @@ theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
 
 end AddCommGroup
 
-section Norm
+section Seminormed
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
+open Metric
 
-theorem gauge_unit_ball (x : E) : gauge (Metric.ball (0 : E) 1) x = ‖x‖ := by
+theorem gauge_unit_ball (x : E) : gauge (ball (0 : E) 1) x = ‖x‖ := by
   rw [← ball_normSeminorm ℝ, Seminorm.gauge_ball, coe_normSeminorm]
 #align gauge_unit_ball gauge_unit_ball
 
-theorem gauge_ball (hr : 0 < r) (x : E) : gauge (Metric.ball (0 : E) r) x = ‖x‖ / r := by
-  rw [← smul_unitBall_of_pos hr, gauge_smul_left, Pi.smul_apply, gauge_unit_ball, smul_eq_mul,
+theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r := by
+  rcases hr.eq_or_lt with rfl | hr
+  · simp
+  · rw [← smul_unitBall_of_pos hr, gauge_smul_left, Pi.smul_apply, gauge_unit_ball, smul_eq_mul,
     abs_of_nonneg hr.le, div_eq_inv_mul]
-  simp_rw [mem_ball_zero_iff, norm_neg]
-  exact fun _ => id
-#align gauge_ball gauge_ball
+    simp_rw [mem_ball_zero_iff, norm_neg]
+    exact fun _ => id
+
+@[deprecated gauge_ball]
+theorem gauge_ball' (hr : 0 < r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r :=
+  gauge_ball hr.le x
+#align gauge_ball gauge_ball'
+
+@[simp]
+theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
+  simp only [← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, mul_eq_zero,
+    norm_eq_zero, inv_eq_zero]
+  rcases (norm_nonneg x).eq_or_gt with hx | hx
+  · convert csInf_Ioi (a := (0 : ℝ))
+    exact Set.ext fun r ↦ and_iff_left (.inr hx)
+  · convert Real.sInf_empty
+    exact eq_empty_of_forall_not_mem fun r ⟨hr₀, hr⟩ ↦ hx.ne' <| hr.resolve_left hr₀.out.ne'
+
+@[simp]
+theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x = ‖x‖ / r := by
+  rcases hr.eq_or_lt with rfl | hr'
+  · rw [div_zero, closedBall_zero', singleton_zero, gauge_closure_zero]; rfl
+  · apply le_antisymm
+    · rw [← gauge_ball hr]
+      exact gauge_mono (absorbent_ball_zero hr') ball_subset_closedBall x
+    · suffices : ∀ᶠ R in 𝓝[>] r, ‖x‖ / R ≤ gauge (closedBall 0 r) x
+      · refine le_of_tendsto ?_ this
+        exact tendsto_const_nhds.div inf_le_left hr'.ne'
+      filter_upwards [self_mem_nhdsWithin] with R hR
+      rw [← gauge_ball (hr.trans hR.out.le)]
+      refine gauge_mono ?_ (closedBall_subset_ball hR) _
+      exact (absorbent_ball_zero hr').subset ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_lt r 0
   · exact (mul_nonpos_of_nonpos_of_nonneg hr <| gauge_nonneg _).trans (norm_nonneg _)
-  rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr]
+  rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr.le]
   exact gauge_mono (absorbent_ball_zero hr) hs x
 #align mul_gauge_le_norm mul_gauge_le_norm
 
@@ -479,7 +511,7 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
       gauge s x = gauge s (y + (x - y)) := by simp
       _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.subset hs) _ _
       _ ≤ gauge s y + ‖x - y‖ / r :=
-        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr _)) _
+        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]
 #align convex.lipschitz_with_gauge Convex.lipschitzWith_gauge
 
@@ -490,4 +522,25 @@ theorem Convex.uniformContinuous_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0
   exact (hc.lipschitzWith_gauge hr₀ hr).uniformContinuous
 #align convex.uniform_continuous_gauge Convex.uniformContinuous_gauge
 
-end Norm
+theorem Convex.continuous_gauge (hc : Convex ℝ s) (h₀: s ∈ 𝓝 (0 : E)) :
+    Continuous (gauge s) :=
+  (hc.uniformContinuous_gauge h₀).continuous
+
+end Seminormed
+
+section Normed
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
+open Metric
+
+theorem le_gauge_of_subset_closedBall (hs : Absorbent ℝ s) (hr : 0 ≤ r) (hsr : s ⊆ closedBall 0 r) :
+    ‖x‖ / r ≤ gauge s x := by
+  rw [← gauge_closedBall hr]
+  exact gauge_mono hs hsr _
+
+theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bounded s) (hx : x ≠ 0) : 0 < gauge s x := by
+  rcases hb.subset_ball_lt 0 0 with ⟨R, hR₀, hR⟩
+  refine lt_of_lt_of_le ?_ (le_gauge_of_subset_closedBall hs hR₀.le hR)
+  exact div_pos (norm_pos_iff.2 hx) hR₀
+
+end Normed

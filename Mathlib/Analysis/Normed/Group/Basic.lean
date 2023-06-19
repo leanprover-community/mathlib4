@@ -692,6 +692,11 @@ theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, 
 #align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
 
+@[to_additive Metric.Bounded.exists_pos_norm_lt]
+theorem Metric.Bounded.exists_pos_norm_lt' (hs : Metric.Bounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
+  let ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
+  ⟨R + 1, by positivity, fun x hx => (hR x hx).trans_lt (lt_add_one _)⟩
+
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- porting note: increase priority so the left-hand side doesn't reduce
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]

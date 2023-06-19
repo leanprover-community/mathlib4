@@ -338,6 +338,11 @@ theorem interior_smul₀ {c : G₀} (hc : c ≠ 0) (s : Set α) : interior (c �
   ((Homeomorph.smulOfNeZero c hc).image_interior s).symm
 #align interior_smul₀ interior_smul₀
 
+theorem closure_smul₀' {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
+    [ContinuousConstSMul G₀ E] {c : G₀} (hc : c ≠ 0) (s : Set E) :
+    closure (c • s) = c • closure s :=
+  ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
+
 theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
     [ContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
@@ -345,7 +350,7 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
     · simp
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
       exact closure_singleton
-  · exact ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
+  · exact closure_smul₀' hc s
 #align closure_smul₀ closure_smul₀
 
 /-- `smul` is a closed map in the second argument.

@@ -425,6 +425,11 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 
 namespace Metric
 
+@[to_additive]
+theorem Bounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
+    (hs : Bounded s) (c : G) : Bounded (c • s) :=
+  (isometry_smul X c).lipschitz.bounded_image hs
+
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
 
 @[to_additive (attr := simp)]
