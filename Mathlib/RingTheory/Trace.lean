@@ -322,6 +322,7 @@ variable [Algebra R L] [Algebra L F] [Algebra R F] [IsScalarTower R L F]
 open Polynomial
 
 attribute [-instance] Field.toEuclideanDomain
+
 set_option maxHeartbeats 240000 in
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
