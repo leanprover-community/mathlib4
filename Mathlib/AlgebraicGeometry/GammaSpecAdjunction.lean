@@ -383,20 +383,22 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
 
-attribute [local semireducible] Spec.to_LocallyRingedSpace
+attribute [local semireducible] Spec.toLocallyRingedSpace
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.spec :=
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
   locallyRingedSpaceAdjunction.restrictFullyFaithful Scheme.forgetToLocallyRingedSpace (𝟭 _)
-    (NatIso.ofComponents (fun X => Iso.refl _) fun _ _ f => by simpa)
-    (NatIso.ofComponents (fun X => Iso.refl _) fun _ _ f => by simpa)
+    (NatIso.ofComponents (fun X => Iso.refl _) )
+    (NatIso.ofComponents (fun X => Iso.refl _) )
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp [adjunction, adjunction.restrict_fully_faithful]; simp
+  dsimp [adjunction, Adjunction.restrictFullyFaithful]
+  simp only [Category.comp_id, Category.id_comp]
+  rfl --Porting Note: Added
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
@@ -407,30 +409,35 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv AlgebraicGeometry.ΓSpec.adjunction_homEquiv
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
-    (f : X ⟶ Scheme.spec.obj R) :
+    (f : X ⟶ Scheme.Spec.obj R) :
     (ΓSpec.adjunction.homEquiv X R).symm f = (locallyRingedSpaceAdjunction.homEquiv X.1 R).symm f :=
-  by congr 2; exact adjunction_hom_equiv _ _
+  by rw [adjunction_homEquiv]; rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
-  rw [← adjunction.hom_equiv_symm_id, ← adjunction.hom_equiv_symm_id,
-    adjunction_hom_equiv_symm_apply]
+  rw [← Adjunction.homEquiv_symm_id, ← Adjunction.homEquiv_symm_id,
+    adjunction_homEquiv_symm_apply]
   rfl
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_counit_app AlgebraicGeometry.ΓSpec.adjunction_counit_app
 
 @[simp]
 theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.Unit.app X = locallyRingedSpaceAdjunction.Unit.app X.1 := by
-  rw [← adjunction.hom_equiv_id, ← adjunction.hom_equiv_id, adjunction_hom_equiv_apply]; rfl
+    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := by
+  rw [← Adjunction.homEquiv_id, ← Adjunction.homEquiv_id, adjunction_homEquiv_apply]; rfl
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app AlgebraicGeometry.ΓSpec.adjunction_unit_app
 
-attribute [local semireducible] LocallyRingedSpace_adjunction Γ_Spec.adjunction
+attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
+-- Porting Note: Had to increase Heartbeats
+set_option maxHeartbeats 220000 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit :=
-  IsIso.of_iso_inv _
+  IsIso.of_iso_inv (NatIso.op SpecΓIdentity) -- Porting Note: Had to make this explicit
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
@@ -438,6 +445,7 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   intro R
   rw [adjunction_counit_app]
   infer_instance
+set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
 -- This is just
@@ -467,7 +475,7 @@ end ΓSpec
 instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
   ΓSpec.locallyRingedSpaceAdjunction.rightAdjointPreservesLimits
 
-instance Spec.preservesLimits : Limits.preservesLimits Scheme.spec :=
+instance Spec.preservesLimits : Limits.PreservesLimits Scheme.spec :=
   ΓSpec.adjunction.rightAdjointPreservesLimits
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
@@ -475,7 +483,7 @@ instance Spec.preservesLimits : Limits.preservesLimits Scheme.spec :=
 instance : Full Spec.toLocallyRingedSpace :=
   rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.full : Full Scheme.spec :=
+instance Spec.full : Full Scheme.Spec :=
   rFullOfCounitIsIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
@@ -483,20 +491,20 @@ instance Spec.full : Full Scheme.spec :=
 instance : Faithful Spec.toLocallyRingedSpace :=
   R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.faithful : Faithful Scheme.spec :=
+instance Spec.faithful : Faithful Scheme.Spec :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
 instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
   ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
 
-instance : IsRightAdjoint Scheme.spec :=
+instance : IsRightAdjoint Scheme.Spec :=
   ⟨_, ΓSpec.adjunction⟩
 
 instance : Reflective Spec.toLocallyRingedSpace :=
   ⟨⟩
 
-instance Spec.reflective : Reflective Scheme.spec :=
+instance Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
