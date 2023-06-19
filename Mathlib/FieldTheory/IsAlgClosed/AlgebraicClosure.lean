@@ -379,8 +379,8 @@ theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
 #align algebraic_closure.algebra_map_def AlgebraicClosure.algebraMap_def
 
 
-instance {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
-    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
+instance isScalarTower {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k]
+    [Algebra R k] [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
   apply IsScalarTower.of_algebraMap_eq _
   intro x
   simp only [algebraMap_def]

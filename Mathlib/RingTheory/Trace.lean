@@ -323,18 +323,27 @@ variable [Algebra R L] [Algebra L F] [Algebra R F] [IsScalarTower R L F]
 
 open Polynomial
 
+set_option maxHeartbeats 1200000 in
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := isIntegral_of_isScalarTower hx
-  rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
-  · refine' (IsIntegral.multiset_sum _).nsmul _
-    intro y hy
-    rw [mem_roots_map (minpoly.ne_zero hx')] at hy
-    use minpoly R x, minpoly.monic hx
-    rw [← aeval_def] at hy ⊢
-    exact minpoly.aeval_of_isScalarTower R x y hy
-  · apply IsAlgClosed.splits_codomain
-  · infer_instance
+-- Porting note: without giving the following three instances by hand the proof timeouts.
+  letI alg : Algebra L (AlgebraicClosure F) := AlgebraicClosure.algebra F
+  letI : Algebra R (AlgebraicClosure F) := AlgebraicClosure.algebra F
+  haveI : IsScalarTower R L (AlgebraicClosure F) := AlgebraicClosure.isScalarTower _
+-- Porting note: without passing `alg` by hand the following timeouts.
+  refine' ((@isIntegral_algebraMap_iff R _ _ _ _ _ _ _ alg _ _)
+    (algebraMap L (AlgebraicClosure F)).injective).1 _
+  have splits :(minpoly L x).Splits (algebraMap L (AlgebraicClosure F)) := by
+    apply IsAlgClosed.splits_codomain
+  rw [trace_eq_sum_roots splits]
+  refine' IsIntegral.nsmul _ _
+  refine' IsIntegral.multiset_sum _
+  intro y hy
+  rw [mem_roots_map (minpoly.ne_zero hx')] at hy
+  use minpoly R x, minpoly.monic hx
+  rw [← aeval_def] at hy ⊢
+  convert minpoly.aeval_of_isScalarTower R x y hy
 #align algebra.is_integral_trace Algebra.isIntegral_trace
 
 section EqSumEmbeddings
