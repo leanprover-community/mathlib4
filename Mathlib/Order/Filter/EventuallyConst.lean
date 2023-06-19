@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Algebra.IndicatorFunction
 /-!
 # Functions that are eventually constant along a filter
 
@@ -26,6 +27,22 @@ lemma eventuallyConst_iff_tendsto : EventuallyConst f l ↔ ∃ x, Tendsto f l (
   simp_rw [EventuallyConst, EventuallyEq, tendsto_pure]
 
 alias eventuallyConst_iff_tendsto ↔ EventuallyConst.exists_tendsto _
+
+theorem eventuallyConst_pred' {p : α → Prop} :
+    EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
+  simp only [EventuallyConst, Prop.exists_iff]
+
+theorem eventuallyConst_pred {p : α → Prop} :
+    EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
+  simp [eventuallyConst_pred', or_comm, EventuallyEq]
+
+theorem eventuallyConst_set' {s : Set α} :
+    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+  eventuallyConst_pred'
+
+theorem eventuallyConst_set {s : Set α} :
+    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+  eventuallyConst_pred
 
 namespace EventuallyConst
 
@@ -79,23 +96,18 @@ lemma mul [Mul β] {g : α → β} (hf : EventuallyConst f l) (hg : EventuallyCo
     EventuallyConst (f * g) l :=
   hf.comp₂ (· * ·) hg
 
+@[to_additive]
+lemma of_mulIndicator_const [One β] {s : Set α} {c : β} (hc : c ≠ 1)
+    (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) : EventuallyConst s l := by
+  rw [eventuallyConst_set]
+  rcases h with ⟨d, hd⟩
+  rcases eq_or_ne d 1 with rfl | hd₁
+  · refine .inr <| hd.mono fun x hx ↦ ?_
+    simpa only [mulIndicator_apply_eq_one, hc] using hx
+  · refine .inl <| hd.mono fun x hx ↦ ?_
+    simpa [hc] using ne_of_eq_of_ne hx hd₁
+
 end EventuallyConst
-
-theorem eventuallyConst_pred' {p : α → Prop} :
-    EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
-  simp only [EventuallyConst, Prop.exists_iff]
-
-theorem eventuallyConst_pred {p : α → Prop} :
-    EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
-  simp [eventuallyConst_pred', or_comm, EventuallyEq]
-
-theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
-  eventuallyConst_pred'
-
-theorem eventuallyConst_set {s : Set α} :
-    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
-  eventuallyConst_pred
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) := by
