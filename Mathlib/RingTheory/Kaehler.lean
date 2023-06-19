@@ -213,7 +213,8 @@ theorem KaehlerDifferential.DLinearMap_apply (s : S) :
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.D_linear_map_apply KaehlerDifferential.DLinearMap_apply
 
-set_option maxHeartbeats 800000 in -- Porting note: Added to prevent timeout
+set_option maxHeartbeats 1000000 in -- Porting note: Added to prevent timeout
+set_option synthInstance.maxHeartbeats 800000 in -- Porting note: Added to prevent timeou
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
   { KaehlerDifferential.DLinearMap R S with
@@ -266,6 +267,8 @@ theorem KaehlerDifferential.span_range_derivation :
 
 variable {R S}
 
+set_option maxHeartbeats 1500000000 in -- Porting note: Added to prevent timeout
+set_option synthInstance.maxHeartbeats 800000 in -- Porting note: Added to prevent timeout
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
 def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
   refine'
