@@ -369,7 +369,8 @@ instance instIsAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 #align algebraic_closure.is_alg_closed AlgebraicClosure.instIsAlgClosed
 
-instance {R : Type _} [CommSemiring R] [alg : Algebra R k] : Algebra R (AlgebraicClosure k) :=
+instance algebra {R : Type _} [CommSemiring R] [alg : Algebra R k] :
+     Algebra R (AlgebraicClosure k) :=
   ((ofStep k 0).comp (@algebraMap _ _ _ _ alg)).toAlgebra
 
 theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
@@ -378,8 +379,8 @@ theorem algebraMap_def {R : Type _} [CommSemiring R] [alg : Algebra R k] :
 #align algebraic_closure.algebra_map_def AlgebraicClosure.algebraMap_def
 
 
-instance {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
-    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
+instance isScalarTower {R S : Type _} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k]
+    [Algebra R k] [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) := by
   apply IsScalarTower.of_algebraMap_eq _
   intro x
   simp only [algebraMap_def]
