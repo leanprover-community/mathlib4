@@ -364,18 +364,21 @@ theorem right_triangle (R : CommRingCat) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
+-- Porting Note: Had to set Heartbeats
+set_option maxHeartbeats 900000 in
 -- Removing this makes the following definition time out.
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
-@[simps Unit counit]
+--Porting Note: Changed to `simps!`
+@[simps! unit counit]
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace :=
   Adjunction.mkOfUnitCounit
-    { Unit := identityToΓSpec
+    { unit := identityToΓSpec
       counit := (NatIso.op SpecΓIdentity).inv
       left_triangle := by
-        ext X; erw [category.id_comp]
+        ext X; erw [Category.id_comp]
         exact congr_arg Quiver.Hom.op (left_triangle X)
       right_triangle := by
-        ext1; ext1 R; erw [category.id_comp]
+        ext1; ext1 R; erw [Category.id_comp]
         exact right_triangle R.unop }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
