@@ -116,7 +116,7 @@ lemma scaleToNorm_smul (r : ℝ≥0) {c : ℝ} (hc : 0 < c) (x : E) :
 lemma scaleToNorm_scaleToNorm (r₁ : ℝ≥0) {r₂ : ℝ≥0} (hr₂ : r₂ ≠ 0) (x : E) :
     scaleToNorm r₁ (scaleToNorm r₂ x) = scaleToNorm r₁ x := by
   cases' (norm_nonneg x).eq_or_gt with hx hx
-  · simp [scaleToNorm, hx] 
+  · simp [scaleToNorm, hx]
   · apply scaleToNorm_smul
     exact div_pos (NNReal.coe_pos.2 hr₂.bot_lt) hx
 
