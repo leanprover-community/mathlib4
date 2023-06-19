@@ -522,7 +522,7 @@ noncomputable def map : ∀ {x y : ℤt}, (x ⟶ y) → (obj t x ⟶ obj t y)
   | some (some a), some none  => fun _ => 0
   | some (some a), some (some b) =>
       fun hab => t.natTransTruncLTOfLE a b (by simpa using (leOfHom hab))
-  | some (some a), none => fun _ => t.truncLTι  a
+  | some (some a), none => fun _ => t.truncLTι a
   | none, some none  => fun _ => 0
   | none, some (some b) => fun _ => 0
   | none, none => fun _ => 𝟙 _
@@ -553,6 +553,10 @@ lemma truncLTt_obj_bot : t.truncLTt.obj ⊥ = 0 := rfl
 
 @[simp]
 lemma truncLTt_obj_mk (n : ℤ) : t.truncLTt.obj (ℤt.mk n) = t.truncLT n := rfl
+
+@[simp]
+lemma truncLTt_map_eq_truncLTι (n : ℤ) :
+    t.truncLTt.map (homOfLE (show ℤt.mk n ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
 namespace TruncGEt
 
@@ -777,6 +781,12 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     infer_instance
   . intro
     exact t.isLE_of_iso (asIso ((truncLEι t n).app X)) n
+
+lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
+  rw [isLE_iff_isIso_truncLEι_app]
+  subst hn₁
+  rfl
 
 lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
     t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
@@ -1229,7 +1239,7 @@ lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
   t.isIso₁_truncLT_map_of_GE _ (t.triangleLTGE_distinguished b X) a
     (t.isGE_of_GE ((t.truncGE b).obj X) a b (by linarith))
 
-lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) :
+lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
   . simp only [ℤt.le_bot_iff] at h
@@ -1249,7 +1259,7 @@ lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) :
     all_goals
       simp only [truncGEt_obj_top, Functor.zero_obj]
 
-lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : ℤt) (h : a ≤ b) :
+lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : ℤt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncLTt.obj a).map ((t.abstractSpectralObject.truncLTι b).app X)) := by
   obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
   . refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
@@ -1271,11 +1281,11 @@ lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : ℤt) (h : a ≤ b) :
 
 instance (D : Arrow ℤt) (X : C) :
   IsIso ((t.abstractSpectralObject.truncGEToTruncGEGE.app D).app X) :=
-    t.isIso_truncGEt_obj_map_truncGEπ_app _ _ (leOfHom D.hom)
+    t.isIso_truncGEt_obj_map_truncGEπ_app _ _ (leOfHom D.hom) X
 
 instance (D : Arrow ℤt) (X : C) :
   IsIso ((t.abstractSpectralObject.truncLTLTToTruncLT.app D).app X) :=
-    t.isIso_truncLTt_obj_map_truncLTπ_app _ _ (leOfHom D.hom)
+    t.isIso_truncLTt_obj_map_truncLTπ_app _ _ (leOfHom D.hom) X
 
 instance (D : Arrow ℤt) : IsIso (t.abstractSpectralObject.truncGEToTruncGEGE.app D) :=
   NatIso.isIso_of_isIso_app _
@@ -1315,10 +1325,55 @@ lemma truncLTι_compatibility (a : ℤt) (X : C) :
     exact ((t.truncLTι a).naturality ((t.truncLTι a).app X))
   . rfl
 
+lemma isIso_truncLTι_app_truncGELT_obj (a b : ℤt) (h : a ≤ b) (X : C) :
+    IsIso ((t.abstractSpectralObject.truncLTι b).app
+      ((t.truncLTt.obj b ⋙ t.truncGEt.obj a).obj X)) := by
+  obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
+  . refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+    . dsimp
+      simp
+    . dsimp
+      refine' IsZero.of_iso (isZero_zero _)
+        (Functor.mapIso _ (IsZero.isoZero (Functor.zero_obj _)) ≪≫
+          (t.truncGEt.obj a).mapZeroObject)
+  . dsimp [SpectralObject.AbstractSpectralObject.truncLTι]
+    simp only [comp_id]
+    rw [← t.isLE_iff_isIso_truncLTι_app (b-1) b (by linarith)]
+    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
+    . dsimp
+      infer_instance
+    . dsimp
+      infer_instance
+    . dsimp
+      apply t.isLE_of_isZero
+      simp
+  . dsimp [SpectralObject.AbstractSpectralObject.truncLTι]
+    erw [comp_id, Functor.map_id]
+    dsimp
+    infer_instance
+
+instance (D : Arrow ℤt) (X : C) :
+    IsIso ((t.abstractSpectralObject.truncLTGELTSelfToTruncGELT.app D).app X) :=
+  t.isIso_truncLTι_app_truncGELT_obj D.left D.right (leOfHom D.hom) X
+
+instance (D : Arrow ℤt) : IsIso (t.abstractSpectralObject.truncLTGELTSelfToTruncGELT.app D) :=
+  NatIso.isIso_of_isIso_app _
+
+instance : IsIso (t.abstractSpectralObject.truncLTGELTSelfToTruncGELT) :=
+  NatIso.isIso_of_isIso_app _
+
+instance (D : Arrow ℤt) (X : C) :
+    IsIso ((t.abstractSpectralObject.truncLTGELTSelfToTruncLTGE.app D).app X) :=
+  sorry
+
+instance (D : Arrow ℤt) : IsIso (t.abstractSpectralObject.truncLTGELTSelfToTruncLTGE.app D) :=
+  NatIso.isIso_of_isIso_app _
+
+instance : IsIso (t.abstractSpectralObject.truncLTGELTSelfToTruncLTGE) :=
+  NatIso.isIso_of_isIso_app _
+
 instance : t.abstractSpectralObject.IsCompatible where
   distinguished := AbstractSpectralObject.distinguished t
-  isIso_truncLTGELTSelfToTruncLTGE := sorry
-  isIso_truncLTGELTSelfToTruncGELT := sorry
   truncGEπ_compatibility' := t.truncGEπ_compatibility
   truncLTι_compatibility' := t.truncLTι_compatibility
 
