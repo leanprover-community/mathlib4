@@ -103,6 +103,8 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
   rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.coe_nat_dvd_left, ← Int.coe_nat_dvd]
 #align padic_int.is_unit_denom PadicInt.isUnit_den
 
+attribute [instance] Field.toEuclideanDomain
+
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd]
