@@ -261,36 +261,38 @@ end HasCoequalizer
 /-- The coequalizer of two locally ringed space in the category of sheafed spaces is a locally
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where
-  toSheafedSpace := coequalizer f.1 g.1
+  toSheafedSpace := Limits.coequalizer f.1 g.1
   localRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x
-    exact (PresheafedSpace.stalk_map (coequalizer.π f.val g.val : _) y).domain_localRing
+    exact (PresheafedSpace.stalkMap (coequalizer.π f.val g.val : _) y).domain_localRing
 #align algebraic_geometry.LocallyRingedSpace.coequalizer AlgebraicGeometry.LocallyRingedSpace.coequalizer
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/
 noncomputable def coequalizerCofork : Cofork f g :=
-  @Cofork.ofπ _ _ _ _ f g (coequalizer f g) ⟨coequalizer.π f.1 g.1, inferInstance⟩
+  @Cofork.ofπ _ _ _ _ f g (coequalizer f g) ⟨coequalizer.π f.1 g.1,
+    -- Porting note : this used to be automatic
+    HasCoequalizer.coequalizer_π_stalk_isLocalRingHom _ _⟩
     (LocallyRingedSpace.Hom.ext _ _ (coequalizer.condition f.1 g.1))
 #align algebraic_geometry.LocallyRingedSpace.coequalizer_cofork AlgebraicGeometry.LocallyRingedSpace.coequalizerCofork
 
 theorem isLocalRingHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
     (h : IsLocalRingHom (PresheafedSpace.stalkMap f x)) :
     IsLocalRingHom (PresheafedSpace.stalkMap g x) := by
-  rw [PresheafedSpace.stalk_map.congr_hom _ _ H.symm x]; infer_instance
+  rw [PresheafedSpace.stalkMap.congr_hom _ _ H.symm x]; infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_local_ring_hom_stalk_map_congr AlgebraicGeometry.LocallyRingedSpace.isLocalRingHom_stalkMap_congr
 
 /-- The cofork constructed in `coequalizer_cofork` is indeed a colimit cocone. -/
 noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g) := by
-  apply cofork.is_colimit.mk'
+  apply Cofork.IsColimit.mk'
   intro s
   have e : f.val ≫ s.π.val = g.val ≫ s.π.val := by injection s.condition
-  use coequalizer.desc s.π.1 e
+  refine ⟨⟨coequalizer.desc s.π.1 e, ?_⟩, ?_⟩
   · intro x
-    rcases(TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x with
+    rcases (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x with
       ⟨y, rfl⟩
-    apply isLocalRingHom_of_comp _ (PresheafedSpace.stalk_map (coequalizer_cofork f g).π.1 _)
-    change IsLocalRingHom (_ ≫ PresheafedSpace.stalk_map (coequalizer_cofork f g).π.val y)
+    apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
+    change IsLocalRingHom (_ ≫ PresheafedSpace.stalkMap (coequalizerCofork f g).π.val y)
     erw [← PresheafedSpace.stalk_map.comp]
     apply is_local_ring_hom_stalk_map_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
     infer_instance
