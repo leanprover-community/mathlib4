@@ -241,7 +241,8 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
   rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
   try simp only [AdjoinSimple.algebraMap_gen _ _]
-  exact hf
+  try exact hf
+  rfl
 #align intermediate_field.adjoin_simple.norm_gen_eq_prod_roots IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots
 
 end IntermediateField
@@ -277,18 +278,19 @@ theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
-      ((@Finset.univ pb.AlgHom.Fintype).Prod fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
+      ((@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod
+        fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.to_ring_hom.to_algebra) := _
-  rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
-    Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
-  refine' Finset.prod_congr rfl fun σ _ => _
-  · letI : Algebra L E := σ.to_ring_hom.to_algebra
-    simp only [Finset.prod_const, Finset.card_univ]
+  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
+  rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+    ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
+  refine Finset.prod_congr rfl fun σ _ => ?_
+  · letI : Algebra L E := σ.toRingHom.toAlgebra
+    simp_rw [Finset.prod_const, Finset.card_univ]
     congr
-    rw [AlgHom.card L F E]
+    exact AlgHom.card L F E
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
@@ -296,31 +298,44 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
 
 variable (K)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ`  of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlgClosed E] (x : L) :
     algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x
-  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.power_basis_gen hx,
-    norm_eq_prod_embeddings_gen E (adjoin.power_basis hx) (IsAlgClosed.splits_codomain _)]
-  · exact (prod_embeddings_eq_finrank_pow L E (adjoin.power_basis hx)).symm
-  · haveI := isSeparable_tower_bot_of_isSeparable K K⟮⟯ L
+  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
+    norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
+  · exact (prod_embeddings_eq_finrank_pow L (L:= K⟮x⟯) E (adjoin.powerBasis hx)).symm
+  · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact IsSeparable.separable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
+set_option maxHeartbeats 300000 in
+set_option synthInstance.maxHeartbeats 30000 in
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
     algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
+
+ -- haveI : Algebra K (AlgebraicClosure L) := AlgebraicClosure.algebra L
+--  letI inst : IsScalarTower K L (AlgebraicClosure L) := AlgebraicClosure.isScalarTower _
+--  haveI : Fintype (L →ₐ[K] (AlgebraicClosure L)) := minpoly.AlgHom.fintype K L (AlgebraicClosure L)
+  rw [← Fintype.prod_equiv (M := AlgebraicClosure L)
+    (@Normal.algHomEquivAut K (AlgebraicClosure L) _ _ _ L _ _ _
+      inst _) (fun σ => σ x) _]
+  · simp_rw [← norm_eq_prod_embeddings]
+
+#exit
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← norm_eq_prod_embeddings]
+  · simp_rw [← norm_eq_prod_embeddings _ _]
     simp only [algebra_map_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
 #align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
+
+#exit
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
