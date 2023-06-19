@@ -17,7 +17,7 @@ import Mathlib.Topology.Algebra.Star
 
 A topological star algebra over a topological semiring `R` is a topological semiring with a
 compatible continuous scalar multiplication by elements of `R` and a continuous star operation.
-We reuse typeclass `has_continuous_smul` for topological algebras.
+We reuse typeclass `ContinuousSMul` for topological algebras.
 
 ## Results
 
@@ -124,7 +124,7 @@ def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace
   s.toSubalgebra.commRingTopologicalClosure hs
 #align star_subalgebra.comm_ring_topological_closure StarSubalgebra.commRingTopologicalClosure
 
-/-- Continuous `StarAlgHom`s from the the topological closure of a `StarSubalgebra` whose
+/-- Continuous `StarAlgHom`s from the topological closure of a `StarSubalgebra` whose
 compositions with the `StarSubalgebra.inclusion` map agree are, in fact, equal. -/
 theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra R A}
     {φ ψ : S.topologicalClosure →⋆ₐ[R] B} (hφ : Continuous φ) (hψ : Continuous ψ)
@@ -232,7 +232,7 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type _} {a : A}
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
   apply adjoin_induction' x ?_ ?_ ?_ ?_ ?_
-  exacts[fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
+  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]
 #align elemental_star_algebra.star_alg_hom_class_ext elementalStarAlgebra.starAlgHomClass_ext

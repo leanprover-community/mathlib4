@@ -183,7 +183,7 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
   toFun f :=
     Quotient.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
-      exacts[rfl, f.prop _ _]
+      exacts [rfl, f.prop _ _]
   invFun F := ⟨curry (F ∘ Quotient.mk''), fun a₁ a₂ => congr_arg F eq_swap⟩
   left_inv f := Subtype.ext rfl
   right_inv F := funext <| Sym2.ind fun x y => rfl
@@ -211,11 +211,11 @@ def lift₂ :
     Quotient.lift₂ (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
       (by
         rintro _ _ _ _ ⟨⟩ ⟨⟩
-        exacts[rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
+        exacts [rfl, (f.2 _ _ _ _).2, (f.2 _ _ _ _).1, (f.2 _ _ _ _).1.trans (f.2 _ _ _ _).2])
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧, fun a₁ a₂ b₁ b₂ => by
       constructor
-      exacts[congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
+      exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
   left_inv f := Subtype.ext rfl
   right_inv F := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 #align sym2.lift₂ Sym2.lift₂
@@ -729,9 +729,8 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     apply other_eq_other'
 #align sym2.other_invol Sym2.other_invol
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ᶠ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
+    ((s ×ˢ s).image Quotient.mk'').filter IsDiag = s.diag.image Quotient.mk'' := by
   ext z
   induction' z using Sym2.inductionOn
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
@@ -744,9 +743,8 @@ theorem filter_image_quotient_mk''_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 #align sym2.filter_image_quotient_mk_is_diag Sym2.filter_image_quotient_mk''_isDiag
 
--- porting note: updating `×ˢ` to the new notation `×ᶠ`
 theorem filter_image_quotient_mk''_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ᶠ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
+    (((s ×ˢ s).image Quotient.mk'').filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Quotient.mk'' := by
   ext z
   induction z using Sym2.inductionOn

@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 # The General Linear group $GL(n, R)$
 
-This file defines the elements of the General Linear group `general_linear_group n R`,
+This file defines the elements of the General Linear group `Matrix.GeneralLinearGroup n R`,
 consisting of all invertible `n` by `n` `R`-matrices.
 
 ## Main definitions
@@ -59,7 +59,7 @@ section CoeFnInstance
 -- Porting note: this instance was not the simp-normal form in mathlib3 but it is fine in mathlib4
 -- because coercions get unfolded.
 /-- This instance is here for convenience, but is not the simp-normal form. -/
-instance : CoeFun (GL n R) fun _ => n → n → R where
+instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
 end CoeFnInstance
@@ -76,7 +76,7 @@ def det : GL n R →* Rˣ where
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
 
-/-- The `GL n R` and `general_linear_group R n` groups are multiplicatively equivalent-/
+/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 #align matrix.general_linear_group.to_lin Matrix.GeneralLinearGroup.toLin
@@ -247,7 +247,7 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
 
-/-- `special_linear_group n R` embeds into `GL_pos n R` -/
+/-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
   map_one' := Subtype.ext <| Units.ext <| rfl
@@ -270,8 +270,8 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL_pos_injective Matrix.SpecialLinearGroup.toGLPos_injective
 
-/-- Coercing a `special_linear_group` via `GL_pos` and `GL` is the same as coercing striaght to a
-matrix. -/
+/-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
+a matrix. -/
 @[simp]
 theorem coe_GLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :
     (↑(↑(↑g : GLPos n R) : GL n R) : Matrix n n R) = ↑g :=

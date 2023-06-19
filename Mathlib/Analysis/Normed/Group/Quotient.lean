@@ -44,10 +44,10 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
 `AddSubgroup.normedMk S` as `S.normedMk`.
 
 * `seminormedAddCommGroupQuotient` : The seminormed group structure on the quotient by
-    an additive subgroup. This is an instance so there is no need to explictly use it.
+    an additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedAddCommGroupQuotient` : The normed group structure on the quotient by
-    a closed additive subgroup. This is an instance so there is no need to explictly use it.
+    a closed additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedMk S` : the normed group hom from `M` to `M ⧸ S`.
 
@@ -80,7 +80,7 @@ Mathematically there is something to prove. The main point is proved in the auxi
 `quotient_nhd_basis` that has no use beyond this verification and states that zero in the quotient
 admits as basis of neighborhoods in the quotient topology the sets `{x | ‖x‖ < ε}` for positive `ε`.
 
-Once this mathematical point it settled, we have two topologies that are propositionaly equal. This
+Once this mathematical point it settled, we have two topologies that are propositionally equal. This
 is not good enough for the type class system. As usual we ensure *definitional* equality
 using forgetful inheritance, see Note [forgetful inheritance]. A (semi)-normed group structure
 includes a uniform space structure which includes a topological space structure, together

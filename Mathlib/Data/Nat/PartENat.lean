@@ -16,7 +16,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Natural numbers with infinity
 
-The natural numbers and an extra `top` element `⊤`. This implementation uses `part ℕ` as an
+The natural numbers and an extra `top` element `⊤`. This implementation uses `Part ℕ` as an
 implementation. Use `ℕ∞` instead unless you care about computability.
 
 ## Main definitions
@@ -543,7 +543,7 @@ protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + 
 
 section WithTop
 
-/-- Computably converts an `PartENat` to a `ℕ∞`. -/
+/-- Computably converts a `PartENat` to a `ℕ∞`. -/
 def toWithTop (x : PartENat) [Decidable x.Dom] : ℕ∞ :=
   x.toOption
 #align part_enat.to_with_top PartENat.toWithTop
@@ -624,7 +624,7 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 end WithTop
 
 -- Porting note : new, extracted from `withTopEquiv`.
-/-- Coersion from `ℕ∞` to `PartENat`. -/
+/-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
   fun x => match x with

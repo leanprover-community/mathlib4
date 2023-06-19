@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Special shapes for limits in `Type`.
@@ -44,13 +44,11 @@ we use the `types_has_terminal` and `types_has_binary_products` instances.
 
 universe u v
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace CategoryTheory.Limits.Types
 
--- attribute [local tidy] tactic.discrete_cases -- Porting note: no local, tidy or discrete_cases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
@@ -306,7 +304,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 #align category_theory.limits.types.binary_cofan_is_colimit_iff CategoryTheory.Limits.Types.binaryCofan_isColimit_iff
 
-/-- Any monomorphism in `Type` is an coproduct injection. -/
+/-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range fᶜ) → Y)) := by
   apply Nonempty.some
@@ -571,7 +569,7 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
 #align category_theory.limits.types.pullback_limit_cone CategoryTheory.Limits.Types.pullbackLimitCone
 
 /-- The pullback cone given by the instance `HasPullbacks (Type u)` is isomorphic to the
-explicit pullback cone given by `pullbacklimitCone`.
+explicit pullback cone given by `pullbackLimitCone`.
 -/
 noncomputable def pullbackConeIsoPullback : limit.cone (cospan f g) ≅ pullbackCone f g :=
   (limit.isLimit _).uniqueUpToIso (pullbackLimitCone f g).isLimit

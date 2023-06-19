@@ -66,8 +66,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.has_limits.hom_diagram CategoryTheory.Cat.HasLimits.homDiagram
 
 @[simps]
-instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects))
-    where
+instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
   Hom X Y := limit (homDiagram X Y)
   id X := Types.Limit.mk.{v, v} (homDiagram X X) (fun j => 𝟙 _) fun j j' f => by simp
   comp {X Y Z} f g :=
@@ -90,8 +89,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Auxiliary definition: the cone over the limit category. -/
 @[simps]
-def limitCone (F : J ⥤ Cat.{v, v}) : Cone F
-    where
+def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
   pt := limitConeX F
   π :=
     { app := fun j =>
@@ -105,8 +103,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps]
-def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F
-    where
+def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F where
   obj :=
     limit.lift (F ⋙ Cat.objects)
       { pt := s.pt

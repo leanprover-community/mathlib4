@@ -157,7 +157,7 @@ At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in 
 consisting of all "functions" that vanish on all of `t`.
 -/
 def vanishingIdeal (t : Set (PrimeSpectrum R)) : Ideal R :=
-  ⨅ (x : PrimeSpectrum R) (__ : x ∈ t), x.asIdeal
+  ⨅ (x : PrimeSpectrum R) (_ : x ∈ t), x.asIdeal
 #align prime_spectrum.vanishing_ideal PrimeSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
@@ -899,10 +899,10 @@ end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
 instance : CompactSpace (PrimeSpectrum R) :=
-{ isCompact_univ := by
-    convert isCompact_basicOpen (1 : R)
-    rw [basicOpen_one]
-    rfl }
+  { isCompact_univ := by
+      convert isCompact_basicOpen (1 : R)
+      rw [basicOpen_one]
+      rfl }
 
 section Order
 

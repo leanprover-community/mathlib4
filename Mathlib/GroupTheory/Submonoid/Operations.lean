@@ -575,7 +575,7 @@ theorem mk_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
-      "An `AddSubmonoid` of an unital additive magma inherits an unital additive magma structure."]
+      "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance (priority := 75) toMulOneClass {M : Type _} [MulOneClass M] {A : Type _} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S :=
     Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
@@ -707,7 +707,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
-      "An `AddSubmonoid` of an unital additive magma inherits an unital additive magma structure."]
+      "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance toMulOneClass {M : Type _} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
   Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
@@ -848,7 +848,8 @@ def prod (s : Submonoid M) (t : Submonoid N) :
 #align add_submonoid.prod AddSubmonoid.prod
 
 @[to_additive coe_prod]
-theorem coe_prod (s : Submonoid M) (t : Submonoid N) : (s.prod t : Set (M × N)) = s ×ˢ t :=
+theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
+    (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
 #align submonoid.coe_prod Submonoid.coe_prod
 #align add_submonoid.coe_prod AddSubmonoid.coe_prod
@@ -1011,7 +1012,7 @@ interchangeable without proof obligations.
 
 A convenient candidate definition for range which is mathematically correct is `map ⊤ f`, just as
 `Set.range` could have been defined as `f '' Set.univ`. However, this lacks the desired definitional
-convenience, in that it both does not match `Set.range`, and that it introduces a redudant `x ∈ ⊤`
+convenience, in that it both does not match `Set.range`, and that it introduces a redundant `x ∈ ⊤`
 term which clutters proofs. In such a case one may resort to the `copy`
 pattern. A `copy` function converts the definitional problem for the carrier set of a subobject
 into a one-off propositional proof obligation which one discharges while writing the definition of
@@ -1022,14 +1023,14 @@ A good example is the case of a morphism of monoids. A convenient definition for
 definitional convenience, we first define `Submonoid.copy` as follows:
 ```lean
 protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M :=
-{ carrier  := s,
-  one_mem' := hs.symm ▸ S.one_mem',
-  mul_mem' := hs.symm ▸ S.mul_mem' }
+  { carrier  := s,
+    one_mem' := hs.symm ▸ S.one_mem',
+    mul_mem' := hs.symm ▸ S.mul_mem' }
 ```
 and then finally define:
 ```lean
 def mrange (f : M →* N) : Submonoid N :=
-((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm
+  ((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm
 ```
 -/
 
@@ -1368,7 +1369,7 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
-    _ ↔ ∃ (x : _)(hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
+    _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
     _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne.def]
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero
@@ -1468,10 +1469,10 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
 
 section Actions
 
-/-! ### Actions by `submonoid`s
+/-! ### Actions by `Submonoid`s
 
-These instances tranfer the action by an element `m : M` of a monoid `M` written as `m • a` onto the
-action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
+These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
+the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
 
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.

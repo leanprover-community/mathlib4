@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.TensorProductBasis
 # Connections between `TensorProduct` and `Matrix`
 
 This file contains results about the matrices corresponding to maps between tensor product types,
-where the correspondance is induced by `Basis.tensorProduct`
+where the correspondence is induced by `Basis.tensorProduct`
 
 Notably, `TensorProduct.toMatrix_map` shows that taking the tensor product of linear maps is
 equivalent to taking the Kronecker product of their matrix representations.

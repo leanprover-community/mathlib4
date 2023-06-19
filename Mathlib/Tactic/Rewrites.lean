@@ -14,14 +14,14 @@ import Mathlib.Control.Basic
 /-!
 # The `rewrites` tactic.
 
-`rewrites` tries to find a lemma which can rewrite the goal.
+`rw?` tries to find a lemma which can rewrite the goal.
 
-`rewrites` should not be left in proofs; it is a search tool, like `library_search`.
+`rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 
 ## Future work
-It would be nice to have `rewrites at h`.
+It would be nice to have `rw? at h`.
 
 We could also try discharging side goals via `assumption` or `solve_by_elim`.
 
@@ -32,6 +32,7 @@ namespace Mathlib.Tactic.Rewrites
 open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.rewrites
+initialize registerTraceClass `Tactic.rewrites.lemmas
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -62,7 +63,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     | _ => return #[]
 
 /-- Insert a lemma into the discrimination tree. -/
--- Recall that `rewrites` caches the discrimination tree on disk.
+-- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
@@ -75,7 +76,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × Bool × Nat)) :=
-  DiscrTreeCache.mk "rewrites: init cache" processLemma
+  DiscrTreeCache.mk "rw?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -97,16 +98,16 @@ initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
     let (d, r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
-    return ⟨r, ← DiscrTreeCache.mk "rewrites: using cache" processLemma (init := some d)⟩
+    return ⟨r, ← DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)⟩
   else
     return ⟨none, ← buildDiscrTree⟩
 
 /--
-Retrieve the current current of lemmas.
+Retrieve the current cache of lemmas.
 -/
 def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
 
-/-- Data structure recording a potential rewrite to report from the `rewrites` tactic. -/
+/-- Data structure recording a potential rewrite to report from the `rw?` tactic. -/
 structure RewriteResult where
   name : Name
   symm : Bool
@@ -114,18 +115,18 @@ structure RewriteResult where
   result : Meta.RewriteResult
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
-  refl? : Option Bool
+  rfl? : Option Bool
 
-/-- Update a `RewriteResult` by filling in the `refl?` field if it is currently `none`,
+/-- Update a `RewriteResult` by filling in the `rfl?` field if it is currently `none`,
 to reflect whether the remaining goal can be closed by `with_reducible rfl`. -/
-def RewriteResult.computeRefl (r : RewriteResult) : MetaM RewriteResult := do
-  if let some _ := r.refl? then
+def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
+  if let some _ := r.rfl? then
     return r
   try
-    (← mkFreshExprMVar r.result.eNew).mvarId!.refl
-    pure { r with refl? := some true }
+    (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+    pure { r with rfl? := some true }
   catch _ =>
-    pure { r with refl? := some false }
+    pure { r with rfl? := some false }
 
 /--
 Find lemmas which can rewrite the goal.
@@ -138,21 +139,22 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   let type ← instantiateMVars (← goal.getType)
 
   -- Get all lemmas which could match some subexpression
+  -- DiscrTree.getSubexpressionMatches
   let candidates := (← lemmas.1.getSubexpressionMatches type)
     ++ (← lemmas.2.getSubexpressionMatches type)
 
-  -- TODO the sort used below should be optimized.
-  -- Remember also that the discrimination tree returns most specific results last,
-  -- so simply reversing might be sufficient.
-
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
+
   let candidates := candidates.insertionSort fun r s => r.2.2 > s.2.2
+
+  trace[Tactic.rewrites.lemmas] m!"Candidate rewrite lemmas:\n{candidates}"
+
   -- Lift to a monadic list, so the caller can decide how much of the computation to run.
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let some result ← try? <| goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    let some result ← try? do goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
       | return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
@@ -162,43 +164,47 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (max : Nat := 10) (leavePercentHeartbeats : Nat := 10) :
-    MetaM (List RewriteResult) :=
-rewritesCore lemmas goal
-  -- Don't use too many heartbeats.
-  |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
-  -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-  |>.mapM RewriteResult.computeRefl
-  |>.takeUpToFirst (fun r => r.refl? = some true)
-  -- Bound the number of results.
-  |>.takeAsList max
-  -- TODO consider sorting the successful results,
-  -- e.g. if we use solveByElim to fill arguments,
-  -- prefer results using local hypotheses.
+    (goal : MVarId) (max : Nat := 20) (leavePercentHeartbeats : Nat := 10) :
+    MetaM (List RewriteResult) := do
+  let results ← rewritesCore lemmas goal
+    -- Don't use too many heartbeats.
+    |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
+    -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
+    |>.mapM RewriteResult.computeRfl
+    |>.takeUpToFirst (fun r => r.rfl? = some true)
+    -- Bound the number of results.
+    |>.takeAsList max
+  return match results.filter (fun r => r.rfl? = some true) with
+  | [] =>
+    -- TODO consider sorting the results,
+    -- e.g. if we use solveByElim to fill arguments,
+    -- prefer results using local hypotheses.
+    results
+  | results => results
 
 open Lean.Parser.Tactic
 
 /--
-`rewrites` tries to find a lemma which can rewrite the goal.
+`rw?` tries to find a lemma which can rewrite the goal.
 
-`rewrites` should not be left in proofs; it is a search tool, like `library_search`.
+`rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
-`rewrites!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
+`rw?!` is the "I'm feeling lucky" mode, and will run the first rewrite it finds.
 -/
-syntax (name := rewrites') "rewrites" "!"? : tactic
+syntax (name := rewrites') "rw?" "!"? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rewrites%$tk $[!%$lucky]?) => do
+    `(tactic| rw?%$tk $[!%$lucky]?) => do
   let goal ← getMainGoal
   goal.withContext do
     let results ← rewrites (← rewriteLemmas.get) goal
     reportOutOfHeartbeats `rewrites tk
     if results.isEmpty then
-      throwError "rewrites could not find any lemmas which can rewrite the goal"
+      throwError "rw? could not find any lemmas which can rewrite the goal"
     for r in results do
-      let newGoal := if r.refl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+      let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
       addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm newGoal
     if lucky.isSome then
       match results[0]? with
@@ -208,5 +214,5 @@ elab_rules : tactic |
           evalTactic (← `(tactic| rfl))
       | _ => failure
 
-@[inherit_doc rewrites'] macro "rewrites!" : tactic =>
-  `(tactic| rewrites !)
+@[inherit_doc rewrites'] macro "rw?!" : tactic =>
+  `(tactic| rw? !)

@@ -31,21 +31,21 @@ instance : LocallyFiniteOrder ℕ where
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩
   finset_mem_Icc a b x := by
-    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range']
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
     cases le_or_lt a b with
     | inl h => rw [add_tsub_cancel_of_le (Nat.lt_succ_of_le h).le, Nat.lt_succ_iff]
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 (succ_le_of_lt h), add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2)
   finset_mem_Ico a b x := by
-    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range']
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
     cases le_or_lt a b with
     | inl h => rw [add_tsub_cancel_of_le h]
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2.le)
   finset_mem_Ioc a b x := by
-    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range']
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
     cases le_or_lt a b with
     | inl h =>
       rw [← succ_sub_succ, add_tsub_cancel_of_le (succ_le_succ h), Nat.lt_succ_iff, Nat.succ_le_iff]
@@ -53,7 +53,7 @@ instance : LocallyFiniteOrder ℕ where
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.le.trans hx.2)
   finset_mem_Ioo a b x := by
-    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range', ← tsub_add_eq_tsub_tsub]
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1, ← tsub_add_eq_tsub_tsub]
     cases le_or_lt (a + 1) b with
     | inl h => rw [add_tsub_cancel_of_le h, Nat.succ_le_iff]
     | inr h =>
@@ -95,22 +95,22 @@ theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
 
 @[simp]
 theorem card_Icc : (Icc a b).card = b + 1 - a :=
-  List.length_range' _ _
+  List.length_range' _ _ _
 #align nat.card_Icc Nat.card_Icc
 
 @[simp]
 theorem card_Ico : (Ico a b).card = b - a :=
-  List.length_range' _ _
+  List.length_range' _ _ _
 #align nat.card_Ico Nat.card_Ico
 
 @[simp]
 theorem card_Ioc : (Ioc a b).card = b - a :=
-  List.length_range' _ _
+  List.length_range' _ _ _
 #align nat.card_Ioc Nat.card_Ioc
 
 @[simp]
 theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
-  List.length_range' _ _
+  List.length_range' _ _ _
 #align nat.card_Ioo Nat.card_Ioo
 
 @[simp]
@@ -156,7 +156,7 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 #align nat.card_fintype_Iio Nat.card_fintypeIio
 
--- TODO@Yaël: Generalize all the following lemmas to `succ_order`
+-- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
   rw [mem_Icc, mem_Ioc, succ_le_iff]
@@ -280,7 +280,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
-well. See `int.image_Ico_mod` for the ℤ version. -/
+well. See `Int.image_Ico_emod` for the ℤ version. -/
 theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := by
   obtain rfl | ha := eq_or_ne a 0
   · rw [range_zero, add_zero, Ico_self, image_empty]
@@ -332,7 +332,7 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, tsub_zero, tsub_self]
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
--- Porting note: had to use `@` and specify `(a + b)` explicitely. mathlib3 managed without.
+-- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
   convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm

@@ -34,9 +34,7 @@ rectangular box, additive function
 
 noncomputable section
 
-open Classical BigOperators
-
-open Function Set
+open Classical BigOperators Function Set
 
 namespace BoxIntegral
 
@@ -63,25 +61,24 @@ open Box Prepartition Finset
 variable {N : Type _} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : CoeFun (ι →ᵇᵃ[I₀] M) fun _ => Box ι → M :=
-  ⟨toFun⟩
+instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) (fun _ ↦ M) where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
 
 initialize_simps_projections BoxIntegral.BoxAdditiveMap (toFun → apply)
 
 #noalign box_integral.box_additive_map.to_fun_eq_coe
 
--- Porting note: Left-hand side has variable as head symbol @[simp]
+@[simp]
 theorem coe_mk (f h) : ⇑(mk f h : ι →ᵇᵃ[I₀] M) = f := rfl
 #align box_integral.box_additive_map.coe_mk BoxIntegral.BoxAdditiveMap.coe_mk
 
-theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x := by
-  rintro ⟨f, hf⟩ ⟨g, hg⟩ (rfl : f = g)
-  rfl
+theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
+  FunLike.coe_injective
 #align box_integral.box_additive_map.coe_injective BoxIntegral.BoxAdditiveMap.coe_injective
 
-@[simp]
-theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g :=
-  coe_injective.eq_iff
+-- porting note: was @[simp], now can be proved by `simp`
+theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := FunLike.coe_fn_eq
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 
 theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π : Prepartition I}
@@ -171,25 +168,25 @@ theorem sum_boxes_congr [Finite ι] (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I�
     _ = ∑ J in π₂.boxes, ∑ J' in (splitMany J s).boxes, f J' := (sum_biUnion_boxes _ _ _)
     _ = ∑ J in π₂.boxes, f J :=
       Finset.sum_congr rfl fun J hJ => f.sum_partition_boxes ?_ (isPartition_splitMany _ _)
-  exacts[(WithTop.coe_le_coe.2 <| π₁.le_of_mem hJ).trans hI,
+  exacts [(WithTop.coe_le_coe.2 <| π₁.le_of_mem hJ).trans hI,
     (WithTop.coe_le_coe.2 <| π₂.le_of_mem hJ).trans hI]
 #align box_integral.box_additive_map.sum_boxes_congr BoxIntegral.BoxAdditiveMap.sum_boxes_congr
 
-section ToSmul
+section ToSMul
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- If `f` is a box-additive map, then so is the map sending `I` to the scalar multiplication
 by `f I` as a continuous linear map from `E` to itself. -/
-def toSmul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
+def toSMul (f : ι →ᵇᵃ[I₀] ℝ) : ι →ᵇᵃ[I₀] E →L[ℝ] E :=
   f.map (ContinuousLinearMap.lsmul ℝ ℝ).toLinearMap.toAddMonoidHom
-#align box_integral.box_additive_map.to_smul BoxIntegral.BoxAdditiveMap.toSmul
+#align box_integral.box_additive_map.to_smul BoxIntegral.BoxAdditiveMap.toSMul
 
 @[simp]
-theorem toSmul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSmul I x = f I • x := rfl
-#align box_integral.box_additive_map.to_smul_apply BoxIntegral.BoxAdditiveMap.toSmul_apply
+theorem toSMul_apply (f : ι →ᵇᵃ[I₀] ℝ) (I : Box ι) (x : E) : f.toSMul I x = f I • x := rfl
+#align box_integral.box_additive_map.to_smul_apply BoxIntegral.BoxAdditiveMap.toSMul_apply
 
-end ToSmul
+end ToSMul
 
 /-- Given a box `I₀` in `ℝⁿ⁺¹`, `f x : Box (Fin n) → G` is a family of functions indexed by a real
 `x` and for `x ∈ [I₀.lower i, I₀.upper i]`, `f x` is box-additive on subboxes of the `i`-th face of

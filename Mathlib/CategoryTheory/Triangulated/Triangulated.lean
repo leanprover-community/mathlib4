@@ -59,7 +59,7 @@ instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
       (contractible_distinguished X) (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _
-    (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl) (by simp) (by simp) (by simp))⟩⟩
+    (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl))⟩⟩
   all_goals apply Subsingleton.elim
 
 namespace Octahedron
