@@ -150,7 +150,6 @@ open Cube
 variable {ι : Type} {cs : ι → Cube (n + 1)} {i i' : ι}
 
 /-- A finite family of (at least 2) cubes partitioning the unit cube with different sizes -/
--- @[protect_proj] -- Porting note: does not exist
 structure Correct (cs : ι → Cube n) : Prop where
   PairwiseDisjoint : Pairwise (Disjoint on Cube.toSet ∘ cs)
   iUnion_eq : (⋃ i : ι, (cs i).toSet) = unitCube.toSet
@@ -291,7 +290,7 @@ theorem b_le_b (hi : i ∈ bcubes cs c) (j : Fin n) : c.b j.succ ≤ (cs i).b j.
 #align theorems_100.«82».b_le_b Theorems100.«82».b_le_b
 
 theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
-   (cs i).b j.succ + (cs i).w ≤ c.b j.succ + c.w := by
+    (cs i).b j.succ + (cs i).w ≤ c.b j.succ + c.w := by
   have h' := tail_sub hi j; dsimp only [side] at h'; rw [Ico_subset_Ico_iff] at h'
   exact h'.2; simp [hw]
 #align theorems_100.«82».t_le_t Theorems100.«82».t_le_t
@@ -453,6 +452,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
+  -- Porting note: simp regression, `simp_rw` can't use `onFun`
   rw [onFun]; simp_rw [comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
   refine' ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, _⟩
   intro j₂
@@ -502,11 +502,11 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
         ⟨w, hw, h2w, h3w⟩
       refine' ⟨fun j' => if j' = j then w else p2 j', _, _, _⟩
       · intro j'; by_cases h : j' = j
-        · simp only [h, if_pos h]; exact h3w
+        · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'
       · simp only [toSet, not_forall, mem_setOf_eq]; use j; rw [if_pos rfl]; convert h2w
       · intro j'; by_cases h : j' = j
-        · simp only [h, if_pos h, side_tail]; exact hw
+        · simp only [if_pos h, side_tail]; exact h ▸ hw
         · simp only [if_neg h]; apply hi.2; apply h2p2
     rcases this with ⟨p3, h1p3, h2p3, h3p3⟩
     let p := @cons n (fun _ => ℝ) (c.b 0) p3
