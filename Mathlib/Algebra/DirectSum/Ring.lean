@@ -254,10 +254,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
       simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
         AddMonoidHom.flipHom_apply] at sol
       exact sol
-  -- Porting note: Next three lines used to be a single `ext` which does not work anymore
-  refine DirectSum.addHom_ext' (fun ai ↦ AddMonoidHom.ext (fun ax ↦ ?_))
-  refine DirectSum.addHom_ext' (fun bi ↦ AddMonoidHom.ext (fun bx ↦ ?_))
-  refine DirectSum.addHom_ext' (fun ci ↦ AddMonoidHom.ext (fun cx ↦ ?_))
+  ext ai ax bi bx ci cx
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]
   simp_rw [mulHom_of_of]

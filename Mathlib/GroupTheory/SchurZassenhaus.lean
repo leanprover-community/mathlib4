@@ -200,7 +200,6 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
   have h4 := step1 h1 h2 h3
   contrapose! h4
-  rw [not_or] at h4 -- porting note: had to add `rw [not_or] at h4`
   have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
     rw [← index_eq_card, ← K.index_mul_card]
     refine'

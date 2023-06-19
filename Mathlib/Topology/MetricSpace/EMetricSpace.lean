@@ -119,6 +119,11 @@ theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z 
   apply edist_congr_right h
 #align edist_congr_left edist_congr_left
 
+-- new theorem
+theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
+    edist w y = edist x z :=
+  (edist_congr_right hl).trans (edist_congr_left hr)
+
 theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
   calc
     edist x t ≤ edist x z + edist z t := edist_triangle x z t
@@ -1146,11 +1151,10 @@ end EMetric
 -/
 
 instance [PseudoEMetricSpace X] : EDist (UniformSpace.SeparationQuotient X) where
-  edist x y := Quotient.liftOn₂' x y edist fun x y x' y' hx hy =>
-    calc edist x y = edist x' y := edist_congr_right $
-      EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx
-    _ = edist x' y' := edist_congr_left $
-      EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy
+  edist x y := Quotient.liftOn₂' x y edist fun _ _ _ _ hx hy =>
+    edist_congr
+      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx)
+      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy)
 
 @[simp] theorem UniformSpace.SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
     @edist (UniformSpace.SeparationQuotient X) _ (Quot.mk _ x) (Quot.mk _ y) = edist x y :=
