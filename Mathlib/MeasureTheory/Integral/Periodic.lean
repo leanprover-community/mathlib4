@@ -87,8 +87,8 @@ protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal
 instance : IsAddHaarMeasure (volume : Measure (AddCircle T)) :=
   IsAddHaarMeasure.smul _ (by simp [hT.out]) ENNReal.ofReal_ne_top
 
-instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T))
-    where measure_univ_lt_top := by simp
+instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) where
+  measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
@@ -113,8 +113,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     intro hε
     rw [inter_eq_left_iff_subset, Real.closedBall_eq_Icc, zero_sub, zero_add]
     rintro y ⟨hy₁, hy₂⟩; constructor <;> linarith
-  have h₂ :
-    (↑) ⁻¹' Metric.closedBall (0 : AddCircle T) ε ∩ I =
+  have h₂ : (↑) ⁻¹' Metric.closedBall (0 : AddCircle T) ε ∩ I =
       if ε < T / 2 then Metric.closedBall (0 : ℝ) ε else I := by
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
@@ -165,7 +164,6 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
     MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this
   rw [← (AddCircle.measurePreserving_mk T t).map_eq]
   convert this.symm using 1
-  -- TODO : there is no "set_lintegral_eq_subtype"?
   · rw [← map_comap_subtype_coe m _]
     exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtype_coe m) _
   · congr 1
