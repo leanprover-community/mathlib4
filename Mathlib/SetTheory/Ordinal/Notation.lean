@@ -10,7 +10,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Ordinal notation
@@ -27,7 +26,6 @@ Various operations (addition, subtraction, multiplication, power function)
 are defined on `ONote` and `NONote`.
 -/
 
--- porting note: Many names intentionally containg "NF" as upper case in the mathlib3 name. -/
 set_option linter.uppercaseLean3 false
 
 
@@ -90,18 +88,21 @@ def toString : ONote → String
   | oadd e n a => toStringAux1 e n (toString e) ++ " + " ++ toString a
 #align onote.to_string ONote.toString
 
+open Lean in
 /-- Print an ordinal notation -/
-def repr' : ONote → String
+def repr' (prec : ℕ) : ONote → Format
   | zero => "0"
   | oadd e n a =>
-    "(oadd " ++ (repr' e) ++ " " ++ ToString.toString (n : ℕ) ++ " " ++ (repr' a) ++ ")"
+    Repr.addAppParen
+      ("oadd " ++ (repr' max_prec e) ++ " " ++ Nat.repr (n : ℕ) ++ " " ++ (repr' max_prec a))
+      prec
 #align onote.repr' ONote.repr
 
 instance : ToString ONote :=
   ⟨toString⟩
 
 instance : Repr ONote where
-  reprPrec o _ := repr' o
+  reprPrec o prec := repr' prec o
 
 instance : Preorder ONote where
   le x y := repr x ≤ repr y
@@ -199,9 +200,6 @@ inductive NFBelow : ONote → Ordinal.{0} → Prop
 class NF (o : ONote) : Prop where
   out : Exists (NFBelow o)
 #align onote.NF ONote.NF
-
--- porting note: unknown attribute
--- attribute [pp_nodot] NF
 
 instance NF.zero : NF 0 :=
   ⟨⟨0, NFBelow.zero⟩⟩
