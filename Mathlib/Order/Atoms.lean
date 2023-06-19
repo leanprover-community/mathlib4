@@ -485,18 +485,6 @@ instance (priority := 100) : IsCoatomic α :=
 
 end IsCoatomistic
 
-namespace CompleteBooleanAlgebra
-
-theorem isAtomistic_of_isAtomic {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
-    IsAtomistic α where
-  eq_sSup_atoms b := by
-    refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
-    refine le_antisymm ?_ (_root_.sSup_le fun c hc => hc.2)
-    refine BooleanAlgebra.le_iff_atom_le_imp.2 fun a ha hab => ?_
-    refine le_sSup _ _ ⟨ha, hab⟩
-
-end CompleteBooleanAlgebra
-
 namespace CompleteAtomicBooleanAlgebra
 
 instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
