@@ -8,9 +8,9 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -173,7 +173,17 @@ theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := 
     rwa [Subtype.ext hji] at hj
 #align finset.sup_indep.attach Finset.SupIndep.attach
 
-@[simp]
+/-
+Porting note: simpNF linter returns
+
+"Left-hand side does not simplify, when using the simp lemma on itself."
+
+However, simp does indeed solve the following. leanprover/std4#71 is related.
+
+example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
+  (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by simp
+-/
+@[simp, nolint simpNF]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
   refine' ⟨fun h t ht i his hit => _, SupIndep.attach⟩
   classical
