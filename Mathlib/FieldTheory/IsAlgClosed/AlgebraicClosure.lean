@@ -337,8 +337,9 @@ theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofSte
   change Ring.DirectLimit.of (Step k) (toStepOfLE' k) (n + 1) (_) =
       Ring.DirectLimit.of (Step k) (toStepOfLE' k) n x
   convert Ring.DirectLimit.of_f n.le_succ x
---Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
---in comparing `toStepOfLE'` with `toStepSucc`. In the above, I made some things more explicit
+  -- Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
+  -- in comparing `toStepOfLE'` with `toStepSucc`. In the above, I made some things more explicit
+  -- Original proof:
   -- RingHom.ext fun x =>
   --   show Ring.DirectLimit.of (Step k) (fun i j h => toStepOfLE k i j h) _ _ = _ by
   --     convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
