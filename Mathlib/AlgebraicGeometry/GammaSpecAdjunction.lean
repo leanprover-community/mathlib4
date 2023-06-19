@@ -354,12 +354,13 @@ theorem right_triangle (R : CommRingCat) :
         Spec.toLocallyRingedSpace.map (SpecΓIdentity.inv.app R).op =
       𝟙 _ := by
   apply LocallyRingedSpace.comp_ring_hom_ext
-  · ext ((p : PrimeSpectrum R)x)
-    erw [←
-      IsLocalization.AtPrime.to_map_mem_maximal_iff ((structure_sheaf R).presheaf.stalk p)
-        p.as_ideal x]
+  · ext (p : PrimeSpectrum R)
+    change _ = p -- Porting note: Had to add this line to make `ext x` work.
+    ext x
+    erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
+        p.asIdeal x]
     rfl
-  · intro r; apply to_open_res
+  · intro r; apply toOpen_res
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
