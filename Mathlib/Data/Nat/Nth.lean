@@ -25,8 +25,8 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 
 ## Main results
 
-* `nat.nth_set_card`: For a fintely-often true `p`, gives the cardinality of the set of numbers
-  satisfying `p` above particular values of `nth p`
+* `Nat.nth_eq_orderEmbOfFin`: For a fintely-often true `p`, gives the cardinality of the set of
+  numbers satisfying `p` above particular values of `nth p`
 * `Nat.gc_count_nth`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-ofter true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
@@ -47,7 +47,7 @@ variable (p : ℕ → Prop)
 
 /-- Find the `n`-th natural number satisfying `p` (indexed from `0`, so `nth p 0` is the first
 natural number satisfying `p`), or `0` if there is no such number. See also
-`subtype.order_iso_of_nat` for the order isomorphism with ℕ when `p` is infinitely often true. -/
+`Subtype.orderIsoOfNat` for the order isomorphism with ℕ when `p` is infinitely often true. -/
 noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
   classical exact
     if h : Set.Finite (setOf p) then (h.toFinset.sort (· ≤ ·)).getD n 0
@@ -244,8 +244,8 @@ theorem isLeast_nth_of_infinite (hf : (setOf p).Infinite) (n : ℕ) :
 
 /-- An alternative recursive definition of `Nat.nth`: `Nat.nth s n` is the infimum of `x ∈ s` such
 that `Nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assume that the set is
-nonempty because we use the same "garbage value" `0` both for `Inf` on `ℕ` and for `Nat.nth s n` for
-`n ≥ card s`. -/
+nonempty because we use the same "garbage value" `0` both for `sInf` on `ℕ` and for `Nat.nth s n`
+for `n ≥ card s`. -/
 theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ ∀ k < n, nth p k < x} := by
   by_cases hn : ∀ hf : (setOf p).Finite, n < hf.toFinset.card
   · exact (isLeast_nth hn).csInf_eq.symm
@@ -417,4 +417,3 @@ theorem lt_nth_iff_count_lt (hp : (setOf p).Infinite) {a b : ℕ} : a < count p 
 end Count
 
 end Nat
-
