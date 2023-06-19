@@ -27,6 +27,7 @@ import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
 import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
+import Archive.Wiedijk100Theorems.CubingACube
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
