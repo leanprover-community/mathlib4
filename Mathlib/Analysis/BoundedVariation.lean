@@ -57,6 +57,7 @@ open scoped BigOperators NNReal ENNReal Topology UniformConvergence
 
 open Set MeasureTheory Filter
 
+-- porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type _} [LinearOrder α] {E : Type _} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -115,9 +116,11 @@ theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : �
   let v i := u (π i)
   calc
     ∑ i in Finset.Ico m n, edist (f (u (i + 1))) (f (u i))
-      = ∑ i in Finset.Ico m n, edist (f (v (i + 1))) (f (v i)) := Finset.sum_congr rfl fun i hi ↦ by
-      rw [Finset.mem_Ico] at hi
-      simp only [projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩, projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
+        = ∑ i in Finset.Ico m n, edist (f (v (i + 1))) (f (v i)) :=
+      Finset.sum_congr rfl fun i hi ↦ by
+        rw [Finset.mem_Ico] at hi
+        simp only [projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
+          projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
     _ ≤ ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
@@ -194,8 +197,7 @@ theorem lowerSemicontinuous_aux {ι : Type _} {F : ι → α → E} {p : Filter 
     ∃ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
       v < ∑ i in Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
     lt_iSup_iff.mp hv
-  have :
-    Tendsto (fun j => ∑ i : ℕ in Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
+  have : Tendsto (fun j => ∑ i : ℕ in Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
       (𝓝 (∑ i : ℕ in Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
     apply tendsto_finset_sum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
@@ -213,8 +215,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using @tendsto_id _ (𝓝 f)
 #align evariation_on.lower_semicontinuous eVariationOn.lowerSemicontinuous
 
-/-- The map `(evariation_on · s)` is lower semicontinuous for uniform convergence on `s`.
--/
+/-- The map `(evariation_on · s)` is lower semicontinuous for uniform convergence on `s`.  -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E {s}) id (𝓝 f) f s _
@@ -269,8 +270,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
     · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
       simp only [this, ite_eq_right_iff, IsEmpty.forall_iff]
-    ·
-      calc
+    · calc
         (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
             ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
           apply Finset.sum_congr rfl fun i hi => ?_
@@ -313,8 +313,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   refine' ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), _⟩, _⟩
   · dsimp only; rw [if_neg (lt_irrefl N), if_pos rfl]
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
-  ·
-    calc
+  · calc
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ∑ i in Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         apply Finset.sum_congr rfl fun i _hi => ?_
@@ -329,9 +328,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         apply Finset.sum_le_sum_of_subset _
         rw [Finset.range_eq_Ico]
         exact Finset.Ico_subset_Ico zero_le_one le_rfl
-
-  ·
-    calc
+  · calc
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ((∑ i in Finset.Ico 0 (N - 1), edist (f (u (i + 1))) (f (u i))) +
               ∑ i in Finset.Ico (N - 1) N, edist (f (u (i + 1))) (f (u i))) +
@@ -341,8 +338,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         · exact hN.1
         · exact zero_le _
         · exact Nat.pred_le _
-      _ =
-          (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+      _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
             ∑ i in Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         congr 1; congr 1
@@ -372,8 +368,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             exact hi.left.ne rfl
           rw [if_neg A, if_neg B, if_neg C, if_neg D]
           congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
-      _ =
-          (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+      _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         congr 1; congr 1
@@ -383,8 +378,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero, if_false,
             B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
-      _ ≤
-          ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
+      _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         refine' add_le_add (add_le_add le_rfl _) le_rfl
@@ -495,8 +489,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
     (∑ j in Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
         ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
       huv
-    _ =
-        (∑ j in Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
+    _ = (∑ j in Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
           ∑ j in Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) :=
       by rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
@@ -517,7 +510,6 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           · rw [← Nx]; exact hv hi.1
         rw [this]
         exact ht.1
-
 #align evariation_on.union eVariationOn.union
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
@@ -544,12 +536,10 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   refine' iSup_le _
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
-  refine'
-    (Finset.sum_congr rfl fun x hx => _).trans_le
-      (le_iSup_of_le
-        ⟨n, fun i => φ (u <| n - i),
-          fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy), fun i => φst (ut _)⟩
-        le_rfl)
+  refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy),
+      fun i => φst (ut _)⟩
+    le_rfl
   dsimp only [Subtype.coe_mk]
   rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_pred_eq_of_pos]
   simp only [Function.comp_apply]
@@ -561,8 +551,8 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
   · convert zero_le (_ : ℝ≥0∞)
-    exact
-      eVariationOn.subsingleton f ((subsingleton_of_subsingleton.image _).anti (surjOn_image φ t))
+    exact eVariationOn.subsingleton f <|
+      (subsingleton_of_subsingleton.image _).anti (surjOn_image φ t)
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts : MapsTo ψ (φ '' t) t := (surjOn_image φ t).mapsTo_invFunOn
@@ -609,8 +599,8 @@ theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   apply le_antisymm (comp_le_of_antitoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
   · convert zero_le (_ : ℝ≥0∞)
-    exact
-      eVariationOn.subsingleton f ((subsingleton_of_subsingleton.image _).anti (surjOn_image φ t))
+    exact eVariationOn.subsingleton f <| (subsingleton_of_subsingleton.image _).anti
+      (surjOn_image φ t)
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts := (surjOn_image φ t).mapsTo_invFunOn
@@ -802,11 +792,9 @@ protected theorem comp_eq_of_monotoneOn {β : Type _} [LinearOrder β] (f : α �
     (φ : β → α) (hφ : MonotoneOn φ t) {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     variationOnFromTo (f ∘ φ) t x y = variationOnFromTo f (φ '' t) (φ x) (φ y) := by
   rcases le_total x y with (h | h)
-  ·
-    rw [variationOnFromTo.eq_of_le _ _ h, variationOnFromTo.eq_of_le _ _ (hφ hx hy h),
+  · rw [variationOnFromTo.eq_of_le _ _ h, variationOnFromTo.eq_of_le _ _ (hφ hx hy h),
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hx hy]
-  ·
-    rw [variationOnFromTo.eq_of_ge _ _ h, variationOnFromTo.eq_of_ge _ _ (hφ hy hx h),
+  · rw [variationOnFromTo.eq_of_ge _ _ h, variationOnFromTo.eq_of_ge _ _ (hφ hy hx h),
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hy hx]
 #align variation_on_from_to.comp_eq_of_monotone_on variationOnFromTo.comp_eq_of_monotoneOn
 
