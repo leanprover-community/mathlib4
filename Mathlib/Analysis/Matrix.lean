@@ -191,7 +191,7 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 #align matrix.norm_diagonal Matrix.norm_diagonal
 
 /-- Note this is safe as an instance as it carries no data. -/
--- Porting note: not yet implemented @[nolint fails_quickly]
+-- Porting note: not yet implemented: `@[nolint fails_quickly]`
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
