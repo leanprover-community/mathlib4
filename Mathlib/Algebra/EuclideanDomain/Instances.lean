@@ -42,7 +42,7 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
 
 -- Porting note: this seems very slow.
 -- see Note [lower instance priority]
-instance (priority := 100) Field.toEuclideanDomain {K : Type _} [Field K] : EuclideanDomain K :=
+def Field.toEuclideanDomain {K : Type _} [Field K] : EuclideanDomain K :=
   { ‹Field K› with
     add := (· + ·), mul := (· * ·), one := 1, zero := 0, neg := Neg.neg,
     quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
