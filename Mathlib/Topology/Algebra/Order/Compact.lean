@@ -71,41 +71,56 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
   refine' .mk'' fun {a b} hlt => ?_
+  cases' le_or_lt a b with hab hab
+  swap
+  · simp [hab]
   refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
-  by_contra H
-  simp only [not_exists, not_and] at H -- porting note: `contrapose!` fails
-  rw [le_principal_iff] at hf
+  contrapose! hf
+  rw [le_principal_iff]
   have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx hxf =>
-    H x hx ((le_pure_iff.2 hxf).trans (pure_le_nhds x))
+    hf x hx ((le_pure_iff.2 hxf).trans (pure_le_nhds x))
   set s := { x ∈ Icc a b | Icc a x ∉ f }
   have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
-  have ha : a ∈ s := by simp [hpt, hlt.le]
+  have sbd : BddAbove s := ⟨b, hsb⟩
+  have ha : a ∈ s := by simp [hpt, hab]
+  rcases hab.eq_or_lt with (rfl | _hlt)
+  · exact ha.2
+  -- porting note: the `obtain` below was instead
+  -- `set c := Sup s`
+  -- `have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ sbd`
   obtain ⟨c, hsc⟩ : ∃ c, IsLUB s c := ⟨sSup s, isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩⟩
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
-  specialize H c hc
+  specialize hf c hc
   have hcs : c ∈ s := by
-    rcases hc.1.eq_or_lt with (rfl | hlt)
-    · assumption
-    refine' ⟨hc, fun hcf => H fun U hU => _⟩
-    rcases exists_Ioc_subset_of_mem_nhds' hU hlt with ⟨x, hxc, hxU⟩
-    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually (Ioc_mem_nhdsWithin_Iic' hxc.2)).exists with
-      ⟨y, ⟨-, hyf⟩, hy⟩
+    cases' hc.1.eq_or_lt with heq hlt
+    · rwa [← heq]
+    refine' ⟨hc, fun hcf => hf fun U hU => _⟩
+    rcases(mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU) with
+      ⟨x, hxc, hxU⟩
+    rcases((hsc.frequently_mem ⟨a, ha⟩).and_eventually
+          (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with
+      ⟨y, ⟨_hyab, hyf⟩, hy⟩
     refine' mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans _ hxU)
     rw [diff_subset_iff]
-    exact Icc_subset_Icc_union_Ioc.trans (union_subset_union_right _ (Ioc_subset_Ioc_left hy.1.le))
+    exact
+      Subset.trans Icc_subset_Icc_union_Ioc
+        (union_subset_union Subset.rfl <| Ioc_subset_Ioc_left hy.1.le)
   cases' hc.2.eq_or_lt with heq hlt
-  · exact hcs.2 (heq.symm ▸ hf)
-  obtain ⟨y, ⟨hcy, hyb⟩, hyf⟩ : ∃ y ∈ Ioc c b, Ico c y ∉ f
-  · contrapose! H
-    intro U hU
-    rcases exists_Ico_subset_of_mem_nhds' hU hlt with ⟨y, hy, hyU⟩
-    exact mem_of_superset (H _ hy) hyU
-  suffices : y ∈ s
-  · exact hcy.not_le (hsc.1 this)
-  have hy : y ∈ Icc a b := ⟨hc.1.trans hcy.le, hyb⟩
-  refine ⟨hy, fun hay => ?_⟩
-  simp only [← Icc_union_Icc_eq_Icc hc.1 hcy.le, ← Ico_union_right hcy.le,
-    Ultrafilter.union_mem_iff, hyf, hcs.2, hpt _ hy, false_or] at hay
+  · rw [← heq]
+    exact hcs.2
+  contrapose! hf
+  intro U hU
+  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+      (mem_nhdsWithin_of_mem_nhds hU) with
+    ⟨y, hxy, hyU⟩
+  refine' mem_of_superset _ hyU
+  clear! U
+  have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
+  by_cases hay : Icc a y ∈ f
+  · refine' mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) _
+    rw [diff_subset_iff, union_comm, Ico_union_right hxy.1.le, diff_subset_iff]
+    exact Icc_subset_Icc_union_Icc
+  · exact ((hsc.1 ⟨hy, hay⟩).not_lt hxy.1).elim
 #align conditionally_complete_linear_order.to_compact_Icc_space ConditionallyCompleteLinearOrder.toCompactIccSpace
 
 instance {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -275,7 +290,7 @@ theorem ContinuousOn.exists_isMinOn' {s : Set β} {f : β → α} (hf : Continuo
     ((hK.inter_right hsc).insert x₀).exists_forall_le (insert_nonempty _ _) (hf.mono hsub)
   refine' ⟨x, hsub hx, fun y hy => _⟩
   by_cases hyK : y ∈ K
-  exacts[hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
+  exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 larger than a value in its image away from compact sets, then it has a minimum on this set. -/
@@ -370,7 +385,7 @@ conditionally complete linear order, and `K : Set β` is a compact set, then
 Porting note: todo: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
-    (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ᶠ 𝓝[K] y) (𝓝 (g y)))
+    (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
     Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```

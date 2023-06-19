@@ -22,7 +22,7 @@ closed) using the following naming conventions:
 - `c`: closed
 
 Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the inverval `(a, b]`.
+`Ioc a b` denotes the interval `(a, b]`.
 
 This file contains these definitions, and basic facts on inclusion, intersection, difference of
 intervals (where the precise statements may depend on the properties of the order, in particular
@@ -1857,7 +1857,7 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
   rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as folllows:
+  -- Porting note: mathlib3 proof finished from here as follows:
   -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
   -- ac_rfl
   -- all_goals

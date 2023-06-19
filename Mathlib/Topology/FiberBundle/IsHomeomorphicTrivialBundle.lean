@@ -28,7 +28,7 @@ variable {B : Type _} (F : Type _) {Z : Type _} [TopologicalSpace B] [Topologica
 
 /-- A trivial fiber bundle with fiber `F` over a base `B` is a space `Z`
 projecting on `B` for which there exists a homeomorphism to `B × F` that sends `proj`
-to `prod.fst`. -/
+to `Prod.fst`. -/
 def IsHomeomorphicTrivialFiberBundle (proj : Z → B) : Prop :=
   ∃ e : Z ≃ₜ B × F, ∀ x, (e x).1 = proj x
 #align is_homeomorphic_trivial_fiber_bundle IsHomeomorphicTrivialFiberBundle

@@ -241,7 +241,7 @@ section cast
 variable {α : Type _} [Zero α] [One α] [Neg α]
 
 /-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
-only a `has_coe_t` instance: see note [use has_coe_t]. -/
+only a `CoeTC` instance: see note [use has_coe_t]. -/
 @[coe]
 def cast : SignType → α
   | zero => 0
@@ -415,10 +415,11 @@ theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   · rw [abs_zero, zero_mul]
   · rw [sign_pos hx, abs_of_pos hx, coe_one, mul_one]
 
-/-- `sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
+/-- `SignType.sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
 is required; consider ℂ with the order `z ≤ w` iff they have the same imaginary part and
-`z - w ≤ 0` in the reals; then `1 + i` and `1 - i` are incomparable to zero, and thus we have:
-`0 * 0 = sign (1 + i) * sign (1 - i) ≠ sign 2 = 1`. (`Complex.orderedCommRing`) -/
+`z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
+`0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
+(`Complex.orderedCommRing`) -/
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero

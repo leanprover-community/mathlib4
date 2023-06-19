@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 # Every NonPreadditiveAbelian category is preadditive
 
 In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphis is
+kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
 normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why

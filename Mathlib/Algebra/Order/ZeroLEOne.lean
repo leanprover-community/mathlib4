@@ -27,12 +27,12 @@ class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
 
 /-- `zero_le_one` with the type argument implicit. -/
 @[simp] lemma zero_le_one [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
-ZeroLEOneClass.zero_le_one
+  ZeroLEOneClass.zero_le_one
 #align zero_le_one zero_le_one
 
 /-- `zero_le_one` with the type argument explicit. -/
 lemma zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
-zero_le_one
+  zero_le_one
 #align zero_le_one' zero_le_one'
 
 section

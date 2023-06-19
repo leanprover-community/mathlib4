@@ -253,7 +253,8 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
   refine' norm_sum_le_of_le _ fun i _ => _
   rw [norm_smul, mul_comm]
-  exact mul_le_mul_of_nonneg_left (norm_le_pi_norm (v - u) i) (norm_nonneg _)
+  gcongr
+  exact norm_le_pi_norm (v - u) i
 #align linear_independent.eventually LinearIndependent.eventually
 
 theorem isOpen_setOf_linearIndependent {ι : Type _} [Finite ι] :
@@ -279,15 +280,13 @@ theorem Basis.op_nnnorm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u :
       _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [u.map_sum, LinearMap.map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := (nnnorm_sum_le _ _)
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
-      _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M :=
-        (Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_left (hu i) (zero_le _))
+      _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
       _ = (∑ i, ‖v.equivFun e i‖₊) * M := Finset.sum_mul.symm
-      _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M :=
-        (suffices _ from mul_le_mul_of_nonneg_right this (zero_le M)
+      _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
+        gcongr
         calc
           (∑ i, ‖v.equivFun e i‖₊) ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
           _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_of_le_right (φ.le_op_nnnorm e) _
-          )
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.op_nnnorm_le
 
@@ -436,7 +435,7 @@ theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : �
 #align exists_seq_norm_le_one_le_norm_sub' exists_seq_norm_le_one_le_norm_sub'
 
 theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
-    ∃ (R : ℝ)(f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ := by
+    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ := by
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 1 < ‖c‖ := NormedField.exists_one_lt_norm 𝕜
   have A : ‖c‖ < ‖c‖ + 1 := by linarith
   rcases exists_seq_norm_le_one_le_norm_sub' hc A h with ⟨f, hf⟩
@@ -451,7 +450,7 @@ theorem finiteDimensional_of_isCompact_closed_ball₀ {r : ℝ} (rpos : 0 < r)
     (h : IsCompact (Metric.closedBall (0 : E) r)) : FiniteDimensional 𝕜 E := by
   by_contra hfin
   obtain ⟨R, f, Rgt, fle, lef⟩ :
-    ∃ (R : ℝ)(f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ :=
+    ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ ∀ m n, m ≠ n → 1 ≤ ‖f m - f n‖ :=
     exists_seq_norm_le_one_le_norm_sub hfin
   have rRpos : 0 < r / R := div_pos rpos (zero_lt_one.trans Rgt)
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < r / R := NormedField.exists_norm_lt _ rRpos
@@ -460,7 +459,7 @@ theorem finiteDimensional_of_isCompact_closed_ball₀ {r : ℝ} (rpos : 0 < r)
     intro n
     simp only [norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
-      ‖c‖ * ‖f n‖ ≤ r / R * R := mul_le_mul hc.2.le (fle n) (norm_nonneg _) rRpos.le
+      ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
   -- Porting note: moved type ascriptions because of exists_prop changes
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,
@@ -473,7 +472,8 @@ theorem finiteDimensional_of_isCompact_closed_ball₀ {r : ℝ} (rpos : 0 < r)
     ‖c‖ ≤ dist (g (φ (N + 1))) (g (φ N)) := by
       conv_lhs => rw [← mul_one ‖c‖]
       simp only [dist_eq_norm, ← smul_sub, norm_smul]
-      apply mul_le_mul_of_nonneg_left (lef _ _ (ne_of_gt _)) (norm_nonneg _)
+      gcongr
+      apply lef _ _ (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closed_ball₀
@@ -564,12 +564,12 @@ def ContinuousLinearEquiv.piRing (ι : Type _) [Fintype ι] [DecidableEq ι] :
       rw [← nsmul_eq_mul]
       refine op_norm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
       simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
-        LinearMap.coe_to_continuous_linear_map', LinearEquiv.piRing_symm_apply]
+        LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
       rw [smul_mul_assoc]
       refine' Finset.sum_le_card_nsmul _ _ _ fun i _ => _
       rw [norm_smul, mul_comm]
-      exact mul_le_mul (norm_le_pi_norm g i) (norm_le_pi_norm t i) (norm_nonneg _) (norm_nonneg g) }
+      gcongr <;> apply norm_le_pi_norm }
 #align continuous_linear_equiv.pi_ring ContinuousLinearEquiv.piRing
 
 /-- A family of continuous linear maps is continuous on `s` if all its applications are. -/

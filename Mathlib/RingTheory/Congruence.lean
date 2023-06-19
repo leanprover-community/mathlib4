@@ -79,7 +79,7 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `ring_con` is also an `AddCon` -/
+/-- Every `RingCon` is also an `AddCon` -/
 def toAddCon : AddCon R :=
   { c with }
 #align ring_con.to_add_con RingCon.toAddCon

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module analysis.normed.mul_action
-! leanprover-community/mathlib commit ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,6 +50,10 @@ theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : 
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 #align lipschitz_with_smul lipschitzWith_smul
 
+theorem edist_smul_le (s : α) (x y : β) : edist (s • x) (s • y) ≤ ‖s‖₊ • edist x y :=
+  lipschitzWith_smul s x y
+#align edist_smul_le edist_smul_le
+
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
@@ -91,7 +95,7 @@ theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   · refine' le_antisymm (norm_smul_le r x) _
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
-      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := (mul_le_mul_of_nonneg_left (norm_smul_le _ _) (norm_nonneg _))
+      _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le
       _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel (mt norm_eq_zero.1 h), one_mul]
 #align norm_smul norm_smul
 
@@ -114,5 +118,9 @@ theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * 
 theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s‖₊ * nndist x y :=
   NNReal.eq <| dist_smul₀ s x y
 #align nndist_smul₀ nndist_smul₀
+
+theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
+  simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+#align edist_smul₀ edist_smul₀
 
 end NormedDivisionRingModule

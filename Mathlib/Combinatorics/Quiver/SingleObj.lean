@@ -18,7 +18,7 @@ Single object quiver with a given arrows type.
 
 ## Main definitions
 
-Given a type `α`, `SingleObj α` is the `unit` type, whose single object is called `star α`, with
+Given a type `α`, `SingleObj α` is the `Unit` type, whose single object is called `star α`, with
 `Quiver` structure such that `star α ⟶ star α` is the type `α`.
 An element `x : α` can be reinterpreted as an element of `star α ⟶ star α` using
 `toHom`.

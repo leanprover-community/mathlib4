@@ -28,7 +28,7 @@ In this file we define
 ## Implementation notes
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
-word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
+word "module" is reserved for `Module R M` where `R` is a `Ring` and `M` an `AddCommGroup`.
 If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.

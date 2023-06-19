@@ -58,7 +58,7 @@ Monad operations:
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
-  `α` to `β`. It is defined as `α → part β`. -/
+  `α` to `β`. It is defined as `α → Part β`. -/
 def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
@@ -123,7 +123,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 #align pfun.as_subtype PFun.asSubtype
 
 /-- The type of partial functions `α →. β` is equivalent to
-the type of pairs `(p : α → Prop, f : subtype p → β)`. -/
+the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
     funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
@@ -457,7 +457,7 @@ theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext ; simp [mem_preima
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext ; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
-/-- Core of a set `s : set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
+/-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
 such that `f a ∈ s`, if `f a` is defined. -/
 def core (s : Set β) : Set α :=
   f.graph'.core s
@@ -704,7 +704,7 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
   ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
   ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩

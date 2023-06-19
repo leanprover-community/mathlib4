@@ -50,7 +50,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
@@ -611,13 +611,13 @@ theorem findGreatest_eq_iff :
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts[rfl, (hm hlt le_rfl hk).elim]
+        exacts [rfl, (hm hlt le_rfl hk).elim]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
         refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl

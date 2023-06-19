@@ -41,7 +41,7 @@ Then we define
   instances from right to left.
 
   - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
-  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
+  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `Unique α`;
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
@@ -105,7 +105,7 @@ instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
-rfl
+  rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
@@ -262,7 +262,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 #align equiv.coe_refl Equiv.coe_refl
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
-`synonym α` is semireducible. This makes a mess of `multiplicative.of_add` etc. -/
+`synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
 theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
@@ -297,7 +297,7 @@ theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
--- `simp` will always rewrite with `equiv.symm_symm` before this has a chance to fire.
+-- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
 @[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 #align equiv.symm_symm_apply Equiv.symm_symm_apply
 
@@ -581,7 +581,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
 
 -- This should not be a simp lemma as long as `(∘)` is reducible:
 -- when `(∘)` is reducible, Lean can unify `f₁ ∘ f₂` with any `g` using
--- `f₁ := g` and `f₂ := λ x, x`.  This causes nontermination.
+-- `f₁ := g` and `f₂ := fun x ↦ x`. This causes nontermination.
 theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
   apply arrowCongr_comp
 #align equiv.conj_comp Equiv.conj_comp
@@ -763,7 +763,7 @@ def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i))
     (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
 #align equiv.sigma_plift_equiv_subtype Equiv.sigmaPLiftEquivSubtype
 
-/-- A `Sigma` with `λ i, ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
+/-- A `Sigma` with `fun i ↦ ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
 Variant of `sigmaPLiftEquivSubtype`.
 -/
 def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
@@ -773,7 +773,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 
 namespace Perm
 
-/-- A family of permutations `Π a, Perm (β a)` generates a permuation `Perm (Σ a, β₁ a)`. -/
+/-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
 @[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
@@ -926,7 +926,7 @@ end Equiv
 namespace Quot
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) : Quot ra ≃ Quot rb where
   toFun := Quot.map e fun a₁ a₂ => (eq a₁ a₂).1
@@ -960,7 +960,7 @@ end Quot
 namespace Quotient
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
     (eq : ∀ a₁ a₂, @Setoid.r α ra a₁ a₂ ↔ @Setoid.r β rb (e a₁) (e a₂)) :
     Quotient ra ≃ Quotient rb := Quot.congr e eq

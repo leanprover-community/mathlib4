@@ -808,7 +808,7 @@ variable [Ring R]
 
 /-
 The inverse of a multivariate formal power series is defined by
-well-founded recursion on the coeffients of the inverse.
+well-founded recursion on the coefficients of the inverse.
 -/
 /-- Auxiliary definition that unifies
  the totalised inverse formal power series `(_)⁻¹` and
