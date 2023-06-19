@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Dynamics.Ergodic.AddCircle
-import Mathbin.MeasureTheory.Covering.LiminfLimsup
+import Mathlib.Dynamics.Ergodic.AddCircle
+import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -101,8 +101,7 @@ variable {A : Type _} [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
 
 @[to_additive]
 theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
-    (fun y => y ^ m) '' approxOrderOf A n δ ⊆ approxOrderOf A n (m * δ) :=
-  by
+    (fun y => y ^ m) '' approxOrderOf A n δ ⊆ approxOrderOf A n (m * δ) := by
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb, hab⟩ := mem_approx_order_of_iff.mp ha
   replace hb : b ^ m ∈ {u : A | orderOf u = n}; · rw [← hb] at hmn ⊢; exact orderOf_pow_coprime hmn
@@ -114,8 +113,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.coprime m) :
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
-    (fun y => y ^ m) '' approxOrderOf A (n * m) δ ⊆ approxOrderOf A n (m * δ) :=
-  by
+    (fun y => y ^ m) '' approxOrderOf A (n * m) δ ⊆ approxOrderOf A n (m * δ) := by
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb : orderOf b = n * m, hab : a ∈ ball b δ⟩ := mem_approx_order_of_iff.mp ha
   replace hb : b ^ m ∈ {y : A | orderOf y = n}
@@ -128,8 +126,7 @@ theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
 
 @[to_additive]
 theorem smul_subset_of_coprime (han : (orderOf a).coprime n) :
-    a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ :=
-  by
+    a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_bUnion_ball, ← image_smul, image_Union₂, image_smul,
     smul_ball'', smul_eq_mul, mem_set_of_eq]
   refine' Union₂_subset_iff.mpr fun b hb c hc => _
@@ -142,8 +139,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).coprime n) :
 
 @[to_additive vadd_eq_of_mul_dvd]
 theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
-    a • approxOrderOf A n δ = approxOrderOf A n δ :=
-  by
+    a • approxOrderOf A n δ = approxOrderOf A n δ := by
   simp_rw [approxOrderOf, thickening_eq_bUnion_ball, ← image_smul, image_Union₂, image_smul,
     smul_ball'', smul_eq_mul, mem_set_of_eq]
   replace han : ∀ {b : A}, orderOf b = n → orderOf (a * b) = n
@@ -170,8 +166,7 @@ end approxOrderOf
 namespace UnitAddCircle
 
 theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 < n) :
-    x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ :=
-  by
+    x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ := by
   haveI := Real.fact_zero_lt_one
   simp only [mem_approx_add_orderOf_iff, mem_set_of_eq, ball, exists_prop, dist_eq_norm,
     AddCircle.addOrderOf_eq_pos_iff hn, mul_one]
@@ -182,8 +177,7 @@ theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 
 
 theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
     x ∈ addWellApproximable UnitAddCircle δ ↔
-      {n : ℕ | ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ n}.Infinite :=
-  by
+      {n : ℕ | ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ n}.Infinite := by
   simp only [mem_add_wellApproximable_iff, ← Nat.cofinite_eq_atTop, cofinite.blimsup_set_eq,
     mem_set_of_eq]
   refine' iff_of_eq (congr_arg Set.Infinite <| ext fun n => ⟨fun hn => _, fun hn => _⟩)
@@ -206,8 +200,7 @@ local notation "𝕊" => AddCircle T
 
 /-- *Gallagher's ergodic theorem* on Diophantine approximation. -/
 theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto δ atTop (𝓝 0)) :
-    (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x :=
-  by
+    (∀ᵐ x, ¬addWellApproximable 𝕊 δ x) ∨ ∀ᵐ x, addWellApproximable 𝕊 δ x := by
   /- Sketch of proof:
   
     Let `E := add_well_approximable 𝕊 δ`. For each prime `p : ℕ`, we can partition `E` into three
@@ -235,8 +228,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / p * T)
   have hu₀ : ∀ p : Nat.Primes, addOrderOf (u p) = (p : ℕ) := by rintro ⟨p, hp⟩;
     exact add_order_of_div_of_gcd_eq_one hp.pos (gcd_one_left p)
-  have hu : tendsto (addOrderOf ∘ u) at_top at_top :=
-    by
+  have hu : tendsto (addOrderOf ∘ u) at_top at_top := by
     rw [(funext hu₀ : addOrderOf ∘ u = coe)]
     have h_mono : Monotone (coe : Nat.Primes → ℕ) := fun p q hpq => hpq
     refine' h_mono.tendsto_at_top_at_top fun n => _
@@ -251,8 +243,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     MeasurableSet.measurableSet_blimsup fun n hn => is_open_thickening.measurable_set
   have hB₀ : ∀ p, MeasurableSet (B p) := fun p =>
     MeasurableSet.measurableSet_blimsup fun n hn => is_open_thickening.measurable_set
-  have hE₀ : null_measurable_set E μ :=
-    by
+  have hE₀ : null_measurable_set E μ := by
     refine'
       (MeasurableSet.measurableSet_blimsup fun n hn => IsOpen.measurableSet _).NullMeasurableSet
     exact is_open_thickening
@@ -264,18 +255,15 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     -- `tauto` can finish from here but unfortunately it's very slow.
     simp only [(em (p ∣ n)).symm, (em (p * p ∣ n)).symm, or_and_left, or_true_iff, true_and_iff,
       or_assoc']
-  have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊) → E =ᵐ[μ] C p :=
-    by
+  have hE₂ : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊) → E =ᵐ[μ] C p := by
     rintro p ⟨hA, hB⟩
     rw [hE₁ p]
     exact union_ae_eq_right_of_ae_eq_empty ((union_ae_eq_right_of_ae_eq_empty hA).trans hB)
-  have hA : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∨ A p =ᵐ[μ] univ :=
-    by
+  have hA : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∨ A p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y => (p : ℕ) • y
     suffices
-      f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) at_top fun n => 0 < n ∧ p∤n
-      by
+      f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) at_top fun n => 0 < n ∧ p∤n by
       apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p)
       apply (HasSubset.Subset.eventuallyLE this).congr eventually_eq.rfl
       exact
@@ -284,14 +272,12 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     refine' (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup fun n hn => _)
     replace hn := nat.coprime_comm.mp (hp.coprime_iff_not_dvd.2 hn.2)
     exact approxAddOrderOf.image_nsmul_subset_of_coprime (δ n) hp.pos hn
-  have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ :=
-    by
+  have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
     let x := u ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y => p • y + x
     suffices
-      f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) at_top fun n => 0 < n ∧ p∣∣n
-      by
+      f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) at_top fun n => 0 < n ∧ p∣∣n by
       apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le (hB₀ p)
       apply (HasSubset.Subset.eventuallyLE this).congr eventually_eq.rfl
       exact
@@ -299,8 +285,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
           (nat.cast_pos.mpr hp.pos) _ hδ
     refine' (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup _)
     rintro n ⟨hn, h_div, h_ndiv⟩
-    have h_cop : (addOrderOf x).coprime (n / p) :=
-      by
+    have h_cop : (addOrderOf x).coprime (n / p) := by
       obtain ⟨q, rfl⟩ := h_div
       rw [hu₀, Subtype.coe_mk, hp.coprime_iff_not_dvd, q.mul_div_cancel_left hp.pos]
       exact fun contra => h_ndiv (mul_dvd_mul_left p contra)
@@ -316,8 +301,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     simp only [hu₀, Subtype.coe_mk, h_div, mul_comm p]
   change (∀ᵐ x, x ∉ E) ∨ E ∈ volume.ae
   rw [← eventually_eq_empty, ← eventually_eq_univ]
-  have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p :=
-    by
+  have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p := by
     intro p
     let e := (AddAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
     change e (C p) = C p
