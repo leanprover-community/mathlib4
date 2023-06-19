@@ -182,7 +182,7 @@ def Pso (i : R) : Matrix (Sum p q) (Sum p q) R :=
 variable [Fintype p] [Fintype q]
 
 theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (⟨x⟩|⟨x⟩) (⟨y⟩|⟨y⟩)
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h]
@@ -202,7 +202,7 @@ def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ ⬝ indefiniteDiagonal p q R ⬝ Pso p q R i = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (⟨x⟩|⟨x⟩) (⟨y⟩|⟨y⟩)
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h]
@@ -363,9 +363,8 @@ theorem indefiniteDiagonal_assoc :
     indefiniteDiagonal (Sum Unit l) l R =
       Matrix.reindexLieEquiv (Equiv.sumAssoc Unit l l).symm
         (Matrix.fromBlocks 1 0 0 (indefiniteDiagonal l l R)) := by
-  ext (i j)
+  ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩
   -- Porting note: added `Sum.inl_injective.eq_iff`, `Sum.inr_injective.eq_iff`
-  rcases i with ⟨⟨i₁ | i₂⟩ | i₃⟩ <;> rcases j with ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
       Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,

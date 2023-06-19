@@ -488,7 +488,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
         ext ⟨f, hf⟩
         apply t.2.to_sieveCompatible _ }
   left_inv α := by
-    ext (X⟨_, _⟩)
+    ext X ⟨_, _⟩
     rfl
   right_inv := by
     rintro ⟨x, hx⟩
