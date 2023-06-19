@@ -74,7 +74,7 @@ convention:
 * If the statement of a theorem involves limits, the existence of these limits should be made an
   explicit typeclass parameter.
 * If a limit only appears in a proof, but not in the statement of a theorem, the limit should not
-  be a typeclass parameter, but instead be created using `Abelian.HasPullbacks` or a similar
+  be a typeclass parameter, but instead be created using `Abelian.hasPullbacks` or a similar
   definition.
 
 ## References
