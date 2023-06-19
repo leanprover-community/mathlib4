@@ -150,6 +150,9 @@ instance coequalizer_π_app_isLocalRingHom
   rw [← PreservesCoequalizer.iso_hom] at this
   erw [SheafedSpace.congr_app this.symm (op U)]
   rw [PresheafedSpace.comp_c_app, ←PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
+  -- Porting note : this instance has to be manually added
+  haveI : IsIso (PreservesCoequalizer.iso SheafedSpace.forgetToPresheafedSpace f.val g.val).hom.c :=
+    PresheafedSpace.c_isIso_of_iso _
   infer_instance
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.coequalizer_π_app_is_local_ring_hom AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.coequalizer_π_app_isLocalRingHom
 
@@ -174,7 +177,7 @@ are local ring homs.
 
 variable (U : Opens (coequalizer f.1 g.1).carrier)
 
-variable (s : (coequalizer f.1 g.1).Presheaf.obj (op U))
+variable (s : (Coequalizer f.1 g.1).Presheaf.obj (op U))
 
 /-- (Implementation). The basic open set of the section `π꙳ s`. -/
 noncomputable def imageBasicOpen : Opens Y :=
