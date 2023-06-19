@@ -176,20 +176,13 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
   mem_iInter₂.2 h
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
-instance : CompleteBooleanAlgebra (Set α) :=
+instance : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
     sInf_le := fun s t t_in a h => h _ t_in
-    iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
-    inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
-
--- This instance will later follow from the more general theorem
--- that every complete atomic Boolean algebra is completely distributive,
--- but we add it here to shorten the import graph.
-instance : CompletelyDistribLattice (Set α) where
-  iInf_iSup_eq f := by ext; simp [Classical.skolem]
+    iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 section GaloisConnection
 

@@ -10,6 +10,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Nontriviality
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -375,7 +376,10 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
-instance {α} [CompleteBooleanAlgebra α] [IsAtomic α] : CompletelyDistribLattice α where
+-- See note [reducible non-instances]
+abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
+    CompleteAtomicBooleanAlgebra α where
+  __ := ‹CompleteBooleanAlgebra α›
   iInf_iSup_eq f := BooleanAlgebra.eq_iff_atom_le_iff.2 fun a ha => by
     simp only [le_iInf_iff, atom_le_iSup ha]
     rw [Classical.skolem]
@@ -483,15 +487,37 @@ end IsCoatomistic
 
 namespace CompleteBooleanAlgebra
 
-instance (priority := 100) isAtomistic_of_isAtomic {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
+theorem isAtomistic_of_isAtomic {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     IsAtomistic α where
   eq_sSup_atoms b := by
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
-    refine le_antisymm ?_ (sSup_le _ _ fun c hc => hc.2)
+    refine le_antisymm ?_ (_root_.sSup_le fun c hc => hc.2)
     refine BooleanAlgebra.le_iff_atom_le_imp.2 fun a ha hab => ?_
     refine le_sSup _ _ ⟨ha, hab⟩
 
 end CompleteBooleanAlgebra
+
+namespace CompleteAtomicBooleanAlgebra
+
+instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
+  eq_sSup_atoms b := by
+    inhabit α
+    refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
+    refine le_antisymm ?_ (sSup_le fun c hc => hc.2)
+    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
+    rw [← this]; clear this
+    simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
+    by_cases (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥; case pos => simp [h]
+    refine le_sSup ⟨⟨h, fun c hc => ?_⟩, le_trans (by rfl) (le_iSup _ g)⟩; clear h
+    have := lt_of_lt_of_le hc (le_trans (iInf_le _ c) inf_le_right)
+    revert this
+    nontriviality α
+    cases g c <;> simp
+
+instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
+  isAtomistic_dual_iff_isCoatomistic.1 inferInstance
+
+end CompleteAtomicBooleanAlgebra
 
 end Atomistic
 

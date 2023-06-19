@@ -25,11 +25,7 @@ We distinguish two different distributivity properties:
  2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
   (infinite `⨅` distributes over infinite `⨆`).
   This stronger property is called "completely distributive",
-  and is required by `CompletelyDistribLattice`.
-
-A complete Boolean algebra is completely distributive iff it is atomic.
-Hence we do not have a separate class for completely distributive Boolean algebras,
-and represent them as `[CompleteBooleanAlgebra α] [IsAtomic α]`.
+  and is required by `CompletelyDistribLattice` and `CompleteAtomicBooleanAlgebra`.
 
 ## Typeclasses
 
@@ -41,6 +37,11 @@ and represent them as `[CompleteBooleanAlgebra α] [IsAtomic α]`.
   and `⊔` distribute over `⨆` and `⨅` respectively.
 * `CompletelyDistribLattice`: Completely distributive lattices: A complete lattice whose
   `⨅` and `⨆` satisfy `iInf_iSup_eq`.
+* `CompleteBooleanAlgebra`: Complete Boolean algebra: A Boolean algebra whose `⊓`
+  and `⊔` distribute over `⨆` and `⨅` respectively.
+* `CompleteAtomicBooleanAlgebra`: Complete atomic Boolean algebra:
+  A complete Boolean algebra which is additionally completely distributive.
+  (This implies that it's (co)atom(ist)ic.)
 
 A set of opens gives rise to a topological space precisely if it forms a frame. Such a frame is also
 completely distributive, but not all frames are. `Filter` is a coframe but not a completely
@@ -367,7 +368,8 @@ variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 -- Porting note: this is mysteriously slow. Minimised in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
 -- but not yet resolved.
-instance : CompleteDistribLattice αᵒᵈ :=
+instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :
+    CompleteDistribLattice αᵒᵈ :=
   { OrderDual.frame, OrderDual.coframe with }
 
 instance Pi.completeDistribLattice {ι : Type _} {π : ι → Type _}
@@ -404,14 +406,10 @@ instance Pi.completeBooleanAlgebra {ι : Type _} {π : ι → Type _}
   { Pi.booleanAlgebra, Pi.completeDistribLattice with }
 #align pi.complete_boolean_algebra Pi.completeBooleanAlgebra
 
-instance Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop :=
-  { Prop.booleanAlgebra, Prop.completeLattice with
-    iInf_sup_le_sup_sInf := fun p s =>
-      Iff.mp <| by simp only [forall_or_left, iInf_Prop_eq, sInf_Prop_eq, sup_Prop_eq]
-    inf_sSup_le_iSup_inf := fun p s =>
-      Iff.mp <| by
-        simp only [inf_Prop_eq, exists_and_left, iSup_Prop_eq, sSup_Prop_eq, exists_prop] }
-#align Prop.complete_boolean_algebra Prop.completeBooleanAlgebra
+instance OrderDual.completeBooleanAlgebra (α) [CompleteBooleanAlgebra α] :
+    CompleteBooleanAlgebra αᵒᵈ where
+  __ := OrderDual.booleanAlgebra α
+  __ := OrderDual.completeDistribLattice α
 
 section CompleteBooleanAlgebra
 
@@ -443,6 +441,36 @@ theorem compl_sSup' : sSup sᶜ = sInf (HasCompl.compl '' s) :=
 #align compl_Sup' compl_sSup'
 
 end CompleteBooleanAlgebra
+
+/--
+A complete atomic Boolean algebra is a complete Boolean algebra
+that is also completely distributive.
+
+We take iSup_iInf_eq as the definition here,
+and prove later on that this implies atomicity.
+-/
+class CompleteAtomicBooleanAlgebra (α : Type u) extends
+    CompletelyDistribLattice α, CompleteBooleanAlgebra α where
+  iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
+
+instance Pi.completeAtomicBooleanAlgebra {ι : Type _} {π : ι → Type _}
+    [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
+  __ := Pi.completeBooleanAlgebra
+  iInf_iSup_eq f := by ext; rw [iInf_iSup_eq]
+
+instance OrderDual.completeAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :
+    CompleteAtomicBooleanAlgebra αᵒᵈ where
+  __ := OrderDual.completeBooleanAlgebra α
+  __ := OrderDual.completelyDistribLattice α
+
+instance Prop.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
+  __ := Prop.completeLattice
+  __ := Prop.booleanAlgebra
+  iInf_iSup_eq f := by simp [Classical.skolem]
+
+instance Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
+#align Prop.complete_boolean_algebra Prop.completeBooleanAlgebra
 
 section lift
 
@@ -517,6 +545,19 @@ protected def Function.Injective.completeBooleanAlgebra [Sup α] [Inf α] [SupSe
     hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff with }
 #align function.injective.complete_boolean_algebra Function.Injective.completeBooleanAlgebra
 
+-- See note [reducible non-instances]
+/-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/
+@[reducible]
+protected def Function.Injective.completeAtomicBooleanAlgebra [Sup α] [Inf α] [SupSet α] [InfSet α]
+    [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteAtomicBooleanAlgebra β] (f : α → β)
+    (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
+    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
+    (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
+    (map_compl : ∀ a, f (aᶜ) = f aᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    CompleteAtomicBooleanAlgebra α where
+  __ := hf.completelyDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff
+
 end lift
 
 namespace PUnit
@@ -524,7 +565,7 @@ namespace PUnit
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
 -- Porting note: we don't have `refine_struct` ported yet, so we do it by hand
-instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := by
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   refine'
     { PUnit.booleanAlgebra with
       sSup := fun _ => unit
