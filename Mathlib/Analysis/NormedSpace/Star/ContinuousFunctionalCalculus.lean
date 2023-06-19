@@ -268,6 +268,8 @@ noncomputable def elementalStarAlgebra.characterSpaceHomeo :
     (elementalStarAlgebra.continuous_characterSpaceToSpectrum a)
 #align elemental_star_algebra.character_space_homeo elementalStarAlgebra.characterSpaceHomeo
 
+attribute [instance] Field.toEuclideanDomain
+
 -- porting note: it would be good to understand why and where Lean is having trouble here
 set_option maxHeartbeats 350000 in
 /-- **Continuous functional calculus.** Given a normal element `a : A` of a unital C⋆-algebra,
