@@ -1376,7 +1376,7 @@ theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
   rfl
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
 
--- porting note: moved below `coe_rat_cast`, added this lemma to the `rw`s
+-- porting note: moved below `coe_rat_cast`, as `coe_rat_cast` is needed in the `rw`s
 instance : DivisionRing ℍ[R] :=
   { Quaternion.instGroupWithZero,
     Quaternion.instRing with

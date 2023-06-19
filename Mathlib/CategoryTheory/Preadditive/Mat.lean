@@ -209,11 +209,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
               substs h h'
               rfl
             ι_π := fun j j' => by
-              -- porting note: it was `ext (x y)`; it seems that when it uses a given
-              -- ext lemma, the mathlib4 `ext` tactic is not able to introduce
-              -- more than one named variable?
-              ext x
-              intro y
+              ext x y
               dsimp
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, dif_ctx_congr, Limits.comp_zero, Limits.zero_comp,
@@ -313,8 +309,8 @@ namespace Mat_
 def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩
   map f _ _ := f
-  map_id _ := by ext ⟨⟩; rintro ⟨⟩; simp
-  map_comp _ _ := by ext ⟨⟩; rintro ⟨⟩ ; simp
+  map_id _ := by ext ⟨⟩; simp
+  map_comp _ _ := by ext ⟨⟩; simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding CategoryTheory.Mat_.embedding
 
@@ -361,8 +357,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     intro j
     simp only [Category.id_comp, Category.assoc, biproduct.lift_π, biproduct.ι_desc_assoc,
       biproduct.ι_π]
-    ext ⟨⟩
-    rintro ⟨⟩
+    ext ⟨⟩ ⟨⟩
     simp only [embedding, comp_apply, comp_dite, dite_comp, comp_zero, zero_comp,
       Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
     split_ifs with h

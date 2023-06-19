@@ -136,7 +136,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   simp only [stalkPushforward.id]
   erw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
-  refine NatTrans.ext _ _ <| funext fun x => ?_
+  ext
   simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
   rfl
 set_option linter.uppercaseLean3 false in
