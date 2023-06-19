@@ -216,8 +216,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         -- See https://github.com/leanprover/std4/pull/158
         swap
         · exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · ext U
-          rcases U with ⟨U, hU⟩
+        · rcases U with ⟨U, hU⟩
           dsimp
           rw [PresheafedSpace.id_c_app, map_id]
           erw [id_comp]
