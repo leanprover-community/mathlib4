@@ -47,10 +47,6 @@ A set of opens gives rise to a topological space precisely if it forms a frame. 
 completely distributive, but not all frames are. `Filter` is a coframe but not a completely
 distributive lattice.
 
-## TODO
-
-Add instances for `Prod`.
-
 ## References
 
 * [Wikipedia, *Complete Heyting algebra*](https://en.wikipedia.org/wiki/Complete_Heyting_algebra)
