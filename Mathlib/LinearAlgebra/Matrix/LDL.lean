@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # LDL decomposition
 
-This file proves the LDL-decomposition of matricies: Any positive definite matrix `S` can be
+This file proves the LDL-decomposition of matrices: Any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix.
 
 ## Main definitions
