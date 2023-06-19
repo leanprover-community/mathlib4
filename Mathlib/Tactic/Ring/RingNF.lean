@@ -247,9 +247,9 @@ example (x y : ℕ) : x + id y = y + id x := by ring!
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | ring_nf; fail "Try this: ring_nf")
+  `(tactic| first | ring1 | ring_nf; trace "Try this: ring_nf")
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | ring_nf!; fail "Try this: ring_nf!")
+  `(tactic| first | ring1! | ring_nf!; trace "Try this: ring_nf!")
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -258,6 +258,6 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | ring_nf; tactic => fail "Try this: ring_nf")
+  `(conv| first | discharge => ring1 | ring_nf; tactic => trace "Try this: ring_nf")
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | ring_nf!; tactic => fail "Try this: ring_nf!")
+  `(conv| first | discharge => ring1! | ring_nf!; tactic => trace "Try this: ring_nf!")
