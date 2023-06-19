@@ -1187,8 +1187,6 @@ theorem mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
       ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
-  -- Porting note: `simp_rw [← exists_prop]` is not necessary because of the
-  --               new definition of `∃ x, p x`.
   exact Finsupp.mem_span_image_iff_total R (v := _root_.id (α := M))
 #align mem_span_set mem_span_set
 
