@@ -311,31 +311,18 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlg
     exact IsSeparable.separable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
-set_option maxHeartbeats 300000 in
-set_option synthInstance.maxHeartbeats 30000 in
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
     algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
-
- -- haveI : Algebra K (AlgebraicClosure L) := AlgebraicClosure.algebra L
---  letI inst : IsScalarTower K L (AlgebraicClosure L) := AlgebraicClosure.isScalarTower _
---  haveI : Fintype (L →ₐ[K] (AlgebraicClosure L)) := minpoly.AlgHom.fintype K L (AlgebraicClosure L)
-  rw [← Fintype.prod_equiv (M := AlgebraicClosure L)
-    (@Normal.algHomEquivAut K (AlgebraicClosure L) _ _ _ L _ _ _
-      inst _) (fun σ => σ x) _]
-  · simp_rw [← norm_eq_prod_embeddings]
-
-#exit
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · simp_rw [← norm_eq_prod_embeddings _ _]
-    simp only [algebra_map_eq_smul_one, smul_one_smul]
+  · rw [← norm_eq_prod_embeddings]
+    simp only [algebraMap_eq_smul_one, smul_one_smul]
+    rfl
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
 #align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
-
-#exit
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
@@ -347,10 +334,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
     rw [← aeval_def] at hy ⊢
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits_codomain
-  · infer_instance
 #align algebra.is_integral_norm Algebra.isIntegral_norm
-
-#exit
 
 variable {F} (L)
 
@@ -360,26 +344,23 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) 
   by_cases hKF : FiniteDimensional K F
   · haveI := hKF
     let A := AlgebraicClosure K
-    apply (algebraMap K A).Injective
+    apply (algebraMap K A).injective
     haveI : FiniteDimensional L F := FiniteDimensional.right K L F
     haveI : FiniteDimensional K L := FiniteDimensional.left K L F
     haveI : IsSeparable K L := isSeparable_tower_bot_of_isSeparable K L F
     haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
-    letI :
-      ∀ σ : L →ₐ[K] A,
-        haveI := σ.to_ring_hom.to_algebra
-        Fintype (F →ₐ[L] A) :=
-      fun _ => inferInstance
+    letI : ∀ σ : L →ₐ[K] A,
+        haveI := σ.toRingHom.toAlgebra
+        Fintype (F →ₐ[L] A) := fun _ => inferInstance
     rw [norm_eq_prod_embeddings K A (_ : F),
       Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] A => σ x)
         (fun π : Σ f : L →ₐ[K] A, _ => (π.2 : F → A) x) fun _ => rfl]
-    suffices
-      ∀ σ : L →ₐ[K] A,
-        haveI := σ.to_ring_hom.to_algebra
+    suffices ∀ σ : L →ₐ[K] A,
+        haveI := σ.toRingHom.toAlgebra
         ∏ π : F →ₐ[L] A, π x = σ (norm L x)
       by simp_rw [← Finset.univ_sigma_univ, Finset.prod_sigma, this, norm_eq_prod_embeddings]
     · intro σ
-      letI : Algebra L A := σ.to_ring_hom.to_algebra
+      letI : Algebra L A := σ.toRingHom.toAlgebra
       rw [← norm_eq_prod_embeddings L A (_ : F)]
       rfl
   · rw [norm_eq_one_of_not_module_finite hKF]
