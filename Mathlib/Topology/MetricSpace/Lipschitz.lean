@@ -628,8 +628,8 @@ with the same Lipschitz constant `K`. Then it is continuous on `s × t`.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
 instead of continuity of `f` on subsets of the product space. -/
-theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α] [TopologicalSpace β]
-    [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
+theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
+    [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
     (ha : ∀ a ∈ s, ContinuousOn (fun y => f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith
