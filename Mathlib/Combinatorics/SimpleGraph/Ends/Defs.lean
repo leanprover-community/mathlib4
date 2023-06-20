@@ -118,7 +118,7 @@ protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
 #align simple_graph.component_compl.nonempty SimpleGraph.ComponentCompl.nonempty
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
-    ∃ (v : _)(h : v ∉ K), G.componentComplMk h = C :=
+    ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 #align simple_graph.component_compl.exists_eq_mk SimpleGraph.ComponentCompl.exists_eq_mk
 

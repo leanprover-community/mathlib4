@@ -210,16 +210,16 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 set_option maxHeartbeats 1000000 in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
-theorem hasDerivAt_of_real_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
+theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne.def, ← add_eq_zero_iff_eq_neg, ← Ne.def] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
   · -- easy case : `0 < x`
     -- Porting note: proof used to be
-    -- convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_of_real using 1
+    -- convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_ofReal using 1
     -- · rw [add_sub_cancel, id.def, mul_one, mul_comm, mul_div_cancel _ hr]
-    -- · rw [id.def, of_real_re]; exact Or.inl hx
-    apply HasDerivAt.comp_of_real (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
+    -- · rw [id.def, ofReal_re]; exact Or.inl hx
+    apply HasDerivAt.comp_ofReal (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
     convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
     · exact (mul_div_cancel _ hr).symm
     · convert HasDerivAt.cpow_const ?_ ?_ using 1
@@ -230,9 +230,9 @@ theorem hasDerivAt_of_real_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -
     have : ∀ᶠ y : ℝ in nhds x,
         (y : ℂ) ^ (r + 1) / (r + 1) = (-y : ℂ) ^ (r + 1) * exp (π * I * (r + 1)) / (r + 1) := by
       refine' Filter.eventually_of_mem (Iio_mem_nhds hx) fun y hy => _
-      rw [of_real_cpow_of_nonpos (le_of_lt hy)]
+      rw [ofReal_cpow_of_nonpos (le_of_lt hy)]
     refine' HasDerivAt.congr_of_eventuallyEq _ this
-    rw [of_real_cpow_of_nonpos (le_of_lt hx)]
+    rw [ofReal_cpow_of_nonpos (le_of_lt hx)]
     suffices HasDerivAt (fun y : ℝ => (-↑y) ^ (r + 1) * exp (↑π * I * (r + 1)))
         ((r + 1) * (-↑x) ^ r * exp (↑π * I * r)) x by
       convert this.div_const (r + 1) using 1
@@ -246,13 +246,13 @@ theorem hasDerivAt_of_real_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -
       convert @HasDerivAt.scomp ℝ _ ℂ _ _ x ℝ _ _ _ _ _ _ _ _ this (hasDerivAt_neg x) using 1
       rw [real_smul, ofReal_neg 1, ofReal_one]; ring
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
-      exact this.comp_of_real
+      exact this.comp_ofReal
     conv in ↑_ ^ _ => rw [(by ring : r = r + 1 - 1)]
     convert HasDerivAt.cpow_const ?_ ?_ using 1
     · rw [add_sub_cancel, add_sub_cancel]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
-#align has_deriv_at_of_real_cpow hasDerivAt_of_real_cpow
+#align has_deriv_at_of_real_cpow hasDerivAt_ofReal_cpow
 
 end deriv
 

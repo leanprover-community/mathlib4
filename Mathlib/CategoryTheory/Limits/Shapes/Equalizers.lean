@@ -97,16 +97,18 @@ def WalkingParallelPairHom.comp :
 #align category_theory.limits.walking_parallel_pair_hom.comp CategoryTheory.Limits.WalkingParallelPairHom.comp
 
 -- Porting note: adding these since they are simple and aesop couldn't directly prove them
-theorem WalkingParallelPairHom.id_comp {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y):
-    comp (id X) g = g := rfl
+theorem WalkingParallelPairHom.id_comp
+    {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y) : comp (id X) g = g :=
+  rfl
 
-theorem WalkingParallelPairHom.comp_id {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y):
-    comp f (id Y) = f := by cases f <;> rfl
+theorem WalkingParallelPairHom.comp_id
+    {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y) : comp f (id Y) = f := by
+  cases f <;> rfl
 
 theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
     (f : WalkingParallelPairHom X Y) (g: WalkingParallelPairHom Y Z)
     (h : WalkingParallelPairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
-    cases f <;> cases g <;> cases h <;> rfl
+  cases f <;> cases g <;> cases h <;> rfl
 
 instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair where
   Hom := WalkingParallelPairHom
@@ -131,10 +133,10 @@ theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
 right.
 -/
 def walkingParallelPairOp : WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ where
-  obj x := op <| by cases x; exacts[one, zero]
+  obj x := op <| by cases x; exacts [one, zero]
   map f := by
     cases f <;> apply Quiver.Hom.op
-    exacts[left, right, WalkingParallelPairHom.id _]
+    exacts [left, right, WalkingParallelPairHom.id _]
   map_comp := by rintro _ _ _ (_|_|_) g <;> cases g <;> rfl
 #align category_theory.limits.walking_parallel_pair_op CategoryTheory.Limits.walkingParallelPairOp
 
@@ -913,7 +915,7 @@ theorem equalizer.isoSourceOfSelf_hom : (equalizer.isoSourceOfSelf f).hom = equa
 @[simp]
 theorem equalizer.isoSourceOfSelf_inv :
     (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
-  apply equalizer.hom_ext
+  ext
   simp [equalizer.isoSourceOfSelf]
 #align category_theory.limits.equalizer.iso_source_of_self_inv CategoryTheory.Limits.equalizer.isoSourceOfSelf_inv
 
@@ -1098,7 +1100,7 @@ noncomputable def coequalizer.isoTargetOfSelf : coequalizer f f ≅ Y :=
 @[simp]
 theorem coequalizer.isoTargetOfSelf_hom :
     (coequalizer.isoTargetOfSelf f).hom = coequalizer.desc (𝟙 Y) (by simp) := by
-  apply coequalizer.hom_ext
+  ext
   simp [coequalizer.isoTargetOfSelf]
 #align category_theory.limits.coequalizer.iso_target_of_self_hom CategoryTheory.Limits.coequalizer.isoTargetOfSelf_hom
 

@@ -197,9 +197,9 @@ noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor 
   refine' NatIso.ofComponents (fun X => _) (fun _ => _)
   · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
-    . apply Limits.prod.hom_ext <;> dsimp <;> simp <;> rfl
+    . apply Limits.prod.hom_ext <;> simp <;> rfl
   . ext : 2
-    apply Limits.prod.hom_ext <;> dsimp <;> simp <;> rfl
+    apply Limits.prod.hom_ext <;> simp <;> rfl
 #align category_theory.limits.types.binary_product_iso_prod CategoryTheory.Limits.Types.binaryProductIsoProd
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
@@ -304,7 +304,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 #align category_theory.limits.types.binary_cofan_is_colimit_iff CategoryTheory.Limits.Types.binaryCofan_isColimit_iff
 
-/-- Any monomorphism in `Type` is an coproduct injection. -/
+/-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range fᶜ) → Y)) := by
   apply Nonempty.some
@@ -569,7 +569,7 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
 #align category_theory.limits.types.pullback_limit_cone CategoryTheory.Limits.Types.pullbackLimitCone
 
 /-- The pullback cone given by the instance `HasPullbacks (Type u)` is isomorphic to the
-explicit pullback cone given by `pullbacklimitCone`.
+explicit pullback cone given by `pullbackLimitCone`.
 -/
 noncomputable def pullbackConeIsoPullback : limit.cone (cospan f g) ≅ pullbackCone f g :=
   (limit.isLimit _).uniqueUpToIso (pullbackLimitCone f g).isLimit

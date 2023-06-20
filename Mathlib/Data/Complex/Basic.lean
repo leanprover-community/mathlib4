@@ -23,7 +23,7 @@ open BigOperators
 
 open Set Function
 
-/-! ### Definition and basic arithmmetic -/
+/-! ### Definition and basic arithmetic -/
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
@@ -367,25 +367,25 @@ instance : Nontrivial ℂ :=
 
 -- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ :=
-{ zero := (0 : ℂ)
-  add := (· + ·)
-  neg := Neg.neg
-  sub := Sub.sub
-  nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  zsmul_zero':= by intros; ext <;> simp
-  nsmul_zero := by intros; ext <;> simp
-  nsmul_succ := by
-    intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
-  zsmul_succ' := by
-    intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
-  zsmul_neg' := by
-    intros; ext <;> simp [zsmul_neg', add_mul]
-  add_assoc := by intros; ext <;> simp [add_assoc]
-  zero_add := by intros; ext <;> simp
-  add_zero := by intros; ext <;> simp
-  add_comm := by intros; ext <;> simp [add_comm]
-  add_left_neg := by intros; ext <;> simp }
+  { zero := (0 : ℂ)
+    add := (· + ·)
+    neg := Neg.neg
+    sub := Sub.sub
+    nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+    zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+    zsmul_zero' := by intros; ext <;> simp
+    nsmul_zero := by intros; ext <;> simp
+    nsmul_succ := by
+      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
+    zsmul_succ' := by
+      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
+    zsmul_neg' := by
+      intros; ext <;> simp [zsmul_neg', add_mul]
+    add_assoc := by intros; ext <;> simp [add_assoc]
+    zero_add := by intros; ext <;> simp
+    add_zero := by intros; ext <;> simp
+    add_comm := by intros; ext <;> simp [add_comm]
+    add_left_neg := by intros; ext <;> simp }
 
 
 instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
@@ -1197,11 +1197,11 @@ theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re :=
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a strictly ordered ring.
 -/
 protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
-{ zero_le_one := ⟨zero_le_one, rfl⟩
-  add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
-  mul_pos := fun z w hz hw => by
-    simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; ext <;> ring_nf }
+  { zero_le_one := ⟨zero_le_one, rfl⟩
+    add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
+    mul_pos := fun z w hz hw => by
+      simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
+    mul_comm := by intros; ext <;> ring_nf }
 #align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
 
 scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing

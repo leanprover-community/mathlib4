@@ -67,28 +67,28 @@ appendNamespace `a.b `_root_.c.d = `c.d
 TODO: Move this declaration to a more central location.
 -/
 def appendNamespace (ns : Name) : Name → Name
-| .str .anonymous s => if s = "_root_" then Name.anonymous else Name.mkStr ns s
-| .str p s          => Name.mkStr (appendNamespace ns p) s
-| .num p n          => Name.mkNum (appendNamespace ns p) n
-| .anonymous        => ns
+  | .str .anonymous s => if s = "_root_" then Name.anonymous else Name.mkStr ns s
+  | .str p s          => Name.mkStr (appendNamespace ns p) s
+  | .num p n          => Name.mkNum (appendNamespace ns p) n
+  | .anonymous        => ns
 
 /-- An alias can be in one of three forms -/
 inductive Target
-| plain : Name → Target
-| forward : Name → Target
-| backwards : Name → Target
+  | plain : Name → Target
+  | forward : Name → Target
+  | backwards : Name → Target
 
 /-- The name underlying an alias target -/
 def Target.toName : Target → Name
-| Target.plain n => n
-| Target.forward n => n
-| Target.backwards n => n
+  | Target.plain n => n
+  | Target.forward n => n
+  | Target.backwards n => n
 
 /-- The docstring for an alias. -/
 def Target.toString : Target → String
-| Target.plain n => s!"**Alias** of `{n}`."
-| Target.forward n => s!"**Alias** of the forward direction of `{n}`."
-| Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
+  | Target.plain n => s!"**Alias** of `{n}`."
+  | Target.forward n => s!"**Alias** of the forward direction of `{n}`."
+  | Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
 
 /-- Elaborates an `alias ←` command. -/
 @[command_elab «alias»] def elabAlias : Command.CommandElab

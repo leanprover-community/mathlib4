@@ -20,7 +20,7 @@ containing all powersets of members of `f`.
 `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
 
 An example usage is that if `f : ι → E → ℝ` is a family of nonnegative functions with integral 1,
-then saying that `λ i, support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
+then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
 

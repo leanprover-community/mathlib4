@@ -320,8 +320,8 @@ def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
--- Porting note: spelled out arguments. (I don't know how this works.)
-toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+  -- Porting note: spelled out arguments. (I don't know how this works.)
+  toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
 variable {A}

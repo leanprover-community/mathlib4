@@ -54,7 +54,7 @@ necessarily injective but respects the order `r`; the other map is the identity 
 chosen well-order on `α`), which is injective but doesn't respect `r`.
 
 By taking the lexicographic product of the two, we get both properties, so we can pull it back and
-get an well-order that extend our original order `r`. Another way to view this is that we choose an
+get a well-order that extend our original order `r`. Another way to view this is that we choose an
 arbitrary well-order to serve as a tiebreak between two elements of same rank.
 -/
 noncomputable def wellOrderExtension : LinearOrder α :=
