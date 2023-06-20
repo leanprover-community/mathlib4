@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module ring_theory.witt_vector.frobenius
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
+! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -254,26 +254,19 @@ The underlying function of this morphism is `witt_vector.frobenius_fun`.
 -/
 def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
-  map_zero' := sorry
-  map_one' := sorry
-  map_add' := sorry
-  map_mul' := sorry
+  map_zero' := by
+    refine'
+      is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.zeroIsPoly)
+        (WittVector.zeroIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
+    ghost_simp
+  map_one' := by
+    refine'
+      is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.oneIsPoly)
+        (WittVector.oneIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
+    ghost_simp
+  map_add' := by ghost_calc _ _ <;> ghost_simp
+  map_mul' := by ghost_calc _ _ <;> ghost_simp
 #align witt_vector.frobenius WittVector.frobenius
-
--- def frobenius : 𝕎 R →+* 𝕎 R where
---   toFun := frobeniusFun
---   map_zero' := by
---     refine'
---       is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.zeroIsPoly)
---         (WittVector.zeroIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
---     ghost_simp
---   map_one' := by
---     refine'
---       is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.oneIsPoly)
---         (WittVector.oneIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
---     ghost_simp
---   map_add' := by ghost_calc _ _ <;> ghost_simp
---   map_mul' := by ghost_calc _ _ <;> ghost_simp
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
     coeff (frobenius x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) :=
@@ -301,6 +294,7 @@ variable [CharP R p]
 @[simp]
 theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
   rw [coeff_frobenius]
+  letI : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
     aeval (fun k => x.coeff k) (frobeniusPoly p n) =
