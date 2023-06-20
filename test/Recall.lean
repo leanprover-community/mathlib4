@@ -44,9 +44,6 @@ but is expected to have value
 Other example tests
 -/
 
-recall Function.comp {α} {β} {δ} (f : β → δ) (g : α → β) : α → δ :=
-  fun x => f (g x)
-
 recall id (x : α) : α := x
 
 /--
@@ -88,3 +85,5 @@ recall Nat.add_comm {n m : Nat} : n + m = m + n
 axiom bar : Nat
 /-- error: constant 'bar' has no defined value -/
 #guard_msgs in recall bar := bar
+
+recall List.cons_append (a : α) (as bs : List α) : (a :: as) ++ bs = a :: (as ++ bs) := rfl
