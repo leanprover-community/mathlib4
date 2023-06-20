@@ -123,14 +123,14 @@ def boundedIntegrableFunctions [MeasurableSpace α] (μ : Measure α) :
     Subspace ℝ (DiscreteCopy α →ᵇ ℝ) where
   carrier := {f | Integrable f μ}
   zero_mem' := integrable_zero _ _ _
-  add_mem' f g hf hg := Integrable.add hf hg
-  smul_mem' c f hf := Integrable.smul c hf
+  add_mem' hf hg := Integrable.add hf hg
+  smul_mem' c _ hf := Integrable.smul c hf
 #align counterexample.phillips_1940.bounded_integrable_functions Counterexample.Phillips1940.boundedIntegrableFunctions
 
 /-- The integral, as a continuous linear map on the subspace of integrable functions in the space
 of all bounded functions on a type. This is a technical device, that we will extend through
 Hahn-Banach. -/
-def boundedIntegrableFunctionsIntegralClm [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
+def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
   LinearMap.mkContinuous
     { toFun := fun f => ∫ x, f x ∂μ
@@ -143,7 +143,7 @@ def boundedIntegrableFunctionsIntegralClm [MeasurableSpace α] (μ : Measure α)
       apply Filter.eventually_of_forall
       intro x
       exact BoundedContinuousFunction.norm_coe_le_norm f x)
-#align counterexample.phillips_1940.bounded_integrable_functions_integral_clm Counterexample.Phillips1940.boundedIntegrableFunctionsIntegralClm
+#align counterexample.phillips_1940.bounded_integrable_functions_integral_clm Counterexample.Phillips1940.boundedIntegrableFunctionsIntegralCLM
 
 /-- Given a measure, there exists a continuous linear form on the space of all bounded functions
 (not necessarily measurable) that coincides with the integral on bounded measurable functions. -/
@@ -214,8 +214,8 @@ theorem le_bound (f : BoundedAdditiveMeasure α) (s : Set α) : f s ≤ f.C :=
 @[simp]
 theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
   have : (∅ : Set α) = ∅ ∪ ∅ := by simp only [empty_union]
-  apply_fun f at this 
-  rwa [f.additive _ _ (empty_disjoint _), self_eq_add_left] at this 
+  apply_fun f at this
+  rwa [f.additive _ _ (empty_disjoint _), self_eq_add_left] at this
 #align counterexample.phillips_1940.bounded_additive_measure.empty Counterexample.Phillips1940.BoundedAdditiveMeasure.empty
 
 instance : Neg (BoundedAdditiveMeasure α) :=
@@ -253,10 +253,10 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     positive measure `ε`. This means that at each step the set we have added also had a large measure,
     say at least `ε / 2`. After `n` steps, the set we have constructed has therefore measure at least
     `n * ε / 2`. This is a contradiction since the measures have to remain uniformly bounded.
-  
+
     We argue from the start by contradiction, as this means that our inductive construction will
     never be stuck, so we won't have to consider this case separately.
-  
+
     In this proof, we use explicit coercions `↑s` for `s : A` as otherwise the system tries to find
     a `has_coe_to_fun` instance on `↥A`, which is too costly.
     -/
@@ -339,7 +339,7 @@ theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
     exact h₁ _ (ht.mono (diff_subset _ _))
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₂ := by rw [diff_diff, union_assoc, union_self]
     rw [this]
-    simp only [neg_nonpos, neg_apply] at h₂ 
+    simp only [neg_nonpos, neg_apply] at h₂
     exact h₂ _ (ht.mono (diff_subset _ _))
 #align counterexample.phillips_1940.bounded_additive_measure.exists_discrete_support Counterexample.Phillips1940.BoundedAdditiveMeasure.exists_discrete_support
 
@@ -437,16 +437,16 @@ def ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [Discrete
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
 @[simp]
-theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
-    (x : α) : (evalClm ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
-  let f := (evalClm ℝ x).toBoundedAdditiveMeasure
+theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
+    (x : α) : (evalCLM ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
+  let f := (evalCLM ℝ x).toBoundedAdditiveMeasure
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
     _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
-#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalClm_eq_zero
+#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalCLM_eq_zero
 
 theorem to_functions_to_measure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
@@ -569,14 +569,14 @@ theorem countable_ne (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ �
       {x | φ.to_bounded_additive_measure.discrete_support ∩ spf Hcont x ≠ ∅} := by
     intro x hx
     contrapose! hx
-    simp only [Classical.not_not, mem_set_of_eq] at hx 
+    simp only [Classical.not_not, mem_set_of_eq] at hx
     simp [apply_f_eq_continuous_part Hcont φ x hx]
   have B :
     {x | φ.to_bounded_additive_measure.discrete_support ∩ spf Hcont x ≠ ∅} ⊆
       ⋃ y ∈ φ.to_bounded_additive_measure.discrete_support, {x | y ∈ spf Hcont x} := by
     intro x hx
-    dsimp at hx 
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hx 
+    dsimp at hx
+    rw [← Ne.def, ← nonempty_iff_ne_empty] at hx
     simp only [exists_prop, mem_Union, mem_set_of_eq]
     exact hx
   apply countable.mono (subset.trans A B)
@@ -634,19 +634,18 @@ theorem no_pettis_integral (Hcont : (#ℝ) = aleph 1) :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,
         ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f Hcont x) = φ g := by
   rintro ⟨g, h⟩
-  simp only [integral_comp] at h 
+  simp only [integral_comp] at h
   have : g = 0 := by
     ext x
     have : g x = eval_clm ℝ x g := rfl
     rw [this, ← h]
     simp
-  simp only [this, ContinuousLinearMap.map_zero] at h 
+  simp only [this, ContinuousLinearMap.map_zero] at h
   specialize h (volume.restrict (Icc (0 : ℝ) 1)).extensionToBoundedFunctions
-  simp_rw [to_functions_to_measure_continuous_part _ _ MeasurableSet.univ] at h 
+  simp_rw [to_functions_to_measure_continuous_part _ _ MeasurableSet.univ] at h
   simpa using h
 #align counterexample.phillips_1940.no_pettis_integral Counterexample.Phillips1940.no_pettis_integral
 
 end Phillips1940
 
 end Counterexample
-
