@@ -34,7 +34,7 @@ deriving DecidableEq, Fintype
 open Verts
 
 /-- Each of the connections between the islands/mainlands and the bridges.
-These are ordered pairs, but the data becomes symmetric in `Konigsberg.Adj`. -/
+These are ordered pairs, but the data becomes symmetric in `Konigsberg.adj`. -/
 def edges : List (Verts × Verts) :=
 [ (V1, B1), (V1, B2), (V1, B3), (V1, B4), (V1, B5),
   (B1, V2), (B2, V2), (B3, V4), (B4, V3), (B5, V3),
