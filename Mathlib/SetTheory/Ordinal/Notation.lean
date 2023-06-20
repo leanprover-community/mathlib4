@@ -33,6 +33,8 @@ open Ordinal Order
 
 open Ordinal
 
+-- Porting note: the generated theorem gets lint.
+set_option genSizeOfSpec false in
 -- get notation for `ω`
 /-- Recursive definition of an ordinal notation. `zero` denotes the
   ordinal 0, and `oadd e n a` is intended to refer to `ω^e * n + a`.
@@ -44,6 +46,8 @@ inductive ONote : Type
   | oadd : ONote → ℕ+ → ONote → ONote
   deriving DecidableEq
 #align onote ONote
+
+compile_inductive% ONote
 
 namespace ONote
 
@@ -119,17 +123,32 @@ theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
   Iff.rfl
 #align onote.le_def ONote.le_def
 
+instance : WellFoundedRelation ONote :=
+  ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
+
 /-- Convert a `Nat` into an ordinal -/
-@[simp, coe]
+@[coe]
 def ofNat : ℕ → ONote
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat ONote.ofNat
 
+-- Porting note: the generated simp lemmas of `ofNat` is not good so we replace.
+
+theorem ofNat_zero : ofNat 0 = 0 :=
+  rfl
+
+theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
+  rfl
+
+attribute [eqns ofNat_zero ofNat_succ] ofNat
+
+attribute [simp] ofNat
+
 instance nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
 
-@[simp]
+@[simp 1200]
 theorem ofNat_one : ofNat 1 = 1 :=
   rfl
 #align onote.of_nat_one ONote.ofNat_one
@@ -138,7 +157,7 @@ theorem ofNat_one : ofNat 1 = 1 :=
 theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
 #align onote.repr_of_nat ONote.repr_ofNat
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one ONote.repr_one
 
@@ -521,8 +540,6 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, h₁, h₂ => by
     haveI := h₁.snd; haveI := h₂.snd; have h' := repr_sub a₁ a₂
     conv_lhs at h' => dsimp [HSub.hSub, Sub.sub, sub]
-    have nf := ONote.sub_nf a₁ a₂
-    conv at nf => dsimp [HSub.hSub, Sub.sub, sub]
     conv_lhs => dsimp only [HSub.hSub, Sub.sub]; dsimp only [sub]
     have ee := @cmp_compares _ _ h₁.fst h₂.fst
     cases h : cmp e₁ e₂ <;> simp only [h] at ee
@@ -789,7 +806,6 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
     repr a + m < ω ^ repr e := by
   cases' nf_repr_split h with h₁ h₂
   cases' h₁.of_dvd_omega (split_dvd h) with e0 d
-  have := h₁.fst; have := h₁.snd
   apply principal_add_omega_opow _ h₁.snd'.repr_lt (lt_of_lt_of_le (nat_lt_omega _) _)
   simpa using opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0)
 #align onote.split_add_lt ONote.split_add_lt
@@ -985,10 +1001,10 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     cases' k with k <;> skip
     · simp [opow, r₂, opow_mul, repr_opow_aux₁ a00 al aa,
         add_assoc, split_eq_scale_split' e₂]
-    · simp [opow, opowAux2, r₂, opow_add, opow_mul, mul_assoc, add_assoc, -ofNat, -repr]
-      simp [repr, -ofNat]
+    · simp [opow, opowAux2, r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
+      simp [repr]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
-      simp [opow_mul, -ofNat]
+      simp [opow_mul]
       rw [← mul_add, ← add_assoc ((ω : Ordinal.{0}) ^ repr a0 * (n : ℕ))]
       congr 1
       rw [← opow_succ]
@@ -1087,20 +1103,20 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
         Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
         true_and_iff, _root_.zero_add, zero_def]
     · exact ⟨rfl, inferInstance⟩
-    · have := opow_pos _ omega_pos
+    · have := opow_pos (repr a') omega_pos
       refine'
         ⟨mul_isLimit this omega_isLimit, fun i =>
           ⟨this, _, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
       rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
       apply nat_lt_omega
-    · have := opow_pos _ omega_pos
+    · have := opow_pos (repr a') omega_pos
       refine'
         ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, _, _⟩,
           exists_lt_add exists_lt_mul_omega'⟩
       · rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega
       · refine' fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (iha.2 H.fst)))
-        rw [repr, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
+        rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega
     · rcases iha with ⟨h1, h2, h3⟩
       refine' ⟨opow_isLimit one_lt_omega h1, fun i => _, exists_lt_omega_opow' one_lt_omega h1 h3⟩
@@ -1112,7 +1128,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
           exists_lt_add (exists_lt_omega_opow' one_lt_omega h1 h3)⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       refine' ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
-      rwa [repr, repr, add_zero, coe_coe, PNat.one_coe, Nat.cast_one, mul_one,
+      rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
         opow_lt_opow_iff_right one_lt_omega]
   · refine'
       ⟨by rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' _ (ihb.2 H.snd))⟩
@@ -1143,14 +1159,22 @@ def fastGrowing : ONote → ℕ → ℕ
       fun i => (fastGrowing a^[i]) i
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
-      fastGrowing (f i) i termination_by'
-  ⟨_, InvImage.wf repr Ordinal.lt_wf⟩
+      fastGrowing (f i) i
+  termination_by fastGrowing o => o
 #align onote.fast_growing ONote.fastGrowing
 
+-- Porting note: `this` in the definition of `fastGrowing` gets lint.
+@[nolint unusedHavesSuffices]
 theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
     fastGrowing o =
-      FastGrowing._match1 o (fun a _ _ => a.fastGrowing) (fun f _ i _ => (f i).fastGrowing i) x
-        (e ▸ fundamentalSequence_has_prop _) := by
+      match
+        (motive := (x : Option ONote ⊕ (ℕ → ONote)) → FundamentalSequenceProp o x → ℕ → ℕ)
+        x, e ▸ fundamentalSequence_has_prop o with
+      | Sum.inl none, _ => Nat.succ
+      | Sum.inl (some a), _ =>
+        fun i => (fastGrowing a^[i]) i
+      | Sum.inr f, _ => fun i =>
+        fastGrowing (f i) i := by
   subst x
   rw [fastGrowing]
 #align onote.fast_growing_def ONote.fastGrowing_def
@@ -1158,19 +1182,16 @@ theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
 theorem fastGrowing_zero' (o : ONote) (h : fundamentalSequence o = Sum.inl none) :
     fastGrowing o = Nat.succ := by
   rw [fastGrowing_def h]
-  rfl
 #align onote.fast_growing_zero' ONote.fastGrowing_zero'
 
 theorem fastGrowing_succ (o) {a} (h : fundamentalSequence o = Sum.inl (some a)) :
     fastGrowing o = fun i => (fastGrowing a^[i]) i := by
   rw [fastGrowing_def h]
-  rfl
 #align onote.fast_growing_succ ONote.fastGrowing_succ
 
 theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
     fastGrowing o = fun i => fastGrowing (f i) i := by
   rw [fastGrowing_def h]
-  rfl
 #align onote.fast_growing_limit ONote.fastGrowing_limit
 
 @[simp]
@@ -1182,19 +1203,17 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
   suffices : ∀ a b, (Nat.succ^[a]) b = b + a; exact this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ]
+  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
 section
 
-@[inherit_doc]
-local infixr:0 "^" => pow
-
 @[simp]
-theorem fastGrowing_two : fastGrowing 2 = fun n => (2^n) * n := by
+theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
-  suffices : ∀ a b, ((fun n : ℕ => 2 * n)^[a]) b = (2^a) * b; exact this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', pow_succ, mul_assoc]
+  suffices : ∀ a b, ((fun n : ℕ => 2 * n)^[a]) b = (2 ^ a) * b; exact this _ _
+  intro a b; induction a <;>
+    simp [*, Function.iterate_succ', pow_succ, mul_assoc, -Function.iterate_succ]
 #align onote.fast_growing_two ONote.fastGrowing_two
 
 end
@@ -1215,8 +1234,8 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
 #align onote.fast_growing_ε₀_one ONote.fastGrowingε₀_one
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  norm_num [fast_growing_ε₀, show oadd 0 1 0 = 1 from rfl, @fast_growing_limit (oadd 1 1 0) _ rfl,
-    show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fast_growing_succ 3 2 rfl]
+  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+    show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 #align onote.fast_growing_ε₀_two ONote.fastGrowingε₀_two
 
 end ONote
@@ -1240,7 +1259,7 @@ instance NF (o : NONote) : NF o.1 :=
   o.2
 #align nonote.NF NONote.NF
 
-/-- Construct a `nonote` from an ordinal notation
+/-- Construct a `NONote` from an ordinal notation
   (and infer normality) -/
 def mk (o : ONote) [h : ONote.NF o] : NONote :=
   ⟨o, h⟩
@@ -1249,7 +1268,7 @@ def mk (o : ONote) [h : ONote.NF o] : NONote :=
 /-- The ordinal represented by an ordinal notation.
   (This function is noncomputable because ordinal
   arithmetic is noncomputable. In computational applications
-  `nonote` can be used exclusively without reference
+  `NONote` can be used exclusively without reference
   to `ordinal`, but this function allows for correctness
   results to be stated.) -/
 noncomputable def repr (o : NONote) : Ordinal :=
@@ -1260,7 +1279,7 @@ instance : ToString NONote :=
   ⟨fun x => x.1.toString⟩
 
 instance : Repr NONote :=
-  ⟨fun x _ => x.1.repr'⟩
+  ⟨fun x prec => x.1.repr' prec⟩
 
 instance : Preorder NONote where
   le x y := repr x ≤ repr y
@@ -1308,22 +1327,21 @@ instance : LinearOrder NONote :=
 
 instance : IsWellOrder NONote (· < ·) where
 
-/-- Asserts that `repr a < ω ^ repr b`. Used in `nonote.rec_on` -/
+/-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn` -/
 def below (a b : NONote) : Prop :=
   NFBelow a.1 (repr b)
 #align nonote.below NONote.below
 
-/-- The `oadd` pseudo-constructor for `nonote` -/
+/-- The `oadd` pseudo-constructor for `NONote` -/
 def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   ⟨_, NF.oadd e.2 n h⟩
 #align nonote.oadd NONote.oadd
 
-/-- This is a recursor-like theorem for `nonote` suggesting an
+/-- This is a recursor-like theorem for `NONote` suggesting an
   inductive definition, which can't actually be defined this
   way due to conflicting dependencies. -/
--- porting note: marked `noncomputable`, TODO use explicit match
 @[elab_as_elim]
-noncomputable def recOn {C : NONote → Sort _} (o : NONote) (H0 : C 0)
+def recOn {C : NONote → Sort _} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
   cases' o with o h; induction' o with e n a IHe IHa
   · exact H0
@@ -1356,7 +1374,7 @@ theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=
 
 /-- Exponentiation of ordinal notations -/
 def opow (x y : NONote) :=
-  mk (x.1.opow y.1)
+  mk (x.1 ^ y.1)
 #align nonote.opow NONote.opow
 
 theorem repr_opow (a b) : repr (opow a b) = repr a ^ repr b :=
