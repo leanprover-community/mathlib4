@@ -123,7 +123,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (← inferType p.2) p.2
+        addHaveSuggestion tk (← inferType p.2) p.2 (← getRef)
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do
@@ -131,6 +131,9 @@ elab_rules : tactic
         replaceMainGoal [g]
 
 @[inherit_doc propose'] syntax "have?!" (" : " term)? " using " (colGt term),+ : tactic
+@[inherit_doc propose'] syntax "have!?" (" : " term)? " using " (colGt term),+ : tactic
 macro_rules
   | `(tactic| have?!%$tk $[: $type]? using $terms,*) =>
+    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+  | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)

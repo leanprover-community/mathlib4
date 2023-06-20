@@ -216,3 +216,6 @@ elab_rules : tactic |
 
 @[inherit_doc rewrites'] macro "rw?!" : tactic =>
   `(tactic| rw? !)
+
+@[inherit_doc rewrites'] macro "rw!?" : tactic =>
+  `(tactic| rw? !)
