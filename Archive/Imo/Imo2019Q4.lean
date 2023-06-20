@@ -51,8 +51,8 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
     rwa [multiplicity_pow_self_of_prime Int.prime_two, multiplicity_pow_self_of_prime Int.prime_two,
       PartENat.coe_lt_coe, ← mem_range]
-  contrapose! h with hn
-  apply _root_.ne_of_gt
+  rw [← not_le]; intro hn
+  apply _root_.ne_of_gt _ h
   have le_sum : ∀ N ≥ 6, 15 ≤ ∑ i in range N, i
   · intro N hN
     show ∑ i in range 6, i ≤ _
@@ -71,7 +71,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   calc ∏ i in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i in range n, i)! := ?_
     _ < k ! := by have := le_sum n hn; gcongr
-  clear h2
+  clear h h2
   induction' n, hn using Nat.le_induction with n' hn' IH
   · show _ < 15!
     norm_num
