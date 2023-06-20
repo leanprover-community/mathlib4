@@ -31,8 +31,6 @@ set_option linter.uppercaseLean3 false
 
 open Ordinal Order
 
-open Ordinal -- get notation for `ω`
-
 -- Porting note: the generated theorem gets lint.
 set_option genSizeOfSpec false in
 /-- Recursive definition of an ordinal notation. `zero` denotes the
