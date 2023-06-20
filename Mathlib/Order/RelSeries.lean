@@ -27,7 +27,7 @@ length : ℕ
 /-- the underlying function of a relation series -/
 toFun : Fin (length + 1) → α
 /-- adjacent elements are related by the said relation -/
-step : ∀ (i : Fin length), r (toFun <| Fin.castSucc i) <| toFun <| i.succ
+step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
 
 namespace RelSeries
 
@@ -81,9 +81,9 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
     | hs j ihj =>
       by_cases H : 0 < Fin.castSucc j
       . exact IsTrans.trans _ _ _ (ihj H) (x.step _)
-      . convert x.step _
-        simp only [not_lt, Fin.le_zero_iff] at H
-        exact H.symm
+      . simp only [not_lt, Fin.le_zero_iff] at H
+        rw [← H]
+        exact x.step _
   | hs i _ => induction j using Fin.inductionOn with
     | h0 => cases not_lt_of_lt (Fin.succ_pos i) h
     | hs j ihj =>
@@ -91,8 +91,7 @@ lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h :
       . change (i + 1 : ℕ) < (j + 1 : ℕ) at h
         rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at h
         rcases h with (h|h)
-        . right
-          exact h
+        . exact Or.inr h
         . left
           ext
           exact h
