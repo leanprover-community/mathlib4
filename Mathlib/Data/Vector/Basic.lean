@@ -43,7 +43,7 @@ theorem toList_injective : Function.Injective (@toList α n) :=
 
 /-- Two `v w : Vector α n` are equal iff they are equal at every single index. -/
 @[ext]
-theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vector.get w m), v = w
+theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, v[m] = w[m]), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
     Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 #align vector.ext Vector.ext
@@ -115,14 +115,14 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
+    v[i.1] = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_get
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
 theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
+    ∀ (v : Vector α n) (i : Fin n), v[i.1] = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
   | ⟨_, _⟩, _ => rfl
 
 @[simp]
@@ -132,7 +132,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 
 @[simp]
 theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
-    (v.map f).get i = f (v.get i) := by
+    (v.map f)[i.1] = f (v[i.1]) := by
   cases v; simp [Vector.map, get_eq_get]; rfl
 #align vector.nth_map Vector.get_map
 
@@ -146,9 +146,8 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
   rfl
 
 @[simp]
-theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  cases' i with i hi
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simpa using hi⟩]
+theorem get_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i.1] = f i := by
+  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
   simp only [get_eq_get]
   congr <;> simp [Fin.heq_ext_iff]
 #align vector.nth_of_fn Vector.get_ofFn
@@ -166,8 +165,8 @@ def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
-theorem get_tail (x : Vector α n) (i) :
-    x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
+theorem get_tail (x : Vector α n) (i : Fin (n-1)) :
+    x.tail[i.1] = x[i.succ.1]'(lt_tsub_iff_right.mp i.2)  := by
   cases' i with i ih ; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -176,8 +175,12 @@ theorem get_tail (x : Vector α n) (i) :
 #align vector.nth_tail Vector.get_tail
 
 @[simp]
-theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get] ; rfl
+theorem get_tail_succ_nat : ∀ (v : Vector α n.succ) (i : Nat) {h},
+    (tail v)[i]'h = v[i.succ]'(Nat.lt_succ.mpr h)
+  | ⟨a :: l, e⟩, i => by simp [get_eq_get] ; rfl
+
+theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), (tail v)[i.1] = v[i.succ.1] :=
+  fun _ _ => get_tail_succ_nat ..
 #align vector.nth_tail_succ Vector.get_tail_succ
 
 @[simp]
@@ -202,8 +205,7 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
   (ofFn_get _).symm.trans <| by
     congr
     funext i
-    rw [get_tail, get_ofFn]
-    rfl
+    rw [get, get_tail, get_ofFn]
 #align vector.tail_of_fn Vector.tail_ofFn
 
 @[simp]
@@ -263,44 +265,59 @@ theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v := by
 #align vector.reverse_reverse Vector.reverse_reverse
 
 @[simp]
-theorem get_zero : ∀ v : Vector α n.succ, get v 0 = head v
+theorem get_zero_nat : ∀ v : Vector α n.succ, v[0] = head v
   | ⟨_ :: _, _⟩ => rfl
+
+theorem get_zero : ∀ v : Vector α n.succ, v[(0 : Fin n.succ).1] = head v :=
+  get_zero_nat
 #align vector.nth_zero Vector.get_zero
+
 
 @[simp]
 theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
---@[simp] Porting note: simp can prove it
-theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
+@[simp] -- Porting note: simp can prove it
+theorem get_cons_zero_nat (a : α) (v : Vector α n) : (a ::ᵥ v)[0] = a := by
+  simp only [get_zero_nat, head_cons]
+
+@[simp] -- Porting note: simp can prove it
+theorem get_cons_zero (a : α) (v : Vector α n) : (a ::ᵥ v)[(0 : Fin n.succ).1] = a :=
+  get_cons_zero_nat ..
 #align vector.nth_cons_zero Vector.get_cons_zero
 
 /-- Accessing the nth element of a vector made up
 of one element `x : α` is `x` itself. -/
 @[simp]
-theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), get (x ::ᵥ nil) ix = x
+theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), (x ::ᵥ nil)[ix.1] = x
   | ⟨0, _⟩, _ => rfl
 #align vector.nth_cons_nil Vector.get_cons_nil
 
 @[simp]
-theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : get (a ::ᵥ v) i.succ = get v i := by
-  rw [← get_tail_succ, tail_cons]
+theorem get_cons_succ_nat (a : α) (v : Vector α n) (i : Nat) {h} : (a ::ᵥ v)[i.succ]'h = v[i]'(Nat.lt_succ.mp h) := by
+  rw [← get_tail_succ_nat, tail_cons]; rfl
+
+@[simp]
+theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : (a ::ᵥ v)[i.succ.1] = v[i.1] :=
+  get_cons_succ_nat ..
 #align vector.nth_cons_succ Vector.get_cons_succ
+
+
 
 /-- The last element of a `Vector`, given that the vector is at least one element. -/
 def last (v : Vector α (n + 1)) : α :=
-  v.get (Fin.last n)
+  v[(Fin.last n).1]
 #align vector.last Vector.last
 
 /-- The last element of a `Vector`, given that the vector is at least one element. -/
-theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
+theorem last_def {v : Vector α (n + 1)} : v.last = v[(Fin.last n).1] :=
   rfl
 #align vector.last_def Vector.last_def
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
-  rw [← get_zero, last_def, get_eq_get, get_eq_get]
+  rw [← get_zero, last, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
   rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
   · congr
@@ -376,8 +393,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
-      List.get]
+    simp only [←get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, List.get]
 #align vector.scanl_head Vector.scanl_head
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
@@ -389,17 +405,21 @@ This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
+    (scanl f b v)[i.succ.1] = f ((scanl f b v)[(Fin.castSucc i).1]) v[i.1] := by
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
-  · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
+    simp [scanl_singleton, get_zero, get_eq_get]
+  · rw [← cons_head_tail v, scanl_cons, get_cons_succ _ _ i]
     refine' Fin.cases _ _ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp [get_cons_zero_nat, scanl_head, Fin.castSucc_zero, head_cons]
+      -- Why does the following not work?
+      rw[get_zero_nat (@cons β (Nat.succ (n + 1) - 1 + 1) b (scanl f (f b (head v)) (tail v)))]
+      sorry
     · intro i'
       simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+      sorry
 #align vector.scanl_nth Vector.scanl_get
 
 end Scan
@@ -626,23 +646,24 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 #align vector.to_list_update_nth Vector.toList_set
 
 @[simp]
-theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
+theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a)[i.1] = a := by
   cases v; cases i; simp [Vector.set, get_eq_get]
   dsimp
   exact List.get_set_eq _ _ _ _
 #align vector.nth_update_nth_same Vector.get_set_same
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
-    (v.set i a).get j = v.get j := by
+    (v.set i a)[j.1] = v[j.1] := by
   cases v; cases i; cases j
-  simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+  have h' := Fin.vne_of_ne h
+  simp only [Vector.set, Vector.get_eq_get, List.get_set_of_ne h', (·[·]'·)]
   rw [List.get_set_of_ne]
-  . rfl
-  . simpa using h
+  exact h'
+
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
-    (v.set i a).get j = if i = j then a else v.get j := by
+    (v.set i a)[j.1] = if i = j then a else v[j.1] := by
   split_ifs <;> try simp [*] <;> try rw [get_set_of_ne] ; assumption
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
@@ -655,7 +676,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 
 @[to_additive]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
-    (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
+    (v.set i a).toList.prod = v.toList.prod * (v[i.1])⁻¹ * a := by
   refine' (List.prod_set' v.toList i a).trans _
   simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
@@ -778,12 +799,12 @@ theorem replicate_succ : replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 @[simp]
-theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
+theorem get_append_cons_zero : (append (x ::ᵥ xs) ys)[0] = x :=
   rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    (append (x ::ᵥ xs) ys)[i.1+1] = (append xs ys)[i.1] :=
   rfl
 
 @[simp]
@@ -792,7 +813,7 @@ theorem append_nil : append xs nil = xs := by
 
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
-    get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
+    (map₂ f v₁ v₂)[i.1] = f v₁[i.1] v₂[i.1] := by
   induction v₁, v₂ using inductionOn₂
   case nil =>
     exact Fin.elim0 i
