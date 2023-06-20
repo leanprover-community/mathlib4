@@ -324,8 +324,7 @@ open Polynomial
 attribute [-instance] Field.toEuclideanDomain
 
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
-    IsIntegral R (Algebra.trace L F x) :=
-  by
+    IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := isIntegral_of_isScalarTower hx
   rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
   · refine' (IsIntegral.multiset_sum _).nsmul _
