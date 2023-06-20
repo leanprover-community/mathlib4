@@ -33,32 +33,32 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
 
 ## Main definitions
 
- * `weierstrass_curve`: a Weierstrass curve over a commutative ring.
- * `weierstrass_curve.Δ`: the discriminant of a Weierstrass curve.
- * `weierstrass_curve.variable_change`: the Weierstrass curve induced by a change of variables.
- * `weierstrass_curve.base_change`: the Weierstrass curve base changed over an algebra.
- * `weierstrass_curve.two_torsion_polynomial`: the 2-torsion polynomial of a Weierstrass curve.
- * `weierstrass_curve.polynomial`: the polynomial associated to a Weierstrass curve.
- * `weierstrass_curve.equation`: the Weirstrass equation of a Weierstrass curve.
- * `weierstrass_curve.nonsingular`: the nonsingular condition at a point on a Weierstrass curve.
- * `weierstrass_curve.coordinate_ring`: the coordinate ring of a Weierstrass curve.
- * `weierstrass_curve.function_field`: the function field of a Weierstrass curve.
- * `weierstrass_curve.coordinate_ring.basis`: the power basis of the coordinate ring over `R[X]`.
- * `elliptic_curve`: an elliptic curve over a commutative ring.
- * `elliptic_curve.j`: the j-invariant of an elliptic curve.
+ * `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
+ * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
+ * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
+ * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over an algebra.
+ * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
+ * `WeierstrassCurve.polynomial`: the polynomial associated to a Weierstrass curve.
+ * `WeierstrassCurve.equation`: the Weirstrass equation of a Weierstrass curve.
+ * `WeierstrassCurve.nonsingular`: the nonsingular condition at a point on a Weierstrass curve.
+ * `WeierstrassCurve.CoordinateRing`: the coordinate ring of a Weierstrass curve.
+ * `WeierstrassCurve.FunctionField`: the function field of a Weierstrass curve.
+ * `WeierstrassCurve.CoordinateRing.basis`: the power basis of the coordinate ring over `R[X]`.
+ * `EllipticCurve`: an elliptic curve over a commutative ring.
+ * `EllipticCurve.j`: the j-invariant of an elliptic curve.
 
 ## Main statements
 
- * `weierstrass_curve.two_torsion_polynomial_disc`: the discriminant of a Weierstrass curve is a
+ * `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
     constant factor of the cubic discriminant of its 2-torsion polynomial.
- * `weierstrass_curve.nonsingular_of_Δ_ne_zero`: a Weierstrass curve is nonsingular at every point
+ * `WeierstrassCurve.nonsingular_of_Δ_ne_zero`: a Weierstrass curve is nonsingular at every point
     if its discriminant is non-zero.
- * `weierstrass_curve.coordinate_ring.is_domain`: the coordinate ring of a Weierstrass curve is
-    an integral domain.
- * `weierstrass_curve.coordinate_ring.degree_norm_smul_basis`: the degree of the norm of an element
+ * `WeierstrassCurve.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of a
+    Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an element
     in the coordinate ring in terms of the power basis.
- * `elliptic_curve.nonsingular`: an elliptic curve is nonsingular at every point.
- * `elliptic_curve.variable_change_j`: the j-invariant of an elliptic curve is invariant under an
+ * `EllipticCurve.nonsingular`: an elliptic curve is nonsingular at every point.
+ * `EllipticCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
     admissible linear change of variables.
 
 ## Implementation notes
@@ -348,7 +348,7 @@ open scoped Polynomial PolynomialPolynomial
 /-- The polynomial $W(X, Y) := Y^2 + a_1XY + a_3Y - (X^3 + a_2X^2 + a_4X + a_6)$ associated to a
 Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
 of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
-For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `polynomial_polynomial`
+For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `PolynomialPolynomial`
 locale to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 protected noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
@@ -395,9 +395,8 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with (h | h | h | h)
-  sorry
-  -- any_goals rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
-  -- any_goals rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
+  any_goals rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
+  any_goals rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.irreducible_polynomial
 
 @[simp]
@@ -415,7 +414,7 @@ lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
     zero_pow <| Nat.zero_lt_succ _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.eval_polynomial_zero
 
--- porting note: add `protected` for consistency with `polynomial`
+-- porting note: add `protected` for consistency with `WeierstrassCurve.polynomial`
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
 protected def equation (x y : R) : Prop :=
   (W.polynomial.eval <| C y).eval x = 0
@@ -461,10 +460,10 @@ lemma equation_iff_baseChange_of_baseChange [Nontrivial B] [NoZeroSMulDivisors A
 
 /-! ### Nonsingularity of Weierstrass curves -/
 
--- porting note: add `protected` for consistency with `polynomial`
+-- porting note: add `protected` for consistency with `WeierstrassCurve.polynomial`
 /-- The partial derivative $W_X(X, Y)$ of $W(X, Y)$ with respect to $X$.
 
-TODO: define this in terms of `polynomial.derivative`. -/
+TODO: define this in terms of `Polynomial.derivative`. -/
 protected noncomputable def polynomialX : R[X][Y] :=
   C (C W.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W.a₂) * X + C W.a₄)
 set_option linter.uppercaseLean3 false in
@@ -485,10 +484,10 @@ lemma eval_polynomialX_zero : (W.polynomialX.eval 0).eval 0 = -W.a₄ := by
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.eval_polynomialX_zero
 
--- porting note: add `protected` for consistency with `polynomial`
+-- porting note: add `protected` for consistency with `WeierstrassCurve.polynomial`
 /-- The partial derivative $W_Y(X, Y)$ of $W(X, Y)$ with respect to $Y$.
 
-TODO: define this in terms of `polynomial.derivative`. -/
+TODO: define this in terms of `Polynomial.derivative`. -/
 protected noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 set_option linter.uppercaseLean3 false in
@@ -509,7 +508,7 @@ lemma eval_polynomialY_zero : (W.polynomialY.eval 0).eval 0 = W.a₃ := by
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_Y_zero WeierstrassCurve.eval_polynomialY_zero
 
--- porting note: add `protected` for consistency with `polynomial`
+-- porting note: add `protected` for consistency with `WeierstrassCurve.polynomial`
 /-- The proposition that an affine point $(x, y)$ on `W` is nonsingular.
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$. -/
 protected def nonsingular (x y : R) : Prop :=
@@ -578,10 +577,10 @@ lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.equation x y) (hΔ : W.Δ ≠ 0
 
 /-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`.
 
-Note that `derive comm_ring` generates a reducible instance of `comm_ring` for `coordinate_ring`.
+Note that `deriving CommRing` generates a reducible instance of `CommRing` for `CoordinateRing`.
 In certain circumstances this might be extremely slow, because all instances in its definition are
 unified exponentially many times. In this case, one solution is to manually add the local attribute
-`local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
+`local attribute [Irreducible] CoordinateRing.CommRing` to block this type-level unification.
 
 TODO Lean 4: verify if the new def-eq cache (lean4#1102) fixed this issue.
 
@@ -699,9 +698,7 @@ noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eva
         quotientSpanXSubCAlgEquiv x
 #align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.CoordinateRing.quotientXYIdealEquiv
 
-/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$.
-
-Given a Weierstrass curve `W`, write `W^.coordinate_ring.basis` for this basis. -/
+/-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' W.monic_polynomial).basis.reindex <| finCongr W.natDegree_polynomial
@@ -805,12 +802,10 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
   rw [norm_smul_basis]
   by_cases hp : p = 0;
-  ·
-    simpa only [hp, hdq, neg_zero, zero_sub, MulZeroClass.zero_mul, zero_pow zero_lt_two,
+  · simpa only [hp, hdq, neg_zero, zero_sub, MulZeroClass.zero_mul, zero_pow zero_lt_two,
       degree_neg] using (max_bot_left _).symm
   by_cases hq : q = 0;
-  ·
-    simpa only [hq, hdp, sub_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
+  · simpa only [hq, hdp, sub_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero,
       zero_pow zero_lt_two] using (max_bot_right _).symm
   rw [← not_congr degree_eq_bot] at hp hq
   cases' p.degree with dp; · exact (hp rfl).elim
