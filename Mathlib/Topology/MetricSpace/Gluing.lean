@@ -482,7 +482,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
 #align metric.glue_space Metric.GlueSpace
 
 -- porting note: TODO: w/o `@`, tries to generate some `[MetricSpace _]` before finding `X` `Y`
-instance : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 
@@ -612,6 +612,10 @@ attribute [local instance] inductivePremetric
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
+
+-- We turn off `relaxedAutoImplicit` in mathlib4,
+-- so uppercase single variable implicits need to be declared.
+variable {I}
 
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|

@@ -1850,7 +1850,8 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
   rfl
 #align turing.TM1to1.step_aux_read Turing.TM1to1.stepAux_read
 
-theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ trCfg enc enc₀ c₁ = c₂ :=
+theorem tr_respects {enc₀} :
+    Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ trCfg enc enc₀ c₁ = c₂ :=
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
     obtain ⟨L, R, rfl⟩ := T.exists_mk'
     cases' l₁ with l₁
