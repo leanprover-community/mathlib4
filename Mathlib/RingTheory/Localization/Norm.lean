@@ -15,11 +15,11 @@ import Mathlib.RingTheory.Norm
 
 # Field/algebra norm and localization
 
-This file contains results on the combination of `algebra.norm` and `is_localization`.
+This file contains results on the combination of `Algebra.norm` and `IsLocalization`.
 
 ## Main results
 
- * `algebra.norm_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
+ * `Algebra.norm_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
   of `R S` respectively. Then the norm of `a : Sₘ` over `Rₘ` is the norm of `a : S` over `R`
   if `S` is free as `R`-module
 
@@ -52,7 +52,7 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
     simp
   let b := Module.Free.chooseBasis R S
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
-  rw [Algebra.norm_eq_matrix_det (b.localization_localization Rₘ M Sₘ),
+  rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
     Algebra.norm_eq_matrix_det b, RingHom.map_det]
   congr
   ext i j
@@ -60,4 +60,3 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
     Basis.localizationLocalization_apply, ← _root_.map_mul]
   apply Basis.localizationLocalization_repr_algebraMap
 #align algebra.norm_localization Algebra.norm_localization
-
