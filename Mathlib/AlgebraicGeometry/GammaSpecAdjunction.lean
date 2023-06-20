@@ -266,8 +266,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
         f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.1.base).obj (basicOpen r) ⟶ _).op =
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
-  -- Porting note : `ext` did not pick `LocallyRingedSpace.Hom.ext` up
-  refine Hom.ext _ _ ?_
+  ext
   -- Porting note : need more hand holding here
   change (X.toΓSpec.1 ≫ _).base = _ at w
   apply Spec.basicOpen_hom_ext w
