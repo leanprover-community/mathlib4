@@ -152,7 +152,7 @@ theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] {i : ℕ} (a c : 
     (a_not_mem : a ∉ P ^ (i + 1)) (c_mem : c ∈ P ^ i) : ∃ d : S, ∃ e ∈ P ^ (i + 1), a * d + e = c :=
   by
   suffices eq_b : P ^ i = Ideal.span {a} ⊔ P ^ (i + 1)
-  · rw [eq_b] at c_mem 
+  · rw [eq_b] at c_mem
     simp only [mul_comm a]
     exact ideal.mem_span_singleton_sup.mp c_mem
   refine'
@@ -553,10 +553,10 @@ theorem spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S
         ⟨s ^ Fintype.card (Module.Free.ChooseBasisIndex R S), pow_mem hs _⟩, _⟩
     swap
     simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
-    apply_fun Algebra.norm Rₘ at has 
+    apply_fun Algebra.norm Rₘ at has
     rwa [_root_.map_mul, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R Rₘ,
       Algebra.norm_algebraMap_of_basis (b.localization_localization Rₘ M Sₘ),
-      Algebra.norm_localization R M a] at has 
+      Algebra.norm_localization R M a] at has
     all_goals infer_instance
   · intro a ha
     rw [Set.mem_preimage, Function.comp_apply, ← Algebra.norm_localization R M a]
@@ -695,4 +695,3 @@ theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J
 end Ideal
 
 end SpanNorm
-
