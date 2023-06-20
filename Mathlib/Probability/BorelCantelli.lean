@@ -8,9 +8,9 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Martingale.BorelCantelli
-import Mathbin.Probability.ConditionalExpectation
-import Mathbin.Probability.Independence.Basic
+import Mathlib.Probability.Martingale.BorelCantelli
+import Mathlib.Probability.ConditionalExpectation
+import Mathlib.Probability.Independence.Basic
 
 /-!
 
@@ -43,8 +43,7 @@ variable {ι β : Type _} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAdd
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun (fun i => mβ) f μ) (hij : i < j) :
-    Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ :=
-  by
+    Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices
     indep (⨆ k ∈ {j}, MeasurableSpace.comap (f k) mβ)
       (⨆ k ∈ {k | k ≤ i}, MeasurableSpace.comap (f k) mβ) μ
@@ -74,8 +73,7 @@ open Filter
 /-- **The second Borel-Cantelli lemma**: Given a sequence of independent sets `(sₙ)` such that
 `∑ n, μ sₙ = ∞`, `limsup sₙ` has measure 1. -/
 theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ)
-    (hs' : ∑' n, μ (s n) = ∞) : μ (limsup s atTop) = 1 :=
-  by
+    (hs' : ∑' n, μ (s n) = ∞) : μ (limsup s atTop) = 1 := by
   rw [measure_congr
       (eventually_eq_set.2 (ae_mem_limsup_at_top_iff μ <| measurable_set_filtration_of_set' hsm) :
         (limsup s at_top : Set Ω) =ᵐ[μ]
@@ -98,8 +96,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   filter_upwards [this] with ω hω
   refine' eq_true (_ : tendsto _ _ _)
   simp_rw [hω]
-  have htends : tendsto (fun n => ∑ k in Finset.range n, μ (s (k + 1))) at_top (𝓝 ∞) :=
-    by
+  have htends : tendsto (fun n => ∑ k in Finset.range n, μ (s (k + 1))) at_top (𝓝 ∞) := by
     rw [← ENNReal.tsum_add_one_eq_top hs' (measure_ne_top _ _)]
     exact ENNReal.tendsto_nat_tsum _
   rw [ENNReal.tendsto_nhds_top_iff_nnreal] at htends 
