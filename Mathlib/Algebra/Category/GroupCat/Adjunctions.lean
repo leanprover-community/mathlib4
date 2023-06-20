@@ -8,8 +8,9 @@ Authors: Scott Morrison, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Group.Basic
+import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
+
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -34,7 +35,8 @@ category of abelian groups.
 * `abelianize_adj`: proves that `abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
-
+set_option autoImplicit false -- **TODO** delete this later
+set_option linter.uppercaseLean3 false -- `AddCommGroup`
 
 noncomputable section
 
@@ -51,9 +53,9 @@ free abelian group with generators `x : X`.
 -/
 def free : Type u ⥤ AddCommGroupCat where
   obj α := of (FreeAbelianGroup α)
-  map X Y := FreeAbelianGroup.map
-  map_id' X := AddMonoidHom.ext FreeAbelianGroup.map_id_apply
-  map_comp' X Y Z f g := AddMonoidHom.ext FreeAbelianGroup.map_comp_apply
+  map := FreeAbelianGroup.map
+  map_id _ := AddMonoidHom.ext FreeAbelianGroup.map_id_apply
+  map_comp _ _ := AddMonoidHom.ext FreeAbelianGroup.map_comp_apply
 #align AddCommGroup.free AddCommGroupCat.free
 
 @[simp]
@@ -84,7 +86,8 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 (This proof works in all universes.)
 -/
 example {G H : AddCommGroupCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective f).1 (show Mono ((forget AddCommGroupCat.{u}).map f) by infer_instance)
+  (mono_iff_injective (FunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
+
 
 end AddCommGroupCat
 
@@ -94,9 +97,11 @@ namespace GroupCat
 -/
 def free : Type u ⥤ GroupCat where
   obj α := of (FreeGroup α)
-  map X Y := FreeGroup.map
-  map_id' := by intros; ext1; rfl
-  map_comp' := by intros; ext1; rfl
+  map := FreeGroup.map
+  map_id := by
+    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
+  map_comp := by
+    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
 #align Group.free GroupCat.free
 
 /-- The free-forgetful adjunction for groups.
@@ -104,7 +109,7 @@ def free : Type u ⥤ GroupCat where
 def adj : free ⊣ forget GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeGroup.lift.symm
-      homEquiv_naturality_left_symm := fun X Y G f g => by ext1; rfl }
+      homEquiv_naturality_left_symm := fun {_ _ M} f g => by ext1; rfl }
 #align Group.adj GroupCat.adj
 
 instance : IsRightAdjoint (forget GroupCat.{u}) :=
@@ -120,20 +125,24 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G :=
     { α := Abelianization G
       str := by infer_instance }
-  map G H f :=
+  map f :=
     Abelianization.lift
       { toFun := fun x => Abelianization.of (f x)
         map_one' := by simp
         map_mul' := by simp }
-  map_id' := by intros; simp only [MonoidHom.mk_coe, coe_id]; ext1; rfl
-  map_comp' := by intros; simp only [coe_comp]; ext1; rfl
+  map_id := by
+    intros; simp only [MonoidHom.mk_coe, coe_id]
+    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
+  map_comp := by
+    intros; simp only [coe_comp];
+    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
 #align abelianize abelianize
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`.-/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G A => Abelianization.lift.symm
-      homEquiv_naturality_left_symm := fun G H A f g => by ext1; rfl }
+      homEquiv_naturality_left_symm := fun f g => by ext1; rfl }
 #align abelianize_adj abelianizeAdj
 
 end Abelianization
@@ -142,9 +151,9 @@ end Abelianization
 @[simps]
 def MonCat.units : MonCat.{u} ⥤ GroupCat.{u} where
   obj R := GroupCat.of Rˣ
-  map R S f := GroupCat.ofHom <| Units.map f
-  map_id' X := MonoidHom.ext fun x => Units.ext rfl
-  map_comp' X Y Z f g := MonoidHom.ext fun x => Units.ext rfl
+  map f := GroupCat.ofHom <| Units.map f
+  map_id _ := MonoidHom.ext fun _ => Units.ext rfl
+  map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 #align Mon.units MonCat.units
 
 /-- The forgetful-units adjunction between `Group` and `Mon`. -/
@@ -154,14 +163,14 @@ def GroupCat.forget₂MonAdj : forget₂ GroupCat MonCat ⊣ MonCat.units.{u} wh
       invFun := fun f => (Units.coeHom Y).comp f
       left_inv := fun f => MonoidHom.ext fun _ => rfl
       right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
-  Unit :=
+  unit :=
     { app := fun X => { (@toUnits X _).toMonoidHom with }
-      naturality' := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
+      naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
-      naturality' := fun X Y f => MonoidHom.ext fun x => rfl }
-  homEquiv_unit X Y f := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit X Y f := MonoidHom.ext fun _ => rfl
+      naturality := by intros; exact MonoidHom.ext fun x => rfl }
+  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
+  homEquiv_counit := MonoidHom.ext fun _ => rfl
 #align Group.forget₂_Mon_adj GroupCat.forget₂MonAdj
 
 instance : IsRightAdjoint MonCat.units.{u} :=
@@ -171,9 +180,9 @@ instance : IsRightAdjoint MonCat.units.{u} :=
 @[simps]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGroupCat.{u} where
   obj R := CommGroupCat.of Rˣ
-  map R S f := CommGroupCat.ofHom <| Units.map f
-  map_id' X := MonoidHom.ext fun x => Units.ext rfl
-  map_comp' X Y Z f g := MonoidHom.ext fun x => Units.ext rfl
+  map f := CommGroupCat.ofHom <| Units.map f
+  map_id _ := MonoidHom.ext fun _ => Units.ext rfl
+  map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
 #align CommMon.units CommMonCat.units
 
 /-- The forgetful-units adjunction between `CommGroup` and `CommMon`. -/
@@ -183,16 +192,15 @@ def CommGroupCat.forget₂CommMonAdj : forget₂ CommGroupCat CommMonCat ⊣ Com
       invFun := fun f => (Units.coeHom Y).comp f
       left_inv := fun f => MonoidHom.ext fun _ => rfl
       right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
-  Unit :=
+  unit :=
     { app := fun X => { (@toUnits X _).toMonoidHom with }
-      naturality' := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
+      naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
-      naturality' := fun X Y f => MonoidHom.ext fun x => rfl }
-  homEquiv_unit X Y f := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit X Y f := MonoidHom.ext fun _ => rfl
+      naturality := by intros; exact MonoidHom.ext fun x => rfl }
+  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
+  homEquiv_counit := MonoidHom.ext fun _ => rfl
 #align CommGroup.forget₂_CommMon_adj CommGroupCat.forget₂CommMonAdj
 
 instance : IsRightAdjoint CommMonCat.units.{u} :=
   ⟨_, CommGroupCat.forget₂CommMonAdj⟩
-
