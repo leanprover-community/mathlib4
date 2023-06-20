@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.Module
-import Mathbin.RingTheory.Norm
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Norm
 
 /-!
 
@@ -46,8 +46,7 @@ variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsSca
 Then the norm of `a : Sₘ` over `Rₘ` is the norm of `a : S` over `R` if `S` is free as `R`-module.
 -/
 theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) :
-    Algebra.norm Rₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.norm R a) :=
-  by
+    Algebra.norm Rₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.norm R a) := by
   cases subsingleton_or_nontrivial R
   · haveI : Subsingleton Rₘ := Module.subsingleton R Rₘ
     simp
