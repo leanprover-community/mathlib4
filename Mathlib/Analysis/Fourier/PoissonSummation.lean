@@ -245,7 +245,8 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ →
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
     (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) : (∑' n : ℤ, f n) = ∑' n : ℤ, 𝓕 f n :=
+    (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) :
+    (∑' n : ℤ, f n) = ∑' n : ℤ, 𝓕 f n :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf
     (summable_of_isBigO (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite))
 #align real.tsum_eq_tsum_fourier_integral_of_rpow_decay Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
