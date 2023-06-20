@@ -8,11 +8,11 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Fourier.AddCircle
-import Mathbin.Analysis.Fourier.FourierTransform
-import Mathbin.Analysis.PSeries
-import Mathbin.Analysis.SchwartzSpace
-import Mathbin.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Analysis.Fourier.AddCircle
+import Mathlib.Analysis.Fourier.FourierTransform
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.SchwartzSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Poisson's summation formula
@@ -60,49 +60,41 @@ open ContinuousMap
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     (hf : ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp (ContinuousMap.addRight n)).restrict K‖)
-    (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m = 𝓕 f m :=
-  by
+    (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m = 𝓕 f m := by
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨(coe : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
-  have neK : ∀ (K : compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ :=
-    by
+  have neK : ∀ (K : compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
     have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle _
     intro K g
     simp_rw [norm_eq_supr_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
-  have eadd : ∀ n : ℤ, e.comp (ContinuousMap.addRight n) = e :=
-    by
+  have eadd : ∀ n : ℤ, e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : periodic e 1 := periodic.comp (fun x => AddCircle.coe_add_period 1 x) _
     simpa only [mul_one] using this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
-        ∫ x in 0 ..1, e x * (∑' n : ℤ, f.comp (ContinuousMap.addRight n)) x :=
-      by
+        ∫ x in 0 ..1, e x * (∑' n : ℤ, f.comp (ContinuousMap.addRight n)) x := by
       simp_rw [fourierCoeff_eq_intervalIntegral _ m 0, div_one, one_smul, zero_add, comp_apply,
         coe_mk, periodic.lift_coe, zsmul_one, smul_eq_mul]
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
         _ =
-        ∫ x in 0 ..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x :=
-      by
+        ∫ x in 0 ..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
       simp_rw [coe_mul, Pi.mul_apply, ← tsum_apply (summable_of_locally_summable_norm hf),
         tsum_mul_left]
     -- Swap sum and integral.
         _ =
-        ∑' n : ℤ, ∫ x in 0 ..1, (e * f.comp (ContinuousMap.addRight n)) x :=
-      by
+        ∑' n : ℤ, ∫ x in 0 ..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩
       exact funext fun n => neK _ _
-    _ = ∑' n : ℤ, ∫ x in 0 ..1, (e * f).comp (ContinuousMap.addRight n) x :=
-      by
+    _ = ∑' n : ℤ, ∫ x in 0 ..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
         _ =
-        ∫ x, e x * f x :=
-      by
+        ∫ x, e x * f x := by
       suffices : integrable ⇑(e * f); exact this.has_sum_interval_integral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, is_compact_Icc⟩
@@ -111,8 +103,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       exact funext fun n => neK ⟨Icc 0 1, is_compact_Icc⟩ _
     -- Minor tidying to finish
         _ =
-        𝓕 f m :=
-      by
+        𝓕 f m := by
       rw [fourier_integral_eq_integral_exp_smul]
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, fourier_coe_apply]
@@ -125,8 +116,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     (h_norm :
       ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
-    (h_sum : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
-  by
+    (h_sum : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n := by
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
@@ -149,14 +139,12 @@ variable {E : Type _} [NormedAddCommGroup E]
 `λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : IsBigO atTop f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    IsBigO atTop (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) :=
-  by
+    IsBigO atTop (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by
   -- First establish an explicit estimate on decay of inverse powers.
   -- This is logically independent of the rest of the proof, but of no mathematical interest in
   -- itself, so it is proved using `async` rather than being formulated as a separate lemma.
   have claim :
-    ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y → y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) :=
-    by
+    ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y → y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) := by
     intro x hx y hy
     rw [max_lt_iff] at hx 
     have hxR : 0 < x + R := by
@@ -166,8 +154,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
         refine' lt_trans _ hx.2
         rwa [neg_mul, neg_lt_neg_iff, two_mul, add_lt_iff_neg_left]
     have hy' : 0 < y := hxR.trans_le hy
-    have : y ^ (-b) ≤ (x + R) ^ (-b) :=
-      by
+    have : y ^ (-b) ≤ (x + R) ^ (-b) := by
       rw [rpow_neg hy'.le, rpow_neg hxR.le,
         inv_le_inv (rpow_pos_of_pos hy' _) (rpow_pos_of_pos hxR _)]
       exact rpow_le_rpow hxR.le hy hb.le
@@ -197,10 +184,8 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : IsBigO atBot f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
-    IsBigO atBot (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) :=
-  by
-  have h1 : is_O at_top (f.comp (ContinuousMap.mk _ continuous_neg)) fun x : ℝ => |x| ^ (-b) :=
-    by
+    IsBigO atBot (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by
+  have h1 : is_O at_top (f.comp (ContinuousMap.mk _ continuous_neg)) fun x : ℝ => |x| ^ (-b) := by
     convert hf.comp_tendsto tendsto_neg_at_top_at_bot
     ext1 x; simp only [Function.comp_apply, abs_neg]
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_at_bot_at_top
@@ -220,14 +205,12 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
-      |x| ^ (-b) :=
-  by
+      |x| ^ (-b) := by
   obtain ⟨r, hr⟩ := K.is_compact.bounded.subset_ball 0
   rw [closed_ball_eq_Icc, zero_add, zero_sub] at hr 
   have :
     ∀ x : ℝ,
-      ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ :=
-    by
+      ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ := by
     intro x
     rw [ContinuousMap.norm_le _ (norm_nonneg _)]
     rintro ⟨y, hy⟩
@@ -273,8 +256,7 @@ section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
 theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 f = g) :
-    ∑' n : ℤ, f n = ∑' n : ℤ, g n :=
-  by
+    ∑' n : ℤ, f n = ∑' n : ℤ, g n := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
   simp_rw [← hfg]
