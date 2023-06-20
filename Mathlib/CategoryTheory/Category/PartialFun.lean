@@ -106,7 +106,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   map_id X :=
     PFun.ext fun a b => PFun.mem_toSubtype_iff.trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
   map_comp f g := by
-    -- porting note: the proof was changed because the original mathlib3 proof no longer worked
+    -- porting note: the proof was changed because the original mathlib3 proof no longer works
     apply PFun.ext _
     rintro ⟨a, ha⟩ ⟨c, hc⟩
     constructor
@@ -140,70 +140,75 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
 #align PartialFun_to_Pointed partialFunToPointed
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
-`part.equiv_option` made functorial. -/
-@[simps]
-noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed := by
-  classical exact
-    equivalence.mk partialFunToPointed pointedToPartialFun
-      (nat_iso.of_components
-        (fun X =>
-          PartialFun.Iso.mk
-            { toFun := fun a => ⟨some a, some_ne_none a⟩
-              invFun := fun a => get <| ne_none_iff_is_some.1 a.2
-              left_inv := fun a => get_some _ _
-              right_inv := fun a => by simp only [Subtype.val_eq_coe, some_get, Subtype.coe_eta] })
-        fun X Y f =>
+`Part.equivOption` made functorial. -/
+@[simps!]
+noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
+  CategoryTheory.Equivalence.mk partialFunToPointed pointedToPartialFun
+    (NatIso.ofComponents (fun X => PartialFun.Iso.mk
+      { toFun := fun a => ⟨some a, some_ne_none a⟩
+        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
+        left_inv := fun a => Option.get_some _ _
+        right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
+      fun f =>
         PFun.ext fun a b => by
-          unfold_projs
-          dsimp
+          dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun]
           rw [Part.bind_some]
-          refine' (part.mem_bind_iff.trans _).trans pfun.mem_to_subtype_iff.symm
+          refine' (Part.mem_bind_iff.trans _).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
+          . dsimp [Part.toOption]
+            simp_rw [Part.mem_some_iff, Subtype.mk_eq_mk]
+            constructor
+            . rintro ⟨_, ⟨h₁, h₂⟩, h₃⟩
+              rw [h₃, ← h₂, dif_pos h₁]
+            . intro h
+              split_ifs at h with ha
+              rw [some_inj] at h
+              refine' ⟨b, ⟨ha, h.symm⟩, rfl⟩)
+    (NatIso.ofComponents (fun X => Pointed.Iso.mk
+      { toFun := Option.elim' X.point Subtype.val
+        invFun := fun a => by
+          classical
+          exact if h : a = X.point then none else some ⟨_, h⟩
+        left_inv := fun a => Option.recOn a (dif_pos rfl) fun a => by
           dsimp
-          simp_rw [Part.mem_some_iff, Subtype.mk_eq_mk, exists_prop, some_inj, exists_eq_right']
-          refine' part.mem_to_option.symm.trans _
-          exact eq_comm)
-      (nat_iso.of_components
-        (fun X =>
-          Pointed.Iso.mk
-            { toFun := Option.elim' X.point Subtype.val
-              invFun := fun a => if h : a = X.point then none else some ⟨_, h⟩
-              left_inv := fun a =>
-                Option.recOn a (dif_pos rfl) fun a =>
-                  (dif_neg a.2).trans <| by
-                    simp only [Option.elim', Subtype.val_eq_coe, Subtype.coe_eta]
-              right_inv := fun a => by
-                change Option.elim' _ _ (dite _ _ _) = _
-                split_ifs
-                · rw [h]; rfl
-                · rfl }
-            rfl)
-        fun X Y f =>
-        Pointed.Hom.ext _ _ <|
-          funext fun a =>
-            Option.recOn a f.map_point.symm fun a => by
-              unfold_projs
-              dsimp
-              change Option.elim' _ _ _ = _
-              rw [Part.elim_toOption]
-              split_ifs
-              · rfl
-              · exact Eq.symm (of_not_not h))
+          rw [dif_neg a.2]
+          rfl
+        right_inv := fun a => by
+          dsimp
+          split_ifs with h
+          . rw [h]
+            rfl
+          . rfl} rfl)
+      fun {X Y} f =>
+      Pointed.Hom.ext _ _ <|
+        funext fun a =>
+          Option.recOn a f.map_point.symm (by
+            rintro ⟨a, ha⟩
+            change Option.elim' _ _ _ = f.toFun a
+            dsimp
+            -- porting note: `rw [Part.elim_toOption]` does not work because there are
+            -- conflicting `Decidable` instances
+            rw [Option.elim'_eq_elim, @Part.elim_toOption _ _ _ (Classical.propDecidable _)]
+            split_ifs with h
+            . rfl
+            . exact Eq.symm (of_not_not h)))
 #align PartialFun_equiv_Pointed partialFunEquivPointed
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
-@[simps]
+@[simps!]
 noncomputable def typeToPartialFunIsoPartialFunToPointed :
     typeToPartialFun ⋙ partialFunToPointed ≅ typeToPointed :=
   NatIso.ofComponents
     (fun X =>
-      { Hom := ⟨id, rfl⟩
+      { hom := ⟨id, rfl⟩
         inv := ⟨id, rfl⟩
-        hom_inv_id' := rfl
-        inv_hom_id' := rfl })
-    fun X Y f =>
+        hom_inv_id := rfl
+        inv_hom_id := rfl })
+    fun f =>
     Pointed.Hom.ext _ _ <|
-      funext fun a => Option.recOn a rfl fun a => by convert Part.some_toOption _
+      funext fun a => Option.recOn a rfl fun a => by
+        classical
+        convert Part.some_toOption _
 #align Type_to_PartialFun_iso_PartialFun_to_Pointed typeToPartialFunIsoPartialFunToPointed
