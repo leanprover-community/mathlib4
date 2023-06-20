@@ -48,8 +48,6 @@ open CategoryTheory Limits
 
 namespace CategoryTheory.Limits.Types
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type u} (f : β → Type u) {P : Type u} (s : ∀ b, P ⟶ f b) (b : β)
