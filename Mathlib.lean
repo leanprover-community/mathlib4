@@ -409,6 +409,7 @@ import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
 import Mathlib.AlgebraicGeometry.PresheafedSpace
@@ -465,6 +466,7 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.BoundedVariation
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
@@ -1900,6 +1902,7 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
+import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.Init.Data.Int.DivMod
 import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -2552,6 +2555,7 @@ import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Localization.Norm
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
@@ -2567,6 +2571,7 @@ import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Perfection
@@ -2615,6 +2620,7 @@ import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
@@ -2757,6 +2763,7 @@ import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.RSuffices
+import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
