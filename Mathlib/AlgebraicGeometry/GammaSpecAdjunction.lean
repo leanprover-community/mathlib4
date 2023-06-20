@@ -430,7 +430,7 @@ instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdj
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   -- Porting Note: Next line was
   -- `apply (config := { instances := false }) nat_iso.is_iso_of_is_iso_app`
-  apply @NatIso.isIso_of_isIso_app _ _ _ _ _ _ ΓSpec.adjunction.counit ?_
+  apply @NatIso.isIso_of_isIso_app (α := ΓSpec.adjunction.counit) ?_
   intro R
   rw [adjunction_counit_app]
   infer_instance
