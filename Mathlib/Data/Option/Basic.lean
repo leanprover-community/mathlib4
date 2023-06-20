@@ -59,7 +59,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-fun _ _ _=> mem_unique
+  fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp

@@ -26,7 +26,7 @@ objects that are in normal form. A normalization procedure is then just a functo
 functoriality says that two objects which are related by associators and unitors have the
 same normal form. Another desirable property of a normalization procedure is that an object is
 isomorphic (i.e., related via associators and unitors) to its normal form. In the case of the
-specific normalization procedure we use we not only get these isomorphismns, but also that they
+specific normalization procedure we use we not only get these isomorphisms, but also that they
 assemble into a natural isomorphism `𝟭 (FreeMonoidalCategory C) ≅ fullNormalize ⋙ inclusion`.
 But this means that any two parallel morphisms in the free monoidal category factor through a
 discrete category in the same way, so they must be equal, and hence the free monoidal category

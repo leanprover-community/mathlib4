@@ -124,7 +124,7 @@ end Get
 
 section Put
 
-/-- Formats the config file for `curl`, containing the list of files to be uploades -/
+/-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
   let l ← fileNames.data.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {← mkFileURL fileName (some token)}"
@@ -159,7 +159,7 @@ def getGitCommitHash : IO String := do
   | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
 
 /--
-Sends a commit file to the server, containing the hashes of the respective commited files.
+Sends a commit file to the server, containing the hashes of the respective committed files.
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/

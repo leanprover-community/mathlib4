@@ -178,7 +178,7 @@ theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
   simp only [Subset.antisymm_iff, coe_subset_coe, le_iff_bounds] at h
   congr
-  exacts[le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
+  exacts [le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
 #align box_integral.box.injective_coe BoxIntegral.Box.injective_coe
 
 @[simp, norm_cast]

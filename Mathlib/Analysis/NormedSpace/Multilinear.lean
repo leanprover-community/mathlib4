@@ -494,7 +494,7 @@ theorem norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', N
   · refine' op_norm_le_bound _ (norm_nonneg f) fun m => _
     dsimp
     rw [pi_norm_le_iff_of_nonneg]
-    exacts[fun i => (f i).le_of_op_norm_le m (norm_le_pi_norm f i),
+    exacts [fun i => (f i).le_of_op_norm_le m (norm_le_pi_norm f i),
       mul_nonneg (norm_nonneg f) (prod_nonneg fun _ _ => norm_nonneg _)]
   · refine' (pi_norm_le_iff_of_nonneg (norm_nonneg _)).2 fun i => _
     refine' op_norm_le_bound _ (norm_nonneg _) fun m => _
@@ -1370,7 +1370,7 @@ theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap �
 theorem ContinuousLinearMap.curry_uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     f.uncurryLeft.curryLeft = f := by
-  ext (m x)
+  ext m x
   simp only [tail_cons, ContinuousLinearMap.uncurryLeft_apply,
     ContinuousMultilinearMap.curryLeft_apply]
   rw [cons_zero]
@@ -1498,7 +1498,7 @@ theorem ContinuousMultilinearMap.curryRight_apply (f : ContinuousMultilinearMap 
 theorem ContinuousMultilinearMap.curry_uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     f.uncurryRight.curryRight = f := by
-  ext (m x)
+  ext m x
   simp only [snoc_last, ContinuousMultilinearMap.curryRight_apply,
     ContinuousMultilinearMap.uncurryRight_apply]
   rw [init_snoc]
@@ -1655,7 +1655,6 @@ theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G[×0]→L[𝕜] G') :
 
 variable (𝕜 G)
 
-@[simp]
 theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
     (ContinuousMultilinearMap.curry0 𝕜 G x).uncurry0 = x :=
   rfl
@@ -1830,7 +1829,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G' �
         ext m
         exact congr_arg f (Sum.elim_comp_inl_inr m)
       right_inv := fun f => by
-        ext (m₁ m₂)
+        ext m₁ m₂
         rfl }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
       simp only [LinearEquiv.coe_symm_mk]

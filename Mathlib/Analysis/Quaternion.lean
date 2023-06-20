@@ -107,7 +107,7 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
 instance : CstarRing ℍ where
   norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
-/-- Coerction from `ℂ` to `ℍ`. -/
+/-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
 
 instance : Coe ℂ ℍ := ⟨coeComplex⟩

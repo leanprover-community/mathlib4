@@ -170,7 +170,7 @@ theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (
   · rcases h with ⟨x₀, hf0⟩
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
-  · push_neg  at h 
+  · push_neg at h
     have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
     rw [this]
     exact differentiable_const 0
@@ -273,7 +273,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         rw [eventually_all_finset]
         intro i hi
         apply h'f
-        simp only [Finset.mem_range_succ_iff] at hi 
+        simp only [Finset.mem_range_succ_iff] at hi
         exact (WithTop.coe_le_coe.2 hi).trans hm
       eventually_cofinite.2 A
     let T : Finset α := ht.toFinset
@@ -292,7 +292,6 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     rintro k ⟨i, hi⟩ x hk
     dsimp
     simp only [Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
-      exists_prop, not_exists, not_and, not_lt] at hi 
+      exists_prop, not_exists, not_and, not_lt] at hi
     exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x
 #align cont_diff_tsum_of_eventually contDiff_tsum_of_eventually
-
