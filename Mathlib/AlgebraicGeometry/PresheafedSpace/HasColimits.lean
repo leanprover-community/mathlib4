@@ -212,11 +212,12 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         { base := colimit.ι (F ⋙ PresheafedSpace.forget C) j
           c := limit.π _ (op j) }
       naturality := fun {j j'} f => by
-        ext x
+        ext1
         -- See https://github.com/leanprover/std4/pull/158
         swap
-        · exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · rcases U with ⟨U, hU⟩
+        · ext x
+          exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
+        · ext ⟨U, hU⟩
           dsimp
           rw [PresheafedSpace.id_c_app, map_id]
           erw [id_comp]
