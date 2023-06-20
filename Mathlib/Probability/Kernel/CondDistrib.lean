@@ -8,8 +8,8 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Kernel.Disintegration
-import Mathbin.Probability.Notation
+import Mathlib.Probability.Kernel.Disintegration
+import Mathlib.Probability.Notation
 
 /-!
 # Regular conditional probability distribution
@@ -112,8 +112,7 @@ end Measurability
 section Integrability
 
 theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :
-    Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ :=
-  by
+    Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ := by
   refine' integrable_to_real_of_lintegral_ne_top _ _
   · exact Measurable.comp_aemeasurable (kernel.measurable_coe _ hs) hX
   · refine' ne_of_lt _
@@ -193,8 +192,7 @@ theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEM
 /-- For almost every `a : α`, the `cond_distrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
 theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
-    (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ :=
-  by
+    (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
   refine' ae_eq_condexp_of_forall_set_integral_eq hX.comap_le _ _ _ _
   · exact (integrable_const _).indicator (hY hs)
   · exact fun t ht _ => (integrable_to_real_cond_distrib hX.ae_measurable hs).IntegrableOn
@@ -275,8 +273,7 @@ theorem condexp_ae_eq_integral_cond_distrib' {Ω} [NormedAddCommGroup Ω] [Norme
 theorem MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk {Ω F} {mΩ : MeasurableSpace Ω}
     {X : Ω → β} {μ : Measure Ω} [TopologicalSpace F] (hX : Measurable X) {f : Ω → F}
     (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) :=
-  by
+    AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine' ⟨fun x => hf.mk f x.2, hf.strongly_measurable_mk.comp_measurable measurable_snd, _⟩
   suffices h : measure.quasi_measure_preserving Prod.snd (μ.map fun ω => (X ω, ω)) μ
   · exact measure.quasi_measure_preserving.ae_eq h hf.ae_eq_mk
@@ -292,8 +289,7 @@ theorem MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk {Ω F} {mΩ : Me
 
 theorem MeasureTheory.Integrable.comp_snd_map_prod_mk {Ω} {mΩ : MeasurableSpace Ω} {X : Ω → β}
     {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} (hf_int : Integrable f μ) :
-    Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) :=
-  by
+    Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   have hf := hf_int.1.comp_snd_map_prod_mk hX
   refine' ⟨hf, _⟩
   rw [has_finite_integral, lintegral_map' hf.ennnorm (hX.prod_mk measurable_id).AEMeasurable]
