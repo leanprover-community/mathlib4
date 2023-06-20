@@ -252,10 +252,10 @@ theorem measurableSet_filtrationOfSet {s : ι → Set Ω} (hsm : ∀ i, Measurab
   MeasurableSpace.measurableSet_generateFrom ⟨j, hj, rfl⟩
 #align measure_theory.measurable_set_filtration_of_set MeasureTheory.measurableSet_filtrationOfSet
 
-theorem measurableSet_filtration_of_set' {s : ι → Set Ω} (hsm : ∀ n, MeasurableSet[m] (s n))
+theorem measurableSet_filtrationOfSet' {s : ι → Set Ω} (hsm : ∀ n, MeasurableSet[m] (s n))
     (i : ι) : MeasurableSet[filtrationOfSet hsm i] (s i) :=
   measurableSet_filtrationOfSet hsm i le_rfl
-#align measure_theory.measurable_set_filtration_of_set' MeasureTheory.measurableSet_filtration_of_set'
+#align measure_theory.measurable_set_filtration_of_set' MeasureTheory.measurableSet_filtrationOfSet'
 
 end OfSet
 

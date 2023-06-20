@@ -277,7 +277,7 @@ theorem pullbackDiagonalMapIdIso_inv_snd_snd :
 theorem pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullback f f] [HasPullback g g]
     [HasPullback (f ≫ g) (f ≫ g)] :
     diagonal (f ≫ g) = diagonal f ≫ (pullbackDiagonalMapIdIso f f g).inv ≫ pullback.snd := by
-  apply pullback.hom_ext <;> simp
+  ext <;> simp
 #align category_theory.limits.pullback.diagonal_comp CategoryTheory.Limits.pullback.diagonal_comp
 
 theorem pullback_map_diagonal_isPullback :
@@ -287,9 +287,9 @@ theorem pullback_map_diagonal_isPullback :
       (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _)) := by
   apply IsPullback.of_iso_pullback _ (pullbackDiagonalMapIdIso f g i).symm
   · simp
-  · apply pullback.hom_ext <;> simp
+  · ext <;> simp
   · constructor
-    apply pullback.hom_ext <;> simp [condition]
+    ext <;> simp [condition]
 #align category_theory.limits.pullback_map_diagonal_is_pullback CategoryTheory.Limits.pullback_map_diagonal_isPullback
 
 /-- The diagonal object of `X ×[Z] Y ⟶ X` is isomorphic to `Δ_{Y/Z} ×[Z] X`. -/
@@ -360,7 +360,7 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
         ((baseChange f).map
               (Over.homMk (diagonal g) : Over.mk g ⟶ Over.mk (pullback.snd ≫ g))).left ≫
           (diagonalObjPullbackFstIso f g).inv := by
-  apply pullback.hom_ext <;> apply pullback.hom_ext <;> dsimp <;> simp
+  ext <;> dsimp <;> simp
 #align category_theory.limits.diagonal_pullback_fst CategoryTheory.Limits.diagonal_pullback_fst
 
 end
@@ -404,6 +404,8 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
       (pullback.lift (pullback.map _ _ _ _ _ _ _ e₁ e₂) pullback.snd (pullback.lift_snd _ _ _))
       (by rw [pullback.lift_fst, pullback.lift_fst])
   hom_inv_id := by
+    -- We could use `ext` here to immediately descend to the leaf goals,
+    -- but it only obscures the structure.
     apply pullback.hom_ext
     . apply pullback.hom_ext
       . apply pullback.hom_ext
