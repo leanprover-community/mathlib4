@@ -719,10 +719,17 @@ end AlgHom
 
 section StarAlgHom
 
-variable {S R A : Type _}
-  [CommSemiring S] [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
-  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
-  {C : Type _} [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
+variable {R A C : Type _} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
+variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
+variable [Semiring C] [Algebra R C] [StarRing C] [StarModule R C]
+
+/-- See note [partially-applied ext lemmas] -/
+@[ext]
+theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
+    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    φ = ψ :=
+  Unitization.algHom_ext'' <| FunLike.congr_fun h
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
