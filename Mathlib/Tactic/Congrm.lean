@@ -119,7 +119,7 @@ partial def congrmLoop (pat : Expr) (goal : MVarId) : MetaM (List MVarId) := do
     let res ← observing? do
       goal.refl
     if res == none then
-      throwTacticEx `congrm goal m!"variable pattern has to "
+      throwTacticEx `congrm goal m!"Variable pattern is not proved by `refl`"
     else return []
   else
     trace[congrm] s!"We have an unhandled expression: {← ppExpr pat}"
