@@ -64,8 +64,7 @@ theorem iIndepSet.condexp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
     fun _ => (μ (s j)).toReal := by
   rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
   refine' (iIndepFun.condexp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans _
-  simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]
-  norm_cast
+  simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set.condexp_indicator_filtration_of_set_ae_eq ProbabilityTheory.iIndepSet.condexp_indicator_filtrationOfSet_ae_eq
 
