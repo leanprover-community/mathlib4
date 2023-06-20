@@ -31,11 +31,10 @@ set_option linter.uppercaseLean3 false
 
 open Ordinal Order
 
-open Ordinal
+open Ordinal -- get notation for `ω`
 
 -- Porting note: the generated theorem gets lint.
 set_option genSizeOfSpec false in
--- get notation for `ω`
 /-- Recursive definition of an ordinal notation. `zero` denotes the
   ordinal 0, and `oadd e n a` is intended to refer to `ω^e * n + a`.
   For this to be valid Cantor normal form, we must have the exponents
@@ -162,7 +161,6 @@ theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one ONote.repr_one
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
-  --unfold repr
   refine' le_trans _ (le_add_right _ _)
   simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega_pos).2 (nat_cast_le.2 n.2)
 #align onote.omega_le_oadd ONote.omega_le_oadd
@@ -887,7 +885,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
--- Porting note: `R'` is used many times but it gets lint.
+-- Porting note: `R'` is used in the proof but marked as an unused variable.
 set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
@@ -1163,7 +1161,7 @@ def fastGrowing : ONote → ℕ → ℕ
   termination_by fastGrowing o => o
 #align onote.fast_growing ONote.fastGrowing
 
--- Porting note: `this` in the definition of `fastGrowing` gets lint.
+-- Porting note: the bug of the linter, should be fixed.
 @[nolint unusedHavesSuffices]
 theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
     fastGrowing o =
