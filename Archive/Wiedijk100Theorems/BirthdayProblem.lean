@@ -68,25 +68,30 @@ theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
   erw [condCount_univ, Measure.count_apply_finite]
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
-set_option maxRecDepth 100000
-set_option maxHeartbeats 4000000
+theorem _root_.ENNReal.mul_div (a b c : ℝ≥0∞) : a * (b / c) = (a * b) / c := sorry
+
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
     ℙ ({f | (Function.Injective f)} : Set ((Fin 23) → (Fin 365))) < 1 / 2 := by
   -- most of this proof is essentially converting it to the same form as `birthday`.
   rw [FinFin.measure_apply]
   generalize_proofs hfin
-  have : |hfin.toFinset| = 42200819302092359872395663074908957253749760700776448000000 := by
-    trans ‖Fin 23 ↪ Fin 365‖
-    · simp_rw [← Fintype.card_coe, Set.Finite.coeSort_toFinset, Set.coe_setOf]
-      exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
-    · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
-      norm_num
-  rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left; iterate 2 right; norm_num; iterate 2 left; norm_num
-  norm_cast
-  simp only [Fintype.card_pi, Fintype.card_fin]
-  norm_num
+  rw [ENNReal.lt_div_iff_mul_lt, mul_comm, ENNReal.mul_div]
+  swap; left; norm_num
+  swap; left; exact ENNReal.two_ne_top
+  apply ENNReal.div_lt_of_lt_mul
+  have : ∀ a b : ℕ, 2 * a < b → 2 * (a : ℝ≥0∞) < b := fun _ _ h => by norm_cast
+  rw [one_mul, Fintype.card_fun]
+  apply this
+  suffices : hfin.toFinset.card = 42200819302092359872395663074908957253749760700776448000000
+  · rw [this]; norm_num
+  trans ‖Fin 23 ↪ Fin 365‖
+  · rw [← Fintype.card_coe]
+    simp_rw [Set.Finite.coeSort_toFinset]
+    simp_rw [Set.coe_setOf] -- these two simp_rws are really slow
+    exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _) -/
+  · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
+
 #align theorems_100.birthday_measure Theorems100.birthday_measure
 
 end MeasureTheory
