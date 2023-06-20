@@ -298,47 +298,50 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
 
 theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k + 1) * Real.sin (2 * π * n * x))
-      ((-1) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
+      ((-1 : ℝ) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
         (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli (2 * k + 1))).eval x) := by
   have :
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k + 1) * (fourier n (x : 𝕌) - fourier (-n) (x : 𝕌)))
-      ((-1) ^ (k + 1) * I * (2 * π) ^ (2 * k + 1) / (2 * k + 1)! * bernoulliFun (2 * k + 1) x) := by
+      ((-1 : ℂ) ^ (k + 1) * I * (2 * π : ℂ) ^ (2 * k + 1) / (2 * k + 1)! * bernoulliFun (2 * k + 1) x) := by
     convert
       hasSum_one_div_nat_pow_mul_fourier
-        (by linarith [Nat.one_le_iff_ne_zero.mpr hk] : 2 ≤ 2 * k + 1) hx
+        (by linarith [Nat.one_le_iff_ne_zero.mpr hk] : 2 ≤ 2 * k + 1) hx using 1
     · ext1 n
       rw [pow_add (-1 : ℂ), pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul, pow_one, ←
         neg_eq_neg_one_mul, ← sub_eq_add_neg]
-    · rw [pow_add, pow_one]
+    · congr
+      rw [pow_add, pow_one]
       conv_rhs =>
         rw [mul_pow]
         congr
         congr
-        skip
-        rw [pow_add, pow_one, pow_mul, I_sq]
+        · skip
+        · rw [pow_add, pow_one, pow_mul, I_sq]
       ring
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
   convert ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
-  · ext1 n
-    convert (ofReal_re _).symm
+  · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_sin, ofReal_mul, fourier_coe_apply, fourier_coe_apply, sin, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_bit0, ofReal_one, Int.cast_neg, Int.cast_ofNat,
+        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_ofNat,
         ofReal_nat_cast, ← div_div, div_I, div_mul_eq_mul_div₀, ← neg_div, ← neg_mul, neg_sub]
       congr 4
-      · ring; · ring
+      · ring
+      · ring
   · convert (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
-      ofReal_nat_cast, ofReal_mul, ofReal_bit0, ofReal_one, ← div_div, div_I,
+      ofReal_nat_cast, ofReal_mul, ofReal_two, ofReal_one, ← div_div, div_I,
       div_mul_eq_mul_div₀]
     have : ∀ α β γ δ : ℂ, α * I * β / γ * δ * I = I ^ 2 * α * β / γ * δ := by intros; ring
     rw [this, I_sq]
+    rw [bernoulliFun]
     ring
 #align has_sum_one_div_nat_pow_mul_sin hasSum_one_div_nat_pow_mul_sin
 
 theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k))
-      ((-1) ^ (k + 1) * 2 ^ (2 * k - 1) * π ^ (2 * k) * bernoulli (2 * k) / (2 * k)!) := by
+      ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) * bernoulli (2 * k) / (2 * k)!) := by
   convert hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
   · ext1 n; rw [MulZeroClass.mul_zero, Real.cos_zero, mul_one]
   rw [Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
@@ -346,10 +349,10 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
     rw [eq_div_iff (two_ne_zero' ℝ)]
     conv_lhs =>
       congr
-      skip
-      rw [← pow_one (2 : ℝ)]
+      · skip
+      · rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
-    linarith [nat.one_le_iff_ne_zero.mpr hk]
+    linarith [Nat.one_le_iff_ne_zero.mpr hk]
   rw [this, mul_pow]
   ring
 #align has_sum_zeta_nat hasSum_zeta_nat
@@ -358,13 +361,13 @@ end Cleanup
 
 section Examples
 
-theorem hasSum_zeta_two : HasSum (fun n : ℕ => 1 / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
+theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
   convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
   norm_num; field_simp; ring
 #align has_sum_zeta_two hasSum_zeta_two
 
-theorem hasSum_zeta_four : HasSum (fun n : ℕ => 1 / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
+theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
   convert hasSum_zeta_nat two_ne_zero using 1; norm_num
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   norm_num; field_simp; ring; decide
