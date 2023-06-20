@@ -40,7 +40,6 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         rw [←Int.natAbs_pos] at b0
         exact Nat.mul_le_mul_of_nonneg_left b0  }
 
--- Porting note: this seems very slow.
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toEuclideanDomain {K : Type _} [Field K] : EuclideanDomain K :=
 { toCommRing := Field.toCommRing
