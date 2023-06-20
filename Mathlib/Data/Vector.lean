@@ -89,17 +89,6 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- porting notes: align to `List` API
-/-- nth element of a vector, indexed by a `Fin` type. -/
-def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
-#align vector.nth Vector.get
-
-/-- nth element of a vector, indexed by a `Nat`.
-Returns `none` if vector is not long enough-/
-def get? : ∀ _ : Vector α n, Nat → Option α
-  | v, i => if h : i < n then some (v.get ⟨i,h⟩) else none
-
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
@@ -265,6 +254,13 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
 #align vector.to_list_take Vector.toList_take
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
-  getElem := fun x i h => get x ⟨i, h⟩
+  -- getElem := fun x i h => x.1.get ⟨i, by rcases x with ⟨_, ⟨⟩⟩; exact h⟩
+  getElem := fun ⟨l, hl⟩ i h => l.get ⟨i, by rw [hl] ; exact h⟩
+
+-- porting notes: align to `List` API
+/-- nth element of a vector, indexed by a `Fin` type. -/
+abbrev get (v : Vector α n)  (i : Fin n) : α :=
+  v[i]
+#align vector.nth Vector.get
 
 end Vector
