@@ -187,7 +187,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       intro n hn_not_mem
       rw [Finset.mem_range, not_lt] at hn_not_mem
       exact h_zero a b n hn_not_mem
-    ext (a b) : 2
+    ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
     have h_finset_sum : ∀ n, ∑ i in Finset.range n, fs i a b = min (f a b) n := by
