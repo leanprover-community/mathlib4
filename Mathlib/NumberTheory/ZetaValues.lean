@@ -387,8 +387,13 @@ theorem Polynomial.bernoulli_three_eval_one_quarter :
 /-- Explicit formula for `L(χ, 3)`, where `χ` is the unique nontrivial Dirichlet character modulo 4.
 -/
 theorem hasSum_L_function_mod_four_eval_three :
-    HasSum (fun n : ℕ => 1 / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
-  convert hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
+    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
+  -- Porting note: times out with
+  -- convert hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
+  have congr : ∀ {a b : ℕ → ℝ} {c d}, a = b → c = d → HasSum a c → HasSum b d := by
+    rintro _ _ _ _ rfl rfl
+    exact id
+  apply congr ?_ ?_ <| hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
     norm_num
     left
@@ -399,6 +404,7 @@ theorem hasSum_L_function_mod_four_eval_three :
       Polynomial.bernoulli_three_eval_one_quarter]
     norm_num; field_simp; ring
   · rw [mem_Icc]; constructor; linarith; linarith
+set_option linter.uppercaseLean3 false in
 #align has_sum_L_function_mod_four_eval_three hasSum_L_function_mod_four_eval_three
 
 end Examples
