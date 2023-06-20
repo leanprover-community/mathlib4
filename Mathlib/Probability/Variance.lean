@@ -242,8 +242,8 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq
 
-theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}
-    (hX : AEStronglyMeasurable X ℙ) : eVar[X] = (∫⁻ ω, ‖X ω‖₊ ^ 2) - ENNReal.ofReal (𝔼[X] ^ 2) := by
+theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X ℙ) :
+    eVar[X] = (∫⁻ ω, ‖X ω‖₊ ^ 2) - ENNReal.ofReal (𝔼[X] ^ 2) := by
   by_cases hℒ : Memℒp X 2
   · rw [← hℒ.ofReal_variance_eq, variance_def' hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
     congr
@@ -258,9 +258,8 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
-      coe, ENNReal.one_toReal, ENNReal.rpow_two, one_div, ENNReal.rpow_eq_top_iff,
-      inv_lt_zero, inv_pos, zero_lt_bit0, zero_lt_one, and_true_iff, or_iff_not_imp_left,
-      not_and_or, zero_lt_two] at hℒ
+      coe, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
+      or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact_mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
 
