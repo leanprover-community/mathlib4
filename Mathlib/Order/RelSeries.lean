@@ -22,9 +22,9 @@ Let `r` be a relation on `α`, a relation series of `r` of length `n` is a serie
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
 -/
 structure RelSeries where
-/-- the number of inequalities in the series -/
+/-- The number of inequalities in the series -/
 length : ℕ
-/-- the underlying function of a relation series -/
+/-- The underlying function of a relation series -/
 toFun : Fin (length + 1) → α
 /-- Adjacent elements are related -/
 step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
@@ -130,7 +130,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   . rw [List.get_ofFn]
     congr 1
 
-lemma toList_not_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
+lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
