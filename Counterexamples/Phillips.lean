@@ -8,10 +8,10 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.NormedSpace.HahnBanach.Extension
-import Mathbin.MeasureTheory.Integral.SetIntegral
-import Mathbin.MeasureTheory.Measure.Lebesgue.Basic
-import Mathbin.Topology.ContinuousFunction.Bounded
+import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.Topology.ContinuousFunction.Bounded
 
 /-!
 # A counterexample on Pettis integrability
@@ -120,8 +120,7 @@ of all bounded functions, coinciding with the integral on the integrable ones.
 This is a technical device, used to apply Hahn-Banach theorem to construct an extension of the
 integral to all bounded functions. -/
 def boundedIntegrableFunctions [MeasurableSpace α] (μ : Measure α) :
-    Subspace ℝ (DiscreteCopy α →ᵇ ℝ)
-    where
+    Subspace ℝ (DiscreteCopy α →ᵇ ℝ) where
   carrier := {f | Integrable f μ}
   zero_mem' := integrable_zero _ _ _
   add_mem' f g hf hg := Integrable.add hf hg
@@ -151,8 +150,7 @@ def boundedIntegrableFunctionsIntegralClm [MeasurableSpace α] (μ : Measure α)
 theorem exists_linear_extension_to_bounded_functions [MeasurableSpace α] (μ : Measure α)
     [IsFiniteMeasure μ] :
     ∃ φ : (DiscreteCopy α →ᵇ ℝ) →L[ℝ] ℝ,
-      ∀ f : DiscreteCopy α →ᵇ ℝ, Integrable f μ → φ f = ∫ x, f x ∂μ :=
-  by
+      ∀ f : DiscreteCopy α →ᵇ ℝ, Integrable f μ → φ f = ∫ x, f x ∂μ := by
   rcases exists_extension_norm_eq _ (bounded_integrable_functions_integral_clm μ) with ⟨φ, hφ⟩
   exact ⟨φ, fun f hf => hφ.1 ⟨f, hf⟩⟩
 #align counterexample.phillips_1940.exists_linear_extension_to_bounded_functions Counterexample.Phillips1940.exists_linear_extension_to_bounded_functions
@@ -214,8 +212,7 @@ theorem le_bound (f : BoundedAdditiveMeasure α) (s : Set α) : f s ≤ f.C :=
 #align counterexample.phillips_1940.bounded_additive_measure.le_bound Counterexample.Phillips1940.BoundedAdditiveMeasure.le_bound
 
 @[simp]
-theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 :=
-  by
+theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
   have : (∅ : Set α) = ∅ ∪ ∅ := by simp only [empty_union]
   apply_fun f at this 
   rwa [f.additive _ _ (empty_disjoint _), self_eq_add_left] at this 
@@ -233,11 +230,9 @@ theorem neg_apply (f : BoundedAdditiveMeasure α) (s : Set α) : (-f) s = -f s :
 #align counterexample.phillips_1940.bounded_additive_measure.neg_apply Counterexample.Phillips1940.BoundedAdditiveMeasure.neg_apply
 
 /-- Restricting a bounded additive measure to a subset still gives a bounded additive measure. -/
-def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasure α
-    where
+def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasure α where
   toFun s := f (t ∩ s)
-  additive' s s' h :=
-    by
+  additive' s s' h := by
     rw [← f.additive (t ∩ s) (t ∩ s'), inter_union_distrib_left]
     exact h.mono (inter_subset_right _ _) (inter_subset_right _ _)
   exists_bound := ⟨f.C, fun s => f.abs_le_bound _⟩
@@ -251,8 +246,7 @@ theorem restrict_apply (f : BoundedAdditiveMeasure α) (s t : Set α) : f.restri
 /-- There is a maximal countable set of positive measure, in the sense that any countable set
 not intersecting it has nonpositive measure. Auxiliary lemma to prove `exists_discrete_support`. -/
 theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
-    ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) ≤ 0 :=
-  by
+    ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) ≤ 0 := by
   /- The idea of the proof is to construct the desired set inductively, adding at each step a
     countable set with close to maximal measure among those points that have not already been chosen.
     Doing this countably many steps will be enough. Indeed, otherwise, a remaining set would have
@@ -274,11 +268,9 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   haveI : Nonempty A := ⟨Empty⟩
   -- given a countable set `s`, one can find a set `t` in its complement with measure close to
   -- maximal.
-  have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) :=
-    by
+  have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
     intro s
-    have B : BddAbove (range fun u : A => f (↑u \ ↑s)) :=
-      by
+    have B : BddAbove (range fun u : A => f (↑u \ ↑s)) := by
       refine' ⟨f.C, fun x hx => _⟩
       rcases hx with ⟨u, hu⟩
       rw [← hu]
@@ -307,8 +299,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono (diff_subset _ _)⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
-  have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) :=
-    by
+  have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
     rw [div_le_iff' (show (0 : ℝ) < 2 by norm_num), hε]
     convert hF (s n) u using 3
@@ -317,8 +308,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [not_exists, mem_Union, mem_diff]
       tauto
     · simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left]
-  have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) :=
-    by
+  have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
     ·
@@ -339,8 +329,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
 #align counterexample.phillips_1940.bounded_additive_measure.exists_discrete_support_nonpos Counterexample.Phillips1940.BoundedAdditiveMeasure.exists_discrete_support_nonpos
 
 theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
-    ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 :=
-  by
+    ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 := by
   rcases f.exists_discrete_support_nonpos with ⟨s₁, s₁_count, h₁⟩
   rcases(-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
   refine' ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm _ _⟩
@@ -382,8 +371,7 @@ def continuousPart (f : BoundedAdditiveMeasure α) : BoundedAdditiveMeasure α :
 #align counterexample.phillips_1940.bounded_additive_measure.continuous_part Counterexample.Phillips1940.BoundedAdditiveMeasure.continuousPart
 
 theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
-    f s = f.discretePart s + f.continuousPart s :=
-  by
+    f s = f.discretePart s + f.continuousPart s := by
   simp only [discrete_part, continuous_part, restrict_apply]
   rw [← f.additive, ← inter_distrib_right]
   · simp only [union_univ, union_diff_self, univ_inter]
@@ -397,8 +385,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 #align counterexample.phillips_1940.bounded_additive_measure.discrete_part_apply Counterexample.Phillips1940.BoundedAdditiveMeasure.discretePart_apply
 
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
-    (hs : s.Countable) : f.continuousPart s = 0 :=
-  by
+    (hs : s.Countable) : f.continuousPart s = 0 := by
   simp [continuous_part]
   convert f.apply_countable s hs using 2
   ext x
@@ -406,8 +393,7 @@ theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α
 #align counterexample.phillips_1940.bounded_additive_measure.continuous_part_apply_eq_zero_of_countable Counterexample.Phillips1940.BoundedAdditiveMeasure.continuousPart_apply_eq_zero_of_countable
 
 theorem continuousPart_apply_diff (f : BoundedAdditiveMeasure α) (s t : Set α) (hs : s.Countable) :
-    f.continuousPart (t \ s) = f.continuousPart t :=
-  by
+    f.continuousPart (t \ s) = f.continuousPart t := by
   conv_rhs => rw [← diff_union_inter t s]
   rw [Additive, self_eq_add_right]
   · exact continuous_part_apply_eq_zero_of_countable _ _ (hs.mono (inter_subset_right _ _))
@@ -432,11 +418,9 @@ theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α �
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
 by applying the functional to the indicator functions. -/
 def ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [DiscreteTopology α]
-    (f : (α →ᵇ ℝ) →L[ℝ] ℝ) : BoundedAdditiveMeasure α
-    where
+    (f : (α →ᵇ ℝ) →L[ℝ] ℝ) : BoundedAdditiveMeasure α where
   toFun s := f (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s))
-  additive' s t hst :=
-    by
+  additive' s t hst := by
     have :
       of_normed_add_comm_group_discrete (indicator (s ∪ t) 1) 1 (norm_indicator_le_one _) =
         of_normed_add_comm_group_discrete (indicator s 1) 1 (norm_indicator_le_one s) +
@@ -444,8 +428,7 @@ def ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [Discrete
       by ext x; simp [indicator_union_of_disjoint hst]
     rw [this, f.map_add]
   exists_bound :=
-    ⟨‖f‖, fun s =>
-      by
+    ⟨‖f‖, fun s => by
       have I :
         ‖of_normed_add_comm_group_discrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_of_normed_add_comm_group_le _ zero_le_one
@@ -467,8 +450,7 @@ theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology �
 
 theorem to_functions_to_measure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal :=
-  by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
   change
     μ.extension_to_bounded_functions
         (of_normed_add_comm_group_discrete (indicator s 1) 1 (norm_indicator_le_one s)) =
@@ -486,8 +468,7 @@ theorem to_functions_to_measure [MeasurableSpace α] (μ : Measure α) [IsFinite
 
 theorem to_functions_to_measure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = (μ s).toReal :=
-  by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = (μ s).toReal := by
   let f := μ.extension_to_bounded_functions.to_bounded_additive_measure
   change f (univ \ f.discrete_support ∩ s) = (μ s).toReal
   rw [to_functions_to_measure]; swap
@@ -513,13 +494,11 @@ We need the continuum hypothesis to construct it.
 
 
 theorem sierpinski_pathological_family (Hcont : (#ℝ) = aleph 1) :
-    ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable :=
-  by
+    ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
   skip
   refine' ⟨fun x => {y | r x y}, fun x => _, fun y => _⟩
-  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} :=
-      by
+  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
       simp only [true_and_iff, mem_univ, mem_set_of_eq, mem_insert_iff, union_singleton, mem_diff]
       rcases trichotomous_of r x y with (h | rfl | h)
@@ -574,8 +553,7 @@ def f (Hcont : (#ℝ) = aleph 1) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
 
 theorem apply_f_eq_continuousPart (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
     (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x = ∅) :
-    φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ :=
-  by
+    φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   set ψ := φ.to_bounded_additive_measure with hψ
   have : φ (f Hcont x) = ψ (spf Hcont x) := rfl
   have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp only [union_univ, union_diff_self]
@@ -585,20 +563,17 @@ theorem apply_f_eq_continuousPart (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy
 #align counterexample.phillips_1940.apply_f_eq_continuous_part Counterexample.Phillips1940.apply_f_eq_continuousPart
 
 theorem countable_ne (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)}.Countable :=
-  by
+    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)}.Countable := by
   have A :
     {x | φ.to_bounded_additive_measure.continuous_part univ ≠ φ (f Hcont x)} ⊆
-      {x | φ.to_bounded_additive_measure.discrete_support ∩ spf Hcont x ≠ ∅} :=
-    by
+      {x | φ.to_bounded_additive_measure.discrete_support ∩ spf Hcont x ≠ ∅} := by
     intro x hx
     contrapose! hx
     simp only [Classical.not_not, mem_set_of_eq] at hx 
     simp [apply_f_eq_continuous_part Hcont φ x hx]
   have B :
     {x | φ.to_bounded_additive_measure.discrete_support ∩ spf Hcont x ≠ ∅} ⊆
-      ⋃ y ∈ φ.to_bounded_additive_measure.discrete_support, {x | y ∈ spf Hcont x} :=
-    by
+      ⋃ y ∈ φ.to_bounded_additive_measure.discrete_support, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx 
     rw [← Ne.def, ← nonempty_iff_ne_empty] at hx 
@@ -610,8 +585,7 @@ theorem countable_ne (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ �
 
 theorem comp_ae_eq_const (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∀ᵐ x ∂volume.restrict (Icc (0 : ℝ) 1),
-      φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f Hcont x) :=
-  by
+      φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f Hcont x) := by
   apply ae_restrict_of_ae
   refine' measure_mono_null _ ((countable_ne Hcont φ).measure_zero _)
   intro x
@@ -619,8 +593,7 @@ theorem comp_ae_eq_const (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →�
 #align counterexample.phillips_1940.comp_ae_eq_const Counterexample.Phillips1940.comp_ae_eq_const
 
 theorem integrable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) :=
-  by
+    IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
   have :
     integrable_on (fun x => φ.to_bounded_additive_measure.continuous_part univ) (Icc (0 : ℝ) 1)
       volume :=
@@ -629,8 +602,7 @@ theorem integrable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →�
 #align counterexample.phillips_1940.integrable_comp Counterexample.Phillips1940.integrable_comp
 
 theorem integral_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ :=
-  by
+    ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   rw [← integral_congr_ae (comp_ae_eq_const Hcont φ)]
   simp
 #align counterexample.phillips_1940.integral_comp Counterexample.Phillips1940.integral_comp
@@ -646,8 +618,7 @@ example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 
 /-- The function `f Hcont : ℝ → (discrete_copy ℝ →ᵇ ℝ)` is scalarly measurable. -/
 theorem measurable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    Measurable fun x => φ (f Hcont x) :=
-  by
+    Measurable fun x => φ (f Hcont x) := by
   have : Measurable fun x => φ.to_bounded_additive_measure.continuous_part univ := measurable_const
   refine' this.measurable_of_countable_ne _
   exact countable_ne Hcont φ
@@ -661,8 +632,7 @@ theorem norm_bound (Hcont : (#ℝ) = aleph 1) (x : ℝ) : ‖f Hcont x‖ ≤ 1 
 /-- The function `f Hcont : ℝ → (discrete_copy ℝ →ᵇ ℝ)` has no Pettis integral. -/
 theorem no_pettis_integral (Hcont : (#ℝ) = aleph 1) :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,
-        ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f Hcont x) = φ g :=
-  by
+        ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f Hcont x) = φ g := by
   rintro ⟨g, h⟩
   simp only [integral_comp] at h 
   have : g = 0 := by
