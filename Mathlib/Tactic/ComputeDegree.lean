@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Data.Polynomial.Degree.Definitions
-import Lean
 
 /-!
 
@@ -36,7 +35,7 @@ section Tactic
 
 namespace Mathlib.Tactic.ComputeDegree
 
-open Lean Meta Elab Tactic Expr Polynomial
+open Lean Meta Elab.Tactic Polynomial
 
 /-- Return `max a b` using `Max.max`. This method assumes `a` and `b` have the same type. -/
 def mkMax (a b : Expr) : MetaM Expr := mkAppM ``Max.max #[a, b]
