@@ -85,7 +85,6 @@ theorem birthday_measure :
   norm_cast
   simp only [Fintype.card_pi]
   norm_num
-
 #align theorems_100.birthday_measure Theorems100.birthday_measure
 
 end MeasureTheory
