@@ -151,7 +151,7 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
   let candidates := ListM.ofList candidates.toList
   pure <| candidates.filterMapM fun ⟨lem, symm, weight⟩ => do
     trace[Tactic.rewrites] "considering {if symm then "←" else ""}{lem}"
-    let some result ← try? do goal.rewrite type (← mkConstWithFreshMVarLevels lem) symm
+    let some result ← try? do goal.rewrite target (← mkConstWithFreshMVarLevels lem) symm
       | return none
     return if result.mvarIds.isEmpty then
       some ⟨lem, symm, weight, result, none⟩
@@ -224,7 +224,7 @@ elab_rules : tactic |
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the goal"
       for r in results do
-        let newGoal := if r.refl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
+        let newGoal := if r.rfl? = some true then Expr.lit (.strVal "no goals") else r.result.eNew
         addRewriteSuggestion tk (← mkConstWithFreshMVarLevels r.name) r.symm
           newGoal (origSpan? := ← getRef)
       if lucky.isSome then
@@ -236,5 +236,5 @@ elab_rules : tactic |
         | _ => failure
     (λ _ => throwError "Failed to find a rewrite for some location")
 
-@[inherit_doc rewrites'] macro "rw?!" : tactic =>
-  `(tactic| rw? !)
+@[inherit_doc rewrites'] macro "rw?!" h:(ppSpace location)? : tactic =>
+  `(tactic| rw? ! $[$h]?)
