@@ -115,6 +115,13 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [(choose_mul_succ_eq k m).symm, mul_comm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
+theorem derivative_bernoulli (k : ℕ) :
+    Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
+  cases' k with k
+  · rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
+  · exact_mod_cast derivative_bernoulli_add_one k
+#align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
+
 @[simp]
 nonrec theorem sum_bernoulli (n : ℕ) :
     (∑ k in range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
