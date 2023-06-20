@@ -683,7 +683,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
     -- As `S` is finite with respect to both `μ` and `ν`, it is clear that `μn n` and `νn n` are
     -- finite measures for all `n : ℕ`. Thus, we may apply the finite Lebesgue decomposition theorem
     -- to `μn n` and `νn n`. We define `ξ` as the sum of the singular part of the Lebesgue
-    -- decompositions of `μn n` and `νn n`, and `f` as the sum of the Radon-Nikodym derviatives of
+    -- decompositions of `μn n` and `νn n`, and `f` as the sum of the Radon-Nikodym derivatives of
     -- `μn n` and `νn n` restricted on `S n`
     set ξ := sum fun n => singularPart (μn n) (νn n) with hξ
     set f := ∑' n, (S.set n).indicator (rnDeriv (μn n) (νn n))
@@ -984,7 +984,7 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   refine' toJordanDecomposition_eq _
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
-  ext i; intro hi
+  ext i hi
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
       toSignedMeasure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
       ENNReal.toReal_add, add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
@@ -1226,7 +1226,7 @@ theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrabl
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
-  ext i : 1; intro hi
+  ext i hi : 1
   rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   ext
   · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,

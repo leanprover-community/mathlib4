@@ -24,7 +24,7 @@ with respect to an ideal `I`:
 - `IsPrecomplete I M`: this says that every Cauchy sequence converges.
 - `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
 - `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
-- `adicCcompletion I M`: if `I` is finitely generated, then this is the universal complete module
+- `adicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
   (TODO) with a map from `M`. This map is injective iff `M` is Hausdorff and surjective iff `M` is
   precomplete.
 

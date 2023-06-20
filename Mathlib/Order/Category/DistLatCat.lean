@@ -58,6 +58,7 @@ instance : BundledHom.ParentProjection @DistribLattice.toLattice :=
 
 deriving instance LargeCategory for DistLatCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory DistLatCat :=
   BundledHom.concreteCategory _
 
@@ -91,8 +92,8 @@ def dual : DistLatCat ⥤ DistLatCat where
 def dualEquiv : DistLatCat ≌ DistLatCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 #align DistLat.dual_equiv DistLatCat.dualEquiv
 
 end DistLatCat

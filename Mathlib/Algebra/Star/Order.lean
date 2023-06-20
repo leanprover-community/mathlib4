@@ -20,7 +20,7 @@ elements of the form `star s * s`. In many cases, including all C⋆-algebras, t
 allows us to register a `StarOrderedRing` instance for `ℚ`), and more closely resembles the
 literature (see the seminal paper [*The positive cone in Banach algebras*][kelleyVaught1953])
 
-In order to accodomate `NonUnitalSemiring R`, we actually don't characterize nonnegativity, but
+In order to accommodate `NonUnitalSemiring R`, we actually don't characterize nonnegativity, but
 rather the entire `≤` relation with `StarOrderedRing.le_iff`. However, notice that when `R` is a
 `NonUnitalRing`, these are equivalent (see `StarOrderedRing.nonneg_iff` and
 `StarOrderedRing.ofNonnegIff`).

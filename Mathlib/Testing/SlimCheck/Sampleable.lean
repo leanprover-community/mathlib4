@@ -9,7 +9,7 @@ import Qq
 /-!
 # `SampleableExt` Class
 This class permits the creation samples of a given type
-controlling the size of those values using the `Gen` monad`.
+controlling the size of those values using the `Gen` monad.
 
 # `Shrinkable` Class
 This class helps minimize examples by creating smaller versions of
@@ -21,9 +21,9 @@ When testing a proposition like `∀ n : ℕ, prime n → n ≤ 100`,
 `SampleableExt` to generate small examples of ℕ and progressively increase
 in size. For each example `n`, `prime n` is tested. If it is false,
 the example will be rejected (not a test success nor a failure) and
-`SlimCheck` will move on to other examples. If `prime n` is true, `n
-≤ 100` will be tested. If it is false, `n` is a counter-example of `∀
-n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
+`SlimCheck` will move on to other examples. If `prime n` is true,
+`n ≤ 100` will be tested. If it is false, `n` is a counter-example of
+`∀ n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
 the test passes and `SlimCheck` moves on to trying more examples.
 
 This is a port of the Haskell QuickCheck library.
@@ -48,7 +48,7 @@ as interpreted (using `interp`) as an object of the right type. If you
 are using it in the first way, this proxy type will simply be the type
 itself and the `interp` function `id`.
 
-### `Shrinkable
+### `Shrinkable`
 Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples.
 

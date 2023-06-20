@@ -73,11 +73,11 @@ As with `Set.iUnion`/`biUnion`/`Set.sUnion`, there are three different approache
 * `Filter.HasBasis l p s`, `p : ι → Prop`, `s : ι → Set α`.
 
 We use the latter one because, e.g., `𝓝 x` in an `EMetricSpace` or in a `MetricSpace` has a basis
-of this form. The other two can be emulated using `s = id` or `p = λ _, True`.
+of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ True`.
 
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
 machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
-`p = λ _, True`.
+`p = fun _ ↦ True`.
 -/
 
 
