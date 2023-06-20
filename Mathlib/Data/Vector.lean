@@ -254,7 +254,6 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
 #align vector.to_list_take Vector.toList_take
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
-  -- getElem := fun x i h => x.1.get ⟨i, by rcases x with ⟨_, ⟨⟩⟩; exact h⟩
   getElem := fun ⟨l, hl⟩ i h => l.get ⟨i, by rw [hl] ; exact h⟩
 
 -- porting notes: align to `List` API
