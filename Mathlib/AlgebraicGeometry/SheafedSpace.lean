@@ -51,6 +51,9 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
+instance coeSort : CoeSort (SheafedSpace C) (Type _) where
+  coe := fun X => X.1
+
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
