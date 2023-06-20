@@ -149,4 +149,132 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
   mk_toPartENat_of_infinite
 #align part_enat.card_eq_top_of_infinite PartENat.card_eq_top_of_infinite
 
+theorem card_congr {α : Type _} {β : Type _} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
+  Cardinal.toPartENat_congr f
+#align part_enat.card_congr PartENat.card_congr
+
+theorem card_uLift (α : Type _) : card (ULift α) = card α :=
+  card_congr Equiv.ulift
+#align part_enat.card_ulift PartENat.card_uLift
+
+@[simp]
+theorem card_pLift (α : Type _) : card (PLift α) = card α :=
+  card_congr Equiv.plift
+#align part_enat.card_plift PartENat.card_pLift
+
+theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+    card (f '' s) = card s :=
+  card_congr (Equiv.Set.imageOfInjOn f s h).symm
+#align part_enat.card_image_of_inj_on PartENat.card_image_of_injOn
+
+theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
+    (h : Function.Injective f) : card (f '' s) = card s :=
+  card_congr (Equiv.Set.imageOfInjOn f s (Set.injOn_of_injective h s)).symm
+#align part_enat.card_image_of_injective PartENat.card_image_of_injective
+
+-- Add other similar lemmas?
+theorem succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e :=
+  by
+  rw [coe_lt_iff, coe_le_iff]
+  apply forall_congr'; intro a; rw [Nat.succ_le_iff]
+#align part_enat.succ_le_iff PartENat.succ_le_iff
+
+/- The line
+-- obtain ⟨m, hm⟩ := cardinal.lt_aleph_0.mp h,
+extract an integer m from a cardinal c such that h : c < ℵ₀
+It may appear easier to use than the rewrites I finally use … -/
+theorem natCast_le_iff_le {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c :=
+  by
+  cases lt_or_ge c ℵ₀ with
+  | inl h =>
+    . rw [toPartENat_apply_of_lt_aleph0 h, coe_le_coe, ← toNat_cast n];
+      rw [toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 n) h]
+      simp only [toNat_cast]
+  | inr h =>
+    . apply iff_of_true
+      . rw [toPartENat_apply_of_aleph0_le h]
+        exact le_top
+      · apply le_trans (le_of_lt _) h
+        rw [lt_aleph0]
+        use n
+#align part_enat.coe_nat_le_iff_le PartENat.natCast_le_iff_le
+
+theorem le_natCast_iff_le {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n :=
+  by
+  cases lt_or_ge c ℵ₀ with
+  | inl h =>
+    · rw [toPartENat_apply_of_lt_aleph0 h, coe_le_coe, ← toNat_cast n]
+      rw [toNat_le_iff_le_of_lt_aleph0 h (nat_lt_aleph0 n)]
+      simp only [toNat_cast]
+  | inr h =>
+    · apply iff_of_false
+      · rw [toPartENat_apply_of_aleph0_le h]
+        simp only [top_le_iff, natCast_ne_top, not_false_iff]
+      · rw [not_le]
+        apply lt_of_lt_of_le (nat_lt_aleph0 n) h
+#align part_enat.le_coe_nat_iff_le PartENat.le_natCast_iff_le
+
+theorem natCast_eq_iff_eq {n : ℕ} {c : Cardinal} : ↑n = toPartENat c ↔ ↑n = c :=
+  by
+  cases lt_or_ge c Cardinal.aleph0 with
+  | inl h =>
+    · rw [toPartENat_apply_of_lt_aleph0 h, natCast_inj]
+      rw [← toNat_cast n]
+      rw [toNat_eq_iff_eq_of_lt_aleph0 (nat_lt_aleph0 n) h]
+      simp only [toNat_cast]
+  | inr h =>
+    · apply iff_of_false
+      · rw [toPartENat_apply_of_aleph0_le h]
+        exact natCast_ne_top n
+      · apply ne_of_lt
+        apply lt_of_lt_of_le (nat_lt_aleph0 n) h
+#align part_enat.coe_nat_eq_iff_eq PartENat.natCast_eq_iff_eq
+
+theorem eq_natCast_iff_eq {c : Cardinal} {n : ℕ} : Cardinal.toPartENat c = n ↔ c = n :=
+  by
+  constructor
+  · intro h; apply symm; exact natCast_eq_iff_eq.mp h.symm
+  · intro h; apply symm; exact natCast_eq_iff_eq.mpr h.symm
+#align part_enat.eq_coe_nat_iff_eq PartENat.eq_natCast_iff_eq
+
+theorem natCast_lt_coe_iff_lt {n : ℕ} {c : Cardinal} : ↑n < toPartENat c ↔ ↑n < c :=
+  by
+  cases lt_or_ge c ℵ₀ with
+  | inl h =>
+    · rw [toPartENat_apply_of_lt_aleph0 h, coe_lt_coe, ← toNat_cast n]
+      rw [toNat_lt_iff_lt_of_lt_aleph0 (nat_lt_aleph0 n) h]
+      simp only [toNat_cast]
+  | inr h =>
+    · apply iff_of_true
+      · rw [toPartENat_apply_of_aleph0_le h]; exact natCast_lt_top n
+      · exact lt_of_lt_of_le (nat_lt_aleph0 n) h
+#align part_enat.coe_nat_lt_coe_iff_lt PartENat.natCast_lt_coe_iff_lt
+
+theorem card_eq_zero_iff_empty (α : Type _) : card α = 0 ↔ IsEmpty α :=
+  by
+  rw [← Cardinal.mk_eq_zero_iff]
+  conv_rhs => rw [← Nat.cast_zero]
+  rw [← eq_natCast_iff_eq]
+  unfold PartENat.card
+  simp only [Nat.cast_zero]
+#align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
+
+theorem card_le_one_iff_subsingleton (α : Type _) : card α ≤ 1 ↔ Subsingleton α :=
+  by
+  rw [← le_one_iff_subsingleton]
+  conv_rhs => rw [← Nat.cast_one]
+  rw [← le_natCast_iff_le]
+  unfold PartENat.card
+  simp only [Nat.cast_one]
+#align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
+
+theorem one_lt_card_iff_nontrivial (α : Type _) : 1 < card α ↔ Nontrivial α :=
+  by
+  rw [← Cardinal.one_lt_iff_nontrivial]
+  conv_rhs => rw [← Nat.cast_one]
+  rw [← natCast_lt_coe_iff_lt]
+  unfold PartENat.card
+  simp only [Nat.cast_one]
+#align part_enat.one_lt_card_iff_nontrivial PartENat.one_lt_card_iff_nontrivial
+
 end PartENat

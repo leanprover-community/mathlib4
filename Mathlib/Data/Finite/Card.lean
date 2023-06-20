@@ -193,6 +193,25 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
 
 end Finite
 
+namespace PartENat
+
+theorem card_of_finite (α : Type _) [Finite α] : card α = Nat.card α :=
+  by
+  unfold PartENat.card
+  apply symm
+  rw [natCast_eq_iff_eq]
+  exact Finite.cast_card_eq_mk
+#align part_enat.card_of_finite PartENat.card_of_finite
+
+-- Necessary ?
+theorem card_of_fintype (α : Type _) [Fintype α] : card α = Fintype.card α :=
+  by
+  rw [card_of_finite]
+  simp only [Nat.card_eq_fintype_card]
+#align part_enat.card_of_fintype PartENat.card_of_fintype
+
+end PartENat
+
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
@@ -206,4 +225,3 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 #align set.card_union_le Set.card_union_le
 
 end Set
-
