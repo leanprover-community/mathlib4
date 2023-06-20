@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module linear_algebra.std_basis
-! leanprover-community/mathlib commit f8c79b0a623404854a2902b836eac32156fd7712
+! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -288,6 +288,11 @@ theorem basisFun_apply [DecidableEq η] (i) : basisFun R η i = stdBasis R (fun 
 @[simp]
 theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x i := by simp [basisFun]
 #align pi.basis_fun_repr Pi.basisFun_repr
+
+@[simp]
+theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
+  Basis.equivFun_ofEquivFun _
+#align pi.basis_fun_equiv_fun Pi.basisFun_equivFun
 
 end
 

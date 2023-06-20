@@ -161,7 +161,6 @@ that `0 < f i x`. -/
 theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   have H := f.sum_eq_one hx
   contrapose! H
-  simp_rw [not_exists, not_lt] at H
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 #align partition_of_unity.exists_pos PartitionOfUnity.exists_pos
 
@@ -375,7 +374,7 @@ of `1 - f j x` vanishes, and `∑ᶠ i, g i x = 1`.
 
 In order to avoid an assumption `LinearOrder ι`, we use `WellOrderingRel` instead of `(<)`. -/
 def toPouFun (i : ι) (x : X) : ℝ :=
-  f i x * ∏ᶠ (j) (_hj : WellOrderingRel j i), 1 - f j x
+  f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), 1 - f j x
 #align bump_covering.to_pou_fun BumpCovering.toPouFun
 
 theorem toPouFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPouFun i x = 0 := by
@@ -455,7 +454,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
 #align bump_covering.to_partition_of_unity BumpCovering.toPartitionOfUnity
 
 theorem toPartitionOfUnity_apply (i : ι) (x : X) :
-    f.toPartitionOfUnity i x = f i x * ∏ᶠ (j) (_hj : WellOrderingRel j i), 1 - f j x := rfl
+    f.toPartitionOfUnity i x = f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), 1 - f j x := rfl
 #align bump_covering.to_partition_of_unity_apply BumpCovering.toPartitionOfUnity_apply
 
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)

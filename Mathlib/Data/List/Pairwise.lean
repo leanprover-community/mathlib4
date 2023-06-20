@@ -104,7 +104,7 @@ theorem Pairwise.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l 
 #align list.pairwise.iff List.Pairwise.iff
 
 theorem pairwise_of_forall {l : List α} (H : ∀ x y, R x y) : Pairwise R l := by
-  induction l <;> [exact Pairwise.nil, simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
+  induction l <;> [exact Pairwise.nil; simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
 #align list.pairwise_of_forall List.pairwise_of_forall
 
 theorem Pairwise.and_mem {l : List α} :

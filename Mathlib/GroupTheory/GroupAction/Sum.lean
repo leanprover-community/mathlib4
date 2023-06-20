@@ -63,20 +63,20 @@ theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
 instance [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] : IsScalarTower M N (Sum α β) :=
   ⟨fun a b x => by
     cases x
-    exacts[congr_arg inl (smul_assoc _ _ _), congr_arg inr (smul_assoc _ _ _)]⟩
+    exacts [congr_arg inl (smul_assoc _ _ _), congr_arg inr (smul_assoc _ _ _)]⟩
 
 @[to_additive]
 instance [SMulCommClass M N α] [SMulCommClass M N β] : SMulCommClass M N (Sum α β) :=
   ⟨fun a b x => by
     cases x
-    exacts[congr_arg inl (smul_comm _ _ _), congr_arg inr (smul_comm _ _ _)]⟩
+    exacts [congr_arg inl (smul_comm _ _ _), congr_arg inr (smul_comm _ _ _)]⟩
 
 @[to_additive]
 instance [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
     IsCentralScalar M (Sum α β) :=
   ⟨fun a x => by
     cases x
-    exacts[congr_arg inl (op_smul_eq_smul _ _), congr_arg inr (op_smul_eq_smul _ _)]⟩
+    exacts [congr_arg inl (op_smul_eq_smul _ _), congr_arg inr (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
 instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (Sum α β) :=
@@ -99,9 +99,9 @@ instance {m : Monoid M} [MulAction M α] [MulAction M β] :
         β) where
   mul_smul a b x := by
     cases x
-    exacts[congr_arg inl (mul_smul _ _ _), congr_arg inr (mul_smul _ _ _)]
+    exacts [congr_arg inl (mul_smul _ _ _), congr_arg inr (mul_smul _ _ _)]
   one_smul x := by
     cases x
-    exacts[congr_arg inl (one_smul _ _), congr_arg inr (one_smul _ _)]
+    exacts [congr_arg inl (one_smul _ _), congr_arg inr (one_smul _ _)]
 
 end Sum

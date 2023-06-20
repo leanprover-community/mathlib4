@@ -195,7 +195,8 @@ protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) whe
 #align topological_space.compacts.prod TopologicalSpace.Compacts.prod
 
 @[simp]
-theorem coe_prod (K : Compacts α) (L : Compacts β) : (K.prod L : Set (α × β)) = K ×ˢ L :=
+theorem coe_prod (K : Compacts α) (L : Compacts β) :
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.compacts.coe_prod TopologicalSpace.Compacts.coe_prod
 
@@ -300,7 +301,7 @@ protected def prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) : Nonempt
 
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    (K.prod L : Set (α × β)) = K ×ˢ L :=
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.nonempty_compacts.coe_prod TopologicalSpace.NonemptyCompacts.coe_prod
 
@@ -440,7 +441,7 @@ protected def prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
 
 @[simp]
 theorem coe_prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    (K.prod L : Set (α × β)) = K ×ˢ L :=
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.positive_compacts.coe_prod TopologicalSpace.PositiveCompacts.coe_prod
 
@@ -601,7 +602,8 @@ protected def prod (K : CompactOpens α) (L : CompactOpens β) : CompactOpens (�
 #align topological_space.compact_opens.prod TopologicalSpace.CompactOpens.prod
 
 @[simp]
-theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) : (K.prod L : Set (α × β)) = K ×ˢ L :=
+theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) :
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.compact_opens.coe_prod TopologicalSpace.CompactOpens.coe_prod
 

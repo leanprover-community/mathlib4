@@ -130,7 +130,6 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
     (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext ; simp))
   unitIso :=
     (comapEq C (by ext ; simp)).trans (Pi.comapComp _ _ _).symm
-  functor_unitIso_comp X := by aesop_cat
 #align category_theory.graded_object.comap_equiv CategoryTheory.GradedObject.comapEquiv
 
 -- See note [dsimp, simp].
@@ -197,18 +196,13 @@ variable [HasCoproducts.{0} C]
 
 section
 
---attribute [local tidy] tactic.discrete_cases
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The total object of a graded object is the coproduct of the graded components.
 -/
 noncomputable def total : GradedObject β C ⥤ C where
   obj X := ∐ fun i : β => X i
   map f := Limits.Sigma.map fun i => f i
-  map_id := fun X => by
-    dsimp
-    ext
-    simp only [ι_colimMap, Discrete.natTrans_app, Category.comp_id]
-    apply Category.id_comp
 #align category_theory.graded_object.total CategoryTheory.GradedObject.total
 
 end

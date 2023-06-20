@@ -512,7 +512,8 @@ theorem mem_one {x : R} : x ∈ (1 : AddSubmonoid R) ↔ ∃ n : ℕ, ↑n = x :
 
 theorem one_eq_closure : (1 : AddSubmonoid R) = closure {1} := by
   rw [closure_singleton_eq, one_eq_mrange]
-  congr 1 with n
+  congr 1
+  ext
   simp
 #align add_submonoid.one_eq_closure AddSubmonoid.one_eq_closure
 

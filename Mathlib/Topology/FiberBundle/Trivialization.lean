@@ -96,7 +96,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toLocalEquiv = e'.toLocal
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toLocalEquiv.symm x = e'.toLocalEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
-  ext1 <;> [ext1, exact h₃]
+  ext1 <;> [ext1; exact h₃]
   · apply h₁
   · apply h₂
   · rw [e.source_eq, e'.source_eq, h₃]
@@ -729,7 +729,7 @@ theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
     e.toLocalHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
 #align trivialization.is_image_preimage_prod Trivialization.isImage_preimage_prod
 
-/-- Restrict a `Trivialization` to an open set in the base. `-/
+/-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
     Trivialization F proj where
   toLocalHomeomorph :=
@@ -791,7 +791,7 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
 linearly ordered base `B` and a point `a ∈ e.baseSet ∩ e'.baseSet`, `e.piecewise_le e' a He He'`
 is the bundle trivialization over `Set.ite (Iic a) e.baseSet e'.baseSet` that is equal to `e` on
 points `p` such that `proj p ≤ a` and is equal to `((e' p).1, h (e' p).2)` otherwise, where
-`h = `e'.coord_change_homeomorph e _ _` is the homeomorphism of the fiber such that
+`h = e'.coord_change_homeomorph e _ _` is the homeomorphism of the fiber such that
 `h (e' p).2 = (e p).2` whenever `e p = a`. -/
 noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Trivialization F proj)
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) : Trivialization F proj :=

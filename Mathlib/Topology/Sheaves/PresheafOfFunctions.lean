@@ -21,7 +21,7 @@ We construct some simple examples of presheaves of functions on a topological sp
   is the presheaf of dependently-typed (not-necessarily continuous) functions
 * `presheafToType X T`, where `T : Type`,
   is the presheaf of (not-necessarily-continuous) functions to a fixed target type `T`
-* `presheafToTop X T`, where `T : Top`,
+* `presheafToTop X T`, where `T : TopCat`,
   is the presheaf of continuous functions into a topological space `T`
 * `presheafToTopCommRing X R`, where `R : TopCommRingCat`
   is the presheaf valued in `CommRing` of functions functions into a topological ring `R`
@@ -50,7 +50,7 @@ def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
   obj U := ∀ x : U.unop, T x
   map {U V} i g := fun x : V.unop => g (i.unop x)
   map_id U := by
-    ext g ⟨x, hx⟩
+    ext g
     rfl
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
@@ -70,11 +70,11 @@ theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U �
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types_map TopCat.presheafToTypes_map
 
--- We don't just define this in terms of `presheaf_to_Types`,
--- as it's helpful later to see (at a syntactic level) that `(presheaf_to_Type X T).obj U`
+-- We don't just define this in terms of `presheafToTypes`,
+-- as it's helpful later to see (at a syntactic level) that `(presheafToType X T).obj U`
 -- is a non-dependent function.
 -- We don't use `@[simps]` to generate the projection lemmas here,
--- as it turns out to be useful to have `presheaf_to_Type_map`
+-- as it turns out to be useful to have `presheafToType_map`
 -- written as an equality of functions (rather than being applied to some argument).
 /-- The presheaf of functions on `X` with values in a type `T`.
 There is no requirement that the functions are continuous, here.
@@ -83,7 +83,7 @@ def presheafToType (T : Type v) : X.Presheaf (Type v) where
   obj U := U.unop → T
   map {U V} i g := g ∘ i.unop
   map_id U := by
-    ext (g⟨x, hx⟩)
+    ext g
     rfl
   map_comp {U V W} i j := rfl
 set_option linter.uppercaseLean3 false in
@@ -158,7 +158,8 @@ set_option linter.uppercaseLean3 false in
 end continuousFunctions
 
 /-- An upgraded version of the Yoneda embedding, observing that the continuous maps
-from `X : Top` to `R : TopCommRing` form a commutative ring, functorial in both `X` and `R`. -/
+from `X : TopCat` to `R : TopCommRingCat` form a commutative ring, functorial in both `X` and
+`R`. -/
 def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u} where
   obj R :=
     { obj := fun X => continuousFunctions X R
@@ -182,9 +183,9 @@ values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex valued functions of `X` as
 ```
-presheaf_to_TopCommRing X (TopCommRing.of ℂ)
+presheafToTopCommRing X (TopCommRing.of ℂ)
 ```
-(this requires `import topology.instances.complex`).
+(this requires `import Topology.Instances.Complex`).
 -/
 def presheafToTopCommRing (T : TopCommRingCat.{v}) : X.Presheaf CommRingCat.{v} :=
   (Opens.toTopCat X).op ⋙ commRingYoneda.obj T

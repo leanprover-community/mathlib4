@@ -19,15 +19,15 @@ import Mathlib.Analysis.Normed.Field.Basic
 
 In this file we prove the following lemmas.
 
-* `Polynomial.continuous_eval₂: `Polynomial.eval₂` defines a continuous function.
-* `Polynomial.continuous_aeval: `Polynomial.aeval` defines a continuous function;
+* `Polynomial.continuous_eval₂`: `Polynomial.eval₂` defines a continuous function.
+* `Polynomial.continuous_aeval`: `Polynomial.aeval` defines a continuous function;
   we also prove convenience lemmas `Polynomial.continuousAt_aeval`,
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
   `Polynomial.continuous_on`.
 * `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `λ x, ‖z x‖` tends to infinity and `0 < degree p`;
+  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.
@@ -192,21 +192,18 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
 #align polynomial.coeff_le_of_roots_le Polynomial.coeff_le_of_roots_le
 
 /-- The coefficients of the monic polynomials of bounded degree with bounded roots are
-uniformely bounded. -/
+uniformly bounded. -/
 theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1 : p.Monic)
     (h2 : Splits f p) (h3 : p.natDegree ≤ d) (h4 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) (i : ℕ) :
     ‖(map f p).coeff i‖ ≤ max B 1 ^ d * d.choose (d / 2) := by
   obtain hB | hB := le_or_lt 0 B
   · apply (coeff_le_of_roots_le i h1 h2 h4).trans
     calc
-      _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i :=
-        mul_le_mul_of_nonneg_right (pow_le_pow_of_le_left hB (le_max_left _ _) _) (by simp)
-      _ ≤ max B 1 ^ d * p.natDegree.choose i :=
-        (mul_le_mul_of_nonneg_right ((pow_mono (le_max_right _ _)) (le_trans (Nat.sub_le _ _) h3))
-          (by simp))
-      _ ≤ max B 1 ^ d * d.choose (d / 2) :=
-        mul_le_mul_of_nonneg_left
-          (Nat.cast_le.mpr ((i.choose_mono h3).trans (i.choose_le_middle d))) (by simp)
+      _ ≤ max B 1 ^ (p.natDegree - i) * p.natDegree.choose i := by gcongr; apply le_max_left
+      _ ≤ max B 1 ^ d * p.natDegree.choose i := by
+        gcongr; apply le_max_right; exact le_trans (Nat.sub_le _ _) h3
+      _ ≤ max B 1 ^ d * d.choose (d / 2) := by
+        gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
     refine' _root_.trans _
       (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)

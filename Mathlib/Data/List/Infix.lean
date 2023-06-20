@@ -11,12 +11,12 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Basic
 
 /-!
-# Prefixes, subfixes, infixes
+# Prefixes, suffixes, infixes
 
 This file proves properties about
-* `List.prefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
-* `List.subfix`: `l₁` is a subfix of `l₂` if `l₂` ends with `l₁`.
-* `List.infix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some subfix of `l₂`.
+* `List.isPrefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
+* `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
+* `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
@@ -26,7 +26,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 ## Notation
 
 `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a subfix of `l₂`.
+`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
@@ -160,11 +160,11 @@ lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropS
 #align list.mem_of_mem_slice List.mem_of_mem_dropSlice
 
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
-  ⟨l.dropWhile p, takeWhile_append_drop p l⟩
+  ⟨l.dropWhile p, takeWhile_append_dropWhile p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
 
 theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
-  ⟨l.takeWhile p, takeWhile_append_drop p l⟩
+  ⟨l.takeWhile p, takeWhile_append_dropWhile p l⟩
 #align list.drop_while_suffix List.dropWhile_suffix
 
 theorem dropLast_prefix : ∀ l : List α, l.dropLast <+: l

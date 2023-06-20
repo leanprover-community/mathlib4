@@ -362,8 +362,8 @@ theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integr
   IsIntegralClosure.eq_bot_of_comap_eq_bot S
 #align ideal.integral_closure.eq_bot_of_comap_eq_bot Ideal.IntegralClosure.eq_bot_of_comap_eq_bot
 
-/-- `comap (algebra_map R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
-`hP : (algebra_map R S).ker ≤ P` is a slight generalization of the extension being injective -/
+/-- `comap (algebraMap R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
+`hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
 theorem exists_ideal_over_prime_of_is_integral' (H : Algebra.IsIntegral R S) (P : Ideal R)
     [IsPrime P] (hP : RingHom.ker (algebraMap R S) ≤ P) :
     ∃ Q : Ideal S, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
@@ -413,8 +413,8 @@ theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : 
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 #align ideal.exists_ideal_over_prime_of_is_integral Ideal.exists_ideal_over_prime_of_isIntegral
 
-/-- `comap (algebra_map R S)` is a surjection from the max spec of `S` to max spec of `R`.
-`hP : (algebra_map R S).ker ≤ P` is a slight generalization of the extension being injective -/
+/-- `comap (algebraMap R S)` is a surjection from the max spec of `S` to max spec of `R`.
+`hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
 theorem exists_ideal_over_maximal_of_isIntegral [IsDomain S] (H : Algebra.IsIntegral R S)
     (P : Ideal R) [P_max : IsMaximal P] (hP : RingHom.ker (algebraMap R S) ≤ P) :
     ∃ Q : Ideal S, IsMaximal Q ∧ Q.comap (algebraMap R S) = P := by

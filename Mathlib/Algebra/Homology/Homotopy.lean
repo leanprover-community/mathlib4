@@ -444,7 +444,7 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
 so that as we construct each component, we have available the previous two components,
 and the fact that they satisfy the homotopy condition.
 
-To simplify the situation, we only construct homotopies of the form `homotopy e 0`.
+To simplify the situation, we only construct homotopies of the form `Homotopy e 0`.
 `Homotopy.equivSubZero` can provide the general case.
 
 Notice however, that this construction does not have particularly good definitional properties:
@@ -486,9 +486,9 @@ variable (e : P ⟶ Q) (zero : P.X 0 ⟶ Q.X 1) (comm_zero : e.f 0 = zero ≫ Q.
   (succ :
     ∀ (n : ℕ)
       (p :
-        Σ'(f : P.X n ⟶ Q.X (n + 1))(f' : P.X (n + 1) ⟶ Q.X (n + 2)),
+        Σ' (f : P.X n ⟶ Q.X (n + 1)) (f' : P.X (n + 1) ⟶ Q.X (n + 2)),
           e.f (n + 1) = P.d (n + 1) n ≫ f + f' ≫ Q.d (n + 2) (n + 1)),
-      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 3),
+      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 3),
         e.f (n + 2) = P.d (n + 2) (n + 1) ≫ p.2.1 + f'' ≫ Q.d (n + 3) (n + 2))
 
 /-- An auxiliary construction for `mkInductive`.
@@ -505,7 +505,7 @@ which we do in `mkInductiveAux₂`.
 @[simp, nolint unusedArguments]
 def mkInductiveAux₁ :
     ∀ n,
-      Σ'(f : P.X n ⟶ Q.X (n + 1))(f' : P.X (n + 1) ⟶ Q.X (n + 2)),
+      Σ' (f : P.X n ⟶ Q.X (n + 1)) (f' : P.X (n + 1) ⟶ Q.X (n + 2)),
         e.f (n + 1) = P.d (n + 1) n ≫ f + f' ≫ Q.d (n + 2) (n + 1)
   | 0 => ⟨zero, one, comm_one⟩
   | 1 => ⟨one, (succ 0 ⟨zero, one, comm_one⟩).1, (succ 0 ⟨zero, one, comm_one⟩).2⟩
@@ -520,7 +520,7 @@ section
 -/
 @[simp]
 def mkInductiveAux₂ :
-    ∀ n, Σ'(f : P.xNext n ⟶ Q.X n)(f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
+    ∀ n, Σ' (f : P.xNext n ⟶ Q.X n) (f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
   | 0 => ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩
   | n + 1 =>
     let I := mkInductiveAux₁ e zero --comm_zero
@@ -611,9 +611,9 @@ variable (e : P ⟶ Q) (zero : P.X 1 ⟶ Q.X 0) (comm_zero : e.f 0 = P.d 0 1 ≫
   (succ :
     ∀ (n : ℕ)
       (p :
-        Σ'(f : P.X (n + 1) ⟶ Q.X n)(f' : P.X (n + 2) ⟶ Q.X (n + 1)),
+        Σ' (f : P.X (n + 1) ⟶ Q.X n) (f' : P.X (n + 2) ⟶ Q.X (n + 1)),
           e.f (n + 1) = f ≫ Q.d n (n + 1) + P.d (n + 1) (n + 2) ≫ f'),
-      Σ'f'' : P.X (n + 3) ⟶ Q.X (n + 2),
+      Σ' f'' : P.X (n + 3) ⟶ Q.X (n + 2),
         e.f (n + 2) = p.2.1 ≫ Q.d (n + 1) (n + 2) + P.d (n + 2) (n + 3) ≫ f'')
 
 /-- An auxiliary construction for `mkCoinductive`.
@@ -630,7 +630,7 @@ which we do in `mkInductiveAux₂`.
 @[simp]
 def mkCoinductiveAux₁ :
     ∀ n,
-      Σ'(f : P.X (n + 1) ⟶ Q.X n)(f' : P.X (n + 2) ⟶ Q.X (n + 1)),
+      Σ' (f : P.X (n + 1) ⟶ Q.X n) (f' : P.X (n + 2) ⟶ Q.X (n + 1)),
         e.f (n + 1) = f ≫ Q.d n (n + 1) + P.d (n + 1) (n + 2) ≫ f'
   | 0 => ⟨zero, one, comm_one⟩
   | 1 => ⟨one, (succ 0 ⟨zero, one, comm_one⟩).1, (succ 0 ⟨zero, one, comm_one⟩).2⟩
@@ -645,7 +645,7 @@ section
 -/
 @[simp]
 def mkCoinductiveAux₂ :
-    ∀ n, Σ'(f : P.X n ⟶ Q.xPrev n)(f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
+    ∀ n, Σ' (f : P.X n ⟶ Q.xPrev n) (f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
   | 0 => ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩
   | n + 1 =>
     let I := mkCoinductiveAux₁ e zero one comm_one succ n

@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Option
 
 /-!
-# Permutations of `option α`
+# Permutations of `Option α`
 -/
 
 
