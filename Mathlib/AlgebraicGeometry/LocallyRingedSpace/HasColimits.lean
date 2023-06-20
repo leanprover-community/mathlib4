@@ -291,23 +291,28 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
   · intro x
     rcases (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x with
       ⟨y, rfl⟩
-    apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
+    -- Porting note : was `apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap ...)`, this
+    -- used to allow you to provide the proof that `... ≫ ...` is a local ring homomorphism later,
+    -- but this is no longer possible
+    set h := _
+    change IsLocalRingHom h
+    suffices : IsLocalRingHom ((PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _).comp h)
+    . apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
     change IsLocalRingHom (_ ≫ PresheafedSpace.stalkMap (coequalizerCofork f g).π.val y)
-    erw [← PresheafedSpace.stalk_map.comp]
-    apply is_local_ring_hom_stalk_map_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
+    erw [← PresheafedSpace.stalkMap.comp]
+    apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
     infer_instance
   constructor
-  · exact LocallyRingedSpace.hom.ext _ _ (coequalizer.π_desc _ _)
+  · exact LocallyRingedSpace.Hom.ext _ _ (coequalizer.π_desc _ _)
   intro m h
-  replace h : (coequalizer_cofork f g).π.1 ≫ m.1 = s.π.1 := by rw [← h]; rfl
-  apply LocallyRingedSpace.hom.ext
-  apply (colimit.is_colimit (parallel_pair f.1 g.1)).uniq (cofork.of_π s.π.1 e) m.1
+  replace h : (coequalizerCofork f g).π.1 ≫ m.1 = s.π.1 := by rw [← h]; rfl
+  apply LocallyRingedSpace.Hom.ext
+  apply (colimit.isColimit (parallelPair f.1 g.1)).uniq (Cofork.ofπ s.π.1 e) m.1
   rintro ⟨⟩
-  · rw [← (colimit.cocone (parallel_pair f.val g.val)).w walking_parallel_pair_hom.left,
-      category.assoc]
+  · rw [← (colimit.cocone (parallelPair f.val g.val)).w WalkingParallelPairHom.left,
+      Category.assoc]
     change _ ≫ _ ≫ _ = _ ≫ _
     congr
-    exact h
   · exact h
 #align algebraic_geometry.LocallyRingedSpace.coequalizer_cofork_is_colimit AlgebraicGeometry.LocallyRingedSpace.coequalizerCoforkIsColimit
 
@@ -319,12 +324,16 @@ instance : HasCoequalizers LocallyRingedSpace :=
 
 noncomputable instance preservesCoequalizer :
     PreservesColimitsOfShape WalkingParallelPair forgetToSheafedSpace.{v} :=
-  ⟨fun F => by
-    apply preserves_colimit_of_iso_diagram _ (diagram_iso_parallel_pair F).symm
-    apply preserves_colimit_of_preserves_colimit_cocone (coequalizer_cofork_is_colimit _ _)
-    apply (is_colimit_map_cocone_cofork_equiv _ _).symm _
-    dsimp only [forget_to_SheafedSpace]
-    exact coequalizer_is_coequalizer _ _⟩
+  ⟨fun {F} => by
+    -- Porting note : was `apply preservesColimitOfIsoDiagram ...` and the proof that preservation
+    -- of colimit is provided later
+    suffices : PreservesColimit (parallelPair (F.map WalkingParallelPairHom.left)
+      (F.map WalkingParallelPairHom.right)) forgetToSheafedSpace
+    . apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair F).symm
+    apply preservesColimitOfPreservesColimitCocone (coequalizerCoforkIsColimit _ _)
+    apply (isColimitMapCoconeCoforkEquiv _ _).symm _
+    dsimp only [forgetToSheafedSpace]
+    exact coequalizerIsCoequalizer _ _⟩
 #align algebraic_geometry.LocallyRingedSpace.preserves_coequalizer AlgebraicGeometry.LocallyRingedSpace.preservesCoequalizer
 
 end HasCoequalizer
