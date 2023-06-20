@@ -398,12 +398,12 @@ theorem adjunction_unit_app {X : Scheme} :
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app AlgebraicGeometry.ΓSpec.adjunction_unit_app
 
 -- Porting Note: Commented
---attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
+-- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
--- Porting Note: Had to increase Heartbeats
-set_option maxHeartbeats 250000 in
-instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit :=
-  IsIso.of_iso_inv (NatIso.op SpecΓIdentity) -- Porting Note: Had to make this explicit
+instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
+  dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
+  -- Porting Note: `dsimp` was unnecessary and had to make this explicit
+  convert IsIso.of_iso_inv (NatIso.op SpecΓIdentity) using 1
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
