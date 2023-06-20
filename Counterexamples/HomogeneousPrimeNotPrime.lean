@@ -8,9 +8,9 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.GradedAlgebra.HomogeneousIdeal
-import Mathbin.Data.Zmod.Basic
-import Mathbin.Tactic.DeriveFintype
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Tactic.DeriveFintype
 
 /-!
 # A homogeneous prime that is homogeneously prime but not prime
@@ -57,8 +57,7 @@ section
 variable (R : Type _) [CommRing R]
 
 /-- The grade 0 part of `R²` is `{(a, a) | a ∈ R}`. -/
-def submoduleZ : Submodule R (R × R)
-    where
+def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
   add_mem' a b ha hb := congr_arg₂ (· + ·) ha hb
@@ -96,8 +95,7 @@ end
 local notation "R" => ZMod 4
 
 /-- `R² ≅ {(a, a) | a ∈ R} ⨁ {(0, b) | b ∈ R}` by `(x, y) ↦ (x, x) + (0, y - x)`. -/
-def grading.decompose : R × R →+ DirectSum Two fun i => grading R i
-    where
+def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
   toFun zz :=
     of (fun i => grading R i) 0 ⟨(zz.1, zz.1), rfl⟩ +
       of (fun i => grading R i) 1 ⟨(0, zz.2 - zz.1), rfl⟩
@@ -129,8 +127,7 @@ theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) gradi
     add_zero, add_sub_cancel'_right]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.left_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.left_inv
 
-instance : GradedAlgebra (grading R)
-    where
+instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R
   mul_mem := grading.mul_mem R
   decompose' := grading.decompose
@@ -156,8 +153,7 @@ theorem i_not_prime : ¬i.IsPrime := by
 -- this is what we change the max instance depth for, it's only 2 above the default
 set_option class.instance_max_depth 32
 
-theorem i_isHomogeneous : i.Homogeneous (grading R) :=
-  by
+theorem i_isHomogeneous : i.Homogeneous (grading R) := by
   rw [Ideal.IsHomogeneous.iff_exists]
   refine' ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
   rw [Set.image_singleton]
@@ -165,8 +161,7 @@ theorem i_isHomogeneous : i.Homogeneous (grading R) :=
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.i_isHomogeneous
 
 theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading R) x)
-    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ i) : x ∈ i ∨ y ∈ i :=
-  by
+    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ i) : x ∈ i ∨ y ∈ i := by
   simp only [I, Ideal.mem_span_singleton] at hxy ⊢
   cases x; cases y
   obtain ⟨_ | ⟨⟨⟩⟩, hx : _ = _⟩ := hx <;> obtain ⟨_ | ⟨⟨⟩⟩, hy : _ = _⟩ := hy <;>
