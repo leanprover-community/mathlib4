@@ -33,11 +33,11 @@ Obviously there's more to do:
 
 open CategoryTheory Limits TopologicalSpace Opens
 
-universe u
+universe v u
 
 noncomputable section
 
-variable (X : TopCat.{u})
+variable (X : TopCat.{v})
 
 open TopCat
 
@@ -95,14 +95,14 @@ namespace TopCat
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in type family
 `T : X → Type u`.
 -/
-def sheafToTypes (T : X → Type u) : Sheaf (Type u) X :=
+def sheafToTypes (T : X → Type u) : Sheaf (TypeMax.{v, u}) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
 set_option linter.uppercaseLean3 false
 #align Top.sheaf_to_Types TopCat.sheafToTypes
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
-def sheafToType (T : Type u) : Sheaf (Type u) X :=
+def sheafToType (T : Type u) : Sheaf (TypeMax.{v, u}) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
 set_option linter.uppercaseLean3 false
 #align Top.sheafToType TopCat.sheafToType

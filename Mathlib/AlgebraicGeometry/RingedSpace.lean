@@ -48,7 +48,7 @@ namespace RingedSpace
 
 open SheafedSpace
 
-variable (X : RingedSpace)
+variable (X : RingedSpace.{u, u})
 
 -- Porting note : this was not necessary in mathlib3
 instance : CoeSort RingedSpace (Type _) where
@@ -95,7 +95,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
-  have ic : IsCompatible (sheaf X).val V g
+  have ic : IsCompatible.{u+1, u} (sheaf X).val V g
   -- swap
   · intro x y
     apply section_ext X.sheaf (V x ⊓ V y)
@@ -123,7 +123,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ := X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   apply isUnit_of_mul_eq_one f gl
-  apply X.sheaf.eq_of_locally_eq' V U iVU hcover
+  apply TopCat.Sheaf.eq_of_locally_eq'.{u+1, u} X.sheaf V U iVU hcover
   intro i
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i

@@ -297,7 +297,7 @@ open CategoryTheory.Limits
 
 noncomputable section Pullback
 
-variable [HasColimits C]
+variable [HasColimitsOfSize.{w, w} C]
 
 /-- Pullback a presheaf on `Y` along a continuous map `f : X ⟶ Y`, obtaining a presheaf on `X`.
 
@@ -305,13 +305,13 @@ This is defined in terms of left Kan extensions, which is just a fancy way of sa
 "take the colimits over the open sets whose preimage contains U".
 -/
 @[simps!]
-def pullbackObj {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) : X.Presheaf C :=
+def pullbackObj {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) : X.Presheaf C :=
   (lan (Opens.map f).op).obj ℱ
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_obj TopCat.Presheaf.pullbackObj
 
 /-- Pulling back along continuous maps is functorial. -/
-def pullbackMap {X Y : TopCat.{v}} (f : X ⟶ Y) {ℱ 𝒢 : Y.Presheaf C} (α : ℱ ⟶ 𝒢) :
+def pullbackMap {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : Y.Presheaf C} (α : ℱ ⟶ 𝒢) :
     pullbackObj f ℱ ⟶ pullbackObj f 𝒢 :=
   (lan (Opens.map f).op).map α
 set_option linter.uppercaseLean3 false in
@@ -319,7 +319,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
 @[simps!]
-def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
+def pullbackObjObjOfImageOpen {X Y : TopCat.{w}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
     (H : IsOpen (f '' SetLike.coe U)) : (pullbackObj f ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
     (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
@@ -340,7 +340,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pullback
 
-variable {X Y : TopCat.{v}} (ℱ : Y.Presheaf C)
+variable {X Y : TopCat.{w}} (ℱ : Y.Presheaf C)
 
 /-- The pullback along the identity is isomorphic to the original presheaf. -/
 def id : pullbackObj (𝟙 _) ℱ ≅ ℱ :=
@@ -467,14 +467,14 @@ set_option linter.uppercaseLean3 false in
 
 end Iso
 
-variable [HasColimits C]
+variable [HasColimitsOfSize.{w, w} C]
 
 noncomputable section
 
 /-- Pullback a presheaf on `Y` along a continuous map `f : X ⟶ Y`, obtaining a presheaf
 on `X`. -/
 @[simps! map_app]
-def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
+def pullback {X Y : TopCat.{w}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   lan (Opens.map f).op
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback TopCat.Presheaf.pullback
@@ -488,14 +488,14 @@ set_option linter.uppercaseLean3 false in
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 @[simps! unit_app_app counit_app_app]
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+def pushforwardPullbackAdjunction {X Y : TopCat.{w}} (f : X ⟶ Y) :
   pullback C f ⊣ pushforward C f :=
   Lan.adjunction _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
-def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
+def pullbackHomIsoPushforwardInv {X Y : TopCat.{w}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
   Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
@@ -503,7 +503,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_hom_iso_pushforward_inv TopCat.Presheaf.pullbackHomIsoPushforwardInv
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
-def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
+def pullbackInvIsoPushforwardHom {X Y : TopCat.{w}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
   Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction

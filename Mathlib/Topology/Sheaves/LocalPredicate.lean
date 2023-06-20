@@ -41,13 +41,13 @@ We give conditions sufficient to show that this map is injective and/or surjecti
 -/
 
 
-universe v
+universe v w
 
 noncomputable section
 
 variable {X : TopCat.{v}}
 
-variable (T : X → Type v)
+variable (T : X → Type w)
 
 open TopologicalSpace
 
@@ -80,14 +80,14 @@ variable (X)
 /-- Continuity is a "prelocal" predicate on functions to a fixed topological space `T`.
 -/
 @[simps!]
-def continuousPrelocal (T : TopCat.{v}) : PrelocalPredicate fun _ : X => T where
+def continuousPrelocal (T : TopCat.{w}) : PrelocalPredicate fun _ : X => T where
   pred {_} f := Continuous f
   res {_ _} i _ h := Continuous.comp h (Opens.openEmbedding_of_le i.le).continuous
 set_option linter.uppercaseLean3 false in
 #align Top.continuous_prelocal TopCat.continuousPrelocal
 
 /-- Satisfying the inhabited linter. -/
-instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
+instance inhabitedPrelocalPredicate (T : TopCat.{w}) :
     Inhabited (PrelocalPredicate fun _ : X => T) :=
   ⟨continuousPrelocal X T⟩
 set_option linter.uppercaseLean3 false in
@@ -169,7 +169,7 @@ set_option linter.uppercaseLean3 false in
 /-- The subpresheaf of dependent functions on `X` satisfying the "pre-local" predicate `P`.
 -/
 @[simps!]
-def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type v) X where
+def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type max v w) X where
   obj U := { f : ∀ x : U.unop , T x // P.pred f }
   map {U V} i f := ⟨fun x => f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 set_option linter.uppercaseLean3 false in
@@ -191,13 +191,16 @@ open TopCat.Presheaf
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
-  Presheaf.isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf sf_comp => by
+  Presheaf.isSheaf_of_isSheafUniqueGluing_types.{v} _ fun ι U sf sf_comp => by
     -- We show the sheaf condition in terms of unique gluing.
     -- First we obtain a family of sections for the underlying sheaf of functions,
     -- by forgetting that the predicate holds
     let sf' : ∀ i : ι, (presheafToTypes X T).obj (op (U i)) := fun i => (sf i).val
     -- Since our original family is compatible, this one is as well
-    have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j =>
+    -- Porting note:
+    -- changing this to use dot notation as `IsCompatible (presheafToTypes X T)`
+    -- causes universe difficulties!
+    have sf'_comp : IsCompatible (presheafToTypes X T) U sf' := fun i j =>
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
@@ -229,17 +232,23 @@ end subpresheafToTypes
 /-- The subsheaf of the sheaf of all dependently typed functions satisfying the local predicate `P`.
 -/
 @[simps]
-def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type v) X :=
+def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type max v w) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 set_option linter.uppercaseLean3 false in
 #align Top.subsheaf_to_Types TopCat.subsheafToTypes
 
+-- TODO There is further universe generalization to do here,
+-- but it depends on more difficult universe generalization in `Mathlib.Topology.Sheaves.Stalks`.
+-- The aim is to replace `T'` with the more general `T` below.
+variable {T' : X → Type v}
+
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
-def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
+def stalkToFiber (P : LocalPredicate T') (x : X) :
+    (subsheafToTypes P).presheaf.stalk x ⟶ T' x := by
   refine'
     colimit.desc _
-      { pt := T x
+      { pt := T' x
         ι :=
           { app := fun U f => _
             naturality := _ } }
@@ -249,7 +258,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
 -- Porting note : removed `simp` attribute, due to left hand side is not in simple normal form.
-theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
+theorem stalkToFiber_germ (P : LocalPredicate T') (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]
   cases x
@@ -260,8 +269,8 @@ set_option linter.uppercaseLean3 false in
 /-- The `stalk_to_fiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it.
 -/
-theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
-    (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
+theorem stalkToFiber_surjective (P : LocalPredicate T') (x : X)
+    (w : ∀ t : T' x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T' y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
     Function.Surjective (stalkToFiber P x) := fun t => by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor
@@ -273,16 +282,16 @@ set_option linter.uppercaseLean3 false in
 /-- The `stalk_to_fiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/
-theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
+theorem stalkToFiber_injective (P : LocalPredicate T') (x : X)
     (w :
-      ∀ (U V : OpenNhds x) (fU : ∀ y : U.1, T y) (_ : P.pred fU) (fV : ∀ y : V.1, T y)
+      ∀ (U V : OpenNhds x) (fU : ∀ y : U.1, T' y) (_ : P.pred fU) (fV : ∀ y : V.1, T' y)
         (_ : P.pred fV) (_ : fU ⟨x, U.2⟩ = fV ⟨x, V.2⟩),
         ∃ (W : OpenNhds x) (iU : W ⟶ U) (iV : W ⟶ V), ∀ w : W.1,
           fU (iU w : U.1) = fV (iV w : V.1)) :
     Function.Injective (stalkToFiber P x) := fun tU tV h => by
   -- We promise to provide all the ingredients of the proof later:
   let Q :
-    ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
+    ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T' w) (hW : P.pred s),
       tU = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ ∧
         tV = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ :=
     ?_
@@ -303,6 +312,9 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     . exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
+
+-- TODO to continue generalizing universes here, we will need to deal with the issue noted
+-- at `presheafToTop` (universe generalization for the Yoneda embedding).
 
 /-- Some repackaging:
 the presheaf of functions satisfying `continuous_prelocal` is just the same thing as

@@ -823,10 +823,6 @@ open scoped Classical
 
 open scoped BigOperators
 
--- Porting note : in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
--- though `hx` is not used in `...` part, it is still required to maintain the structure of
--- the original proof in mathlib3.
-set_option linter.unusedVariables false in
 -- The proof here follows the argument in Hartshorne's Algebraic Geometry, Proposition II.2.2.
 theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) := by
   intro s
@@ -841,7 +837,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   obtain ⟨t, ht_cover'⟩ :=
     (PrimeSpectrum.isCompact_basicOpen f).elim_finite_subcover
       (fun i : ι => PrimeSpectrum.basicOpen (h' i)) (fun i => PrimeSpectrum.isOpen_basicOpen)
-      -- Here, we need to show that our basic opens actually form a cover of `basic_open f`
+      -- Here, we need to show that our basic opens actually form a cover of `basicOpen f`
       fun x hx => by rw [Set.mem_iUnion]; exact ⟨⟨x, hx⟩, hxDh' ⟨x, hx⟩⟩
   simp only [← Opens.coe_iSup, SetLike.coe_subset_coe] at ht_cover'
   -- We use the normalization lemma from above to obtain the relation `a i * h j = h i * a j`
@@ -853,7 +849,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- desired form
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
-    ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
+    ⋃ (i : ι) (_ : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
   . convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
@@ -861,7 +857,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
     -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
-      ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
+      ⋃ (i : ι) (_ : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
     . convert ht_cover
       . rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
       . simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
@@ -887,8 +883,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- coerce our finset `t` to a type first.
   let tt := ((t : Set (PrimeSpectrum.basicOpen f)) : Type u)
   apply
-    (structureSheaf R).eq_of_locally_eq' (fun i : tt => PrimeSpectrum.basicOpen (h i))
-      (PrimeSpectrum.basicOpen f) fun i : tt => iDh i
+    TopCat.Sheaf.eq_of_locally_eq'.{u+1, u, u} (structureSheaf R)
+      (fun i : tt => PrimeSpectrum.basicOpen (h i))
+      (PrimeSpectrum.basicOpen f) (fun i : tt => iDh i)
   · -- This feels a little redundant, since already have `ht_cover` as a hypothesis
     -- Unfortunately, `ht_cover` uses a bounded union over the set `t`, while here we have the
     -- Union indexed by the type `tt`, so we need some boilerplate to translate one to the other
