@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Complex.Module
-import Mathbin.RingTheory.Norm
-import Mathbin.RingTheory.Trace
+import Mathlib.Data.Complex.Module
+import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Trace
 
 /-! # Lemmas about `algebra.trace` and `algebra.norm` on `ℂ` -/
 
@@ -18,8 +18,7 @@ import Mathbin.RingTheory.Trace
 open Complex
 
 theorem Algebra.leftMulMatrix_complex (z : ℂ) :
-    Algebra.leftMulMatrix Complex.basisOneI z = !![z.re, -z.im; z.im, z.re] :=
-  by
+    Algebra.leftMulMatrix Complex.basisOneI z = !![z.re, -z.im; z.im, z.re] := by
   ext i j
   rw [Algebra.leftMulMatrix_eq_repr_mul, Complex.coe_basisOneI_repr, Complex.coe_basisOneI, mul_re,
     mul_im, Matrix.of_apply]
@@ -32,15 +31,13 @@ theorem Algebra.leftMulMatrix_complex (z : ℂ) :
     fin_cases i <;> rfl
 #align algebra.left_mul_matrix_complex Algebra.leftMulMatrix_complex
 
-theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re :=
-  by
+theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re := by
   rw [Algebra.trace_eq_matrix_trace Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.trace_fin_two]
   exact (two_mul _).symm
 #align algebra.trace_complex_apply Algebra.trace_complex_apply
 
-theorem Algebra.norm_complex_apply (z : ℂ) : Algebra.norm ℝ z = z.normSq :=
-  by
+theorem Algebra.norm_complex_apply (z : ℂ) : Algebra.norm ℝ z = z.normSq := by
   rw [Algebra.norm_eq_matrix_det Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.det_fin_two, norm_sq_apply]
   simp
