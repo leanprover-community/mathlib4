@@ -61,10 +61,7 @@ abbrev homologyK : A :=
   This is an isomorphism, and it is used in obtaining the API for `homology f g w`
   in the bottom of this file. -/
 abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
-  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp))
-    (by
-      apply Limits.equalizer.hom_ext
-      simp)
+  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp)) (by ext; simp)
 #align category_theory.abelian.homology_c_to_k CategoryTheory.Abelian.homologyCToK
 
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
@@ -223,7 +220,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
     (kernelSubobjectIso g).inv ≫ kernelSubobjectMap β =
       kernel.map _ _ β.left β.right β.w.symm ≫ (kernelSubobjectIso _).inv := by
     rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-    refine Limits.equalizer.hom_ext ?_
+    ext
     dsimp
     simp
   rw [this]
@@ -252,8 +249,7 @@ theorem map_eq_desc'_lift_left (α β h) :
   dsimp [π', lift]
   rw [Iso.eq_comp_inv]
   dsimp [homologyIsoKernelDesc]
-  -- Porting note: previously ext
-  apply Limits.equalizer.hom_ext
+  ext
   simp [h]
 #align homology.map_eq_desc'_lift_left homology.map_eq_desc'_lift_left
 

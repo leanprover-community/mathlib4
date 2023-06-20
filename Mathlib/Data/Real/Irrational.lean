@@ -463,7 +463,7 @@ theorem of_one_div (h : Irrational (1 / x)) : Irrational x :=
 #align irrational.of_one_div Irrational.of_one_div
 
 /-!
-#### Natural and integerl power
+#### Natural and integer power
 -/
 
 

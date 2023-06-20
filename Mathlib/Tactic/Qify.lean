@@ -55,7 +55,7 @@ example (a b c : ℤ) (h : a / b = c) (hab : b ∣ a) (hb : b ≠ 0) : a = c * b
 ```
 `qify` makes use of the `@[zify_simps]` and `@[qify_simps]` attributes to move propositions,
 and the `push_cast` tactic to simplify the `ℚ`-valued expressions. -/
-syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
+syntax (name := qify) "qify" (simpArgs)? (location)? : tactic
 
 macro_rules
 | `(tactic| qify $[[$simpArgs,*]]? $[at $location]?) =>

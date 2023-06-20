@@ -185,7 +185,7 @@ variable {α : Type u} {β : Type v} {γ : Type _}
 
 variable [OmegaCompletePartialOrder α]
 
-/-- Transfer a `OmegaCompletePartialOrder` on `β` to a `OmegaCompletePartialOrder` on `α`
+/-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
 continuous with regard to the provided `ωSup` and the ωCPO on `α`. -/
 @[reducible]
@@ -324,7 +324,7 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   -- have := c.monotone h _ ha; apply mem_unique this hb
 #align part.eq_of_chain Part.eq_of_chain
 
-/-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `part α`. -/
+/-- The (noncomputable) `ωSup` definition for the `ω`-CPO structure on `Part α`. -/
 protected noncomputable def ωSup (c : Chain (Part α)) : Part α :=
   if h : ∃ a, some a ∈ c then some (Classical.choose h) else none
 #align part.ωSup Part.ωSup
@@ -581,7 +581,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 infixr:25 " →𝒄 " => ContinuousHom
 -- Input: \r\MIc
 
-/-! todo: should we make this a OrderHomClass instead of a CoeFun? -/
+/-! todo: should we make this an OrderHomClass instead of a CoeFun? -/
 instance : CoeFun (α →𝒄 β) fun _ => α → β :=
   ⟨fun f => f.toOrderHom.toFun⟩
 

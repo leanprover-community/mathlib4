@@ -155,7 +155,7 @@ end Measure
 theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
-theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_st : s ⊆ t) (_ht : MeasurableSet t), μ t := by
+theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
   rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
@@ -360,16 +360,16 @@ def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
 -- mathport name: «expr∀ᵐ ∂ , »
-notation3"∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
+notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
 -- mathport name: «expr∃ᵐ ∂ , »
-notation3"∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
+notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
 -- mathport name: «expr =ᵐ[ ] »
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => f =ᶠ[Measure.ae μ] g
+notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
 -- mathport name: «expr ≤ᵐ[ ] »
-notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => f ≤ᶠ[Measure.ae μ] g
+notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ (sᶜ) = 0 :=
   Iff.rfl
@@ -598,7 +598,7 @@ irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
 
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts[hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
+  exacts [hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -637,16 +637,15 @@ add_decl_doc volume
 section MeasureSpace
 
 -- mathport name: «expr∀ᵐ , »
-notation3"∀ᵐ "(...)", "r:(scoped P =>
-  Filter.Eventually P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
+notation3 "∀ᵐ "(...)", "r:(scoped P =>
+  Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 -- mathport name: «expr∃ᵐ , »
-notation3"∃ᵐ "(...)", "r:(scoped P =>
-  Filter.Frequently P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
+notation3 "∃ᵐ "(...)", "r:(scoped P =>
+  Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
-
-/-- The tactic `exact volume`, to be used in optional (`auto_param`) arguments. -/
-macro "volume_tac": tactic =>
+/-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
+macro "volume_tac" : tactic =>
   `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
 
 end MeasureSpace

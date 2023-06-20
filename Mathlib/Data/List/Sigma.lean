@@ -17,7 +17,7 @@ import Mathlib.Data.List.Perm
 This file includes several ways of interacting with `List (Sigma β)`, treated as a key-value store.
 
 If `α : Type _` and `β : α → Type _`, then we regard `s : Sigma β` as having key `s.1 : α` and value
-`s.2 : β s.1`. Hence, `list (sigma β)` behaves like a key-value store.
+`s.2 : β s.1`. Hence, `List (Sigma β)` behaves like a key-value store.
 
 ## Main Definitions
 
@@ -429,7 +429,7 @@ theorem mem_keys_of_mem_keys_kerase {a₁ a₂} {l : List (Sigma β)} :
 #align list.mem_keys_of_mem_keys_kerase List.mem_keys_of_mem_keys_kerase
 
 theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
-    ∃ (b : β a)(l₁ l₂ : List (Sigma β)),
+    ∃ (b : β a) (l₁ l₂ : List (Sigma β)),
       a ∉ l₁.keys ∧ l = l₁ ++ ⟨a, b⟩ :: l₂ ∧ kerase a l = l₁ ++ l₂ := by
   induction l
   case nil => cases h
@@ -597,7 +597,7 @@ theorem dlookup_kinsert_ne {a a'} {b' : β a'} {l : List (Sigma β)} (h : a ≠ 
 /-! ### `kextract` -/
 
 
-/-- Finds the first entry with a given key `a` and returns its value (as an `option` because there
+/-- Finds the first entry with a given key `a` and returns its value (as an `Option` because there
 might be no entry with key `a`) alongside with the rest of the entries. -/
 def kextract (a : α) : List (Sigma β) → Option (β a) × List (Sigma β)
   | [] => (none, [])
@@ -622,7 +622,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
 /-! ### `dedupKeys` -/
 
 
-/-- Remove entries with duplicate keys from `l : list (sigma β)`. -/
+/-- Remove entries with duplicate keys from `l : List (Sigma β)`. -/
 def dedupKeys : List (Sigma β) → List (Sigma β) :=
   List.foldr (fun x => kinsert x.1 x.2) []
 #align list.dedupkeys List.dedupKeys

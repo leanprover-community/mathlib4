@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -25,7 +25,7 @@ about these definitions.
 
 variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
 
-open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity Pointwise
+open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
@@ -65,7 +65,6 @@ instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b :=
 -- shortcut instance
 instance NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
-#align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]

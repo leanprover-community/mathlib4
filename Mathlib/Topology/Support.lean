@@ -181,7 +181,7 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
     (hf : Continuous f) : IsCompact (range f) := by
   cases' range_eq_image_mulTSupport_or f with h2 h2 <;> rw [h2]
-  exacts[h.image hf, (h.image hf).insert 1]
+  exacts [h.image hf, (h.image hf).insert 1]
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 

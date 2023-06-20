@@ -162,7 +162,7 @@ variable (R R' M N)
 
 /-- A typeclass for `SMul` structures which can be moved across a tensor product.
 
-This typeclass is generated automatically from a `IsScalarTower` instance, but exists so that
+This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
 we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
 `R` does not support negation.
 
@@ -939,12 +939,12 @@ theorem tensorTensorTensorComm_symm :
 
 variable (M N P Q)
 
-/-- This special case is useful for describing the interplay between `dual_tensor_hom_equiv` and
+/-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and
 composition of linear maps.
 
 E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M → P)`, and applying
 `dual_tensor_hom_equiv.symm` to the three hom-modules gives a map
-`(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contract_right`
+`(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
 on `N ⊗ N.dual` after the suitable rebracketting.
 -/
 def tensorTensorTensorAssoc : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] N ⊗[R] P) ⊗[R] Q :=
@@ -1015,11 +1015,11 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
 def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
-    ext (x y)
+    ext x y
     simp only [compr₂_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
-    ext (x y)
+    ext x y
     simp only [compr₂_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
 #align linear_map.rtensor_hom LinearMap.rTensorHom
 
@@ -1064,7 +1064,7 @@ theorem rTensor_smul (r : R) (f : N →ₗ[R] P) : (r • f).rTensor M = r • f
 #align linear_map.rtensor_smul LinearMap.rTensor_smul
 
 theorem lTensor_comp : (g.comp f).lTensor M = (g.lTensor M).comp (f.lTensor M) := by
-  ext (m n)
+  ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, lTensor_tmul]
 #align linear_map.ltensor_comp LinearMap.lTensor_comp
 
@@ -1073,7 +1073,7 @@ theorem lTensor_comp_apply (x : M ⊗[R] N) :
 #align linear_map.ltensor_comp_apply LinearMap.lTensor_comp_apply
 
 theorem rTensor_comp : (g.comp f).rTensor M = (g.rTensor M).comp (f.rTensor M) := by
-  ext (m n)
+  ext m n
   simp only [compr₂_apply, mk_apply, comp_apply, rTensor_tmul]
 #align linear_map.rtensor_comp LinearMap.rTensor_comp
 

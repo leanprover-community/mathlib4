@@ -339,7 +339,7 @@ def GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (hf 
   { GradeMinOrder.liftRight f hf hcovby hmin, GradeMaxOrder.liftRight f hf hcovby hmax with }
 #align grade_bounded_order.lift_right GradeBoundedOrder.liftRight
 
-/-! #### `fin n`-graded to `ℕ`-graded to `ℤ`-graded -/
+/-! #### `Fin n`-graded to `ℕ`-graded to `ℤ`-graded -/
 
 
 -- See note [reducible non-instances]

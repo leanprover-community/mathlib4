@@ -20,7 +20,7 @@ import Mathlib.Data.Fintype.Card
 This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
 this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
 `Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
-seperately for both groups and modules, the proof in this file can be applied to both.
+separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,

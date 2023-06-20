@@ -97,7 +97,7 @@ At a point `x` (a homogeneous prime ideal) the function (i.e., element) `f` take
 quotient ring `A` modulo the prime ideal `x`. In this manner, `vanishingIdeal t` is exactly the
 ideal of `A` consisting of all "functions" that vanish on all of `t`. -/
 def vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) : HomogeneousIdeal 𝒜 :=
-  ⨅ (x : ProjectiveSpectrum 𝒜) (_h : x ∈ t), x.asHomogeneousIdeal
+  ⨅ (x : ProjectiveSpectrum 𝒜) (_ : x ∈ t), x.asHomogeneousIdeal
 #align projective_spectrum.vanishing_ideal ProjectiveSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :

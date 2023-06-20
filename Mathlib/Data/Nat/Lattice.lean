@@ -16,7 +16,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 In this file we
 
-* define a `ConditionallyCcompleteLinearOrderBot` structure on `ℕ`;
+* define a `ConditionallyCompleteLinearOrderBot` structure on `ℕ`;
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 
@@ -124,8 +124,8 @@ instance : Lattice ℕ :=
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    -- sup := sSup -- Porting note: removed, unecessary?
-    -- inf := sInf -- Porting note: removed, unecessary?
+    -- sup := sSup -- Porting note: removed, unnecessary?
+    -- inf := sInf -- Porting note: removed, unnecessary?
     le_csSup := fun s a hb ha ↦ by rw [sSup_def hb] ; revert a ha ; exact @Nat.find_spec _ _ hb
     csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by

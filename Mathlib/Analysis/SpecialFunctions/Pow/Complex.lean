@@ -164,9 +164,7 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : HPow.hPow (x ^ (n�
 
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
 
--- TODO: should log_of_real_mul and of_real_log use ofReal in their names?
-
-theorem mul_cpow_of_real_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
+theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · simp only [cpow_zero, mul_one]
@@ -176,9 +174,9 @@ theorem mul_cpow_of_real_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
   · rw [ofReal_zero, MulZeroClass.mul_zero, zero_cpow hr, MulZeroClass.mul_zero]
   have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
   have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
-  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_of_real_mul ha' hb'', of_real_log ha,
+  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
-#align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_of_real_nonneg
+#align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
 
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by
@@ -192,7 +190,7 @@ theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)�
   rw [inv_cpow_eq_ite, if_neg hx]
 #align complex.inv_cpow Complex.inv_cpow
 
-/-- `complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
+/-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :
     (x ^ n)⁻¹ = if x.arg = π then conj (x⁻¹ ^ conj n) else x⁻¹ ^ n := by
   rw [inv_cpow_eq_ite, apply_ite conj, conj_conj, conj_conj]
@@ -258,7 +256,7 @@ end Complex
 --       pure (c, (expr.const Pos []).mk_app [a, b, b', c, hb, h])
 -- #align norm_num.prove_rpow' norm_num.prove_rpow'
 
--- /-- Evaluate `complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
+-- /-- Evaluate `Complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_cpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` cpow_pos `` cpow_neg `` Complex.cpow_zero q(ℂ) q(ℂ) q((1 : ℂ))
 -- #align norm_num.prove_cpow norm_num.prove_cpow

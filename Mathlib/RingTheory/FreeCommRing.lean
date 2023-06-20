@@ -136,7 +136,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact F.congr_arg (Multiset.sum_map_singleton x')
 
-/-- Lift a map `α → R` to a additive group homomorphism `FreeCommRing α → R`. -/
+/-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
   Equiv.trans liftToMultiset FreeAbelianGroup.liftMonoid
 #align free_comm_ring.lift FreeCommRing.lift
@@ -163,7 +163,7 @@ end lift
 
 variable {β : Type v} (f : α → β)
 
-/-- A map `f : α → β` produces a ring homomorphism `free_comm_ring α →+* free_comm_ring β`. -/
+/-- A map `f : α → β` produces a ring homomorphism `FreeCommRing α →+* FreeCommRing β`. -/
 def map : FreeCommRing α →+* FreeCommRing β :=
   lift <| of ∘ f
 #align free_comm_ring.map FreeCommRing.map
