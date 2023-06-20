@@ -38,18 +38,13 @@ def addRewriteSuggestion (ref : Syntax) (e : Expr) (symm : Bool)
   (origSpan? : Option Syntax := none) :
     TermElabM Unit := do
   let estx ← delabToRefinableSyntax e
-  let tac ←
-    if let some loc := loc? then
-      if symm then
-        `(tactic| rw [← $estx] at $(← delab loc):term)
-      else
-        `(tactic| rw [$estx:term] at $(← delab loc):term)
-    else
-      if symm then `(tactic| rw [← $estx]) else `(tactic| rw [$estx:term])
+  let tac ← do
+    let loc ← loc?.mapM fun loc => do `(Lean.Parser.Tactic.location| at $(← delab loc):term)
+    if symm then `(tactic| rw [← $estx] $(loc)?) else `(tactic| rw [$estx:term] $(loc)?)
 
   let mut tacMsg :=
     if let some loc := loc? then
-      if symm then m!"rw [← {e}] at {loc}" else m!"rw [{e}] at {loc}" -- TODO fix
+      if symm then m!"rw [← {e}] at {loc}" else m!"rw [{e}] at {loc}"
     else
       if symm then m!"rw [← {e}]" else m!"rw [{e}]"
   let mut extraMsg := ""
