@@ -3,6 +3,7 @@ import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.Tactic
 import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.Vector.MapNorm
+import Mathlib.Data.Vector.Snoc
 
 namespace Vector
   variable (xs : Vector α n)
@@ -132,6 +133,64 @@ theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
 @[simp]
 theorem neg_neg_x : neg (neg x) = x := by
   aesop_bitvec
+
+
+
+  section Mul
+
+    #check List.map
+
+    def corec : (n : Nat) → (f : σ → σ × Bool) → (s : σ) → Bitvec n
+      | 0,   _, _ => Vector.nil
+      | n+1, f, s => Vector.snoc (corec n f ((f s).1)) ((f s).2)
+
+
+    structure BitvecStateMachine where
+      σ : Type u
+      f : σ → σ × Bool
+      s : σ
+
+
+    structure MulState (σ₁ σ₂ : Type _) where
+      initial_state1 : σ₁
+      cur_state1 : σ₁
+      cur_state2 : σ₂
+      carry_states : List σ₁
+      carry : Nat
+
+    /--
+      An alternative definition of `Bitvec` multiplication, when the two arguments can be described
+      in terms of `corec`
+    -/
+    protected abbrev mul' (xs ys : BitvecStateMachine) : Bitvec n :=
+      corec n (fun (s : MulState xs.σ ys.σ) =>
+        let ⟨next_state1, _⟩ := xs.f s.cur_state1
+        let ⟨next_state2, y⟩ := ys.f s.cur_state2
+        let carry_states := if y then
+          s.initial_state1 :: s.carry_states
+        else
+          s.carry_states
+
+        /- Iterate all carry states, storing -/
+        let (carry_states, carry) :=
+          carry_states.map xs.f
+          |>.unzip
+
+        let carry := s.carry + (carry.map Bool.toNat).sum
+
+        let out := (carry % 2) == 1
+        let carry := carry / 2
+
+        ({
+          initial_state1 := s.initial_state1,
+          cur_state1 := next_state1,
+          cur_state2 := next_state2,
+          carry_states,
+          carry
+        }, out)
+      ) ⟨xs.s, xs.s, ys.s, [], 0⟩
+
+  end Mul
 
 
 end Bitvec
