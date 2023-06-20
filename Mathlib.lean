@@ -2453,6 +2453,7 @@ import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Probability.Martingale.BorelCantelli
 import Mathlib.Probability.Martingale.Centering
 import Mathlib.Probability.Martingale.OptionalSampling
 import Mathlib.Probability.Martingale.OptionalStopping
