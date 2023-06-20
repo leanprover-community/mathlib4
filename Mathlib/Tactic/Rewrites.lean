@@ -167,7 +167,7 @@ def rewrites (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × B
     -- Don't use too many heartbeats.
     |>.whileAtLeastHeartbeatsPercent leavePercentHeartbeats
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
-    |>.mapM RewriteResult.computeRfl -- TODO we could simply not compute this if stop_at_rfl is False
+    |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if stop_at_rfl is False
     |>.takeUpToFirst (fun r => stop_at_rfl && r.rfl? = some true)
     -- Bound the number of results.
     |>.takeAsList max
