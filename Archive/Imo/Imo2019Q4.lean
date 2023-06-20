@@ -55,7 +55,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   apply _root_.ne_of_gt
   have le_sum : ∀ N ≥ 6, 15 ≤ ∑ i in range N, i
   · intro N hN
-    show ∑ i in range 6, i ≤_
+    show ∑ i in range 6, i ≤ _
     apply sum_le_sum_of_subset
     simpa using hN
   calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ i in range n, (2:ℤ) ^ n := ?_
@@ -70,19 +70,19 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   norm_cast
   calc ∏ i in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i in range n, i)! := ?_
-    _ < k ! := by have := le_sum n (by linarith); gcongr
+    _ < k ! := by have := le_sum n hn; gcongr
   clear h2
   induction' n, hn using Nat.le_induction with n' hn' IH
-  · calc 2 ^ (6 * 6) < 15! := by norm_num
-      _ = (∑ i in range 6, i)! := by simp only [sum_range_succ, sum_range_zero]
+  · show _ < 15!
+    norm_num
   let A := ∑ i in range n', i
   calc 2 ^ ((n' + 1) * (n' + 1))
-      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr; norm_num; linarith
+      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
     _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
     _ < A ! * (2 ^ 4) ^ n' := by gcongr
     _ = A ! * (15 + 1) ^ n' := rfl
     _ ≤ A ! * (A + 1) ^ n' := by gcongr; apply le_sum _ hn'
-    _ ≤ (A + n')! := by apply factorial_mul_pow_le_factorial
+    _ ≤ (A + n')! := factorial_mul_pow_le_factorial
     _ = (∑ i in range (n' + 1), i)! := by rw [sum_range_succ]
 #align imo2019_q4.upper_bound Imo2019Q4.upper_bound
 
