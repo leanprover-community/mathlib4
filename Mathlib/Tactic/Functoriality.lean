@@ -167,10 +167,12 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MySeqCo
   --
   aesop
 
-#check IsCompact
+--   convert_to IsCompact (f '' Set.univ)
+--   . sorry
+  -- exact IsCompact.image hX hf_cont
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : CompactSpace X) :
   CompactSpace Y := by
-. constructor
+  constructor
   rcases hX with ⟨hX⟩
   --
   intro s
@@ -187,6 +189,6 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : Compact
       aesop
     . replace hx := hx.2
       sorry
-
+  sorry
 
 end compact
