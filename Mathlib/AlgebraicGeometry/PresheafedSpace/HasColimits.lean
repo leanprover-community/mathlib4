@@ -215,20 +215,18 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         fapply PresheafedSpace.ext
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · refine NatTrans.ext _ _ (funext fun U => ?_)
-          induction U with
-          | h U =>
-            rcases U with ⟨U, hU⟩
-            dsimp
-            rw [PresheafedSpace.id_c_app, map_id]
-            erw [id_comp]
-            rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
-              ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
-              NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
-            dsimp
-            rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
-              Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ←assoc]
-            congr 1 }
+        · ext U
+          rcases U with ⟨U, hU⟩
+          dsimp
+          rw [PresheafedSpace.id_c_app, map_id]
+          erw [id_comp]
+          rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
+            ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
+            NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
+          dsimp
+          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
+            Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ←assoc]
+          congr 1 }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone AlgebraicGeometry.PresheafedSpace.colimitCocone
 
@@ -309,7 +307,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    ext U
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
