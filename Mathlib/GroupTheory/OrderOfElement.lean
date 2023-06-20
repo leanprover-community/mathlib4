@@ -49,10 +49,10 @@ variable [Monoid G] [AddMonoid A]
 
 section IsOfFinOrder
 
--- porting note: `rw [mul_one]` does not work
+-- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1 ↔ x ^ n = 1 := by
-  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; simp only [mul_one]
+  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; dsimp; rw [mul_one]
 #align is_periodic_pt_mul_iff_pow_eq_one isPeriodicPt_mul_iff_pow_eq_one
 #align is_periodic_pt_add_iff_nsmul_eq_zero isPeriodicPt_add_iff_nsmul_eq_zero
 
@@ -153,12 +153,12 @@ theorem orderOf_pos' (h : IsOfFinOrder x) : 0 < orderOf x :=
 #align order_of_pos' orderOf_pos'
 #align add_order_of_pos' addOrderOf_pos'
 
--- porting note: `rw [mul_one]` does not work
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   -- porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
   refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  rw [orderOf, mul_left_iterate]; simp only [mul_one]
+  -- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
+  rw [orderOf, mul_left_iterate]; dsimp; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
 
@@ -522,10 +522,9 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   suffices s.Infinite by exact this.mono hs
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
-    have H := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
-    contrapose! H -- Porting note: `contrapose! this` errored, so renamed `this ↦ H`
-    rw [not_not] at H -- Porting note: why is `contrapose!` not taking care of this?
-    exact Set.injOn_of_injective H _
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
+    contrapose! this
+    exact Set.injOn_of_injective this _
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder

@@ -1408,9 +1408,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
   contrapose! h
-  --porting note: why do we have `contrapose!` if the `push_neg` behaviour doesn't work?
-  rw [injective_codRestrict, ← injOn_iff_injective]
-  rwa [not_not] at h
+  rwa [injective_codRestrict, ← injOn_iff_injective]
 #align set.not_inj_on_infinite_finite_image Set.not_injOn_infinite_finite_image
 
 /-! ### Order properties -/
