@@ -14,7 +14,7 @@ import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.DedekindDomain.Pid
+import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.Norm
 
