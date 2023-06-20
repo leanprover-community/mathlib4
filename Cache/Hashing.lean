@@ -34,7 +34,7 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
-    else throw $ IO.userError s!"No match for {filePath}"
+    else IO.println s!"{filePath} is not covered by the olean cache."
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/

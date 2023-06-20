@@ -119,8 +119,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
   left_inv f := by rfl
--- Porting note: replaced ext by FreeMagma.hom_ext
-  right_inv F := FreeMagma.hom_ext (rfl)
+  right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
 @[to_additive (attr := simp)]
@@ -468,7 +467,7 @@ variable {α : Type u}
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
--- Porting note: replaced ext by FreeSemigroup.ext
+  -- Porting note: replaced ext by FreeSemigroup.ext
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
@@ -484,7 +483,7 @@ theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++
 #align free_semigroup.mk_mul_mk FreeSemigroup.mk_mul_mk
 
 /-- The embedding `α → FreeSemigroup α`. -/
-@[to_additive (attr := simps) "The embedding `α → free_add_semigroup α`."]
+@[to_additive (attr := simps) "The embedding `α → FreeAddSemigroup α`."]
 def of (x : α) : FreeSemigroup α := ⟨x, []⟩
 #align free_semigroup.of FreeSemigroup.of
 

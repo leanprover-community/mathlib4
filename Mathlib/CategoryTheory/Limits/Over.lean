@@ -104,6 +104,7 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             dsimp
             simp
           right_inv := fun Y => by
+            -- TODO: It would be nice to replace the next two lines with just `ext`.
             apply OverMorphism.ext
             apply pullback.hom_ext
             . dsimp

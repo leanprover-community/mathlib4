@@ -90,8 +90,8 @@ def leftDerivedZeroToSelfAppInv [EnoughProjectives C] [PreservesFiniteColimits F
     (asIso (cokernel.desc _ _ (exact_of_map_projectiveResolution F P).w)).inv ≫
       _ ≫ (homologyIsoCokernelLift _ _ _).inv ≫ (leftDerivedObjIso F 0 P).inv
   refine' cokernel.map _ _ (𝟙 _) (kernel.lift _ (𝟙 _) (by simp)) _
-  -- Porting note: this used to be ext ; simp
-  apply equalizer.hom_ext
+  ext
+  -- Porting note: this used to just be `simp`
   simp only [Category.assoc, kernel.lift_ι, Category.comp_id, Category.id_comp]
 #align category_theory.abelian.functor.left_derived_zero_to_self_app_inv CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppInv
 
@@ -117,7 +117,7 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   -- Porting note: restructured proof to avoid `convert`
   conv_rhs => rw [← Category.id_comp (cokernel.π _)]
   congr
-  apply equalizer.hom_ext
+  ext
   -- Porting note: working around 'motive is not type correct'
   simp only [Category.id_comp]
   rw [Category.assoc, equalizer_as_kernel, kernel.lift_ι]
@@ -145,7 +145,7 @@ theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteC
   rw [IsIso.inv_comp_eq]
   -- Porting note: working around 'motive is not type correct'
   simp only [Category.comp_id]
-  apply coequalizer.hom_ext
+  ext
   simp only [cokernel.π_desc_assoc, Category.assoc, cokernel.π_desc, homology.desc']
   rw [← Category.assoc, ← Category.assoc (homologyIsoCokernelLift _ _ _).inv, Iso.inv_hom_id]
   simp only [Category.assoc, cokernel.π_desc, kernel.lift_ι_assoc, Category.id_comp]
