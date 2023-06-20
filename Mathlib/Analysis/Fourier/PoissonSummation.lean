@@ -42,11 +42,11 @@ noncomputable section
 
 open Function hiding comp_apply
 
+open Set hiding restrict_apply
+
 open Complex hiding abs_of_nonneg
 
 open Real
-
-open Set hiding restrict_apply
 
 open TopologicalSpace Filter MeasureTheory Asymptotics
 
@@ -64,7 +64,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨(coe : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
-  have neK : ∀ (K : compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
+  have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
     have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle _
     intro K g
     simp_rw [norm_eq_supr_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
@@ -75,35 +75,31 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
-        ∫ x in 0 ..1, e x * (∑' n : ℤ, f.comp (ContinuousMap.addRight n)) x := by
+        ∫ x in 0..1, e x * (∑' n : ℤ, f.comp (ContinuousMap.addRight n)) x := by
       simp_rw [fourierCoeff_eq_intervalIntegral _ m 0, div_one, one_smul, zero_add, comp_apply,
         coe_mk, periodic.lift_coe, zsmul_one, smul_eq_mul]
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
-        _ =
-        ∫ x in 0 ..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
-      simp_rw [coe_mul, Pi.mul_apply, ← tsum_apply (summable_of_locally_summable_norm hf),
+    _ = ∫ x in 0..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
+      simp_rw [coeMul, Pi.mul_apply, ← tsum_apply (summable_of_locally_summable_norm hf),
         tsum_mul_left]
     -- Swap sum and integral.
-        _ =
-        ∑' n : ℤ, ∫ x in 0 ..1, (e * f.comp (ContinuousMap.addRight n)) x := by
+    _ =  ∑' n : ℤ, ∫ x in 0..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩
       exact funext fun n => neK _ _
-    _ = ∑' n : ℤ, ∫ x in 0 ..1, (e * f).comp (ContinuousMap.addRight n) x := by
+    _ = ∑' n : ℤ, ∫ x in 0..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
-        _ =
-        ∫ x, e x * f x := by
-      suffices : integrable ⇑(e * f); exact this.has_sum_interval_integral_comp_add_int.tsum_eq
+    _ = ∫ x, e x * f x := by
+      suffices : integrable ⇑(e * f) := by exact this.has_sum_interval_integral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, is_compact_Icc⟩
       simp_rw [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, is_compact_Icc⟩ _
     -- Minor tidying to finish
-        _ =
-        𝓕 f m := by
+    _ = 𝓕 f m := by
       rw [fourier_integral_eq_integral_exp_smul]
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, fourier_coe_apply]
@@ -116,7 +112,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     (h_norm :
       ∀ K : Compacts ℝ, Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict K‖)
-    (h_sum : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n := by
+    (h_sum : Summable fun n : ℤ => 𝓕 f n) : (∑' n : ℤ, f n) = (∑' n : ℤ, 𝓕 f n) := by
   let F : C(UnitAddCircle, ℂ) :=
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
@@ -146,7 +142,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   have claim :
     ∀ x : ℝ, max 0 (-2 * R) < x → ∀ y : ℝ, x + R ≤ y → y ^ (-b) ≤ (1 / 2) ^ (-b) * x ^ (-b) := by
     intro x hx y hy
-    rw [max_lt_iff] at hx 
+    rw [max_lt_iff] at hx
     have hxR : 0 < x + R := by
       rcases le_or_lt 0 R with (h | h)
       · exact add_pos_of_pos_of_nonneg hx.1 h
@@ -165,12 +161,12 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     exact rpow_le_rpow (mul_pos one_half_pos hx.1).le (by linarith) hb.le
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
-  simp only [is_O, is_O_with, eventually_at_top] at hc' ⊢
+  simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine' ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => _⟩⟩
-  rw [ge_iff_le, max_le_iff] at hx 
+  rw [ge_iff_le, max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
-  rw [max_lt_iff] at hx' 
+  rw [max_lt_iff] at hx'
   rw [norm_norm,
     ContinuousMap.norm_le _
       (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg_of_nonneg one_half_pos.le _) (norm_nonneg _))]
@@ -191,7 +187,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_at_bot_at_top
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by ext1 x;
     simp only [Function.comp_apply, abs_neg]
-  rw [this] at h2 
+  rw [this] at h2
   refine' (is_O_of_le _ fun x => _).trans h2
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
@@ -207,7 +203,7 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
   obtain ⟨r, hr⟩ := K.is_compact.bounded.subset_ball 0
-  rw [closed_ball_eq_Icc, zero_add, zero_sub] at hr 
+  rw [closed_ball_eq_Icc, zero_add, zero_sub] at hr
   have :
     ∀ x : ℝ,
       ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ := by
@@ -266,4 +262,3 @@ theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hf
 #align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz
-
