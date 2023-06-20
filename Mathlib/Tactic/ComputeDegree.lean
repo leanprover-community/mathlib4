@@ -95,7 +95,8 @@ partial
 def CDL : TacticM Unit := do
   -- if there is no goal left, stop
   let _::_ := ← getGoals | pure ()
-  match (← getMainTarget).consumeMData.getAppFnArgs with
+  let tgt := ← getMainTarget
+  match tgt.consumeMData.getAppFnArgs with
     -- check that the target is an inequality `≤`...
     | (``LE.le, #[_, _, lhs, rhs]) => match lhs.getAppFnArgs with
       -- and that the LHS is `natDegree ...` or `degree ...`
@@ -165,7 +166,7 @@ def CDL : TacticM Unit := do
         evalTactic (← `(tactic| refine degree_le_natDegree.trans ?_))
         evalTactic (← `(tactic| refine Nat.cast_le.mpr ?_))
       | _ => throwError "Expected an inequality of the form 'f.natDegree ≤ d' or 'f.degree ≤ d'"
-    | _ => do dbg_trace (← getMainTarget).ctorName ; throwError "Expected an inequality"
+    | _ => throwError m!"Expected an inequality instead of '{tgt.ctorName}'"
   CDL
 
 /--
