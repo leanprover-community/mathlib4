@@ -218,18 +218,14 @@ theorem toΓSpecSheafedSpace_app_eq :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
-theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
+-- Porting note : need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
+-- `toStalk_stalkMap_to_Γ_Spec`
+@[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
     toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
       X.toToΓSpecMapBasicOpen r :=
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_spec AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_spec
-
--- Porting note : added this helper lemma to help compile `toStalk_stalkMap_to_Γ_Spec`
-theorem toΓSpecSheafedSpace_app_spec_comp {Z} (r : Γ.obj (op X)) (f : _ ⟶ Z) :
-    toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) ≫ f =
-      X.toToΓSpecMapBasicOpen r ≫ f := by
-  rw [←Category.assoc, toΓSpecSheafedSpace_app_spec]
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
@@ -241,7 +237,7 @@ theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
   -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
-  rw [toΓSpecSheafedSpace_app_spec_comp]
+  rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
@@ -366,7 +362,6 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting Note: Had to set Heartbeats
 set_option maxHeartbeats 900000 in
--- Removing this makes the following definition time out.
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: Changed to `simps!`
 @[simps! unit counit]
