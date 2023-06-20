@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 
 ! This file was ported from Lean 3 source module field_theory.finite.galois_field
-! leanprover-community/mathlib commit 4b05d3f4f0601dca8abf99c4ec99187682ed0bba
+! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -80,9 +80,6 @@ instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
 namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
-
--- Porting note: prevents diamond for `Algebra (ZMod p) (ZMod p)`
-attribute [-instance] ZMod.instAlgebraZModToCommSemiringCommRingToSemiring
 
 instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
 
@@ -166,9 +163,6 @@ theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
 set_option linter.uppercaseLean3 false in
 #align galois_field.splits_zmod_X_pow_sub_X GaloisField.splits_zMod_x_pow_sub_x
 
--- Porting note: This instance is already disabled
--- attribute [-instance] ZMod.algebra
-
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
   let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
@@ -241,6 +235,8 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
     exact Nat.Prime.ne_one hp' h2
   rw [← hpp'] at _char_p'_K'
   haveI := fact_iff.2 hp
+  letI : Algebra (ZMod p) K := ZMod.algebra _ _
+  letI : Algebra (ZMod p) K' := ZMod.algebra _ _
   exact ↑(algEquivOfCardEq p hKK')
 #align finite_field.ring_equiv_of_card_eq FiniteField.ringEquivOfCardEq
 
