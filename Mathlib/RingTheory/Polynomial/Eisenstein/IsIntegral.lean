@@ -40,6 +40,7 @@ section Cyclotomic
 
 variable (p : ℕ)
 
+-- Porting note: to prevent Lean complaigning about this notation
 set_option quotPrecheck false
 local notation "𝓟" => Submodule.span ℤ {↑p}
 
@@ -132,6 +133,7 @@ variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSepa
 
 variable [IsDomain R] [IsFractionRing R K] [IsIntegrallyClosed R]
 
+-- Porting note: to prevent Lean complaigning about this notation
 set_option quotPrecheck false
 local notation "𝓟" => Submodule.span R {p}
 
@@ -295,7 +297,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_is_eiseinstein_at {B : PowerBas
         ← Nat.add_sub_assoc (Nat.lt_of_succ_lt_succ (mem_range.1 hj)).le, add_comm,
         Nat.add_sub_cancel]
     -- By induction hypothesis we can find `g : ℕ → R` such that
-    -- `k ∈ range (j + 1) → Q.coeff k • B.gen ^ k = (algebra_map R L) p * g k • B.gen ^ k`-
+    -- `k ∈ range (j + 1) → Q.coeff k • B.gen ^ k = (algebraMap R L) p * g k • B.gen ^ k`-
     choose! g hg using hind
     replace hg : ∀ k ∈ range (j + 1), Q.coeff k • B.gen ^ k = algebraMap R L p * g k • B.gen ^ k
     · intro k hk
@@ -304,8 +306,8 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_is_eiseinstein_at {B : PowerBas
           (le_trans (mem_range_succ_iff.1 hk) (succ_le_iff.1 (mem_range_succ_iff.1 hj)).le)),
         Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, mul_assoc]
     -- Since `minpoly R B.gen` is Eiseinstein, we can find `f : ℕ → L` such that
-    -- `(map (algebra_map R L) (minpoly R B.gen)).nat_degree ≤ i` implies `f i ∈ adjoin R {B.gen}`
-    -- and `(algebra_map R L) p * f i = B.gen ^ i`. We will also need `hf₁`, a reformulation of this
+    -- `(map (algebraMap R L) (minpoly R B.gen)).nat_degree ≤ i` implies `f i ∈ adjoin R {B.gen}`
+    -- and `(algebraMap R L) p * f i = B.gen ^ i`. We will also need `hf₁`, a reformulation of this
     -- property.
     choose! f hf using
       IsWeaklyEisensteinAt.exists_mem_adjoin_mul_eq_pow_natDegree_le (minpoly.aeval R B.gen)
