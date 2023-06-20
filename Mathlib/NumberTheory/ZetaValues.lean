@@ -261,16 +261,15 @@ theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (h
 
 theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k) * Real.cos (2 * π * n * x))
-      ((-1) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
+      ((-1 : ℝ) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
         (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli (2 * k))).eval x) := by
   have :
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) * (fourier n (x : 𝕌) + fourier (-n) (x : 𝕌)))
-      ((-1) ^ (k + 1) * (2 * π) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
+      ((-1 : ℂ) ^ (k + 1) * (2 * (π : ℂ)) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
     convert
       hasSum_one_div_nat_pow_mul_fourier (by linarith [Nat.one_le_iff_ne_zero.mpr hk] : 2 ≤ 2 * k)
-        hx using 1
-    · ext1 n
-      rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
+        hx using 3
+    · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
     · rw [pow_add, pow_one]
       conv_rhs =>
         rw [mul_pow]
@@ -279,18 +278,21 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · skip
         · rw [pow_mul, I_sq]
       ring
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
   convert ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
     · rw [ofReal_cos, ofReal_mul, fourier_coe_apply, fourier_coe_apply, cos, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_bit0, ofReal_one, Int.cast_neg, Int.cast_ofNat,
+        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_ofNat,
         ofReal_nat_cast]
       congr 3
-      · ring; · ring
+      · ring
+      · ring
   · convert (ofReal_re _).symm
     rw [ofReal_mul, ofReal_div, ofReal_div, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_neg,
-      ofReal_nat_cast, ofReal_mul, ofReal_bit0, ofReal_one]
+      ofReal_nat_cast, ofReal_mul, ofReal_two, ofReal_one]
+    rw [bernoulliFun]
     ring
 #align has_sum_one_div_nat_pow_mul_cos hasSum_one_div_nat_pow_mul_cos
 
