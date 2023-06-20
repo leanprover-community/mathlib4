@@ -28,7 +28,7 @@ inductive Verts : Type
   | V1 | V2 | V3 | V4
   -- The bridges
   | B1 | B2 | B3 | B4 | B5 | B6 | B7
-deriving DecidableEq, Fintype
+  deriving DecidableEq, Fintype
 #align konigsberg.verts Konigsberg.Verts
 
 open Verts
@@ -36,10 +36,10 @@ open Verts
 /-- Each of the connections between the islands/mainlands and the bridges.
 These are ordered pairs, but the data becomes symmetric in `Konigsberg.adj`. -/
 def edges : List (Verts × Verts) :=
-[ (V1, B1), (V1, B2), (V1, B3), (V1, B4), (V1, B5),
-  (B1, V2), (B2, V2), (B3, V4), (B4, V3), (B5, V3),
-  (V2, B6), (B6, V4),
-  (V3, B7), (B7, V4) ]
+  [(V1, B1), (V1, B2), (V1, B3), (V1, B4), (V1, B5),
+   (B1, V2), (B2, V2), (B3, V4), (B4, V3), (B5, V3),
+   (V2, B6), (B6, V4),
+   (V3, B7), (B7, V4)]
 #align konigsberg.edges Konigsberg.edges
 
 /-- The adjacency relation for the Königsberg graph. -/
