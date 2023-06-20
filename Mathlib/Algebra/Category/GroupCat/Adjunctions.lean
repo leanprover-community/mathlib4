@@ -74,7 +74,11 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 def adj : free ⊣ forget AddCommGroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeAbelianGroup.lift.symm
-      homEquiv_naturality_left_symm := by intros; ext; rfl }
+      homEquiv_naturality_left_symm := by
+        intros
+        ext
+        simp only [Equiv.symm_symm]
+        apply FreeAbelianGroup.lift_comp }
 #align AddCommGroup.adj AddCommGroupCat.adj
 
 instance : IsRightAdjoint (forget AddCommGroupCat.{u}) :=
@@ -109,7 +113,14 @@ def free : Type u ⥤ GroupCat where
 def adj : free ⊣ forget GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeGroup.lift.symm
-      homEquiv_naturality_left_symm := fun {_ _ M} f g => by ext1; rfl }
+      homEquiv_naturality_left_symm := by
+        intros
+        ext1
+        simp only [Equiv.symm_symm]
+        apply Eq.symm
+        apply FreeGroup.lift.unique
+        intros
+        apply FreeGroup.lift.of }
 #align Group.adj GroupCat.adj
 
 instance : IsRightAdjoint (forget GroupCat.{u}) :=
@@ -142,7 +153,14 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G A => Abelianization.lift.symm
-      homEquiv_naturality_left_symm := fun f g => by ext1; rfl }
+      homEquiv_naturality_left_symm := by
+        intros
+        ext1
+        simp only [Equiv.symm_symm]
+        apply Eq.symm
+        apply Abelianization.lift.unique
+        intros
+        apply Abelianization.lift.of }
 #align abelianize_adj abelianizeAdj
 
 end Abelianization
