@@ -64,7 +64,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
 @[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
 theorem pi.cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
-  ext (a' h')
+  ext a' h'
   by_cases h : a' = a
   · subst h
     rw [Pi.cons_same]
