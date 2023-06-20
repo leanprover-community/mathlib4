@@ -336,12 +336,20 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
--- Porting Note: Had to set Heartbeats
-set_option maxHeartbeats 900000 in
+-- Porting note : the two unification hint is to help compile `locallyRingedSpaceAdjunction`
+-- faster, from 900000 to normal maxHeartbeats
+/-- opposite of composition of two functors -/
+unif_hint uh_functor_op1 where ⊢
+  Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
+  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp
+
+/-- opposite of identity functor -/
+unif_hint uh_functor_op2 where ⊢
+  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ
+
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
---Porting Note: Changed to `simps!`
-@[simps! unit counit]
-def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace :=
+--Porting Note: `simps` cause a time out, so `unit` and `counit` will be added manually
+def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
   Adjunction.mkOfUnitCounit
     { unit := identityToΓSpec
       counit := (NatIso.op SpecΓIdentity).inv
@@ -349,9 +357,23 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace :=
         ext X; erw [Category.id_comp]
         exact congr_arg Quiver.Hom.op (left_triangle X)
       right_triangle := by
-        ext1; ext1 R; erw [Category.id_comp]
-        exact right_triangle R.unop }
+        ext R : 2
+        -- Porting note : a little bit hand holding
+        change identityToΓSpec.app _ ≫ 𝟙 _ ≫ Spec.toLocallyRingedSpace.map _ =
+          𝟙 _
+        simp_rw [Category.id_comp, show (NatIso.op SpecΓIdentity).inv.app R =
+          (SpecΓIdentity.inv.app R.unop).op from rfl]
+        exact right_triangle R.unop
+        }
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
+
+lemma locallyRingedSpaceAdjunction_unit :
+  locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
+#align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_unit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_unit
+
+lemma locallyRingedSpaceAdjunction_counit :
+  locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
+#align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
 -- Porting Note: Commented
 --attribute [local semireducible] Spec.toLocallyRingedSpace
@@ -434,10 +456,10 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
   --    Γ_Spec.adjunction_counit_app] at this
   --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
   rw [← IsIso.eq_comp_inv] at this
-  simp only [adjunction_counit_app, locallyRingedSpaceAdjunction_counit, NatTrans.op_app, unop_op,
+  simp only [adjunction_counit_app, locallyRingedSpaceAdjunction_counit, NatIso.op_inv, NatTrans.op_app, unop_op,
     Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj, Spec.toLocallyRingedSpace_obj, Γ_obj,
-    Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
-    Spec.sheafedSpaceObj_presheaf, SpecΓIdentity_inv_app, Category.id_comp] at this
+    Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
+    SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
   exact this
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
