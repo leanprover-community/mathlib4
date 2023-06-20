@@ -544,13 +544,17 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd : pullback f g ⟶ Y).1.base =
-      (Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩ := by
+      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
   rw [←
     show _ = (pullback.snd : pullback f g ⟶ _).1.base from
-      preserves_pullback.iso_hom_snd Scheme.forget_to_Top f g,
-    coe_comp, Set.range_comp, set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _),
-    TopCat.pullback_snd_image_fst_preimage, Set.image_univ]
+      PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
+  -- Porting note : was `rw`
+  erw [coe_comp]
+  rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
+    @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
+  -- Porting note : was `rw`
+  erw [TopCat.pullback_snd_image_fst_preimage]
+  rw [Set.image_univ]
   rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
@@ -558,13 +562,17 @@ theorem range_pullback_snd_of_left :
 
 theorem range_pullback_fst_of_right :
     Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
-      (Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩ := by
+      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
   rw [←
     show _ = (pullback.fst : pullback g f ⟶ _).1.base from
-      preserves_pullback.iso_hom_fst Scheme.forget_to_Top g f,
-    coe_comp, Set.range_comp, set.range_iff_surjective.mpr, ←
-    @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _),
-    TopCat.pullback_fst_image_snd_preimage, Set.image_univ]
+      PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
+  -- Porting note : was `rw`
+  erw [coe_comp]
+  rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
+    @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
+  -- Porting note : was `rw`
+  erw [TopCat.pullback_fst_image_snd_preimage]
+  rw [Set.image_univ]
   rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
@@ -574,15 +582,16 @@ theorem range_pullback_to_base_of_left :
     Set.range (pullback.fst ≫ f : pullback f g ⟶ Z).1.base =
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, coe_comp, Set.range_comp,
-    range_pullback_snd_of_left, opens.map_obj, opens.coe_mk, Set.image_preimage_eq_inter_range,
+    range_pullback_snd_of_left, Opens.carrier_eq_coe,
+    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range,
     Set.inter_comm]
 #align algebraic_geometry.is_open_immersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
     Set.range (pullback.fst ≫ g : pullback g f ⟶ Z).1.base =
       Set.range g.1.base ∩ Set.range f.1.base := by
-  rw [Scheme.comp_val_base, coe_comp, Set.range_comp, range_pullback_fst_of_right, opens.map_obj,
-    opens.coe_mk, Set.image_preimage_eq_inter_range, Set.inter_comm]
+  rw [Scheme.comp_val_base, coe_comp, Set.range_comp, range_pullback_fst_of_right, Opens.map_obj,
+    Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range, Set.inter_comm]
 #align algebraic_geometry.is_open_immersion.range_pullback_to_base_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_right
 
 /-- The universal property of open immersions:
@@ -607,21 +616,21 @@ theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X)
 /-- Two open immersions with equal range are isomorphic. -/
 @[simps]
 def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) : X ≅ Y where
-  Hom := lift g f (le_of_eq e)
+  hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
-  hom_inv_id' := by rw [← cancel_mono f]; simp
-  inv_hom_id' := by rw [← cancel_mono g]; simp
+  hom_inv_id := by rw [← cancel_mono f]; simp
+  inv_hom_id := by rw [← cancel_mono g]; simp
 #align algebraic_geometry.is_open_immersion.iso_of_range_eq AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme} (f : X ⟶ Y)
+abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme} (f : X ⟶ Y)
     [H : IsOpenImmersion f] : Opens X.carrier ⥤ Opens Y.carrier :=
   H.openFunctor
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
-def AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] (U) :
-    X.Presheaf.obj (op U) ⟶ Y.Presheaf.obj (op (f.opensFunctor.obj U)) :=
+def _root_.AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] (U) :
+    X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (f.opensFunctor.obj U)) :=
   H.invApp U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
 
@@ -629,7 +638,7 @@ theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme} (f : Y ⟶ U) (g : U 
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U.carrier) :
     (Opens.map f.1.base).obj V = (Opens.map fg.1.base).obj (g.opensFunctor.obj V) := by
   subst H
-  rw [Scheme.comp_val_base, opens.map_comp_obj]
+  rw [Scheme.comp_val_base, Opens.map_comp_obj]
   congr 1
   ext1
   exact (Set.preimage_image_eq _ h.base_open.inj).symm
@@ -639,28 +648,29 @@ theorem app_eq_inv_app_app_of_comp_eq_aux {X Y U : Scheme} (f : Y ⟶ U) (g : U 
 theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : Opens U.carrier) :
     f.1.c.app (op V) =
-      g.invApp _ ≫
+      Scheme.Hom.invApp g _ ≫
         fg.1.c.app _ ≫
-          Y.Presheaf.map
+          Y.presheaf.map
             (eqToHom <| IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux f g fg H V).op := by
   subst H
-  rw [Scheme.comp_val_c_app, category.assoc, Scheme.hom.inv_app,
-    PresheafedSpace.is_open_immersion.inv_app_app_assoc, f.val.c.naturality_assoc,
-    TopCat.Presheaf.pushforwardObj_map, ← functor.map_comp]
-  convert (category.comp_id _).symm
+  rw [Scheme.comp_val_c_app, Category.assoc, Scheme.Hom.invApp,
+    PresheafedSpace.IsOpenImmersion.invApp_app_assoc, f.val.c.naturality_assoc,
+    TopCat.Presheaf.pushforwardObj_map, ← Functor.map_comp]
+  convert (Category.comp_id <| f.1.c.app (op V)).symm
   convert Y.presheaf.map_id _
 #align algebraic_geometry.is_open_immersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
 theorem lift_app {X Y U : Scheme} (f : U ⟶ Y) (g : X ⟶ Y) [h : IsOpenImmersion f] (H)
     (V : Opens U.carrier) :
     (IsOpenImmersion.lift f g H).1.c.app (op V) =
-      f.invApp _ ≫
+      Scheme.Hom.invApp f _ ≫
         g.1.c.app _ ≫
-          X.Presheaf.map
+          X.presheaf.map
             (eqToHom <|
                 IsOpenImmersion.app_eq_inv_app_app_of_comp_eq_aux _ _ _
                   (IsOpenImmersion.lift_fac f g H).symm V).op :=
-  IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ _ _
+  -- Porting note : `(lift_fac ...).symm` was done by unification magic in Lean3.
+  IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ H).symm _
 #align algebraic_geometry.is_open_immersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
 end IsOpenImmersion
