@@ -205,6 +205,21 @@ theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
   gauge_le_of_mem zero_le_one <| by rwa [one_smul]
 #align gauge_le_one_of_mem gauge_le_one_of_mem
 
+/-- Gauge is subadditive. -/
+theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
+    gauge s (x + y) ≤ gauge s x + gauge s y := by
+  refine' le_of_forall_pos_lt_add fun ε hε => _
+  obtain ⟨a, ha, ha', x, hx, rfl⟩ :=
+    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
+  obtain ⟨b, hb, hb', y, hy, rfl⟩ :=
+    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s y) (half_pos hε))
+  calc
+    gauge s (a • x + b • y) ≤ a + b := gauge_le_of_mem (by positivity) <| by
+      rw [hs.add_smul ha.le hb.le]
+      exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
+    _ < gauge s (a • x) + gauge s (b • y) + ε := by linarith
+#align gauge_add_le gauge_add_le
+
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 #align self_subset_gauge_le_one self_subset_gauge_le_one
 
@@ -349,13 +364,6 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
   exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
 #align interior_subset_gauge_lt_one interior_subset_gauge_lt_one
 
-theorem gauge_lt_one_eq_interior [TopologicalAddGroup E] (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
-    { x | gauge s x < 1 } = interior s := by
-  refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
-  rcases mem_openSegment_of_gauge_lt_one hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) hx
-    with ⟨y, hys, hxy⟩
-  exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
-
 theorem gauge_lt_one_eq_self_of_open (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
     { x | gauge s x < 1 } = s := by
   refine' (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm _
@@ -380,22 +388,46 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
 
 end TopologicalSpace
 
-theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
-    gauge s (x + y) ≤ gauge s x + gauge s y := by
-  refine' le_of_forall_pos_lt_add fun ε hε => _
-  obtain ⟨a, ha, ha', hx⟩ :=
-    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
-  obtain ⟨b, hb, hb', hy⟩ :=
-    exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s y) (half_pos hε))
-  rw [mem_smul_set_iff_inv_smul_mem₀ ha.ne'] at hx
-  rw [mem_smul_set_iff_inv_smul_mem₀ hb.ne'] at hy
-  suffices gauge s (x + y) ≤ a + b by linarith
-  have hab : 0 < a + b := add_pos ha hb
-  apply gauge_le_of_mem hab.le
-  have := convex_iff_div.1 hs hx hy ha.le hb.le hab
-  rwa [smul_smul, smul_smul, ← mul_div_right_comm, ← mul_div_right_comm, mul_inv_cancel ha.ne',
-    mul_inv_cancel hb.ne', ← smul_add, one_div, ← mem_smul_set_iff_inv_smul_mem₀ hab.ne'] at this
-#align gauge_add_le gauge_add_le
+section TopologicalAddGroup
+
+open Filter
+
+variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+
+theorem continuous_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuous (gauge s) := by
+  have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
+  simp only [continuous_iff_continuousAt, ContinuousAt,
+    Metric.nhds_basis_closedBall.tendsto_right_iff, Real.closedBall_eq_Icc]
+  intro x ε hε₀
+  rw [← map_add_left_nhds_zero, eventually_map]
+  have : ε • s ∩ ε • -s ∈ 𝓝 0
+  · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
+      ((set_smul_mem_nhds_zero_iff hε₀.ne').2 (neg_mem_nhds_zero _ hs₀))
+  filter_upwards [this] with y hy
+  rw [Real.closedBall_eq_Icc]
+  
+  -- refine continuous_iff_continuousAt.2 fun x ↦ tendsto_order.2 ⟨?_, ?_⟩ <;> intro r hr
+  -- · sorry
+  -- · obtain ⟨ε, hε₀, hεr⟩ : ∃ ε, 0 < ε ∧ gauge s x + ε < r :=
+  --     ⟨(r - gauge s x) / 2, by linarith, by linarith⟩
+  --   have : x +ᵥ ε • s ∈ 𝓝 (x + ε • (0 : E)) :=
+  --     vadd_mem_nhds _ (smul_mem_nhds (Units.mk0 ε hε₀.ne') hs₀)
+  --   rw [smul_zero, add_zero] at this
+  --   filter_upwards [this] with a ha
+  --   rcases ha with ⟨y, hy, rfl⟩
+  --   calc
+  --     gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
+  --     _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy) _
+  --     _ < r := hεr
+
+theorem gauge_lt_one_eq_interior (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    { x | gauge s x < 1 } = interior s := by
+  refine Subset.antisymm (fun x hx ↦ ?_) (interior_subset_gauge_lt_one s)
+  rcases mem_openSegment_of_gauge_lt_one hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) hx
+    with ⟨y, hys, hxy⟩
+  exact hc.openSegment_interior_self_subset_interior (mem_interior_iff_mem_nhds.2 hs₀) hys hxy
+
+end TopologicalAddGroup
 
 section IsROrC
 
