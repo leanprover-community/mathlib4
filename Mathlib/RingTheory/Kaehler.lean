@@ -38,13 +38,17 @@ import Mathlib.RingTheory.IsTensorProduct
 -/
 
 
+
 section KaehlerDifferential
 
 open scoped TensorProduct
 
 open Algebra
 
-variable (R S : Type _) [CommRing R] [CommRing S] [Algebra R S]
+-- Porting note: TODO
+universe u v
+
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
 abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
@@ -54,8 +58,7 @@ abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
 variable {S}
 
 theorem KaehlerDifferential.one_smul_sub_smul_one_mem_ideal (a : S) :
-    (1 : S) ⊗ₜ[R] a - a ⊗ₜ[R] (1 : S) ∈ KaehlerDifferential.ideal R S := by
-  simp [RingHom.mem_ker]
+    (1 : S) ⊗ₜ[R] a - a ⊗ₜ[R] (1 : S) ∈ KaehlerDifferential.ideal R S := by simp [RingHom.mem_ker]
 #align kaehler_differential.one_smul_sub_smul_one_mem_ideal KaehlerDifferential.one_smul_sub_smul_one_mem_ideal
 
 variable {R}
@@ -68,21 +71,20 @@ def Derivation.tensorProductTo (D : Derivation R S M) : S ⊗[R] S →ₗ[S] M :
 #align derivation.tensor_product_to Derivation.tensorProductTo
 
 theorem Derivation.tensorProductTo_tmul (D : Derivation R S M) (s t : S) :
-    D.tensorProductTo (s ⊗ₜ t) = s • D t :=
-  rfl
+    D.tensorProductTo (s ⊗ₜ t) = s • D t := rfl
 #align derivation.tensor_product_to_tmul Derivation.tensorProductTo_tmul
 
 theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S) :
     D.tensorProductTo (x * y) =
       TensorProduct.lmul' R x • D.tensorProductTo y +
         TensorProduct.lmul' R y • D.tensorProductTo x := by
-  refine' TensorProduct.induction_on x _ _ _
+  refine TensorProduct.induction_on x ?_ ?_ ?_
   · rw [MulZeroClass.zero_mul, map_zero, map_zero, zero_smul, smul_zero, add_zero]
   swap
   · intro x₁ y₁ h₁ h₂
     rw [add_mul, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x₁ x₂
-  refine' TensorProduct.induction_on y _ _ _
+  refine TensorProduct.induction_on y ?_ ?_ ?_
   · rw [MulZeroClass.mul_zero, map_zero, map_zero, zero_smul, smul_zero, add_zero]
   swap
   · intro x₁ y₁ h₁ h₂
@@ -111,13 +113,13 @@ theorem KaehlerDifferential.submodule_span_range_eq_ideal :
       rw [hx, TensorProduct.zero_tmul, sub_zero]
     rw [← this]
     clear this hx
-    refine' TensorProduct.induction_on x _ _ _ <;> clear x
+    refine TensorProduct.induction_on x ?_ ?_ ?_
     · rw [map_zero, TensorProduct.zero_tmul, sub_zero]; exact zero_mem _
     · intro x y
       have : x ⊗ₜ[R] y - (x * y) ⊗ₜ[R] (1 : S) = x • ((1 : S) ⊗ₜ y - y ⊗ₜ (1 : S)) := by
         simp_rw [smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
       rw [TensorProduct.lmul'_apply_tmul, this]
-      refine' Submodule.smul_mem _ x _
+      refine Submodule.smul_mem _ x ?_
       apply Submodule.subset_span
       exact Set.mem_range_self y
     · intro x y hx hy
@@ -160,8 +162,7 @@ instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R
 
 notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-instance : Nonempty (Ω[S⁄R]) :=
-  ⟨0⟩
+instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
 instance KaehlerDifferential.module' {R' : Type _} [CommRing R'] [Algebra R' S] :
     Module R' (Ω[S⁄R]) :=
@@ -171,11 +172,10 @@ instance KaehlerDifferential.module' {R' : Type _} [CommRing R'] [Algebra R' S] 
 instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
   Ideal.Cotangent.isScalarTower _
 
-set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type _} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) := by
-  convert RestrictScalars.isScalarTower R₁ R₂ (Ω[S⁄R]) using 1
+  convert  RestrictScalars.isScalarTower R₁ R₂ (Ω[S⁄R]) using 1
   ext (x m)
   show algebraMap R₁ S x • m = algebraMap R₂ S (algebraMap R₁ R₂ x) • m
   rw [← IsScalarTower.algebraMap_apply]
@@ -193,7 +193,6 @@ def KaehlerDifferential.fromIdeal : KaehlerDifferential.ideal R S →ₗ[S ⊗[R
   (KaehlerDifferential.ideal R S).toCotangent
 #align kaehler_differential.from_ideal KaehlerDifferential.fromIdeal
 
-set_option synthInstance.maxHeartbeats 100000 in -- Porting note: Added to prevent timeout
 /-- (Implementation) The underlying linear map of the derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.DLinearMap : S →ₗ[R] Ω[S⁄R] :=
   ((KaehlerDifferential.fromIdeal R S).restrictScalars R).comp
@@ -208,13 +207,11 @@ set_option linter.uppercaseLean3 false in
 theorem KaehlerDifferential.DLinearMap_apply (s : S) :
     KaehlerDifferential.DLinearMap R S s =
       (KaehlerDifferential.ideal R S).toCotangent
-        ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ :=
-  rfl
+        ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.D_linear_map_apply KaehlerDifferential.DLinearMap_apply
 
-set_option maxHeartbeats 1000000 in -- Porting note: Added to prevent timeout
-set_option synthInstance.maxHeartbeats 800000 in -- Porting note: Added to prevent timeou
+set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout
 /-- The universal derivation into `Ω[S⁄R]`. -/
 def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
   { KaehlerDifferential.DLinearMap R S with
@@ -223,9 +220,11 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
       congr
       rw [sub_self]
     leibniz' := fun a b => by
+      -- Porting note: TODO
+      have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
-      rw [← LinearMap.map_smul_of_tower, ← LinearMap.map_smul_of_tower, ← map_add,
-        Ideal.toCotangent_eq, pow_two]
+      rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
+        ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
       simp only [AddSubgroupClass.coe_sub, Submodule.coe_add, Submodule.coe_mk,
@@ -238,8 +237,7 @@ set_option linter.uppercaseLean3 false in
 theorem KaehlerDifferential.D_apply (s : S) :
     KaehlerDifferential.D R S s =
       (KaehlerDifferential.ideal R S).toCotangent
-        ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ :=
-  rfl
+        ⟨1 ⊗ₜ s - s ⊗ₜ 1, KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R s⟩ := rfl
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.D_apply KaehlerDifferential.D_apply
 
@@ -253,9 +251,9 @@ theorem KaehlerDifferential.span_range_derivation :
   suffices ∃ hx, (KaehlerDifferential.ideal R S).toCotangent ⟨x, hx⟩ ∈
       Submodule.span S (Set.range <| KaehlerDifferential.D R S) by
     exact this.choose_spec
-  refine' Submodule.span_induction this _ _ _ _
+  refine Submodule.span_induction this ?_ ?_ ?_ ?_
   · rintro _ ⟨x, rfl⟩
-    refine' ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, _⟩
+    refine ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, ?_⟩
     apply Submodule.subset_span
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
   · exact ⟨zero_mem _, Submodule.zero_mem _⟩
@@ -267,44 +265,47 @@ theorem KaehlerDifferential.span_range_derivation :
 
 variable {R S}
 
-set_option maxHeartbeats 1500000000 in -- Porting note: Added to prevent timeout
-set_option synthInstance.maxHeartbeats 800000 in -- Porting note: Added to prevent timeout
+-- Porting note: this def is really slow
+-- See https://github.com/leanprover-community/mathlib4/issues/5028
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
 def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
-  refine'
-    ((KaehlerDifferential.ideal R S • ⊤ :
-              Submodule (S ⊗[R] S) (KaehlerDifferential.ideal R S)).restrictScalars
-          S).liftQ
-      _ _
-  · exact D.tensorProductTo.comp ((KaehlerDifferential.ideal R S).Subtype.restrictScalars S)
+  refine LinearMap.comp ((((KaehlerDifferential.ideal R S) •
+    (⊤ : Submodule (S ⊗[R] S) (KaehlerDifferential.ideal R S))).restrictScalars S).liftQ ?_ ?_)
+    (Submodule.Quotient.restrictScalarsEquiv S _).symm.toLinearMap
+  · exact D.tensorProductTo.comp ((KaehlerDifferential.ideal R S).subtype.restrictScalars S)
   · intro x hx
     change _ = _
-    apply Submodule.smul_induction_on hx <;> clear hx x
-    · rintro x (hx : _ = _) ⟨y, hy : _ = _⟩ -
+    refine Submodule.smul_induction_on hx ?_ ?_
+    · rintro x (hx : _ = _) y -
       dsimp
-      rw [Derivation.tensorProductTo_mul, hx, hy, zero_smul, zero_smul, zero_add]
+      rw [show ↑(x • y) = x * ↑y  by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
+        zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 #align derivation.lift_kaehler_differential Derivation.liftKaehlerDifferential
 
 theorem Derivation.liftKaehlerDifferential_apply (D : Derivation R S M) (x) :
     D.liftKaehlerDifferential ((KaehlerDifferential.ideal R S).toCotangent x) =
-      D.tensorProductTo x :=
-  rfl
+      D.tensorProductTo x := rfl
 #align derivation.lift_kaehler_differential_apply Derivation.liftKaehlerDifferential_apply
 
 theorem Derivation.liftKaehlerDifferential_comp (D : Derivation R S M) :
     D.liftKaehlerDifferential.compDer (KaehlerDifferential.D R S) = D := by
   ext a
   dsimp [KaehlerDifferential.D_apply]
-  refine' (D.liftKaehlerDifferential_apply _).trans _
+  refine (D.liftKaehlerDifferential_apply _).trans ?_
   rw [Subtype.coe_mk, map_sub, Derivation.tensorProductTo_tmul, Derivation.tensorProductTo_tmul,
     one_smul, D.map_one_eq_zero, smul_zero, sub_zero]
 #align derivation.lift_kaehler_differential_comp Derivation.liftKaehlerDifferential_comp
 
 @[simp]
 theorem Derivation.liftKaehlerDifferential_comp_D (D' : Derivation R S M) (x : S) :
-    D'.liftKaehlerDifferential (KaehlerDifferential.D R S x) = D' x :=
-  Derivation.congr_fun D'.liftKaehlerDifferential_comp x
+    D'.liftKaehlerDifferential (KaehlerDifferential.D R S x) = D' x := by
+-- Porting note: original proof (timeout)
+--  Derivation.congr_fun D'.liftKaehlerDifferential_comp x
+  rw [← Derivation.congr_fun D'.liftKaehlerDifferential_comp x]
+  simp
 set_option linter.uppercaseLean3 false in
 #align derivation.lift_kaehler_differential_comp_D Derivation.liftKaehlerDifferential_comp_D
 
@@ -316,11 +317,11 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   intro x
   have : x ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) := by
     rw [KaehlerDifferential.span_range_derivation]; trivial
-  refine' Submodule.span_induction this _ _ _ _
+  refine Submodule.span_induction this ?_ ?_ ?_ ?_
   · rintro _ ⟨x, rfl⟩; exact congr_arg (fun D : Derivation R S M => D x) hf
   · rw [map_zero, map_zero]
   · intro x y hx hy; rw [map_add, map_add, hx, hy]
-  · intro a x e; rw [map_smul, map_smul, e]
+  · intro a x e; simp [e]
 #align derivation.lift_kaehler_differential_unique Derivation.liftKaehlerDifferential_unique
 
 variable (R S)
@@ -368,8 +369,8 @@ def KaehlerDifferential.quotientCotangentIdealRingEquiv :
       (↑(TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S) : S ⊗[R] S →+* S) := by
     intro x; rw [AlgHom.coe_toRingHom, ← AlgHom.comp_apply, TensorProduct.lmul'_comp_includeLeft]
     rfl
-  refine' (Ideal.quotCotangent _).trans _
-  refine' (Ideal.quotEquivOfEq _).trans (RingHom.quotientKerEquivOfRightInverse this)
+  refine (Ideal.quotCotangent _).trans ?_
+  refine (Ideal.quotEquivOfEq ?_).trans (RingHom.quotientKerEquivOfRightInverse this)
   ext; rfl
 #align kaehler_differential.quotient_cotangent_ideal_ring_equiv KaehlerDifferential.quotientCotangentIdealRingEquiv
 
@@ -381,6 +382,12 @@ def KaehlerDifferential.quotientCotangentIdeal :
     commutes' := (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).apply_symm_apply }
 #align kaehler_differential.quotient_cotangent_ideal KaehlerDifferential.quotientCotangentIdeal
 
+-- Porting note: this proof is really slow
+-- See https://github.com/leanprover-community/mathlib4/issues/5028
+set_option maxHeartbeats 600000 in
+-- Porting note: extra heartbeats are needed to infer the instance
+-- IsScalarTower R S ((S ⊗[R] S ⧸ ideal R S ^ 2) ⧸ Ideal.cotangentIdeal (ideal R S))
+set_option synthInstance.maxHeartbeats 23000 in
 theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) :
     (Ideal.Quotient.mkₐ R (KaehlerDifferential.ideal R S).cotangentIdeal).comp f =
         IsScalarTower.toAlgHom R S _ ↔
@@ -388,8 +395,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   rw [AlgHom.ext_iff, AlgHom.ext_iff]
   apply forall_congr'
   intro x
-  have e₁ :
-    (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift (f x) =
+  have e₁ : (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift (f x) =
       KaehlerDifferential.quotientCotangentIdealRingEquiv R S
         (Ideal.Quotient.mk (KaehlerDifferential.ideal R S).cotangentIdeal <| f x) := by
     generalize f x = y; obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y; rfl
@@ -398,23 +404,24 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
     (mul_one x).symm
   constructor
   · intro e
-    exact
-      (e₁.trans
-            (@RingEquiv.congr_arg _ _ _ _ _ _
-              (KaehlerDifferential.quotientCotangentIdealRingEquiv R S) _ _ e)).trans
-        e₂.symm
-  · intro e; apply (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).Injective
+    exact (e₁.trans (@RingEquiv.congr_arg _ _ _ _ _ _
+      (KaehlerDifferential.quotientCotangentIdealRingEquiv R S) _ _ e)).trans e₂.symm
+  · intro e; apply (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).injective
     exact e₁.symm.trans (e.trans e₂)
 #align kaehler_differential.End_equiv_aux KaehlerDifferential.End_equiv_aux
 
+set_option maxHeartbeats 800000 in
+-- Porting note: extra heartbeats are needed to infer the instance
+-- Module S { x // x ∈ Ideal.cotangentIdeal (ideal R S) }
+set_option synthInstance.maxHeartbeats 100000 in
 -- This has type
 -- `Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (KaehlerDifferential.ideal R S).cotangentIdeal`
 -- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :=
-  @LinearEquiv.compDer R _ _ _ _ (Ω[S⁄R]) _ _ _ _ _ _ _ _ _
-    ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
+  @LinearEquiv.compDer R _ S _ _ (Ω[S⁄R]) _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
+    _ _ _ _ _ ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
