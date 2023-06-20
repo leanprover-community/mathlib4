@@ -143,7 +143,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : Re
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
-  toFun := fun x => ⟨_, x.toList_not_empty, x.toList_chain'⟩
+  toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun := fun x => fromListChain' _ x.2.1 x.2.2
   left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by ext f; simp
   right_inv := by
