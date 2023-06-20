@@ -449,14 +449,14 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
   refine' @Set.Finite.of_finite_image _ _ _ f _ _
   · suffices Finite (S ⧸ @Ideal.span S _ {n}) by
       let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {n}) → Set (S ⧸ @Ideal.span S _ {n}))
-      refine' @Set.Finite.of_finite_image _ _ _ g _ (SetLike.coe_injective.inj_on _)
+      refine' @Set.Finite.of_finite_image _ _ _ g _ (SetLike.coe_injective.injOn _)
       exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
-    rw [← abs_norm_ne_zero_iff, abs_norm_span_singleton]
+    rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
     simpa only [Ne.def, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
       ne_of_gt hn
   · intro I hI J hJ h
-    rw [← comap_map_mk (span_singleton_abs_norm_le I), ← hI.symm, ←
-      comap_map_mk (span_singleton_abs_norm_le J), ← hJ.symm]
+    rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←
+      comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
     exact congr_arg (Ideal.comap (Ideal.Quotient.mk (@Ideal.span S _ {n}))) h
 #align ideal.finite_set_of_abs_norm_eq Ideal.finite_setOf_absNorm_eq
 
@@ -528,6 +528,8 @@ theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
 theorem map_spanNorm (I : Ideal S) {T : Type _} [CommRing T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.norm R '' (I : Set S)) := by
   rw [spanNorm, map_span, Set.image_image]
+  -- Porting note: `Function.comp` reducibility
+  rfl
 #align ideal.map_span_norm Ideal.map_spanNorm
 
 @[mono]
