@@ -176,10 +176,11 @@ def OpenCover.copy {X : Scheme} (𝒰 : OpenCover X) (J : Type _) (obj : J → S
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
 #align algebraic_geometry.Scheme.open_cover.copy AlgebraicGeometry.Scheme.OpenCover.copy
 
+-- Porting note : need more hint on universe level
 /-- The pushforward of an open cover along an isomorphism. -/
-@[simps J obj map]
-def OpenCover.pushforwardIso {X Y : Scheme} (𝒰 : OpenCover X) (f : X ⟶ Y) [IsIso f] : OpenCover Y :=
-  ((openCoverOfIsIso f).bind fun _ => 𝒰).copy 𝒰.J _ _
+@[simps! J obj map]
+def OpenCover.pushforwardIso {X Y : Scheme.{u}} (𝒰 : OpenCover.{v} X) (f : X ⟶ Y) [IsIso f] : OpenCover.{v} Y :=
+  ((openCoverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.J _ _
     ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ => Iso.refl _)
     fun _ => (Category.id_comp _).symm
 #align algebraic_geometry.Scheme.open_cover.pushforward_iso AlgebraicGeometry.Scheme.OpenCover.pushforwardIso
@@ -199,7 +200,7 @@ def OpenCover.add {X : Scheme} (𝒰 : X.OpenCover) {Y : Scheme} (f : Y ⟶ X) [
 -- Related result : `open_cover.pullback_cover`, where we pullback an open cover on `X` along a
 -- morphism `W ⟶ X`. This is provided at the end of the file since it needs some more results
 -- about open immersion (which in turn needs the open cover API).
-attribute [local reducible] CommRingCat.of CommRingCat.ofHom
+-- attribute [local reducible] CommRingCat.of CommRingCat.ofHom
 
 instance val_base_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base :=
   Scheme.forgetToTop.map_isIso f
@@ -208,12 +209,10 @@ instance val_base_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base 
 instance basic_open_isOpenImmersion {R : CommRingCat} (f : R) :
     AlgebraicGeometry.IsOpenImmersion
       (Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f))).op) := by
-  apply (config := { instances := false }) SheafedSpace.is_open_immersion.of_stalk_iso
-  any_goals infer_instance
-  any_goals infer_instance
-  exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
-  intro x
-  exact Spec_map_localization_is_iso R (Submonoid.powers f) x
+  apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
+  . exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
+  . intro x
+    exact Spec_map_localization_isIso R (Submonoid.powers f) x
 #align algebraic_geometry.Scheme.basic_open_is_open_immersion AlgebraicGeometry.Scheme.basic_open_isOpenImmersion
 
 /-- The basic open sets form an affine open cover of `Spec R`. -/
@@ -221,11 +220,14 @@ def affineBasisCoverOfAffine (R : CommRingCat) : OpenCover (Spec.obj (Opposite.o
   J := R
   obj r := Spec.obj (Opposite.op <| CommRingCat.of <| Localization.Away r)
   map r := Spec.map (Quiver.Hom.op (algebraMap R (Localization.Away r) : _))
-  f x := 1
+  f _ := 1
   Covers r := by
     rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
-    · infer_instance
+    · -- Porting note : need more hand holding here because Lean knows that
+      -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do
+      change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _)).op).1.base
+      infer_instance
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 #align algebraic_geometry.Scheme.affine_basis_cover_of_affine AlgebraicGeometry.Scheme.affineBasisCoverOfAffine
 
@@ -237,7 +239,7 @@ def affineBasisCover (X : Scheme) : OpenCover X :=
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
 def affineBasisCoverRing (X : Scheme) (i : X.affineBasisCover.J) : CommRingCat :=
-  CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.some _ i.2
+  CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
 #align algebraic_geometry.Scheme.affine_basis_cover_ring AlgebraicGeometry.Scheme.affineBasisCoverRing
 
 theorem affineBasisCover_obj (X : Scheme) (i : X.affineBasisCover.J) :
@@ -246,7 +248,7 @@ theorem affineBasisCover_obj (X : Scheme) (i : X.affineBasisCover.J) :
 #align algebraic_geometry.Scheme.affine_basis_cover_obj AlgebraicGeometry.Scheme.affineBasisCover_obj
 
 theorem affineBasisCover_map_range (X : Scheme) (x : X.carrier)
-    (r : (X.local_affine x).choose_spec.some) :
+    (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).1.base =
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
   erw [coe_comp, Set.range_comp]
