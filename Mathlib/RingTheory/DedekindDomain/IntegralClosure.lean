@@ -25,7 +25,7 @@ The definitions that involve a field of fractions choose a canonical field of fr
 but are independent of that choice. The `..._iff` lemmas express this independence.
 
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
-to add a `(h : ¬ is_field A)` assumption whenever this is explicitly needed.
+to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
@@ -47,7 +47,7 @@ variable [IsDomain A]
 
 section IsIntegralClosure
 
-/-! ### `is_integral_closure` section
+/-! ### `IsIntegralClosure` section
 
 We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
@@ -98,8 +98,7 @@ variable {A K L}
 theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type _} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
-      Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) :=
-  by
+    Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
   let db := (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
   rintro _ ⟨x, rfl⟩
   simp only [LinearMap.coe_restrictScalars, Algebra.linearMap_apply]
@@ -118,8 +117,8 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type _
     conv_lhs => rw [← Classical.choose_spec (hc' i)]
     rw [← IsScalarTower.algebraMap_smul K (Classical.choose (hc' i)) (db i)]
   refine' ⟨fun i => db.repr (algebraMap C L x) i, fun i => _, (db.sum_repr _).symm⟩
-  rw [BilinForm.dualBasis_repr_apply]
-  exact is_integral_trace (isIntegral_mul hx (hb_int i))
+  simp_rw [BilinForm.dualBasis_repr_apply]
+  exact isIntegral_trace (isIntegral_mul hx (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type _} [Fintype ι] [DecidableEq ι]
@@ -131,11 +130,10 @@ theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type _} [Finty
   exact ⟨⟨x, hx⟩, rfl⟩
 #align integral_closure_le_span_dual_basis integralClosure_le_span_dualBasis
 
-variable (A) (K)
+variable (A K)
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (y «expr ≠ » (0 : A)) -/
-/-- Send a set of `x`'es in a finite extension `L` of the fraction field of `R`
-to `(y : R) • x ∈ integral_closure R L`. -/
+/-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
+to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
@@ -143,10 +141,10 @@ theorem exists_integral_multiples (s : Finset L) :
   · use 1, one_ne_zero
     rintro x ⟨⟩
   · rintro x s hx ⟨y, hy, hs⟩
-    obtain ⟨x', y', hy', hx'⟩ :=
-      exists_integral_multiple
-        ((IsFractionRing.isAlgebraic_iff A K L).mpr (isAlgebraic_of_finite _ _ x))
-        ((injective_iff_map_eq_zero (algebraMap A L)).mp _)
+    have := exists_integral_multiple
+      ((IsFractionRing.isAlgebraic_iff A K L).mpr (isAlgebraic_of_finite _ _ x))
+      ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
+    rcases this with ⟨x', y', hy', hx'⟩
     refine' ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => _⟩
     rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
     · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
@@ -154,7 +152,7 @@ theorem exists_integral_multiples (s : Finset L) :
     · rw [mul_comm, mul_smul, Algebra.smul_def]
       exact isIntegral_mul isIntegral_algebraMap (hs _ hx'')
     · rw [IsScalarTower.algebraMap_eq A K L]
-      apply (algebraMap K L).Injective.comp
+      apply (algebraMap K L).injective.comp
       exact IsFractionRing.injective _ _
 #align exists_integral_multiples exists_integral_multiples
 
@@ -172,15 +170,12 @@ theorem FiniteDimensional.exists_is_basis_integral :
   have hy' : algebraMap A L y ≠ 0 := by
     refine' mt ((injective_iff_map_eq_zero (algebraMap A L)).mp _ _) hy
     rw [IsScalarTower.algebraMap_eq A K L]
-    exact (algebraMap K L).Injective.comp (IsFractionRing.injective A K)
-  refine' ⟨s',
-      bs'.map
-        { Algebra.lmul _ _
-            (algebraMap A L y) with
-          toFun := fun x => algebraMap A L y * x
-          invFun := fun x => (algebraMap A L y)⁻¹ * x
-          left_inv := _
-          right_inv := _ }, _⟩
+    exact (algebraMap K L).injective.comp (IsFractionRing.injective A K)
+  refine ⟨s', bs'.map {Algebra.lmul _ _ (algebraMap A L y) with
+    toFun := fun x => algebraMap A L y * x
+    invFun := fun x => (algebraMap A L y)⁻¹ * x
+    left_inv := ?_
+    right_inv := ?_}, ?_⟩
   · intro x; simp only [inv_mul_cancel_left₀ hy']
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
@@ -256,8 +251,8 @@ variable (A K) [IsDomain C]
 the integral closure `C` of `A` in `L` is a Dedekind domain.
 
 Can't be an instance since `A`, `K` or `L` can't be inferred. See also the instance
-`integral_closure.is_dedekind_domain_fraction_ring` where `K := fraction_ring A`
-and `C := integral_closure A L`.
+`integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
+and `C := integralClosure A L`.
 -/
 theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekindDomain C :=
   haveI : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
@@ -271,7 +266,7 @@ theorem IsIntegralClosure.isDedekindDomain [h : IsDedekindDomain A] : IsDedekind
 the integral closure of `A` in `L` is a Dedekind domain.
 
 Can't be an instance since `K` can't be inferred. See also the instance
-`integral_closure.is_dedekind_domain_fraction_ring` where `K := fraction_ring A`.
+`integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`.
 -/
 theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
@@ -285,7 +280,7 @@ variable [FiniteDimensional (FractionRing A) L] [IsSeparable (FractionRing A) L]
 /- If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.
 
-See also the lemma `integral_closure.is_dedekind_domain` where you can choose
+See also the lemma `integralClosure.isDedekindDomain` where you can choose
 the field of fractions yourself.
 -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
