@@ -18,8 +18,8 @@ This can be useful for files that give an expository account of some theory in L
 
 The syntax of the command mirrors `def`, so all the usual bells and whistles work.
 ```
-recall HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) :=
-  (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
+recall Function.comp {α} {β} {δ} (f : β → δ) (g : α → β) : α → δ :=
+  fun x => f (g x)
 ```
 Also, one can leave out the body.
 ```
@@ -42,6 +42,7 @@ elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
     let some info := (← getEnv).find? id.getId
       | throwError "unknown constant '{id}'"
+    runTermElabM fun _ => discard <| addTermInfo id (mkConst id.getId)
     let id' := mkIdentFrom id (← mkAuxName id.getId 1)
     if let some val := val? then
       let some infoVal := info.value?

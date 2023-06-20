@@ -4,6 +4,9 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Complex.Exponential
 
+-- Remark: When the test is run by make/CI, this option is not set, so we set it here.
+set_option pp.unicode.fun true
+
 /-
 Motivating examples from the initial Zulip thread:
 https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/recall.20command
@@ -40,6 +43,9 @@ but is expected to have value
 /-
 Other example tests
 -/
+
+recall Function.comp {α} {β} {δ} (f : β → δ) (g : α → β) : α → δ :=
+  fun x => f (g x)
 
 recall id (x : α) : α := x
 
