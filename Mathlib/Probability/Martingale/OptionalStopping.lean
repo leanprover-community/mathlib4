@@ -8,8 +8,8 @@ Authors: Kexing Ying
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Process.HittingTime
-import Mathbin.Probability.Martingale.Basic
+import Mathlib.Probability.Process.HittingTime
+import Mathlib.Probability.Martingale.Basic
 
 /-! # Optional stopping theorem (fair game theorem)
 
@@ -44,12 +44,10 @@ expectation of `stopped_value f τ` is less than or equal to the expectation of 
 This is the forward direction of the optional stopping theorem. -/
 theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hf : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) (hπ : IsStoppingTime 𝒢 π) (hle : τ ≤ π)
-    {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
-  by
+    {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f τ] ≤ μ[stoppedValue f π] := by
   rw [← sub_nonneg, ← integral_sub', stopped_value_sub_eq_sum' hle hbdd]
   · simp only [Finset.sum_apply]
-    have : ∀ i, measurable_set[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} :=
-      by
+    have : ∀ i, measurable_set[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
       refine' (hτ i).inter _
       convert (hπ i).compl
@@ -78,8 +76,7 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
         IsStoppingTime 𝒢 τ →
           IsStoppingTime 𝒢 π →
             τ ≤ π → (∃ N, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
-    Submartingale f 𝒢 μ :=
-  by
+    Submartingale f 𝒢 μ := by
   refine' submartingale_of_set_integral_le hadp hint fun i j hij s hs => _
   classical
   specialize
@@ -108,8 +105,7 @@ theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp 
 /-- The stopped process of a submartingale with respect to a stopping time is a submartingale. -/
 @[protected]
 theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submartingale f 𝒢 μ)
-    (hτ : IsStoppingTime 𝒢 τ) : Submartingale (stoppedProcess f τ) 𝒢 μ :=
-  by
+    (hτ : IsStoppingTime 𝒢 τ) : Submartingale (stoppedProcess f τ) 𝒢 μ := by
   rw [submartingale_iff_expected_stopped_value_mono]
   · intro σ π hσ hπ hσ_le_π hπ_bdd
     simp_rw [stopped_value_stopped_process]
@@ -132,14 +128,12 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
     ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} ≤
       ENNReal.ofReal
         (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω},
-          stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) :=
-  by
+          stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) := by
   have hn : Set.Icc 0 n = {k | k ≤ n} := by ext x; simp
   have :
     ∀ ω,
       ((ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω) →
-        (ε : ℝ) ≤ stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω :=
-    by
+        (ε : ℝ) ≤ stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx 
     refine' stopped_value_hitting_mem _
@@ -172,22 +166,19 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
     ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} ≤
       ENNReal.ofReal
         (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω},
-          f n ω ∂μ) :=
-  by
+          f n ω ∂μ) := by
   suffices
     ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} +
         ENNReal.ofReal
           (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ε}, f n ω ∂μ) ≤
-      ENNReal.ofReal (μ[f n])
-    by
+      ENNReal.ofReal (μ[f n]) by
     have hadd :
       ENNReal.ofReal (∫ ω, f n ω ∂μ) =
         ENNReal.ofReal
             (∫ ω in {ω | ↑ε ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω}, f n ω ∂μ) +
           ENNReal.ofReal
             (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ↑ε},
-              f n ω ∂μ) :=
-      by
+              f n ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← integral_union]
       · conv_lhs => rw [← integral_univ]
         convert rfl
@@ -215,8 +206,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
               stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) +
           ENNReal.ofReal
             (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ε},
-              stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) :=
-      by
+              stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) := by
       refine'
         add_le_add (smul_le_stopped_value_hitting hsub _)
           (ENNReal.ofReal_le_ofReal
@@ -231,8 +221,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
               _))
       intro ω hω
       rw [Set.mem_setOf_eq] at hω 
-      have : hitting f {y : ℝ | ↑ε ≤ y} 0 n ω = n :=
-        by
+      have : hitting f {y : ℝ | ↑ε ≤ y} 0 n ω = n := by
         simp only [hitting, Set.mem_setOf_eq, exists_prop, Pi.coe_nat, Nat.cast_id,
           ite_eq_right_iff, forall_exists_index, and_imp]
         intro m hm hεm
@@ -240,8 +229,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           False.elim
             ((not_le.2 hω) ((le_sup'_iff _).2 ⟨m, mem_range.2 (Nat.lt_succ_of_le hm.2), hεm⟩))
       simp_rw [stopped_value, this]
-    _ = ENNReal.ofReal (∫ ω, stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) :=
-      by
+    _ = ENNReal.ofReal (∫ ω, stopped_value f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← integral_union]
       · conv_rhs => rw [← integral_univ]
         convert rfl
@@ -268,8 +256,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
             (hsub.integrable_stopped_value (hitting_is_stopping_time hsub.adapted measurableSet_Ici)
               hitting_le)
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
-    _ ≤ ENNReal.ofReal (μ[f n]) :=
-      by
+    _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine' ENNReal.ofReal_le_ofReal _
       rw [← stopped_value_const f n]
       exact
