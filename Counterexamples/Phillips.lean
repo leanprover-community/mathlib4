@@ -115,6 +115,7 @@ Thanks to Hahn-Banach, one can define a (non-canonical) continuous linear functi
 of all bounded functions, coinciding with the integral on the integrable ones.
 -/
 
+attribute [-instance] Real.pseudoMetricSpace
 
 /-- The subspace of integrable functions in the space of all bounded functions on a type.
 This is a technical device, used to apply Hahn-Banach theorem to construct an extension of the
@@ -132,17 +133,17 @@ of all bounded functions on a type. This is a technical device, that we will ext
 Hahn-Banach. -/
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
-  LinearMap.mkContinuous
-    { toFun := fun f => ∫ x, f x ∂μ
+  LinearMap.mkContinuous (F := ℝ)
+    { toFun := fun f => ∫ x, f.1 x ∂μ
       map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul _ _ } (μ univ).toReal
+      map_smul' := fun c f => integral_smul c f.1 } (μ univ).toReal
     (by
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
       apply Filter.eventually_of_forall
       intro x
-      exact BoundedContinuousFunction.norm_coe_le_norm f x)
+      exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
 #align counterexample.phillips_1940.bounded_integrable_functions_integral_clm Counterexample.Phillips1940.boundedIntegrableFunctionsIntegralCLM
 
 /-- Given a measure, there exists a continuous linear form on the space of all bounded functions
