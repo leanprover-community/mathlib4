@@ -14,8 +14,6 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
-set_option autoImplicit false
-
 /-!
 # Poisson's summation formula
 
@@ -119,11 +117,11 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
     ⟨(f.periodic_tsum_comp_add_zsmul 1).lift, continuous_coinduced_dom.mpr (map_continuous _)⟩
   have : Summable (fourierCoeff F) := by
     convert h_sum
-    exact funext fun n => Real.fourierCoeff_tsum_comp_add h_norm n
+    exact Real.fourierCoeff_tsum_comp_add h_norm _
   convert (has_pointwise_sum_fourier_series_of_summable this 0).tsum_eq.symm using 1
-  · have := (has_sum_apply (summable_of_locally_summable_norm h_norm).HasSum 0).tsum_eq
-    simpa only [coe_mk, ← QuotientAddGroup.mk_zero, periodic.lift_coe, zsmul_one, comp_apply,
-      coe_add_right, zero_add] using this
+  · have := (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum 0).tsum_eq
+    simpa only [coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
+      coe_addRight, zero_add] using this
   · congr 1 with n : 1
     rw [← Real.fourierCoeff_tsum_comp_add h_norm n, fourier_eval_zero, smul_eq_mul, mul_one]
     rfl
@@ -174,38 +172,42 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
       (mul_nonneg (mul_nonneg hc.le <| rpow_nonneg_of_nonneg one_half_pos.le _) (norm_nonneg _))]
   refine' fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans _
   have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
-  rwa [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
+  rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
+set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
+set_option autoImplicit false in
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : IsBigO atBot f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     IsBigO atBot (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by
-  have h1 : is_O at_top (f.comp (ContinuousMap.mk _ continuous_neg)) fun x : ℝ => |x| ^ (-b) := by
-    convert hf.comp_tendsto tendsto_neg_at_top_at_bot
+  have h1 : IsBigO atTop (f.comp (ContinuousMap.mk _ continuous_neg)) fun x : ℝ => |x| ^ (-b) := by
+    convert hf.comp_tendsto tendsto_neg_atTop_atBot using 1
     ext1 x; simp only [Function.comp_apply, abs_neg]
-  have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_at_bot_at_top
-  have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by ext1 x;
-    simp only [Function.comp_apply, abs_neg]
+  have h2 := (isBigO_norm_Icc_restrict_atTop hb h1 (-S) (-R)).comp_tendsto tendsto_neg_atBot_atTop
+  have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
+    ext1 x; simp only [Function.comp_apply, abs_neg]
   rw [this] at h2
-  refine' (is_O_of_le _ fun x => _).trans h2
+  refine' (isBigO_of_le _ fun x => _).trans h2
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
   rintro ⟨x, hx⟩
   rw [ContinuousMap.restrict_apply_mk]
   refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, _⟩)
-  · exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
-  · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk, neg_neg]
+  rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+    ContinuousMap.coe_mk, neg_neg]
+  exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
-  obtain ⟨r, hr⟩ := K.is_compact.bounded.subset_ball 0
-  rw [closed_ball_eq_Icc, zero_add, zero_sub] at hr
+  obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+  rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have :
     ∀ x : ℝ,
       ‖(f.comp (ContinuousMap.addRight x)).restrict K‖ ≤ ‖f.restrict (Icc (x - r) (x + r))‖ := by
@@ -213,22 +215,22 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     rw [ContinuousMap.norm_le _ (norm_nonneg _)]
     rintro ⟨y, hy⟩
     refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨y + x, _⟩)
-    exact ⟨by linarith [(hr hy).1], by linarith [(hr hy).2]⟩
-    simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight,
-      Subtype.coe_mk]
-  simp_rw [cocompact_eq, is_O_sup] at hf ⊢
+    · simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight]
+    · exact ⟨by linarith [(hr hy).1], by linarith [(hr hy).2]⟩
+  simp_rw [cocompact_eq, isBigO_sup] at hf ⊢
   constructor
-  · refine' (is_O_of_le at_bot _).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
+  · refine' (isBigO_of_le atBot _).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
     simp_rw [norm_norm]; exact this
-  · refine' (is_O_of_le at_top _).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
+  · refine' (isBigO_of_le atTop _).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
     simp_rw [norm_norm]; exact this
+set_option linter.uppercaseLean3 false in
 #align is_O_norm_restrict_cocompact isBigO_norm_restrict_cocompact
 
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ → ℂ} (hc : Continuous f)
     {b : ℝ} (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : Summable fun n : ℤ => 𝓕 f n) : ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
+    (hFf : Summable fun n : ℤ => 𝓕 f n) : (∑' n : ℤ, f n) = (∑' n : ℤ, 𝓕 f n) :=
   Real.tsum_eq_tsum_fourierIntegral
     (fun K =>
       summable_of_isBigO (Real.summable_abs_int_rpow hb)
@@ -243,7 +245,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ →
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
 theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : Continuous f) {b : ℝ}
     (hb : 1 < b) (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b))
-    (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) : ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
+    (hFf : IsBigO (cocompact ℝ) (𝓕 f) fun x : ℝ => |x| ^ (-b)) : (∑' n : ℤ, f n) = ∑' n : ℤ, 𝓕 f n :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf
     (summable_of_isBigO (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite))
 #align real.tsum_eq_tsum_fourier_integral_of_rpow_decay Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
@@ -254,13 +256,14 @@ section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
 theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 f = g) :
-    ∑' n : ℤ, f n = ∑' n : ℤ, g n := by
+    (∑' n : ℤ, f n) = (∑' n : ℤ, g n) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
   simp_rw [← hfg]
-  exact
-    Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
-      (f.is_O_cocompact_rpow (-2)) (by simpa only [hfg] using g.is_O_cocompact_rpow (-2))
+  rw [Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
+    (f.isBigO_cocompact_rpow (-2))]
+  rw [hfg]
+  exact g.isBigO_cocompact_rpow (-2)
 #align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz
