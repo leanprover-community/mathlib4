@@ -117,7 +117,6 @@ theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     apply mul_left_injective₀ (b := 2) (by norm_num)
     linear_combination (8 * a ^ 4 - 10 * a ^ 2 + 3) * h
   · linear_combination 2 * a * h
-
 #align imo1962_q4.formula Imo1962Q4.formula
 
 /-
