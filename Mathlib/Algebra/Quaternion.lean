@@ -315,7 +315,7 @@ theorem sub_self_re : a - a.re = a.im :=
 * `j * j = c₂`;
 * `i * j = k`, `j * i = -k`;
 * `k * k = -c₁ * c₂`;
-* `i * k = c₁ * j`, `k * i = `-c₁ * j`;
+* `i * k = c₁ * j`, `k * i = -c₁ * j`;
 * `j * k = -c₂ * i`, `k * j = c₂ * i`.  -/
 instance : Mul ℍ[R,c₁,c₂] :=
   ⟨fun a b =>
@@ -1376,7 +1376,7 @@ theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
   rfl
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
 
--- porting note: moved below `coe_rat_cast`, added this lemma to the `rw`s
+-- porting note: moved below `coe_rat_cast`, as `coe_rat_cast` is needed in the `rw`s
 instance : DivisionRing ℍ[R] :=
   { Quaternion.instGroupWithZero,
     Quaternion.instRing with

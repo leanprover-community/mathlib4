@@ -515,7 +515,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
   have B := Nat.find_spec A
-  contrapose! B; rw [not_lt] at B -- porting note: why this `rw` is needed?
+  contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
   refine' ⟨y, hy, _⟩
   rw [mem_cylinder_comm]

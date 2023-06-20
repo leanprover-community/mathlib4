@@ -117,7 +117,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
         Set.pi univ fun k => ⋃ j : ℕ,
         @update ι (fun i' => Set (α i')) _ (fun i' => t i' j) i s k := by
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
-      by_cases i' = i
+      by_cases h : i' = i
       · subst h; simp
       · rw [← Ne.def] at h; simp [h]
     rw [this, ← iUnion_univ_pi]

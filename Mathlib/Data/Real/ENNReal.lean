@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
+! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,8 +33,8 @@ and prove basic properties of these operations, order, and conversions to/from `
 
   - `a + b` is defined so that `↑p + ↑q = ↑(p + q)` for `(p q : ℝ≥0)` and `a + ∞ = ∞ + a = ∞`;
 
-  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and `a *
-    ∞ = ∞ * a = ∞` for `a ≠ 0`;
+  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and
+    `a * ∞ = ∞ * a = ∞` for `a ≠ 0`;
 
   - `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
     `↑p - ↑q = ↑(p - q)`, `∞ - ↑p = ∞`, `↑p - ∞ = ∞ - ∞ = 0`; note that there is no negation, only
@@ -272,6 +272,14 @@ theorem toReal_eq_zero_iff (x : ℝ≥0∞) : x.toReal = 0 ↔ x = 0 ∨ x = ∞
   simp [ENNReal.toReal, toNNReal_eq_zero_iff]
 #align ennreal.to_real_eq_zero_iff ENNReal.toReal_eq_zero_iff
 
+theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toNNReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_nnreal_ne_zero ENNReal.toNNReal_ne_zero
+
+theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
+  a.toReal_eq_zero_iff.not.trans not_or
+#align ennreal.to_real_ne_zero ENNReal.toReal_ne_zero
+
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untop'_eq_iff.trans <| by simp
 #align ennreal.to_nnreal_eq_one_iff ENNReal.toNNReal_eq_one_iff
@@ -279,6 +287,14 @@ theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
 theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
   rw [ENNReal.toReal, NNReal.coe_eq_one, ENNReal.toNNReal_eq_one_iff]
 #align ennreal.to_real_eq_one_iff ENNReal.toReal_eq_one_iff
+
+theorem toNNReal_ne_one : a.toNNReal ≠ 1 ↔ a ≠ 1 :=
+  a.toNNReal_eq_one_iff.not
+#align ennreal.to_nnreal_ne_one ENNReal.toNNReal_ne_one
+
+theorem toReal_ne_one : a.toReal ≠ 1 ↔ a ≠ 1 :=
+  a.toReal_eq_one_iff.not
+#align ennreal.to_real_ne_one ENNReal.toReal_ne_one
 
 @[simp] theorem coe_ne_top : (r : ℝ≥0∞) ≠ ∞ := WithTop.coe_ne_top
 #align ennreal.coe_ne_top ENNReal.coe_ne_top
@@ -1327,7 +1343,7 @@ instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 instance : DivInvMonoid ℝ≥0∞ where
 
-theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
+protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 #align ennreal.div_eq_inv_mul ENNReal.div_eq_inv_mul
 
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
@@ -2366,6 +2382,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
   · -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
+    -- https://github.com/leanprover-community/mathlib4/issues/5164
     erw [NNReal.iSup_of_not_bddAbove h, (WithTop.iSup_coe_eq_top f).mpr h, top_toNNReal]
 #align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
 
@@ -2527,41 +2544,41 @@ end OrdConnected
 
 end Set
 
--- namespace Tactic
+namespace Mathlib.Meta.Positivity
 
--- open Positivity
+open Lean Meta Qq
 
--- private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ≥0∞) :=
---   ENNReal.coe_pos.2
--- #align tactic.nnreal_coe_pos tactic.nnreal_coe_pos
+/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+@[positivity ENNReal.toReal _]
+def evalENNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(ENNReal → Real)) (a : Q(ENNReal))) ← whnfR e | throwError "not ENNReal.toReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.toReal)
+  pure (.nonnegative (q(@ENNReal.toReal_nonneg $a) : Expr))
 
--- /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ≥0∞`. -/
--- @[positivity]
--- unsafe def positivity_coe_nnreal_ennreal : expr → tactic strictness
---   | q(@coe _ _ $(inst) $(a)) => do
---     unify inst q(@coeToLift _ _ <| @coeBase _ _ ENNReal.hasCoe)
---     let positive p ← core a
---     -- We already know `0 ≤ r` for all `r : ℝ≥0∞`
---         positive <$>
---         mk_app `` nnreal_coe_pos [p]
---   | e =>
---     pp e >>=
---       fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ≥0∞)` for `r : ℝ≥0`"
--- #align tactic.positivity_coe_nnreal_ennreal tactic.positivity_coe_nnreal_ennreal
+/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+@[positivity ENNReal.ofReal _]
+def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
+  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
+  | _ => pure .none
 
--- private theorem ennreal_ofReal_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
---   ENNReal.ofReal_pos.2
--- #align tactic.ennreal_ofReal_pos tactic.ennreal_ofReal_pos
+/-- Extension for the `positivity` tactic: `ENNReal.some`. -/
+@[positivity ENNReal.some _]
+def evalENNRealSome : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.some"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.some)
+  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.coe_pos $a) $pa) : Expr))
+  | _ => pure .none
 
--- /-- Extension for the `positivity` tactic: `ENNReal.ofReal` is positive if its input is. -/
--- @[positivity]
--- unsafe def positivity_ennreal_ofReal : expr → tactic strictness
---   | q(ENNReal.ofReal $(r)) => do
---     let positive p ← core r
---     positive <$> mk_app `` ennreal_ofReal_pos [p]
---   |-- This case is handled by `tactic.positivity_canon`
---     e =>
---     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `ENNReal.ofReal r`"
--- #align tactic.positivity_ennreal_ofReal tactic.positivity_ennreal_ofReal
-
--- end Tactic
+end Mathlib.Meta.Positivity
