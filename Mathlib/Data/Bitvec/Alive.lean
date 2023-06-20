@@ -2,6 +2,7 @@ import Mathlib.Data.Bitvec.Tactic
 import Mathlib.Data.Bitvec.BitwiseLemmas
 import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.Bitvec.ArithmeticLemmas
+import Mathlib.Data.Vector.BisimTactic
 
 -- A lot of this should probably go to a differet file here and not Mathlib
 inductive Refinement {α : Type u} : Option α → Option α → Prop
@@ -52,10 +53,19 @@ def statement13 :  some (Bitvec.sub ((-1 : Bitvec w)) x) ⊑
     := by aesop_bitvec
 
 
-
+-- set_option trace.aesop true
 def statement15 :  some (Bitvec.sub (Bitvec.sub x y) x) ⊑
     some (Bitvec.sub 0 y)
-    := by aesop_bitvec
+    := by
+        aesop_bitvec (options := {terminal := false})
+        save
+        rw[Vector.mapAccumr₂_unused_input_left _ ?hrw]
+        case hrw =>
+          sorry
+        bisim
+        sorry
+
+#exit
 
 -- def statement16 :  some
 --       (Bitvec.sub (Bitvec.or A B)

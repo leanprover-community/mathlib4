@@ -5,7 +5,7 @@ Authors: Alex Keizer
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Snoc
-import Qq
+
 
 /-!
 
@@ -242,6 +242,27 @@ namespace Vector
         rcases (f x y (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
         simp_all
 
+
+    -- @[simp]
+    theorem mapAccumr₂_unused_input_left  [Inhabited α]
+                                          (f : α → β → σ → σ × γ)
+                                          (h : ∀ a b s, f Inhabited.default b s = f a b s) :
+        mapAccumr₂ f xs ys s = mapAccumr (fun b s => f Inhabited.default b s) ys s := by
+      induction xs, ys using Vector.revInductionOn₂ generalizing s
+      case nil => rfl
+      case snoc xs ys x y ih =>
+        simp[h x y s, ih]
+
+    -- @[simp]
+    theorem mapAccumr₂_unused_input_right [Inhabited β]
+                                          (f : α → β → σ → σ × γ)
+                                          (h : ∀ a b s, f a Inhabited.default s = f a b s) :
+        mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a Inhabited.default s) xs s := by
+      induction xs, ys using Vector.revInductionOn₂ generalizing s
+      case nil => rfl
+      case snoc xs ys x y ih =>
+        simp[h x y s, ih]
+
   end RedundantState
 
 
@@ -307,35 +328,4 @@ namespace Vector
 
     end Binary
   end Congr
-
-
-  /-
-    TODO: this should probably go to a separate file
-  -/
-  namespace Tactic
-    open Lean.Elab.Tactic Qq
-
-    variable {α β γ σ : Q(Type u)}
-
-    protected def bisim_unary (_f : Q($α → $σ → $σ × $α))
-                              -- (g : Q())
-    : TacticM Unit := do
-      return
-
-    def bisim : TacticM Unit := do
-      withMainContext do
-        let (goal : Q(Prop)) ← getMainTarget
-        goal.check
-        match goal with
-          | ~q(Vector.mapAccumr $f $xs $s = Vector.mapAccumr $g $xs $s') =>
-              return
-          | _ => throwError  "Expected goal of form
-                                mapAccumr ?f ?xs ?s = mapAccumr ?g ?xs ?s'
-                              Found:
-                                {goal}
-                              "
-
-  end Tactic
-
-
 end Vector
