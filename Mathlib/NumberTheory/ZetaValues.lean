@@ -21,12 +21,12 @@ zeta functions, in terms of Bernoulli polynomials.
 
 ## Main results:
 
-* `has_sum_zeta_nat`: the final formula for zeta values,
+* `hasSum_zeta_nat`: the final formula for zeta values,
   $$\zeta(2k) = \frac{(-1)^{(k + 1)} 2 ^ {2k - 1} \pi^{2k} B_{2 k}}{(2 k)!}.$$
-* `has_sum_zeta_two` and `has_sum_zeta_four`: special cases given explicitly.
-* `has_sum_one_div_nat_pow_mul_cos`: a formula for the sum `∑ (n : ℕ), cos (2 π i n x) / n ^ k` as
+* `hasSum_zeta_two` and `hasSum_zeta_four`: special cases given explicitly.
+* `hasSum_one_div_nat_pow_mul_cos`: a formula for the sum `∑ (n : ℕ), cos (2 π i n x) / n ^ k` as
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 2` even.
-* `has_sum_one_div_nat_pow_mul_sin`: a formula for the sum `∑ (n : ℕ), sin (2 π i n x) / n ^ k` as
+* `hasSum_one_div_nat_pow_mul_sin`: a formula for the sum `∑ (n : ℕ), sin (2 π i n x) / n ^ k` as
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
