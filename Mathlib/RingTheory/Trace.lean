@@ -593,22 +593,22 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   haveI : FiniteDimensional K L := FiniteDimensional.of_fintype_basis b
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
   rw [← BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
-    det_comm' (pb.basis.to_matrix_mul_to_matrix_flip b) _, ← Matrix.mul_assoc, det_mul]
+    det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine'
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.to_matrix pb.basis)ᵀ ⬝ b.to_matrix pb.basis).det _).NeZero _
+      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det _).ne_zero _
   ·
     calc
-      (pb.basis.to_matrix b ⬝ (pb.basis.to_matrix b)ᵀ).det *
-            ((b.to_matrix pb.basis)ᵀ ⬝ b.to_matrix pb.basis).det =
-          (pb.basis.to_matrix b ⬝ (b.to_matrix pb.basis ⬝ pb.basis.to_matrix b)ᵀ ⬝
-              b.to_matrix pb.basis).det :=
+      (pb.basis.toMatrix b ⬝ (pb.basis.toMatrix b)ᵀ).det *
+            ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det =
+          (pb.basis.toMatrix b ⬝ (b.toMatrix pb.basis ⬝ pb.basis.toMatrix b)ᵀ ⬝
+              b.toMatrix pb.basis).det :=
         by simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
-  simpa only [trace_matrix_of_basis] using det_traceMatrix_ne_zero' pb
+  simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
 #align det_trace_form_ne_zero det_traceForm_ne_zero
 
 variable (K L)
