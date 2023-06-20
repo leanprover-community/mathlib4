@@ -31,6 +31,9 @@ example :
 example : natDegree (7 * X : R[X]) ≤ 1 := by
   compute_degree_le
 
+example : natDegree (0 : R[X]) ≤ 0 := by
+  compute_degree_le
+
 example : natDegree (1 : R[X]) ≤ 0 := by
   compute_degree_le
 
@@ -38,6 +41,12 @@ example : natDegree (2 : R[X]) ≤ 0 := by
   compute_degree_le
 
 example : natDegree ((n : Nat) : R[X]) ≤ 0 := by
+  compute_degree_le
+
+example {R} [Ring R] {n : Int} : natDegree ((n : Int) : R[X]) ≤ 0 := by
+  compute_degree_le
+
+example {R} [Ring R] {n : Nat} : natDegree ((- n : Int) : R[X]) ≤ 0 := by
   compute_degree_le
 
 example : natDegree (monomial 5 c * monomial 1 c + monomial 7 d +

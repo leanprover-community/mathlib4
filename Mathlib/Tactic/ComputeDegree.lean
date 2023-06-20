@@ -148,6 +148,10 @@ def CDL : TacticM Unit := do
           | (``Nat.cast, #[_, _, n]) =>
             let nStx := ← n.toSyntax
             evalTactic (← `(tactic| exact (natDegree_nat_cast $nStx).le))
+          -- deal with `natDegree (n : Int)`
+          | (``Int.cast, #[_, _, n]) =>
+            let nStx := ← n.toSyntax
+            evalTactic (← `(tactic| exact (natDegree_int_cast $nStx).le))
           -- deal with `natDegree 0, 1, (n : Nat)`.
           -- I am not sure why I had to split `n = 0, 1, generic`.
           | (``OfNat.ofNat, #[_, n, _]) =>
