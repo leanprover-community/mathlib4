@@ -116,12 +116,6 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
       exact ⟨_, rfl⟩
 #align Pointed_to_PartialFun pointedToPartialFun
 
--- porting note: this lemma may need to be added in order to prove `map_comp` for
--- `partialFunToPointed`
-lemma _root_.Option.elim'_eq_elim {α β : Type _} (b : β) (f : α → β) (a : Option α) :
-    Option.elim' b f a = Option.elim a b f := by
-  cases a <;> rfl
-
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
