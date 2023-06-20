@@ -40,7 +40,7 @@ open scoped TensorProduct
 @[reducible]
 def TensorPower (R : Type _) (n : ℕ) (M : Type _) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
-  ⨂[R] _i : Fin n, M
+  ⨂[R] _ : Fin n, M
 #align tensor_power TensorPower
 
 variable {R : Type _} {M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -53,7 +53,7 @@ namespace PiTensorProduct
 are equal after a canonical reindexing. -/
 @[ext]
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type _} {ι : ιι → Type _} :
-    ∀ {a b : GradedMonoid fun ii => ⨂[R] _i : ι ii, M} (h : a.fst = b.fst),
+    ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R M (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R M _ a = b) => by
     subst hi
@@ -139,7 +139,7 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : (⨂[R]^i) M) :
 #align tensor_power.cast_cast TensorPower.cast_cast
 
 @[ext]
-theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _i : Fin n, M} (h : a.fst = b.fst)
+theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine' gradedMonoid_eq_of_reindex_cast h _
   rw [cast] at h2

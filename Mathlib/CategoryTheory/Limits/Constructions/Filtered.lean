@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Opposites
 # Constructing colimits from finite colimits and filtered colimits
 
 We construct colimits of size `w` from finite colimits and filtered colimits of size `w`. Since
-`w`-sized colimits are constructured from coequalizers and `w`-sized coproducts, it suffices to
+`w`-sized colimits are constructed from coequalizers and `w`-sized coproducts, it suffices to
 construct `w`-sized coproducts from finite coproducts and `w`-sized filtered colimits.
 
 The idea is simple: to construct coproducts of shape `α`, we take the colimit of the filtered

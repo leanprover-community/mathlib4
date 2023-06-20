@@ -38,6 +38,7 @@ Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- Porting note: Failed to synthesize
   -- Π₀ i, β i deriving AddCommMonoid, Inhabited
+  -- See https://github.com/leanprover-community/mathlib4/issues/5020
   Π₀ i, β i
 #align direct_sum DirectSum
 
@@ -209,7 +210,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note: ext applied unsuitable ext lemma
+  -- Porting note: ext applies addHom_ext' here, which isn't what we want.
   apply Dfinsupp.addHom_ext'
   simp [toAddMonoid, of]
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
@@ -264,7 +265,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Unique ι] :
-    (⨁ _x : ι, M) ≃+ M :=
+    (⨁ _ : ι, M) ≃+ M :=
   {
     DirectSum.toAddMonoid fun _ =>
       AddMonoidHom.id

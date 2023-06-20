@@ -186,7 +186,7 @@ inductive saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
 
 lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf : S f) :
     T.pullback f = ⊤ := by
-  ext Z ; intro g
+  ext Z g
   simp only [Sieve.pullback_apply, Sieve.top_apply, iff_true]
   apply h
   apply S.downward_closed

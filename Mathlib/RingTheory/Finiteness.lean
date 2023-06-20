@@ -69,7 +69,7 @@ theorem fg_iff_add_subgroup_fg {G : Type _} [AddCommGroup G] (P : Submodule ℤ 
 #align submodule.fg_iff_add_subgroup_fg Submodule.fg_iff_add_subgroup_fg
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
-    N.FG ↔ ∃ (n : ℕ)(s : Fin n → M), span R (range s) = N := by
+    N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
   rw [fg_def]
   constructor
   · rintro ⟨S, Sfin, hS⟩
@@ -553,7 +553,7 @@ theorem iff_addGroup_fg {G : Type _} [AddCommGroup G] : Module.Finite ℤ G ↔ 
 
 variable {R M N}
 
-theorem exists_fin [Finite R M] : ∃ (n : ℕ)(s : Fin n → M), Submodule.span R (range s) = ⊤ :=
+theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
