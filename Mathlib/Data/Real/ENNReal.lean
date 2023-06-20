@@ -2547,41 +2547,41 @@ end OrdConnected
 
 end Set
 
--- namespace Tactic
+namespace Mathlib.Meta.Positivity
 
--- open Positivity
+open Lean Meta Qq
 
--- private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ≥0∞) :=
---   ENNReal.coe_pos.2
--- #align tactic.nnreal_coe_pos tactic.nnreal_coe_pos
+/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+@[positivity ENNReal.toReal _]
+def evalENNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(ENNReal → Real)) (a : Q(ENNReal))) ← whnfR e | throwError "not ENNReal.toReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.toReal)
+  pure (.nonnegative (q(@ENNReal.toReal_nonneg $a) : Expr))
 
--- /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ≥0∞`. -/
--- @[positivity]
--- unsafe def positivity_coe_nnreal_ennreal : expr → tactic strictness
---   | q(@coe _ _ $(inst) $(a)) => do
---     unify inst q(@coeToLift _ _ <| @coeBase _ _ ENNReal.hasCoe)
---     let positive p ← core a
---     -- We already know `0 ≤ r` for all `r : ℝ≥0∞`
---         positive <$>
---         mk_app `` nnreal_coe_pos [p]
---   | e =>
---     pp e >>=
---       fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ≥0∞)` for `r : ℝ≥0`"
--- #align tactic.positivity_coe_nnreal_ennreal tactic.positivity_coe_nnreal_ennreal
+/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
+@[positivity ENNReal.ofReal _]
+def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
+  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
+  | _ => pure .none
 
--- private theorem ennreal_ofReal_pos {r : ℝ} : 0 < r → 0 < ENNReal.ofReal r :=
---   ENNReal.ofReal_pos.2
--- #align tactic.ennreal_ofReal_pos tactic.ennreal_ofReal_pos
+/-- Extension for the `positivity` tactic: `ENNReal.some`. -/
+@[positivity ENNReal.some _]
+def evalENNRealSome : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.some"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.some)
+  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
+  let ra ← core zα' pα' a
+  assertInstancesCommute
+  match ra with
+  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.coe_pos $a) $pa) : Expr))
+  | _ => pure .none
 
--- /-- Extension for the `positivity` tactic: `ENNReal.ofReal` is positive if its input is. -/
--- @[positivity]
--- unsafe def positivity_ennreal_ofReal : expr → tactic strictness
---   | q(ENNReal.ofReal $(r)) => do
---     let positive p ← core r
---     positive <$> mk_app `` ennreal_ofReal_pos [p]
---   |-- This case is handled by `tactic.positivity_canon`
---     e =>
---     pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `ENNReal.ofReal r`"
--- #align tactic.positivity_ennreal_ofReal tactic.positivity_ennreal_ofReal
-
--- end Tactic
+end Mathlib.Meta.Positivity
