@@ -1,4 +1,5 @@
 import Embedding.Basic
+import Mathlib.Lean.Expr
 
 open Lean
 
@@ -8,11 +9,11 @@ instance : ForM m ConstMap (Name × ConstantInfo) where
   forM M e := M.forM fun n c => e (n,c)
 
 instance : ForIn m ConstMap (Name × ConstantInfo) where
-  forIn := ForM.forIn 
+  forIn := ForM.forIn
 
 namespace Environment
 
-def getModuleNameFor? (env : Environment) (nm : Name) : Option Name := 
+def getModuleNameFor? (env : Environment) (nm : Name) : Option Name :=
   env.getModuleIdxFor? nm >>= fun i => env.header.moduleNames[i.toNat]?
 
 end Environment
@@ -52,17 +53,17 @@ def main : IO Unit := IO.FS.withFile "embeddings.jsonl" .write fun handle => do
   let rev ← IO.Process.output {
     cmd := "git"
     args := #["rev-parse","HEAD"]
-  } 
+  }
   let rev := rev.stdout.trim
   let mut batch := #[]
-  let totalSize : Nat := env.constants.toList.filter (fun (nm, _) => !nm.isInternal) |>.length
+  let totalSize : Nat := env.constants.toList.filter (fun (nm, _) => !nm.isInternal') |>.length
   IO.println s!"Starting to process {totalSize} declarations."
   let mut counter : Nat := 0
-  for (nm,cinfo) in env.constants do 
-    if nm.isInternal then continue
+  for (nm,cinfo) in env.constants do
+    if nm.isInternal' then continue
     counter := counter + 1
     batch := batch.push <| mkDecl nm cinfo env rev
-    if batch.size == 2000 then 
+    if batch.size == 2000 then
       process handle env batch
       batch := #[]
     if counter % 2000 == 0 then IO.println s!"PROGRESS: {counter}:{totalSize}"
@@ -70,6 +71,6 @@ def main : IO Unit := IO.FS.withFile "embeddings.jsonl" .write fun handle => do
 where
 process (handle env batch) := do
   let embeddedDecls ← getDeclEmbeddings batch env (trace := true)
-  for e in embeddedDecls do 
+  for e in embeddedDecls do
     handle.putStrLn <| (← e.json env).compress
   IO.println s!"Process complete with batch of size {batch.size}"
