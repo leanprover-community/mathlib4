@@ -1887,8 +1887,7 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
 
-theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPartENat c :=
-  by
+theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPartENat c := by
   cases' lt_or_ge c ℵ₀ with hc hc
   · rw [toPartENat_apply_of_lt_aleph0 hc, Cardinal.toPartENat_apply_of_lt_aleph0 _]
     simp only [toNat_lift]

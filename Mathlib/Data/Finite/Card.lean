@@ -195,8 +195,7 @@ end Finite
 
 namespace PartENat
 
-theorem card_of_finite (α : Type _) [Finite α] : card α = Nat.card α :=
-  by
+theorem card_of_finite (α : Type _) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
   rw [natCast_eq_iff_eq]
@@ -204,8 +203,7 @@ theorem card_of_finite (α : Type _) [Finite α] : card α = Nat.card α :=
 #align part_enat.card_of_finite PartENat.card_of_finite
 
 -- Necessary ?
-theorem card_of_fintype (α : Type _) [Fintype α] : card α = Fintype.card α :=
-  by
+theorem card_of_fintype (α : Type _) [Fintype α] : card α = Fintype.card α := by
   rw [card_of_finite]
   simp only [Nat.card_eq_fintype_card]
 #align part_enat.card_of_fintype PartENat.card_of_fintype
