@@ -14,6 +14,8 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
+set_option autoImplicit false
+
 /-!
 # Poisson's summation formula
 
@@ -63,12 +65,12 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     (m : ℤ) : fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m = 𝓕 f m := by
   -- NB: This proof can be shortened somewhat by telescoping together some of the steps in the calc
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
-  let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨(coe : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
+  let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle _
+    have : ∀ x : ℝ, ‖e x‖ = 1 := abs_coe_circle
     intro K g
     simp_rw [norm_eq_supr_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
-  have eadd : ∀ n : ℤ, e.comp (ContinuousMap.addRight n) = e := by
+  have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : periodic e 1 := periodic.comp (fun x => AddCircle.coe_add_period 1 x) _
     simpa only [mul_one] using this.int_mul n x
