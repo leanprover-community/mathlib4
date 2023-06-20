@@ -1403,7 +1403,7 @@ non-commutative groups too.
 class AddGroupWithZeroNhd (G : Type u) extends AddCommGroup G where
   z : Filter G
   zero_z : pure 0 ≤ z
-  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (Z ×ˢ Z) Z
+  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (z ×ˢ z) z
 #align add_group_with_zero_nhd AddGroupWithZeroNhd
 
 section FilterMul
