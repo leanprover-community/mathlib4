@@ -66,7 +66,7 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
   rw [bernoulliFun, bernoulliFun_eval_zero, Polynomial.eval_one_map, Polynomial.bernoulli_eval_one]
   split_ifs with h
   · rw [h, bernoulli_one, bernoulli'_one, eq_ratCast]
-    push_cast ; ring
+    push_cast; ring
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 #align bernoulli_fun_eval_one bernoulliFun_eval_one
 
@@ -117,12 +117,11 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
       ((continuous_ofReal.comp <|
             continuous_const.mul <| Polynomial.continuous _).intervalIntegrable
         _ _)]
-  dsimp only
   simp_rw [ofReal_one, ofReal_zero, sub_zero, one_mul]
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
     add_sub_cancel']
   congr 2
-  · split_ifs; all_goals simp only [ofReal_one, ofReal_zero, one_mul]
+  · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
   · simp_rw [ofReal_mul, ofReal_nat_cast, fourierCoeffOn.const_mul]
 #align bernoulli_fourier_coeff_recurrence bernoulliFourierCoeff_recurrence
 
@@ -302,7 +301,8 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli (2 * k + 1))).eval x) := by
   have :
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k + 1) * (fourier n (x : 𝕌) - fourier (-n) (x : 𝕌)))
-      ((-1 : ℂ) ^ (k + 1) * I * (2 * π : ℂ) ^ (2 * k + 1) / (2 * k + 1)! * bernoulliFun (2 * k + 1) x) := by
+      ((-1 : ℂ) ^ (k + 1) * I * (2 * π : ℂ) ^ (2 * k + 1) / (2 * k + 1)! *
+        bernoulliFun (2 * k + 1) x) := by
     convert
       hasSum_one_div_nat_pow_mul_fourier
         (by linarith [Nat.one_le_iff_ne_zero.mpr hk] : 2 ≤ 2 * k + 1) hx using 1
@@ -341,7 +341,8 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
 
 theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k))
-      ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) * bernoulli (2 * k) / (2 * k)!) := by
+      ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) *
+        bernoulli (2 * k) / (2 * k)!) := by
   convert hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
   · ext1 n; rw [MulZeroClass.mul_zero, Real.cos_zero, mul_one]
   rw [Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
@@ -390,10 +391,8 @@ theorem hasSum_L_function_mod_four_eval_three :
     HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
   -- Porting note: times out with
   -- convert hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
-  have congr : ∀ {a b : ℕ → ℝ} {c d}, a = b → c = d → HasSum a c → HasSum b d := by
-    rintro _ _ _ _ rfl rfl
-    exact id
-  apply congr ?_ ?_ <| hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
+  apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
+    hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
     norm_num
     left
