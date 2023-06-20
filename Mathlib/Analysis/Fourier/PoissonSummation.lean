@@ -94,7 +94,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
     _ = ∫ x, e x * f x := by
-      suffices : integrable ⇑(e * f) := by exact this.has_sum_interval_integral_comp_add_int.tsum_eq
+      suffices integrable (e * f) from this.has_sum_interval_integral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, is_compact_Icc⟩
       simp_rw [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
