@@ -28,23 +28,23 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## Main definitions
 
- * `algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
- * `algebra.trace_form R S`: bilinear form sending `x`, `y` to the trace of `x * y`
- * `algebra.trace_matrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
- * `algebra.embeddings_matrix A C b : matrix κ (B →ₐ[A] C) C` is the matrix whose
+ * `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
+ * `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
+ * `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
+ * `Algebra.embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose
    `(i, σ)` coefficient is `σ (b i)`.
- * `algebra.embeddings_matrix_reindex A C b e : matrix κ κ C` is the matrix whose `(i, j)`
+ * `Algebra.embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)`
    coefficient is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ`
    given by a bijection `e : κ ≃ (B →ₐ[A] C)`.
 
 ## Main results
 
- * `trace_algebra_map_of_basis`, `trace_algebra_map`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
+ * `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
  * `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
  * `trace_eq_sum_roots`: the trace of `x : K(x)` is the sum of all conjugate roots of `x`
  * `trace_eq_sum_embeddings`: the trace of `x : K(x)` is the sum of all embeddings of `x` into an
    algebraically closed field
- * `trace_form_nondegenerate`: the trace form over a separable extension is a nondegenerate
+ * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
    bilinear form
 
 ## Implementation notes
@@ -53,8 +53,8 @@ Typically, the trace is defined specifically for finite field extensions.
 The definition is as general as possible and the assumption that we have
 fields or that the extension is finite is added to the lemmas as needed.
 
-We only define the trace for left multiplication (`algebra.left_mul_matrix`,
-i.e. `linear_map.mul_left`).
+We only define the trace for left multiplication (`Algebra.leftMulMatrix`,
+i.e. `LinearMap.mulLeft`).
 For now, the definitions assume `S` is commutative, so the choice doesn't matter anyway.
 
 ## References
@@ -194,7 +194,7 @@ section TraceForm
 
 variable (R S)
 
-/-- The `trace_form` maps `x y : S` to the trace of `x * y`.
+/-- The `traceForm` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
 -- Porting note: dot notation `().toBilin` does not work anymore.
@@ -203,7 +203,7 @@ noncomputable def traceForm : BilinForm R S :=
 
 variable {S}
 
--- This is a nicer lemma than the one produced by `@[simps] def trace_form`.
+-- This is a nicer lemma than the one produced by `@[simps] def traceForm`.
 @[simp]
 theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
@@ -234,7 +234,7 @@ variable {F : Type _} [Field F]
 
 variable [Algebra K S] [Algebra K F]
 
-/-- Given `pb : power_basis K S`, the trace of `pb.gen` is `-(minpoly K pb.gen).next_coeff`. -/
+/-- Given `pb : PowerBasis K S`, the trace of `pb.gen` is `-(minpoly K pb.gen).nextCoeff`. -/
 theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasis K S) :
     Algebra.trace K S pb.gen = -(minpoly K pb.gen).nextCoeff := by
   have d_pos : 0 < pb.dim := PowerBasis.dim_pos pb
@@ -244,8 +244,8 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
     pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_pos_natDegree _ d_pos']
 #align power_basis.trace_gen_eq_next_coeff_minpoly PowerBasis.trace_gen_eq_nextCoeff_minpoly
 
-/-- Given `pb : power_basis K S`, then the trace of `pb.gen` is
-`((minpoly K pb.gen).map (algebra_map K F)).roots.sum`. -/
+/-- Given `pb : PowerBasis K S`, then the trace of `pb.gen` is
+`((minpoly K pb.gen).map (algebraMap K F)).roots.sum`. -/
 theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).map (algebraMap K F)).roots.sum := by
@@ -387,8 +387,6 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
       IsScalarTower.coe_toAlgHom']
 #align sum_embeddings_eq_finrank_mul sum_embeddings_eq_finrank_mul
 
---set_option pp.explicit true in
-set_option maxHeartbeats 0 in
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x
@@ -431,12 +429,12 @@ variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 open Finset
 
 /-- Given an `A`-algebra `B` and `b`, an `κ`-indexed family of elements of `B`, we define
-`trace_matrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
+`traceMatrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
 #align algebra.trace_matrix Algebra.traceMatrix
 
--- TODO: set as an equation lemma for `trace_matrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
@@ -508,25 +506,25 @@ theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
 
 variable (A)
 
-/-- `embeddings_matrix A C b : matrix κ (B →ₐ[A] C) C` is the matrix whose `(i, σ)` coefficient is
-  `σ (b i)`. It is mostly useful for fields when `fintype.card κ = finrank A B` and `C` is
+/-- `embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose `(i, σ)` coefficient is
+  `σ (b i)`. It is mostly useful for fields when `Fintype.card κ = finrank A B` and `C` is
   algebraically closed. -/
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 #align algebra.embeddings_matrix Algebra.embeddingsMatrix
 
--- TODO: set as an equation lemma for `embeddings_matrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
   rfl
 #align algebra.embeddings_matrix_apply Algebra.embeddingsMatrix_apply
 
-/-- `embeddings_matrix_reindex A C b e : matrix κ κ C` is the matrix whose `(i, j)` coefficient
+/-- `embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)` coefficient
   is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ` given by a
   bijection `e : κ ≃ (B →ₐ[A] C)`. It is mostly useful for fields and `C` is algebraically closed.
-  In this case, in presence of `h : fintype.card κ = finrank A B`, one can take
-  `e := equiv_of_card_eq ((alg_hom.card A B C).trans h.symm)`. -/
+  In this case, in presence of `h : Fintype.card κ = finrank A B`, one can take
+  `e := equivOfCardEq ((AlgHom.card A B C).trans h.symm)`. -/
 def embeddingsMatrixReindex (b : κ → B) (e : κ ≃ (B →ₐ[A] C)) :=
   reindex (Equiv.refl κ) e.symm (embeddingsMatrix A C b)
 #align algebra.embeddings_matrix_reindex Algebra.embeddingsMatrixReindex
@@ -598,8 +596,7 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   refine'
     mul_ne_zero
       (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det _).ne_zero _
-  ·
-    calc
+  · calc
       (pb.basis.toMatrix b ⬝ (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ ⬝ b.toMatrix pb.basis).det =
           (pb.basis.toMatrix b ⬝ (b.toMatrix pb.basis ⬝ pb.basis.toMatrix b)ᵀ ⬝
