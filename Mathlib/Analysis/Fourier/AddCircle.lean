@@ -8,15 +8,15 @@ Authors: Heather Macbeth, David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.ExpDeriv
-import Mathbin.Analysis.SpecialFunctions.Complex.Circle
-import Mathbin.Analysis.InnerProductSpace.L2Space
-import Mathbin.MeasureTheory.Function.ContinuousMapDense
-import Mathbin.MeasureTheory.Function.L2Space
-import Mathbin.MeasureTheory.Group.Integration
-import Mathbin.MeasureTheory.Integral.Periodic
-import Mathbin.Topology.ContinuousFunction.StoneWeierstrass
-import Mathbin.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+import Mathlib.Analysis.InnerProductSpace.L2Space
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
+import Mathlib.MeasureTheory.Function.L2Space
+import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Integral.Periodic
+import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.MeasureTheory.Integral.FundThmCalculus
 
 /-!
 
@@ -77,8 +77,7 @@ namespace AddCircle
 /-! ### Map from `add_circle` to `circle` -/
 
 
-theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T :=
-  by
+theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T := by
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
   rcases eq_or_ne T 0 with (rfl | hT)
   · intro x; simp
@@ -92,8 +91,7 @@ def toCircle : AddCircle T → circle :=
 #align add_circle.to_circle AddCircle.toCircle
 
 theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
-    toCircle (x + y) = toCircle x * toCircle y :=
-  by
+    toCircle (x + y) = toCircle x * toCircle y := by
   induction x using QuotientAddGroup.induction_on'
   induction y using QuotientAddGroup.induction_on'
   simp_rw [← QuotientAddGroup.mk_add, to_circle, Function.Periodic.lift_coe, mul_add,
@@ -104,8 +102,7 @@ theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (expMapCircle.Continuous.comp <| continuous_const.mul continuous_id')
 #align add_circle.continuous_to_circle AddCircle.continuous_toCircle
 
-theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) :=
-  by
+theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
   induction a using QuotientAddGroup.induction_on'
   induction b using QuotientAddGroup.induction_on'
@@ -148,8 +145,7 @@ section Monomials
 
 /-- The family of exponential monomials `λ x, exp (2 π i n x / T)`, parametrized by `n : ℤ` and
 considered as bundled continuous maps from `ℝ / ℤ • T` to `ℂ`. -/
-def fourier (n : ℤ) : C(AddCircle T, ℂ)
-    where
+def fourier (n : ℤ) : C(AddCircle T, ℂ) where
   toFun x := toCircle (n • x)
   continuous_toFun := continuous_induced_dom.comp <| continuous_toCircle.comp <| continuous_zsmul _
 #align fourier fourier
@@ -161,8 +157,7 @@ theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n �
 
 @[simp]
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
-    fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) :=
-  by
+    fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, to_circle, Function.Periodic.lift_coe,
     expMapCircle_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
     Complex.ofReal_mul, Complex.ofReal_int_cast, Complex.ofReal_bit0, Complex.ofReal_one]
@@ -170,8 +165,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
 #align fourier_coe_apply fourier_coe_apply
 
 @[simp]
-theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 :=
-  by
+theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   induction x using QuotientAddGroup.induction_on'
   simp only [fourier_coe_apply, algebraMap.coe_zero, MulZeroClass.mul_zero, MulZeroClass.zero_mul,
     zero_div, Complex.exp_zero]
@@ -188,8 +182,7 @@ theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fouri
 #align fourier_one fourier_one
 
 @[simp]
-theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) :=
-  by
+theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
   induction x using QuotientAddGroup.induction_on'
   simp_rw [fourier_apply, to_circle, ← QuotientAddGroup.mk_zsmul, Function.Periodic.lift_coe, ←
     coe_inv_circle_eq_conj, ← expMapCircle_neg, neg_smul, mul_neg]
@@ -200,8 +193,7 @@ theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m + n) x = fourier 
   by simp_rw [fourier_apply, add_zsmul, to_circle_add, coe_mul_unitSphere]
 #align fourier_add fourier_add
 
-theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 :=
-  by
+theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => abs_coe_circle _
   simp_rw [this]
@@ -210,12 +202,10 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 :=
 
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
-    fourier n (x + (T / 2 / n : ℝ)) = -fourier n x :=
-  by
+    fourier n (x + (T / 2 / n : ℝ)) = -fourier n x := by
   rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, to_circle_add, coe_mul_unitSphere]
   have : (n : ℂ) ≠ 0 := by simpa using hn
-  have : (@to_circle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 :=
-    by
+  have : (@to_circle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, to_circle, Function.Periodic.lift_coe, expMapCircle_apply]
     replace hT := complex.of_real_ne_zero.mpr hT.ne'
     convert Complex.exp_pi_mul_I using 3
@@ -230,8 +220,7 @@ def fourierSubalgebra : Subalgebra ℂ C(AddCircle T, ℂ) :=
 
 /-- The subalgebra of `C(add_circle T, ℂ)` generated by `fourier n` for `n ∈ ℤ` is in fact the
 linear span of these functions. -/
-theorem fourierSubalgebra_coe : (@fourierSubalgebra T).toSubmodule = span ℂ (range fourier) :=
-  by
+theorem fourierSubalgebra_coe : (@fourierSubalgebra T).toSubmodule = span ℂ (range fourier) := by
   apply adjoin_eq_span_of_subset
   refine' subset.trans _ Submodule.subset_span
   intro x hx
@@ -246,8 +235,7 @@ theorem fourierSubalgebra_coe : (@fourierSubalgebra T).toSubmodule = span ℂ (r
 /-- The subalgebra of `C(add_circle T, ℂ)` generated by `fourier n` for `n ∈ ℤ` is invariant under
 complex conjugation. -/
 theorem fourierSubalgebra_conj_invariant :
-    ConjInvariantSubalgebra ((@fourierSubalgebra T).restrictScalars ℝ) :=
-  by
+    ConjInvariantSubalgebra ((@fourierSubalgebra T).restrictScalars ℝ) := by
   apply subalgebra_conj_invariant
   rintro _ ⟨n, rfl⟩
   exact ⟨-n, ext fun _ => fourier_neg⟩
@@ -257,8 +245,7 @@ variable [hT : Fact (0 < T)]
 
 /-- The subalgebra of `C(add_circle T, ℂ)` generated by `fourier n` for `n ∈ ℤ`
 separates points. -/
-theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints :=
-  by
+theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints := by
   intro x y hxy
   refine' ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, _⟩
   dsimp only; rw [fourier_one, fourier_one]
@@ -274,8 +261,7 @@ theorem fourierSubalgebra_closure_eq_top : (@fourierSubalgebra T).topologicalClo
 #align fourier_subalgebra_closure_eq_top fourierSubalgebra_closure_eq_top
 
 /-- The linear span of the monomials `fourier n` is dense in `C(add_circle T, ℂ)`. -/
-theorem span_fourier_closure_eq_top : (span ℂ (range <| @fourier T)).topologicalClosure = ⊤ :=
-  by
+theorem span_fourier_closure_eq_top : (span ℂ (range <| @fourier T)).topologicalClosure = ⊤ := by
   rw [← fourierSubalgebra_coe]
   exact congr_arg Subalgebra.toSubmodule fourierSubalgebra_closure_eq_top
 #align span_fourier_closure_eq_top span_fourier_closure_eq_top
@@ -294,8 +280,7 @@ theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `fourier n` is dense in
 `Lp ℂ p haar_circle`. -/
 theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
-    (span ℂ (range (@fourierLp T _ p _))).topologicalClosure = ⊤ :=
-  by
+    (span ℂ (range (@fourierLp T _ p _))).topologicalClosure = ⊤ := by
   convert
     (ContinuousMap.toLp_denseRange ℂ (@haar_add_circle T hT) hp ℂ).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
@@ -304,8 +289,7 @@ theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p 
 #align span_fourier_Lp_closure_eq_top span_fourierLp_closure_eq_top
 
 /-- The monomials `fourier n` are an orthonormal set with respect to normalised Haar measure. -/
-theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) :=
-  by
+theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [orthonormal_iff_ite]
   intro i j
   rw [continuous_map.inner_to_Lp (@haar_add_circle T hT) (fourier i) (fourier j)]
@@ -342,8 +326,7 @@ def fourierCoeff (f : AddCircle T → E) (n : ℤ) : E :=
 /-- The Fourier coefficients of a function on `add_circle T` can be computed as an integral
 over `[a, a + T]`, for any real `a`. -/
 theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : ℝ) :
-    fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x :=
-  by
+    fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
   simp_rw [this]
@@ -372,8 +355,7 @@ def fourierCoeffOn {a b : ℝ} (hab : a < b) (f : ℝ → E) (n : ℤ) : E :=
 
 theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab f n =
-      (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x :=
-  by
+      (1 / (b - a)) • ∫ x in a..b, fourier (-n) (x : AddCircle (b - a)) • f x := by
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a]
   congr 1
   rw [add_sub, add_sub_cancel']
@@ -436,8 +418,7 @@ theorem coe_fourierBasis : ⇑(@fourierBasis _ hT) = fourierLp 2 :=
 `i`-th coefficient is `fourier_coeff f i`, i.e., the integral over `add_circle T` of
 `λ t, fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
 theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
-    fourierBasis.repr f i = fourierCoeff f i :=
-  by
+    fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haar_add_circle
   · simp [fourier_basis.repr_apply_apply f i, MeasureTheory.L2.inner_def]
   · apply integral_congr_ae
@@ -454,11 +435,9 @@ theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
 /-- **Parseval's identity**: for an `L²` function `f` on `add_circle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
-  by
+    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
   simp_rw [← fourierBasis_repr]
-  have H₁ : ‖fourier_basis.repr f‖ ^ 2 = ∑' i, ‖fourier_basis.repr f i‖ ^ 2 :=
-    by
+  have H₁ : ‖fourier_basis.repr f‖ ^ 2 = ∑' i, ‖fourier_basis.repr f i‖ ^ 2 := by
     exact_mod_cast lp.norm_rpow_eq_tsum _ (fourier_basis.repr f)
     norm_num
   have H₂ : ‖fourier_basis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
@@ -486,8 +465,7 @@ variable {f}
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
-    HasSum (fun i => fourierCoeff f i • fourier i) f :=
-  by
+    HasSum (fun i => fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (to_Lp 2 haar_add_circle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2 
   refine' ContinuousMap.hasSum_of_hasSum_Lp (summable_of_summable_norm _) sum_L2
@@ -516,8 +494,7 @@ variable (T)
 
 theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
-      (2 * π * I * n / T * fourier n (x : AddCircle T)) x :=
-  by
+      (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
   refine' (_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
@@ -536,8 +513,7 @@ variable {T}
 
 theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
-      (fourier (-n) (x : AddCircle T)) x :=
-  by
+      (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · rw [mul_div_cancel_left]
