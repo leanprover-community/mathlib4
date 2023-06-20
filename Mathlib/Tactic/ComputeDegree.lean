@@ -152,6 +152,6 @@ def CDL : TacticM Unit := do
 /--
 `compute_degree_le` attempts to close goals of the form `natDegree f ≤ d` and `degree f ≤ d`.
 -/
-elab (name := computeDegreeLE) "compute_degree_le" : tactic => CDL
+elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus CDL
 
 end Mathlib.Tactic.ComputeDegree
