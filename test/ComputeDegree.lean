@@ -10,6 +10,12 @@ example {R : Type _} [Ring R] (h : ∀ {p q : R[X]}, p.natDegree ≤ 0 → (p * 
   apply h _
   compute_degree_le
 
+-- check for making sure that `compute_degree_le` is `focus`ed
+example : Polynomial.natDegree (Polynomial.C 4) ≤ 1 ∧ True := by
+  constructor
+  compute_degree_le
+  trivial
+
 example {R : Type _} [Ring R] :
     natDegree (- 1 * 1 : R[X]) ≤ 0 := by
   compute_degree_le
