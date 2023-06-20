@@ -37,7 +37,6 @@ protected theorem zero_ne_neg_of_ne {a : ℤ} (h : 0 ≠ a) : 0 ≠ -a :=
 
 protected theorem neg_ne_of_pos {a b : ℤ} : 0 < a → 0 < b → -a ≠ b := fun h₁ h₂ h => by
   rw [← h] at h₂
-  have := le_of_lt h₁
   exact absurd (le_of_lt h₁) (not_le_of_gt (Int.neg_of_neg_pos h₂))
 #align int.neg_ne_of_pos Int.neg_ne_of_pos
 
@@ -126,8 +125,7 @@ theorem natAbs_of_negSucc (n : ℕ) : natAbs (negSucc n) = Nat.succ n :=
 protected theorem natAbs_add_nonneg :
     ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
   | ofNat n, ofNat m, _, _ => by
-    have : ofNat n + ofNat m = ofNat (n + m) := rfl
-    simp [natAbs_ofNat_core, this]
+    simp [natAbs_ofNat_core]
   | _, negSucc m, _, h₂ => absurd (negSucc_lt_zero m) (not_lt_of_ge h₂)
   | negSucc n, _, h₁, _ => absurd (negSucc_lt_zero n) (not_lt_of_ge h₁)
 #align int.nat_abs_add_nonneg Int.natAbs_add_nonneg
@@ -135,8 +133,7 @@ protected theorem natAbs_add_nonneg :
 protected theorem natAbs_add_neg :
     ∀ {a b : Int}, a < 0 → b < 0 → natAbs (a + b) = natAbs a + natAbs b
   | negSucc n, negSucc m, _, _ => by
-    have : -[n+1] + -[m+1] = -[Nat.succ (n + m)+1] := rfl
-    simp [natAbs_of_negSucc, this, Nat.succ_add, Nat.add_succ]
+    simp [natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
 #align int.nat_abs_add_neg Int.natAbs_add_neg
 
 set_option linter.deprecated false in
