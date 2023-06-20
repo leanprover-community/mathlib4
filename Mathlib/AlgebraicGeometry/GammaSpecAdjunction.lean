@@ -341,11 +341,11 @@ theorem right_triangle (R : CommRingCat) :
 /-- opposite of composition of two functors -/
 unif_hint uh_functor_op1 where ⊢
   Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
-  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp
+  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp in
 
 /-- opposite of identity functor -/
 unif_hint uh_functor_op2 where ⊢
-  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ
+  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `unit` and `counit` will be added manually
@@ -436,32 +436,25 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   infer_instance
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
--- Porting Note: Had to increase Heartbeats
-set_option maxHeartbeats 600000 in
--- This is just
--- `(Γ_Spec.adjunction.unit.app X).1.c.app (op ⊤) = Spec_Γ_identity.hom.app (X.presheaf.obj (op ⊤))`
--- But lean times out when trying to unify the types of the two sides.
 theorem adjunction_unit_app_app_top (X : Scheme) :
-    @Eq
-      ((Scheme.Spec.obj (op <| X.presheaf.obj (op ⊤))).presheaf.obj (op ⊤) ⟶
-        ((ΓSpec.adjunction.unit.app X).1.base _* X.presheaf).obj (op ⊤))
-      ((ΓSpec.adjunction.unit.app X).val.c.app (op ⊤))
-      (SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤))) := by
+    (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) =
+    SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  -- Porting Notes: Slightly changed some rewrites.
-  -- Originally:
-  --  rw [← is_iso.eq_comp_inv] at this
-  --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
-  --    Γ_Spec.adjunction_counit_app] at this
-  --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
+  -- -- Porting Notes: Slightly changed some rewrites.
+  -- -- Originally:
+  -- --  rw [← is_iso.eq_comp_inv] at this
+  -- --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
+  -- --    Γ_Spec.adjunction_counit_app] at this
+  -- --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
   rw [← IsIso.eq_comp_inv] at this
   simp only [adjunction_counit_app, locallyRingedSpaceAdjunction_counit, NatIso.op_inv, NatTrans.op_app, unop_op,
     Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj, Spec.toLocallyRingedSpace_obj, Γ_obj,
     Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  exact this
+  rw [SpecΓIdentity_hom_app]
+  convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
