@@ -26,7 +26,7 @@ structure RelSeries where
 length : ℕ
 /-- the underlying function of a relation series -/
 toFun : Fin (length + 1) → α
-/-- adjacent elements are related by the said relation -/
+/-- Adjacent elements are related -/
 step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
 
 namespace RelSeries
@@ -142,7 +142,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : Re
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
-def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
+protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
   toFun := fun x => ⟨_, x.toList_not_empty, x.toList_chain'⟩
   invFun := fun x => fromListChain' _ x.2.1 x.2.2
   left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by ext f; simp
