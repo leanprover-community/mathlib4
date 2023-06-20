@@ -259,7 +259,7 @@ instance : GetElem (Vector α n) Nat α fun _ i => i < n where
 -- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
 abbrev get (v : Vector α n)  (i : Fin n) : α :=
-  v[i]
+  v[i.1]
 #align vector.nth Vector.get
 
 end Vector
