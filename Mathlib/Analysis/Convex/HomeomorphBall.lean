@@ -97,13 +97,17 @@ lemma scaleFromGauge_scaleToGauge (hs : Absorbent ℝ s) (hb : Bounded s) (x : E
     abs_of_nonneg hg.le, hg.ne', norm_ne_zero_iff.2 hx]
   ac_rfl
 
+theorem image_scaleToGauge_interior (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 0) (hb : Bounded s) :
+    scaleToGauge s '' interior s = ball 0 1 := by
+  have ha : Absorbent ℝ s := absorbent_nhds_zero h₀
+  refine mapsTo_scaleToGauge_interior.image_subset.antisymm fun x hx ↦ ?_
+  refine ⟨scaleFromGauge s x, ?_, scaleToGauge_scaleFromGauge ha hb _⟩
+  rw [← gauge_lt_one_eq_interior hc h₀]
+  rwa [mem_setOf_eq, gauge_scaleFromGauge ha hb, ← mem_ball_zero_iff]
+
 theorem image_scaleToGauge_of_open (hc : Convex ℝ s) (h₀ : 0 ∈ s) (ho : IsOpen s) (hb : Bounded s) :
     scaleToGauge s '' s = ball 0 1 := by
-  have ha : Absorbent ℝ s := absorbent_nhds_zero (ho.mem_nhds h₀)
-  refine ho.mapsTo_scaleToGauge.image_subset.antisymm fun x hx ↦ ?_
-  refine ⟨scaleFromGauge s x, ?_, scaleToGauge_scaleFromGauge ha hb _⟩
-  apply gauge_lt_one_subset_self hc h₀ ha
-  rwa [mem_setOf_eq, gauge_scaleFromGauge ha hb, ← mem_ball_zero_iff]
+  rw [← image_scaleToGauge_interior hc (ho.mem_nhds h₀) hb, ho.interior_eq]
   
 /-- If `s` is a bounded convex neighbourhood of zero, then `scaleToGaugeHomeomorph s _ _ _` is
 a homeomorphism of the ambient space to itself that preserves rays from the origin and sends the
@@ -118,11 +122,34 @@ noncomputable def scaleToGaugeHomeomorph (s : Set E) (hc : Convex ℝ s) (hs : s
   continuous_toFun := continuous_scaleToGauge hc hs
   continuous_invFun := continuous_scaleFromGauge hc hs hb
 
-theorem IsOpen.exists_homeomorph_unit_ball {s : Set E} (ho : IsOpen s) (hc : Convex ℝ s)
+noncomputable def scaleToGaugeVAddHomeomorph (a : E) (s : Set E) (hc : Convex ℝ s) (ha : s ∈ 𝓝 a)
+    (hb : Bounded s) : E ≃ₜ E :=
+  (Homeomorph.addLeft (-a)).trans <|
+    scaleToGaugeHomeomorph (-a +ᵥ s) (hc.vadd _) (neg_add_self a ▸ vadd_mem_nhds _ ha) (hb.vadd _)
+
+theorem image_scaleToGaugeVAddHomeomorph_interior {a : E} {s : Set E} (hc : Convex ℝ s)
+    (ha : s ∈ 𝓝 a) (hb : Bounded s) :
+    scaleToGaugeVAddHomeomorph a s hc ha hb '' interior s = ball 0 1 :=
+  calc
+    scaleToGaugeVAddHomeomorph a s hc ha hb '' interior s
+      = scaleToGauge (-a +ᵥ s) '' (-a +ᵥ interior s) := by
+      rw [← image_vadd (t := interior s), image_image]; rfl
+    _ = ball 0 1 := by
+      rw [← interior_vadd, image_scaleToGauge_interior]
+      exacts [hc.vadd _, neg_add_self a ▸ vadd_mem_nhds _ ha, hb.vadd _]
+
+/-- If `s` is an open convex bounded nonempty set in a real normed vector space, then there exists a
+homeomorphism of the ambient space that sends `s` to the open unit ball. -/
+theorem IsOpen.exists_homeomorph_image_eq_unit_ball {s : Set E} (ho : IsOpen s) (hc : Convex ℝ s)
     (hb : Bounded s) (hne : s.Nonempty) :
     ∃ h : E ≃ₜ E, h '' s = ball 0 1 := by
-  wlog h₀ : 0 ∈ s generalizing s
-  · rcases hne with ⟨x, hx⟩
-    have hb : Bounded (-x +ᵥ s)
-    have := this (ho.vadd (-x)) (hc.vadd _)
-    
+  rcases hne with ⟨a, ha⟩
+  rw [← ho.interior_eq]
+  exact ⟨_, image_scaleToGaugeVAddHomeomorph_interior hc (ho.mem_nhds ha) hb⟩
+
+/-- An open convex bounded nonempty set in a real normed vector space is homeomorphic to the open
+unit ball in the same space. -/
+theorem IsOpen.nonempty_homeomorph_unit_ball {s : Set E} (ho : IsOpen s) (hc : Convex ℝ s)
+    (hb : Bounded s) (hne : s.Nonempty) : Nonempty (s ≃ₜ ball (0 : E) 1) := by
+  rcases ho.exists_homeomorph_image_eq_unit_ball hc hb hne with ⟨h, himage⟩
+  exact ⟨(h.image _).trans <| .setCongr himage⟩
