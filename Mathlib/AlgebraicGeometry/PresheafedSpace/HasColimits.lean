@@ -304,13 +304,12 @@ set_option linter.uppercaseLean3 false in
 
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
-  ext
+  ext U
   -- See https://github.com/leanprover/std4/pull/158
   swap
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    ext U
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
