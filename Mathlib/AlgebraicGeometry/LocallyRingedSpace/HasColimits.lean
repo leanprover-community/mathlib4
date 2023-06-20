@@ -104,11 +104,11 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
       (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s), by
       intro x
       obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
-      have :=
-        PresheafedSpace.stalkMap.comp (colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+      have := PresheafedSpace.stalkMap.comp
+        (colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
           (F ⋙ forgetToSheafedSpace) i)
-          (colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
-            (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s)) y
+        (colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+          (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s)) y
       rw [← IsIso.comp_inv_eq] at this
       erw [← this,
         PresheafedSpace.stalkMap.congr_hom _ _
