@@ -68,8 +68,6 @@ theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
   erw [condCount_univ, Measure.count_apply_finite]
 #align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
 
-theorem _root_.ENNReal.mul_div (a b c : ℝ≥0∞) : a * (b / c) = (a * b) / c := sorry
-
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
     ℙ ({f | (Function.Injective f)} : Set ((Fin 23) → (Fin 365))) < 1 / 2 := by
@@ -89,7 +87,7 @@ theorem birthday_measure :
   · rw [← Fintype.card_coe]
     simp_rw [Set.Finite.coeSort_toFinset]
     simp_rw [Set.coe_setOf] -- these two simp_rws are really slow
-    exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _) -/
+    exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
   · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
 
 #align theorems_100.birthday_measure Theorems100.birthday_measure
