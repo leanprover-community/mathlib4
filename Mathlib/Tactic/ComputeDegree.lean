@@ -101,9 +101,11 @@ def CDL : TacticM Unit := do
       -- and that the LHS is `natDegree ...` or `degree ...`
       | (``Polynomial.natDegree, #[_, _, pol]) =>
         -- compute the expected degree, guessing `0` whenever there is a doubt
-        let guessDeg := ← toNatDegree (fun _ => return mkNatLit 0) pol
-        let gdgNat := ← unsafe evalExpr Nat (.const `Nat []) guessDeg
-        let rhsNat := ← unsafe evalExpr Nat (.const `Nat []) rhs
+        let guessDeg := ← toNatDegree (fun p => mkAppM ``natDegree #[p] <|> return mkNatLit 0) pol
+        let gdgNat := ← if guessDeg.hasAnyFVar fun _ => true
+          then pure 0 else unsafe evalExpr Nat (.const `Nat []) guessDeg
+        let rhsNat := ← if rhs.hasAnyFVar fun _ => true
+          then pure 0 else unsafe evalExpr Nat (.const `Nat []) rhs
         -- check that the guessed degree really is at most the given degree
         let _ := ← (guard <| gdgNat ≤ rhsNat) <|>
           throwError m!"Should the degree be '{gdgNat}' instead of '{rhsNat}'?"
@@ -111,7 +113,7 @@ def CDL : TacticM Unit := do
         -- we begin by replacing the initial inequality with the possibly sharper
         -- `natDegree f ≤ guessDeg`.  This helps, since the shape of `guessDeg` is already
         -- tailored to the expressions that we will find along the way
-        evalTactic (← `(tactic| refine le_trans ?_ (by norm_num : $gDstx ≤ _)))
+        evalTactic (← `(tactic| refine le_trans ?_ (?_ : $gDstx ≤ _)))
         -- we recurse into the shape of the polynomial, using the appropriate theorems in each case
         match pol.getAppFnArgs with
           | (``HAdd.hAdd, #[_, _, _, _, f, g])  =>
@@ -165,12 +167,15 @@ def CDL : TacticM Unit := do
         evalTactic (← `(tactic| refine degree_le_natDegree.trans ?_))
         evalTactic (← `(tactic| refine Nat.cast_le.mpr ?_))
       | _ => throwError "Expected an inequality of the form 'f.natDegree ≤ d' or 'f.degree ≤ d'"
-    | _ => throwError m!"Expected an inequality instead of '{tgt.ctorName}'"
-  CDL
-
+    | _ => throwError m!"Expected an inequality instead of '{tgt.getAppFnArgs.1}'"
 /--
 `compute_degree_le` attempts to close goals of the form `natDegree f ≤ d` and `degree f ≤ d`.
 -/
-elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus CDL
+elab "compute_degree_le1" : tactic => CDL
+elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
+  evalTactic (← `(tactic|
+    repeat
+    any_goals compute_degree_le1
+    any_goals (norm_num <;> try assumption <;> done)))
 
 end Mathlib.Tactic.ComputeDegree
