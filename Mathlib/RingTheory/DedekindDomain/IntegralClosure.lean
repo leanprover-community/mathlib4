@@ -8,10 +8,10 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.FreeModule.Pid
-import Mathbin.RingTheory.DedekindDomain.Basic
-import Mathbin.RingTheory.Localization.Module
-import Mathbin.RingTheory.Trace
+import Mathlib.LinearAlgebra.FreeModule.Pid
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Trace
 
 /-!
 # Integral closure of Dedekind domains
@@ -69,8 +69,7 @@ variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A 
 /- If `L` is a separable extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
 theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A L] :
-    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
-  by
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toRingEquiv.IsDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
@@ -110,8 +109,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type _
     refine' Submodule.sum_mem _ fun i _ => Submodule.smul_mem _ _ (Submodule.subset_span _)
     rw [Set.mem_range]
     exact ⟨i, rfl⟩
-  suffices ∃ c : ι → K, (∀ i, IsIntegral A (c i)) ∧ algebraMap C L x = ∑ i, c i • db i
-    by
+  suffices ∃ c : ι → K, (∀ i, IsIntegral A (c i)) ∧ algebraMap C L x = ∑ i, c i • db i by
     obtain ⟨c, hc, hx⟩ := this
     have hc' : ∀ i, IsLocalization.IsInteger A (c i) := fun i =>
       is_integrally_closed.is_integral_iff.mp (hc i)
@@ -140,8 +138,7 @@ variable (A) (K)
 /-- Send a set of `x`'es in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integral_closure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) :=
-  by
+    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
   refine' s.induction _ _
   · use 1, one_ne_zero
@@ -167,15 +164,13 @@ variable (L)
 /-- If `L` is a finite extension of `K = Frac(A)`,
 then `L` has a basis over `A` consisting of integral elements. -/
 theorem FiniteDimensional.exists_is_basis_integral :
-    ∃ (s : Finset L) (b : Basis s K L), ∀ x, IsIntegral A (b x) :=
-  by
+    ∃ (s : Finset L) (b : Basis s K L), ∀ x, IsIntegral A (b x) := by
   letI := Classical.decEq L
   letI : IsNoetherian K L := IsNoetherian.iff_fg.2 inferInstance
   let s' := IsNoetherian.finsetBasisIndex K L
   let bs' := IsNoetherian.finsetBasis K L
   obtain ⟨y, hy, his'⟩ := exists_integral_multiples A K (finset.univ.image bs')
-  have hy' : algebraMap A L y ≠ 0 :=
-    by
+  have hy' : algebraMap A L y ≠ 0 := by
     refine' mt ((injective_iff_map_eq_zero (algebraMap A L)).mp _ _) hy
     rw [IsScalarTower.algebraMap_eq A K L]
     exact (algebraMap K L).Injective.comp (IsFractionRing.injective A K)
@@ -230,8 +225,7 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
 theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdealRing A] :
-    Module.Free A C :=
-  by
+    Module.Free A C := by
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L _
   exact Module.free_of_finite_type_torsion_free'
@@ -241,8 +235,7 @@ theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdeal
 and `L` has no zero smul divisors by `A`, the `A`-rank of the integral closure `C` of `A` in `L`
 is equal to the `K`-rank of `L`. -/
 theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L] :
-    FiniteDimensional.finrank A C = FiniteDimensional.finrank K L :=
-  by
+    FiniteDimensional.finrank A C = FiniteDimensional.finrank K L := by
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
   haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
