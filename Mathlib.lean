@@ -2456,6 +2456,7 @@ import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Martingale.Centering
 import Mathlib.Probability.Martingale.OptionalSampling
 import Mathlib.Probability.Martingale.OptionalStopping
+import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
