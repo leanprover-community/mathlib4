@@ -18,8 +18,8 @@ import Mathlib.Probability.Notation
 This file proves Theorem 93 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/).
 
 As opposed to the standard probabilistic statement, we instead state the birthday problem
-in terms of injective functions. The general result about `fintype.card (α ↪ β)` which this proof
-uses is `fintype.card_embedding_eq`.
+in terms of injective functions. The general result about `Fintype.card (α ↪ β)` which this proof
+uses is `Fintype.card_embedding_eq`.
 -/
 
 
@@ -43,11 +43,11 @@ open scoped ProbabilityTheory ENNReal
 
 variable {n m : ℕ}
 
-/- In order for Lean to understand that we can take probabilities in `fin 23 → fin 365`, we must
-tell Lean that there is a `measurable_space` structure on the space. Note that this instance
-is only for `fin m` - Lean automatically figures out that the function space `fin n → fin m`
-is _also_ measurable, by using `measurable_space.pi`, and furthermore that all sets are measurable,
-from `measurable_singleton_class.pi`. -/
+/- In order for Lean to understand that we can take probabilities in `Fin 23 → Fin 365`, we must
+tell Lean that there is a `MeasurableSpace` structure on the space. Note that this instance
+is only for `Fin m` - Lean automatically figures out that the function space `Fin n → Fin m`
+is _also_ measurable, by using `MeasurableSpace.pi`, and furthermore that all sets are measurable,
+from `MeasurableSingletonClass.pi`. -/
 instance : MeasurableSpace (Fin m) :=
   ⊤
 
@@ -59,7 +59,7 @@ We define this to be the conditional counting measure. -/
 noncomputable instance : MeasureSpace (Fin n → Fin m) :=
   ⟨condCount Set.univ⟩
 
--- The canonical measure on `fin n → fin m` is a probability measure (except on an empty space).
+-- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
 instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
   condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
@@ -71,24 +71,20 @@ theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
     ℙ ({f | (Function.Injective f)} : Set ((Fin 23) → (Fin 365))) < 1 / 2 := by
-  -- most of this proof is essentially converting it to the same form as `birthday`.
   rw [FinFin.measure_apply]
   generalize_proofs hfin
-  rw [ENNReal.lt_div_iff_mul_lt, mul_comm, ENNReal.mul_div]
-  swap; left; norm_num
-  swap; left; exact ENNReal.two_ne_top
-  apply ENNReal.div_lt_of_lt_mul
-  have : ∀ a b : ℕ, 2 * a < b → 2 * (a : ℝ≥0∞) < b := fun _ _ h => by norm_cast
-  rw [one_mul, Fintype.card_fun]
-  apply this
-  suffices : hfin.toFinset.card = 42200819302092359872395663074908957253749760700776448000000
-  · rw [this]; norm_num
-  trans ‖Fin 23 ↪ Fin 365‖
-  · rw [← Fintype.card_coe]
-    simp_rw [Set.Finite.coeSort_toFinset]
-    simp_rw [Set.coe_setOf] -- these two simp_rws are really slow
-    exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
-  · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
+  have : |hfin.toFinset| = 42200819302092359872395663074908957253749760700776448000000 := by
+    trans ‖Fin 23 ↪ Fin 365‖
+    · simp_rw [← Fintype.card_coe, Set.Finite.coeSort_toFinset, Set.coe_setOf]
+      exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
+    · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
+  rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
+  rotate_left
+  iterate 2 right; norm_num
+  iterate 2 left; norm_num
+  norm_cast
+  simp only [Fintype.card_pi]
+  norm_num
 
 #align theorems_100.birthday_measure Theorems100.birthday_measure
 

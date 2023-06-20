@@ -1346,9 +1346,6 @@ instance : DivInvMonoid ℝ≥0∞ where
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 #align ennreal.div_eq_inv_mul ENNReal.div_eq_inv_mul
 
-protected theorem mul_div (a b c : ℝ≥0∞) : a * (b / c) = (a * b) / c :=
-by simp only [ENNReal.div_eq_inv_mul, mul_left_comm]
-
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 #align ennreal.inv_zero ENNReal.inv_zero
