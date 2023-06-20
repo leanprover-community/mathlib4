@@ -12,8 +12,8 @@ import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Interval
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
-import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Linarith
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -40,6 +40,19 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 -/
 
+
+open Lean Parser Tactic Meta
+
+attribute [local field_simps] div_le_div_iff div_lt_div_iff div_lt_iff lt_div_iff
+
+syntax (name := invIneqTacAux) "normalize_nat_reciprocals " (ppSpace location)? : tactic
+
+macro_rules
+  | `(tactic| normalize_nat_reciprocals $[$loc]?)
+      => `(tactic|
+        simp (config := { decide := false }) (discharger := positivity) only [field_simps] $[$loc]?;
+        ring_nf (config := {}) $[$loc]?;
+        norm_cast0 $[$loc]?)
 
 namespace ADEInequality
 
@@ -174,27 +187,20 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
-  have h3 : (0 : ℚ) < 3 := by norm_num
+  have : 0 < (p:ℕ) := p.2 -- FIXME positivity
+  have : 0 < (q:ℕ) := q.2 -- FIXME positivity
+  have : 0 < (r:ℕ) := r.2 -- FIXME positivity
+  have hpq' : (p:ℕ) ≤ (q:ℕ) := hpq -- FIXME natify at hpq
+  have hqr' : (q:ℕ) ≤ (r:ℕ) := hqr -- FIXME natify at hpq
+  show (p:ℕ) < 3 -- FIXME natify
   contrapose! H
   rw [sumInv_pqr]
-  have h3q := H.trans hpq
-  have h3r := h3q.trans hqr
-  simp at H
-  have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
-  have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
-  have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
+  have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by normalize_nat_reciprocals; exact H
+  have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by normalize_nat_reciprocals; linarith
+  have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by normalize_nat_reciprocals; linarith
   calc
-    (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
-    _ = 1 := by norm_num
+    (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := by linarith
+    _ = 1 := by norm_num -- FIXME
 #align ADE_inequality.lt_three ADEInequality.lt_three
 
 theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
@@ -286,3 +292,50 @@ theorem classification (p q r : ℕ+) : 1 < sumInv {p, q, r} ↔ Admissible {p, 
 #align ADE_inequality.classification ADEInequality.classification
 
 end ADEInequality
+
+
+-- example {p q r : ℕ} (hp : 1 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (H : (p:ℚ)⁻¹ + (q:ℚ)⁻¹ + (r:ℚ)⁻¹ = 1) :
+--     (p = 2 ∧ q = 3 ∧ r = 6) ∨ (p = 2 ∧ q = 4 ∧ r = 4) ∨ (p = 3 ∧ q = 3 ∧ r = 3) := by
+--   have hq₀ : 0 < q := by linarith
+--   have hr₀ : 0 < r := by linarith
+--   have Hq₀ : 0 < (q:ℚ)⁻¹ := by positivity
+--   have Hr₀ : 0 < (r:ℚ)⁻¹ := by positivity
+--   have Hpq : (q:ℚ)⁻¹ ≤ (p:ℚ)⁻¹ := by normalize_nat_reciprocals; exact hpq
+--   have Hqr : (r:ℚ)⁻¹ ≤ (q:ℚ)⁻¹ := by normalize_nat_reciprocals; exact hqr
+--   -- step 1a
+--   have : (1:ℚ)/3 ≤ (p:ℚ)⁻¹ := by linarith only [H, Hpq, Hqr]
+--   -- step 1b
+--   have : (p:ℚ)⁻¹ < 1 := by linarith only [H, Hr₀, Hq₀]
+--   have Hp : (p:ℚ)⁻¹ ≤ (2:ℚ)⁻¹ := by normalize_nat_reciprocals at this ⊢; exact this
+--   -- step 2a
+--   have : ((1:ℚ) - (2:ℚ)⁻¹) / (2:ℚ) ≤ (q:ℚ)⁻¹ := by linarith only [H, Hp, Hqr]
+--   -- step 2b
+--   have : (q:ℚ)⁻¹ < (1:ℚ)/(2:ℚ) := by linarith only [H, Hr₀, Hpq]
+--   have Hq : (q:ℚ)⁻¹ ≤ (3:ℚ)⁻¹ := by normalize_nat_reciprocals at this ⊢; exact this
+--   -- step 3a
+--   have : (1:ℚ) - (2:ℚ)⁻¹ - (3:ℚ)⁻¹ ≤ (r:ℚ)⁻¹ := by linarith only [H, Hp, Hq]
+--   normalize_nat_reciprocals at *
+--   interval_cases p <;> interval_cases q <;> interval_cases r <;> norm_num at H <;> tauto
+
+-- example {p q r : ℕ} (hp : 1 ≤ p) (hpq : p ≤ q) (hqr : q ≤ r) (H : (p:ℚ)⁻¹ + (q:ℚ)⁻¹ + (r:ℚ)⁻¹ > 1) :
+--     p = 1 ∨ -- A
+--     (p = 2 ∧ q = 2) ∨ -- D
+--     (p = 2 ∧ q = 3 ∧ r = 3) ∨ -- E₆
+--     (p = 2 ∧ q = 3 ∧ r = 4) ∨ -- E₇
+--     (p = 2 ∧ q = 3 ∧ r = 5) := by -- E₈
+--   have hq₀ : 0 < q := by linarith
+--   have hr₀ : 0 < r := by linarith
+--   have Hpq : (q:ℚ)⁻¹ ≤ (p:ℚ)⁻¹ := by normalize_nat_reciprocals; exact hpq
+--   have Hqr : (r:ℚ)⁻¹ ≤ (q:ℚ)⁻¹ := by normalize_nat_reciprocals; exact hqr
+--   obtain rfl | (hp' : 2 ≤ p) := eq_or_lt_of_le hp
+--   · tauto
+--   have Hp : (p:ℚ)⁻¹ ≤ 2⁻¹ := by normalize_nat_reciprocals; exact hp'
+--   obtain rfl | (hq : 3 ≤ q) := eq_or_lt_of_le (by linarith : 2 ≤ q)
+--   · interval_cases p
+--     tauto
+--   have Hq : (q:ℚ)⁻¹ ≤ 3⁻¹ := by normalize_nat_reciprocals; exact hq
+--   have : (1:ℚ)/3 ≤ (p:ℚ)⁻¹ := by linarith only [H, Hpq, Hqr]
+--   have : ((1:ℚ) - 2⁻¹) / 2 ≤ (q:ℚ)⁻¹ := by linarith only [H, Hp, Hqr]
+--   have : (1:ℚ) - 2⁻¹ - 3⁻¹ ≤ (r:ℚ)⁻¹ := by linarith only [H, Hp, Hq]
+--   normalize_nat_reciprocals at *
+--   interval_cases p <;> interval_cases q <;> interval_cases r <;> norm_num at H <;> tauto
