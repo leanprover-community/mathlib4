@@ -1105,7 +1105,6 @@ noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [h : CommRin
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
 #align field_of_finite_dimensional fieldOfFiniteDimensional
-#print fieldOfFiniteDimensional
 end
 
 namespace Submodule
