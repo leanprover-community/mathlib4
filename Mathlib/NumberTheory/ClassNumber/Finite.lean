@@ -114,10 +114,10 @@ theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
   set y' : ℤ := Finset.max' _ him with y'_def
   have hy' : ∀ k, abv (bS.repr a k) ≤ y' := by
     intro k
-    exact Finset.le_max' _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
+    exact @Finset.le_max' ℤ _ _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
   have : (y' : T) < y := by
     rw [y'_def, ←
-      Finset.max'_image (show Monotone (coe : ℤ → T) from fun x y h => Int.cast_le.mpr h)]
+      Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
     simp only [Finset.mem_image, exists_prop]
     rintro _ ⟨x, ⟨k, -, rfl⟩, rfl⟩
