@@ -23,6 +23,11 @@ example (h : 42 = y) : ∃ x : Nat, x = y := by use 42, h
 -- `trivial` uses `assumption`
 example (h : 42 = y) : ∃ x : Nat, x = y := by use 42
 
+-- Check that `use` inserts a coercion:
+/-- info: Try this: Exists.intro (↑n) (Eq.refl ↑n) -/
+#guard_msgs (info) in
+example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
+
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
 /--

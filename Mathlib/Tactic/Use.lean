@@ -87,10 +87,11 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVa
         throwErrorAt arg
           "argument is not definitionally equal to inferred value{indentExpr (.mvar g)}"
       return ← useLoop eager gs' args' acc
+    -- Type ascription is a workaround for fact that `refine` doesn't seem to ensure the type.
+    let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
-      if let some newGoals ← observing? (run g do
-                                withoutRecover <| evalTactic (← `(tactic| refine $arg))) then
+      if let some newGoals ← observing? (run g do withoutRecover <| evalTactic refineArg) then
         return ← useLoop eager gs' args' (acc ++ newGoals)
     if eager || gs'.isEmpty then
       if let some (expl, impl) ← observing? do
@@ -99,7 +100,7 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVa
         return ← useLoop eager (expl ++ gs') args (acc ++ impl)
     -- In eager mode, this will give an error, which hopefully is more informative than
     -- the one provided by `constructor1`.
-    let newGoals ← run g do evalTactic (← `(tactic| refine $arg))
+    let newGoals ← run g do evalTactic refineArg
     useLoop eager gs' args' (acc ++ newGoals)
   else
     throwError "useLoop: impossible"

@@ -320,7 +320,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
   let fract_q_num := (Int.fract q).num; let n := fract_q_num.natAbs + 1
   cases' stream_nth_eq : IntFractPair.stream q n with ifp
-  · use n; exact stream_nth_eq
+  · use n, stream_nth_eq
   · -- arrive at a contradiction since the numerator decreased num + 1 times but every fractional
     -- value is nonnegative.
     have ifp_fr_num_le_q_fr_num_sub_n : ifp.fr.num ≤ fract_q_num - n :=
