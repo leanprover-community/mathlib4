@@ -179,7 +179,6 @@ theorem get_tail_succ_nat : ∀ (v : Vector α n.succ) (i : Nat) {h},
     (tail v)[i]'h = v[i+1]'(Nat.lt_succ.mpr h)
   | ⟨a :: l, e⟩, i => by simp [get_eq_get] ; rfl
 
-@[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), (tail v)[i.1] = v[i.succ.1] :=
   fun _ _ => get_tail_succ_nat ..
 #align vector.nth_tail_succ Vector.get_tail_succ
@@ -269,7 +268,6 @@ theorem reverse_reverse {v : Vector α n} : v.reverse.reverse = v := by
 theorem get_zero_nat : ∀ v : Vector α n.succ, v[0] = head v
   | ⟨_ :: _, _⟩ => rfl
 
-@[simp]
 theorem get_zero : ∀ v : Vector α n.succ, v[(0 : Fin n.succ).1] = head v :=
   get_zero_nat
 #align vector.nth_zero Vector.get_zero
@@ -280,18 +278,17 @@ theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
-@[simp] -- Porting note: simp can prove it
+-- @[simp] Porting note: simp can prove it
 theorem get_cons_zero_nat (a : α) (v : Vector α n) : (a ::ᵥ v)[0] = a := by
   simp only [get_zero_nat, head_cons]
 
-@[simp] -- Porting note: simp can prove it
+-- @[simp] Porting note: simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : (a ::ᵥ v)[(0 : Fin n.succ).1] = a :=
   get_cons_zero_nat ..
 #align vector.nth_cons_zero Vector.get_cons_zero
 
 /-- Accessing the nth element of a vector made up
 of one element `x : α` is `x` itself. -/
-@[simp]
 theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), (x ::ᵥ nil)[ix.1] = x
   | ⟨0, _⟩, _ => rfl
 #align vector.nth_cons_nil Vector.get_cons_nil
@@ -300,7 +297,6 @@ theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), (x ::ᵥ nil)[ix.1] = x
 theorem get_cons_succ_nat (a : α) (v : Vector α n) (i : Nat) {h} : (a ::ᵥ v)[i + 1]'h = v[i]'(Nat.lt_succ.mp h) := by
   rw [← get_tail_succ_nat, tail_cons]; rfl
 
-@[simp]
 theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : (a ::ᵥ v)[i.succ.1] = v[i.1] :=
   get_cons_succ_nat ..
 #align vector.nth_cons_succ Vector.get_cons_succ
@@ -398,33 +394,26 @@ theorem scanl_head : (scanl f b v).head = b := by
     simp only [←get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, List.get]
 #align vector.scanl_head Vector.scanl_head
 
--- set_option pp.analyze true in
--- /- For an index `i : Fin n`, the nth element of `scanl` of a
--- vector `v : Vector α n` at `i.succ`, is equal to the application
--- function `f : β → α → β` of the `castSucc i` element of
--- `scanl f b v` and `get v i`.
+set_option pp.analyze true in
+/- For an index `i : Fin n`, the nth element of `scanl` of a
+vector `v : Vector α n` at `i.succ`, is equal to the application
+function `f : β → α → β` of the `castSucc i` element of
+`scanl f b v` and `get v i`.
 
--- This lemma is the `get` version of `scanl_cons`.
--- -/
--- @[simp]
--- theorem scanl_get (i : Fin n) :
---     (scanl f b v)[i.succ.1] = f ((scanl f b v)[i.1]) v[i.1] := by
---   cases' n with n
---   · exact i.elim0
---   simp
---   induction' n with n hn generalizing b
---   · have i0 : i = 0 := Fin.eq_zero _
---     simp [scanl_singleton, get_zero, get_eq_get]
---   · rw [← cons_head_tail v, scanl_cons, get_cons_succ _ _ i]
---     refine' Fin.cases _ _ i
---     · simp [get_zero_nat (n := n + 1), get_zero_nat (n := n + 2),
---             scanl_head, head_cons]
---     · intro i'
---       simp
---       rw[hn, get_tail_succ_nat (n:=n) _ i'.1]
---       simp [get_cons_succ_nat (n := n + 2)]
---       simp
---       sorry
+This lemma is the `get` version of `scanl_cons`.
+-/
+@[simp]
+theorem scanl_get (i : Fin n) :
+    (scanl f b v)[i.1 + 1]'i.succ.2 = f ((scanl f b v)[i.1]) v[i.1] := by
+  cases' n with n
+  · exact i.elim0
+  induction' n with n hn generalizing b
+  · simp [scanl_singleton, get_zero, get_eq_get, get_cons_succ _ _ i]
+  · rw [← cons_head_tail v, scanl_cons, get_cons_succ_nat (n:=n+2) _ _ i.1]
+    refine' Fin.cases _ _ i
+    · simp [get_zero_nat (n := n + 1), get_zero_nat (n := n + 2), scanl_head, head_cons]
+    · intro i'
+      simp only [Fin.val_succ, hn, get_cons_succ_nat (n := n + 2), get_cons_succ_nat (n := n + 1)]
 -- #align vector.scanl_nth Vector.scanl_get
 
 end Scan
