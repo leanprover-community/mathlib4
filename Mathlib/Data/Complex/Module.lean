@@ -61,6 +61,9 @@ variable [SMul R ℝ]
 `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
 instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
+-- Test if the `ℚ` smul instance is correct.
+example : (Complex.instSMulComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re
 
