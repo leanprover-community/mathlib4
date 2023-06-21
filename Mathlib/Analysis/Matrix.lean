@@ -19,28 +19,28 @@ In this file we provide the following non-instances for norms on matrices:
 
 * The elementwise norm:
 
-  * `matrix.seminormed_add_comm_group`
-  * `matrix.normed_add_comm_group`
-  * `matrix.normed_space`
+  * `Matrix.seminormedAddCommGroup`
+  * `Matrix.normedAddCommGroup`
+  * `Matrix.normedSpace`
 
 * The Frobenius norm:
 
-  * `matrix.frobenius_seminormed_add_comm_group`
-  * `matrix.frobenius_normed_add_comm_group`
-  * `matrix.frobenius_normed_space`
-  * `matrix.frobenius_normed_ring`
-  * `matrix.frobenius_normed_algebra`
+  * `Matrix.frobeniusSeminormedAddCommGroup`
+  * `Matrix.frobeniusNormedAddCommGroup`
+  * `Matrix.frobeniusNormedSpace`
+  * `Matrix.frobeniusNormedRing`
+  * `Matrix.frobeniusNormedAlgebra`
 
 * The $L^\infty$ operator norm:
 
-  * `matrix.linfty_op_seminormed_add_comm_group`
-  * `matrix.linfty_op_normed_add_comm_group`
-  * `matrix.linfty_op_normed_space`
-  * `matrix.linfty_op_non_unital_semi_normed_ring`
-  * `matrix.linfty_op_semi_normed_ring`
-  * `matrix.linfty_op_non_unital_normed_ring`
-  * `matrix.linfty_op_normed_ring`
-  * `matrix.linfty_op_normed_algebra`
+  * `Matrix.linftyOpSeminormedAddCommGroup`
+  * `Matrix.linftyOpNormedAddCommGroup`
+  * `Matrix.linftyOpNormedSpace`
+  * `Matrix.linftyOpNonUnitalSemiNormedRing`
+  * `Matrix.linftyOpSemiNormedRing`
+  * `Matrix.linftyOpNonUnitalNormedRing`
+  * `Matrix.linftyOpNormedRing`
+  * `Matrix.linftyOpNormedAlgebra`
 
 These are not declared as instances because there are several natural choices for defining the norm
 of a matrix.
