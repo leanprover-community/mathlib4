@@ -140,7 +140,7 @@ theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ
 theorem bit_cases_on_injective {C : ℕ → Sort u} :
     Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
   intro H₁ H₂ h
-  ext (b n)
+  ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 #align nat.bit_cases_on_injective Nat.bit_cases_on_injective
 

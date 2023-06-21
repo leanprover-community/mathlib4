@@ -46,6 +46,7 @@ set_option linter.uppercaseLean3 false in
 deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
