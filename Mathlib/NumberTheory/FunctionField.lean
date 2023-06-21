@@ -71,7 +71,7 @@ theorem functionField_iff (Fqt : Type _) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine' congr_fun _ c
+    refine' congr_fun (f := fun c => algebraMap Fqt F (e c)) _ c -- Porting note: Added `(f := _)`
     refine' IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ _ _ _ _ _ <;> intros <;>
       simp only [AlgEquiv.map_one, RingHom.map_one, AlgEquiv.map_mul, RingHom.map_mul,
         AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
@@ -86,8 +86,7 @@ theorem functionField_iff (Fqt : Type _) [Field Fqt] [Algebra Fq[X] Fqt]
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
-  exact Function.Injective.comp
-    (algebraMap (RatFunc Fq) F).injective (IsFractionRing.injective Fq[X] (RatFunc Fq))
+  exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 #align algebra_map_injective algebraMap_injective
 
 namespace FunctionField
@@ -117,8 +116,7 @@ variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
 theorem algebraMap_injective : Function.Injective (⇑(algebraMap Fq[X] (ringOfIntegers Fq F))) := by
   have hinj : Function.Injective (⇑(algebraMap Fq[X] F)) := by
     rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
-    exact Function.Injective.comp
-      (algebraMap (RatFunc Fq) F).injective (IsFractionRing.injective Fq[X] (RatFunc Fq))
+    exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
   rw [injective_iff_map_eq_zero (algebraMap Fq[X] (↥(ringOfIntegers Fq F)))]
   intro p hp
   rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hp
