@@ -441,13 +441,14 @@ section Field
 variable {n S}
 
 /-- A cyclotomic extension splits `X ^ n - 1` if `n ∈ S`.-/
-theorem splits_x_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
+theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (algebraMap K L) (X ^ (n : ℕ) - 1) := by
   rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
-  obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS
+  obtain ⟨z, hz⟩ := ((IsCyclotomicExtension_iff _ _ _).1 H).1 hS
   exact X_pow_sub_one_splits hz
-#align is_cyclotomic_extension.splits_X_pow_sub_one IsCyclotomicExtension.splits_x_pow_sub_one
+set_option linter.uppercaseLean3 false in
+#align is_cyclotomic_extension.splits_X_pow_sub_one IsCyclotomicExtension.splits_X_pow_sub_one
 
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S` and `ne_zero (n : K)`.-/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
@@ -464,29 +465,31 @@ section Singleton
 variable [IsCyclotomicExtension {n} K L]
 
 /-- If `is_cyclotomic_extension {n} K L`, then `L` is the splitting field of `X ^ n - 1`. -/
-theorem splitting_field_x_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1) :=
-  { Splits := splits_x_pow_sub_one K L (mem_singleton n)
-    adjoin_rootSet := by
+theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1) :=
+  { splits' := splits_X_pow_sub_one K L (mem_singleton n)
+    adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       congr
       refine' Set.ext fun x => _
       simp only [Polynomial.map_pow, mem_singleton_iff, Multiset.mem_toFinset, exists_eq_left,
-        mem_set_of_eq, Polynomial.map_X, Polynomial.map_one, Finset.mem_coe, Polynomial.map_sub]
-      simp only [mem_root_set', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,
+        mem_setOf_eq, Polynomial.map_X, Polynomial.map_one, Finset.mem_coe, Polynomial.map_sub]
+      simp only [mem_rootSet', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,
         and_iff_right_iff_imp, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one]
       exact fun _ => X_pow_sub_C_ne_zero n.pos (1 : L) }
-#align is_cyclotomic_extension.splitting_field_X_pow_sub_one IsCyclotomicExtension.splitting_field_x_pow_sub_one
+set_option linter.uppercaseLean3 false in
+#align is_cyclotomic_extension.splitting_field_X_pow_sub_one
+       IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 /-- Any two `n`-th cyclotomic extensions are isomorphic. -/
 def algEquiv (L' : Type _) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :
     L ≃ₐ[K] L' :=
-  let h₁ := splitting_field_x_pow_sub_one n K L
-  let h₂ := splitting_field_x_pow_sub_one n K L'
+  let h₁ := isSplittingField_X_pow_sub_one n K L
+  let h₂ := isSplittingField_X_pow_sub_one n K L'
   (@IsSplittingField.algEquiv K L _ _ _ (X ^ (n : ℕ) - 1) h₁).trans
     (@IsSplittingField.algEquiv K L' _ _ _ (X ^ (n : ℕ) - 1) h₂).symm
 #align is_cyclotomic_extension.alg_equiv IsCyclotomicExtension.algEquiv
 
-scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_x_pow_sub_one
+scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 theorem isGalois : IsGalois K L :=
   letI := splitting_field_X_pow_sub_one n K L
