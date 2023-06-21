@@ -211,7 +211,8 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   w := coequalizer.condition g h
   isColimit :=
     Cofork.IsColimit.mk _ (fun s => colimit.desc _ s) (by simp) fun s m w => by
-      apply coequalizer.hom_ext; simp [← w]
+      apply coequalizer.hom_ext
+      simp [← w]
 #align category_theory.coequalizer_regular CategoryTheory.coequalizerRegular
 
 /-- Every split epimorphism is a regular epimorphism. -/
