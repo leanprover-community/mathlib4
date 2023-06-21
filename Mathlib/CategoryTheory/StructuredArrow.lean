@@ -229,8 +229,6 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- The identity structured arrow is initial. -/
 def mkIdInitial [Full T] [Faithful T] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom)
@@ -454,8 +452,6 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 #align category_theory.costructured_arrow.proj_reflects_iso CategoryTheory.CostructuredArrow.proj_reflectsIsomorphisms
 
 open CategoryTheory.Limits
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The identity costructured arrow is terminal. -/
 def mkIdTerminal [Full S] [Faithful S] : IsTerminal (mk (𝟙 (S.obj Y))) where
