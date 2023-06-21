@@ -413,20 +413,21 @@ theorem adjoin_primitive_root_eq_top {n : ℕ+} [IsDomain B] [h : IsCyclotomicEx
 
 variable (A)
 
-theorem IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
+theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
   { exists_prim_root := fun hi => by
       rw [Set.mem_singleton_iff] at hi
       refine' ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, _⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
     adjoin_roots := fun x => by
-      refine'
-        adjoin_induction' (x := x) (fun b hb => _) (fun a => _) (fun b₁ b₂ hb₁ hb₂ => _)
-          (fun b₁ b₂ hb₁ hb₂ => _) x
+      refine
+        adjoin_induction'
+          (x := x) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ hb₁ hb₂ => ?_)
+          (fun b₁ b₂ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
         refine' subset_adjoin _
-        simp only [mem_singleton_iff, exists_eq_left, mem_set_of_eq, hb]
-        rw [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, SetLike.coe_mk]
+        simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq, hb]
+        rw [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
         exact ((IsPrimitiveRoot.iff_def ζ n).1 h).1
       · exact Subalgebra.algebraMap_mem _ _
       · exact Subalgebra.add_mem _ hb₁ hb₂
