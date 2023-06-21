@@ -107,6 +107,9 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * m.succ ^ n ≤ (
 theorem monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 #align nat.monotone_factorial Nat.monotone_factorial
 
+@[gcongr]
+lemma factorial_le_of_le {m n : ℕ} (h : n ≤ m) : n ! ≤ m ! := monotone_factorial h
+
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
   refine' ⟨fun h => not_le.mp fun hmn => not_le_of_lt h (factorial_le hmn), fun h => _⟩
   have : ∀ {n}, 0 < n → n ! < n.succ ! := by
