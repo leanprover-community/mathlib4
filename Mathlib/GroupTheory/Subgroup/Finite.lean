@@ -145,7 +145,7 @@ theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.
 
 @[to_additive]
 theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ := by
-  apply Iff.intro (eq_top_of_card_eq H) _
+  apply Iff.intro (eq_top_of_card_eq H)
   intro h
   simp_rw [h]
   exact card_top
