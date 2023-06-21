@@ -35,7 +35,7 @@ category of abelian groups.
 * `abelianize_adj`: proves that `abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
-set_option autoImplicit false -- **TODO** delete this later
+
 set_option linter.uppercaseLean3 false -- `AddCommGroup`
 
 noncomputable section
@@ -74,6 +74,7 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 def adj : free ⊣ forget AddCommGroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeAbelianGroup.lift.symm
+      -- Porting note: used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
@@ -89,6 +90,7 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 
 (This proof works in all universes.)
 -/
+-- Porting note: had to elaborate instance of Mono rather than just using `apply_instance`.
 example {G H : AddCommGroupCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   (mono_iff_injective (FunLike.coe f)).mp (Functor.map_mono (forget AddCommGroupCat) f)
 
@@ -113,6 +115,7 @@ def free : Type u ⥤ GroupCat where
 def adj : free ⊣ forget GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeGroup.lift.symm
+      -- Porting note: used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
@@ -153,6 +156,7 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun G A => Abelianization.lift.symm
+      -- Porting note: used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
