@@ -33,11 +33,10 @@ theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
 #align vector.zip_with_to_list Vector.zipWith_toList
 
 @[simp]
-theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
-    (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
-  dsimp only [Vector.zipWith, Vector.get]
+theorem zipWith_get (x : Vector α n) (y : Vector β n) (i : Nat) {h} :
+    (Vector.zipWith f x y)[i] = f x[i] y[i] := by
   cases x; cases y
-  simp only [List.nthLe_zipWith]
+  simp only [Vector.zipWith, (·[·]'·), List.get_zipWith]
 #align vector.zip_with_nth Vector.zipWith_get
 
 @[simp]
