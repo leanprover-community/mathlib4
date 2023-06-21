@@ -310,8 +310,7 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
   refine' ⟨eventually_of_forall fun t => (L (f t)).integrable_comp (hg.comp_sub_right t), _⟩
   refine' Integrable.mono' _ h2_meas
       (eventually_of_forall fun t => (_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
-  · -- porting note: was `simp only [integral_sub_right_eq_self (‖g ·‖) _]`, replaced with `conv`
-    conv in ∫ _, _ ∂μ => rw [integral_sub_right_eq_self (‖g ·‖)]
+  · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
   · simp_rw [← integral_mul_left]
     rw [Real.norm_of_nonneg]
@@ -1184,7 +1183,6 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
   · have : fderiv 𝕜 (0 : G → E') = 0 := fderiv_const (0 : E')
     simp only [this, convolution_zero, Pi.zero_apply]
     exact hasFDerivAt_const (0 : F) x₀
-  skip
   have : ProperSpace G := FiniteDimensional.proper_isROrC 𝕜 G
   set L' := L.precompR G
   have h1 : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
@@ -1193,14 +1191,15 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
   have h2 : ∀ x, AEStronglyMeasurable (fun t => L' (f t) (fderiv 𝕜 g (x - t))) μ :=
     hf.aestronglyMeasurable.convolution_integrand_snd L'
       (hg.continuous_fderiv le_rfl).aestronglyMeasurable
-  have h3 : ∀ x t, HasFDerivAt (fun x => g (x - t)) (fderiv 𝕜 g (x - t)) x := by
-    intro x t
+  have h3 : ∀ x t, HasFDerivAt (fun x => g (x - t)) (fderiv 𝕜 g (x - t)) x := fun x t ↦ by
     simpa using
       (hg.differentiable le_rfl).differentiableAt.hasFDerivAt.comp x
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
-  -- was refine'
+  -- porting note: was
+  -- `refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _`
+  -- but it failed; surprisingly, `apply` works
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
   · refine' eventually_of_forall fun t x hx =>
       (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
@@ -1298,8 +1297,8 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     exact hgs p y hp hy
   /- We find a small neighborhood of `{q₀.1} × k` on which the derivative is uniformly bounded. This
     follows from the continuity at all points of the compact set `k`. -/
-  obtain ⟨ε, C, εpos, -, h₀ε, hε⟩ :
-    ∃ ε C, 0 < ε ∧ 0 ≤ C ∧ ball q₀.1 ε ⊆ s ∧ ∀ p x, ‖p - q₀.1‖ < ε → ‖g' (p, x)‖ ≤ C := by
+  obtain ⟨ε, C, εpos, h₀ε, hε⟩ :
+      ∃ ε C, 0 < ε ∧ ball q₀.1 ε ⊆ s ∧ ∀ p x, ‖p - q₀.1‖ < ε → ‖g' (p, x)‖ ≤ C := by
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ : ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ Bounded (g' '' t) := by
       have B : ContinuousOn g' (s ×ˢ univ) :=
@@ -1317,7 +1316,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       · exact Subset.trans (thickening_mono (min_le_left _ _) _) hε
       · exact Subset.trans (ball_subset_ball (min_le_right _ _)) hδ
     obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C; exact ht.subset_ball_lt 0 0
-    refine' ⟨ε, C, εpos, Cpos.le, h'ε, fun p x hp => _⟩
+    refine' ⟨ε, C, εpos, h'ε, fun p x hp => _⟩
     have hps : p ∈ s := h'ε (mem_ball_iff_norm.2 hp)
     by_cases hx : x ∈ k
     · have H : (p, x) ∈ t := by
