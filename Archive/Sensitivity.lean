@@ -37,23 +37,19 @@ The project was developed at https://github.com/leanprover-community/lean-sensit
 archived at https://github.com/leanprover-community/mathlib/blob/master/archive/sensitivity.lean
 -/
 
+set_option linter.uppercaseLean3 false
+
 
 namespace Sensitivity
 
 /-! The next two lines assert we do not want to give a constructive proof,
 but rather use classical logic. -/
-
-
 noncomputable section
-
 open scoped Classical
 
 /-! We also want to use the notation `∑` for sums. -/
-
-
 open scoped BigOperators
-
-notation "√" => Real.sqrt
+local notation "√" => Real.sqrt
 
 open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases
 
@@ -62,16 +58,19 @@ open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases
 
 Notations:
 - `ℕ` denotes natural numbers (including zero).
-- `fin n` = {0, ⋯ , n - 1}.
-- `bool` = {`tt`, `ff`}.
+- `Fin n` = {0, ⋯ , n - 1}.
+- `Bool` = {`true`, `false`}.
 -/
 
 
 /-- The hypercube in dimension `n`. -/
 def Q (n : ℕ) :=
   Fin n → Bool
-deriving Inhabited, Fintype
 #align sensitivity.Q Sensitivity.Q
+
+instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
+
+instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q (n + 1)` to `Q n` forgetting the first value
 (ie. the image of zero). -/
@@ -80,8 +79,10 @@ def π {n : ℕ} : Q (n + 1) → Q n := fun p => p ∘ Fin.succ
 
 namespace Q
 
-/-! `n` will always denote a natural number. -/
+@[ext]
+theorem ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
 
+/-! `n` will always denote a natural number. -/
 
 variable (n : ℕ)
 
@@ -95,7 +96,6 @@ theorem card : card (Q n) = 2 ^ n := by simp [Q]
 
 /-! Until the end of this namespace, `n` will be an implicit argument (still
 a natural number). -/
-
 
 variable {n}
 
@@ -111,19 +111,19 @@ theorem succ_n_eq (p q : Q (n + 1)) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
 #align sensitivity.Q.succ_n_eq Sensitivity.Q.succ_n_eq
 
 /-- The adjacency relation defining the graph structure on `Q n`:
-`p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
-def adjacent {n : ℕ} (p : Q n) : Set (Q n) := fun q => ∃! i, p i ≠ q i
-#align sensitivity.Q.adjacent Sensitivity.Q.adjacent
+`p.Adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
+def Adjacent {n : ℕ} (p : Q n) : Q n → Prop := fun q => ∃! i, p i ≠ q i
+#align sensitivity.Q.adjacent Sensitivity.Q.Adjacent
 
 /-- In `Q 0`, no two vertices are adjacent. -/
-theorem not_adjacent_zero (p q : Q 0) : ¬p.adjacent q := by rintro ⟨v, _⟩ <;> apply finZeroElim v
+theorem not_adjacent_zero (p q : Q 0) : ¬p.Adjacent q := by rintro ⟨v, _⟩; apply finZeroElim v
 #align sensitivity.Q.not_adjacent_zero Sensitivity.Q.not_adjacent_zero
 
 /-- If `p` and `q` in `Q (n+1)` have different values at zero then they are adjacent
 iff their projections to `Q n` are equal. -/
-theorem adj_iff_proj_eq {p q : Q (n + 1)} (h₀ : p 0 ≠ q 0) : p.adjacent q ↔ π p = π q := by
+theorem adj_iff_proj_eq {p q : Q (n + 1)} (h₀ : p 0 ≠ q 0) : p.Adjacent q ↔ π p = π q := by
   constructor
-  · rintro ⟨i, h_eq, h_uni⟩
+  · rintro ⟨i, _, h_uni⟩
     ext x; by_contra hx
     apply Fin.succ_ne_zero x
     rw [h_uni _ hx, h_uni _ h₀]
@@ -132,13 +132,13 @@ theorem adj_iff_proj_eq {p q : Q (n + 1)} (h₀ : p 0 ≠ q 0) : p.adjacent q �
     intro y hy
     contrapose! hy
     rw [← Fin.succ_pred _ hy]
-    apply congr_fun HEq
+    apply congr_fun heq
 #align sensitivity.Q.adj_iff_proj_eq Sensitivity.Q.adj_iff_proj_eq
 
 /-- If `p` and `q` in `Q (n+1)` have the same value at zero then they are adjacent
 iff their projections to `Q n` are adjacent. -/
-theorem adj_iff_proj_adj {p q : Q (n + 1)} (h₀ : p 0 = q 0) : p.adjacent q ↔ (π p).adjacent (π q) :=
-  by
+theorem adj_iff_proj_adj {p q : Q (n + 1)} (h₀ : p 0 = q 0) :
+    p.Adjacent q ↔ (π p).Adjacent (π q) := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
     have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
@@ -149,17 +149,18 @@ theorem adj_iff_proj_adj {p q : Q (n + 1)} (h₀ : p 0 = q 0) : p.adjacent q ↔
   · rintro ⟨i, h_eq, h_uni⟩
     use i.succ, h_eq
     intro y hy
-    rw [← Fin.pred_inj, Fin.pred_succ]
-    · apply h_uni
-      change p (Fin.pred _ _).succ ≠ q (Fin.pred _ _).succ
-      simp [hy]
-    · contrapose! hy
+    rw [← Fin.pred_inj (ha := ?ha) (hb := ?hb), Fin.pred_succ]
+    case ha =>
+      contrapose! hy
       rw [hy, h₀]
-    · apply Fin.succ_ne_zero
+    case hb =>
+      apply Fin.succ_ne_zero
+    apply h_uni
+    simp [π, hy]
 #align sensitivity.Q.adj_iff_proj_adj Sensitivity.Q.adj_iff_proj_adj
 
 @[symm]
-theorem adjacent.symm {p q : Q n} : p.adjacent q ↔ q.adjacent p := by simp only [adjacent, ne_comm]
+theorem adjacent.symm {p q : Q n} : p.Adjacent q ↔ q.Adjacent p := by simp only [Adjacent, ne_comm]
 #align sensitivity.Q.adjacent.symm Sensitivity.Q.adjacent.symm
 
 end Q
@@ -191,7 +192,7 @@ end V
 /-- The basis of `V` indexed by the hypercube, defined inductively. -/
 noncomputable def e : ∀ {n}, Q n → V n
   | 0 => fun _ => (1 : ℝ)
-  | n + 1 => fun x => cond (x 0) (e (π x), 0) (0, e (π x))
+  | _ + 1 => fun x => cond (x 0) (e (π x), 0) (0, e (π x))
 #align sensitivity.e Sensitivity.e
 
 @[simp]
@@ -200,9 +201,9 @@ theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
 #align sensitivity.e_zero_apply Sensitivity.e_zero_apply
 
 /-- The dual basis to `e`, defined inductively. -/
-noncomputable def ε : ∀ {n : ℕ} (p : Q n), V n →ₗ[ℝ] ℝ
+noncomputable def ε : ∀ {n : ℕ}, Q n → V n →ₗ[ℝ] ℝ
   | 0, _ => LinearMap.id
-  | n + 1, p =>
+  | _ + 1, p =>
     cond (p 0) ((ε <| π p).comp <| LinearMap.fst _ _ _) ((ε <| π p).comp <| LinearMap.snd _ _ _)
 #align sensitivity.ε Sensitivity.ε
 
@@ -222,7 +223,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
       try congr 1; rw [Q.succ_n_eq]; finish
       try
         erw [(ε _).map_zero]
-        have : p ≠ q := by intro h; rw [p.succ_n_eq q] at h ; finish
+        have : p ≠ q := by intro h; rw [p.succ_n_eq q] at h; finish
         simp [this]
 #align sensitivity.duality Sensitivity.duality
 
@@ -237,8 +238,8 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
     all_goals
       specialize h q
       first
-      | rw [ε, show q 0 = tt from rfl, cond_tt] at h 
-      | rw [ε, show q 0 = ff from rfl, cond_ff] at h 
+      | rw [ε, show q 0 = tt from rfl, cond_tt] at h
+      | rw [ε, show q 0 = ff from rfl, cond_ff] at h
       rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
 #align sensitivity.epsilon_total Sensitivity.epsilon_total
 
@@ -347,7 +348,7 @@ theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by delta g <;
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h 
+  simp only [LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
   exact h.right
 #align sensitivity.g_injective Sensitivity.g_injective
 
@@ -413,15 +414,15 @@ theorem exists_eigenvalue (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
       convert (dual_bases_e_ε _).Basis.LinearIndependent.comp _ Subtype.val_injective
       rw [(dual_bases_e_ε _).coe_basis]
     have hdW := rank_span li
-    rw [Set.range_restrict] at hdW 
+    rw [Set.range_restrict] at hdW
     convert hdW
     rw [← (dual_bases_e_ε _).coe_basis, Cardinal.mk_image_eq (dual_bases_e_ε _).Basis.Injective,
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
-  rw [← finrank_eq_rank ℝ, ← finrank_eq_rank ℝ] at dim_add 
+  rw [← finrank_eq_rank ℝ, ← finrank_eq_rank ℝ] at dim_add
   norm_cast at dim_le dim_add dimW ⊢
-  rw [pow_succ'] at dim_le 
-  rw [Set.toFinset_card] at hH 
+  rw [pow_succ'] at dim_le
+  rw [Set.toFinset_card] at hH
   linarith
 #align sensitivity.exists_eigenvalue Sensitivity.exists_eigenvalue
 
@@ -431,7 +432,7 @@ theorem huang_degree_theorem (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dual_bases_e_ε (m + 1)).coeffs y).support ⊆ H.to_finset := by
     intro p p_in
-    rw [Finsupp.mem_support_iff] at p_in 
+    rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dual_bases_e_ε _).mem_of_mem_span y_mem_H p p_in
   obtain ⟨q, H_max⟩ : ∃ q : Q (m + 1), ∀ q' : Q (m + 1), |(ε q' : _) y| ≤ |ε q y|
@@ -474,4 +475,3 @@ theorem huang_degree_theorem (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
 #align sensitivity.huang_degree_theorem Sensitivity.huang_degree_theorem
 
 end Sensitivity
-
