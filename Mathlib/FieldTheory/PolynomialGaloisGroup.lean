@@ -112,18 +112,22 @@ instance uniqueGalOne : Unique (1 : F[X]).Gal :=
 
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
   uniqueGalOfSplits _ (splits_C _ _)
+set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_C Polynomial.Gal.uniqueGalC
 
 instance uniqueGalX : Unique (X : F[X]).Gal :=
   uniqueGalOfSplits _ (splits_X _)
+set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X Polynomial.Gal.uniqueGalX
 
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
   uniqueGalOfSplits _ (splits_X_sub_C _)
+set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X_sub_C Polynomial.Gal.uniqueGalXSubC
 
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (splits_X_pow _ _)
+set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X_pow Polynomial.Gal.uniqueGalXPow
 
 instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E :=
@@ -285,7 +289,7 @@ def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
 theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   by_cases hpq : p * q = 0
   · have : Unique (p * q).Gal := by rw [hpq]; infer_instance
-    exact fun f g h => Eq.trans (Unique.eq_default f) (Unique.eq_default g).symm
+    exact fun f g _ => Eq.trans (Unique.eq_default f) (Unique.eq_default g).symm
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
@@ -449,24 +453,25 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   have inj : Function.Injective (IsScalarTower.toAlgHom ℚ ℝ ℂ) := (algebraMap ℝ ℂ).injective
   rw [← Finset.card_image_of_injective _ Subtype.coe_injective, ←
     Finset.card_image_of_injective _ inj]
-  let a : Finset ℂ := _
-  let b : Finset ℂ := _
-  let c : Finset ℂ := _
-  change a.card = b.card + c.card
+  let a : Finset ℂ := ?_
+  let b : Finset ℂ := ?_
+  let c : Finset ℂ := ?_
+  -- Porting note: was
+  --   change a.card = b.card + c.card
+  suffices a.card = b.card + c.card by exact this
   have ha : ∀ z : ℂ, z ∈ a ↔ aeval z p = 0 := by
-    intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]; infer_instance
+    intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
     intro z
     simp_rw [Finset.mem_image, exists_prop, Set.mem_toFinset, mem_rootSet_of_ne hp]
     constructor
     · rintro ⟨w, hw, rfl⟩
-      exact ⟨by rw [aeval_alg_hom_apply, hw, AlgHom.map_zero], rfl⟩
+      exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
     · rintro ⟨hz1, hz2⟩
       have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by ext; rfl; rw [hz2]; rfl
-      exact ⟨z.re, inj (by rwa [← aeval_alg_hom_apply, key, AlgHom.map_zero]), key⟩
+      exact ⟨z.re, inj (by rwa [← aeval_algHom_apply, key, AlgHom.map_zero]), key⟩
   have hc0 :
-    ∀ w : p.rootSet ℂ,
-      galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ)) w = w ↔
+    ∀ w : p.rootSet ℂ, galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ)) w = w ↔
         w.val.im = 0 := by
     intro w
     rw [Subtype.ext_iff, galActionHom_restrict]
@@ -476,9 +481,9 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     simp_rw [Finset.mem_image, exists_prop]
     constructor
     · rintro ⟨w, hw, rfl⟩
-      exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (equiv.perm.mem_support.mp hw)⟩
+      exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
-      exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, equiv.perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
+      exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
   rw [← Finset.card_disjoint_union]
   · apply congr_arg Finset.card
     simp_rw [Finset.ext_iff, Finset.mem_union, ha, hb, hc]
@@ -487,7 +492,6 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     intro z
     rw [hb, hc]
     tauto
-  · infer_instance
 #align polynomial.gal.card_complex_roots_eq_card_real_add_card_not_gal_inv Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv
 
 /-- An irreducible polynomial of prime degree with two non-real roots has full Galois group. -/
@@ -531,7 +535,7 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
   have hn : 2 ∣ n :=
     Equiv.Perm.two_dvd_card_support
       (by
-        rw [← MonoidHom.map_pow, ← MonoidHom.map_pow,
+         rw [← MonoidHom.map_pow, ← MonoidHom.map_pow,
           show AlgEquiv.restrictScalars ℚ Complex.conjAe ^ 2 = 1 from
             AlgEquiv.ext Complex.conj_conj,
           MonoidHom.map_one, MonoidHom.map_one])
@@ -541,8 +545,7 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
   rw [key, add_right_inj]
   suffices ∀ m : ℕ, 2 ∣ m → 1 ≤ m → m ≤ 3 → m = 2 by exact this n hn p_roots1 p_roots2
   rintro m ⟨k, rfl⟩ h2 h3
-  exact
-    le_antisymm
+  exact le_antisymm
       (Nat.lt_succ_iff.mp
         (lt_of_le_of_ne h3 (show 2 * k ≠ 2 * 1 + 1 from Nat.two_mul_ne_two_mul_add_one)))
       (Nat.succ_le_iff.mpr
