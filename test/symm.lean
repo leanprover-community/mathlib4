@@ -41,6 +41,9 @@ infixl:25 " ≃* " => MulEquiv
 def foo_symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   { h.toEquiv.symm with map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
 
+-- Reducible heads:
+example (h : ¬ a = b) : ¬ b = a := by symm; assumption
+
 def MyEq (n m : Nat) := ∃ k, n + k = m ∧ m + k = n
 
 @[symm] lemma MyEq.symm {n m : Nat} (h : MyEq n m) : MyEq m n := by
