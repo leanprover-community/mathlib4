@@ -145,6 +145,10 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
         PFun.ext fun a b => by
           dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun]
           rw [Part.bind_some]
+          -- porting note: the proof below has changed a lot because
+          -- `Part.mem_bind_iff` means that `b ∈ Part.bind f g` is equivalent
+          -- to `∃ (a : α), a ∈ f ∧ b ∈ g a`, while in mathlib3 it was equivalent
+          -- to `∃ (a : α) (H : a ∈ f), b ∈ g a`
           refine' (Part.mem_bind_iff.trans _).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
