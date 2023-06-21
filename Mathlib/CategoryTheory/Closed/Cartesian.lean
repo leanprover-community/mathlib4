@@ -78,6 +78,14 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
   MonoidalClosed C
 #align category_theory.cartesian_closed CategoryTheory.CartesianClosed
 
+-- porting note: added to ease the port of `CategoryTheory.Closed.Types`
+/-- Constructor for `CartesianClosed C`. -/
+def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
+    (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
+      (monoidalOfHasFiniteProducts C) X)) :
+    CartesianClosed C :=
+  ⟨fun X => ⟨h X⟩⟩
+
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
 
 variable [HasFiniteProducts C] [Exponentiable A]
@@ -346,12 +354,12 @@ def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
     CartesianClosed.uncurry
       (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
   hom_inv_id := by
-    apply coprod.hom_ext
+    ext
     rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
     rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
   inv_hom_id := by
     rw [← uncurry_natural_right, ← eq_curry_iff]
-    apply coprod.hom_ext
+    ext
     rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
       comp_id]
     rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,

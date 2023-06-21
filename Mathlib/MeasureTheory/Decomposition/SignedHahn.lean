@@ -411,7 +411,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   · exact restrict_le_restrict_union _ _ hA₁ hA₂ hD₁ hD₂
 #align measure_theory.signed_measure.exists_compl_positive_negative MeasureTheory.SignedMeasure.exists_compl_positive_negative
 
-/-- **The Hahn decomposition thoerem**: Given a signed measure `s`, there exist
+/-- **The Hahn decomposition theorem**: Given a signed measure `s`, there exist
 complement measurable sets `i` and `j` such that `i` is positive, `j` is negative. -/
 theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
     ∃ i j : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ MeasurableSet j ∧ s ≤[j] 0 ∧ IsCompl i j :=

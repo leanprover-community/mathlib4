@@ -144,7 +144,7 @@ theorem PseudoMetricSpace.ext {α : Type _} {m m' : PseudoMetricSpace α}
   cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
   obtain rfl : d = d' := h
   congr
-  · ext (x y) : 2
+  · ext x y : 2
     rw [hed, hed']
   · exact uniformSpace_eq (hU.trans hU'.symm)
   · ext : 2
@@ -863,7 +863,7 @@ theorem totallyBounded_iff {s : Set α} :
 space from finitely many data. -/
 theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
-        ∃ (β : Type u)(_ : Fintype β)(F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
+        ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
   cases' s.eq_empty_or_nonempty with hs hs
   · rw [hs]
@@ -1509,8 +1509,8 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 #align metric.cauchy_seq_iff' Metric.cauchySeq_iff'
 
 -- see Note [nolint_ge]
-/-- In a pseudometric space, unifom Cauchy sequences are characterized by the fact that, eventually,
-the distance between all its elements is uniformly, arbitrarily small -/
+/-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
+eventually, the distance between all its elements is uniformly, arbitrarily small -/
 -- porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type _} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),

@@ -158,7 +158,7 @@ def swap : C × D ⥤ D × C where
   map f := (f.2, f.1)
 #align category_theory.prod.swap CategoryTheory.Prod.swap
 
-/-- Swapping the factors of a cartesion product of categories twice is naturally isomorphic
+/-- Swapping the factors of a cartesian product of categories twice is naturally isomorphic
 to the identity functor.
 -/
 @[simps]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit 20d5763051978e9bc6428578ed070445df6a18b3
+! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -63,6 +63,10 @@ open MeasurableSpace TopologicalSpace
 def borel (α : Type u) [TopologicalSpace α] : MeasurableSpace α :=
   generateFrom { s : Set α | IsOpen s }
 #align borel borel
+
+theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
+  MeasurableSpace.generateFrom_le fun _ hs => .basic _ (h _ hs)
+#align borel_anti borel_anti
 
 theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)
@@ -216,17 +220,19 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def addBorelInstance (t : Term) : TacticM Unit := do
+/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
+def addBorelInstance (e : Expr) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $t := borel $t
       haveI : BorelSpace $t := ⟨rfl⟩
       ?_)
 
-/-- Given a type `$t`, an assumption `i : MeasurableSpace $t`, and an instance `[BorelSpace $t]`,
-replace `i` with `borel $t`. -/
-def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
+/-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
+replace `i` with `borel e`. -/
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $t _ _ _)
   liftMetaTactic fun m => return [← subst m i]
@@ -238,11 +244,11 @@ def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := do
+def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
-  let e ← Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance t) (borelToRefl t)
+  i?.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
@@ -381,7 +387,7 @@ instance Pi.opensMeasurableSpace {ι : Type _} {π : ι → Type _} [Countable �
     [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
     OpensMeasurableSpace (∀ i, π i) := by
   constructor
-  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a))(i : Finset ι),
+  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
     rw [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
@@ -720,7 +726,7 @@ theorem ext_of_Ioc' {α : Type _} [TopologicalSpace α] {m : MeasurableSpace α}
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ioc a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν := by
   refine' @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν _ _ <;> intro a b hab <;> erw [dual_Ico (α := α)]
-  exacts[hμ hab, h hab]
+  exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
 /-- Two measures which are finite on closed-open intervals are equal if the agree on all

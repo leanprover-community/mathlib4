@@ -1211,7 +1211,7 @@ theorem strictConcaveOn_of_deriv2_neg {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ
     hD hf
 #align strict_concave_on_of_deriv2_neg strictConcaveOn_of_deriv2_neg
 
-/-- If a function `f` is twice differentiable on a open convex set `D ⊆ ℝ` and
+/-- If a function `f` is twice differentiable on an open convex set `D ⊆ ℝ` and
 `f''` is nonnegative on `D`, then `f` is convex on `D`. -/
 theorem convexOn_of_deriv2_nonneg' {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf' : DifferentiableOn ℝ f D) (hf'' : DifferentiableOn ℝ (deriv f) D)

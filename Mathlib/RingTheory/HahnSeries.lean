@@ -31,7 +31,7 @@ in the file `RingTheory/LaurentSeries`.
   * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
   * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
-  * If `R` is a (comm_)(semi)ring, then so is `HahnSeries Γ R`.
+  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
@@ -1161,7 +1161,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [StrictOrderedSemiring Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -1297,7 +1297,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [StrictOrderedSemiring Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`
+/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
