@@ -125,23 +125,35 @@ theorem counted_succ_succ (p q : ℕ) :
   · intro hl
     have hlnil := counted_ne_nil_left (Nat.succ_ne_zero p) hl
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
-    obtain hlast | hlast := hl₂ l.head (List.head!_mem_self hlnil)
+    obtain hlast | hlast := hl₂ l.head! (List.head!_mem_self hlnil)
     · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, if_pos,
-          Nat.add_succ_sub_one, add_zero]
-        rw [List.nthLe_zero, hlast]
+      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil)]
+        rw [hl₀, if_pos]
+        rw [Nat.add_succ_sub_one, add_zero]
+        cases l
+        · tauto
+        · simp only [List.head!_cons] at hlast
+          simp only [List.get]
+          exact hlast.symm
       · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, if_neg, Nat.sub_zero]
-        rw [List.nthLe_zero, hlast]
-        norm_num
+        cases l
+        · tauto
+        · simp only [List.head!_cons] at hlast
+          simp only [List.get, hlast]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head!_tail hlnil]
     · refine' Or.inr ⟨l.tail, ⟨_, _, _⟩, _⟩
       · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, if_neg, Nat.sub_zero]
-        rw [List.nthLe_zero, hlast]
-        norm_num
+        cases l
+        · tauto
+        · simp only [List.head!_cons] at hlast
+          simp only [List.get, hlast]
       · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, if_pos,
           Nat.add_succ_sub_one, add_zero]
-        rw [List.nthLe_zero, hlast]
+        cases l
+        · tauto
+        · simp only [List.head!_cons] at hlast
+          simp only [List.get, hlast]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head!_tail hlnil]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
@@ -150,13 +162,13 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
       · rintro x (_ | _)
-        exacts [Or.inl rfl, ht₂ x _]
+        exacts [Or.inl rfl, ht₂ x (by tauto)]
     · refine' ⟨_, _, _⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, if_pos rfl, ht₁]
       · rintro x (_ | _)
-        exacts [Or.inr rfl, ht₂ x _]
+        exacts [Or.inr rfl, ht₂ x (by tauto)]
 #align ballot.counted_succ_succ Ballot.counted_succ_succ
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
