@@ -1267,6 +1267,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace �
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : MeasureTheory.Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
+-- porting note: the lemma is slow, added `set_option maxHeartbeats 300000 in`
 set_option maxHeartbeats 300000 in
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
 and `g` is `C^1` and compactly supported. Version where `g` depends on an additional parameter in an
@@ -1354,7 +1355,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
-  set K' := -k + {q₀.2} with K'_def
+  set K' := (-k + {q₀.2} : Set G) with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ
   exact hf.integrableOn_nhds_isCompact hK'
@@ -1605,6 +1606,9 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
     (ν : MeasureTheory.Measure ℝ := by volume_tac) [NoAtoms ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x
+  -- porting note: was `rw [convolution, posConvolution, indicator]`, now `rw` can't do it
+  -- the `rw` unfolded only one `indicator`; now we unfold it everywhere, so we need to adjust
+  -- `rw`s below
   unfold convolution posConvolution indicator; simp only
   split_ifs with h
   · rw [intervalIntegral.integral_of_le (le_of_lt h), integral_Ioc_eq_integral_Ioo, ←
@@ -1665,7 +1669,7 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E']
     (∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ) =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
-  iterate 3 rw [← integral_indicator measurableSet_Ioi]
+  simp_rw [← integral_indicator measurableSet_Ioi]
   convert integral_convolution L hf hg using 4 with x
   apply posConvolution_eq_convolution_indicator
 #align integral_pos_convolution integral_posConvolution
