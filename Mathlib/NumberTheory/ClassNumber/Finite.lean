@@ -8,13 +8,13 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.SpecialFunctions.Pow.Real
-import Mathbin.LinearAlgebra.FreeModule.Pid
-import Mathbin.LinearAlgebra.Matrix.AbsoluteValue
-import Mathbin.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathbin.RingTheory.ClassGroup
-import Mathbin.RingTheory.DedekindDomain.IntegralClosure
-import Mathbin.RingTheory.Norm
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.LinearAlgebra.FreeModule.Pid
+import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.RingTheory.ClassGroup
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.Norm
 
 /-!
 # Class numbers of global fields
@@ -71,10 +71,8 @@ noncomputable def normBound : ℤ :=
   Nat.factorial n • (n • m) ^ n
 #align class_group.norm_bound ClassGroup.normBound
 
-theorem normBound_pos : 0 < normBound abv bS :=
-  by
-  obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 :=
-    by
+theorem normBound_pos : 0 < normBound abv bS := by
+  obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 := by
     by_contra' h
     obtain ⟨i⟩ := bS.index_nonempty
     apply bS.ne_zero i
@@ -92,8 +90,7 @@ theorem normBound_pos : 0 < normBound abv bS :=
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
 its norm is less than `norm_bound abv b * y ^ dim S`. -/
 theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
-    abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι :=
-  by
+    abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι := by
   conv_lhs => rw [← bS.sum_repr a]
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, LinearEquiv.map_sum,
@@ -109,8 +106,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 its norm is strictly less than `norm_bound abv b * y ^ dim S`. -/
 theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
-    (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι :=
-  by
+    (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
   have him : (finset.univ.image fun k => abv (bS.repr a k)).Nonempty :=
     ⟨_, finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩⟩
@@ -118,8 +114,7 @@ theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
   have hy' : ∀ k, abv (bS.repr a k) ≤ y' := by
     intro k
     exact Finset.le_max' _ _ (finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
-  have : (y' : T) < y :=
-    by
+  have : (y' : T) < y := by
     rw [y'_def, ←
       Finset.max'_image (show Monotone (coe : ℤ → T) from fun x y h => int.cast_le.mpr h)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
@@ -216,13 +211,11 @@ attribute [-instance] Real.decidableEq
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm,
-        abv (Algebra.norm R (r • a - b • q)) < abv (Algebra.norm R (algebraMap R S b)) :=
-  by
+        abv (Algebra.norm R (r • a - b • q)) < abv (Algebra.norm R (algebraMap R S b)) := by
   have dim_pos := fintype.card_pos_iff.mpr bS.index_nonempty
   set ε : ℝ := norm_bound abv bS ^ (-1 / Fintype.card ι : ℝ) with ε_eq
   have hε : 0 < ε := Real.rpow_pos_of_pos (int.cast_pos.mpr (norm_bound_pos abv bS)) _
-  have ε_le : (norm_bound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι :=
-    by
+  have ε_le : (norm_bound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι := by
     have := norm_bound_pos abv bS
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, ← rpow_nat_cast, mul_rpow, ← rpow_mul, div_mul_cancel,
@@ -238,12 +231,10 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have q_eq : ∀ j i, qs j i = μ j * s i / b := fun i j => rfl
   set rs := fun j i => μ j * s i % b with r_eq
   have r_eq : ∀ j i, rs j i = μ j * s i % b := fun i j => rfl
-  have μ_eq : ∀ i j, μ j * s i = b * qs j i + rs j i :=
-    by
+  have μ_eq : ∀ i j, μ j * s i = b * qs j i + rs j i := by
     intro i j
     rw [q_eq, r_eq, EuclideanDomain.div_add_mod]
-  have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i :=
-    by
+  have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
@@ -255,8 +246,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   set r := μ k - μ j with r_eq
   refine' ⟨q, r, (mem_finset_approx bS adm).mpr _, _⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
-  have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) :=
-    by
+  have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
     simp only [r_eq, sub_smul, μ_mul_a_eq, q_eq, Finset.smul_sum, ← Finset.sum_add_distrib, ←
       Finset.sum_sub_distrib, smul_sub]
     refine' Finset.sum_congr rfl fun x _ => _
@@ -274,10 +264,8 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
-      ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) :=
-  by
-  have inj : Function.Injective (algebraMap R L) :=
-    by
+      ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) := by
+  have inj : Function.Injective (algebraMap R L) := by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (IsIntegralClosure.algebraMap_injective S R L).comp bS.algebra_map_injective
   obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul h inj a hb
@@ -296,8 +284,7 @@ theorem exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} 
 
 end Real
 
-theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m in finsetApprox bS adm, m) ≠ 0 :=
-  by
+theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m in finsetApprox bS adm, m) ≠ 0 := by
   refine' mt ((injective_iff_map_eq_zero _).mp bS.algebra_map_injective _) _
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x hx rfl
@@ -314,13 +301,11 @@ such that `M := Π m ∈ finset_approx` is in `J`. -/
 theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
-        algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ (J : Ideal S) :=
-  by
+        algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ (J : Ideal S) := by
   set M := ∏ m in finset_approx bS adm, m with M_eq
   have hM : algebraMap R S M ≠ 0 := prod_finset_approx_ne_zero bS adm
   obtain ⟨b, b_mem, b_ne_zero, b_min⟩ := exists_min abv I
-  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1
-    by
+  suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1 by
     obtain ⟨J, hJ⟩ := this
     refine' ⟨⟨J, _⟩, _, _⟩
     · rw [mem_nonZeroDivisors_iff_ne_zero]
@@ -358,8 +343,7 @@ noncomputable def mkMMem [IsDedekindDomain S]
 #align class_group.mk_M_mem ClassGroup.mkMMem
 
 theorem mkMMem_surjective [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) :
-    Function.Surjective (ClassGroup.mkMMem bS adm) :=
-  by
+    Function.Surjective (ClassGroup.mkMMem bS adm) := by
   intro I'
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm h ⟨I, hI⟩
@@ -395,8 +379,7 @@ absolute value.
 See also `class_group.fintype_of_admissible_of_algebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
-noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) :=
-  by
+noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
   letI := Classical.decEq L
   letI := IsIntegralClosure.isFractionRing_of_finite_extension R K L S
   letI := IsIntegralClosure.isDedekindDomain R K L S
