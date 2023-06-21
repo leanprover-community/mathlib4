@@ -8,9 +8,9 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Zsqrtd.Basic
-import Mathbin.Data.Complex.Basic
-import Mathbin.RingTheory.PrincipalIdealDomain
+import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.Data.Complex.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Gaussian integers
@@ -135,8 +135,7 @@ theorem to_complex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
 #align gaussian_int.to_complex_sub GaussianInt.to_complex_sub
 
 @[simp]
-theorem to_complex_star (x : ℤ[i]) : ((star x : ℤ[i]) : ℂ) = conj (x : ℂ) :=
-  by
+theorem to_complex_star (x : ℤ[i]) : ((star x : ℤ[i]) : ℂ) = conj (x : ℂ) := by
   rw [to_complex_def₂, to_complex_def₂]
   exact congr_arg₂ _ rfl (Int.cast_neg _)
 #align gaussian_int.to_complex_star GaussianInt.to_complex_star
