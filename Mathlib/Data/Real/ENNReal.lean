@@ -1610,6 +1610,8 @@ theorem div_le_of_le_mul' (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 #align ennreal.div_le_of_le_mul' ENNReal.div_le_of_le_mul'
 
+protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
+
 theorem mul_le_of_le_div (h : a ≤ b / c) : a * c ≤ b := by
   rw [← inv_inv c]
   exact div_le_of_le_mul h
