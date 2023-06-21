@@ -121,8 +121,8 @@ theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A 
 variable {A B}
 
 /-- If `(⊥ : subalgebra A B) = ⊤`, then `is_cyclotomic_extension ∅ A B`. -/
-theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) : IsCyclotomicExtension ∅ A B :=
-    by
+theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
+    IsCyclotomicExtension ∅ A B := by
 -- Porting note: Lean3 is able to infer `A`.
   refine'  (iff_adjoin_eq_top _ A _).2
     ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => _⟩
@@ -177,8 +177,8 @@ roots of unity of order in `T`. -/
 theorem union_right [h : IsCyclotomicExtension (S ∪ T) A B] :
     IsCyclotomicExtension T (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}) B := by
   have : {b : B | ∃ n : ℕ+, n ∈ S ∪ T ∧ b ^ (n : ℕ) = 1} =
-      {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1} ∪ {b : B | ∃ n : ℕ+, n ∈ T ∧ b ^ (n : ℕ) = 1} :=
-    by
+      {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1} ∪
+        {b : B | ∃ n : ℕ+, n ∈ T ∧ b ^ (n : ℕ) = 1} := by
     refine' le_antisymm _ _
     · rintro x ⟨n, hn₁ | hn₂, hnpow⟩
       · left; exact ⟨n, hn₁, hnpow⟩
@@ -306,8 +306,8 @@ end Basic
 
 section Fintype
 
-theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] : Module.Finite A B :=
-  by
+theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
+    Module.Finite A B := by
   classical
   rw [Module.finite_def, ← top_toSubmodule, ← ((iff_adjoin_eq_top _ _ _).1 h).2]
   refine' FG_adjoin_of_finite _ fun b hb => _
@@ -413,8 +413,8 @@ theorem adjoin_primitive_root_eq_top {n : ℕ+} [IsDomain B] [h : IsCyclotomicEx
 
 variable (A)
 
-theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
-    IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
+theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
+    (h : IsPrimitiveRoot ζ n) : IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
   { exists_prim_root := fun hi => by
       rw [Set.mem_singleton_iff] at hi
       refine' ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, _⟩
@@ -497,8 +497,6 @@ theorem isGalois : IsGalois K L :=
     (IsCyclotomicExtension.ne_zero' n K L).1)
 #align is_cyclotomic_extension.is_galois IsCyclotomicExtension.isGalois
 
-scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isGalois
-
 /-- If `is_cyclotomic_extension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/
 theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
   { splits' := splits_cyclotomic K L (mem_singleton n)
@@ -520,7 +518,6 @@ end IsCyclotomicExtension
 
 section CyclotomicField
 
-/- ./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler algebra[algebra] K -/
 /-- Given `n : ℕ+` and a field `K`, we define `cyclotomic_field n K` as the
 splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `is_cyclotomic_extension {n} K (cyclotomic_field n K)`. -/
