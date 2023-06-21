@@ -266,7 +266,7 @@ theorem linfty_op_nnnorm_def (A : Matrix m n α) :
   Subtype.ext <| linfty_op_norm_def A
 #align matrix.linfty_op_nnnorm_def Matrix.linfty_op_nnnorm_def
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: linter times out
 theorem linfty_op_nnnorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
   rw [linfty_op_nnnorm_def, Pi.nnnorm_def]
   simp
