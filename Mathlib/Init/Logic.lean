@@ -60,8 +60,7 @@ attribute [symm] Ne.symm
 
 alias eqRec_heq ← eq_rec_heq
 
--- FIXME This is still rejected after #857
--- attribute [refl] HEq.refl
+attribute [refl] HEq.refl
 attribute [symm] HEq.symm
 attribute [trans] HEq.trans
 attribute [trans] heq_of_eq_of_heq
