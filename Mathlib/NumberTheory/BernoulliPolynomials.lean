@@ -102,7 +102,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
 end Examples
 
 theorem derivative_bernoulli_add_one (k : ℕ) :
-    Polynomial.derivative (bernoulli (k + 1))= (k + 1) * bernoulli k := by
+    Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
   rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, MulZeroClass.mul_zero,
@@ -116,10 +116,10 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
-    Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
-  cases' k with k
-  · rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
-  · exact_mod_cast derivative_bernoulli_add_one k
+  Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
+  cases k with
+  | zero => rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
+  | succ k => exact_mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]
