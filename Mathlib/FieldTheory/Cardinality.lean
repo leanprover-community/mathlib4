@@ -8,14 +8,14 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Field.Ulift
-import Mathbin.Data.MvPolynomial.Cardinal
-import Mathbin.Data.Nat.Factorization.PrimePow
-import Mathbin.Data.Rat.Denumerable
-import Mathbin.FieldTheory.Finite.GaloisField
-import Mathbin.Logic.Equiv.TransferInstance
-import Mathbin.RingTheory.Localization.Cardinality
-import Mathbin.SetTheory.Cardinal.Divisibility
+import Mathlib.Algebra.Field.Ulift
+import Mathlib.Data.MvPolynomial.Cardinal
+import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Rat.Denumerable
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.RingTheory.Localization.Cardinality
+import Mathlib.SetTheory.Cardinal.Divisibility
 
 /-!
 # Cardinality of Fields
@@ -40,8 +40,7 @@ open scoped Cardinal nonZeroDivisors
 universe u
 
 /-- A finite field has prime power cardinality. -/
-theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ :=
-  by
+theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
   -- TODO: `algebra` version of `char_p.exists`, of type `Σ p, algebra (zmod p) α`
   cases' CharP.exists α with p _
   haveI hp := Fact.mk (CharP.char_is_prime α p)
@@ -54,8 +53,7 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 #align fintype.is_prime_pow_card_of_field Fintype.isPrimePow_card_of_field
 
 /-- A `fintype` can be given a field structure iff its cardinality is a prime power. -/
-theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ :=
-  by
+theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
   refine' ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, _⟩
   rintro ⟨p, n, hp, hn, hα⟩
   haveI := Fact.mk hp.nat_prime
@@ -68,8 +66,7 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
 #align fintype.not_is_field_of_card_not_prime_pow Fintype.not_isField_of_card_not_prime_pow
 
 /-- Any infinite type can be endowed a field structure. -/
-theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) :=
-  by
+theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)
   suffices (#α) = (#K) by
     obtain ⟨e⟩ := Cardinal.eq.1 this
@@ -83,8 +80,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 #align infinite.nonempty_field Infinite.nonempty_field
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
-theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow (#α) :=
-  by
+theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow (#α) := by
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   ·
