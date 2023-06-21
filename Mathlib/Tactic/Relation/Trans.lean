@@ -56,34 +56,86 @@ def _root_.Trans.het {a : α} {b : β} {c : γ}
   {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
   [Trans r s t] : r a b → s b c → t a c := trans
 
+/-- Applies all `@[trans]` lemmas to the goal, optionally using `y?` as a "bridge" argument. Fails
+if no lemma can be applied.
 
-open Lean.Elab.Tactic
+If a lemma of type `..hyps → x ∼ y → y ∼ z → x ∼ z` can be applied to the goal of type `x ∼ z`,
+this returns `?g₁ : x ∼ y`, `?g₂ : y ∼ z`, and `?y` in that order, along with an array of any
+unsolved explicit arguments in `hyps`. If `?y` was solved, we return `none`.
 
-/-- solving `e ← mkAppM' f #[x]` -/
-def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
-  match e with
-  | Expr.app f a => do
-    if ← isDefEq (← mkAppM' f #[a]) e then
-      return some (f, a)
-    else
-      getExplicitFuncArg? f
-  | _ => return none
+If the argument `y?` is provided as `none`, a new metavariable will be created for `y` if
+necessary; otherwise the third component of the return value will be `none`.
 
-/-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
-def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
-  | Expr.app rel x => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if check then
-      return some (rel, x)
-    else
-      getExplicitRelArg? tgt rel z
-  | _ => return none
+If `userFacingGoals` is `true`, the returned goals will be renamed appropriately and changed from
+`.natural` (the default) to `.syntheticOpaque`, except for `?y` (if present). This allows `?y` to
+be assigned in the course of solving for the other goals. -/
+def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacingGoals := false)
+    : MetaM (MVarId × MVarId × Option MVarId × Array MVarId) := withReducible do
+  let tgt ← g.getType'
+  let s ← saveState
+  for lem in (← (transExt.getState (← getEnv)).getUnify tgt) ++ #[``Trans.simple, ``Trans.het] do
+    trace[Tactic.trans] "trying {lem}"
+    try
+      let (l, lType) ← mkFun lem
+      let (hs, bs, targetTy) ← forallMetaTelescope lType
+      let g₂ := hs.back.mvarId!
+      let g₁ := hs[hs.size - 2]!.mvarId!
+      -- whnf(R) the hypotheses. Also makes them syntheticOpaque.
+      let g₂ ← g₂.change (← whnfR <|← g₂.getType) false
+      let g₁ ← g₁.change (← whnfR <|← g₁.getType) false
+      -- Assign mvars in `targetTy` (and therefore in `hs`)
+      unless ← isDefEq targetTy tgt do throwError "doesn't apply!"
+      -- Process optional "bridge" argument
+      let yz ← (← inferType hs.back).getNumExplicitArgs 2
+      let yGoal? ← match y? with
+        | none => pure yz[0]!.mvarId?
+        | some y => match yz[0]!.mvarId? with
+          | some mvarId => do
+            unless ← isDefEq yz[0]! y do
+              throwError "could not use {y}; was not defeq to {yz[0]!}"
+            unless ← mvarId.isAssigned do mvarId.assign y -- `isDefEq` doesn't always assign mvars
+            pure none
+          | none => throwError "could not use {y}; {yz[0]!} is not a metavariable"
+      -- We use `mkAppNUnifying` to account for the new assignments.
+      let proof ← mkAppNUnifying l hs
+      -- Assign the proof to `g`
+      unless ← isDefEq (.mvar g) proof do
+        throwError "{← g.getType} is not defeq to {← inferType proof}"
+      unless ← g.isAssigned do g.assign proof -- `isDefEq` doesn't always assign mvars
+      -- Handle remaining `hs`
+      let (explicitHyps, implicitHyps, instImplicitHyps) := groupByBinderInfo hs.pop.pop bs.pop.pop
+      -- Check we have all instance hypotheses, and if not try to synthesize them.
+      instImplicitHyps.forM fun mvar => do
+        let mvarId := mvar.mvarId!
+        unless ← mvarId.isAssigned do
+          let mvarVal ← synthInstance (← instantiateMVars <|← mvarId.getType)
+          mvarId.assign mvarVal
+      -- Make sure all implicit hypotheses in `hs` got assigned, but make an exception for the
+      -- "bridge" argument `y`, if there is one.
+      let allImplicitHypsAssigned ←
+        if let some yGoal := yGoal? then
+          implicitHyps.allM fun h => do
+            let mvarId := h.mvarId!
+            pure (mvarId == yGoal) <||> mvarId.isAssigned
+        else
+          implicitHyps.allM (·.mvarId!.isAssigned)
+      unless allImplicitHypsAssigned do
+        throwError "could not unify all implicit arguments, namely {
+          ← implicitHyps.filterM (notM ·.mvarId!.isAssigned)}"
+      if userFacingGoals then return (
+          ← g₁.mkUserFacingMVar `trans₁ false, -- already `.syntheticOpaque`.
+          ← g₂.mkUserFacingMVar `trans₂ false,
+          (← yGoal?.mapM (·.mkUserFacingMVar? `trans_y (setSyntheticOpaque := false))).join,
+          ← mkUserFacingMVarsArray (explicitHyps.map (·.mvarId!)) `trans_side)
+      else return (
+          g₁,
+          g₂,
+          yGoal?,
+          ← explicitHyps.filterMapM (·.mvarId!.unassigned?))
+    catch e =>
+      trace[Tactic.trans] "failed: {e.toMessageData}"
+      s.restore
+  throwError "no trans lemmas applied"
 
 /-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
 def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
