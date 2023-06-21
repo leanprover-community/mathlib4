@@ -294,7 +294,8 @@ theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), (x ::ᵥ nil)[ix.1] = x
 #align vector.nth_cons_nil Vector.get_cons_nil
 
 @[simp]
-theorem get_cons_succ_nat (a : α) (v : Vector α n) (i : Nat) {h} : (a ::ᵥ v)[i + 1]'h = v[i]'(Nat.lt_succ.mp h) := by
+theorem get_cons_succ_nat (a : α) (v : Vector α n) (i : Nat) {h} :
+    (a ::ᵥ v)[i + 1]'h = v[i]'(Nat.lt_succ.mp h) := by
   rw [← get_tail_succ_nat, tail_cons]; rfl
 
 theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : (a ::ᵥ v)[i.succ.1] = v[i.1] :=
@@ -394,7 +395,6 @@ theorem scanl_head : (scanl f b v).head = b := by
     simp only [←get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, List.get]
 #align vector.scanl_head Vector.scanl_head
 
-set_option pp.analyze true in
 /- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
 function `f : β → α → β` of the `castSucc i` element of
@@ -414,7 +414,7 @@ theorem scanl_get (i : Fin n) :
     · simp [get_zero_nat (n := n + 1), get_zero_nat (n := n + 2), scanl_head, head_cons]
     · intro i'
       simp only [Fin.val_succ, hn, get_cons_succ_nat (n := n + 2), get_cons_succ_nat (n := n + 1)]
--- #align vector.scanl_nth Vector.scanl_get
+#align vector.scanl_nth Vector.scanl_get
 
 end Scan
 
