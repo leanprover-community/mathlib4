@@ -2279,6 +2279,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries
 import Mathlib.NumberTheory.LegendreSymbol.Basic
@@ -2311,6 +2312,7 @@ import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
+import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
@@ -2474,6 +2476,7 @@ import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalSampling
 import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Probability.Martingale.Upcrossing
+import Mathlib.Probability.Moments
 import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
@@ -2488,6 +2491,7 @@ import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Maschke
+import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
