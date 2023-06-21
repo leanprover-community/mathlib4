@@ -51,6 +51,8 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 -- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
 private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
 
+-- Porting note: Consider if `evariance` or `eVariance` is better. Also,
+-- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `(X - 𝔼[X])^2`. -/
 def evariance {Ω : Type _} {_ : MeasurableSpace Ω} (X : Ω → ℝ) (μ : Measure Ω) : ℝ≥0∞ :=
