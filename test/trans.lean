@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Relation.Trans
 import Std.Data.Nat.Lemmas
+import Mathlib.Init.Logic
 
 -- testing that the attribute is recognized and used
 def nleq (a b : Nat) : Prop := a ≤ b
@@ -69,6 +70,12 @@ example (a : α) (c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
     trans b
     assumption
     assumption
+
+-- Reducible heads:
+example (Q : Prop) (q : Q) (h₁ : P → Q) (h₂ : Q → R) : P → R := by
+  trans
+  case h₁ => guard_target =ₛ P → ?q; assumption
+  case h₂ => guard_target =ₛ Q → R; assumption
 
 def MyLE (n m : Nat) := ∃ k, n + k = m
 
