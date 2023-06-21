@@ -73,8 +73,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ < k ! := by have := le_sum n hn; gcongr
   clear h h2
   induction' n, hn using Nat.le_induction with n' hn' IH
-  · show _ < 15!
-    norm_num
+  · norm_num
   let A := ∑ i in range n', i
   calc 2 ^ ((n' + 1) * (n' + 1))
       ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
