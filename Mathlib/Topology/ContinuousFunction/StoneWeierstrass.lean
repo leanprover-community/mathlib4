@@ -425,7 +425,7 @@ open scoped Polynomial
 See `polynomialFunctions_closure_eq_top` for the special case `s = Set.Icc a b` which does not use
 the full Stone-Weierstrass theorem. Of course, that version could be used to prove this one as
 well. -/
-theorem polynomialFunctions.topologicalClosure [IsROrC ℝ] (s : Set ℝ)
+theorem polynomialFunctions.topologicalClosure (s : Set ℝ)
     [CompactSpace s] : (polynomialFunctions s).topologicalClosure = ⊤ :=
   ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (polynomialFunctions_separatesPoints s)
@@ -440,7 +440,7 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type _} [IsRO
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext]
-theorem ContinuousMap.algHom_ext_map_X {A : Type _} [Ring A] [StarRing A]
+theorem ContinuousMap.algHom_ext_map_X {A : Type _} [Ring A]
     [Algebra ℝ A] [TopologicalSpace A] [T2Space A] {s : Set ℝ} [CompactSpace s]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
@@ -454,7 +454,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type _} [Ring A] [StarRing A]
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext]
 theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A]
-    [Algebra 𝕜 A] [TopologicalSpace A] [T2Space A] [StarModule 𝕜 A] {s : Set 𝕜} [CompactSpace s]
+    [Algebra 𝕜 A] [TopologicalSpace A] [T2Space A] {s : Set 𝕜} [CompactSpace s]
     {φ ψ : C(s, 𝕜) →⋆ₐ[𝕜] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
   suffices (⊤ : StarSubalgebra 𝕜 C(s, 𝕜)) ≤ StarAlgHom.equalizer φ ψ from

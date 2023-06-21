@@ -237,7 +237,7 @@ theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar
   rw [polynomialFunctions.eq_adjoin_X s, adjoin_eq_starClosure_adjoin]
 
 theorem polynomialFunctions.starClosure_le_equalizer {A : Type _} [StarRing R] [ContinuousStar R]
-    [Semiring A] [StarRing A] [Algebra R A] [StarModule R A] (s : Set R) (φ ψ : C(s, R) →⋆ₐ[R] A)
+    [Semiring A] [StarRing A] [Algebra R A] (s : Set R) (φ ψ : C(s, R) →⋆ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.starClosure_eq_adjoin_X s]
