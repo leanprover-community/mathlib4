@@ -788,19 +788,18 @@ theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, 
 theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
 #align complex.int_cast_im Complex.int_cast_im
 
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
+@[simp, norm_cast]
 theorem rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := by
   show (Rat.castRec q : ℂ).im = 0
-  cases q; simp [Rat.castRec]
+  cases q
+  simp [Rat.castRec]
 #align complex.rat_cast_im Complex.rat_cast_im
 
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
+@[simp, norm_cast]
 theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := by
   show (Rat.castRec q : ℂ).re = _
-  cases q; simp [Rat.castRec, normSq, Rat.mk_eq_divInt, Rat.mkRat_eq_div,
-    div_eq_mul_inv, *]
+  cases q
+  simp [Rat.castRec, normSq, Rat.mk_eq_divInt, Rat.mkRat_eq_div, div_eq_mul_inv, *]
 #align complex.rat_cast_re Complex.rat_cast_re
 
 /-! ### Field instance and lemmas -/
