@@ -15,7 +15,7 @@ import Mathlib.FieldTheory.Finite.GaloisField
 # The trace map for finite fields
 
 We state the fact that the trace map from a finite field of
-characteristic `p` to `zmod p` is nondegenerate.
+characteristic `p` to `ZMod p` is nondegenerate.
 
 ## Tags
 finite field, trace
@@ -30,10 +30,9 @@ theorem trace_to_zMod_nondegenerate (F : Type _) [Field F] [Finite F]
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
   haveI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
   have htr := traceForm_nondegenerate (ZMod (ringChar F)) F a
-  simp_rw [Algebra.traceForm_apply] at htr 
+  simp_rw [Algebra.traceForm_apply] at htr
   by_contra' hf
   exact ha (htr hf)
 #align finite_field.trace_to_zmod_nondegenerate FiniteField.trace_to_zMod_nondegenerate
 
 end FiniteField
-
