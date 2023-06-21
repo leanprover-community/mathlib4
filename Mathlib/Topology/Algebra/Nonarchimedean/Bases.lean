@@ -30,7 +30,7 @@ sub-modules in a commutative algebra. This important example gives rise to the a
 (studied in its own file).
 -/
 
-open Set Filter Function Lattice AddGroupWithZeroNhd
+open Set Filter Function Lattice
 
 open Topology Filter Pointwise
 
