@@ -93,7 +93,8 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVa
                                 withoutRecover <| evalTactic (← `(tactic| refine $arg))) then
         return ← useLoop eager gs' args' (acc ++ newGoals)
     if eager || gs'.isEmpty then
-      if let some (expl, impl) ← observing? g.constructor1 then
+      if let some (expl, impl) ← observing? do
+                try g.constructor1 catch e => trace[tactic.use] "{e.toMessageData}"; throw e then
         trace[tactic.use] "expl.length = {expl.length}, impl.length = {impl.length}"
         return ← useLoop eager (expl ++ gs') args (acc ++ impl)
     -- In eager mode, this will give an error, which hopefully is more informative than
@@ -103,9 +104,12 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVa
   else
     throwError "useLoop: impossible"
 
+/-- Run the `useLoop` on the main goal then discharge remaining explicit `Prop` arguments. -/
 def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : TacticM Unit := do
-  let (egoals, acc) ← focus <| useLoop eager (← getGoals) args []
-  setGoals (egoals ++ acc)
+  let egoals ← focus do
+    let (egoals, acc) ← useLoop eager (← getGoals) args []
+    setGoals (egoals ++ acc)
+    pure egoals
   -- Run the discharger on non-assigned proposition metavariables
   -- (`trivial` uses `assumption`, which would be bad for non-propositions)
   for g in egoals do

@@ -149,6 +149,17 @@ example : Baz 1 3 := by use (3 : Nat)
 -- https://github.com/leanprover-community/mathlib4/issues/5072
 example (n : Nat) : Nat := by use n
 
+structure Embedding (α β : Sort _) where
+  toFun : α → β
+  inj : ∀ x y, toFun x = toFun y → x = y
+
+example (α : Type u) : Embedding α α × Unit := by
+  constructor
+  -- testing that `use` actually focuses on the main goal
+  use id
+  · simp
+  constructor
+
 
 -- FIXME Failing tests ported from mathlib3
 
