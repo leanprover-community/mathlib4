@@ -757,8 +757,6 @@ protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
     ofReal_one]
 #align complex.mul_inv_cancel Complex.mul_inv_cancel
 
-/-! ### Field instance and lemmas -/
-
 noncomputable instance : RatCast ℂ where
   ratCast := Rat.castRec
 
@@ -804,6 +802,8 @@ theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := by
   cases q; simp [Rat.castRec, normSq, Rat.mk_eq_divInt, Rat.mkRat_eq_div,
     div_eq_mul_inv, *]
 #align complex.rat_cast_re Complex.rat_cast_re
+
+/-! ### Field instance and lemmas -/
 
 noncomputable instance : Field ℂ :=
 { qsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
