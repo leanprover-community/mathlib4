@@ -136,7 +136,7 @@ of all bounded functions on a type. This is a technical device, that we will ext
 Hahn-Banach. -/
 def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     boundedIntegrableFunctions μ →L[ℝ] ℝ :=
-  LinearMap.mkContinuous (F := ℝ)
+  LinearMap.mkContinuous
     { toFun := fun f => ∫ x, f.1 x ∂μ
       map_add' := fun f g => integral_add f.2 g.2
       map_smul' := fun c f => integral_smul c f.1 } (μ univ).toReal
