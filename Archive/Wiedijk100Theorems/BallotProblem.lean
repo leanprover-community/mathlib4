@@ -116,6 +116,13 @@ theorem counted_ne_nil_right {p q : ℕ} (hq : q ≠ 0) {l : List ℤ} (hl : l �
     l ≠ [] := by simp [counted_eq_nil_iff hl, hq]
 #align ballot.counted_ne_nil_right Ballot.counted_ne_nil_right
 
+-- Porting note: Added this helper function to help with golfing
+private theorem get0_eq_head! {l : List ℤ} (h : l ≠ []) :
+    l.get ⟨0, List.length_pos_of_ne_nil h⟩ = l.head! := by
+  cases l
+  · tauto
+  · rw [List.get, List.head!_cons]
+
 theorem counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) =
       List.cons 1 '' countedSequence p (q + 1) ∪ List.cons (-1) '' countedSequence (p + 1) q := by
@@ -127,30 +134,17 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ l.head! (List.head!_mem_self hlnil)
     · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, if_pos,
-          Nat.add_succ_sub_one, add_zero]
-        cases l
-        · tauto
-        · exact hlast.symm
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, if_neg, Nat.sub_zero]
-        cases l
-        · tauto
-        · simp only [List.head!_cons] at hlast
-          simp only [List.get, hlast]
+      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
+          if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
+          hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head!_tail hlnil]
     · refine' Or.inr ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, if_neg, Nat.sub_zero]
-        cases l
-        · tauto
-        · simp only [List.head!_cons] at hlast
-          simp only [List.get, hlast]
-      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, if_pos,
-          Nat.add_succ_sub_one, add_zero]
-        cases l
-        · tauto
-        · simp only [List.head!_cons] at hlast
-          simp only [List.get, hlast]
+      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, get0_eq_head! hlnil, hlast,
+          if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, get0_eq_head! hlnil,
+          hlast, if_pos rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head!_tail hlnil]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
