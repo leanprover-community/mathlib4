@@ -2476,6 +2476,7 @@ import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalSampling
 import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Probability.Martingale.Upcrossing
+import Mathlib.Probability.Moments
 import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
