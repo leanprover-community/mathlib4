@@ -8,11 +8,11 @@ Authors: Bolton Bailey
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.PrimeFin
-import Mathbin.Data.Nat.Totient
-import Mathbin.Data.Finset.LocallyFinite
-import Mathbin.Data.Nat.Count
-import Mathbin.Data.Nat.Nth
+import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.Nth
 
 /-!
 # The Prime Counting Function
@@ -82,15 +82,13 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
-    π' (k + n) ≤ ((range k).filterₓ Prime).card + ((Ico k (k + n)).filterₓ Prime).card :=
-      by
+    π' (k + n) ≤ ((range k).filterₓ Prime).card + ((Ico k (k + n)).filterₓ Prime).card := by
       rw [prime_counting', count_eq_card_filter_range, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
     _ ≤ π' k + ((Ico k (k + n)).filterₓ Prime).card := by
       rw [prime_counting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filterₓ (coprime a)).card :=
-      by
+    _ ≤ π' k + ((Ico k (k + n)).filterₓ (coprime a)).card := by
       refine' add_le_add_left (card_le_of_subset _) k.prime_counting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime
@@ -98,8 +96,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       · exact ⟨succ_k_le_p, p_lt_n⟩
       · rw [coprime_comm]
         exact coprime_of_lt_prime h0 (gt_of_ge_of_gt succ_k_le_p h1) p_prime
-    _ ≤ π' k + totient a * (n / a + 1) :=
-      by
+    _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
 #align nat.prime_counting'_add_le Nat.primeCounting'_add_le
