@@ -126,12 +126,13 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
+set_option maxHeartbeats 300000 in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
     (-- while not necessary, the `by apply` makes this elaborate faster
       lift
-      Q ⟨by apply GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩)
+      Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
     (-- the proof from here onward is mostly similar to the `tensor_algebra` case, with some extra
     -- handling for the `supr` in `even_odd`.
     by
@@ -142,20 +143,23 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     (by apply GradedAlgebra.lift_ι_eq Q)
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
+set_option maxHeartbeats 300000 in
 theorem iSup_ι_range_eq_top : (⨆ i : ℕ, LinearMap.range (ι Q) ^ i) = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
-    (⨆ (i : ZMod 2) (j : { n // ↑n = i }), (ι Q).range ^ ↑j) =
-        ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, (ι Q).range ^ (i.2 : ℕ) :=
+    -- porting note: needs extra annotations, no longer unifies against the goal in the face of
+    -- ambiguity
+    (⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ)) =
+        ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) :=
       by rw [iSup_sigma]
-    _ = ⨆ i : ℕ, (ι Q).range ^ i :=
+    _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
       Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 #align clifford_algebra.supr_ι_range_eq_top CliffordAlgebra.iSup_ι_range_eq_top
 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
-  (DirectSum.Decomposition.isInternal (evenOdd Q)).IsCompl zero_ne_one <| by
+  (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
-    simpa using congr_arg (coe : Finset (ZMod 2) → Set (ZMod 2)) this
+    simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
 #align clifford_algebra.even_odd_is_compl CliffordAlgebra.evenOdd_isCompl
 
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
@@ -164,7 +168,7 @@ of vectors. -/
 @[elab_as_elim]
 theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
     (hr :
-      ∀ (v) (h : v ∈ (ι Q).range ^ n.val),
+      ∀ (v) (h : v ∈ LinearMap.range (ι Q) ^ n.val),
         P v (Submodule.mem_iSup_of_mem ⟨n.val, n.nat_cast_zmod_val⟩ h))
     (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
     (hιι_mul :
@@ -214,7 +218,7 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add 0 ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
-  refine' even_odd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
+  refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
   simp_rw [ZMod.val_zero, pow_zero]
   rintro ⟨r, rfl⟩
   exact hr r
@@ -232,7 +236,7 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
-  refine' even_odd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
+  refine' evenOdd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
   simp_rw [ZMod.val_one, pow_one]
   rintro ⟨v, rfl⟩
   exact hι v
