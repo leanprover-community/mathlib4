@@ -56,9 +56,7 @@ def of : Type _ → PartialFun :=
 #align PartialFun.of PartialFun.of
 
 -- porting note: removed this lemma which is useless because of the expansion of coercions
---theorem coe_of (X : Type _) : ↥(of X) = X :=
---  rfl
---#align PartialFun.coe_of PartialFun.coe_of
+#noalign PartialFun.coe_of PartialFun.coe_of
 
 instance : Inhabited PartialFun :=
   ⟨Type _⟩
