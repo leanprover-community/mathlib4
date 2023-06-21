@@ -686,12 +686,12 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
     exact hx
   surj' x := by
     letI : NeZero ((n : ℕ) : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
-    refine'
+    refine
       Algebra.adjoin_induction
-        (((IsCyclotomicExtension.iff_singleton n K _).1
+        (((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
               (CyclotomicField.isCyclotomicExtension n K)).2
           x)
-        (fun y hy => _) (fun k => _) _ _
+        (fun y hy => ?_) (fun k => ?_) ?_ ?_
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simpa⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj
