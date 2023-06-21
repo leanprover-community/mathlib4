@@ -765,7 +765,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits
 
--- Porting note: TODO
+-- Porting note: Lean needs to be reminded of this instance
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
