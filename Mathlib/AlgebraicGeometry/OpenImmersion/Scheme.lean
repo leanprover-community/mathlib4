@@ -660,7 +660,7 @@ theorem app_eq_invApp_app_of_comp_eq {X Y U : Scheme} (f : Y ⟶ U) (g : U ⟶ X
   convert Y.presheaf.map_id _
 #align algebraic_geometry.is_open_immersion.app_eq_inv_app_app_of_comp_eq AlgebraicGeometry.IsOpenImmersion.app_eq_invApp_app_of_comp_eq
 
-theorem lift_app {X Y U : Scheme} (f : U ⟶ Y) (g : X ⟶ Y) [h : IsOpenImmersion f] (H)
+theorem lift_app {X Y U : Scheme} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
     (V : Opens U.carrier) :
     (IsOpenImmersion.lift f g H).1.c.app (op V) =
       Scheme.Hom.invApp f _ ≫
@@ -678,17 +678,21 @@ end IsOpenImmersion
 namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : Opens X.carrier}
-    (r : X.Presheaf.obj (op U)) : f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (f.invApp U r) :=
+    (r : X.presheaf.obj (op U)) : f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (Scheme.Hom.invApp f U r) :=
   by
-  have e := Scheme.preimage_basic_open f (f.inv_app U r)
-  rw [Scheme.hom.inv_app, PresheafedSpace.is_open_immersion.inv_app_app_apply,
-    Scheme.basic_open_res, inf_eq_right.mpr _] at e
+  have e := Scheme.preimage_basicOpen f (Scheme.Hom.invApp f U r)
+  rw [Scheme.Hom.invApp] at e
+  -- Porting note : was `rw`
+  erw [PresheafedSpace.IsOpenImmersion.invApp_app_apply] at e
+  rw [Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   rw [← e]
   ext1
-  refine' set.image_preimage_eq_inter_range.trans _
+  -- Porting note : this `dsimp` was not necessary
+  dsimp [Opens.map]
+  refine' Set.image_preimage_eq_inter_range.trans _
   erw [Set.inter_eq_left_iff_subset]
-  refine' Set.Subset.trans (Scheme.basic_open_le _ _) (Set.image_subset_range _ _)
-  refine' le_trans (Scheme.basic_open_le _ _) (le_of_eq _)
+  refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
@@ -705,79 +709,98 @@ section
 
 variable (X : Scheme)
 
+-- Porting note : `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
-@[simps obj_left obj_hom mapLeft]
+-- @[simps obj_left obj_hom mapLeft]
 def Scheme.restrictFunctor : Opens X.carrier ⥤ Over X where
-  obj U := Over.mk (X.ofRestrict U.OpenEmbedding)
-  map U V i :=
+  obj U := Over.mk (X.ofRestrict U.openEmbedding)
+  map {U V} i :=
     Over.homMk
-      (IsOpenImmersion.lift (X.ofRestrict _) (X.ofRestrict _)
-        (by change Set.range coe ⊆ Set.range coe; simp_rw [Subtype.range_coe]; exact i.le))
+      (IsOpenImmersion.lift (X.ofRestrict _) (X.ofRestrict _) <| by
+          dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
+          rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
+          exact i.le)
       (IsOpenImmersion.lift_fac _ _ _)
-  map_id' U := by
+  map_id U := by
     ext1
-    dsimp only [over.hom_mk_left, over.id_left]
-    rw [← cancel_mono (X.ofRestrict U.open_embedding), category.id_comp,
-      is_open_immersion.lift_fac]
-  map_comp' U V W i j := by
+    dsimp only [Over.homMk_left, Over.id_left]
+    rw [← cancel_mono (X.ofRestrict U.openEmbedding), Category.id_comp,
+      IsOpenImmersion.lift_fac]
+  map_comp {U V W} i j := by
     ext1
-    dsimp only [over.hom_mk_left, over.comp_left]
-    rw [← cancel_mono (X.ofRestrict W.open_embedding), category.assoc]
-    iterate 3 rw [is_open_immersion.lift_fac]
+    dsimp only [Over.homMk_left, Over.comp_left]
+    rw [← cancel_mono (X.ofRestrict W.openEmbedding), Category.assoc]
+    iterate 3 rw [IsOpenImmersion.lift_fac]
 #align algebraic_geometry.Scheme.restrict_functor AlgebraicGeometry.Scheme.restrictFunctor
 
+@[simp] lemma Scheme.restrictFunctor_obj_left (U : Opens X.carrier) :
+  (X.restrictFunctor.obj U).left = (X.restrict U.openEmbedding) := rfl
+
+@[simp] lemma Scheme.restrictFunctor_obj_hom (U : Opens X.carrier) :
+  (X.restrictFunctor.obj U).hom = (X.ofRestrict U.openEmbedding) := rfl
+
+@[simp] lemma Scheme.restrictFunctor_map_left {U V : Opens X.carrier} (i : U ⟶ V) :
+  ((X.restrictFunctor.map i).left) =
+  IsOpenImmersion.lift (X.ofRestrict V.openEmbedding) (X.ofRestrict U.openEmbedding) (by
+    dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
+    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
+    exact i.le) := rfl
+
+-- Porting note : the `by ...` used to be automatically done by unification magic
 @[reassoc]
 theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X.carrier} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1 ≫ X.ofRestrict _ = X.ofRestrict _ :=
-  IsOpenImmersion.lift_fac _ _ _
+  IsOpenImmersion.lift_fac _ _ (by
+    dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
+    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
+    exact i.le)
 #align algebraic_geometry.Scheme.restrict_functor_map_ofRestrict AlgebraicGeometry.Scheme.restrictFunctor_map_ofRestrict
 
 theorem Scheme.restrictFunctor_map_base {U V : Opens X.carrier} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.1.base = (Opens.toTopCat _).map i := by
-  ext a
-  exact
-    (congr_arg (fun f : X.restrict U.open_embedding ⟶ X => f.1.base a)
-        (X.restrict_functor_map_ofRestrict i) :
-      _)
+  ext a; refine Subtype.ext ?_ -- Porting note : `ext` did not pick up `Subtype.ext`
+  exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.1.base a)
+        (X.restrictFunctor_map_ofRestrict i))
 #align algebraic_geometry.Scheme.restrict_functor_map_base AlgebraicGeometry.Scheme.restrictFunctor_map_base
 
 theorem Scheme.restrictFunctor_map_app_aux {U V : Opens X.carrier} (i : U ⟶ V) (W : Opens V) :
-    U.OpenEmbedding.IsOpenMap.Functor.obj ((Opens.map (X.restrictFunctor.map i).1.val.base).obj W) ≤
-      V.OpenEmbedding.IsOpenMap.Functor.obj W := by
+    U.openEmbedding.isOpenMap.functor.obj ((Opens.map (X.restrictFunctor.map i).1.val.base).obj W) ≤
+      V.openEmbedding.isOpenMap.functor.obj W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
-    Scheme.restrict_functor_map_base, opens.map_coe, opens.inclusion_apply]
+    Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 #align algebraic_geometry.Scheme.restrict_functor_map_app_aux AlgebraicGeometry.Scheme.restrictFunctor_map_app_aux
 
 theorem Scheme.restrictFunctor_map_app {U V : Opens X.carrier} (i : U ⟶ V) (W : Opens V) :
     (X.restrictFunctor.map i).1.1.c.app (op W) =
-      X.Presheaf.map (homOfLE <| X.restrictFunctor_map_app_aux i W).op := by
+      X.presheaf.map (homOfLE <| X.restrictFunctor_map_app_aux i W).op := by
   have e₁ :=
-    Scheme.congr_app (X.restrict_functor_map_ofRestrict i)
-      (op <| V.open_embedding.is_open_map.functor.obj W)
+    Scheme.congr_app (X.restrictFunctor_map_ofRestrict i)
+      (op <| V.openEmbedding.isOpenMap.functor.obj W)
   rw [Scheme.comp_val_c_app] at e₁
-  have e₂ := (X.restrict_functor.map i).1.val.c.naturality (eq_to_hom W.map_functor_eq).op
-  rw [← is_iso.eq_inv_comp] at e₂
+  -- Porting note : `Opens.map_functor_eq` need more help
+  have e₂ := (X.restrictFunctor.map i).1.val.c.naturality (eqToHom <| W.map_functor_eq (U := V)).op
+  rw [← IsIso.eq_inv_comp] at e₂
   dsimp at e₁ e₂ ⊢
-  rw [e₂, W.adjunction_counit_map_functor, ← is_iso.eq_inv_comp, is_iso.inv_comp_eq, ←
-    is_iso.eq_comp_inv] at e₁
-  simp_rw [eq_to_hom_map (opens.map _), eq_to_hom_map (IsOpenMap.functor _), ← functor.map_inv, ←
-    functor.map_comp] at e₁
+  rw [e₂, W.adjunction_counit_map_functor (U := V), ← IsIso.eq_inv_comp, IsIso.inv_comp_eq,
+    ← IsIso.eq_comp_inv] at e₁
+  simp_rw [eqToHom_map (Opens.map _), eqToHom_map (IsOpenMap.functor _), ← Functor.map_inv,
+    ← Functor.map_comp] at e₁
   rw [e₁]
   congr 1
 #align algebraic_geometry.Scheme.restrict_functor_map_app AlgebraicGeometry.Scheme.restrictFunctor_map_app
 
 /-- The functor that restricts to open subschemes and then takes global section is
 isomorphic to the structure sheaf. -/
-@[simps]
-def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ Scheme.Γ ≅ X.Presheaf :=
+@[simps!]
+def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ Scheme.Γ ≅ X.presheaf :=
   NatIso.ofComponents
     (fun U => X.presheaf.mapIso ((eqToIso (unop U).openEmbedding_obj_top).symm.op : _))
     (by
       intro U V i
-      dsimp [-Subtype.val_eq_coe, -Scheme.restrict_functor_map_left]
-      rw [X.restrict_functor_map_app, ← functor.map_comp, ← functor.map_comp]
+      dsimp [-Scheme.restrictFunctor_map_left]
+      rw [X.restrictFunctor_map_app, ← Functor.map_comp, ← Functor.map_comp]
       congr 1)
 #align algebraic_geometry.Scheme.restrict_functor_Γ AlgebraicGeometry.Scheme.restrictFunctorΓ
 
