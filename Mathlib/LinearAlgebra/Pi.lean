@@ -148,7 +148,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
   map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
   map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
   left_inv f := by
-    ext (i x)
+    ext i x
     simp [apply_single]
   right_inv f := by
     ext x
@@ -217,7 +217,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
-    ext (b⟨j, hj⟩)
+    ext b ⟨j, hj⟩
     simp only [dif_pos, Function.comp_apply, Function.eval_apply, LinearMap.codRestrict_apply,
       LinearMap.coe_comp, LinearMap.coe_proj, LinearMap.pi_apply, Submodule.subtype_apply,
       Subtype.coe_prop]

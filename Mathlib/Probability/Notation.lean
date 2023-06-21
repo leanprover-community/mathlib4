@@ -40,7 +40,8 @@ open scoped MeasureTheory
 scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
   MeasureTheory.condexp m MeasureTheory.MeasureSpace.volume X
 
-scoped[ProbabilityTheory] notation P "[" X "]" => ∫ x, X x ∂P
+set_option quotPrecheck false in
+scoped[ProbabilityTheory] notation P "[" X "]" => ∫ x, ↑(X x) ∂P
 
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, X a
 
