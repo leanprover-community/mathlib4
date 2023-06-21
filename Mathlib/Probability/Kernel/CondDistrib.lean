@@ -179,6 +179,8 @@ end Integrability
 theorem set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫⁻ a in X ⁻¹' t, condDistrib Y X μ (X a) s ∂μ = μ (X ⁻¹' t ∩ Y ⁻¹' s) := by
+  -- Porting note: need to massage the LHS integrand into the form accepted by `lintegral_comp`
+  -- (`rw` does not see that the two forms are defeq)
   conv_lhs => arg 2; change (fun a => ((condDistrib Y X μ) a) s) ∘ X
   rw [lintegral_comp (kernel.measurable_coe _ hs) hX, condDistrib, ← Measure.restrict_map hX ht, ←
     Measure.fst_map_prod_mk₀ hX.aemeasurable hY, set_lintegral_condKernel_eq_measure_prod _ ht hs,
