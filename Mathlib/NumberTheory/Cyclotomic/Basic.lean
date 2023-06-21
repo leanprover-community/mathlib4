@@ -492,22 +492,22 @@ def algEquiv (L' : Type _) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 theorem isGalois : IsGalois K L :=
-  letI := splitting_field_X_pow_sub_one n K L
-  IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2 (ne_zero' n K L).1)
+  letI := isSplittingField_X_pow_sub_one n K L
+  IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2
+    (IsCyclotomicExtension.ne_zero' n K L).1)
 #align is_cyclotomic_extension.is_galois IsCyclotomicExtension.isGalois
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isGalois
 
 /-- If `is_cyclotomic_extension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/
 theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
-  { Splits := splits_cyclotomic K L (mem_singleton n)
-    adjoin_rootSet := by
+  { splits' := splits_cyclotomic K L (mem_singleton n)
+    adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       letI := Classical.decEq L
       -- todo: make `exists_prim_root` take an explicit `L`
       obtain ⟨ζ : L, hζ⟩ := IsCyclotomicExtension.exists_prim_root K (mem_singleton n)
-      exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
-      all_goals infer_instance }
+      exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 #align is_cyclotomic_extension.splitting_field_cyclotomic IsCyclotomicExtension.splitting_field_cyclotomic
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
@@ -526,28 +526,41 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `is_cyclotomic_extension {n} K (cyclotomic_field n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
-deriving Field,
-  «./././Mathport/Syntax/Translate/Command.lean:43:9: unsupported derive handler algebra[algebra] K»,
-  Inhabited
+-- deriving Field,
+  -- Inhabited
 #align cyclotomic_field CyclotomicField
 
 namespace CyclotomicField
 
+--Porting note: could not be derived
+instance : Field (CyclotomicField n K) := by
+  delta CyclotomicField; infer_instance
+
+--Porting note: could not be derived
+instance : Algebra K (CyclotomicField n K) := by
+  delta CyclotomicField; infer_instance
+
+--Porting note: could not be derived
+instance : Inhabited (CyclotomicField n K) := by
+  delta CyclotomicField; infer_instance
+
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
-  charZero_of_injective_algebraMap (algebraMap K _).Injective
+  charZero_of_injective_algebraMap (algebraMap K _).injective
 
 instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   haveI : NeZero ((n : ℕ) : CyclotomicField n K) :=
-    NeZero.nat_of_injective (algebraMap K _).Injective
+    NeZero.nat_of_injective (algebraMap K _).injective
   letI := Classical.decEq (CyclotomicField n K)
   obtain ⟨ζ, hζ⟩ :=
-    exists_root_of_splits (algebraMap K (CyclotomicField n K)) (splitting_field.splits _)
+    exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
-  rw [← eval_map, ← is_root.def, map_cyclotomic, is_root_cyclotomic_iff] at hζ
-  refine' ⟨forall_eq.2 ⟨ζ, hζ⟩, _⟩
-  rw [← Algebra.eq_top_iff, ← splitting_field.adjoin_root_set, eq_comm]
-  exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
+  rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+  refine ⟨?_, ?_⟩
+  . simp only [mem_singleton_iff, forall_eq]
+    exact ⟨ζ, hζ⟩
+  . rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
+    exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 #align cyclotomic_field.is_cyclotomic_extension CyclotomicField.isCyclotomicExtension
 
 end CyclotomicField
@@ -562,7 +575,7 @@ section CyclotomicRing
 
 /-- If `K` is the fraction field of `A`, the `A`-algebra structure on `cyclotomic_field n K`.
 -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra_base CyclotomicField.algebraBase
@@ -583,24 +596,36 @@ instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicFi
   refine' NoZeroSMulDivisors.of_algebraMap_injective _
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
-    Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
-      (IsFractionRing.injective A K)
+    (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
+      (IsFractionRing.injective A K) : _)
 #align cyclotomic_field.no_zero_smul_divisors CyclotomicField.noZeroSMulDivisors
 
 /-- If `A` is a domain with fraction field `K` and `n : ℕ+`, we define `cyclotomic_ring n A K` as
 the `A`-subalgebra of `cyclotomic_field n K` generated by the roots of `X ^ n - 1`. If `n`
 is nonzero in `A`, it has the instance `is_cyclotomic_extension {n} A (cyclotomic_ring n A K)`. -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ (n : ℕ) = 1}
-deriving CommRing, IsDomain, Inhabited
+--deriving CommRing, IsDomain, Inhabited
 #align cyclotomic_ring CyclotomicRing
 
 namespace CyclotomicRing
 
+--Porting note: could not be derived
+instance : CommRing (CyclotomicRing n A K) := by
+  delta CyclotomicRing; infer_instance
+
+--Porting note: could not be derived
+instance : IsDomain (CyclotomicRing n A K) := by
+  delta CyclotomicRing; infer_instance
+
+--Porting note: could not be derived
+instance : Inhabited (CyclotomicRing n A K) := by
+  delta CyclotomicRing; infer_instance
+
 /-- The `A`-algebra structure on `cyclotomic_ring n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
-  (adjoin A _).Algebra
+  (adjoin A _).algebra
 #align cyclotomic_ring.algebra_base CyclotomicRing.algebraBase
 
 -- Ensure that there is no diamonds with ℤ.
@@ -630,7 +655,7 @@ instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
 
 instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
-  exists_prim_root a han := by
+  exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
     subst a
     haveI := NeZero.of_noZeroSMulDivisors A K n
@@ -639,13 +664,13 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     refine' ⟨⟨μ, subset_adjoin _⟩, _⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr
       refine' ⟨n, Nat.mem_divisors_self _ n.ne_zero, _⟩
-      rwa [← is_root_cyclotomic_iff] at hμ
+      rwa [← isRoot_cyclotomic_iff] at hμ
     · rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   adjoin_roots x := by
     refine'
       adjoin_induction' (fun y hy => _) (fun a => _) (fun y z hy hz => _) (fun y z hy hz => _) x
     · refine' subset_adjoin _
-      simp only [mem_singleton_iff, exists_eq_left, mem_set_of_eq]
+      simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
     · exact Subalgebra.algebraMap_mem _ a
     · exact Subalgebra.add_mem _ hy hz
@@ -654,12 +679,12 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
 
 instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
-  map_units := fun ⟨x, hx⟩ => by
+  map_units' := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
     apply adjoin_algebra_injective
     exact hx
-  surj x := by
+  surj' x := by
     letI : NeZero ((n : ℕ) : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine'
       Algebra.adjoin_induction
@@ -690,7 +715,7 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
       rw [SetLike.coe_mk, RingHom.map_mul, mul_comm ((algebraMap _ _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap _ _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
-  eq_iff_exists x y :=
+  eq_iff_exists' := @fun x y =>
     ⟨fun h => ⟨1, by rw [adjoin_algebra_injective n A K h]⟩, fun ⟨c, hc⟩ => by
       rw [mul_left_cancel₀ (nonZeroDivisors.ne_zero c.prop) hc]⟩
 
