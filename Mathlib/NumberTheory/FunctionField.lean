@@ -9,7 +9,7 @@ Authors: Anne Baanen, Ashvni Narayanan
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.FieldTheory.Ratfunc
+import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField
