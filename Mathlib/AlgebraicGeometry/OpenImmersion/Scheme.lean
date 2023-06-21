@@ -906,7 +906,7 @@ def Scheme.openCoverOfSuprEqTop {s : Type _} (X : Scheme) (U : s → Opens X)
 section MorphismRestrict
 
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
-def pullbackRestrictIsoRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+def pullbackRestrictIsoRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Y.ofRestrict U.openEmbedding) ≅
       X.restrict ((Opens.map f.1.base).obj U).openEmbedding := by
   refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
@@ -938,18 +938,18 @@ infixl:80 " ∣_ " => morphismRestrict
 
 @[simp, reassoc]
 theorem pullbackRestrictIsoRestrict_hom_morphismRestrict {X Y : Scheme} (f : X ⟶ Y)
-    (U : Opens Y.carrier) : (pullbackRestrictIsoRestrict f U).hom ≫ f ∣_ U = pullback.snd :=
+    (U : Opens Y) : (pullbackRestrictIsoRestrict f U).hom ≫ f ∣_ U = pullback.snd :=
   Iso.hom_inv_id_assoc _ _
 #align algebraic_geometry.pullback_restrict_iso_restrict_hom_morphism_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict_hom_morphismRestrict
 
 @[simp, reassoc]
-theorem morphismRestrict_ι {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+theorem morphismRestrict_ι {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     (f ∣_ U) ≫ Y.ofRestrict U.openEmbedding = X.ofRestrict _ ≫ f := by
   delta morphismRestrict
   rw [Category.assoc, pullback.condition.symm, pullbackRestrictIsoRestrict_inv_fst_assoc]
 #align algebraic_geometry.morphism_restrict_ι AlgebraicGeometry.morphismRestrict_ι
 
-theorem isPullback_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+theorem isPullback_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     IsPullback (f ∣_ U) (X.ofRestrict _) (Y.ofRestrict _) f := by
   delta morphismRestrict
   rw [← Category.id_comp f]
@@ -960,7 +960,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.ca
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
 #align algebraic_geometry.is_pullback_morphism_restrict AlgebraicGeometry.isPullback_morphismRestrict
 
-theorem morphismRestrict_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z.carrier) :
+theorem morphismRestrict_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U : Opens Z) :
     (f ≫ g) ∣_ U = ((f ∣_ (Opens.map g.val.base).obj U) ≫ g ∣_ U : _) := by
   delta morphismRestrict
   rw [← pullbackRightPullbackFstIso_inv_snd_snd]
@@ -973,21 +973,21 @@ theorem morphismRestrict_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U : 
     pullbackRestrictIsoRestrict_inv_fst_assoc]
 #align algebraic_geometry.morphism_restrict_comp AlgebraicGeometry.morphismRestrict_comp
 
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens Y.carrier) : IsIso (f ∣_ U) := by
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens Y) : IsIso (f ∣_ U) := by
   delta morphismRestrict; infer_instance
 
-theorem morphismRestrict_base_coe {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) (x) :
-    @Coe.coe U Y.carrier (⟨fun x => x.1⟩) ((f ∣_ U).1.base x) = f.1.base x.1 :=
+theorem morphismRestrict_base_coe {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
+    @Coe.coe U Y (⟨fun x => x.1⟩) ((f ∣_ U).1.base x) = f.1.base x.1 :=
   congr_arg (fun f => PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f) x)
     (morphismRestrict_ι f U)
 #align algebraic_geometry.morphism_restrict_base_coe AlgebraicGeometry.morphismRestrict_base_coe
 
-theorem morphismRestrict_val_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+theorem morphismRestrict_val_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     ⇑(f ∣_ U).1.base = U.1.restrictPreimage f.1.base :=
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 #align algebraic_geometry.morphism_restrict_val_base AlgebraicGeometry.morphismRestrict_val_base
 
-theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier)
+theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
     (V : Opens U) :
     ((Opens.map f.val.base).obj U).openEmbedding.isOpenMap.functor.obj
         ((Opens.map (f ∣_ U).val.base).obj V) =
@@ -1011,7 +1011,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens 
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage
 
-theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) (V : Opens U) :
+theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     (f ∣_ U).1.c.app (op V) =
       f.1.c.app (op (U.openEmbedding.isOpenMap.functor.obj V)) ≫
         X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op := by
@@ -1031,7 +1031,7 @@ theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier
     congr 1
 #align algebraic_geometry.morphism_restrict_c_app AlgebraicGeometry.morphismRestrict_c_app
 
-theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom <| U.openEmbedding_obj_top.symm).op ≫
         f.1.c.app (op U) ≫
@@ -1061,36 +1061,43 @@ def morphismRestrictOpensRange {X Y U : Scheme} (f : X ⟶ Y) (g : U ⟶ Y) [hg 
 
 /-- The restrictions onto two equal open sets are isomorphic. This currently has bad defeqs when
 unfolded, but it should not matter for now. Replace this definition if better defeqs are needed. -/
-def morphismRestrictEq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) :
+def morphismRestrictEq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (e : U = V) :
     Arrow.mk (f ∣_ U) ≅ Arrow.mk (f ∣_ V) :=
   eqToIso (by subst e; rfl)
 #align algebraic_geometry.morphism_restrict_eq AlgebraicGeometry.morphismRestrictEq
 
--- set_option maxHeartbeats 0 in
+-- Porting note : this does not compile under 200000 heart beats. The proof is more or less
+-- preserved with some morphisms named so that instances about them can be made manually.
+set_option maxHeartbeats 350000 in
 /-- Restricting a morphism twice is isomorphic to one restriction. -/
-def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) (V : Opens U) :
+def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.openEmbedding.isOpenMap.functor.obj V) := by
-  have :
-    (f ∣_ U ∣_ V) ≫ (iso.refl _).Hom =
-      (as_iso <|
-            (pullback_restrict_iso_restrict (f ∣_ U) V).inv ≫
-              (pullback_symmetry _ _).Hom ≫
-                pullback.map _ _ _ _ (𝟙 _)
-                    ((pullback_restrict_iso_restrict f U).inv ≫ (pullback_symmetry _ _).Hom) (𝟙 _)
-                    ((category.comp_id _).trans (category.id_comp _).symm) (by simpa) ≫
-                  (pullback_right_pullback_fst_iso _ _ _).Hom ≫ (pullback_symmetry _ _).Hom).Hom ≫
-        pullback.snd := by
-    simpa only [category.comp_id, pullback_right_pullback_fst_iso_hom_fst, iso.refl_hom,
-      category.assoc, pullback_symmetry_hom_comp_snd, as_iso_hom, pullback.lift_fst,
-      pullback_symmetry_hom_comp_fst]
+  set g := ((Y.restrict U.openEmbedding).ofRestrict (V.openEmbedding (X := TopCat.of U)) ≫ Y.ofRestrict U.openEmbedding)
+  have i1 : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
+  have i2 : HasPullback f g := IsOpenImmersion.hasPullback_of_right g f
+  set h : _ ⟶ pullback f g :=
+    (pullbackRestrictIsoRestrict (f ∣_ U) V).inv ≫
+      (pullbackSymmetry _ _).hom ≫
+      pullback.map _ _ _ _ (𝟙 _)
+        ((pullbackRestrictIsoRestrict f U).inv ≫ (pullbackSymmetry _ _).hom) (𝟙 _)
+        ((Category.comp_id _).trans (Category.id_comp _).symm) (by aesop_cat) ≫
+      (pullbackRightPullbackFstIso _ _ _).hom ≫ (pullbackSymmetry _ _).hom
+  have i3 : IsIso h
+  . repeat
+      apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
+  have : (f ∣_ U ∣_ V) ≫ (Iso.refl _).hom = (asIso h).hom ≫ pullback.snd (f := f) (g := g)
+  . simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst, Iso.refl_hom,
+      Category.assoc, pullbackSymmetry_hom_comp_snd, asIso_hom, pullback.lift_fst,
+      pullbackSymmetry_hom_comp_fst]
+    rfl
   refine'
-    arrow.iso_mk' _ _ _ _ this.symm ≪≫
-      (morphism_restrict_opens_range _ _).symm ≪≫ morphism_restrict_eq _ _
+    Arrow.isoMk' _ _ _ _ this.symm ≪≫
+      (morphismRestrictOpensRange _ _).symm ≪≫ morphismRestrictEq _ _
   ext1
   dsimp
   rw [coe_comp, Set.range_comp]
-  congr
-  exact Subtype.range_coe
+  apply congr_arg (U.inclusion '' .)
+  exact Subtype.range_val
 #align algebraic_geometry.morphism_restrict_restrict AlgebraicGeometry.morphismRestrictRestrict
 
 /-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction.  -/
@@ -1103,40 +1110,47 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
   refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
   erw [Scheme.ofRestrict_val_c_app, Opens.adjunction_counit_app_self, eqToHom_op] at e
-  rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op, ←
-    comp_apply]
+  rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
+  erw [← comp_apply]
   erw [← Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
-  ext1; dsimp [opens.map, opens.inclusion]
-  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, Subtype.range_coe]
-  exact Y.basic_open_le r
+  ext1; dsimp [Opens.map, Opens.inclusion]
+  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, ContinuousMap.coe_mk,
+    Subtype.range_val]
+  exact Y.basicOpen_le r
 #align algebraic_geometry.morphism_restrict_restrict_basic_open AlgebraicGeometry.morphismRestrictRestrictBasicOpen
 
+set_option maxHeartbeats 500000 in
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
-def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) (x) :
+def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
     Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
       Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
   fapply Arrow.isoMk'
-  · refine' Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
+  · refine' Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
     apply Inseparable.of_eq
-    exact morphism_restrict_base_coe f U x
-  · exact X.restrict_stalk_iso _ _
+    exact morphismRestrict_base_coe f U x
+  · exact X.restrictStalkIso (Opens.openEmbedding _) _
   · apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     simp only [TopCat.Presheaf.stalkCongr_hom, CategoryTheory.Category.assoc,
       CategoryTheory.Iso.trans_hom]
-    erw [PresheafedSpace.restrict_stalk_iso_hom_eq_germ_assoc]
-    erw [PresheafedSpace.stalk_map_germ_assoc _ _ ⟨_, _⟩]
+    erw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc]
+    erw [PresheafedSpace.stalkMap_germ_assoc _ V ⟨_, hxV⟩]
     rw [TopCat.Presheaf.germ_stalk_specializes'_assoc]
-    erw [PresheafedSpace.stalk_map_germ _ _ ⟨_, _⟩]
-    erw [PresheafedSpace.restrict_stalk_iso_hom_eq_germ]
-    rw [morphism_restrict_c_app, category.assoc, TopCat.Presheaf.germ_res]
+    -- Porting note : explicit variables and proofs were not necessary
+    erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
+      ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
+    swap
+    . rw [morphismRestrict_val_base] at hxV
+      exact hxV
+    erw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
+    rw [morphismRestrict_c_app, Category.assoc, TopCat.Presheaf.germ_res]
     rfl
 #align algebraic_geometry.morphism_restrict_stalk_map AlgebraicGeometry.morphismRestrictStalkMap
 
-instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) [IsOpenImmersion f] :
+instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
       delta morphismRestrict
       refine PresheafedSpace.IsOpenImmersion.comp _ _
