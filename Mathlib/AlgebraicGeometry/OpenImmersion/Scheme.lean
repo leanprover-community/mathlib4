@@ -83,11 +83,17 @@ obtain. Also, since such a coverage in the pretopology usually contains a proper
 immersions, it is quite hard to glue them, reason about finite covers, etc.
 -/
 structure OpenCover (X : Scheme.{u}) where
+  /-- index set of an open cover of a scheme `X` -/
   J : Type v
+  /-- the subschemes of an open cover -/
   obj : ∀ _ : J, Scheme
+  /-- the embedding of subschemes to `X` -/
   map : ∀ j : J, obj j ⟶ X
+  /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
   f : X.carrier → J
+  /-- the subschemes covers `X` -/
   Covers : ∀ x, x ∈ Set.range (map (f x)).1.base
+  /-- the embedding of subschemes are open immersions -/
   IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
 #align algebraic_geometry.Scheme.open_cover AlgebraicGeometry.Scheme.OpenCover
 
@@ -179,7 +185,8 @@ def OpenCover.copy {X : Scheme} (𝒰 : OpenCover X) (J : Type _) (obj : J → S
 -- Porting note : need more hint on universe level
 /-- The pushforward of an open cover along an isomorphism. -/
 @[simps! J obj map]
-def OpenCover.pushforwardIso {X Y : Scheme.{u}} (𝒰 : OpenCover.{v} X) (f : X ⟶ Y) [IsIso f] : OpenCover.{v} Y :=
+def OpenCover.pushforwardIso {X Y : Scheme.{u}} (𝒰 : OpenCover.{v} X) (f : X ⟶ Y) [IsIso f] :
+    OpenCover.{v} Y :=
   ((openCoverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.J _ _
     ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ => Iso.refl _)
     fun _ => (Category.id_comp _).symm
@@ -356,7 +363,8 @@ theorem scheme_eq_of_locallyRingedSpace_eq {X Y : Scheme}
   cases X; cases Y; congr
 #align algebraic_geometry.PresheafedSpace.IsOpenImmersion.Scheme_eq_of_LocallyRingedSpace_eq AlgebraicGeometry.PresheafedSpace.IsOpenImmersionₓ.scheme_eq_of_locallyRingedSpace_eq
 
-theorem scheme_toScheme {X Y : Scheme} (f : X ⟶ Y) [AlgebraicGeometry.IsOpenImmersion f] : toScheme Y f.1 = X := by
+theorem scheme_toScheme {X Y : Scheme} (f : X ⟶ Y) [AlgebraicGeometry.IsOpenImmersion f] :
+    toScheme Y f.1 = X := by
   apply scheme_eq_of_locallyRingedSpace_eq
   exact locallyRingedSpace_toLocallyRingedSpace f
 #align algebraic_geometry.PresheafedSpace.IsOpenImmersion.Scheme_to_Scheme AlgebraicGeometry.PresheafedSpace.IsOpenImmersionₓ.scheme_toScheme
@@ -629,7 +637,8 @@ abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme} (f : X �
 #align algebraic_geometry.Scheme.hom.opens_functor AlgebraicGeometry.Scheme.Hom.opensFunctor
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
-def _root_.AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] (U) :
+def _root_.AlgebraicGeometry.Scheme.Hom.invApp {X Y : Scheme} (f : X ⟶ Y)
+    [H : IsOpenImmersion f] (U) :
     X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (f.opensFunctor.obj U)) :=
   H.invApp U
 #align algebraic_geometry.Scheme.hom.inv_app AlgebraicGeometry.Scheme.Hom.invApp
@@ -678,7 +687,8 @@ end IsOpenImmersion
 namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : Opens X}
-    (r : X.presheaf.obj (op U)) : f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (Scheme.Hom.invApp f U r) :=
+    (r : X.presheaf.obj (op U)) :
+    f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (Scheme.Hom.invApp f U r) :=
   by
   have e := Scheme.preimage_basicOpen f (Scheme.Hom.invApp f U r)
   rw [Scheme.Hom.invApp] at e
@@ -934,6 +944,7 @@ def morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   (pullbackRestrictIsoRestrict f U).inv ≫ pullback.snd
 #align algebraic_geometry.morphism_restrict AlgebraicGeometry.morphismRestrict
 
+/-- the notation for restricting a morphism of scheme to an open subset of the target scheme -/
 infixl:80 " ∣_ " => morphismRestrict
 
 @[simp, reassoc]
@@ -1072,7 +1083,8 @@ set_option maxHeartbeats 350000 in
 /-- Restricting a morphism twice is isomorphic to one restriction. -/
 def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.openEmbedding.isOpenMap.functor.obj V) := by
-  set g := ((Y.restrict U.openEmbedding).ofRestrict (V.openEmbedding (X := TopCat.of U)) ≫ Y.ofRestrict U.openEmbedding)
+  set g := ((Y.restrict U.openEmbedding).ofRestrict (V.openEmbedding (X := TopCat.of U)) ≫
+    Y.ofRestrict U.openEmbedding)
   have i1 : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
   have i2 : HasPullback f g := IsOpenImmersion.hasPullback_of_right g f
   set h : _ ⟶ pullback f g :=
@@ -1154,6 +1166,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
       delta morphismRestrict
       refine PresheafedSpace.IsOpenImmersion.comp _ _
+
 end MorphismRestrict
 
 end AlgebraicGeometry
