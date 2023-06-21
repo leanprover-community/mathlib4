@@ -6,10 +6,10 @@ Authors: Ian Benway.
 
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+--import Mathlib.Analysis.Complex.AbsMax
+--import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
@@ -42,25 +42,22 @@ example : True := by
 
 open Complex
 open scoped Real
+/-
 example : True := by
   let a : ℝ := sorry
   let d : ℝ  := sorry
   set aff : ℂ → ℂ := (fun w => d * (w - a * I) )
   set g : ℝ → ℂ → ℂ  := fun ε w => exp (ε * (exp (aff w) + exp (-aff w)))
-  sorry
-open Set Function Filter Asymptotics Metric Complex
-open scoped Topology Filter Real
+  -/
+--en Set Function Filter Asymptotics Metric Complex
+--en scoped Topology Filter Real
 
 
-variable {E : Type _} [NormedAddCommGroup E]
-
-variable [NormedSpace ℂ E] {a b C : ℝ} {f g : ℂ → E} {z : ℂ}
+variable {a b C l o p m n b v c j l k u y : ℝ}
 set_option trace.Meta.synthInstance true
-set_option trace.profiler true
+--set_option trace.profiler true
 theorem horizontal_strip
-  {d : ℝ}
-  {hb' : d * b < Real.pi}
    : True := by
   set aff : ℂ → ℂ := sorry
-  set g : ℝ → ℂ → ℂ  := fun ε w => exp (ε * (exp (aff w) + exp (-aff w)))
+  set g : ℝ → ℂ → ℂ  := fun ε w => (ε * ( (aff w) ))
   sorry
