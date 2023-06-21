@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.CliffordAlgebra.Basic
-import Mathbin.Data.Zmod.Basic
-import Mathbin.RingTheory.GradedAlgebra.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the clifford algebra
@@ -36,14 +36,12 @@ def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, (ι Q).range ^ (j : ℕ)
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
 
-theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 :=
-  by
+theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
   refine' le_trans _ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 #align clifford_algebra.one_le_even_odd_zero CliffordAlgebra.one_le_evenOdd_zero
 
-theorem range_ι_le_evenOdd_one : (ι Q).range ≤ evenOdd Q 1 :=
-  by
+theorem range_ι_le_evenOdd_one : (ι Q).range ≤ evenOdd Q 1 := by
   refine' le_trans _ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
 #align clifford_algebra.range_ι_le_even_odd_one CliffordAlgebra.range_ι_le_evenOdd_one
@@ -61,8 +59,7 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
           (LinearMap.mem_range_self (ι Q) m₂))
 #align clifford_algebra.ι_mul_ι_mem_even_odd_zero CliffordAlgebra.ι_mul_ι_mem_evenOdd_zero
 
-theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) :=
-  by
+theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
   simp_rw [even_odd, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
   intro z hz
@@ -74,8 +71,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   exact Submodule.mul_mem_mul hx' hy'
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
-instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q)
-    where
+instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   one_mem := Submodule.one_le.mp (one_le_evenOdd_zero Q)
   mul_mem i j p q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
 #align clifford_algebra.even_odd.graded_monoid CliffordAlgebra.evenOdd.gradedMonoid
@@ -92,16 +88,14 @@ theorem GradedAlgebra.ι_apply (m : M) :
 #align clifford_algebra.graded_algebra.ι_apply CliffordAlgebra.GradedAlgebra.ι_apply
 
 theorem GradedAlgebra.ι_sq_scalar (m : M) :
-    GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) :=
-  by
+    GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) := by
   rw [graded_algebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 #align clifford_algebra.graded_algebra.ι_sq_scalar CliffordAlgebra.GradedAlgebra.ι_sq_scalar
 
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     lift Q ⟨by apply graded_algebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
-      DirectSum.of (fun i => evenOdd Q i) i' x' :=
-  by
+      DirectSum.of (fun i => evenOdd Q i) i' x' := by
   cases' x' with x' hx'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   refine' Submodule.iSup_induction' _ (fun i x hx => _) _ (fun x y hx hy ihx ihy => _) hx'
@@ -140,8 +134,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     (by apply graded_algebra.lift_ι_eq Q)
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
-theorem iSup_ι_range_eq_top : (⨆ i : ℕ, (ι Q).range ^ i) = ⊤ :=
-  by
+theorem iSup_ι_range_eq_top : (⨆ i : ℕ, (ι Q).range ^ i) = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (even_odd Q)).submodule_iSup_eq_top, eq_comm]
   calc
     (⨆ (i : ZMod 2) (j : { n // ↑n = i }), (ι Q).range ^ ↑j) =
@@ -152,8 +145,7 @@ theorem iSup_ι_range_eq_top : (⨆ i : ℕ, (ι Q).range ^ i) = ⊤ :=
 #align clifford_algebra.supr_ι_range_eq_top CliffordAlgebra.iSup_ι_range_eq_top
 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
-  (DirectSum.Decomposition.isInternal (evenOdd Q)).IsCompl zero_ne_one <|
-    by
+  (DirectSum.Decomposition.isInternal (evenOdd Q)).IsCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
     simpa using congr_arg (coe : Finset (ZMod 2) → Set (ZMod 2)) this
 #align clifford_algebra.even_odd_is_compl CliffordAlgebra.evenOdd_isCompl
@@ -172,8 +164,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
         P x hx →
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
-    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx :=
-  by
+    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
   apply Submodule.iSup_induction' _ _ (hr 0 (Submodule.zero_mem _)) @hadd
   refine' Subtype.rec _
   simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
@@ -214,8 +205,7 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
         P x hx →
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add 0 ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
-    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx :=
-  by
+    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
   refine' even_odd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
   simp_rw [ZMod.val_zero, pow_zero]
   rintro ⟨r, rfl⟩
@@ -233,8 +223,7 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
         P x hx →
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
-    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx :=
-  by
+    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
   refine' even_odd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
   simp_rw [ZMod.val_one, pow_one]
   rintro ⟨v, rfl⟩
