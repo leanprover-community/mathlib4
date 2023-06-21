@@ -186,7 +186,8 @@ theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
 
 @[to_additive]
-theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G := Fintype.card_le_of_injective _ Subtype.coe_injective
+theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
+  Fintype.card_le_of_injective _ Subtype.coe_injective
 
 end Subgroup
 
