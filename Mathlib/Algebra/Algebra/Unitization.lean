@@ -716,7 +716,8 @@ theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
 #align unitization.lift_symm_apply Unitization.lift_symm_apply
 
 @[simp]
-theorem lift_zero : (Unitization.lift 0 : Unitization R A → R) = Unitization.fst := by
+lemma _root_.NonUnitalAlgHom.toAlgHom_zero :
+    ⇑(0 : A →ₙₐ[R] R).toAlgHom = Unitization.fst := by
   ext
   simp
 
@@ -738,10 +739,10 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
-@[simps! apply_apply]
+@[simps! apply symm_apply apply_apply]
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
-  { Unitization.lift φ.toNonUnitalAlgHom with
+  { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
     map_star' := fun x => by
       induction x using Unitization.ind
       simp [map_star] }
@@ -749,14 +750,10 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   left_inv := fun φ => by ext; simp,
   right_inv := fun φ => Unitization.algHom_ext'' <| by simp }
 
+@[simp]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
-
-@[simp]
-theorem starLift_zero : (Unitization.starLift 0 : Unitization R A → R) = Unitization.fst := by
-  ext
-  simp
 
 end StarAlgHom
 
