@@ -523,8 +523,6 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `is_cyclotomic_extension {n} K (cyclotomic_field n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
--- deriving Field,
-  -- Inhabited
 #align cyclotomic_field CyclotomicField
 
 namespace CyclotomicField
@@ -534,7 +532,7 @@ instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
 --Porting note: could not be derived
-instance : Algebra K (CyclotomicField n K) := by
+instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
 --Porting note: could not be derived
@@ -689,28 +687,28 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
               (CyclotomicField.isCyclotomicExtension n K)).2
           x)
         (fun y hy => ?_) (fun k => ?_) ?_ ?_
-    · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simpa⟩
+    · refine' ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, _⟩
+      simp only [OneMemClass.coe_one, map_one, mul_one]
+      rfl
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj
       obtain ⟨⟨z, w⟩, hw⟩ := this k
-      refine'
-        ⟨⟨algebraMap A _ z, algebraMap A _ w,
-            map_mem_nonZeroDivisors _ (algebra_base_injective n A K) w.2⟩,
-          _⟩
+      refine' ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
+        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, _⟩
       letI : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
-      rw [SetLike.coe_mk, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-        @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.cyclotomic_field.algebra n K) _ _ w, ←
-        RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
+      rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+        @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
+        ← RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
       refine' ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
-      rw [SetLike.coe_mk, RingHom.map_mul, add_mul, ← mul_assoc, ha,
-        mul_comm ((algebraMap _ _) ↑a.2), ← mul_assoc, hb]
+      rw [RingHom.map_mul, add_mul, ← mul_assoc, ha,
+        mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
       refine' ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
-      rw [SetLike.coe_mk, RingHom.map_mul, mul_comm ((algebraMap _ _) ↑a.2), mul_assoc, ←
-        mul_assoc z, hb, ← mul_comm ((algebraMap _ _) ↑a.2), ← mul_assoc, ha]
+      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), mul_assoc, ←
+        mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
   eq_iff_exists' := @fun x y =>
     ⟨fun h => ⟨1, by rw [adjoin_algebra_injective n A K h]⟩, fun ⟨c, hc⟩ => by
@@ -737,11 +735,11 @@ variable [IsAlgClosed K]
 `ne_zero ((a : ℕ) : K))` for all `a ∈ S`. -/
 theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : K)) :
     IsCyclotomicExtension S K K := by
-  refine' ⟨fun a ha => _, algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
+  refine' ⟨@fun a ha => _, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (degree_cyclotomic_pos a K a.pos).ne'
   refine' ⟨r, _⟩
   haveI := h a ha
-  rwa [coe_aeval_eq_eval, ← is_root.def, is_root_cyclotomic_iff] at hr
+  rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
 #align is_alg_closed.is_cyclotomic_extension IsAlgClosed.isCyclotomicExtension
 
 instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
