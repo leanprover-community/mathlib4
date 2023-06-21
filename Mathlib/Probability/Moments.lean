@@ -8,7 +8,7 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Probability.Variance
+import Mathlib.Probability.Variance
 
 /-!
 # Moments and moment generating function
@@ -74,22 +74,19 @@ theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
 #align probability_theory.central_moment_zero ProbabilityTheory.centralMoment_zero
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
-    centralMoment X 1 μ = (1 - (μ Set.univ).toReal) * μ[X] :=
-  by
+    centralMoment X 1 μ = (1 - (μ Set.univ).toReal) * μ[X] := by
   simp only [central_moment, Pi.sub_apply, pow_one]
   rw [integral_sub h_int (integrable_const _)]
   simp only [sub_mul, integral_const, Algebra.id.smul_eq_mul, one_mul]
 #align probability_theory.central_moment_one' ProbabilityTheory.centralMoment_one'
 
 @[simp]
-theorem centralMoment_one [IsProbabilityMeasure μ] : centralMoment X 1 μ = 0 :=
-  by
+theorem centralMoment_one [IsProbabilityMeasure μ] : centralMoment X 1 μ = 0 := by
   by_cases h_int : integrable X μ
   · rw [central_moment_one' h_int]
     simp only [measure_univ, ENNReal.one_toReal, sub_self, MulZeroClass.zero_mul]
   · simp only [central_moment, Pi.sub_apply, pow_one]
-    have : ¬integrable (fun x => X x - integral μ X) μ :=
-      by
+    have : ¬integrable (fun x => X x - integral μ X) μ := by
       refine' fun h_sub => h_int _
       have h_add : X = (fun x => X x - integral μ X) + fun x => integral μ X := by ext1 x; simp
       rw [h_add]
@@ -146,8 +143,7 @@ theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = 
 
 @[simp]
 theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
-    cgf (fun _ => c) μ t = log (μ Set.univ).toReal + t * c :=
-  by
+    cgf (fun _ => c) μ t = log (μ Set.univ).toReal + t * c := by
   simp only [cgf, mgf_const']
   rw [log_mul _ (exp_pos _).ne']
   · rw [log_exp _]
@@ -187,8 +183,7 @@ theorem cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t
   simp only [cgf, mgf_undef hX, log_zero]
 #align probability_theory.cgf_undef ProbabilityTheory.cgf_undef
 
-theorem mgf_nonneg : 0 ≤ mgf X μ t :=
-  by
+theorem mgf_nonneg : 0 ≤ mgf X μ t := by
   refine' integral_nonneg _
   intro ω
   simp only [Pi.zero_apply]
@@ -201,8 +196,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
   have : ∫ x : Ω, exp (t * X x) ∂μ = ∫ x : Ω in Set.univ, exp (t * X x) ∂μ := by
     simp only [measure.restrict_univ]
   rw [this, set_integral_pos_iff_support_of_nonneg_ae _ _]
-  · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ :=
-      by
+  · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ := by
       ext1 x
       simp only [Function.mem_support, Set.mem_univ, iff_true_iff]
       exact (exp_pos _).ne'
@@ -228,8 +222,7 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 
 /-- This is a trivial application of `indep_fun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
-    IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ :=
-  by
+    IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
   have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
   change indep_fun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) μ
   exact indep_fun.comp h_indep (h_meas s) (h_meas t)
@@ -238,15 +231,13 @@ theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : �
 theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (hX : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ)
     (hY : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
-    mgf (X + Y) μ t = mgf X μ t * mgf Y μ t :=
-  by
+    mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
   exact (h_indep.exp_mul t t).integral_mul hX hY
 #align probability_theory.indep_fun.mgf_add ProbabilityTheory.IndepFun.mgf_add
 
 theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
-    (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t :=
-  by
+    (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   have A : Continuous fun x : ℝ => exp (t * x) := by continuity
   have h'X : ae_strongly_measurable (fun ω => exp (t * X ω)) μ :=
     A.ae_strongly_measurable.comp_ae_measurable hX.ae_measurable
@@ -268,8 +259,7 @@ theorem IndepFun.cgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
 theorem aEStronglyMeasurable_exp_mul_add {X Y : Ω → ℝ}
     (h_int_X : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
-    AEStronglyMeasurable (fun ω => exp (t * (X + Y) ω)) μ :=
-  by
+    AEStronglyMeasurable (fun ω => exp (t * (X + Y) ω)) μ := by
   simp_rw [Pi.add_apply, mul_add, exp_add]
   exact ae_strongly_measurable.mul h_int_X h_int_Y
 #align probability_theory.ae_strongly_measurable_exp_mul_add ProbabilityTheory.aEStronglyMeasurable_exp_mul_add
@@ -291,8 +281,7 @@ theorem aEStronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
 theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
-    Integrable (fun ω => exp (t * (X + Y) ω)) μ :=
-  by
+    Integrable (fun ω => exp (t * (X + Y) ω)) μ := by
   simp_rw [Pi.add_apply, mul_add, exp_add]
   exact (h_indep.exp_mul t t).integrable_mul h_int_X h_int_Y
 #align probability_theory.indep_fun.integrable_exp_mul_add ProbabilityTheory.IndepFun.integrable_exp_mul_add
@@ -330,8 +319,7 @@ theorem iIndepFun.mgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
 theorem iIndepFun.cgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
-    cgf (∑ i in s, X i) μ t = ∑ i in s, cgf (X i) μ t :=
-  by
+    cgf (∑ i in s, X i) μ t = ∑ i in s, cgf (X i) μ t := by
   simp_rw [cgf]
   rw [← log_prod _ _ fun j hj => _]
   · rw [h_indep.mgf_sum h_meas]
@@ -341,22 +329,19 @@ theorem iIndepFun.cgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε) * mgf X μ t :=
-  by
+    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε) * mgf X μ t := by
   cases' ht.eq_or_lt with ht_zero_eq ht_pos
   · rw [ht_zero_eq.symm]
     simp only [neg_zero, MulZeroClass.zero_mul, exp_zero, mgf_zero', one_mul]
     rw [ENNReal.toReal_le_toReal (measure_ne_top μ _) (measure_ne_top μ _)]
     exact measure_mono (Set.subset_univ _)
   calc
-    (μ {ω | ε ≤ X ω}).toReal = (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal :=
-      by
+    (μ {ω | ε ≤ X ω}).toReal = (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal := by
       congr with ω
       simp only [exp_le_exp, eq_iff_iff]
       exact
         ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le, fun h => le_of_mul_le_mul_left h ht_pos⟩
-    _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] :=
-      by
+    _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
       have :
         exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤ μ[fun ω => exp (t * X ω)] :=
         mul_meas_ge_le_integral_of_nonneg (fun x => (exp_pos _).le) h_int _
@@ -367,8 +352,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
 /-- **Chernoff bound** on the lower tail of a real random variable. -/
 theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε) * mgf X μ t :=
-  by
+    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε) * mgf X μ t := by
   rw [← neg_neg t, ← mgf_neg, neg_neg, ← neg_mul_neg (-t)]
   refine' Eq.trans_le _ (measure_ge_le_exp_mul_mgf (-ε) (neg_nonneg.mpr ht) _)
   · congr with ω
@@ -380,8 +364,7 @@ theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε + cgf X μ t) :=
-  by
+    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε + cgf X μ t) := by
   refine' (measure_ge_le_exp_mul_mgf ε ht h_int).trans _
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
@@ -390,8 +373,7 @@ theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
 /-- **Chernoff bound** on the lower tail of a real random variable. -/
 theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε + cgf X μ t) :=
-  by
+    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε + cgf X μ t) := by
   refine' (measure_le_le_exp_mul_mgf ε ht h_int).trans _
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
