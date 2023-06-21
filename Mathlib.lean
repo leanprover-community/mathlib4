@@ -2280,6 +2280,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Fermat4
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
+import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries
 import Mathlib.NumberTheory.LegendreSymbol.Basic
@@ -2312,6 +2313,7 @@ import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
+import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
