@@ -24,11 +24,11 @@ the number of primes less than or equal to its input.
 
 The main definitions for this file are
 
-- `nat.prime_counting`: The prime counting function π
-- `nat.prime_counting'`: π(n - 1)
+- `Nat.primeCounting`: The prime counting function π
+- `Nat.primeCounting'`: π(n - 1)
 
-We then prove that these are monotone in `nat.monotone_prime_counting` and
-`nat.monotone_prime_counting'`. The last main theorem `nat.prime_counting'_add_le` is an upper
+We then prove that these are monotone in `Nat.monotone_primeCounting` and
+`Nat.monotone_primeCounting'`. The last main theorem `Nat.primeCounting'_add_le` is an upper
 bound on `π'` which arises by observing that all numbers greater than `k` and not coprime to `k`
 are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to `n` are prime.
 
@@ -65,7 +65,7 @@ theorem monotone_primeCounting' : Monotone primeCounting' :=
 #align nat.monotone_prime_counting' Nat.monotone_primeCounting'
 
 theorem monotone_primeCounting : Monotone primeCounting :=
-  monotone_primeCounting'.comp (monotone_id.AddConst _)
+  monotone_primeCounting'.comp (monotone_id.add_const _)
 #align nat.monotone_prime_counting Nat.monotone_primeCounting
 
 @[simp]
@@ -78,18 +78,18 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
 
-/-- A linear upper bound on the size of the `prime_counting'` function -/
+/-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
-    π' (k + n) ≤ ((range k).filterₓ Prime).card + ((Ico k (k + n)).filterₓ Prime).card := by
-      rw [prime_counting', count_eq_card_filter_range, range_eq_Ico, ←
+    π' (k + n) ≤ ((range k).filter Prime).card + ((Ico k (k + n)).filter Prime).card := by
+      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
-    _ ≤ π' k + ((Ico k (k + n)).filterₓ Prime).card := by
-      rw [prime_counting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filterₓ (coprime a)).card := by
-      refine' add_le_add_left (card_le_of_subset _) k.prime_counting'
+    _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
+      rw [primeCounting', count_eq_card_filter_range]
+    _ ≤ π' k + ((Ico k (k + n)).filter (coprime a)).card := by
+      refine' add_le_add_left (card_le_of_subset _) k.primeCounting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime
       constructor
@@ -102,4 +102,3 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
 #align nat.prime_counting'_add_le Nat.primeCounting'_add_le
 
 end Nat
-
