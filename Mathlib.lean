@@ -2305,6 +2305,7 @@ import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
+import Mathlib.NumberTheory.PrimeCounting
 import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
