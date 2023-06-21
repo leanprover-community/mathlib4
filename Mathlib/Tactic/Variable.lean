@@ -54,7 +54,7 @@ The `variable?` command will give a suggestion to replace itself with a command 
 `variable? ...binders... => ...binders...`.  The binders after the `=>` are the completed
 list of binders. When this `=>` clause is present, the command verifies that the expanded
 binders match the post-`=>` binders.  The purpose of this is to help keep code that uses
-`variable?` resiliant against changes to the typeclass hierarchy, at least in the sense
+`variable?` resilient against changes to the typeclass hierarchy, at least in the sense
 that this additional information can be used to debug issues that might arise.
 One can also replace `variable? ...binders... =>` with `variable`.
 
@@ -82,7 +82,8 @@ syntax (name := «variable?»)
   "variable?" (ppSpace bracketedBinder)* (" =>" (ppSpace bracketedBinder)*)? : command
 
 /--
-Attribute to record aliases for the `variable?` command. It should be placed on a structure.
+Attribute to record aliases for the `variable?` command. Aliases are structures that have no
+fields, and additional typeclasses are recorded as *arguments* to the structure.
 
 Example:
 ```
@@ -91,7 +92,8 @@ structure VectorSpace (k V : Type _)
   [Field k] [AddCommGroup V] [Module k V]
 ```
 Then `variable? [VectorSpace k V]` ensures that these three typeclasses are present in
-the current scope.
+the current scope. Notice that it's looking at the arguments to the `VectorSpace` type
+constructor. You should not have any fields in `variable_alias` structures.
 
 Notice that `VectorSpace` is not a class; the `variable?` command allows non-classes with the
 `variable_alias` attribute to use instance binders.
