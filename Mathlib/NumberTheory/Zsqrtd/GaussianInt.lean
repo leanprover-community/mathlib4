@@ -278,7 +278,7 @@ instance : EuclideanDomain ℤ[i] :=
     quotient_zero := by simp [div_def]; rfl
     quotient_mul_add_remainder_eq := fun _ _ => by simp [mod_def]
     r := _
-    r_wellFounded := measure_wf (Int.natAbs ∘ norm)
+    r_wellFounded := (measure (Int.natAbs ∘ norm)).wf
     remainder_lt := natAbs_norm_mod_lt
     mul_left_not_lt := fun a b hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
 
@@ -288,14 +288,17 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
     (hpi : ¬Irreducible (p : ℤ[i])) : ∃ a b, a ^ 2 + b ^ 2 = p :=
   have hpu : ¬IsUnit (p : ℤ[i]) :=
     mt norm_eq_one_iff.2 <| by
-      rw [norm_nat_cast, Int.natAbs_mul, mul_eq_one] <;>
-        exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
+      rw [norm_nat_cast, Int.natAbs_mul, mul_eq_one]
+      exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
-    simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
+    -- Porting note: was
+    -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
+    simpa only [true_and, not_false_iff, exists_prop, irreducible_iff, hpu, not_forall, not_or]
+      using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
-        rw [← Int.coe_nat_inj', Int.coe_nat_pow, sq, ← @norm_nat_cast (-1), hpab] <;> simp).1
+        rw [← Int.coe_nat_inj', Int.coe_nat_pow, sq, ← @norm_nat_cast (-1), hpab]; simp).1
   ⟨a.re.natAbs, a.im.natAbs, by simpa [natAbs_norm_eq, sq] using hnap⟩
 #align gaussian_int.sq_add_sq_of_nat_prime_of_not_irreducible GaussianInt.sq_add_sq_of_nat_prime_of_not_irreducible
 
