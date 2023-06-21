@@ -1676,6 +1676,6 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E']
   iterate 3 rw [← integral_indicator measurableSet_Ioi]
   convert integral_convolution L hf hg using 4 with x
   apply posConvolution_eq_convolution_indicator
-#align integral_pos_convolution integral_pos_convolution
+#align integral_pos_convolution integral_posConvolution
 
 end Nonneg
