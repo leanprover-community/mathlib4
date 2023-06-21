@@ -83,7 +83,7 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
-  --porting note: `nth_rw` didn't work here anymore. artifical workaround
+  --porting note: `nth_rw` didn't work here anymore. artificial workaround
   nth_rw 3 [← Nat.div_add_mod n 4]
   nth_rw 3 [(by norm_num : 4 = 2 * 2)]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ (by norm_num : 0 < 2), pow_add, pow_mul,

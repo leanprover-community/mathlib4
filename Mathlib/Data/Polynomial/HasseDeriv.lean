@@ -148,7 +148,7 @@ set_option linter.uppercaseLean3 false in
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative R _^[k] := by
   induction' k with k ih
   · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
-  ext (f n) : 2
+  ext f n : 2
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
     hasseDeriv_coeff, ← @choose_symm_add _ k]
@@ -242,7 +242,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
   simp only [← finset_sum_apply]
   congr 2
   clear f g
-  ext (m r n s) : 4
+  ext m r n s : 4
   simp only [finset_sum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
              hasseDeriv_monomial, LinearMap.toAddMonoidHom_coe, compHom_apply_apply,
              coe_mul, monomial_mul_monomial]

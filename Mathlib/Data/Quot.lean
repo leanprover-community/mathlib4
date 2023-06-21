@@ -145,7 +145,7 @@ theorem liftOn₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b
 
 variable {t : γ → γ → Prop}
 
-/-- Descends a function `f : α → β → γ` to quotients of `α` and `β` wih values in a quotient of
+/-- Descends a function `f : α → β → γ` to quotients of `α` and `β` with values in a quotient of
 `γ`. -/
 protected def map₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → t (f a b₁) (f a b₂))
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → t (f a₁ b) (f a₂ b)) (q₁ : Quot r) (q₂ : Quot s) : Quot t :=

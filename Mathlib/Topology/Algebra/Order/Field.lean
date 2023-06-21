@@ -223,7 +223,7 @@ instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing
 
--- porting note: todo: generalize to a `GroupWithzero`
+-- porting note: todo: generalize to a `GroupWithZero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]

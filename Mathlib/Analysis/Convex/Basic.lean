@@ -472,11 +472,18 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 #align convex.smul_mem_of_zero_mem Convex.smul_mem_of_zero_mem
 
+theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
+    MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
+  simpa only [mapsTo', segment_eq_image_lineMap] using h.segment_subset hx hy
+
+theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
+    (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
+  h.mapsTo_lineMap hx hy ht
+
 theorem Convex.add_smul_sub_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc (0 : 𝕜) 1) : x + t • (y - x) ∈ s := by
-  apply h.segment_subset hx hy
-  rw [segment_eq_image']
-  exact mem_image_of_mem _ ht
+  rw [add_comm]
+  exact h.lineMap_mem hx hy ht
 #align convex.add_smul_sub_mem Convex.add_smul_sub_mem
 
 /-- Affine subspaces are convex. -/

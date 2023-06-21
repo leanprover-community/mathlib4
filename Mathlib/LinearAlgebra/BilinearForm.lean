@@ -313,7 +313,7 @@ variable {R₂}
 
 theorem flip_flip_aux [Algebra R₂ R] (A : BilinForm R M) :
     (flipHomAux R₂) (flipHomAux R₂ A) = A := by
-  ext (A x y)
+  ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux BilinForm.flip_flip_aux
 
@@ -338,7 +338,7 @@ theorem flip_apply [Algebra R₂ R] (A : BilinForm R M) (x y : M) : flipHom R₂
 
 theorem flip_flip [Algebra R₂ R] :
     (flipHom R₂).trans (flipHom R₂) = LinearEquiv.refl R₂ (BilinForm R M) := by
-  ext (A x y)
+  ext A
   simp
 #align bilin_form.flip_flip BilinForm.flip_flip
 
@@ -641,8 +641,7 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
     (hᵣ : Function.Surjective r) : B₁.comp l r = B₂.comp l r ↔ B₁ = B₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
-    ext x
-    intro y
+    ext x y
     cases' hₗ x with x' hx
     subst hx
     cases' hᵣ y with y' hy
@@ -943,8 +942,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 theorem isSymm_iff_flip' [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
   constructor
   · intro h
-    ext x
-    intro y
+    ext x y
     exact h y x
   · intro h x y
     conv_lhs => rw [← h]
@@ -1031,7 +1029,7 @@ theorem IsAdjointPair.eq (h : IsAdjointPair B B' f g) : ∀ {x y}, B' (f x) y = 
 theorem isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
     IsAdjointPair B F f g ↔ F.compLeft f = B.compRight g := by
   constructor <;> intro h
-  · ext (x y)
+  · ext x
     simp only [compLeft_apply, compRight_apply]
     apply h
   · intro x y

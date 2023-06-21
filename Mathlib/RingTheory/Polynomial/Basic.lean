@@ -54,12 +54,12 @@ variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
 def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : ↑k > n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 #align polynomial.degree_le Polynomial.degreeLE
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLT (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLT
 
 variable {R}
@@ -1212,7 +1212,7 @@ namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  haveI : NormalizationMonoid D:= Inhabited.default
+  haveI : NormalizationMonoid D := Inhabited.default
   haveI := toNormalizedGCDMonoid D
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid

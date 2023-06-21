@@ -21,29 +21,22 @@ We further describe how to apply functors and natural transformations to the val
 presheaves.
 -/
 
+open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
+  CategoryTheory.Functor
 
-universe v u
+variable (C : Type _) [Category C]
 
-open CategoryTheory
-
-open TopCat
-
-open TopologicalSpace
-
-open Opposite
-
-open CategoryTheory.Limits
-
-open CategoryTheory.Category CategoryTheory.Functor
-
-variable (C : Type u) [Category.{v} C]
-
--- attribute [local tidy] tactic.op_induction'
+-- Porting note: removed
+-- local attribute [tidy] tactic.op_induction'
+-- as it isn't needed here. If it is useful elsewhere
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- should suffice, but may need
+-- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
-structure SheafedSpace extends PresheafedSpace.{_, _, v} C where
+structure SheafedSpace extends PresheafedSpace C where
   /-- A sheafed space is presheafed space which happens to be sheaf. -/
   IsSheaf : presheaf.IsSheaf
 set_option linter.uppercaseLean3 false in
@@ -58,30 +51,33 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
+instance coeSort : CoeSort (SheafedSpace C) (Type _) where
+  coe := fun X => X.1
+
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
-def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat.{v}) :=
+def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.sheaf AlgebraicGeometry.SheafedSpace.sheaf
 
 -- Porting note : this is a syntactic tautology, so removed
 -- @[simp]
--- theorem as_coe (X : SheafedSpace.{v} C) : X.carrier = (X : TopCat.{v}) :=
+-- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
--- #align algebraic_geometry.SheafedSpace.as_coe AlgebraicGeometry.SheafedSpace.as_coe
+#noalign algebraic_geometry.SheafedSpace.as_coe
 
 -- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
 theorem mk_coe (carrier) (presheaf) (h) :
   (({ carrier
       presheaf
-      IsSheaf := h } : SheafedSpace.{v} C) : TopCat.{v}) = carrier :=
+      IsSheaf := h } : SheafedSpace C) : TopCat) = carrier :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe
 
-instance (X : SheafedSpace.{v} C) : TopologicalSpace X :=
+instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
 /-- The trivial `unit` valued sheaf on any topological space. -/
@@ -94,11 +90,18 @@ instance : Inhabited (SheafedSpace (Discrete Unit)) :=
   ⟨unit (TopCat.of PEmpty)⟩
 
 instance : Category (SheafedSpace C) :=
-  show Category (InducedCategory (PresheafedSpace.{_, _, v} C) SheafedSpace.toPresheafedSpace) by
+  show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
+-- Porting note: adding an ext lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
+    (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
+  PresheafedSpace.ext α β w h
+
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
-def forgetToPresheafedSpace : SheafedSpace.{v} C ⥤ PresheafedSpace.{_, _, v} C :=
+def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
@@ -109,9 +112,8 @@ instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C)
 
 -- Porting note : can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
-  map_injective h := h
 
-instance is_presheafedSpace_iso {X Y : SheafedSpace.{v} C} (f : X ⟶ Y) [IsIso f] :
+instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
   SheafedSpace.forgetToPresheafedSpace.map_isIso f
 set_option linter.uppercaseLean3 false in
@@ -122,7 +124,7 @@ section
 attribute [local simp] id comp
 
 @[simp]
-theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat.{v}) :=
+theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_base AlgebraicGeometry.SheafedSpace.id_base
@@ -135,12 +137,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_c_app (X : SheafedSpace C) (U) :
-    (𝟙 X : X ⟶ X).c.app U =
-    eqToHom (by induction U using Opposite.rec' with | h U => ?_; cases U; rfl) := by
-  induction U using Opposite.rec' with | h U => ?_
-  cases U
-  simp only [id_c]
-  rw [eqToHom_app]
+    (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
+  aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c_app AlgebraicGeometry.SheafedSpace.id_c_app
 
@@ -174,7 +172,7 @@ variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
-  obj X := (X : TopCat.{v})
+  obj X := (X : TopCat)
   map {X Y} f := f.base
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget AlgebraicGeometry.SheafedSpace.forget
@@ -185,7 +183,7 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : OpenEmbedding f) :
     SheafedSpace C :=
   { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_openEmbedding h X.IsSheaf }
 set_option linter.uppercaseLean3 false in
@@ -242,7 +240,7 @@ noncomputable instance [HasLimits C] :
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
 instance [HasLimits C] : HasColimits (SheafedSpace C) :=
-  has_colimits_of_has_colimits_creates_colimits forgetToPresheafedSpace
+  hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
 noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)

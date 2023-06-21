@@ -97,16 +97,18 @@ def WalkingParallelPairHom.comp :
 #align category_theory.limits.walking_parallel_pair_hom.comp CategoryTheory.Limits.WalkingParallelPairHom.comp
 
 -- Porting note: adding these since they are simple and aesop couldn't directly prove them
-theorem WalkingParallelPairHom.id_comp {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y):
-    comp (id X) g = g := rfl
+theorem WalkingParallelPairHom.id_comp
+    {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y) : comp (id X) g = g :=
+  rfl
 
-theorem WalkingParallelPairHom.comp_id {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y):
-    comp f (id Y) = f := by cases f <;> rfl
+theorem WalkingParallelPairHom.comp_id
+    {X Y : WalkingParallelPair} (f : WalkingParallelPairHom X Y) : comp f (id Y) = f := by
+  cases f <;> rfl
 
 theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
     (f : WalkingParallelPairHom X Y) (g: WalkingParallelPairHom Y Z)
     (h : WalkingParallelPairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
-    cases f <;> cases g <;> cases h <;> rfl
+  cases f <;> cases g <;> cases h <;> rfl
 
 instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair where
   Hom := WalkingParallelPairHom
@@ -122,7 +124,7 @@ theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPai
   rfl
 #align category_theory.limits.walking_parallel_pair_hom_id CategoryTheory.Limits.walkingParallelPairHom_id
 
--- Porting note: simpNF asked me to do this becasue the LHS of the non-primed version reduced
+-- Porting note: simpNF asked me to do this because the LHS of the non-primed version reduced
 @[simp]
 theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
     (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl
@@ -131,10 +133,10 @@ theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
 right.
 -/
 def walkingParallelPairOp : WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ where
-  obj x := op <| by cases x; exacts[one, zero]
+  obj x := op <| by cases x; exacts [one, zero]
   map f := by
     cases f <;> apply Quiver.Hom.op
-    exacts[left, right, WalkingParallelPairHom.id _]
+    exacts [left, right, WalkingParallelPairHom.id _]
   map_comp := by rintro _ _ _ (_|_|_) g <;> cases g <;> rfl
 #align category_theory.limits.walking_parallel_pair_op CategoryTheory.Limits.walkingParallelPairOp
 
@@ -169,11 +171,11 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       (by rintro _ _ (_ | _ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
-            induction' j using Opposite.rec with X
+            induction' j with X
             cases X <;> rfl ))
       (fun {i} {j} f => by
-      induction' i using Opposite.rec with i
-      induction' j using Opposite.rec with j
+      induction' i with i
+      induction' j with j
       let g := f.unop
       have : f = g.op := rfl
       rw [this]
@@ -249,7 +251,7 @@ theorem parallelPair_functor_obj {F : WalkingParallelPair ⥤ C} (j : WalkingPar
 @[simps!]
 def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
-  (NatIso.ofComponents fun j => eqToIso <| by cases j <;> rfl) <| by rintro _ _ (_|_|_) <;> simp
+  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_|_|_) <;> simp)
 #align category_theory.limits.diagram_iso_parallel_pair CategoryTheory.Limits.diagramIsoParallelPair
 
 /-- Construct a morphism between parallel pairs. -/
@@ -287,7 +289,7 @@ def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.
   NatIso.ofComponents
     (by
       rintro ⟨j⟩
-      exacts[zero, one])
+      exacts [zero, one])
     (by rintro _ _ ⟨_⟩ <;> simp [left, right])
 #align category_theory.limits.parallel_pair.ext CategoryTheory.Limits.parallelPair.ext
 
@@ -688,7 +690,8 @@ it suffices to give an isomorphism between the cone points
 and check that it commutes with the `ι` morphisms.
 -/
 @[simps]
-def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι) : s ≅ t where
+def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by aesop_cat) :
+    s ≅ t where
   hom := Fork.mkHom i.hom w
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 #align category_theory.limits.fork.ext CategoryTheory.Limits.Fork.ext
@@ -724,8 +727,8 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 @[simps]
-def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π) : s ≅ t
-    where
+def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by aesop_cat) :
+    s ≅ t where
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 #align category_theory.limits.cofork.ext CategoryTheory.Limits.Cofork.ext
@@ -912,7 +915,7 @@ theorem equalizer.isoSourceOfSelf_hom : (equalizer.isoSourceOfSelf f).hom = equa
 @[simp]
 theorem equalizer.isoSourceOfSelf_inv :
     (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
-  apply equalizer.hom_ext
+  ext
   simp [equalizer.isoSourceOfSelf]
 #align category_theory.limits.equalizer.iso_source_of_self_inv CategoryTheory.Limits.equalizer.isoSourceOfSelf_inv
 
@@ -1097,7 +1100,7 @@ noncomputable def coequalizer.isoTargetOfSelf : coequalizer f f ≅ Y :=
 @[simp]
 theorem coequalizer.isoTargetOfSelf_hom :
     (coequalizer.isoTargetOfSelf f).hom = coequalizer.desc (𝟙 Y) (by simp) := by
-  apply coequalizer.hom_ext
+  ext
   simp [coequalizer.isoTargetOfSelf]
 #align category_theory.limits.coequalizer.iso_target_of_self_hom CategoryTheory.Limits.coequalizer.isoTargetOfSelf_hom
 

@@ -100,7 +100,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
     refine' ⟨a + gmin, mem_support_iff.mpr _⟩
     rw [mul_apply_add_eq_mul_of_forall_ne _]
     · refine' mul_ne_zero _ _
-      exacts[mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
+      exacts [mem_support_iff.mp ha, mem_support_iff.mp (Finset.min'_mem _ _)]
     · rw [H]
       rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
       · refine' lt_of_lt_of_le (_ : _ < b + gmin) _
@@ -139,7 +139,7 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
     refine' ⟨fmin + a, mem_support_iff.mpr _⟩
     rw [mul_apply_add_eq_mul_of_forall_ne _]
     · refine' mul_ne_zero _ _
-      exacts[mem_support_iff.mp (Finset.min'_mem _ _), mem_support_iff.mp ha]
+      exacts [mem_support_iff.mp (Finset.min'_mem _ _), mem_support_iff.mp ha]
     · rw [H]
       rintro b c bf cg (hb | hc) <;> refine' ne_of_gt _
       · refine' lt_of_le_of_lt (_ : _ ≤ fmin + c) _

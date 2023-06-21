@@ -1435,7 +1435,7 @@ def ConnectedComponents (α : Type u) [TopologicalSpace α] :=
 
 namespace ConnectedComponents
 
-/-- Coersion from a topological space to the set of connected components of this space. -/
+/-- Coercion from a topological space to the set of connected components of this space. -/
 def mk : α → ConnectedComponents α := Quotient.mk''
 
 instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩

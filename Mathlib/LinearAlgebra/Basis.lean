@@ -387,7 +387,7 @@ def mapCoeffs : Basis ι R' M := by
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically infered from the definition of
+    -- Porting note: in Lean 3, these were automatically inferred from the definition of
     -- `mapCoeffs`.
     letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
     haveI : IsScalarTower R' R M :=
@@ -831,7 +831,7 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
 
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
@@ -1103,9 +1103,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
     ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
   simp_rw [Finsupp.total_apply] at e
-  -- Porting note: `change at` doesn't work
-  replace e : ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) =
-      ((⟨x, p⟩ : w) : M) := e
+  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
   refine' hi.total_ne_of_not_mem_support _ _ e
@@ -1437,7 +1435,7 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 The specific value of this definition should be considered an implementation detail.
 -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+  LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=

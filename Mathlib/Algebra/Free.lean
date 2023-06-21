@@ -39,6 +39,7 @@ inductive FreeAddMagma (α : Type u) : Type u
   | add : FreeAddMagma α → FreeAddMagma α → FreeAddMagma α
   deriving DecidableEq
 #align free_add_magma FreeAddMagma
+compile_inductive% FreeAddMagma
 
 /-- Free magma over a given alphabet. -/
 @[to_additive]
@@ -47,6 +48,7 @@ inductive FreeMagma (α : Type u) : Type u
   | mul : FreeMagma α → FreeMagma α → FreeMagma α
   deriving DecidableEq
 #align free_magma FreeMagma
+compile_inductive% FreeMagma
 
 namespace FreeMagma
 
@@ -75,8 +77,7 @@ attribute [nolint simpNF] FreeMagma.mul.injEq
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
 @[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMagma` using `x + y` instead of
 `FreeAddMagma.add x y`."]
--- Porting note: added noncomputable
-noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
+def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
 #align free_magma.rec_on_mul FreeMagma.recOnMul
@@ -118,8 +119,7 @@ def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
     map_mul' := fun x y ↦ rfl }
   invFun F := F ∘ of
   left_inv f := by rfl
--- Porting note: replaced ext by FreeMagma.hom_ext
-  right_inv F := FreeMagma.hom_ext (rfl)
+  right_inv F := by ext; rfl
 #align free_magma.lift FreeMagma.lift
 
 @[to_additive (attr := simp)]
@@ -164,8 +164,7 @@ instance : Monad FreeMagma where
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
 @[to_additive (attr := elab_as_elim) "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
--- Porting note: added noncomputable
-protected noncomputable def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
+protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
@@ -444,20 +443,22 @@ end Magma
 
 /-- Free additive semigroup over a given alphabet. -/
 structure FreeAddSemigroup (α : Type u) where
-/-- The head of the element -/
+  /-- The head of the element -/
   head : α
-/-- The tail of the element -/
+  /-- The tail of the element -/
   tail : List α
 #align free_add_semigroup FreeAddSemigroup
+compile_inductive% FreeAddSemigroup
 
 /-- Free semigroup over a given alphabet. -/
 @[to_additive (attr := ext)]
 structure FreeSemigroup (α : Type u) where
-/-- The head of the element -/
+  /-- The head of the element -/
   head : α
-/-- The tail of the element -/
+  /-- The tail of the element -/
   tail : List α
 #align free_semigroup FreeSemigroup
+compile_inductive% FreeSemigroup
 
 namespace FreeSemigroup
 
@@ -466,7 +467,7 @@ variable {α : Type u}
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
--- Porting note: replaced ext by FreeSemigroup.ext
+  -- Porting note: replaced ext by FreeSemigroup.ext
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
@@ -482,7 +483,7 @@ theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++
 #align free_semigroup.mk_mul_mk FreeSemigroup.mk_mul_mk
 
 /-- The embedding `α → FreeSemigroup α`. -/
-@[to_additive (attr := simps) "The embedding `α → free_add_semigroup α`."]
+@[to_additive (attr := simps) "The embedding `α → FreeAddSemigroup α`."]
 def of (x : α) : FreeSemigroup α := ⟨x, []⟩
 #align free_semigroup.of FreeSemigroup.of
 
@@ -505,8 +506,7 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
--- Porting note: added noncomputable
-protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
+protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦
       List.recOn s ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
@@ -587,8 +587,7 @@ instance : Monad FreeSemigroup where
 
 /-- Recursor that uses `pure` instead of `of`. -/
 @[to_additive (attr := elab_as_elim) "Recursor that uses `pure` instead of `of`."]
--- Porting note: added noncomputable
-noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
+def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
@@ -631,15 +630,13 @@ instance : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
 
 /-- `FreeSemigroup` is traversable. -/
 @[to_additive "`FreeAddSemigroup` is traversable."]
--- Porting note: added noncomputable
-protected noncomputable def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
+protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) (x : FreeSemigroup α) : m (FreeSemigroup β) :=
   recOnPure x (fun x ↦ pure <$> F x) fun _x _y ihx ihy ↦ (· * ·) <$> ihx <*> ihy
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
--- Porting note: added noncomputable
-noncomputable instance : Traversable FreeSemigroup := ⟨@FreeSemigroup.traverse⟩
+instance : Traversable FreeSemigroup := ⟨@FreeSemigroup.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
@@ -686,9 +683,8 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
 
--- Porting note: Added noncomputable
 @[to_additive]
-noncomputable instance : IsLawfulTraversable FreeSemigroup.{u} :=
+instance : IsLawfulTraversable FreeSemigroup.{u} :=
   { instLawfulMonadFreeSemigroupInstMonadFreeSemigroup with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by

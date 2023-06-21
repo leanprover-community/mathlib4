@@ -944,7 +944,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
 
 theorem eq_pow_of_pell {m n k} :
     n ^ k = m ↔ k = 0 ∧ m = 1 ∨0 < k ∧ (n = 0 ∧ m = 0 ∨
-      0 < n ∧ ∃ (w a t z : ℕ)(a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
+      0 < n ∧ ∃ (w a t z : ℕ) (a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
       2 * a * n = t + (n * n + 1) ∧ m < t ∧
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
   constructor

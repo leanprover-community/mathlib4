@@ -1041,9 +1041,9 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
 
   · apply max_le <;> rw [← lift_id (#α →₀ β), ← lift_umax]
     · cases' exists_ne (0 : β) with b hb
-      exact lift_mk_le.{u, max u v, v}.2 ⟨⟨_, Finsupp.single_left_injective hb⟩⟩
+      exact lift_mk_le.{v}.2 ⟨⟨_, Finsupp.single_left_injective hb⟩⟩
     · inhabit α
-      exact lift_mk_le.{v, max u v, u}.2 ⟨⟨_, Finsupp.single_injective default⟩⟩
+      exact lift_mk_le.{u}.2 ⟨⟨_, Finsupp.single_injective default⟩⟩
 #align cardinal.mk_finsupp_lift_of_infinite Cardinal.mk_finsupp_lift_of_infinite
 
 theorem mk_finsupp_of_infinite (α β : Type u) [Infinite α] [Zero β] [Nontrivial β] :
@@ -1057,7 +1057,7 @@ theorem mk_finsupp_lift_of_infinite' (α : Type u) (β : Type v) [Nonempty α] [
   · rw [mk_finsupp_lift_of_fintype]
     have : ℵ₀ ≤ (#β).lift := aleph0_le_lift.2 (aleph0_le_mk β)
     rw [max_eq_right (le_trans _ this), power_nat_eq this]
-    exacts[Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
+    exacts [Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
   · apply mk_finsupp_lift_of_infinite
 #align cardinal.mk_finsupp_lift_of_infinite' Cardinal.mk_finsupp_lift_of_infinite'
 

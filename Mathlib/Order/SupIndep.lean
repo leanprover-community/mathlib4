@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 
 ! This file was ported from Lean 3 source module order.sup_indep
-! leanprover-community/mathlib commit 1c857a1f6798cb054be942199463c2cf904cb937
+! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
@@ -89,12 +90,42 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
     sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| not_mem_singleton.2 hab
 #align finset.sup_indep.pairwise_disjoint Finset.SupIndep.pairwiseDisjoint
 
+theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
+    f i ≤ t.sup f ↔ i ∈ t := by
+  refine' ⟨fun h => _, le_sup⟩
+  by_contra hit
+  exact hf i (disjoint_self.1 <| (hs hts hi hit).mono_right h)
+#align finset.sup_indep.le_sup_iff Finset.SupIndep.le_sup_iff
+
 /-- The RHS looks like the definition of `CompleteLattice.Independent`. -/
 theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
     s.SupIndep f ↔ ∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f) :=
   ⟨fun hs _ hi => hs (erase_subset _ _) hi (not_mem_erase _ _), fun hs _ ht i hi hit =>
     (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 #align finset.sup_indep_iff_disjoint_erase Finset.supIndep_iff_disjoint_erase
+
+theorem SupIndep.image [DecidableEq ι] {s : Finset ι'} {g : ι' → ι} (hs : s.SupIndep (f ∘ g)) :
+    (s.image g).SupIndep f := by
+  intro t ht i hi hit
+  rw [mem_image] at hi
+  obtain ⟨i, hi, rfl⟩ := hi
+  haveI : DecidableEq ι' := Classical.decEq _
+  suffices hts : t ⊆ (s.erase i).image g
+  · refine' (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
+    rw [sup_image]
+  rintro j hjt
+  obtain ⟨j, hj, rfl⟩ := mem_image.1 (ht hjt)
+  exact mem_image_of_mem _ (mem_erase.2 ⟨ne_of_apply_ne g (ne_of_mem_of_not_mem hjt hit), hj⟩)
+#align finset.sup_indep.image Finset.SupIndep.image
+
+theorem supIndep_map {s : Finset ι'} {g : ι' ↪ ι} : (s.map g).SupIndep f ↔ s.SupIndep (f ∘ g) := by
+  refine' ⟨fun hs t ht i hi hit => _, fun hs => _⟩
+  · rw [← sup_map]
+    exact hs (map_subset_map.2 ht) ((mem_map' _).2 hi) (by rwa [mem_map'])
+  · classical
+    rw [map_eq_image]
+    exact hs.image
+#align finset.sup_indep_map Finset.supIndep_map
 
 @[simp]
 theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
@@ -131,15 +162,38 @@ theorem supIndep_univ_fin_two (f : Fin 2 → α) :
   supIndep_pair this
 #align finset.sup_indep_univ_fin_two Finset.supIndep_univ_fin_two
 
-theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep (f ∘ Subtype.val) := by
+theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := by
   intro t _ i _ hi
   classical
-    rw [← Finset.sup_image]
+    have : (fun (a : { x // x ∈ s }) => f ↑a) = f ∘ (fun a : { x // x ∈ s } => ↑a) := rfl
+    rw [this, ← Finset.sup_image]
     refine' hs (image_subset_iff.2 fun (j : { x // x ∈ s }) _ => j.2) i.2 fun hi' => hi _
     rw [mem_image] at hi'
     obtain ⟨j, hj, hji⟩ := hi'
     rwa [Subtype.ext hji] at hj
 #align finset.sup_indep.attach Finset.SupIndep.attach
+
+/-
+Porting note: simpNF linter returns
+
+"Left-hand side does not simplify, when using the simp lemma on itself."
+
+However, simp does indeed solve the following. leanprover/std4#71 is related.
+
+example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
+  (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by simp
+-/
+@[simp, nolint simpNF]
+theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
+  refine' ⟨fun h t ht i his hit => _, SupIndep.attach⟩
+  classical
+  convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
+    fun hi => hit <| by simpa using hi using 1
+  refine' eq_of_forall_ge_iff _
+  simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and_iff, Function.comp_apply,
+    Subtype.forall, Subtype.coe_mk]
+  exact fun a => forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
+#align finset.sup_indep_attach Finset.supIndep_attach
 
 end Lattice
 
@@ -172,6 +226,53 @@ theorem SupIndep.biUnion [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset �
   rw [← sup_eq_biUnion]
   exact hs.sup hg
 #align finset.sup_indep.bUnion Finset.SupIndep.biUnion
+
+/-- Bind operation for `sup_indep`. -/
+theorem SupIndep.sigma {β : ι → Type _} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
+    (hs : s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
+    (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
+  rintro t ht ⟨i, b⟩ hi hit
+  rw [Finset.disjoint_sup_right]
+  rintro ⟨j, c⟩ hj
+  have hbc := (ne_of_mem_of_not_mem hj hit).symm
+  replace hj := ht hj
+  rw [mem_sigma] at hi hj
+  obtain rfl | hij := eq_or_ne i j
+  · exact (hg _ hj.1).pairwiseDisjoint hi.2 hj.2 (sigma_mk_injective.ne_iff.1 hbc)
+  · refine' (hs.pairwiseDisjoint hi.1 hj.1 hij).mono _ _
+    · convert le_sup (α := α) hi.2; simp
+    · convert le_sup (α := α) hj.2; simp
+#align finset.sup_indep.sigma Finset.SupIndep.sigma
+
+theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
+    (hs : s.SupIndep fun i => t.sup fun i' => f (i, i'))
+    (ht : t.SupIndep fun i' => s.sup fun i => f (i, i')) : (s ×ˢ t).SupIndep f := by
+  rintro u hu ⟨i, i'⟩ hi hiu
+  rw [Finset.disjoint_sup_right]
+  rintro ⟨j, j'⟩ hj
+  have hij := (ne_of_mem_of_not_mem hj hiu).symm
+  replace hj := hu hj
+  rw [mem_product] at hi hj
+  obtain rfl | hij := eq_or_ne i j
+  · refine' (ht.pairwiseDisjoint hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 hij).mono _ _
+    · convert le_sup (α := α) hi.1; simp
+    · convert le_sup (α := α) hj.1; simp
+  · refine' (hs.pairwiseDisjoint hi.1 hj.1 hij).mono _ _
+    · convert le_sup (α := α) hi.2; simp
+    · convert le_sup (α := α) hj.2; simp
+#align finset.sup_indep.product Finset.SupIndep.product
+
+theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
+    (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
+      ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
+  refine' ⟨_, fun h => h.1.product h.2⟩
+  simp_rw [supIndep_iff_pairwiseDisjoint]
+  refine' fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩ <;>
+      simp_rw [Function.onFun, Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
+    intro i' hi' j' hj'
+  · exact h (mk_mem_product hi hi') (mk_mem_product hj hj') (ne_of_apply_ne Prod.fst hij)
+  · exact h (mk_mem_product hi' hi) (mk_mem_product hj' hj) (ne_of_apply_ne Prod.snd hij)
+#align finset.sup_indep_product_iff Finset.supIndep_product_iff
 
 end DistribLattice
 
@@ -240,7 +341,7 @@ theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : 
   and only the natural map from the direct sum of the submodules to the module is injective. -/
 -- Porting note: needed to use `_H`
 def Independent {ι : Sort _} {α : Type _} [CompleteLattice α] (t : ι → α) : Prop :=
-  ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j)
+  ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 #align complete_lattice.independent CompleteLattice.Independent
 
 theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
@@ -252,7 +353,7 @@ theorem setIndependent_iff {α : Type _} [CompleteLattice α] (s : Set α) :
 
 variable {t : ι → α} (ht : Independent t)
 
-theorem independent_def : Independent t ↔ ∀ i : ι, Disjoint (t i) (⨆ (j) (_H : j ≠ i), t j) :=
+theorem independent_def : Independent t ↔ ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j) :=
   Iff.rfl
 #align complete_lattice.independent_def CompleteLattice.independent_def
 
@@ -262,7 +363,7 @@ theorem independent_def' : Independent t ↔ ∀ i, Disjoint (t i) (sSup (t '' {
 #align complete_lattice.independent_def' CompleteLattice.independent_def'
 
 theorem independent_def'' :
-    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _)(_ : j ≠ i), t j = a }) := by
+    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _) (_ : j ≠ i), t j = a }) := by
   rw [independent_def']
   aesop
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''
@@ -313,7 +414,7 @@ theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ �
   intro i j h
   by_contra' contra
   apply h_ne_bot j
-  suffices t j ≤ ⨆ (k) (_hk : k ≠ i), t k by
+  suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i
@@ -334,8 +435,8 @@ theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k 
       rw [(huniv j).resolve_right hj]
 #align complete_lattice.independent_pair CompleteLattice.independent_pair
 
-/-- Composing an indepedent indexed family with an order isomorphism on the elements results in
-another indepedendent indexed family. -/
+/-- Composing an independent indexed family with an order isomorphism on the elements results in
+another independent indexed family. -/
 theorem Independent.map_orderIso {ι : Sort _} {α β : Type _} [CompleteLattice α]
     [CompleteLattice β] (f : α ≃o β) {a : ι → α} (ha : Independent a) : Independent (f ∘ a) :=
   fun i => ((ha i).map_orderIso f).mono_right (f.monotone.le_map_iSup₂ _)

@@ -306,7 +306,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
-  ext (i j)
+  ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe
@@ -316,7 +316,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
     refine' fun h => algHom_ext _
-  exacts[h, conj_I.symm ▸ h]
+  exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/

@@ -280,7 +280,7 @@ variable [DecidableEq α] {a b c : α}
 
 instance : Inf (Finpartition a) :=
   ⟨fun P Q ↦
-    ofErase ((P.parts ×ᶠ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
+    ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
         rw [supIndep_iff_disjoint_erase]
         simp only [mem_image, and_imp, exists_prop, forall_exists_index, id.def, Prod.exists,
@@ -300,7 +300,7 @@ instance : Inf (Finpartition a) :=
 
 @[simp]
 theorem parts_inf (P Q : Finpartition a) :
-    (P ⊓ Q).parts = ((P.parts ×ᶠ Q.parts).image fun bc : α × α ↦ bc.1 ⊓ bc.2).erase ⊥ :=
+    (P ⊓ Q).parts = ((P.parts ×ˢ Q.parts).image fun bc : α × α ↦ bc.1 ⊓ bc.2).erase ⊥ :=
   rfl
 #align finpartition.parts_inf Finpartition.parts_inf
 
@@ -561,7 +561,7 @@ variable {F : Finset (Finset α)}
    (Q «expr ⊆ » F) -/
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
-      t.Nonempty ∧ ∃ (Q : _)(_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
+      t.Nonempty ∧ ∃ (Q : _) (_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
   simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, nonempty_iff_ne_empty,
     mem_singleton, and_comm, mem_powerset, exists_prop]
 #align finpartition.mem_atomise Finpartition.mem_atomise
