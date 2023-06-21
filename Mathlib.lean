@@ -2487,6 +2487,7 @@ import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.Stopping
+import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
