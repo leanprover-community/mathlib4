@@ -8,8 +8,8 @@ Authors: Michail Karatarakis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.LocalRing
-import Mathbin.RingTheory.Valuation.ValuationSubring
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Ramification groups
@@ -35,8 +35,7 @@ def decompositionSubgroup (A : ValuationSubring L) : Subgroup (L ≃ₐ[K] L) :=
 
 /-- The valuation subring `A` (considered as a subset of `L`)
 is stable under the action of the decomposition group. -/
-def subMulAction (A : ValuationSubring L) : SubMulAction (A.decompositionSubgroup K) L
-    where
+def subMulAction (A : ValuationSubring L) : SubMulAction (A.decompositionSubgroup K) L where
   carrier := A
   smul_mem' g l h := Set.mem_of_mem_of_subset (Set.smul_mem_smul_set h) g.Prop.le
 #align valuation_subring.sub_mul_action ValuationSubring.subMulAction
