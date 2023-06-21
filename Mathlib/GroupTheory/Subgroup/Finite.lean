@@ -129,6 +129,11 @@ theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
+theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
+  rw [Fintype.card_eq]
+  exact Nonempty.intro Subgroup.topEquiv.toEquiv
+
+@[to_additive]
 theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
     H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
@@ -172,6 +177,9 @@ theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
+
+@[to_additive]
+theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G := Fintype.card_le_of_injective _ Subtype.coe_injective
 
 end Subgroup
 
