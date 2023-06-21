@@ -56,7 +56,7 @@ theorem card_functions_sum_skolem₁ :
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
   · refine' sum_le_sum _ _ fun n => _
-    rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{_, _, v}]
+    rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{_, max u v, v}]
     refine' ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => _⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
     rfl
