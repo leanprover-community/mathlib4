@@ -126,7 +126,7 @@ theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
 
 @[simp]
 theorem areaForm_neg_orientation : (-o).areaForm = -o.areaForm := by
-  ext (x y)
+  ext x y
   simp [areaForm_to_volumeForm]
 #align orientation.area_form_neg_orientation Orientation.areaForm_neg_orientation
 

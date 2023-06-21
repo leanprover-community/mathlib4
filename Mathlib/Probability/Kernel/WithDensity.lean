@@ -95,7 +95,7 @@ theorem integral_withDensity {E : Type _} [NormedAddCommGroup E] [NormedSpace �
 theorem withDensity_add_left (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
-  · ext (a s); intro
+  · ext a s
     simp only [kernel.withDensity_apply _ hf, coeFn_add, Pi.add_apply, withDensity_add_measure,
       Measure.add_apply]
   · simp_rw [withDensity_of_not_measurable _ hf]
@@ -119,7 +119,7 @@ theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ]
     withDensity κ (∑' n, f n) = kernel.sum fun n => withDensity κ (f n) := by
   have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable
   have h_sum : Summable fun n => f n := Pi.summable.mpr h_sum_a
-  ext (a s); intro hs
+  ext a s hs
   rw [sum_apply' _ a hs, withDensity_apply' κ _ a hs]
   swap
   · have : Function.uncurry (∑' n, f n) = ∑' n, Function.uncurry (f n) := by
@@ -187,7 +187,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       intro n hn_not_mem
       rw [Finset.mem_range, not_lt] at hn_not_mem
       exact h_zero a b n hn_not_mem
-    ext (a b) : 2
+    ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
     have h_finset_sum : ∀ n, ∑ i in Finset.range n, fs i a b = min (f a b) n := by

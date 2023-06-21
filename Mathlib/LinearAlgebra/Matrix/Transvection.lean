@@ -100,7 +100,7 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
     updateRow (1 : Matrix n n R) i ((1 : Matrix n n R) i + c • (1 : Matrix n n R) j) =
       transvection i j c := by
   cases nonempty_fintype n
-  ext (a b)
+  ext a b
   by_cases ha : i = a; by_cases hb : j = b
   · simp only [updateRow_self, transvection, ha, hb, Pi.add_apply, StdBasisMatrix.apply_same,
       one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul, add_apply]
@@ -255,7 +255,7 @@ def sumInl (t : TransvectionStruct n R) : TransvectionStruct (Sum n p) R where
 theorem toMatrix_sumInl (t : TransvectionStruct n R) :
     (t.sumInl p).toMatrix = fromBlocks t.toMatrix 0 0 1 := by
   cases t
-  ext (a b)
+  ext a b
   cases' a with a a <;> cases' b with b b
   · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h, stdBasisMatrix]
   · simp [TransvectionStruct.sumInl, transvection]
@@ -299,7 +299,7 @@ variable [Fintype n] [Fintype p]
 theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R e t.toMatrix := by
   rcases t with ⟨t_i, t_j, _⟩
-  ext (a b)
+  ext a b
   simp only [reindexEquiv, transvection, mul_boole, Algebra.id.smul_eq_mul, toMatrix_mk,
     submatrix_apply, reindex_apply, DMatrix.add_apply, Pi.smul_apply, reindexAlgEquiv_apply]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>
@@ -525,10 +525,10 @@ theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
     (hM : M (inr unit) (inr unit) ≠ 0) :
     IsTwoBlockDiagonal ((listTransvecCol M).prod ⬝ M ⬝ (listTransvecRow M).prod) := by
   constructor
-  · ext (i j)
+  · ext i j
     have : j = unit := by simp only [eq_iff_true_of_subsingleton]
     simp [toBlocks₁₂, this, listTransvecCol_mul_mul_listTransvecRow_last_row M hM]
-  · ext (i j)
+  · ext i j
     have : i = unit := by simp only [eq_iff_true_of_subsingleton]
     simp [toBlocks₂₁, this, listTransvecCol_mul_mul_listTransvecRow_last_col M hM]
 #align matrix.pivot.is_two_block_diagonal_list_transvec_col_mul_mul_list_transvec_row Matrix.Pivot.isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
@@ -654,7 +654,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
       (L.map toMatrix).prod ⬝ M ⬝ (L'.map toMatrix).prod = diagonal D := by
   induction' hn : Fintype.card n with r IH generalizing n M
   · refine' ⟨List.nil, List.nil, fun _ => 1, _⟩
-    ext (i j)
+    ext i j
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
   · have e : n ≃ Sum (Fin r) Unit := by

@@ -891,6 +891,7 @@ theorem srange_top_iff_surjective {f : F} :
 #align non_unital_ring_hom.srange_top_iff_surjective NonUnitalRingHom.srange_top_iff_surjective
 
 /-- The range of a surjective non-unital ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem srange_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
     srange f = (⊤ : NonUnitalSubsemiring S) :=
   srange_top_iff_surjective.2 hf
