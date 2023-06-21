@@ -49,7 +49,7 @@ namespace ProbabilityTheory
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 -- Porting note: this lemma replaces `ENNReal.toReal_bit0`, which does not exist in Lean 4
-private lemma coe : ENNReal.toReal 2 = (2 : ℝ) := rfl
+private lemma coe_two : ENNReal.toReal 2 = (2 : ℝ) := rfl
 
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `(X - 𝔼[X])^2`. -/
@@ -69,7 +69,7 @@ theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX :
     evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
   rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, ← ENNReal.rpow_two] at this
-  simp only [coe, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
+  simp only [coe_two, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
@@ -82,7 +82,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
     refine' ⟨hXm.sub aestronglyMeasurable_const, _⟩
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [coe, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
+    simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne.def]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine' hX _
   convert this.add (memℒp_const <| μ[X])
@@ -123,7 +123,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
     rename_i ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, coe, ENNReal.one_toReal,
+    simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq_of_integral_eq_zero MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero
@@ -136,7 +136,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
     rename_i ω
-    simp only [Pi.sub_apply, Real.norm_eq_abs, coe, ENNReal.one_toReal,
+    simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
 #align measure_theory.mem_ℒp.variance_eq MeasureTheory.Memℒp.variance_eq
@@ -258,7 +258,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
-      coe, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
+      coe_two, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact_mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
@@ -273,7 +273,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
       NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
   · rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [show ENNReal.some (c ^ 2) = (ENNReal.some c) ^ 2 by norm_cast, coe, one_div,
+    simp only [show ENNReal.some (c ^ 2) = (ENNReal.some c) ^ 2 by norm_cast, coe_two, one_div,
       Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
