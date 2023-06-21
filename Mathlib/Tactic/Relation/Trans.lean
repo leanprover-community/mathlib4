@@ -137,21 +137,7 @@ def _root_.Lean.MVarId.trans (g : MVarId) (y? : Option Expr := none) (userFacing
       s.restore
   throwError "no trans lemmas applied"
 
-/-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
-def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
-  match rel with
-  | Expr.app rel' _ => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel' #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if !check then
-      return (rel, x)
-    else
-      getExplicitRelArgCore tgt rel' x z
-  | _ => return (rel ,x)
+open Lean.Elab.Tactic
 
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
@@ -160,70 +146,17 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 -/
-elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
-  let tgt ← getMainTarget''
-  let (rel, x, z) ←
-    match tgt with
-    | Expr.app f z =>
-      match (← getExplicitRelArg? tgt f z) with
-      | some (rel, x) =>
-        let (rel, x) ← getExplicitRelArgCore tgt rel x z
-        pure (rel, x, z)
-      | none => throwError "transitivity lemmas only apply to
-        binary relations, not {indentExpr tgt}"
-    | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  trace[Tactic.trans]"goal decomposed"
-  trace[Tactic.trans]"rel: {indentExpr rel}"
-  trace[Tactic.trans]"x: {indentExpr x}"
-  trace[Tactic.trans]"z: {indentExpr z}"
-  -- first trying the homogeneous case
-  try
-    let ty ← inferType x
-    let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
-    let s ← saveState
-    trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
-      trace[Tactic.trans]"trying lemma {lem}"
-      try
-        liftMetaTactic fun g ↦ do
-          let lemTy ← inferType (← mkConstWithLevelParams lem)
-          let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-          let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
-          let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-          let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-          g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-          pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-        return
-      catch _ => s.restore
-    pure ()
-  catch _ =>
-  trace[Tactic.trans]"trying heterogeneous case"
-  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
-  let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
-    try
-      liftMetaTactic fun g ↦ do
-        trace[Tactic.trans]"trying lemma {lem}"
-        let lemTy ← inferType (← mkConstWithLevelParams lem)
-        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-        trace[Tactic.trans]"arity: {arity}"
-        trace[Tactic.trans]"lemma-type: {lemTy}"
-        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
-        trace[Tactic.trans]"obtained y: {y}"
-        trace[Tactic.trans]"rel: {indentExpr rel}"
-        trace[Tactic.trans]"x:{indentExpr x}"
-        trace[Tactic.trans]"z:  {indentExpr z}"
-        let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-        trace[Tactic.trans]"obtained g₂: {g₂}"
-        let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-        trace[Tactic.trans]"obtained g₁: {g₁}"
-        g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-      return
-    catch e =>
-      trace[Tactic.trans]"failed: {e.toMessageData}"
-      s.restore
-
-  throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
-"
+elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
+  let yGoals? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
+  let (y?, goals?) := match yGoals? with
+    | some (y, goals) => (some y, some goals)
+    | none => (none, none)
+  let (g₁, g₂, yGoal?, otherGoals) ← liftMetaM <| (← getMainGoal).trans y?
+  let goals? ← goals?.mapM (mkUserFacingMVars · `trans_y_side)
+  let mut allGoals := #[]
+  allGoals := allGoals.push g₁
+  allGoals := allGoals.push g₂
+  if let some y  := yGoal? then allGoals := allGoals.push y
+  if let some gs := goals? then allGoals := allGoals ++ gs
+  allGoals := allGoals ++ otherGoals
+  replaceMainGoal allGoals.toList
