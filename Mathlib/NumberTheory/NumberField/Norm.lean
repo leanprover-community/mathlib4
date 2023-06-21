@@ -8,8 +8,8 @@ Authors: Riccardo Brasca, Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.NumberField.Basic
-import Mathbin.RingTheory.Norm
+import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.RingTheory.Norm
 
 /-!
 # Norm in number fields
@@ -98,8 +98,7 @@ theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimen
 
 variable {F}
 
-theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :=
-  by
+theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.algebra K
   let L := normalClosure K F (AlgebraicClosure F)
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
