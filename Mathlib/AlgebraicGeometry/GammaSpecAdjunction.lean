@@ -266,7 +266,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
         f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.1.base).obj (basicOpen r) ⟶ _).op =
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
-  ext
+  ext1
   -- Porting note : need more hand holding here
   change (X.toΓSpec.1 ≫ _).base = _ at w
   apply Spec.basicOpen_hom_ext w
@@ -428,9 +428,7 @@ instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdj
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
-  -- Porting Note: Next line was
-  -- `apply (config := { instances := false }) nat_iso.is_iso_of_is_iso_app`
-  apply @NatIso.isIso_of_isIso_app (α := ΓSpec.adjunction.counit) ?_
+  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
   intro R
   rw [adjunction_counit_app]
   infer_instance
