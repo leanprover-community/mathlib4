@@ -146,6 +146,9 @@ but is expected to have type
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)
 
+-- https://github.com/leanprover-community/mathlib4/issues/5072
+example (n : Nat) : Nat := by use n
+
 
 -- FIXME Failing tests ported from mathlib3
 
