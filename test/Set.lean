@@ -7,7 +7,7 @@ Authors: Ian Benway.
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
 import Mathlib.Data.Complex.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 --import Mathlib.Analysis.Complex.AbsMax
 --import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
@@ -55,7 +55,7 @@ example : True := by
 
 variable {a b C l o p m n b v c j l k u y : ℝ}
 set_option trace.Meta.synthInstance true
---set_option trace.profiler true
+set_option trace.profiler true
 theorem horizontal_strip
    : True := by
   set aff : ℂ → ℂ := sorry
