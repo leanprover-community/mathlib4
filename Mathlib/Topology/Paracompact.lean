@@ -245,10 +245,8 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine' ⟨k, _, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)
-      revert this
-      contrapose!
-      simp only [ge_iff_le, not_le]
-      exact fun hnk ↦ K.subset hnk (interior_subset hxK)
+      contrapose! this with hnk
+      exact K.subset hnk (interior_subset hxK)
 #align refinement_of_locally_compact_sigma_compact_of_nhds_basis_set refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
