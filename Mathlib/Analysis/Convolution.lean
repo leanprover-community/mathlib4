@@ -1359,17 +1359,12 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ
   exact hf.integrableOn_nhds_isCompact hK'
-    -- porting note: This solves the universe problem…
-  have hδ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
---  obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
-    obtain ⟨V, V_mem, hV⟩ := compact_open_separated_add_right hK' U_open K'U
---    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U
---    exact compact_open_separated_add_right hK' U_open K'U
+  obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
+    obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U :=
+      compact_open_separated_add_right hK' U_open K'U
     rcases Metric.mem_nhds_iff.1 V_mem with ⟨δ, δpos, hδ⟩
-    -- porting note: stuck solving universe constraint
     refine' ⟨min δ ε, lt_min δpos εpos, min_le_right δ ε, _⟩
     exact (add_subset_add_left ((ball_subset_ball (min_le_left _ _)).trans hδ)).trans hV
-  obtain ⟨δ, δpos, δε, hδ⟩ := hδ
   -- Porting note: added to speed up the line below.
   letI := ContinuousLinearMap.hasOpNorm (𝕜 := 𝕜) (𝕜₂ := 𝕜) (E := E)
     (F := (P × G →L[𝕜] E') →L[𝕜] P × G →L[𝕜] F) (σ₁₂ := RingHom.id 𝕜)
@@ -1389,7 +1384,6 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         rw [mem_ball_iff_norm]
         exact ((le_max_left _ _).trans_lt hx).trans_le δε
       · simp only [add_ball, thickening_singleton, zero_vadd, subset_rfl]
-    -- does not work while the above instance is not fixed
     apply convolution_integrand_bound_right_of_le_of_subset _ _ _ this
     · intro y
       exact hε _ _ (((le_max_left _ _).trans_lt hx).trans_le δε)
@@ -1483,8 +1477,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     `contDiffOn_convolution_right_with_param_aux`. We reduce to this situation by pushing
     everything through `ULift` continuous linear equivalences. -/
   let eG : Type max uG uE' uF uP := ULift.{max uE' uF uP} G
-  -- porting note: `borelize eG` doesn't work
-  let _ : MeasurableSpace eG := borel eG; let _ : BorelSpace eG := ⟨rfl⟩
+  borelize eG
   let eE' : Type max uE' uG uF uP := ULift.{max uG uF uP} E'
   let eF : Type max uF uG uE' uP := ULift.{max uG uE' uP} F
   let eP : Type max uP uG uE' uF := ULift.{max uG uE' uF} P
