@@ -176,7 +176,7 @@ def ValueGroup :=
 -- deriving LinearOrderedCommGroupWithZero
 #align valuation_subring.value_group ValuationSubring.ValueGroup
 
--- Porting note: deriving failed but apparently synth works just fine:
+-- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
@@ -355,8 +355,9 @@ theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P 
 @[simp]
 theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     idealOfLE A (ofPrime A P) (le_ofPrime A P) = P := by
-  ext
+  refine Ideal.ext (fun x => ?_)
   apply IsLocalization.AtPrime.to_map_mem_maximal_iff
+  exact localRing (ofPrime A P)
 #align valuation_subring.ideal_of_le_of_prime ValuationSubring.idealOfLE_ofPrime
 
 @[simp]
@@ -409,12 +410,11 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
       ⟨fun h => by
+        dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         iterate 2 erw [idealOfLE_ofPrime] at this
         exact this
-        -- Porting note: the `erw` should have resolved the metavariables. Try filling in the
-        -- underscores for `idealOfLE_le_of_le`?
-        ,
+        all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
@@ -715,7 +715,7 @@ theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :
   rw [MonoidHom.mem_ker, Units.ext_iff]
   let π := Ideal.Quotient.mk (LocalRing.maximalIdeal A); convert_to _ ↔ π _ = 1
   rw [← π.map_one, ← sub_eq_zero, ← π.map_sub, Ideal.Quotient.eq_zero_iff_mem, valuation_lt_one_iff]
-  simp
+  simp [mem_principalUnitGroup_iff]
 #align valuation_subring.coe_mem_principal_unit_group_iff ValuationSubring.coe_mem_principalUnitGroup_iff
 
 /-- The principal unit group agrees with the kernel of the canonical map from
@@ -759,7 +759,13 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
 
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
-  ext; simp only [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  ext
+  -- Porting note: simp fails but rw works
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
+  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  rw [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  rfl
+  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
 #align valuation_subring.ker_unit_group_to_residue_field_units ValuationSubring.ker_unitGroupToResidueFieldUnits
 
 theorem surjective_unitGroupToResidueFieldUnits :
@@ -776,6 +782,9 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
   (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits
+
+scoped[PrincipalUnitGroup] instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
+  Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 @[simp]
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
