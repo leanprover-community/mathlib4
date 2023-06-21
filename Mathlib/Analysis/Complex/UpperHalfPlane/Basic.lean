@@ -134,8 +134,8 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
-theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by rw [Complex.normSq_pos];
-  exact z.ne_zero
+theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
+  rw [Complex.normSq_pos]; exact z.ne_zero
 #align upper_half_plane.norm_sq_pos UpperHalfPlane.normSq_pos
 
 theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
