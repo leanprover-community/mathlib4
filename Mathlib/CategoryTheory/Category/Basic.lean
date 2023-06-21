@@ -12,6 +12,7 @@ Ported by: Scott Morrison
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.RestateAxiom
+import Std.Tactic.Ext
 
 /-!
 # Categories
@@ -79,15 +80,6 @@ Often, however, it's not even necessary to include the `.{v}`.
 (Although it was in earlier versions of Lean.)
 If it is omitted a "free" universe will be used.
 -/
-
-namespace Std.Tactic.Ext
-open Lean Elab Tactic
-
-/-- A wrapper for `ext` that we can pass to `aesop`. -/
-def extCore' : TacticM Unit := do
-  evalTactic (← `(tactic| ext))
-
-end Std.Tactic.Ext
 
 universe v u
 
