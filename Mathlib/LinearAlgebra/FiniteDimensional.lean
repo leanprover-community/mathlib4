@@ -276,7 +276,7 @@ theorem basisUnique.repr_eq_zero_iff {ι : Type _} [Unique ι] {h : finrank K V 
 
 theorem cardinal_mk_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι : Type w} {b : ι → V}
     (h : LinearIndependent K b) : (#ι) ≤ finrank K V := by
-  rw [← lift_le.{_, max v w}]
+  rw [← lift_le.{max v w}]
   simpa [← finrank_eq_rank', -finrank_eq_rank] using
     cardinal_lift_le_rank_of_linearIndependent h
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
