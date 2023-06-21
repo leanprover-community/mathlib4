@@ -22,7 +22,7 @@ integers.
 
 The Euclidean domain structure on `ℤ[i]` is defined in this file.
 
-The homomorphism `to_complex` into the complex numbers is also defined in this file.
+The homomorphism `GaussianInt.toComplex` into the complex numbers is also defined in this file.
 
 ## See also
 
@@ -65,9 +65,8 @@ instance instCommRing : CommRing ℤ[i] :=
 
 section
 
-attribute [-instance] Complex.instField
+attribute [-instance] Complex.instField -- Avoid making things noncomputable unnecessarily.
 
--- Avoid making things noncomputable unnecessarily.
 /-- The embedding of the Gaussian integers into the complex numbers, as a ring homomorphism. -/
 def toComplex : ℤ[i] →+* ℂ :=
   Zsqrtd.lift ⟨I, by simp⟩
@@ -78,78 +77,78 @@ end
 instance : Coe ℤ[i] ℂ :=
   ⟨toComplex⟩
 
-theorem to_complex_def (x : ℤ[i]) : (x : ℂ) = x.re + x.im * I :=
+theorem toComplex_def (x : ℤ[i]) : (x : ℂ) = x.re + x.im * I :=
   rfl
-#align gaussian_int.to_complex_def GaussianInt.to_complex_def
+#align gaussian_int.to_complex_def GaussianInt.toComplex_def
 
-theorem to_complex_def' (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ) = x + y * I := by simp [to_complex_def]
-#align gaussian_int.to_complex_def' GaussianInt.to_complex_def'
+theorem toComplex_def' (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ) = x + y * I := by simp [toComplex_def]
+#align gaussian_int.to_complex_def' GaussianInt.toComplex_def'
 
-theorem to_complex_def₂ (x : ℤ[i]) : (x : ℂ) = ⟨x.re, x.im⟩ := by
-  apply Complex.ext <;> simp [to_complex_def]
-#align gaussian_int.to_complex_def₂ GaussianInt.to_complex_def₂
+theorem toComplex_def₂ (x : ℤ[i]) : (x : ℂ) = ⟨x.re, x.im⟩ := by
+  apply Complex.ext <;> simp [toComplex_def]
+#align gaussian_int.to_complex_def₂ GaussianInt.toComplex_def₂
 
 @[simp]
-theorem to_real_re (x : ℤ[i]) : ((x.re : ℤ) : ℝ) = (x : ℂ).re := by simp [to_complex_def]
+theorem to_real_re (x : ℤ[i]) : ((x.re : ℤ) : ℝ) = (x : ℂ).re := by simp [toComplex_def]
 #align gaussian_int.to_real_re GaussianInt.to_real_re
 
 @[simp]
-theorem to_real_im (x : ℤ[i]) : ((x.im : ℤ) : ℝ) = (x : ℂ).im := by simp [to_complex_def]
+theorem to_real_im (x : ℤ[i]) : ((x.im : ℤ) : ℝ) = (x : ℂ).im := by simp [toComplex_def]
 #align gaussian_int.to_real_im GaussianInt.to_real_im
 
 @[simp]
-theorem to_complex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by simp [to_complex_def]
-#align gaussian_int.to_complex_re GaussianInt.to_complex_re
+theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by simp [toComplex_def]
+#align gaussian_int.to_complex_re GaussianInt.toComplex_re
 
 @[simp]
-theorem to_complex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [to_complex_def]
-#align gaussian_int.to_complex_im GaussianInt.to_complex_im
+theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
+#align gaussian_int.to_complex_im GaussianInt.toComplex_im
 
 @[simp]
-theorem to_complex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
+theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
-#align gaussian_int.to_complex_add GaussianInt.to_complex_add
+#align gaussian_int.to_complex_add GaussianInt.toComplex_add
 
 @[simp]
-theorem to_complex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
+theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
   toComplex.map_mul _ _
-#align gaussian_int.to_complex_mul GaussianInt.to_complex_mul
+#align gaussian_int.to_complex_mul GaussianInt.toComplex_mul
 
 @[simp]
-theorem to_complex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
+theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
-#align gaussian_int.to_complex_one GaussianInt.to_complex_one
+#align gaussian_int.to_complex_one GaussianInt.toComplex_one
 
 @[simp]
-theorem to_complex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
+theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
-#align gaussian_int.to_complex_zero GaussianInt.to_complex_zero
+#align gaussian_int.to_complex_zero GaussianInt.toComplex_zero
 
 @[simp]
-theorem to_complex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
+theorem toComplex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
   toComplex.map_neg _
-#align gaussian_int.to_complex_neg GaussianInt.to_complex_neg
+#align gaussian_int.to_complex_neg GaussianInt.toComplex_neg
 
 @[simp]
-theorem to_complex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
+theorem toComplex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
   toComplex.map_sub _ _
-#align gaussian_int.to_complex_sub GaussianInt.to_complex_sub
+#align gaussian_int.to_complex_sub GaussianInt.toComplex_sub
 
 @[simp]
-theorem to_complex_star (x : ℤ[i]) : ((star x : ℤ[i]) : ℂ) = conj (x : ℂ) := by
-  rw [to_complex_def₂, to_complex_def₂]
+theorem toComplex_star (x : ℤ[i]) : ((star x : ℤ[i]) : ℂ) = conj (x : ℂ) := by
+  rw [toComplex_def₂, toComplex_def₂]
   exact congr_arg₂ _ rfl (Int.cast_neg _)
-#align gaussian_int.to_complex_star GaussianInt.to_complex_star
+#align gaussian_int.to_complex_star GaussianInt.toComplex_star
 
 @[simp]
-theorem to_complex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
-  cases x; cases y; simp [to_complex_def₂]
-#align gaussian_int.to_complex_inj GaussianInt.to_complex_inj
+theorem toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
+  cases x; cases y; simp [toComplex_def₂]
+#align gaussian_int.to_complex_inj GaussianInt.toComplex_inj
 
 @[simp]
-theorem to_complex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
-  rw [← to_complex_zero, to_complex_inj]
-#align gaussian_int.to_complex_eq_zero GaussianInt.to_complex_eq_zero
+theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
+  rw [← toComplex_zero, toComplex_inj]
+#align gaussian_int.to_complex_eq_zero GaussianInt.toComplex_eq_zero
 
 @[simp]
 theorem nat_cast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
@@ -198,15 +197,15 @@ theorem div_def (x y : ℤ[i]) :
   show Zsqrtd.mk _ _ = _ by simp [div_eq_mul_inv]
 #align gaussian_int.div_def GaussianInt.div_def
 
-theorem to_complex_div_re (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
+theorem toComplex_div_re (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
   rw [div_def, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
-#align gaussian_int.to_complex_div_re GaussianInt.to_complex_div_re
+#align gaussian_int.to_complex_div_re GaussianInt.toComplex_div_re
 
-theorem to_complex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
+theorem toComplex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
   rw [div_def, ← @Rat.round_cast ℝ _ _, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
-#align gaussian_int.to_complex_div_im GaussianInt.to_complex_div_im
+#align gaussian_int.to_complex_div_im GaussianInt.toComplex_div_im
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
@@ -218,19 +217,18 @@ theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
 #align gaussian_int.norm_sq_le_norm_sq_of_re_le_of_im_le GaussianInt.normSq_le_normSq_of_re_le_of_im_le
 
 theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
-  Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=
+    Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=
   calc
-   Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) =
-       Complex.normSq ((x / y : ℂ).re - ((x / y : ℤ[i]) : ℂ).re + ((x / y : ℂ).im - ((x / y : ℤ[i]) : ℂ).im) * I :
-            ℂ):=
+    Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ))
+    _ = Complex.normSq
+      ((x / y : ℂ).re - ((x / y : ℤ[i]) : ℂ).re + ((x / y : ℂ).im - ((x / y : ℤ[i]) : ℂ).im) *
+        I : ℂ) :=
       congr_arg _ <| by apply Complex.ext <;> simp
-    _ ≤ Complex.normSq (1 / 2 + 1 / 2 * I) :=
-      (have : |(2⁻¹ : ℝ)| = 2⁻¹ := abs_of_nonneg (by norm_num)
-      normSq_le_normSq_of_re_le_of_im_le
-        (by
-          rw [to_complex_div_re]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).re)
-        (by
-          rw [to_complex_div_im]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).im))
+    _ ≤ Complex.normSq (1 / 2 + 1 / 2 * I) := by
+      have : |(2⁻¹ : ℝ)| = 2⁻¹ := abs_of_nonneg (by norm_num)
+      exact normSq_le_normSq_of_re_le_of_im_le
+        (by rw [toComplex_div_re]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).re)
+        (by rw [toComplex_div_im]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).im)
     _ < 1 := by simp [normSq]; norm_num
 #align gaussian_int.norm_sq_div_sub_div_lt_one GaussianInt.normSq_div_sub_div_lt_one
 
@@ -242,7 +240,7 @@ theorem mod_def (x y : ℤ[i]) : x % y = x - y * (x / y) :=
 #align gaussian_int.mod_def GaussianInt.mod_def
 
 theorem norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) : (x % y).norm < y.norm :=
-  have : (y : ℂ) ≠ 0 := by rwa [Ne.def, ← to_complex_zero, to_complex_inj]
+  have : (y : ℂ) ≠ 0 := by rwa [Ne.def, ← toComplex_zero, toComplex_inj]
   (@Int.cast_lt ℝ _ _ _ _).1 <|
     calc
       ↑(Zsqrtd.norm (x % y)) = Complex.normSq (x - y * (x / y : ℤ[i]) : ℂ) := by simp [mod_def]
