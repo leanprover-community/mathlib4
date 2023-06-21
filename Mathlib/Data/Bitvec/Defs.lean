@@ -348,10 +348,47 @@ private def repr {n : Nat} : Bitvec n → String
 instance (n : Nat) : Repr (Bitvec n) where
   reprPrec (b : Bitvec n) _ := Std.Format.text (repr b)
 
-end Bitvec
-
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
   decEq _ _
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   decEq _ _
+
+
+
+/-!
+  ### Checked arithmetic
+-/
+section CheckedArith
+
+/--
+  Alternate version of addition on bitvectors, which returns `none` on (signed/unsigned) overflow,
+  instead of wrapping
+-/
+def checked_add (no_unsigned_wrap := true) (no_signed_wrap := false) (x y : Bitvec n) :
+    Option (Bitvec n) :=
+  match n with
+    | 0 => some Vector.nil
+    | _+1 =>
+        let res := adc x y false
+        let carry_out := res.head
+        let res := res.tail
+
+        /-
+          When unsigned overflow happens, the last carry bit is set.
+          Signed overlow occured when adding two positive numbers resulted in a negative number,
+          or two negative numbers resulted in a positive number. That is, if both inputs have the
+          same sign bit, but the output has a different sign
+        -/
+        if (no_unsigned_wrap && carry_out)
+            || (no_signed_wrap && x.head == y.head && x.head != res.head)
+        then
+          none
+        else
+          some res
+
+
+
+end CheckedArith
+
+end Bitvec
