@@ -127,14 +127,11 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ l.head! (List.head!_mem_self hlnil)
     · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
-      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil)]
-        rw [hl₀, if_pos]
-        rw [Nat.add_succ_sub_one, add_zero]
+      · rw [List.count_tail l 1 (List.length_pos_of_ne_nil hlnil), hl₀, if_pos,
+          Nat.add_succ_sub_one, add_zero]
         cases l
         · tauto
-        · simp only [List.head!_cons] at hlast
-          simp only [List.get]
-          exact hlast.symm
+        · exact hlast.symm
       · rw [List.count_tail l (-1) (List.length_pos_of_ne_nil hlnil), hl₁, if_neg, Nat.sub_zero]
         cases l
         · tauto
