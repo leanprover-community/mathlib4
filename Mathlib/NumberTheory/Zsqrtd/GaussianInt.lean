@@ -59,12 +59,13 @@ namespace GaussianInt
 instance : Repr ℤ[i] :=
   ⟨fun x _ => "⟨" ++ repr x.re ++ ", " ++ repr x.im ++ "⟩"⟩
 
-instance : CommRing ℤ[i] :=
+instance instCommRing : CommRing ℤ[i] :=
   Zsqrtd.commRing
+#align gaussian_int.comm_ring GaussianInt.instCommRing
 
 section
 
-attribute [-instance] Complex.Field
+attribute [-instance] Complex.instField
 
 -- Avoid making things noncomputable unnecessarily.
 /-- The embedding of the Gaussian integers into the complex numbers, as a ring homomorphism. -/
@@ -265,17 +266,18 @@ theorem norm_le_norm_mul_left (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) :
     exact Int.add_one_le_of_lt (norm_pos.2 hy)))
 #align gaussian_int.norm_le_norm_mul_left GaussianInt.norm_le_norm_mul_left
 
-instance : Nontrivial ℤ[i] :=
+instance instNontrivial : Nontrivial ℤ[i] :=
   ⟨⟨0, 1, by decide⟩⟩
+#align gaussian_int.nontrivial GaussianInt.instNontrivial
 
 instance : EuclideanDomain ℤ[i] :=
-  { GaussianInt.comm_ring,
-    GaussianInt.nontrivial with
-    Quotient := (· / ·)
+  { GaussianInt.instCommRing,
+    GaussianInt.instNontrivial with
+    quotient := (· / ·)
     remainder := (· % ·)
     quotient_zero := by simp [div_def]; rfl
     quotient_mul_add_remainder_eq := fun _ _ => by simp [mod_def]
-    R := _
+    r := _
     r_wellFounded := measure_wf (Int.natAbs ∘ norm)
     remainder_lt := natAbs_norm_mod_lt
     mul_left_not_lt := fun a b hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
