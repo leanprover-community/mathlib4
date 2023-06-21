@@ -1755,6 +1755,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.ChevalleyWarning
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
