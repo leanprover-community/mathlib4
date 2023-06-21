@@ -1,15 +1,20 @@
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Biproducts
+import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Connected
+
+set_option autoImplicit false
 
 universe u
 
 namespace LinearIndependent
 
-variable {ι₁ : Type _} {ι₁ : Type _} (R : Type _) (M₁ : Type _) (M₂ : Type _)
+variable {ι₁ : Type _} {ι₂ : Type _} (R : Type _) (M₁ : Type _) (M₂ : Type _)
   [Ring R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 
 instance : Module R (M₁ × M₂) := inferInstance
@@ -90,6 +95,176 @@ lemma sum_prod : LinearIndependent R v₁ → LinearIndependent R v₂ →
       simp only [smul_zero]
 
 end LinearIndependent
+
+namespace ModuleCat
+
+variable {I : Type _} {J : Type _} {R : Type _} [Ring R] {N P : ModuleCat R} {v : I → N} {w : J → P}
+  (hv : LinearIndependent R v) (hw : LinearIndependent R w)
+
+open CategoryTheory
+open CategoryTheory.Limits
+
+lemma hom_inv_id_apply (e : P ≅ N) (x : P) : e.inv (e.hom x) = x := by
+  nth_rw 2 [← ModuleCat.id_apply x]
+  rw [← e.hom_inv_id]
+  rfl
+
+lemma inv_hom_id_apply (e : P ≅ N) (x : N) : e.hom (e.inv x) = x := by
+  nth_rw 2 [← ModuleCat.id_apply x]
+  rw [← e.inv_hom_id]
+  rfl
+
+lemma iso_inv_inj (e : P ≅ N) : Function.Injective e.inv := by
+  apply Function.HasLeftInverse.injective
+  use e.hom
+  intro a
+  exact inv_hom_id_apply e a
+
+lemma iso_hom_inj (e : P ≅ N) : Function.Injective e.hom := by
+  apply Function.HasLeftInverse.injective
+  use e.inv
+  intro a
+  exact hom_inv_id_apply e a
+
+@[simp]
+lemma biprod.inl_fst_apply (x : N) :
+    (biprod.fst : N ⊞ P ⟶ N) ((biprod.inl : N ⟶ N ⊞ P) x) = x := by
+  nth_rw 2 [← ModuleCat.id_apply x]
+  rw [← biprod.inl_fst]
+  rfl
+
+@[simp]
+lemma biprod.inl_snd_apply (x : N) :
+    (biprod.snd : N ⊞ P ⟶ P) ((biprod.inl : N ⟶ N ⊞ P) x) = 0 := by
+  rw [← types_comp_apply ((forget (ModuleCat R)).map _)
+    ((forget (ModuleCat R)).map _) x]
+  simp only [← CategoryTheory.Functor.map_comp]
+  simp only [BinaryBicone.inl_snd, forget_map]
+  rfl
+
+@[simp]
+lemma biprod.inr_fst_apply (x : P) :
+    (biprod.fst : N ⊞ P ⟶ N) ((biprod.inr : P ⟶ N ⊞ P) x) = 0 := by
+  rw [← types_comp_apply ((forget (ModuleCat R)).map _)
+    ((forget (ModuleCat R)).map _) x]
+  simp only [← CategoryTheory.Functor.map_comp]
+  simp only [BinaryBicone.inr_fst, forget_map]
+  rfl
+
+@[simp]
+lemma biprod.inr_snd_apply (x : P) :
+    (biprod.snd : N ⊞ P ⟶ P) ((biprod.inr : P ⟶ N ⊞ P) x) = x := by
+  nth_rw 2 [← ModuleCat.id_apply x]
+  rw [← biprod.inr_snd]
+  rfl
+
+lemma linearIndependent_sum_prod : LinearIndependent R
+    (Sum.elim ((biprod.inl : N ⟶ N ⊞ P) ∘ v) ((biprod.inr : P ⟶ N ⊞ P) ∘ w)) := by
+  have hN : (LinearIndependent.ProdInl R N P : N → N × P)  =
+    (biprodIsoProd N P).hom ∘ (biprod.inl : N ⟶ N ⊞ P)
+  · dsimp [LinearIndependent.ProdInl]
+    ext n
+    · simp only [Function.comp_apply]
+      rw [biprodIsoProd_hom_apply]
+      dsimp
+      nth_rw 1 [← ModuleCat.id_apply n,  ← biprod.inl_fst]
+      rfl
+    · simp only [Function.comp_apply]
+      rw [biprodIsoProd_hom_apply]
+      dsimp
+      rw [← forget_map biprod.snd]
+      rw [← forget_map, ← types_comp_apply ((forget (ModuleCat R)).map _)
+        ((forget (ModuleCat R)).map _) n]
+      simp only [← CategoryTheory.Functor.map_comp]
+      simp only [BinaryBicone.inl_snd, forget_map]
+      rfl
+  have hP : (LinearIndependent.ProdInr R N P : P → N × P) =
+    (biprodIsoProd N P).hom ∘ (biprod.inr : P ⟶ N ⊞ P)
+  · dsimp [LinearIndependent.ProdInl]
+    ext n
+    · simp only [Function.comp_apply]
+      rw [biprodIsoProd_hom_apply]
+      dsimp
+      rw [← forget_map biprod.fst]
+      rw [← forget_map, ← types_comp_apply ((forget (ModuleCat R)).map _)
+        ((forget (ModuleCat R)).map _) n]
+      simp only [← CategoryTheory.Functor.map_comp]
+      simp only [BinaryBicone.inr_fst, forget_map]
+      rfl
+    · simp only [Function.comp_apply]
+      rw [biprodIsoProd_hom_apply]
+      dsimp
+      nth_rw 1 [← ModuleCat.id_apply n,  ← biprod.inr_snd]
+      rfl
+  have h := LinearIndependent.sum_prod v w hv hw
+  rw [hN, hP, Function.comp.assoc, Function.comp.assoc,
+     ← Sum.comp_elim ((forget (ModuleCat R)).map (biprodIsoProd N P).hom) _ _] at h
+  have h_inj : LinearMap.ker (biprodIsoProd N P).hom = ⊥
+  · rw [LinearMap.ker_eq_bot]
+    exact iso_hom_inj (biprodIsoProd N P)
+  rw [← LinearMap.linearIndependent_iff _ h_inj]
+  exact h
+
+variable {M : ModuleCat R} {u : I ⊕ J → M} (hu : Function.Injective u) {f : N ⟶ M}
+  {g : M ⟶ P} (hse : ShortExact f g) (huv : u ∘ Sum.inl = f ∘ v) (huw : g ∘ u ∘ Sum.inr = w)
+
+lemma linearIndependent_shortExact : LinearIndependent R u := by
+  rw [linearIndependent_sum]
+  refine' ⟨_,_,_⟩
+  · rw [huv]
+    refine' (LinearMap.linearIndependent_iff (f : N →ₗ[R] M) _).mpr hv
+    rw [LinearMap.ker_eq_bot]
+    rw [← mono_iff_injective]
+    exact hse.mono
+  · rw [← huw] at hw
+    refine' LinearIndependent.of_comp g _
+    exact hw
+  · rw [huv]
+    have he := hse.exact
+    rw [exact_iff] at he
+    rw [Submodule.disjoint_def]
+    intro m hml hmr
+    have hm : m ∈ Submodule.span R (Set.range f) :=
+      Submodule.span_mono (Set.range_comp_subset_range v f) hml
+    have h₁ : Set.range f ⊆ LinearMap.range f
+    · rw [LinearMap.range_coe]
+      exact Set.Subset.rfl
+    have h₂ : LinearMap.range f ≤ Submodule.span R (Set.range f)
+    · intro x hx
+      exact Submodule.subset_span hx
+    rw [Submodule.span_eq_of_le (LinearMap.range f) h₁ h₂, he] at hm
+    simp only [LinearMap.mem_ker] at hm
+    rw [mem_span_set] at hmr
+    obtain ⟨c, ⟨hc, hsum⟩⟩ := hmr
+    rw [← hsum, map_finsupp_sum] at hm
+    simp only [map_smul] at hm
+    rw [linearIndependent_iff'] at hw
+    have hui : Function.Injective (u ∘ Sum.inr) := Function.Injective.comp hu Sum.inr_injective
+    specialize hw (Finset.preimage c.support (u ∘ Sum.inr) (Set.injOn_of_injective hui _))
+    dsimp [Finsupp.sum] at hm
+    rw [← Finset.sum_preimage (u ∘ Sum.inr) c.support (Set.injOn_of_injective hui _) _ _] at hm
+    · rw [← huw] at hw
+      specialize hw (c ∘ u ∘ Sum.inr) hm
+      dsimp [Finsupp.sum] at hsum
+      rw [← hsum]
+      apply Finset.sum_eq_zero
+      intro x hx
+      obtain ⟨y,hy⟩ := hc hx
+      specialize hw y
+      rw [← hy]
+      suffices : (c ∘ u ∘ Sum.inr) y = 0
+      · dsimp at this ⊢
+        rw [this]
+        simp only [zero_smul]
+      apply hw
+      simp only [Finset.mem_preimage, Function.comp_apply]
+      dsimp at hy
+      rwa [hy]
+    · intro x hx hnx
+      exfalso
+      exact hnx (hc hx)
+
+end ModuleCat
 
 namespace LocallyConstant
 
@@ -1807,87 +1982,6 @@ section Successor
 
 variable (o : Ordinal)
 
-noncomputable
-def ProjOrdSucc : (WithTop I → Bool) → (WithTop I → Bool) :=
-fun f i ↦ (if ord I i ≤ o then (if ord I i < o then f i else true) else false)
-
-lemma continuous_ProjOrdSucc :
-    Continuous (ProjOrdSucc o : (WithTop I → Bool) → (WithTop I → Bool)) := by
-  refine' continuous_pi _
-  intro i
-  dsimp [ProjOrdSucc]
-  split_ifs
-  · exact continuous_apply _
-  · exact continuous_const
-  · exact continuous_const
-
-lemma isClosedMap_projOrdSucc :
-    IsClosedMap (ProjOrdSucc o : (WithTop I → Bool) → (WithTop I → Bool)) :=
-  fun _ hF ↦ (IsCompact.isClosed (hF.isCompact.image (continuous_ProjOrdSucc o)))
-
-def ResSucc : Set (WithTop I → Bool) := (ProjOrdSucc o) '' C
-
--- lemma projOrdCSucc (h : Support C ⊆ {i | ord I i < o}) (f : WithTop I → Bool)
---     (hf : f ∈ C) : f = ProjOrdSucc o f := by
---   dsimp [ProjOrdSucc]
---   ext x
---   split_ifs with ho₁ ho₂
---   · rfl
---   · dsimp [Support] at h
---     simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at h
---     specialize h x f hf
---     rw [← not_imp_not] at h
---     simp only [not_lt, Bool.not_eq_true] at h
---     simp only [not_lt] at ho₂
---     exact (h ho₂)
-
--- lemma supportResEqSucc (h : Support C ⊆ {i | ord I i < o}) : C = Res C o := by
---   ext f
---   constructor <;>
---   rintro hf
---   · use f
---     exact ⟨hf, (projOrdC C h f hf).symm⟩
---   · obtain ⟨g, hg⟩ := hf
---     rw [← projOrdC C h g hg.1] at hg
---     rw [← hg.2]
---     exact hg.1
-
-lemma isClosed_ResSucc (hC : IsClosed C) : IsClosed (ResSucc C o) :=
-  isClosedMap_projOrdSucc o C hC
-
--- lemma support_Res_le_oSucc : Support (Res C o) ⊆ {j | ord I j < o} := by
---   intro j hj
---   dsimp [Support, Res, ProjOrd] at hj
---   simp only [Set.mem_image, exists_exists_and_eq_and, Bool.ite_eq_true_distrib] at hj
---   simp only [Set.mem_setOf_eq]
---   obtain ⟨_, ⟨_, h⟩⟩ := hj
---   split_ifs at h
---   assumption
-
-noncomputable
-def ResOnSubsetSucc : {i // i ∈ C} → {i // i ∈ ResSucc C o} :=
-fun ⟨i, h⟩ ↦ ⟨ProjOrdSucc o i, Set.mem_image_of_mem _ h⟩
-
-lemma resOnSubset_eqSucc : Subtype.val ∘ ResOnSubsetSucc C o =
-    (ProjOrdSucc o : (WithTop I → Bool) → _) ∘ Subtype.val := by
-  rfl
-
-lemma continuous_val_comp_ResOnSubsetSucc :
-    Continuous (Subtype.val ∘ ResOnSubsetSucc C o) := by
-  rw [resOnSubset_eqSucc _]
-  exact Continuous.comp (continuous_ProjOrdSucc o) continuous_subtype_val
-
-lemma continuous_ResOnSubsetSucc : Continuous (ResOnSubsetSucc C o) := by
-  rw [continuous_induced_rng]
-  exact continuous_val_comp_ResOnSubsetSucc _ _
-
-lemma surjective_ResOnSubsetSucc : Function.Surjective (ResOnSubsetSucc C o) := by
-  rintro ⟨i, h⟩
-  obtain ⟨b, hb⟩ := h
-  dsimp [ResOnSubsetSucc]
-  use ⟨b, hb.1⟩
-  simp_rw [← hb.2]
-
 variable (hC : IsClosed C) (hsC : Support C ⊆ {j | ord I j < Order.succ o}) [Nonempty C]
 
 def GoodProducts.StartingWithMax : Set (Products (WithTop I)) :=
@@ -2058,57 +2152,48 @@ lemma GoodProducts.linearIndependent_succ_iff :
   rw [ModProducts.smaller_linear_independent_iff, ← linearIndependent_equiv (equiv_smaller C o),
     eval_eq_comp_equiv]
 
-/-- This is probably not true as stated. We should replace `Res C o` by another closed subset
-    `C'` with `Support C' ⊆ {j | ord I j < o}`   -/
-lemma GoodProducts.linearIndependent_max_of :
-    LinearIndependent ℤ (eval (Res C o)) → LinearIndependent ℤ
-    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1) := by
-  sorry
-
-lemma GoodProducts.sum_spans_disjoint (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
-    (hsnC : ¬ (Support C ⊆ {j | ord I j < o} )) :
-    Disjoint
-    (Submodule.span ℤ (Set.range (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1)))
-    (Submodule.span ℤ (Set.range (fun (l : StartingWithMax C o) ↦ Products.eval C l.1))) := by
-  rw [Submodule.disjoint_def]
-  intro f hfg hfm
-  rw [mem_span_set] at hfg hfm
-  obtain ⟨cg, ⟨hcg, hsumg⟩⟩ := hfg
-  obtain ⟨cm, ⟨hcm, hsumm⟩⟩ := hfm
-  rw [Finsupp.sum_of_support_subset cg subset_rfl _ (fun _ _ ↦ by simp only [zero_smul])] at hsumg
-  rw [Finsupp.sum_of_support_subset cm subset_rfl _ (fun _ _ ↦ by simp only [zero_smul])] at hsumm
-  let gg := fun x ↦ cg x • x
-  let gm := fun x ↦ cm x • x
-  by_contra hf
-  rw [← hsumm] at hf
-  obtain ⟨a, ⟨ha₁,ha₂⟩⟩ := Finset.exists_ne_zero_of_sum_ne_zero hf
-  obtain ⟨l, hl⟩ := hcm ha₁
-  simp only [zsmul_eq_mul] at ha₂
-  have ha := right_ne_zero_of_mul ha₂
-  rw [← hl] at ha
-  dsimp at ha
-  apply ha
-  dsimp [Products.eval]
-  rw [← List.cons_head!_tail l.prop.2.1]
-  simp only [List.map, List.prod_cons]
-  ext x
-  simp only [LocallyConstant.coe_mul, Pi.mul_apply, LocallyConstant.coe_zero, Pi.zero_apply,
-    mul_eq_zero]
-  sorry
-
-/-- Something like this is what we'll eventually use.
-    I've added some API for `LinearIndependent` and `LocallyConstant` at the top to prepare. -/
-lemma exist_smaller_closed : ∃ (C₀ C₁ : Set (WithTop I → Bool))
-    (e : {i // i ∈ C} ≃ₜ {i // i ∈ C₀} ⊕ {i // i ∈ C₀}),
-    IsClosed C₀ ∧ Support C₀ ⊆ {j | ord I j < o} ∧
-    IsClosed C₁ ∧ Support C₁ ⊆ {j | ord I j < o} := sorry
-
-
 variable {o} (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop))
 
-def C0 := C ∩ {f | f (term I ho) = false} -- {x | x ∈ C ∧ ∀ i, ord I i = o → x i = false}
-def C1 := C ∩ {f | f (term I ho) = true} -- {x | x ∈ C ∧ ∀ i, ord I i = o → x i = true}
--- def C' := (C0 C ho) ∩ (Res (C1 C o) o)
+def C0 := C ∩ {f | f (term I ho) = false}
+
+def C1 := C ∩ {f | f (term I ho) = true}
+
+lemma isClosed_C0 : IsClosed (C0 C ho) := by
+  refine' IsClosed.inter hC _
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact (continuous_iff_isClosed.mp h) {false} (isClosed_discrete _)
+
+lemma isClosed_C1 : IsClosed (C1 C ho) := by
+  refine' IsClosed.inter hC _
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact (continuous_iff_isClosed.mp h) {true} (isClosed_discrete _)
+
+lemma support_C0 : Support (C0 C ho) ⊆ {j | ord I j < o} := by
+  intro i hi
+  dsimp [Support] at hi hsC
+  simp only [Set.mem_setOf_eq]
+  simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+  obtain ⟨f, hf⟩ := hi
+  dsimp [C0] at hf
+  specialize hsC i f hf.1.1 hf.2
+  refine' lt_of_le_of_ne hsC _
+  have hf' := hf.1.2
+  simp only [Set.mem_setOf_eq] at hf'
+  have : i ≠ term I ho
+  · refine' ne_of_apply_ne f _
+    rw [hf.2, hf']
+    simp
+  have ht : ord I (term I ho) = o
+  · dsimp [ord, term]
+    simp only [Ordinal.typein_enum]
+  rw [← ht]
+  dsimp [ord]
+  simpa only [Ordinal.typein_inj]
+
+lemma support_C1 : Support (Res (C1 C ho) o) ⊆ {j | ord I j < o} :=
+  support_Res_le_o _ _
 
 lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
   ext x
@@ -2128,54 +2213,301 @@ lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
     · right
       simpa only [← Bool.not_eq_false]
 
-def SumEquiv : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)} ≃ {i // i ∈ C} := sorry
+def SumCsTo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} → ((WithTop I) → Bool) :=
+  Sum.elim Subtype.val Subtype.val
 
-lemma continuous_sumEquiv : Continuous (SumEquiv C ho) := sorry
+lemma SumCsToInC (x : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) : SumCsTo C ho x ∈ C := by
+  dsimp [SumCsTo]
+  induction x with
+  | inl x =>
+    · simp only [Sum.elim_inl]
+      exact x.prop.1
+  | inr x =>
+    · simp only [Sum.elim_inr]
+      exact x.prop.1
 
-instance : CompactSpace ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) := sorry
+lemma sumCsTo_set_range : Set.range (SumCsTo C ho) = C := by
+  dsimp [SumCsTo]
+  simp only [Set.Sum.elim_range, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  exact UnionEq _ _
 
-def SumHomeo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)} ≃ₜ {i // i ∈ C} :=
-  Continuous.homeoOfEquivCompactToT2 (continuous_sumEquiv C ho)
+lemma injective_sumCsTo : Function.Injective (SumCsTo C ho) := by
+  refine' Function.Injective.sum_elim _ _ _
+  · exact Subtype.coe_injective
+  · exact Subtype.coe_injective
+  · intro a b
+    refine' ne_of_apply_ne (fun f ↦ f (term I ho)) _
+    dsimp
+    have ha := a.prop.2
+    have hb := b.prop.2
+    simp only [Set.mem_setOf_eq] at ha hb
+    rw [ha, hb]
+    simp
+
+noncomputable
+def SumEquiv : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} ≃ {i // i ∈ C} :=
+Equiv.trans (Equiv.ofInjective (SumCsTo C ho) (injective_sumCsTo C ho))
+  (Equiv.Set.ofEq (sumCsTo_set_range C ho))
+
+lemma continuous_sumEquiv : Continuous (SumEquiv C ho) := by
+  dsimp [SumEquiv]
+  refine' Continuous.comp _ _
+  · refine' Continuous.subtype_mk _ _
+    dsimp
+    exact Continuous.comp continuous_subtype_val continuous_id
+  · refine' Continuous.subtype_mk _ _
+    dsimp [SumCsTo]
+    refine' Continuous.sum_elim _ _
+    · exact continuous_subtype_val
+    · exact continuous_subtype_val
+
+instance CS₁ : CompactSpace {i // i ∈ (C0 C ho)} := by
+  rw [← isCompact_iff_compactSpace]
+  apply IsClosed.isCompact
+  exact isClosed_C0 _ hC _
+
+instance CS₂ : CompactSpace {i // i ∈ (C1 C ho)} := by
+  rw [← isCompact_iff_compactSpace]
+  apply IsClosed.isCompact
+  exact isClosed_C1 _ hC _
+
+instance CS : CompactSpace ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) := by
+  haveI h₁ := CS₁ C hC ho
+  haveI h₂ := CS₂ C hC ho
+  exact @instCompactSpaceSumInstTopologicalSpaceSum _ _ _ _ h₁ h₂
+
+noncomputable
+def SumHomeo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ C} :=
+  @Continuous.homeoOfEquivCompactToT2 _ _ _ _ (CS C hC ho) _ _ (continuous_sumEquiv C ho)
 
 noncomputable
 def LocConstLinearEquiv₁ : LocallyConstant {i // i ∈ C} ℤ ≃ₗ[ℤ]
-    LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) ℤ  :=
-    LocallyConstant.equivLinear (SumHomeo C ho).symm
+    LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) ℤ  :=
+    LocallyConstant.equivLinear (SumHomeo C hC ho).symm
 
 noncomputable
-def LocConstLinearEquiv₂ : LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (Res (C1 C ho) o)}) ℤ
+def LocConstLinearEquiv₂ : LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) ℤ
     ≃ₗ[ℤ] (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) ×
-    (LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ) := LocallyConstant.LinearSumEquivProd
+    (LocallyConstant {i // i ∈ (C1 C ho)} ℤ) := LocallyConstant.LinearSumEquivProd
 
 noncomputable
 def LocConstLinearEquiv : LocallyConstant {i // i ∈ C} ℤ  ≃ₗ[ℤ]
-    (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) × (LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ) :=
-  LinearEquiv.trans (LocConstLinearEquiv₁ _ _) (LocConstLinearEquiv₂ _ _)
+    (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) × (LocallyConstant {i // i ∈ (C1 C ho)} ℤ) :=
+  LinearEquiv.trans (LocConstLinearEquiv₁ _ hC _) (LocConstLinearEquiv₂ _ _)
 
 lemma GoodProducts.linearIndependent_iff_sum₁ : LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (eval C)) :=
-  (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (eval C)) :=
+  (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
 
 lemma GoodProducts.linearIndependent_iff_sum₂ :
     LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (Sum.elim
+    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (Sum.elim
     (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1)
     (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)))  := by
   rw [linearIndependent_iff_sum C o hsC]
-  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
+
+instance NC01 : Nonempty (C0 C ho) ∨ Nonempty (C1 C ho) := by
+  have h : Set.Nonempty C := Set.nonempty_of_nonempty_subtype
+  obtain ⟨c,hc⟩ := h
+  by_cases c (term I ho) = true
+  · right
+    apply Set.Nonempty.to_subtype
+    use c
+    exact ⟨hc,h⟩
+  · left
+    apply Set.Nonempty.to_subtype
+    use c
+    simp only [Bool.not_eq_true] at h
+    exact ⟨hc,h⟩
+
+lemma Products.eval_proj0 : eval (C0 C ho) =
+    (LinearMap.fst ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C) := by
+  ext l x
+  dsimp [LinearMap.fst, LocConstLinearEquiv, LocConstLinearEquiv₁, LocallyConstant.equivLinear,
+    LocConstLinearEquiv₂, LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd,
+    LocallyConstant.equiv]
+  rw [LocallyConstant.coe_comap_apply _ _ continuous_inl]
+  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo _ hC _).continuous]
+  dsimp [SumHomeo, Continuous.homeoOfEquivCompactToT2]
+  obtain ⟨l,hl⟩ := l
+  induction l with
+  | nil => rfl
+  | cons a as ih =>
+    · rw [evalCons, evalCons]
+      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
+      dsimp
+      rw [ih]
+      rfl
+
+--((LinearMap.fst ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C)) l
+
+lemma Products.eval_proj1 : eval (C1 C ho) =
+    (LinearMap.snd ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C) := by
+  ext l x
+  dsimp [LinearMap.fst, LocConstLinearEquiv, LocConstLinearEquiv₁, LocallyConstant.equivLinear,
+    LocConstLinearEquiv₂, LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd,
+    LocallyConstant.equiv]
+  rw [LocallyConstant.coe_comap_apply _ _ continuous_inr]
+  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo _ hC _).continuous]
+  dsimp [SumHomeo, Continuous.homeoOfEquivCompactToT2]
+  obtain ⟨l,hl⟩ := l
+  induction l with
+  | nil => rfl
+  | cons a as ih =>
+    · rw [evalCons, evalCons]
+      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
+      dsimp
+      rw [ih]
+      rfl
+
+lemma Products.eval_max_zero (l : Products (WithTop I))
+    (hl : l ∈ GoodProducts.StartingWithMax C o) : 0 = l.eval (C0 C ho) := by
+  ext x
+  obtain ⟨l,hlc⟩ := l
+  induction l with
+  | nil =>
+    · exfalso
+      dsimp [GoodProducts.StartingWithMax] at hl
+      exact hl.2.1 rfl
+  | cons a as _ =>
+    · rw [evalCons]
+      dsimp [e]
+      dsimp [GoodProducts.StartingWithMax] at hl
+      suffices : x.val a = false
+      · rw [this]
+        dsimp [BoolToZ]
+        simp only [ite_false, zero_mul]
+      suffices : a = term I ho
+      · rw [this]
+        exact x.prop.2
+      dsimp [term]
+      simp_rw [← hl.2.2]
+      dsimp [ord]
+      simp only [Ordinal.enum_typein]
+
+lemma Products.eval_max_res (l : Products (WithTop I))
+    (hl : l ∈ GoodProducts.StartingWithMax C o) : 0 = l.eval (Res C o) := by
+  ext x
+  obtain ⟨l,hlc⟩ := l
+  induction l with
+  | nil =>
+    · exfalso
+      dsimp [GoodProducts.StartingWithMax] at hl
+      exact hl.2.1 rfl
+  | cons a as _ =>
+    · rw [evalCons]
+      dsimp [e]
+      dsimp [GoodProducts.StartingWithMax] at hl
+      suffices : x.val a = false
+      · rw [this]
+        dsimp [BoolToZ]
+        simp only [ite_false, zero_mul]
+      obtain ⟨x,hx⟩ := x
+      dsimp [Res] at hx
+      obtain ⟨y,hy⟩ := hx
+      simp_rw [← hy.2]
+      dsimp [ProjOrd]
+      simp only [ite_eq_right_iff]
+      intro h
+      exfalso
+      exact (ne_of_lt h) hl.2.2
+
+def LC_eval (x : {i // i ∈ C}) : (LocallyConstant {i // i ∈ C} ℤ) → ℤ :=
+fun f ↦ f x
+
+def Products.Apply (l : Products (WithTop I)) (x : {i // i ∈ C}) : List ℤ :=
+List.map ((LC_eval C x) ∘ (e C)) l.val
+
+lemma Products.eval_apply (l : Products (WithTop I)) (x : {i // i ∈ C}) :
+    l.eval C x = List.prod (Apply C l x) := by
+  dsimp [eval, Apply, LC_eval]
+  obtain ⟨l,hl⟩ := l
+  induction l with
+  | nil => rfl
+  | cons a as ih =>
+    · simp only [List.map, List.prod_cons, LocallyConstant.coe_mul, Pi.mul_apply,
+        Function.comp_apply, mul_eq_mul_left_iff]
+      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
+      left
+      exact ih
+
+lemma Products.eval_res_zero (l : Products (WithTop I))
+    (hl : l ∈ GoodProducts (Res C o)) : 0 = l.eval (C1 C ho) := by
+  rw [eval_proj1 C hC]
+  ext x
+  have : (l.eval C) ⟨x.val, x.prop.1⟩ = 0
+  · rw [eval_apply]
+    simp only [Set.mem_setOf_eq, List.prod_eq_zero_iff]
+    dsimp [Apply]
+    simp only [List.mem_map, Function.comp_apply]
+    dsimp [LC_eval, e, BoolToZ]
+    simp only [ite_eq_right_iff]
+    use (term I ho)
+    by_contra h
+    sorry
+  dsimp
+  rw [← this]
+  dsimp [LocConstLinearEquiv, LocConstLinearEquiv₁, LocConstLinearEquiv₂,
+    LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd, LocallyConstant.equivLinear]
+  rw [LocallyConstant.coe_comap_apply _ _ continuous_inr]
+  dsimp [LocallyConstant.equiv]
+  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo C hC ho).continuous]
+  rfl
+  -- obtain ⟨l,hlc⟩ := l
+  -- induction l with
+  -- | nil =>
+  --   · exfalso
+
+  -- | cons a as ih =>
+  --   · sorry
 
 lemma GoodProducts.linearIndependent_iff_sum₃ :
     LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (Sum.elim
     (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)) := sorry
+    (fun (l : GoodProducts (C1 C ho)) ↦ Products.eval C l.1)) := sorry
 
 lemma GoodProducts.linearIndependent_iff_sum₄ :
     LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C ho) ∘ (Sum.elim
+    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (Sum.elim
     (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)))  := by
+    (fun (l : GoodProducts (C1 C ho)) ↦ Products.eval C l.1)))  := by
   rw [linearIndependent_iff_sum₃ C ho]
-  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C ho).ker).symm
+  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
+
+lemma GoodProducts.linearIndependent_of_sums_aux :
+    LinearIndependent ℤ (eval (C0 C ho)) → LinearIndependent ℤ (eval (C1 C ho)) →
+    LinearIndependent ℤ (eval C) := by
+  intro h0 h1
+  have h := LinearIndependent.sum_prod (eval (C0 C ho)) (eval (C1 C ho)) h0 h1
+  rw [linearIndependent_iff_sum C o hsC]
+  dsimp [eval] at h
+  rw [Products.eval_proj0 C hC ho, Products.eval_proj1 C hC ho] at h
+  rw [linearIndependent_sum] at h
+  simp only [Sum.elim_comp_inl, Sum.elim_comp_inr] at h
+  sorry
+  -- rw [Sum.comp_elim]
+  -- suffices hs : (LocConstLinearEquiv C hC ho) ∘ (fun (l : GoodProducts (C0 C ho))  ↦ l.val.eval C) =
+  --   (LinearIndependent.ProdInl ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
+  --   (LocallyConstant { i // i ∈ (C1 C ho) } ℤ)).toFun ∘ (eval (C0 C ho)) ∧
+  --   (LocConstLinearEquiv C hC ho) ∘ (fun (l : GoodProducts (C1 C ho))  ↦ l.val.eval C) =
+  --   (LinearIndependent.ProdInr ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
+  --   (LocallyConstant { i // i ∈ (C1 C ho) } ℤ)).toFun ∘ (eval (C1 C ho))
+  -- · rwa [hs.1, hs.2]
+  -- constructor
+  -- · ext l x
+  --   · dsimp [eval]
+  --     rw [Products.eval_proj0 C hC ho]
+  --     rfl
+  --   · dsimp [eval]
+  --     rw [Products.eval_proj0 C hC ho]
+  --     dsimp [LinearIndependent.ProdInl, Products.eval]
+  --     sorry
+  -- · ext l x
+  --   · sorry
+  --   · dsimp [eval ]
+  --     rw [Products.eval_proj1 C hC ho]
+  --     rfl
 
 def ResHomeo1 : {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ (Res (C1 C ho) o)} := sorry
 
@@ -2184,28 +2516,8 @@ def LocConstResLinearEquiv : LocallyConstant {i // i ∈ (C1 C ho)} ℤ ≃ₗ[�
     LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ :=
   LocallyConstant.equivLinear (ResHomeo1 C ho)
 
--- def GoodProducts.equiv0 : GoodProducts (C0 C ho) ≃ GoodProducts (Res C o) := sorry
-
-lemma GoodProducts.linearIndependent_of_sums_aux :
-    LinearIndependent ℤ (eval (C0 C ho)) → LinearIndependent ℤ (eval (Res (C1 C ho) o)) →
-    LinearIndependent ℤ (eval C) := by
-  intro h0 h1
-  -- have he := (linearIndependent_equiv (equiv0 C ho)).mpr h0
-  -- rw [← linearIndependent_equiv (equiv0 C ho)] at h0
-  have h := LinearIndependent.sum_prod (eval (C0 C ho)) (eval (Res (C1 C ho) o)) h0 h1
-  rw [linearIndependent_iff_sum₄ C ho]
-  rw [Sum.comp_elim]
-  -- apply LinearIndependent.sum_type
-  suffices hs : (LocConstLinearEquiv C ho) ∘ (fun (l : GoodProducts (C0 C ho))  ↦ l.val.eval C) =
-    (LinearIndependent.ProdInl ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
-    (LocallyConstant { i // i ∈ Res (C1 C ho) o } ℤ)).toFun ∘ (eval (C0 C ho)) -- ∧
-    -- (LocConstLinearEquiv C ho) ∘ (fun (l : StartingWithMax C o)  ↦ l.val.eval C) =
-    -- (LinearIndependent.ProdInr ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
-    -- (LocallyConstant { i // i ∈ Res (C1 C ho) o } ℤ)).toFun ∘ (eval (Res (C1 C ho) o))
-  -- · rw [hs.1, hs.2]
-  sorry
-  sorry
-
+lemma GoodProducts.linearIndependent_iff_res : LinearIndependent ℤ (eval (C1 C ho)) ↔
+    LinearIndependent ℤ (eval (Res (C1 C ho) o)) := sorry
 
 end Successor
 
@@ -2236,15 +2548,23 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
     intro C hC hsC
     by_cases hnC : Nonempty C
     · by_cases ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)
-      · by_cases hnsC : Support C ⊆ {j | ord I j < o}
-        · exact h C hC hnsC
-        · rw [linearIndependent_iff_sum C o hsC]
-          apply LinearIndependent.sum_type
-          · rw [← linearIndependent_succ_iff]
-            exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-          · apply linearIndependent_max_of
-            exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-          · exact sum_spans_disjoint C o ho hnsC
+      · sorry
+        -- New approach -/
+        -- apply linearIndependent_of_sums_aux C hsC ho
+        -- · exact h (C0 C ho) (isClosed_C0 _ hC _) (support_C0 _ hsC _)
+        -- · rw [linearIndependent_iff_res]
+        --   exact h (Res (C1 C ho) o) (isClosed_Res _ _ (isClosed_C1 _ hC _)) (support_C1 _ _)
+
+        -- Old approach -/
+        -- by_cases hnsC : Support C ⊆ {j | ord I j < o}
+        -- · exact h C hC hnsC
+        -- · rw [linearIndependent_iff_sum C o hsC]
+        --   apply LinearIndependent.sum_type
+        --   · rw [← linearIndependent_succ_iff]
+        --     exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
+        --   · apply linearIndependent_max_of
+        --     exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
+        --   · exact sum_spans_disjoint C o ho hnsC
       · have hsC' : Support C ⊆ {j | ord I j < o}
         · dsimp [Support]
           simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp]
