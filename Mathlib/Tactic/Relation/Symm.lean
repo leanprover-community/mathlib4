@@ -81,20 +81,13 @@ end Lean.Expr
 
 namespace Lean.MVarId
 
-/--
-Internal implementation of `Lean.MVarId.symm` and the user-facing tactic.
-
-`tgt` should be of the form `a ~ b`, and is used to index the symm lemmas.
-
-`k lem args body goal` should transform `goal` into a new goal,
-given a candidate `symm` lemma `lem`, which will have type `∀ args, body`.
-Depending on whether we are working on a hypothesis or a goal,
-`k` will internally use either `replace` or `assign`.
--/
-def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM MVarId) (g : MVarId) :
-    MetaM MVarId := do
-  tgt.symmAux fun lem args body => do
-    let g' ← k lem args body g
+/-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable of type `x ∼ y`. Returns the symmetry hypothesis of type `y ∼ x`.  -/
+def symm (g : MVarId) : MetaM MVarId := do
+  (← g.getType).symmAux fun lem args body => do
+    guard <|← isDefEq (← g.getType) body
+    g.assign (mkAppN lem args)
+    let some h := args.back? | failure
+    let g' := h.mvarId!
     g'.setTag (← g.getTag)
     return g'
 
