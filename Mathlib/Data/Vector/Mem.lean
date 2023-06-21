@@ -26,12 +26,12 @@ namespace Vector
 variable {α β : Type _} {n : ℕ} (a a' : α)
 
 @[simp]
-theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
+theorem get_mem (i : Fin n) (v : Vector α n) : v[i.1] ∈ v.toList := by
   rw [get_eq_get]
   exact List.get_mem _ _ _
 #align vector.nth_mem Vector.get_mem
 
-theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a := by
+theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ (i : Fin n), v[i.1] = a := by
   simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get]
   exact
     ⟨fun ⟨i, hi, h⟩ => ⟨i, by rwa [toList_length] at hi, h⟩, fun ⟨i, hi, h⟩ =>
