@@ -44,6 +44,9 @@ equals the number of real roots plus the number of roots not fixed by complex co
 -/
 
 
+example :=
+  AlgEquiv.restrictScalars ℚ Complex.conjAe
+
 noncomputable section
 
 open scoped Polynomial
@@ -227,8 +230,7 @@ theorem galActionHom_injective [Fact (p.Splits (algebraMap F E))] :
     Function.Injective (galActionHom p E) := by
   rw [injective_iff_map_eq_one]
   intro ϕ hϕ
-  ext (x)
-  intro hx
+  ext (x hx)
   have key := Equiv.Perm.ext_iff.mp hϕ (rootsEquivRoots p E ⟨x, hx⟩)
   change
     rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm (rootsEquivRoots p E ⟨x, hx⟩)) =
@@ -288,8 +290,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
   simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
-  ext (x)
-  intro hx
+  ext (x hx)
   rw [rootSet_def, Polynomial.map_mul, Polynomial.roots_mul] at hx
   cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
@@ -332,6 +333,7 @@ theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ 
     exact splits_comp_of_splits _ _ h₂
 #align polynomial.gal.mul_splits_in_splitting_field_of_mul Polynomial.Gal.mul_splits_in_splittingField_of_mul
 
+set_option maxHeartbeats 300000 in
 /-- `p` splits in the splitting field of `p ∘ q`, for `q` non-constant. -/
 theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     p.Splits (algebraMap F (p.comp q).SplittingField) := by
@@ -366,9 +368,16 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
-  exact
-    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
-      fun _ _ _ h => key2 (key1 h)
+  -- Porting note: the last part of the proof needs to be unfolded to avoid timeout
+  -- original proof
+  -- exact
+  --  WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
+  --    fun _ _ _ h => key2 (key1 h)
+  induction p using WfDvdMonoid.induction_on_irreducible with
+  | h0 => exact splits_zero _
+  | hu u hu =>  exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
+  -- Porting note: using `exact` instead of `apply` times out
+  | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
 #align polynomial.gal.splits_in_splitting_field_of_comp Polynomial.Gal.splits_in_splittingField_of_comp
 
 /-- `polynomial.gal.restrict` for the composition of polynomials. -/
@@ -397,8 +406,6 @@ theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.
   IsGalois.card_aut_eq_finrank F p.SplittingField
 #align polynomial.gal.card_of_separable Polynomial.Gal.card_of_separable
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
     p.natDegree ∣ Fintype.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]
@@ -433,7 +440,8 @@ attribute [local instance] splits_ℚ_ℂ
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +
-        (galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ))).support.card := by
+        (galActionHom p ℂ (restrict p ℂ
+        (AlgEquiv.restrictScalars ℚ Complex.conjAe))).support.card := by
   by_cases hp : p = 0
   · haveI : IsEmpty (p.rootSet ℂ) := by rw [hp, rootSet_zero]; infer_instance
     simp_rw [(galActionHom p ℂ _).support.eq_empty_of_isEmpty, hp, rootSet_zero,
