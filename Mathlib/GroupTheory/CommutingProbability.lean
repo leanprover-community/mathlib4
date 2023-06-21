@@ -326,7 +326,7 @@ namespace CommutingProbability
 open Pointwise
 
 instance (A B : Set G) [Finite A] [Finite B] : Finite (A * B) := by
-  sorry
+  exact Finite.Set.finite_image2 (· * ·) A B
 
 instance (A : Set G) [Finite A] (n : ℕ) : Finite (A ^ n) := by
   induction' n with n hn
@@ -335,11 +335,21 @@ instance (A : Set G) [Finite A] (n : ℕ) : Finite (A ^ n) := by
   . rw [pow_succ]
     infer_instance
 
-instance (A B : Set G) [Infinite A] [Nonempty B] : Infinite (A * B) := by
-  sorry
+instance (A B : Set G) [hA : Infinite A] [hB : Nonempty B] : Infinite (A * B) := by
+  have key := Set.infinite_coe_iff.mp hA
+  rcases hB with ⟨b, hb⟩
+  refine' Set.infinite_coe_iff.mpr _
+  refine' Set.Infinite.image2_left key hb _
+  apply Set.injOn_of_injective
+  exact mul_left_injective b
 
-instance (A B : Set G) [Nonempty A] [Infinite B] : Infinite (A * B) := by
-  sorry
+instance (A B : Set G) [hA : Nonempty A] [hB : Infinite B] : Infinite (A * B) := by
+  have key := Set.infinite_coe_iff.mp hB
+  rcases hA with ⟨a, ha⟩
+  refine' Set.infinite_coe_iff.mpr _
+  refine' Set.Infinite.image2_right key ha _
+  apply Set.injOn_of_injective
+  exact mul_right_injective a
 
 instance myinst (A : Set G) [Infinite A] (n : ℕ) : Infinite (A ^ (n + 1 : ℕ)) := by
   induction' n with n hn
@@ -351,7 +361,27 @@ instance myinst (A : Set G) [Infinite A] (n : ℕ) : Infinite (A ^ (n + 1 : ℕ)
 lemma Set.ncard_eq_zero_of_infinite (A : Set G) [hA : Infinite A] : Set.ncard A = 0 :=
   Set.Infinite.ncard (Set.infinite_coe_iff.mp hA)
 
-lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := sorry
+theorem ncard_congr {s : Set α} {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
+    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
+    s.ncard = t.ncard := by
+  set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
+  have hbij : f'.Bijective := by
+    constructor
+    · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+      simp only [Subtype.mk.injEq] at hxy ⊢
+      exact h₂ _ _ hx hy hxy
+    rintro ⟨y, hy⟩
+    obtain ⟨a, ha, rfl⟩ := h₃ y hy
+    simp only [Subtype.mk.injEq, Subtype.exists]
+    exact ⟨_, ha, rfl⟩
+  exact Nat.card_congr (Equiv.ofBijective f' hbij)
+
+lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := by
+  symm
+  apply ncard_congr
+  . exact fun a => Set.smul_mem_smul_set
+  . exact fun a b _ _ h => mul_right_injective g h
+  . exact fun b ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩
 
 -- growth lemma for powers of symmetric sets
 lemma mylem (A : Set G) (hA : A⁻¹ = A) (k : ℕ) (g : G)
