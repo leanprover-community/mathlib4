@@ -1185,6 +1185,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
 import Mathlib.Control.Bitraversable.Basic
+import Mathlib.Control.Bitraversable.Instances
 import Mathlib.Control.Bitraversable.Lemmas
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
