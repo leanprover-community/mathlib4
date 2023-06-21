@@ -102,17 +102,17 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
   | hp i x hx =>
-  -- refine Submodule.iSup_induction' _ (@fun i x hx => ?_) _ (@fun x y hx hy ihx ihy => ?_) hx'
     obtain ⟨i, rfl⟩ := i
-    rw [Subtype.coe_mk] at hx
-    induction hx using Submodule.pow_induction_on_left'
-    #exit
-    refine'
-      Submodule.pow_induction_on_left' _ (fun r => _) (fun x y i hx hy ihx ihy => _)
-        (fun m hm i x hx ih => _) hx
-    · rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-    · rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
-    · obtain ⟨_, rfl⟩ := hm
+    -- porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
+    change x ∈ LinearMap.range (ι Q) ^ i at hx
+    induction hx using Submodule.pow_induction_on_left' with
+    | hr r =>
+      rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
+    | hadd x y i hx hy ihx ihy =>
+      rw [AlgHom.map_add, ihx, ihy, ← map_add]
+      rfl
+    | hmul m hm i x hx ih =>
+      obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext _ _) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
@@ -177,8 +177,9 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
           P (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
-  apply Submodule.iSup_induction' _ _ (hr 0 (Submodule.zero_mem _)) @hadd
+  apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
   refine' Subtype.rec _
+  -- TODO: this `simp_rw` is not actually doing anything, lean4#1926
   simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
   simp_rw [pow_add, pow_mul]
@@ -216,7 +217,7 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
       ∀ (m₁ m₂) {x hx},
         P x hx →
           P (ι Q m₁ * ι Q m₂ * x)
-            (zero_add 0 ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
+            (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
   refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
   simp_rw [ZMod.val_zero, pow_zero]
@@ -237,7 +238,8 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
   refine' evenOdd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
-  simp_rw [ZMod.val_one, pow_one]
+  -- porting note: was `simp_rw [ZMod.val_one, pow_one]`, lean4#1926
+  intro h; rw [ZMod.val_one, pow_one] at h; revert h
   rintro ⟨v, rfl⟩
   exact hι v
 #align clifford_algebra.odd_induction CliffordAlgebra.odd_induction
