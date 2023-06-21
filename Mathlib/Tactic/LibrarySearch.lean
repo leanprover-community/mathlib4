@@ -132,6 +132,8 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     (goal : MVarId) : MetaM (MetavarContext × List MVarId) :=
   withTraceNode `Tactic.librarySearch (return m!"{·.emoji} trying {lem}") do
   withoutModifyingState do
+    if lem == `self_ne_add_left then
+      throwError "nope"
     let lem ← mkConstWithFreshMVarLevels lem
     let lem ← match mod with
     | .none => pure lem
