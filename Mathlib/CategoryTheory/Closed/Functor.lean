@@ -149,7 +149,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [exp.ev_coev]
   rw [F.map_id (A ⨯ L.obj B), comp_id]
-  apply prod.hom_ext
+  ext
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
     simp
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]
