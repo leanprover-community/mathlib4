@@ -19,7 +19,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 ## Projects
 
-The order structure on `valuation_subring K`.
+The order structure on `ValuationSubring K`.
 
 -/
 
@@ -50,7 +50,7 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove that
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 #align valuation_subring.mem_carrier ValuationSubring.mem_carrier
 
@@ -769,7 +769,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom.comp (QuotientGroup.mk' _) =
       A.unitGroupToResidueFieldUnits := rfl
@@ -912,7 +912,7 @@ namespace Valuation
 
 variable {Γ : Type _} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   (Valuation.isEquiv_iff_val_eq_one _ _).mp (Valuation.isEquiv_valuation_valuationSubring _).symm
 #align valuation.mem_unit_group_iff Valuation.mem_unitGroup_iff
