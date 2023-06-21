@@ -49,17 +49,15 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
   map_add' := by
     intros
     apply NatTrans.ext
-    ext1
-    dsimp
     ext
+    dsimp
     simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
     rfl
   map_mul' := by
     intros
     apply NatTrans.ext
-    ext1
-    dsimp
     ext
+    dsimp
     simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl
 

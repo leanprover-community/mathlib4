@@ -1241,6 +1241,8 @@ theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: `rw` → `erw`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
+  -- Here Lean can not see that `fun i ↦ Fin.cons x v (↑(finRotate (n + 1)) i)`
+  -- matches with `?f ∘ ↑(finRotate (n + 1))`.
   erw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
 #align linear_independent_fin_snoc linearIndependent_fin_snoc
 

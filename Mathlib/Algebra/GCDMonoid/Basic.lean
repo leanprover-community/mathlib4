@@ -920,13 +920,13 @@ instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
     have hgcd : g₁.gcd = g₂.gcd := by
-      ext (a b)
+      ext a b
       refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       · exact dvd_gcd (@gcd_dvd_left _ _ g₁ _ _) (@gcd_dvd_right _ _ g₁ _ _)
       · exact @dvd_gcd _ _ g₁ _ _ _ (@gcd_dvd_left _ _ g₂ _ _) (@gcd_dvd_right _ _ g₂ _ _)
     have hlcm : g₁.lcm = g₂.lcm := by
-      ext (a b)
+      ext a b
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
       · exact (@lcm_dvd_iff _ _ g₁ ..).mpr ⟨@dvd_lcm_left _ _ g₂ _ _, @dvd_lcm_right _ _ g₂ _ _⟩
