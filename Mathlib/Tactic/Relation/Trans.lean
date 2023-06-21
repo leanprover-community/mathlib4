@@ -30,18 +30,20 @@ initialize transExt :
 initialize registerBuiltinAttribute {
   name := `trans
   descr := "transitive relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind ↦ MetaM.run' <| withReducible do
     let declTy := (← getConstInfo decl).type
-    let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
-    let fail := throwError
-      "@[trans] attribute only applies to lemmas proving
-      x ∼ y → y ∼ z → x ∼ z, got {indentExpr declTy} with target {indentExpr targetTy}"
-    let .app (.app rel _) _ := targetTy | fail
-    let some yzHyp := xs.back? | fail
-    let some xyHyp := xs.pop.back? | fail
-    let .app (.app _ _) _ ← inferType yzHyp | fail
-    let .app (.app _ _) _ ← inferType xyHyp | fail
-    let key ← withReducible <| DiscrTree.mkPath rel
+    let (hs, _, targetTy) ← forallMetaTelescope declTy
+    let failMsg := "@[trans] attribute only applies to lemmas proving x ∼ y → y ∼ z → x ∼ z"
+    let some h₂ := hs.back? | throwError "{failMsg}, but couldn't find hypotheses"
+    let some h₁ := hs.pop.back? | throwError "{failMsg}, but only found one hypothesis"
+    let xz ← targetTy.getNumExplicitArgs 2
+    let xy ← (← inferType h₁).getNumExplicitArgs 2
+    let yz ← (← inferType h₂).getNumExplicitArgs 2
+    unless ← withNewMCtxDepth <|
+        isDefEq xz[0]! xy[0]! <&&> isDefEq xz[1]! yz[1]! <&&> isDefEq xy[1]! yz[0]! do
+      throwError "{failMsg
+        }, but got {xy[0]!} ∼ {xy[1]!} → {yz[0]!} ∼ {yz[1]!} → {xz[0]!} ∼ {xz[1]!}"
+    let key ← DiscrTree.mkPath (← whnfR targetTy)
     transExt.add (decl, key) kind
 }
 
