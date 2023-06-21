@@ -32,7 +32,7 @@ set_option linter.uppercaseLean3 false
 open Ordinal Order
 
 -- Porting note: the generated theorem is warned by `simpNF`.
--- set_option genSizeOfSpec false in
+set_option genSizeOfSpec false in
 /-- Recursive definition of an ordinal notation. `zero` denotes the
   ordinal 0, and `oadd e n a` is intended to refer to `ω^e * n + a`.
   For this to be valid Cantor normal form, we must have the exponents
