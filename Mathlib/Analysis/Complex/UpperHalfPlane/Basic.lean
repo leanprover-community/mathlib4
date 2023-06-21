@@ -146,14 +146,14 @@ theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
   simpa using div_pos z.property (normSq_pos z)
 #align upper_half_plane.im_inv_neg_coe_pos UpperHalfPlane.im_inv_neg_coe_pos
 
+-- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Numerator of the formula for a fractional linear transformation -/
-@[simp]
 def num (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   (↑ₘg 0 0 : ℝ) * z + (↑ₘg 0 1 : ℝ)
 #align upper_half_plane.num UpperHalfPlane.num
 
+-- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Denominator of the formula for a fractional linear transformation -/
-@[simp]
 def denom (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   (↑ₘg 1 0 : ℝ) * z + (↑ₘg 1 1 : ℝ)
 #align upper_half_plane.denom UpperHalfPlane.denom
@@ -176,7 +176,7 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   have DET := (mem_glpos _).1 g.prop
   have hz := z.prop
   simp only [GeneralLinearGroup.det_apply_val] at DET
-  have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa using congr_arg Complex.im H
+  have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
   cases' H1 with H1
   · simp only [H1, Complex.ofReal_zero, denom, MulZeroClass.zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
@@ -204,7 +204,7 @@ theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
   rw [smulAux', Complex.div_im]
   set NsqBot := Complex.normSq (denom g z)
   have : NsqBot ≠ 0 := by simp only [denom_ne_zero g z, map_eq_zero, Ne.def, not_false_iff]
-  field_simp [smulAux']
+  field_simp [smulAux', num, denom]
   -- porting note: the local notation still didn't work here
   rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
   ring
@@ -223,10 +223,7 @@ def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
 theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
-  -- Porting note: was
-  -- field_simp [denom_ne_zero, -denom, -num]
-  -- but `field_simp` insists on unfolding denom and num.
-  rw [add_mul, mul_assoc, div_mul_cancel _ (denom_ne_zero _ _)]
+  field_simp [denom_ne_zero]
   simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
@@ -235,9 +232,13 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
 
 theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
   ext1
-  change _ / _ = (_ * (_ / _) + _) * _
+  -- Porting note: was `change _ / _ = (_ * (_ / _) + _) * _`
+  change _ / _ = (_ * (_ / _) + _) / _
+  conv =>
+    rhs
+    rw [div_eq_mul_inv]
   rw [denom_cocycle]
-  field_simp [denom_ne_zero, -denom, -num]
+  field_simp [denom_ne_zero]
   simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
     GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
     Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
@@ -250,7 +251,7 @@ instance : MulAction GL(2, ℝ)⁺ ℍ where
   one_smul z := by
     ext1
     change _ / _ = _
-    simp
+    simp [num, denom]
   mul_smul := mul_smul'
 
 section ModularScalarTowers
@@ -345,7 +346,7 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
   change _ / _ = _ / _
-  field_simp [denom_ne_zero, -denom, -Num]
+  field_simp [denom_ne_zero]
   simp only [Num, denom, coe_coe, Complex.ofReal_neg, neg_mul, GL_pos.coe_neg_GL, Units.val_neg,
     Pi.neg_apply]
   ring_nf
@@ -400,7 +401,7 @@ end SLModularAction
 section PosRealAction
 
 instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
-  smul x z := mk ((x : ℝ) • z) <| by simpa using mul_pos x.2 z.2
+  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.2
   one_smul z := Subtype.ext <| one_smul _ _
   mul_smul x y z := Subtype.ext <| mul_smul (x : ℝ) y (z : ℂ)
 #align upper_half_plane.pos_real_action UpperHalfPlane.posRealAction
@@ -453,11 +454,11 @@ end RealAddAction
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 theorem modular_s_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [special_linear_group_apply]; simp [ModularGroup.S, neg_div, inv_neg]
+  rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg]
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_s_smul
 
 theorem modular_t_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [← Subtype.coe_inj, coe_vadd, add_comm, special_linear_group_apply, coe_mk,
+  rw [← Subtype.coe_inj, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk,
     ModularGroup.coe_T_zpow]
   simp only [of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
     head_cons, algebraMap.coe_zero, MulZeroClass.zero_mul, zero_add, div_one]
@@ -473,7 +474,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
   ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by rw [special_linear_group_apply];
+  suffices ↑a * z * a + b * a = b * a + a * a * z by rw [specialLinearGroup_apply];
     simpa [add_mul]
   ring
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero
@@ -489,12 +490,13 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
   refine' ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, _⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
-    rw [special_linear_group_apply]
+    rw [specialLinearGroup_apply]
     simpa only [inv_neg, modular_S_smul, Subtype.coe_mk, coe_vadd, Complex.ofReal_mul,
       coe_pos_real_smul, Complex.real_smul, Function.comp_apply, Complex.ofReal_div]
   replace hc : (c : ℂ) ≠ 0; · norm_cast; assumption
   replace h_denom : ↑c * z + d ≠ 0; · simpa using h_denom ⟨z, hz⟩
-  have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by rw [mul_assoc, ← mul_add, add_comm];
+  have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
+    rw [mul_assoc, ← mul_add, add_comm]
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ); · norm_cast; assumption
   field_simp
