@@ -8,8 +8,8 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Trace
-import Mathbin.FieldTheory.Finite.GaloisField
+import Mathlib.RingTheory.Trace
+import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # The trace map for finite fields
@@ -27,8 +27,7 @@ namespace FiniteField
 /-- The trace map from a finite field to its prime field is nongedenerate. -/
 theorem trace_to_zMod_nondegenerate (F : Type _) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
-    ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 :=
-  by
+    ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
   haveI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩
   have htr := traceForm_nondegenerate (ZMod (ringChar F)) F a
   simp_rw [Algebra.traceForm_apply] at htr 
