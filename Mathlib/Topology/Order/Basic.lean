@@ -1921,6 +1921,13 @@ theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
   simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
 #align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
+theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
+    (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
+  (nhds_basis_Ioo_pos a).to_hasBasis
+    (fun _ε ε₀ ↦ let ⟨δ, δ₀, δε⟩ := exists_between ε₀
+      ⟨δ, δ₀, Icc_subset_Ioo (sub_lt_sub_left δε _) (add_lt_add_left δε _)⟩)
+    (fun ε ε₀ ↦ ⟨ε, ε₀, Ioo_subset_Icc_self⟩)
+
 variable (α)
 
 theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
