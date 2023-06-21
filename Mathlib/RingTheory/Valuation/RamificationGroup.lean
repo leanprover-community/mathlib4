@@ -37,20 +37,17 @@ def decompositionSubgroup (A : ValuationSubring L) : Subgroup (L ≃ₐ[K] L) :=
 is stable under the action of the decomposition group. -/
 def subMulAction (A : ValuationSubring L) : SubMulAction (A.decompositionSubgroup K) L where
   carrier := A
-  smul_mem' g l h := Set.mem_of_mem_of_subset (Set.smul_mem_smul_set h) g.Prop.le
+  smul_mem' g _ h := Set.mem_of_mem_of_subset (Set.smul_mem_smul_set h) g.prop.le
 #align valuation_subring.sub_mul_action ValuationSubring.subMulAction
 
 /-- The multiplicative action of the decomposition subgroup on `A`. -/
 instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
     MulSemiringAction (A.decompositionSubgroup K) A :=
-  {
-    SubMulAction.mulAction
-      (A.SubMulAction
-        K) with
-    smul_add := fun g k l => Subtype.ext <| smul_add g k l
+  { SubMulAction.mulAction (A.subMulAction K) with
+    smul_add := fun g k l => Subtype.ext <| smul_add (A := L) g k l
     smul_zero := fun g => Subtype.ext <| smul_zero g
     smul_one := fun g => Subtype.ext <| smul_one g
-    smul_mul := fun g k l => Subtype.ext <| smul_mul' g k l }
+    smul_mul := fun g k l => Subtype.ext <| smul_mul' (A := L) g k l }
 #align valuation_subring.decomposition_subgroup_mul_semiring_action ValuationSubring.decompositionSubgroupMulSemiringAction
 
 /-- The inertia subgroup defined as the kernel of the group homomorphism from
@@ -61,4 +58,3 @@ def inertiaSubgroup (A : ValuationSubring L) : Subgroup (A.decompositionSubgroup
 #align valuation_subring.inertia_subgroup ValuationSubring.inertiaSubgroup
 
 end ValuationSubring
-
