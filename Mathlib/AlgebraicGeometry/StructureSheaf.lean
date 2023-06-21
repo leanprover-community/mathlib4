@@ -577,6 +577,10 @@ def stalkIso (x : PrimeSpectrum.Top R) :
   hom := stalkToFiberRingHom R x
   inv := localizationToStalk R x
   hom_inv_id :=
+    -- Porting note: We should be able to replace the next two lines with `ext U hxU s`,
+    -- but there seems to be a bug in `ext` whereby
+    -- it will not do multiple introductions for a single lemma, if you name the arguments.
+    -- See https://github.com/leanprover/std4/pull/159
     (structureSheaf R).presheaf.stalk_hom_ext fun U hxU => by
       ext s
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
