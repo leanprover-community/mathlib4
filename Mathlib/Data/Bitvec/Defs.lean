@@ -131,6 +131,18 @@ protected def xor : Bitvec n → Bitvec n → Bitvec n :=
   map₂ xor
 #align bitvec.xor Bitvec.xor
 
+instance : Complement (Bitvec n) :=
+⟨Bitvec.not⟩
+
+instance : AndOp (Bitvec n) :=
+⟨Bitvec.and⟩
+
+instance : OrOp (Bitvec n) :=
+⟨Bitvec.or⟩
+
+instance : Xor (Bitvec n) :=
+⟨Bitvec.xor⟩
+
 end Bitwise
 
 /-! ### Arithmetic operators -/
