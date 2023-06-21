@@ -391,16 +391,16 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
 theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ+} [IsDomain B] {ζ : B}
     (hζ : IsPrimitiveRoot ζ n) : adjoin A ((cyclotomic n A).rootSet B) = adjoin A {ζ} := by
   refine' le_antisymm (adjoin_le fun x hx => _) (adjoin_mono fun x hx => _)
-  · suffices hx : x ^ ↑n = 1
-    obtain ⟨i, hin, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+  · suffices hx : x ^ n.1 = 1
+    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
     exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
-    rw [isRoot_of_unity_iff n.pos]
+    refine' (isRoot_of_unity_iff n.pos B).2 _
     refine' ⟨n, Nat.mem_divisors_self n n.ne_zero, _⟩
-    rw [mem_root_set', aeval_def, ← eval_map, map_cyclotomic, ← is_root] at hx
+    rw [mem_rootSet', aeval_def, ← eval_map, map_cyclotomic, ← IsRoot] at hx
     exact hx.2
-  · simp only [mem_singleton_iff, exists_eq_left, mem_set_of_eq] at hx
-    simpa only [hx, mem_root_set', map_cyclotomic, aeval_def, ← eval_map, is_root] using
-      And.intro (cyclotomic_ne_zero n B) (hζ.is_root_cyclotomic n.pos)
+  · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hx
+    simpa only [hx, mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, IsRoot] using
+      And.intro (cyclotomic_ne_zero n B) (hζ.isRoot_cyclotomic n.pos)
 #align is_cyclotomic_extension.adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic
 
 theorem adjoin_primitive_root_eq_top {n : ℕ+} [IsDomain B] [h : IsCyclotomicExtension {n} A B]
@@ -415,13 +415,13 @@ variable (A)
 
 theorem IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
-  { exists_prim_root := fun i hi => by
+  { exists_prim_root := fun hi => by
       rw [Set.mem_singleton_iff] at hi
       refine' ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, _⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
     adjoin_roots := fun x => by
       refine'
-        adjoin_induction' (fun b hb => _) (fun a => _) (fun b₁ b₂ hb₁ hb₂ => _)
+        adjoin_induction' (x := x) (fun b hb => _) (fun a => _) (fun b₁ b₂ hb₁ hb₂ => _)
           (fun b₁ b₂ hb₁ hb₂ => _) x
       · rw [Set.mem_singleton_iff] at hb
         refine' subset_adjoin _
