@@ -805,7 +805,10 @@ theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := by
 /-! ### Field instance and lemmas -/
 
 noncomputable instance : Field ℂ :=
-{ qsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+{
+/- We define `qsmul` in this way to ensure it is equal to the more general instance
+`SMul R ℝ → SMul R ℂ` found in `Data.Complex.Module`. -/
+  qsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
   qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def]
   inv := Inv.inv
   mul_inv_cancel := @Complex.mul_inv_cancel
