@@ -81,7 +81,7 @@ syntax (name := tfaeFinish) "tfae_finish" : tactic
 /-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
 long as `[P₁, P₂, ...]` is an explicit list. -/
 partial def getTFAEList (t : Expr) : MetaM (Q(List Prop) × List Q(Prop)) := do
-  let .app tfae (l : Q(List Prop)) ← whnfR t
+  let .app tfae (l : Q(List Prop)) ← whnfR <|← instantiateMVars t
     | throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
