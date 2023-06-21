@@ -9,12 +9,12 @@ Authors: Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, 
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.FinCases
-import Mathbin.Tactic.ApplyFun
-import Mathbin.LinearAlgebra.FiniteDimensional
-import Mathbin.LinearAlgebra.Dual
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Data.Real.Sqrt
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.ApplyFun
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Data.Real.Sqrt
 
 /-!
 # Huang's sensitivity theorem
@@ -99,8 +99,7 @@ a natural number). -/
 
 variable {n}
 
-theorem succ_n_eq (p q : Q (n + 1)) : p = q ↔ p 0 = q 0 ∧ π p = π q :=
-  by
+theorem succ_n_eq (p q : Q (n + 1)) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
   constructor
   · rintro rfl; exact ⟨rfl, rfl⟩
   · rintro ⟨h₀, h⟩
@@ -122,8 +121,7 @@ theorem not_adjacent_zero (p q : Q 0) : ¬p.adjacent q := by rintro ⟨v, _⟩ <
 
 /-- If `p` and `q` in `Q (n+1)` have different values at zero then they are adjacent
 iff their projections to `Q n` are equal. -/
-theorem adj_iff_proj_eq {p q : Q (n + 1)} (h₀ : p 0 ≠ q 0) : p.adjacent q ↔ π p = π q :=
-  by
+theorem adj_iff_proj_eq {p q : Q (n + 1)} (h₀ : p 0 ≠ q 0) : p.adjacent q ↔ π p = π q := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
     ext x; by_contra hx
@@ -210,8 +208,7 @@ noncomputable def ε : ∀ {n : ℕ} (p : Q n), V n →ₗ[ℝ] ℝ
 
 variable {n : ℕ}
 
-theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 :=
-  by
+theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   induction' n with n IH
   · rw [show p = q from Subsingleton.elim p q]
     dsimp [ε, e]
@@ -230,8 +227,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 :=
 #align sensitivity.duality Sensitivity.duality
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
-theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 :=
-  by
+theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
   · dsimp [ε] at h ; exact h fun _ => tt
   · cases' v with v₁ v₂
@@ -250,8 +246,7 @@ open Module
 
 /-- `e` and `ε` are dual families of vectors. It implies that `e` is indeed a basis
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
-def dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n)
-    where
+def dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
   Total := @epsilon_total _
 #align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
@@ -260,8 +255,7 @@ def dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n)
 since this cardinal is finite, as a natural number in `finrank_V` -/
 
 
-theorem dim_v : Module.rank ℝ (V n) = 2 ^ n :=
-  by
+theorem dim_v : Module.rank ℝ (V n) = 2 ^ n := by
   have : Module.rank ℝ (V n) = (2 ^ n : ℕ) := by
     rw [rank_eq_card_basis (dual_bases_e_ε _).Basis, Q.card] <;> infer_instance
   assumption_mod_cast
@@ -270,8 +264,7 @@ theorem dim_v : Module.rank ℝ (V n) = 2 ^ n :=
 instance : FiniteDimensional ℝ (V n) :=
   FiniteDimensional.of_fintype_basis (dualBases_e_ε _).Basis
 
-theorem finrank_v : finrank ℝ (V n) = 2 ^ n :=
-  by
+theorem finrank_v : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_v n
   rw [← finrank_eq_rank] at this  <;> assumption_mod_cast
 #align sensitivity.finrank_V Sensitivity.finrank_v
@@ -297,8 +290,7 @@ theorem f_zero : f 0 = 0 :=
   rfl
 #align sensitivity.f_zero Sensitivity.f_zero
 
-theorem f_succ_apply (v : V (n + 1)) : f (n + 1) v = (f n v.1 + v.2, v.1 - f n v.2) :=
-  by
+theorem f_succ_apply (v : V (n + 1)) : f (n + 1) v = (f n v.1 + v.2, v.1 - f n v.2) := by
   cases v
   rw [f]
   simp only [LinearMap.id_apply, LinearMap.prod_apply, Pi.prod, Prod.mk.inj_iff,
@@ -311,8 +303,7 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
-theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v :=
-  by
+theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
   induction' n with n IH <;> intro
   · simpa only [Nat.cast_zero, zero_smul]
   · cases v; simp [f_succ_apply, IH, add_smul, add_assoc]; abel
@@ -322,8 +313,7 @@ theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v :=
 `q` the column index). -/
 
 
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if q.adjacent p then 1 else 0 :=
-  by
+theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if q.adjacent p then 1 else 0 := by
   induction' n with n IH
   · intro p q
     dsimp [f]
@@ -361,8 +351,7 @@ theorem g_injective : Injective (g m) := by
   exact h.right
 #align sensitivity.g_injective Sensitivity.g_injective
 
-theorem f_image_g (w : V (m + 1)) (hv : ∃ v, g m v = w) : f (m + 1) w = √ (m + 1) • w :=
-  by
+theorem f_image_g (w : V (m + 1)) (hv : ∃ v, g m v = w) : f (m + 1) w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
   have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (by exact_mod_cast zero_le _)
   simp [this, f_succ_apply, g_apply, f_squared, smul_add, add_smul, smul_smul]
@@ -406,26 +395,21 @@ theory of lattices, with inf and sup (also known as meet and join). -/
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
 theorem exists_eigenvalue (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ y ∈ Span (e '' H) ⊓ (g m).range, y ≠ (0 : _) :=
-  by
+    ∃ y ∈ Span (e '' H) ⊓ (g m).range, y ≠ (0 : _) := by
   let W := Span (e '' H)
   let img := (g m).range
   suffices 0 < dim (W ⊓ img) by
     simp only [exists_prop]
     exact_mod_cast exists_mem_ne_zero_of_rank_pos this
-  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) :=
-    by
+  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) := by
     convert ← rank_submodule_le (W ⊔ img)
     apply dim_V
-  have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m :=
-    by
+  have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
     convert ← Submodule.rank_sup_add_rank_inf_eq W img
     rw [← rank_eq_of_injective (g m) g_injective]
     apply dim_V
-  have dimW : dim W = card H :=
-    by
-    have li : LinearIndependent ℝ (H.restrict e) :=
-      by
+  have dimW : dim W = card H := by
+    have li : LinearIndependent ℝ (H.restrict e) := by
       convert (dual_bases_e_ε _).Basis.LinearIndependent.comp _ Subtype.val_injective
       rw [(dual_bases_e_ε _).coe_basis]
     have hdW := rank_span li
@@ -443,11 +427,9 @@ theorem exists_eigenvalue (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
 
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent :=
-  by
+    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
-  have coeffs_support : ((dual_bases_e_ε (m + 1)).coeffs y).support ⊆ H.to_finset :=
-    by
+  have coeffs_support : ((dual_bases_e_ε (m + 1)).coeffs y).support ⊆ H.to_finset := by
     intro p p_in
     rw [Finsupp.mem_support_iff] at p_in 
     rw [Set.mem_toFinset]
@@ -483,8 +465,7 @@ theorem huang_degree_theorem (H : Set (Q (m + 1))) (hH : Card H ≥ 2 ^ m + 1) :
       rw [Finset.sum_const, nsmul_eq_mul]
     _ = (((coeffs y).support ∩ (Q.adjacent q).toFinset).card : ℝ) * |coeffs y q| := by congr with x;
       simp; rfl
-    _ ≤ Finset.card (H ∩ Q.adjacent q).toFinset * |ε q y| :=
-      by
+    _ ≤ Finset.card (H ∩ Q.adjacent q).toFinset * |ε q y| := by
       refine' (mul_le_mul_right H_q_pos).2 _
       norm_cast
       apply Finset.card_le_of_subset
