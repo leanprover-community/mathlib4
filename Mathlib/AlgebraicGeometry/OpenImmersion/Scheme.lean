@@ -111,10 +111,8 @@ def affineCover (X : Scheme) : OpenCover X where
     ((X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _ : _)
   f x := x
   IsOpen x := by
-    -- Porting note : was `apply (config := { instances := false })`
-    refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := ?_)
-    . infer_instance
-    . apply PresheafedSpace.IsOpenImmersion.ofRestrict
+    apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
+    apply PresheafedSpace.IsOpenImmersion.ofRestrict
   Covers := by
     intro x
     erw [coe_comp]
