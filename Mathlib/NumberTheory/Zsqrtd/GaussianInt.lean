@@ -104,32 +104,32 @@ theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by si
 theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
 #align gaussian_int.to_complex_im GaussianInt.toComplex_im
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
 #align gaussian_int.to_complex_add GaussianInt.toComplex_add
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
   toComplex.map_mul _ _
 #align gaussian_int.to_complex_mul GaussianInt.toComplex_mul
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
 #align gaussian_int.to_complex_one GaussianInt.toComplex_one
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
 #align gaussian_int.to_complex_zero GaussianInt.toComplex_zero
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
   toComplex.map_neg _
 #align gaussian_int.to_complex_neg GaussianInt.toComplex_neg
 
-@[simp]
+-- Porting note: @[simp] can prove this
 theorem toComplex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
   toComplex.map_sub _ _
 #align gaussian_int.to_complex_sub GaussianInt.toComplex_sub
