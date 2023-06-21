@@ -19,13 +19,12 @@ import Mathlib.Tactic.Relation.Trans
 
 /- Implication -/
 
-@[deprecated] def Implies (a b : Prop) := a → b
+@[deprecated, reducible] def Implies (a b : Prop) := a → b
 
 /-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
--- FIXME This should have `@[trans]`, but the `trans` attribute PR'd in #253 rejects it.
--- Note that it is still rejected after #857.
-@[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
-    p → r := fun hp ↦ h₂ (h₁ hp)
+@[deprecated, trans] theorem Implies.trans {p q r : Prop} (h₁ : Implies p q) (h₂ : Implies q r) :
+    Implies p r :=
+  fun hp ↦ h₂ (h₁ hp)
 
 /- Not -/
 
