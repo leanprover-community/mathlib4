@@ -7,9 +7,18 @@ Authors: Ian Benway.
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
 import Mathlib.Data.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
---import Mathlib.Analysis.Complex.AbsMax
---import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+-- import Mathlib.RingTheory.Ideal.Operations
+-- import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Algebra.Equiv
+-- import Mathlib.Algebra.Module.Submodule.Pointwise
+-- import Mathlib.Algebra.Module.Submodule.Bilinear
+-- import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Order.Kleene
+-- import Mathlib.Data.Finset.Pointwise
+-- import Mathlib.Data.Set.Semiring
+-- import Mathlib.Data.Set.Pointwise.BigOperators
+-- import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
@@ -54,8 +63,8 @@ example : True := by
 
 
 variable {a b C l o p m n b v c j l k u y : ℝ}
-set_option trace.Meta.synthInstance true
-set_option trace.profiler true
+-- set_option trace.Meta.synthInstance true
+-- set_option trace.profiler true
 theorem horizontal_strip
    : True := by
   set aff : ℂ → ℂ := sorry
