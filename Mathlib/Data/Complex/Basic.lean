@@ -806,7 +806,7 @@ theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℝ) := by
 
 noncomputable instance : Field ℂ :=
 { qsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [mul_smul, Rat.smul_def]
+  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp
   inv := Inv.inv
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero }
