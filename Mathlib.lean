@@ -1185,6 +1185,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
 import Mathlib.Control.Bitraversable.Basic
+import Mathlib.Control.Bitraversable.Instances
 import Mathlib.Control.Bitraversable.Lemmas
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
@@ -1203,6 +1204,7 @@ import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
+import Mathlib.Control.ULiftable
 import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
@@ -2458,6 +2460,7 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.Probability.Kernel.CondDistrib
+import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
@@ -2660,6 +2663,7 @@ import Mathlib.SetTheory.Ordinal.CantorNormalForm
 import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
+import Mathlib.SetTheory.Ordinal.Notation
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.SetTheory.ZFC.Basic
