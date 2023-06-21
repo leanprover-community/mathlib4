@@ -32,13 +32,13 @@ See `number_theory.zsqrtd.gaussian_int` for:
 
 ## Notations
 
-This file uses the local notation `ℤ[i]` for `gaussian_int`
+This file uses the local notation `ℤ[i]` for `GaussianInt`
 
 ## Implementation notes
 
-Gaussian integers are implemented using the more general definition `zsqrtd`, the type of integers
+Gaussian integers are implemented using the more general definition `Zsqrtd`, the type of integers
 adjoined a square root of `d`, in this case `-1`. The definition is reducible, so that properties
-and definitions about `zsqrtd` can easily be used.
+and definitions about `Zsqrtd` can easily be used.
 -/
 
 
