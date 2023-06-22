@@ -65,6 +65,7 @@ instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b :=
 -- shortcut instance
 instance NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
+#align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
