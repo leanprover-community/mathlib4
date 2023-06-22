@@ -3112,6 +3112,11 @@ instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFinite
     where measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
 #align measure_theory.is_finite_measure_smul_nnreal MeasureTheory.isFiniteMeasureSMulNNReal
 
+instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
+  measure_univ_lt_top := by
+    rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+    exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
+
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]
