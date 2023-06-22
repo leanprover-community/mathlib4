@@ -76,7 +76,7 @@ section HacksForPiInstanceSearch
 /-- A special case of `pi.topological_ring` for when `R` is not dependently typed. -/
 instance Function.topologicalRing (I : Type _) (R : Type _) [NonUnitalRing R] [TopologicalSpace R]
     [TopologicalRing R] : TopologicalRing (I → R) :=
-  Pi.topologicalRing
+  Pi.instTopologicalRing
 #align function.topological_ring Function.topologicalRing
 
 /-- A special case of `function.algebra` for when A is a `ring` not a `semiring` -/
@@ -89,13 +89,13 @@ instance Function.algebraRing (I : Type _) {R : Type _} (A : Type _) [CommSemiri
 instance Pi.matrixAlgebra (I R A : Type _) (m : I → Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
     Algebra R (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.algebra
+  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.instAlgebra
 #align pi.matrix_algebra Pi.matrixAlgebra
 
 /-- A special case of `pi.topological_ring` for when `f = λ i, matrix (m i) (m i) A`. -/
 instance Pi.matrix_topologicalRing (I A : Type _) (m : I → Type _) [Ring A] [TopologicalSpace A]
     [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.topologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.topologicalRing
+  @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.topologicalRing
 #align pi.matrix_topological_ring Pi.matrix_topologicalRing
 
 end HacksForPiInstanceSearch
@@ -118,12 +118,12 @@ theorem exp_diagonal (v : m → 𝔸) : exp 𝕂 (diagonal v) = diagonal (exp �
 
 theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
     exp 𝕂 (blockDiagonal v) = blockDiagonal (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← block_diagonal_pow, ← block_diagonal_smul, ← block_diagonal_tsum]
+  simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
 #align matrix.exp_block_diagonal Matrix.exp_blockDiagonal
 
 theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp 𝕂 (blockDiagonal' v) = blockDiagonal' (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← block_diagonal'_pow, ← block_diagonal'_smul, ← block_diagonal'_tsum]
+  simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 #align matrix.exp_block_diagonal' Matrix.exp_blockDiagonal'
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
@@ -160,7 +160,7 @@ section Normed
 variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
   [∀ i, DecidableEq (n' i)] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
-theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
+nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp 𝕂 (A + B) = exp 𝕂 A ⬝ exp 𝕂 B := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
@@ -168,7 +168,7 @@ theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
   exact exp_add_of_commute h
 #align matrix.exp_add_of_commute Matrix.exp_add_of_commute
 
-theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
+nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp 𝕂 (∑ i in s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
@@ -178,21 +178,21 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
   exact exp_sum_of_commute s f h
 #align matrix.exp_sum_of_commute Matrix.exp_sum_of_commute
 
-theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n := by
+nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_nsmul n A
 #align matrix.exp_nsmul Matrix.exp_nsmul
 
-theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
+nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact isUnit_exp _ A
 #align matrix.is_unit_exp Matrix.isUnit_exp
 
-theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
+nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (↑U ⬝ A ⬝ ↑U⁻¹ : Matrix m m 𝔸) = ↑U ⬝ exp 𝕂 A ⬝ ↑U⁻¹ := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
@@ -221,7 +221,7 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
 #align matrix.exp_neg Matrix.exp_neg
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
-  obtain ⟨n, rfl | rfl⟩ := z.eq_coe_or_neg
+  obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul]
   · have : IsUnit (exp 𝕂 A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _ _)
     rw [Matrix.zpow_neg this, zpow_ofNat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
