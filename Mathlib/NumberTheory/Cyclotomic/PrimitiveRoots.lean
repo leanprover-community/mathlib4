@@ -121,7 +121,7 @@ namespace IsPrimitiveRoot
 variable {C}
 
 /-- The `power_basis` given by a primitive root `η`. -/
-@[simps]
+@[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
   PowerBasis.map (Algebra.adjoin.powerBasis <| integral {n} K L ζ) <|
     (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
@@ -135,7 +135,7 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 #align is_primitive_root.power_basis_gen_mem_adjoin_zeta_sub_one IsPrimitiveRoot.powerBasis_gen_mem_adjoin_zeta_sub_one
 
 /-- The `power_basis` given by `η - 1`. -/
-@[simps]
+@[simps!]
 noncomputable def subOnePowerBasis : PowerBasis K L :=
   (hζ.powerBasis K).ofGenMemAdjoin
     (isIntegral_sub (IsCyclotomicExtension.integral {n} K L ζ) isIntegral_one)
@@ -222,9 +222,11 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   · replace h1 : 2 ≤ n
     · by_contra' h
       exact h1 (PNat.eq_one_of_lt_two h)
+-- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
-      hζ.minpoly_eq_cyclotomic_of_irreducible hirr, cyclotomic_coeff_zero _ h1, mul_one,
-      hζ.power_basis_dim K, ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, nat_degree_cyclotomic]
+      hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
+      (cyclotomic_coeff_zero K h1 : coeff (cyclotomic n K) 0 = 1), mul_one,
+      hζ.powerBasis_dim K, ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
     exact (totient_even <| h1.lt_of_ne hn.symm).neg_one_pow
 #align is_primitive_root.norm_eq_one IsPrimitiveRoot.norm_eq_one
 
