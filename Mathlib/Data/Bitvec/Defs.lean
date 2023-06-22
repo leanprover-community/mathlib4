@@ -36,18 +36,50 @@ open Vector
 -- mathport name: «expr ++ₜ »
 local infixl:65 "++ₜ" => Vector.append
 
-/-- Create a zero bitvector -/
-@[reducible]
-protected def zero (n : ℕ) : Bitvec n :=
-  replicate n false
-#align bitvec.zero Bitvec.zero
+/-! ### Constant Bitvectors -/
+section Constants
 
-/-- Create a bitvector of length `n` whose `n-1`st entry is 1 and other entries are 0. -/
-@[reducible]
-protected def one : ∀ n : ℕ, Bitvec n
-  | 0 => nil
-  | succ n => replicate n false++ₜtrue ::ᵥ nil
-#align bitvec.one Bitvec.one
+  /-- The bitvector `0000..`, whose entries are all `0`, represents the value `0` -/
+  @[reducible]
+  protected def zero (n : ℕ) : Bitvec n :=
+    replicate n false
+  #align bitvec.zero Bitvec.zero
+
+  /-- The bitvector `1000..`, whose `n-1`st entry is `1` and other entries are `0`, represents the
+      value `1` -/
+  @[reducible]
+  protected def one : ∀ (n : ℕ), Bitvec n
+    | 0 => nil
+    | succ n => replicate n false++ₜtrue ::ᵥ nil
+  #align bitvec.one Bitvec.one
+
+  /-- The bitvector `1111..`, whose entries are all `1`, represents the value `-1` as a signed
+      integer, or `(2^n)-1` as an unsigned integer -/
+  def negOne (n : ℕ) : Bitvec n :=
+    replicate n true
+
+  /--
+  The maximal positive (signed) integer for a given bitwidth has bitpattern `011111..`, representing
+  the value `2^n-1`
+  -/
+  @[reducible]
+  def intMax : ∀ n, Bitvec n
+    | 0   => Vector.nil
+    | n+1 => false ::ᵥ negOne n
+
+  /--
+    The minimal negative integer for a given bitwidth has bitpattern `10000...`, representing
+    `-2^n` as a signed integer, or `2^(n-1)` as an unsigned integer
+   -/
+  @[reducible]
+  def intMin : ∀ n, Bitvec n
+    | 0   => Vector.nil
+    | n+1 => true ::ᵥ Bitvec.zero n
+
+end Constants
+
+
+
 
 /-- Create a bitvector from another with a provably equal length. -/
 protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
