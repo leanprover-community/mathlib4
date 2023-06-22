@@ -10,7 +10,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.Matrix
-import Mathlib.LinearAlgebra.Matrix.Zpow
+import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Topology.UniformSpace.Matrix
