@@ -5,6 +5,7 @@ Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
 
 import Lean
+import Std.Logic
 
 /-!
 # The `use` tactic
@@ -132,8 +133,18 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
         trace[tactic.use] "running discharger on {g}"
         discard <| run g discharger
 
+/-- Default discharger to try to use for the `use` and `use!` tactics.
+This is similar to the `trivial` tactic but doesn't do things like `contradiction` or `decide`. -/
+syntax "use_discharger" : tactic
+
+macro_rules | `(tactic| use_discharger) => `(tactic| apply exists_prop.mpr <;> use_discharger)
+macro_rules | `(tactic| use_discharger) => `(tactic| apply And.intro <;> use_discharger)
+macro_rules | `(tactic| use_discharger) => `(tactic| rfl)
+macro_rules | `(tactic| use_discharger) => `(tactic| assumption)
+macro_rules | `(tactic| use_discharger) => `(tactic| apply True.intro)
+
 /-- Returns a `TacticM Unit` that either runs the tactic sequence from `discharger?` if it's
-non-`none`, or it does `try with_reducible trivial`. -/
+non-`none`, or it does `try with_reducible use_discharger`. -/
 def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) :
     TacticM (TacticM Unit) := do
   let discharger ←
@@ -142,7 +153,7 @@ def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) 
       | `(Parser.Tactic.discharger| ($_ := $d)) => `(tactic| ($d))
       | _ => throwUnsupportedSyntax
     else
-      `(tactic| try with_reducible trivial)
+      `(tactic| try with_reducible use_discharger)
   return evalTactic discharger
 
 /--
@@ -173,13 +184,14 @@ example : ∃ p : Nat × Nat, p.1 = p.2 := by use! (42, 42)
 ```
 
 The second line makes use of the fact that `use!` tries refining with the argument before
-applying a constructor. Also note that `use`/`use!` by default uses `trivial` to discharge goals,
-so `use! 42` will close the goal in this example since `trivial` applies `rfl`, which as a
-consequence solves for the other `Nat` metavariable.
+applying a constructor. Also note that `use`/`use!` by default uses a tactic
+called `use_discharger` to discharge goals, so `use! 42` will close the goal in this example since
+`use_discharger` applies `rfl`, which as a consequence solves for the other `Nat` metavariable.
 
 These tactics take an optional discharger to handle remaining explicit `Prop` constructor arguments.
-By default it is `use (discharger := try with_reducible trivial) e₁, e₂, ⋯`.
+By default it is `use (discharger := try with_reducible use_discharger) e₁, e₂, ⋯`.
 To turn off the discharger and keep all goals, use `(discharger := skip)`.
+To allow "heavy refls", use `(discharger := try use_discharger)`.
 -/
 elab (name := useSyntax)
     "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do

@@ -65,6 +65,7 @@ example : ∃ x : Int, x = x := by use 42
 
 example : ∃ a b c : Int, a + b + c = 6 := by
   use 1, 2, 3
+  rfl
 
 example : ∃ p : Int × Int, p.1 = 1 := by use ⟨1, 42⟩
 
@@ -72,6 +73,7 @@ example : ∃ p : Int × Int, p.1 = 1 := by use! 1, 42
 
 example : ∃ n : Int, n * 3 = 3 * 2 := by
   use 2
+  rfl
 
 example : Σ _x _y : Int, Int × Int × Int := by
   use 1, 2, 3, 4, 5
@@ -123,7 +125,7 @@ example : foo := show_term by
   exact true
 
 -- `use!` is helpful for auto-flattening quantifiers over subtypes
-example : ∃ p : {x : Nat // 0 < x}, 1 < p.1 := by use! 2
+example : ∃ p : {x : Nat // 0 < x}, 1 < p.1 := by use! 2 <;> decide
 
 inductive Baz : Nat → Nat → Prop
   | cons (x : Nat) : Baz 0 x
@@ -202,3 +204,7 @@ by
   use (discharger := skip) 1
   guard_target = 1 > 0 ∧ 1 = 1
   decide
+
+-- The discharger knows about `exists_prop`.
+example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
+  use 1
