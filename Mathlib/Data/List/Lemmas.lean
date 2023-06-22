@@ -10,6 +10,7 @@ Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.List.Basic
+import Mathlib.Init.Data.List.Lemmas
 
 /-! # Some lemmas about lists involving sets
 
@@ -81,5 +82,49 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 #align list.foldl_range_eq_of_range_eq List.foldl_range_eq_of_range_eq
+
+
+
+/-!
+  ### MapAccumr and Foldr
+  Some lemmas relation `mapAccumr` and `foldr`
+-/
+section MapAccumr
+
+theorem mapAccumr_eq_foldr (f : α → σ → σ × β) (as : List α) (s : σ) :
+    mapAccumr f as s = List.foldr (fun a (s, bs) =>
+                                    let ⟨s_out, b⟩ := f a s
+                                    (s_out, b :: bs)
+                                  ) (s, []) as := by
+  induction as
+  . rfl
+  next a as ih =>
+    simp only [mapAccumr, foldr]
+    revert ih
+    rcases mapAccumr f as s with ⟨out_state₁, res₁⟩
+    rw [Prod.mk.injEq]
+    rintro ⟨⟨⟩, ⟨⟩⟩
+    rfl
+
+theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) (as : List α) (bs : List β) (s : σ) :
+    mapAccumr₂ f as bs s = foldr (fun (a, b) (s, cs) =>
+                              let ⟨s_out, c⟩ := f a b s
+                              (s_out, c :: cs)
+                            ) (s, []) (as.zip bs) := by
+  induction as generalizing bs
+  . cases bs <;> rfl
+  next a as ih =>
+    cases bs
+    . rfl
+    next b bs =>
+      simp only [mapAccumr₂, foldr]
+      specialize ih bs
+      revert ih
+      rcases mapAccumr₂ f as bs s with ⟨out_state₁, res₁⟩
+      rw[Prod.mk.injEq]
+      rintro ⟨⟨⟩, ⟨⟩⟩
+      rfl
+
+end MapAccumr
 
 end List
