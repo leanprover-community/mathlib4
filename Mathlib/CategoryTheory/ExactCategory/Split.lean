@@ -33,8 +33,7 @@ def admissibleSplitMono := ShortComplex.fAdmissible (splitShortExact C)
 def admissibleSplitEpi := ShortComplex.gAdmissible (splitShortExact C)
 
 lemma admissibleSplitMono_op : (admissibleSplitMono _).op = admissibleSplitEpi Cᵒᵖ := by
-  ext X
-  intro Y f
+  ext X Y f
   constructor
   . rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_op _ h⟩
@@ -42,8 +41,7 @@ lemma admissibleSplitMono_op : (admissibleSplitMono _).op = admissibleSplitEpi C
     exact ⟨_, _, _, splitShortExact_unop _ h⟩
 
 lemma admissibleSplitEpi_op : (admissibleSplitEpi _).op = admissibleSplitMono Cᵒᵖ := by
-  ext X
-  intro Y f
+  ext X Y f
   constructor
   . rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_op _ h⟩
