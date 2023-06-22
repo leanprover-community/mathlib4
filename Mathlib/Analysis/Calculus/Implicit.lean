@@ -15,8 +15,8 @@ import Mathlib.Analysis.NormedSpace.Complemented
 # Implicit function theorem
 
 We prove three versions of the implicit function theorem. First we define a structure
-`implicit_function_data` that holds arguments for the most general version of the implicit function
-theorem, see `implicit_function_data.implicit_function`
+`ImplicitFunctionData` that holds arguments for the most general version of the implicit function
+theorem, see `ImplicitFunctionData.implicitFunction`
 and `implicit_function_data.to_implicit_function`. This version allows a user to choose
 a specific implicit function but provides only a little convenience over the inverse function
 theorem.
@@ -26,14 +26,14 @@ where `f : E → F` is a function strictly differentiable at `a` such that its d
 is surjective and has a `complemented` kernel.
 
 Finally, if the codomain of `f` is a finite dimensional space, then we can automatically prove
-that the kernel of `f'` is complemented, hence the only assumptions are `has_strict_fderiv_at`
+that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `implicit_function`.
 
 ## TODO
 
 * Add a version for a function `f : E × F → G` such that $$\frac{\partial f}{\partial y}$$ is
   invertible.
-* Add a version for `f : 𝕜 × 𝕜 → 𝕜` proving `has_strict_deriv_at` and `deriv φ = ...`.
+* Add a version for `f : 𝕜 × 𝕜 → 𝕜` proving `HasStrictDerivAt` and `deriv φ = ...`.
 * Prove that in a real vector space the implicit function has the same smoothness as the original
   one.
 * If the original function is differentiable in a neighborhood, then the implicit function is
@@ -72,7 +72,7 @@ Consider two functions `f : E → F` and `g : E → G` and a point `a` such that
 
 Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is a local homeomorphism
 between `E` and `F × G`. We use this fact to define a function `φ : F → G → E`
-(see `implicit_function_data.implicit_function`) such that for `(y, z)` close enough to `(f a, g a)`
+(see `ImplicitFunctionData.implicitFunction`) such that for `(y, z)` close enough to `(f a, g a)`
 we have `f (φ y z) = y` and `g (φ y z) = z`.
 
 We also prove a formula for $$\frac{\partial\varphi}{\partial z}.$$
