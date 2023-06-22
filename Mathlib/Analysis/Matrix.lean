@@ -390,7 +390,7 @@ matrix. -/
 @[local instance]
 protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
-  { Matrix.linftyOpNormedSpace, Matrix.instAlgebraMatrixSemiring with }
+  { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 #align matrix.linfty_op_normed_algebra Matrix.linftyOpNormedAlgebra
 
 end LinftyOp
@@ -584,7 +584,7 @@ matrix. -/
 @[local instance]
 def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] :
     NormedAlgebra R (Matrix m m α) :=
-  { Matrix.frobeniusNormedSpace, Matrix.instAlgebraMatrixSemiring with }
+  { Matrix.frobeniusNormedSpace, Matrix.instAlgebra with }
 #align matrix.frobenius_normed_algebra Matrix.frobeniusNormedAlgebra
 
 end IsROrC
