@@ -1464,7 +1464,7 @@ instance starAddMonoid : StarAddMonoid (α →ᵇ β) where
   star_add f g := ext fun x => star_add (f x) (g x)
 
 /-- The right-hand side of this equality can be parsed `star ∘ ⇑f` because of the
-instance `Pi.instStarForAll`. Upon inspecting the goal, one sees `⊢ ↑(star f) = star ↑f`. -/
+instance `Pi.instStarForAll`. Upon inspecting the goal, one sees ` ⊢ ↑(star f) = star ↑f`. -/
 @[simp]
 theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 #align bounded_continuous_function.coe_star BoundedContinuousFunction.coe_star
@@ -1528,7 +1528,7 @@ instance semilatticeInf : SemilatticeInf (α →ᵇ β) :=
           obtain ⟨C₁, hf⟩ := f.bounded
           obtain ⟨C₂, hg⟩ := g.bounded
           refine' ⟨C₁ + C₂, fun x y => _⟩
-          simp_rw [NormedAddCommGroup.dist_eq] at hf hg⊢
+          simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
           exact (norm_inf_sub_inf_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
     inf_le_left := fun f g => ContinuousMap.le_def.mpr fun _ => inf_le_left
     inf_le_right := fun f g => ContinuousMap.le_def.mpr fun _ => inf_le_right
@@ -1545,7 +1545,7 @@ instance semilatticeSup : SemilatticeSup (α →ᵇ β) :=
           obtain ⟨C₁, hf⟩ := f.bounded
           obtain ⟨C₂, hg⟩ := g.bounded
           refine' ⟨C₁ + C₂, fun x y => _⟩
-          simp_rw [NormedAddCommGroup.dist_eq] at hf hg⊢
+          simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
           exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
     le_sup_left := fun f g => ContinuousMap.le_def.mpr fun _ => le_sup_left
     le_sup_right := fun f g => ContinuousMap.le_def.mpr fun _ => le_sup_right

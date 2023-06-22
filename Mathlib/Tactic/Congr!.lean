@@ -868,8 +868,8 @@ declare_config_elab elabConfig Config
 
 /--
 Equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand side by
-recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
-two goals `⊢ f = g` and `⊢ as = bs`.
+recursively applying congruence lemmas. For example, with ` ⊢ f as = g bs` we could get
+two goals ` ⊢ f = g` and ` ⊢ as = bs`.
 
 Syntax:
 ```
@@ -884,13 +884,13 @@ Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`,
 The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
 to right-hand sides of goals. Here is a list of things it can try:
 
-- If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
+- If `R` in ` ⊢ R x y` is a reflexive relation, it will convert the goal to ` ⊢ x = y` if possible.
   The list of reflexive relations is maintained using the `@[refl]` attribute.
-  As a special case, `⊢ p ↔ q` is converted to `⊢ p = q` during congruence processing and then
-  returned to `⊢ p ↔ q` form at the end.
+  As a special case, ` ⊢ p ↔ q` is converted to ` ⊢ p = q` during congruence processing and then
+  returned to ` ⊢ p ↔ q` form at the end.
 
 - If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
-  lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
+  lemma applying to ` ⊢ List.map f xs = List.map g ys`), then it will use that.
 
 - It uses a congruence lemma generator at least as capable as the one used by `congr` and `simp`.
   If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
@@ -911,9 +911,9 @@ to right-hand sides of goals. Here is a list of things it can try:
 
 The optional parameter is the depth of the recursive applications.
 This is useful when `congr!` is too aggressive in breaking down the goal.
-For example, given `⊢ f (g (x + y)) = f (g (y + x))`,
-`congr!` produces the goals `⊢ x = y` and `⊢ y = x`,
-while `congr! 2` produces the intended `⊢ x + y = y + x`.
+For example, given ` ⊢ f (g (x + y)) = f (g (y + x))`,
+`congr!` produces the goals ` ⊢ x = y` and ` ⊢ y = x`,
+while `congr! 2` produces the intended ` ⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
 ```lean

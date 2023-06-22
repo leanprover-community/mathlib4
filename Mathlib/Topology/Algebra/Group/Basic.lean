@@ -739,8 +739,8 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [TopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}
     (hs : s.topologicalClosure = ⊤) : (s.map f).topologicalClosure = ⊤ := by
-  rw [SetLike.ext'_iff] at hs⊢
-  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs⊢
+  rw [SetLike.ext'_iff] at hs ⊢
+  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image hf hs
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup

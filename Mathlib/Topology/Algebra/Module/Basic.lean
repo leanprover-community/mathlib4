@@ -563,8 +563,8 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
     [ContinuousSMul R₂ M₂] [ContinuousAdd M₂] {f : M₁ →SL[σ₁₂] M₂} (hf' : DenseRange f)
     {s : Submodule R₁ M₁} (hs : s.topologicalClosure = ⊤) :
     (s.map (f : M₁ →ₛₗ[σ₁₂] M₂)).topologicalClosure = ⊤ := by
-  rw [SetLike.ext'_iff] at hs⊢
-  simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs⊢
+  rw [SetLike.ext'_iff] at hs ⊢
+  simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image f.continuous hs
 #align dense_range.topological_closure_map_submodule DenseRange.topologicalClosure_map_submodule
 

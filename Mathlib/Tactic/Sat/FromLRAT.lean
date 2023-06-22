@@ -222,7 +222,7 @@ structure Clause where
   lits : Array Int
   /-- The clause expression of type `Clause` -/
   expr : Expr
-  /-- A proof of `⊢ ctx.proof c`.
+  /-- A proof of ` ⊢ ctx.proof c`.
   Note that we do not use `have` statements to cache these proofs:
   this is literally the proof expression itself. As a result, the proof terms
   rely heavily on dag-like sharing of the expression, and printing these proof terms
@@ -245,7 +245,7 @@ partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
     let mid := start + len / 2
     mkApp2 (mkConst ``Sat.Fmla.and) (buildConj arr start mid) (buildConj arr mid stop)
 
-/-- Constructs the proofs of `⊢ ctx.proof c` for each clause `c` in `ctx`.
+/-- Constructs the proofs of ` ⊢ ctx.proof c` for each clause `c` in `ctx`.
 The proofs are stashed in a `HashMap` keyed on the clause ID. -/
 partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Nat)
   (f p : Expr) (accum : Nat × HashMap Nat Clause) : Nat × HashMap Nat Clause :=
@@ -272,12 +272,12 @@ structure LClause where
   lits : Array Int
   /-- The clause expression of type `Clause` -/
   expr : Expr
-  /-- The bound variable index of the hypothesis asserting `⊢ ctx.proof c`,
+  /-- The bound variable index of the hypothesis asserting ` ⊢ ctx.proof c`,
   _counting from the outside and 1-based_. (We use this numbering because we will need to
   reference the variable from multiple binder depths.) -/
   depth : Nat
 
-/-- Construct an individual proof step `⊢ ctx.proof c`.
+/-- Construct an individual proof step ` ⊢ ctx.proof c`.
 
   * `db`: the current global context
   * `ns`, `clause`: the new clause
@@ -293,7 +293,7 @@ structure LClause where
      sharing in the `pi` (which are themselves previous proof steps which may be large terms).
      The hypotheses are in `gctx`, keyed on the clause ID.
 
-  2. Unfold `⊢ ctx.proof [a, b, c]` to
+  2. Unfold ` ⊢ ctx.proof [a, b, c]` to
      `∀ v, v.satisfies_fmla ctx → v.neg a → v.neg b → v.neg c → False` and `intro v hv ha hb hc`,
      storing each `ha : v.neg a` in `lctx`, keyed on the literal `a`.
 
@@ -375,7 +375,7 @@ inductive LRATStep
   | /-- A (multiple) deletion step, which deletes all the listed clause IDs from the context -/
     del (ids : Array Nat) : LRATStep
 
-/-- Build the main proof of `⊢ ctx.proof []` using the LRAT proof trace.
+/-- Build the main proof of ` ⊢ ctx.proof []` using the LRAT proof trace.
 
   * `arr`: The input CNF
   * `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
@@ -400,7 +400,7 @@ partial def buildProof (arr : Array (Array Int)) (ctx ctx' : Expr)
 
 /-- Build the type and value of the reified theorem. This rewrites all the SAT definitions
 into standard operators on `Prop`, for example if the formula is `[[1, 2], [-1, 2], [-2]]` then
-this produces a proof of `⊢ ∀ a b : Prop, (a ∧ b) ∨ (¬a ∧ b) ∨ ¬b`. We use the input `nvars` to
+this produces a proof of ` ⊢ ∀ a b : Prop, (a ∧ b) ∨ (¬a ∧ b) ∨ ¬b`. We use the input `nvars` to
 decide how many quantifiers to use.
 
 Most of the proof is under `2 * nvars + 1` quantifiers

@@ -70,7 +70,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
 theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
-    rw [← hx] at hJ⊢
+    rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
         (Ideal.mem_map_of_mem _
