@@ -28,7 +28,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category has finite products if there is a chosen limit for every diagram
+/-- A category has finite products if there exists a limit for every diagram
 with shape `Discrete J`, where we have `[Finite J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
