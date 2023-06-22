@@ -127,15 +127,15 @@ def MySeqCompact (X : Type) [TopologicalSpace X] :=
 
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : MySeqCompact X) :
   MySeqCompact Y := by
-  set g : Y → X := (Classical.axiomOfChoice hf).choose
-  have hg : ∀ y, f (g y) = y := (Classical.axiomOfChoice hf).choose_spec
-  clear_value g
+  -- set g : Y → X := (Classical.axiomOfChoice hf).choose
+  -- have hg : ∀ y, f (g y) = y := (Classical.axiomOfChoice hf).choose_spec
+  -- clear_value g
   -- clear hf
+  -- clear g hg
   --
   intro α
   specialize hX ?_
-  . clear g hg
-    intro n
+  . intro n
     specialize α n
     exact (hf α).choose
   -- specialize hX (g ∘ α)
@@ -192,3 +192,98 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f) (hX : Compact
   sorry
 
 end compact
+
+-- structure TransportCtx where
+--   term : Expr
+--   goal : MVarId
+
+def Transporter : Type := Expr → MVarId → MetaM (List (Expr × MVarId))
+
+-- This is never actually used: it exists so we can write `partial` definitions.
+instance : Inhabited Transporter where
+  default _ _ := pure []
+
+def Lean.Expr.forallE? : Expr → Option (Name × Expr × Expr × BinderInfo)
+  | .forallE n t b bi => some (n, t, b, bi)
+  | _ => none
+
+def Lean.Expr.lam? : Expr → Option (Name × Expr × Expr × BinderInfo)
+  | .lam n t b bi => some (n, t, b, bi)
+  | _ => none
+
+def transportForall (_f : Expr) (_cont : Transporter) : Transporter := fun t g => do
+  let (h, g) ← g.intro1P
+  g.withContext do
+    -- We need to get the `Expr` corresponding to `h` (which is just an `FVarId`)
+    let h := (← h.getDecl).toExpr -- FIXME what is the colloquialism here?
+    -- TODO we need to transport `h` along `f` to whatever the type of the first argument of `t` is!
+    -- FIXME cleanup!!
+    trace[Tactic.transport] t
+    let .some (_, t_arg_type, _, _) := (← inferType t).forallE? | throwError "foo"
+    let synthetic_goal ← mkFreshExprMVar t_arg_type
+    let [] ← _cont h synthetic_goal.mvarId! | throwError "transporting the argument failed"
+    let t' ← mkAppM' t #[synthetic_goal]
+    return [(t', g)]
+
+def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => do
+  let ty ← g.getType
+  if ← isDefEq ty (← inferType t) then
+    g.assign t
+    return []
+  if let .some t' ← try? (mkAppM' f #[t]) then
+    -- code smell: this is just doing the first branch now, can we refactor?
+    if ← isDefEq ty (← inferType t') then
+      g.assign t'
+      return []
+  if ty.isForall then
+    return ← transportForall f cont t g
+  throwError "transport doesn't know what to do yet!"
+
+-- FIXME probably better to use fuel rather than a `partial` def.
+partial def transportMany (f : Expr) : Transporter := fun t g => do
+  -- TODO call transport1 repeatedly not just once
+  transport1 f (transportMany f) t g
+
+def transport (f t : Expr) (g : MVarId) : MetaM (List MVarId) := do
+  (← transportMany f t g).mapM fun ⟨t', g'⟩ => do
+    -- FIXME don't use a hardcoded name `w
+    let (_, g'') ← g'.note `w t'
+    pure g''
+
+syntax "transport" ppSpace term:max "along" ppSpace term:max : tactic
+
+/-- A user-facing tactic that just calls the plumbing. -/
+-- To see how to do this, look for examples of `macro`, `elab`,
+-- or `syntax` and `elab_rules`.
+elab_rules : tactic
+  | `(tactic| transport $t:term along $f:term) => do
+    -- Let's hand off to a "plumbing" function in `MetaM` right away.
+    -- This means we need to 1) change `f` and `t` from ``TSyntax `term`` to `Expr`,
+    -- and we need to 2) get the main goal, and afterwards reset the user's goals.
+    -- For 1), we need `elabTerm`:
+    let t ← Term.elabTerm t none
+    let f ← Term.elabTerm f none
+    -- For 2):
+    -- let g ← getMainGoal
+    -- let gs ← ourAwesomeTactic g t f
+    -- replaceMainGoal gs
+    liftMetaTactic (transport f t)
+
+set_option trace.Tactic.transport true
+
+example (w : ∀ n : Nat, n > 1) : ∀ n : Nat, n > 1 := by
+  transport w along id
+
+example (w : α) (f : α → β) : β := by
+  transport w along f
+
+example (w : ∀ n : Nat, n > 1) : ∀ n : Nat, n > 0 := by
+  transport w along id
+
+example (w : ∀ n : Int, n > 1) : ∀ n : Nat, n > 0 := by
+  transport w along Int.ofNat
+
+example (w : ∀ n : Int, n > 0) : ∀ n : Nat, n > 0 := by
+  transport w along Int.ofNat
+
+example : (by transport (0 : ℕ) along (fun (n : ℕ) => (n+1, n+2)) : ℕ × ℕ) = (1, 2) := rfl
