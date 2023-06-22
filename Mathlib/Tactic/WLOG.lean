@@ -129,11 +129,23 @@ assumptions:
   `wlog h : P with H`.
 
 Typically, it is useful to use the variant `wlog h : P generalizing x y`,
-to revert certain parts of the context before creating the new goal.
+to revert only certain parts of the context before creating the new goal.
 In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
 (exploiting symmetry, which is the typical use case).
 
-By default, the entire context is reverted. -/
+By default, the entire context is reverted.
+
+To replace some hypotheses instead of generalizing them, one can use `wlog h : P replacing y`. The
+new hypothesis `h` will "replace" `y` (and all of its forward dependencies) in both the type of
+`this` and the hypotheses of the second goal, where `y` will no longer appear. For this to make
+sense, `y` and all its forward dependencies must be among all the hypotheses that would be
+generalized if the `replacing` syntax were removed; `wlog` will fail if not.
+
+All syntax options can be used in conjunction:
+```lean
+wlog h : P generalizing x y replacing w z with H
+```
+-/
 syntax (name := wlog) "wlog " binderIdent " : " term (" generalizing" (ppSpace colGt ident)*)?
   (" replacing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
