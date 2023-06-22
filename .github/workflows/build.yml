@@ -131,7 +131,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash env LEAN_ABORT_ON_PANIC=1 lake build | tee stdout.log
+            bash LEAN_ABORT_ON_PANIC=1 lake build | tee stdout.log
 
       - name: check for noisy stdout lines
         run: |
