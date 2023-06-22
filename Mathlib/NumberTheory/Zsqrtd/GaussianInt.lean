@@ -151,9 +151,9 @@ theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
 #align gaussian_int.to_complex_eq_zero GaussianInt.toComplex_eq_zero
 
 @[simp]
-theorem nat_cast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
+theorem int_cast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
   rw [Zsqrtd.norm, normSq]; simp
-#align gaussian_int.nat_cast_real_norm GaussianInt.nat_cast_real_norm
+#align gaussian_int.nat_cast_real_norm GaussianInt.int_cast_real_norm
 
 @[simp]
 theorem nat_cast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
