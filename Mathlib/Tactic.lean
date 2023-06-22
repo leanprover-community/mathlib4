@@ -50,6 +50,9 @@ import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
+import Mathlib.Tactic.Hint
+import Mathlib.Tactic.Hint.Basic
+import Mathlib.Tactic.Hint.Core
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.InferParam
