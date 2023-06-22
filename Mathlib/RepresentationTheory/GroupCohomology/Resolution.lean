@@ -72,12 +72,13 @@ open CategoryTheory
 
 local notation "Gⁿ" => Fin n → G
 
+set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
-namespace GroupCohomology.resolution
+namespace GroupCohomology.Resolution
 
 open Finsupp hiding lift
-
+open MonoidalCategory
 open Fin (partialProd)
 
 section Basis
@@ -99,25 +100,29 @@ def actionDiagonalSucc (G : Type u) [Group G] :
       (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.equivOfUnique PUnit _).toIso)
   | n + 1 =>
     diagonalSucc _ _ ≪≫
-      tensorIso (Iso.refl _) (Action_diagonal_succ n) ≪≫
+      tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫
         leftRegularTensorIso _ _ ≪≫
           tensorIso (Iso.refl _)
-            (mkIso (Equiv.piFinSuccAboveEquiv (fun j => G) 0).symm.toIso fun g => rfl)
+            (mkIso (Equiv.piFinSuccAboveEquiv (fun _ => G) 0).symm.toIso fun _ => rfl)
 #align group_cohomology.resolution.Action_diagonal_succ GroupCohomology.Resolution.actionDiagonalSucc
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f i.cast_succ)⁻¹ * f i.succ) := by
+    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · ext
-    · rfl
-    · dsimp only [Action_diagonal_succ]
-      simp only [iso.trans_hom, comp_hom, types_comp_apply, diagonal_succ_hom_hom,
-        left_regular_tensor_iso_hom_hom, tensor_iso_hom, mk_iso_hom_hom, Equiv.toIso_hom,
-        tensor_hom, Equiv.piFinSuccAboveEquiv_symm_apply, tensor_apply, types_id_apply, tensor_rho,
-        MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ, Fin.insertNth_zero']
+  · refine' Prod.ext rfl (funext fun x => _)
+/- Porting note: broken proof was
+    · dsimp only [actionDiagonalSucc]
+      simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
+        leftRegularTensorIso_hom_hom, tensorIso_hom, mkIso_hom_hom, Equiv.toIso_hom,
+        Action.tensorHom, Equiv.piFinSuccAboveEquiv_symm_apply, tensor_apply, types_id_apply,
+        tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
+        Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
-      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ]
+      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
+    · dsimp [actionDiagonalSucc]
+      erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+      exact Fin.cases rfl (fun i => rfl) x
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply GroupCohomology.Resolution.actionDiagonalSucc_hom_apply
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
@@ -125,18 +130,27 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
   revert g
   induction' n with n hn
   · intro g
-    ext
-    simpa only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
+    funext (x : Fin 1)
+    simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one];
+    rfl
   · intro g
+/- Porting note: broken proof was
     ext
-    dsimp only [Action_diagonal_succ]
-    simp only [iso.trans_inv, comp_hom, hn, diagonal_succ_inv_hom, types_comp_apply, tensor_iso_inv,
-      iso.refl_inv, tensor_hom, id_hom, tensor_apply, types_id_apply,
-      left_regular_tensor_iso_inv_hom, tensor_rho, left_regular_ρ_apply, Pi.smul_apply, smul_eq_mul]
+    dsimp only [actionDiagonalSucc]
+    simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
+      Iso.refl_inv, Action.tensorHom, id_hom, tensor_apply, types_id_apply,
+      leftRegularTensorIso_inv_hom, tensor_rho, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
     refine' Fin.cases _ _ x
     · simp only [Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · intro i
-      simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc]
+      simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
+    funext x
+    dsimp [actionDiagonalSucc]
+    erw [hn, Equiv.piFinSuccAboveEquiv_symm_apply]
+    refine' Fin.cases _ (fun i => _) x
+    · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
+    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ←mul_assoc]
+      rfl
 #align group_cohomology.resolution.Action_diagonal_succ_inv_apply GroupCohomology.Resolution.actionDiagonalSucc_inv_apply
 
 end Action
@@ -161,53 +175,84 @@ variable {k G n}
 
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f i.cast_succ)⁻¹ * f i.succ) a := by
-  dsimp only [diagonal_succ]
-  simpa only [iso.trans_hom, iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
-    LinearMap.comp_apply, functor.map_iso_hom,
-    linearization_map_hom_single (Action_diagonal_succ G n).hom f a, as_iso_inv,
-    linearization_μ_inv_hom, Action_diagonal_succ_hom_apply, finsuppTensorFinsupp',
+      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
+/- Porting note: broken proof was
+  dsimp only [diagonalSucc]
+  simpa only [Iso.trans_hom, Iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
+    LinearMap.comp_apply, Functor.mapIso_hom,
+    linearization_map_hom_single (actionDiagonalSucc G n).hom f a, asIso_inv,
+    linearization_μ_inv_hom, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, lcongr_symm, LinearEquiv.trans_apply, lcongr_single,
-    TensorProduct.lid_symm_apply, finsuppTensorFinsupp_symm_single, LinearEquiv.coe_toLinearMap]
+    TensorProduct.lid_symm_apply, finsuppTensorFinsupp_symm_single, LinearEquiv.coe_toLinearMap] -/
+  change (𝟙 ((linearization k G).1.obj (Action.leftRegular G)).V
+      ⊗ (linearizationTrivialIso k G (Fin n → G)).hom.hom)
+    ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
+      ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
+  simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
+  rw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
+    LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
+  erw [lcongr_single]
+  rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
+  rfl
 #align group_cohomology.resolution.diagonal_succ_hom_single GroupCohomology.Resolution.diagonalSucc_hom_single
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
       single (g • partialProd f) (a * b) := by
-  dsimp only [diagonal_succ]
-  simp only [iso.trans_inv, iso.symm_inv, iso.refl_inv, tensor_iso_inv, Action.tensorHom,
-    Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply, as_iso_hom, functor.map_iso_inv,
-    ModuleCat.MonoidalCategory.hom_apply, linearization_trivial_iso_inv_hom_apply,
-    linearization_μ_hom, Action.id_hom ((linearization k G).obj _), Action_diagonal_succ_inv_apply,
+/- Porting note: broken proof was
+  dsimp only [diagonalSucc]
+  simp only [Iso.trans_inv, Iso.symm_inv, Iso.refl_inv, tensorIso_inv, Action.tensorHom,
+    Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply, asIso_hom, Functor.mapIso_inv,
+    ModuleCat.MonoidalCategory.hom_apply, linearizationTrivialIso_inv_hom_apply,
+    linearization_μ_hom, Action.id_hom ((linearization k G).obj _), actionDiagonalSucc_inv_apply,
     ModuleCat.id_apply, LinearEquiv.coe_toLinearMap,
     finsuppTensorFinsupp'_single_tmul_single k (Action.leftRegular G).V,
-    linearization_map_hom_single (Action_diagonal_succ G n).inv (g, f) (a * b)]
+    linearization_map_hom_single (actionDiagonalSucc G n).inv (g, f) (a * b)] -/
+  change mapDomain (actionDiagonalSucc G n).inv.hom
+    (lcongr (Equiv.refl (G × (Fin n → G))) (TensorProduct.lid k k)
+      (finsuppTensorFinsupp k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
+    = single (g • partialProd f) (a * b)
+  rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
+    actionDiagonalSucc_inv_apply]
+  rfl
 #align group_cohomology.resolution.diagonal_succ_inv_single_single GroupCohomology.Resolution.diagonalSucc_inv_single_single
 
 theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
       Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine' f.induction _ _
+/- Porting note: broken proof was
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
-      diagonal_succ_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      MulZeroClass.zero_mul, single_zero]
+      diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
+      MulZeroClass.zero_mul, single_zero] -/
+  · rw [TensorProduct.tmul_zero, map_zero, map_zero]
+  · intro _ _ _ _ _ hx
+    rw [TensorProduct.tmul_add, map_add, map_add, hx]
+    simp_rw [lift_apply, smul_single, smul_eq_mul, diagonalSucc_inv_single_single]
+    rw [sum_single_index, mul_comm]
+    · rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left GroupCohomology.Resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
       Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine' g.induction _ _
+/- Porting note: broken proof was
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
-    simp only [lift_apply, smul_single', map_add, hx, diagonal_succ_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero]
+    simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
+      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero] -/
+  · rw [TensorProduct.zero_tmul, map_zero, map_zero]
+  · intro _ _ _ _ _ hx
+    rw [TensorProduct.add_tmul, map_add, map_add, hx]
+    simp_rw [lift_apply, smul_single', diagonalSucc_inv_single_single]
+    rw [sum_single_index]
+    · rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_right GroupCohomology.Resolution.diagonalSucc_inv_single_right
 
 end Rep
-
-variable (k G n)
 
 open scoped TensorProduct
 
