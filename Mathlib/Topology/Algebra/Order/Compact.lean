@@ -446,6 +446,19 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
   eq_Icc_csInf_csSup_of_connected_bdd_closed h₁ h₂.bddBelow h₂.bddAbove h₂.isClosed
 #align eq_Icc_of_connected_compact eq_Icc_of_connected_compact
 
+/- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
+conditionally complete linear order, and `K : Set β` is a compact set, then
+`fun x ↦ sSup (f x '' K)` is a continuous function.
+
+Porting note: todo: generalize. The following version seems to be true:
+```
+theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
+    (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
+    (hgc : ContinuousOn g K) :
+    Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
+```
+Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov).
+-/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
     (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)
@@ -535,20 +548,16 @@ theorem IsCompact.exists_isMinOn_mem_subset {f : β → α} {s t : Set β} {z : 
 @[deprecated IsCompact.exists_isMinOn_mem_subset]
 theorem IsCompact.exists_isLocalMinOn_mem_subset {f : β → α} {s t : Set β} {z : β}
     (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t) (hfz : ∀ z' ∈ t \ s, f z < f z') :
-    ∃ x ∈ s, IsLocalMinOn f t x := by
-  obtain ⟨x, hx, hfx⟩ : ∃ x ∈ t, ∀ y ∈ t, f x ≤ f y := ht.exists_forall_le ⟨z, hz⟩ hf
-  have key : ∀ ⦃y⦄, y ∈ t → (∀ z' ∈ t \ s, f y < f z') → y ∈ s := fun y hy hfy => by
-    by_contra h; simpa using hfy y ((mem_diff y).mpr ⟨hy, h⟩)
-  have h1 : ∀ z' ∈ t \ s, f x < f z' := fun z' hz' => (hfx z hz).trans_lt (hfz z' hz')
-  have h2 : x ∈ s := key hx h1
-  refine' ⟨x, h2, eventually_nhdsWithin_of_forall hfx⟩
+    ∃ x ∈ s, IsLocalMinOn f t x :=
+  let ⟨x, hxs, h⟩ := ht.exists_isMinOn_mem_subset hf hz hfz
+  ⟨x, hxs, h.localize⟩
 #align is_compact.exists_local_min_on_mem_subset IsCompact.exists_isLocalMinOn_mem_subset
 
 -- porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
 -- `IsOpen s`?
 theorem IsCompact.exists_isLocalMin_mem_open {f : β → α} {s t : Set β} {z : β} (ht : IsCompact t)
     (hst : s ⊆ t) (hf : ContinuousOn f t) (hz : z ∈ t) (hfz : ∀ z' ∈ t \ s, f z < f z')
-    (hs : IsOpen s) : ∃ x ∈ s, IsLocalMin f x := by
-  obtain ⟨x, hx, hfx⟩ := ht.exists_isLocalMinOn_mem_subset hf hz hfz
-  exact ⟨x, hx, hfx.isLocalMin (Filter.mem_of_superset (hs.mem_nhds hx) hst)⟩
+    (hs : IsOpen s) : ∃ x ∈ s, IsLocalMin f x :=
+  let ⟨x, hxs, h⟩ := ht.exists_isMinOn_mem_subset hf hz hfz
+  ⟨x, hxs, h.isLocalMin <| mem_nhds_iff.2 ⟨s, hst, hs, hxs⟩⟩
 #align is_compact.exists_local_min_mem_open IsCompact.exists_isLocalMin_mem_open
