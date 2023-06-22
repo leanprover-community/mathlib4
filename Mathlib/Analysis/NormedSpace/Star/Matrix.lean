@@ -22,6 +22,8 @@ This file collects facts about the unitary matrices over `𝕜` (either `ℝ` or
 
 open scoped BigOperators Matrix
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 variable {𝕜 m n E : Type _}
 
 section EntrywiseSupNorm
@@ -34,7 +36,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   have norm_sum : ‖U i j‖ ^ 2 ≤ ∑ x, ‖U i x‖ ^ 2 := by
     apply Multiset.single_le_sum
     · intro x h_x
-      rw [Multiset.mem_map] at h_x 
+      rw [Multiset.mem_map] at h_x
       cases' h_x with a h_a
       rw [← h_a.2]
       apply sq_nonneg
@@ -44,10 +46,10 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   -- The L2 norm of a row is a diagonal entry of U ⬝ Uᴴ
   have diag_eq_norm_sum : (U ⬝ Uᴴ) i i = ∑ x : n, ‖U i x‖ ^ 2 := by
     simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, IsROrC.mul_conj,
-      IsROrC.normSq_eq_def', IsROrC.ofReal_pow]
+      IsROrC.normSq_eq_def', IsROrC.ofReal_pow]; norm_cast
   -- The L2 norm of a row is a diagonal entry of U ⬝ Uᴴ, real part
   have re_diag_eq_norm_sum : IsROrC.re ((U ⬝ Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
-    rw [IsROrC.ext_iff] at diag_eq_norm_sum 
+    rw [IsROrC.ext_iff] at diag_eq_norm_sum
     rw [diag_eq_norm_sum.1]
     norm_cast
   -- Since U is unitary, the diagonal entries of U ⬝ Uᴴ are all 1
@@ -64,10 +66,12 @@ attribute [local instance] Matrix.normedAddCommGroup
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
     ‖U‖ ≤ 1 := by
-  simp_rw [pi_norm_le_iff_of_nonneg zero_le_one]
-  intro i j
+  conv => -- Porting note: was `simp_rw [pi_norm_le_iff_of_nonneg zero_le_one]`
+    rw [pi_norm_le_iff_of_nonneg zero_le_one]
+    intro
+    rw [pi_norm_le_iff_of_nonneg zero_le_one]
+  intros
   exact entry_norm_bound_of_unitary hU _ _
 #align entrywise_sup_norm_bound_of_unitary entrywise_sup_norm_bound_of_unitary
 
 end EntrywiseSupNorm
-
