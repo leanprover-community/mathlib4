@@ -58,7 +58,7 @@ elab "count_heartbeats " "in" ppLine cmd:command : command => do
       while max' < elapsed do
         max' := 2 * max'
       logInfo m!"Used {elapsed} heartbeats, which is greater than the current maximum of {max}."
-      let m : TSyntax `num := Syntax.mkNumLit <| toString max'
+      let m : TSyntax `num := quote max'
       Command.liftCoreM <| MetaM.run' do
         Std.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
