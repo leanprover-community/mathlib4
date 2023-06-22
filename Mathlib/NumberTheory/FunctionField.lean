@@ -261,7 +261,7 @@ set_option linter.uppercaseLean3 false in
 
 instance : Field (FqtInfty Fq) :=
   letI := inftyValuedFqt Fq
-  UniformSpace.Completion.instFieldCompletion
+  UniformSpace.Completion.instField
 
 instance : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
