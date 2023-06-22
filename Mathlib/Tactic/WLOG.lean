@@ -134,18 +134,21 @@ In this way, the wlog-claim `this` can be applied to `x` and `y` in different or
 (exploiting symmetry, which is the typical use case).
 
 By default, the entire context is reverted. -/
-syntax (name := wlog) "wlog " binderIdent " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
+syntax (name := wlog) "wlog " binderIdent " : " term (" generalizing" (ppSpace colGt ident)*)?
+  (" replacing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
-| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  withMainContext do
+| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ replacing $ys*]?
+    $[ with $H:ident]?) => withMainContext do
   let H := H.map (·.getId)
   let h := match h with
   | `(binderIdent|$h:ident) => some h.getId
   | _ => none
+  let ys := match ys with
+  | some ys => ys
+  | none => #[]
   let P ← elabType P
   let goal ← getMainGoal
-  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
+  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs ys H
   replaceMainGoal [reductionGoal, hypothesisGoal]
