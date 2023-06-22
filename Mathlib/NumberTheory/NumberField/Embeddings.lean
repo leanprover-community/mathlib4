@@ -92,12 +92,11 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
   have hx := IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
-  refine
-    coeff_bdd_of_roots_le _ (minpoly.monic hx)
+  refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
       (IsAlgClosed.splits_codomain _) (IntermediateField.minpoly.natDegree_le hx) (fun z hz => ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
-  obtain ⟨φ, rfl⟩ := (range_eval_eq_root_set_minpoly K A x).symm.Subset hz
+  obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
   exact h φ
 #align number_field.embeddings.coeff_bdd_of_norm_le NumberField.Embeddings.coeff_bdd_of_norm_le
 
@@ -120,18 +119,18 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
 
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
-    ∃ (n : ℕ) (hn : 0 < n), x ^ n = 1 := by
+    ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ ((· ^ ·) x : ℕ → K) Set.infinite_univ _
-      (finite_of_norm_le K A (1 : ℝ))
+    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ ((· ^ ·) x : ℕ → K) Set.infinite_univ
+      (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   · wlog hlt : b < a
-    · exact this hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
-    refine' ⟨a - b, tsub_pos_of_lt hlt, _⟩
+    · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
+    refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
+    dsimp at h -- Porting note: added dsimp
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
-    refine' h.resolve_right fun hp => _
+    refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
     rw [pow_eq_zero hp, map_zero, norm_zero] at hx ; norm_num at hx
-  · exact fun a _ => ⟨hxi.pow a, fun φ => by simp only [hx φ, norm_pow, one_pow, map_pow]⟩
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
 
 end Bounded
@@ -148,8 +147,7 @@ def NumberField.place : AbsoluteValue K ℝ :=
 #align number_field.place NumberField.place
 
 @[simp]
-theorem NumberField.place_apply (x : K) : (NumberField.place φ) x = norm (φ x) :=
-  rfl
+theorem NumberField.place_apply (x : K) : (NumberField.place φ) x = norm (φ x) := rfl
 #align number_field.place_apply NumberField.place_apply
 
 end Place
@@ -165,16 +163,15 @@ variable {K : Type _} [Field K]
 /-- The conjugate of a complex embedding as a complex embedding. -/
 @[reducible]
 def conjugate (φ : K →+* ℂ) : K →+* ℂ :=
-  star φ
+    star φ
 #align number_field.complex_embedding.conjugate NumberField.ComplexEmbedding.conjugate
 
 @[simp]
-theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) :=
-  rfl
+theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 #align number_field.complex_embedding.conjugate_coe_eq NumberField.ComplexEmbedding.conjugate_coe_eq
 
-theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by ext;
-  simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
+theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
+  ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
 /-- A embedding into `ℂ` is real if it is fixed by complex conjugation. -/
@@ -183,8 +180,7 @@ def IsReal (φ : K →+* ℂ) : Prop :=
   IsSelfAdjoint φ
 #align number_field.complex_embedding.is_real NumberField.ComplexEmbedding.IsReal
 
-theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ :=
-  isSelfAdjoint_iff
+theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff
 #align number_field.complex_embedding.is_real_iff NumberField.ComplexEmbedding.isReal_iff
 
 /-- A real embedding as a ring homomorphism from `K` to `ℝ` . -/
@@ -192,7 +188,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   toFun x := (φ x).re
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
-    simp only [complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
+    simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
       MulZeroClass.mul_zero, tsub_zero, eq_self_iff_true, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
   map_add' := by simp only [map_add, add_re, eq_self_iff_true, forall_const]
@@ -200,16 +196,16 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
 
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
-    (hφ.Embedding x : ℂ) = φ x := by
-  ext; · rfl
-  · rw [of_real_im, eq_comm, ← Complex.conj_eq_iff_im]
-    rw [is_real] at hφ
+    (hφ.embedding x : ℂ) = φ x := by
+  ext
+  · rfl
+  · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
     exact RingHom.congr_fun hφ x
 #align number_field.complex_embedding.is_real.coe_embedding_apply NumberField.ComplexEmbedding.IsReal.coe_embedding_apply
 
-theorem IsReal.place_embedding {φ : K →+* ℂ} (hφ : IsReal φ) : place hφ.Embedding = place φ := by
-  ext x;
-  simp only [place_apply, Real.norm_eq_abs, ← abs_of_real, norm_eq_abs, hφ.coe_embedding_apply x]
+theorem IsReal.place_embedding {φ : K →+* ℂ} (hφ : IsReal φ) : place hφ.embedding = place φ := by
+  ext x
+  simp only [place_apply, Real.norm_eq_abs, ← abs_ofReal, norm_eq_abs, hφ.coe_embedding_apply x]
 #align number_field.complex_embedding.is_real.place_embedding NumberField.ComplexEmbedding.IsReal.place_embedding
 
 theorem isReal_conjugate_iff {φ : K →+* ℂ} : IsReal (conjugate φ) ↔ IsReal φ :=
@@ -230,7 +226,7 @@ def NumberField.InfinitePlace :=
 #align number_field.infinite_place NumberField.InfinitePlace
 
 instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) :=
-  Set.range.nonempty _
+  Set.instNonemptyElemRange _
 
 variable {K}
 
@@ -243,6 +239,7 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
+-- Porting note: check if this is still necessary
 instance : CoeFun (InfinitePlace K) fun _ => K → ℝ where coe w := w.1
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
@@ -255,19 +252,21 @@ instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
   coe w x := w x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
-  map_nonneg w x := w.1.NonNeg _
+  map_nonneg w _ := w.1.nonneg _
 
-theorem coe_mk (φ : K →+* ℂ) : ⇑(mk φ) = place φ :=
-  rfl
+-- Porting note: new
+@[ext]
+theorem ext {w z : InfinitePlace K} (h : ∀ x, w x = z x) : w = z := FunLike.ext _ _ h
+
+theorem coe_mk (φ : K →+* ℂ) : ⇑(mk φ) = place φ := rfl
 #align number_field.infinite_place.coe_mk NumberField.InfinitePlace.coe_mk
 
-theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) :=
-  rfl
+theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
 #align number_field.infinite_place.apply NumberField.InfinitePlace.apply
 
 /-- For an infinite place `w`, return an embedding `φ` such that `w = infinite_place φ` . -/
 noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ :=
-  w.2.some
+  w.2.choose
 #align number_field.infinite_place.embedding NumberField.InfinitePlace.embedding
 
 @[simp]
@@ -277,15 +276,20 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w :=
 
 @[simp]
 theorem abs_embedding (w : InfinitePlace K) (x : K) : Complex.abs (embedding w x) = w x :=
-  congr_fun (congr_arg coeFn w.2.choose_spec) x
+  congr_fun (congr_arg (↑) w.2.choose_spec) x
 #align number_field.infinite_place.abs_embedding NumberField.InfinitePlace.abs_embedding
 
 theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x = r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ = r :=
-  ⟨fun hw φ => hw (mk φ), fun hφ ⟨w, ⟨φ, rfl⟩⟩ => hφ φ⟩
+-- Porting note: original proof was:  ⟨fun hw φ => hw (mk φ), fun hφ ⟨w, ⟨φ, rfl⟩⟩ => hφ φ⟩
+-- but `rfl` does not work here anymore
+  ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
+
 #align number_field.infinite_place.eq_iff_eq NumberField.InfinitePlace.eq_iff_eq
 
 theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
-  ⟨fun hw φ => hw (mk φ), fun hφ ⟨w, ⟨φ, rfl⟩⟩ => hφ φ⟩
+-- Porting note: original proof was:  ⟨fun hw φ => hw (mk φ), fun hφ ⟨w, ⟨φ, rfl⟩⟩ => hφ φ⟩
+-- but `rfl` does not work here anymore
+  ⟨fun hw φ => hw (mk φ), by rintro hφ ⟨w, ⟨φ, rfl⟩⟩; exact hφ φ⟩
 #align number_field.infinite_place.le_iff_le NumberField.InfinitePlace.le_iff_le
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 :=
@@ -295,7 +299,7 @@ theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 :=
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
   ext x
-  exact congr_fun (congr_arg coeFn (complex_embedding.place_conjugate φ)) x
+  exact congr_fun (congr_arg (↑) (ComplexEmbedding.place_conjugate φ)) x
 #align number_field.infinite_place.mk_conjugate_eq NumberField.InfinitePlace.mk_conjugate_eq
 
 @[simp]
@@ -304,18 +308,19 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
   · -- We prove that the map ψ ∘ φ⁻¹ between φ(K) and ℂ is uniform continuous, thus it is either the
     -- inclusion or the complex conjugation using complex.uniform_continuous_ring_hom_eq_id_or_conj
     intro h₀
-    obtain ⟨j, hiφ⟩ := φ.injective.has_left_inverse
+    obtain ⟨j, hiφ⟩ := (φ.injective).hasLeftInverse
     let ι := RingEquiv.ofLeftInverse hiφ
-    have hlip : LipschitzWith 1 (RingHom.comp ψ ι.symm.to_ring_hom) := by
+    have hlip : LipschitzWith 1 (RingHom.comp ψ ι.symm.toRingHom) := by
       change LipschitzWith 1 (ψ ∘ ι.symm)
       apply LipschitzWith.of_dist_le_mul
       intro x y
-      rw [Nonneg.coe_one, one_mul, NormedField.dist_eq, ← map_sub, ← map_sub]
+      rw [NNReal.coe_one, one_mul, NormedField.dist_eq, Function.comp_apply, Function.comp_apply,
+        ← map_sub, ← map_sub]
       apply le_of_eq
       suffices ‖φ (ι.symm (x - y))‖ = ‖ψ (ι.symm (x - y))‖ by
         rw [← this, ← RingEquiv.ofLeftInverse_apply hiφ _, RingEquiv.apply_symm_apply ι _]
         rfl
-      exact congr_fun (congr_arg coeFn h₀) _
+      exact congr_fun (congr_arg (↑) h₀) _
     cases Complex.uniformContinuous_ringHom_eq_id_or_conj φ.field_range hlip.uniform_continuous
     · left; ext1 x
       convert (congr_fun h (ι x)).symm
