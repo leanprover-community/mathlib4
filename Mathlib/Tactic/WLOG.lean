@@ -60,7 +60,12 @@ If `xs` is `none`, all hypotheses are reverted to produce the reduction goal's h
 Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and only those
 hypotheses are reverted (and any that depend on them).
 
-If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
+If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible.
+
+The fvars specified by `ys` will be excluded from the type of `this` and from the hypotheses of the
+resulting `hypothesisGoal` as long as they (and their forward dependencies) are among the fvars
+that would be reverted if `ys` were empty. Otherwise, `wlog` fails.
+ -/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     (xs : Option (TSyntaxArray `ident) := none) (ys : TSyntaxArray `ident := #[])
     (H : Option Name := none) : TacticM WLOGResult := goal.withContext do
