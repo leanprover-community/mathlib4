@@ -1431,6 +1431,7 @@ import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
+import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Kronecker
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv

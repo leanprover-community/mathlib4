@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Invertible
-import Mathbin.Data.Matrix.Basic
+import Mathlib.Algebra.Invertible
+import Mathlib.Data.Matrix.Basic
 
 /-! # Extra lemmas about invertible matrices
 
@@ -108,8 +108,7 @@ end Matrix
 /-- A copy of `invertible.mul_left` using `⬝` not `*`. -/
 @[reducible]
 def Invertible.matrixMulLeft {a : Matrix n n α} (ha : Invertible a) (b : Matrix n n α) :
-    Invertible b ≃ Invertible (a ⬝ b)
-    where
+    Invertible b ≃ Invertible (a ⬝ b) where
   toFun hb := Matrix.invertibleMul a b
   invFun hab := Matrix.invertibleOfInvertibleMul a _
   left_inv hb := Subsingleton.elim _ _
@@ -119,8 +118,7 @@ def Invertible.matrixMulLeft {a : Matrix n n α} (ha : Invertible a) (b : Matrix
 /-- A copy of `invertible.mul_right` using `⬝` not `*`. -/
 @[reducible]
 def Invertible.matrixMulRight (a : Matrix n n α) {b : Matrix n n α} (ha : Invertible b) :
-    Invertible a ≃ Invertible (a ⬝ b)
-    where
+    Invertible a ≃ Invertible (a ⬝ b) where
   toFun hb := Matrix.invertibleMul a b
   invFun hab := Matrix.invertibleOfMulInvertible _ b
   left_inv hb := Subsingleton.elim _ _
