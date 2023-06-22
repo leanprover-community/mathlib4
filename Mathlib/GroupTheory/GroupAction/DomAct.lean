@@ -97,11 +97,9 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup] do
-  let idnt := Lean.mkIdent n
-  -- TODO: shorter names let instName := "inst" ++ n
+    `CommGroup].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
-    @[to_additive] instance [$idnt Mᵐᵒᵖ] : $idnt Mᵈᵐᵃ := ‹_›
+    @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
   ))
 
 @[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵐᵃ := ‹_›
