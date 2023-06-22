@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.CliffordAlgebra.Grading
-import Mathbin.Algebra.Module.Opposites
+import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+import Mathlib.Algebra.Module.Opposites
 
 /-!
 # Conjugations
@@ -142,8 +142,7 @@ def reverseEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q :=
 
 theorem reverse_comp_involute :
     reverse.comp involute.toLinearMap =
-      (involute.toLinearMap.comp reverse : _ →ₗ[R] CliffordAlgebra Q) :=
-  by
+      (involute.toLinearMap.comp reverse : _ →ₗ[R] CliffordAlgebra Q) := by
   ext
   simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply]
   induction x using CliffordAlgebra.induction
@@ -248,8 +247,7 @@ theorem submodule_map_reverse_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
 
 @[simp]
 theorem ι_range_map_reverse :
-    (ι Q).range.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) = (ι Q).range :=
-  by
+    (ι Q).range.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) = (ι Q).range := by
   rw [reverse, Submodule.map_comp, ι_range_map_lift, LinearMap.range_comp, ← Submodule.map_comp]
   exact Submodule.map_id _
 #align clifford_algebra.ι_range_map_reverse CliffordAlgebra.ι_range_map_reverse
@@ -264,8 +262,7 @@ theorem ι_range_comap_reverse :
 theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       q.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
-        p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) :=
-  by
+        p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
   simp_rw [reverse, Submodule.map_comp, LinearEquiv.toLinearMap_eq_coe, Submodule.map_mul,
     Submodule.map_unop_mul]
 #align clifford_algebra.submodule_map_mul_reverse CliffordAlgebra.submodule_map_mul_reverse
@@ -280,8 +277,7 @@ theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
 /-- Like `submodule.map_pow` -/
 theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n :=
-  by
+      p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
   simp_rw [reverse, Submodule.map_comp, LinearEquiv.toLinearMap_eq_coe, Submodule.map_pow,
     Submodule.map_unop_pow]
 #align clifford_algebra.submodule_map_pow_reverse CliffordAlgebra.submodule_map_pow_reverse
@@ -327,8 +323,7 @@ TODO: show that these are `iff`s when `invertible (2 : R)`.
 -/
 
 
-theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) : involute x = x :=
-  by
+theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) : involute x = x := by
   refine' even_induction Q (AlgHom.commutes _) _ _ x h
   · rintro x y hx hy ihx ihy
     rw [map_add, ihx, ihy]
@@ -336,8 +331,7 @@ theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) 
     rw [map_mul, map_mul, involute_ι, involute_ι, ihx, neg_mul_neg]
 #align clifford_algebra.involute_eq_of_mem_even CliffordAlgebra.involute_eq_of_mem_even
 
-theorem involute_eq_of_mem_odd {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 1) : involute x = -x :=
-  by
+theorem involute_eq_of_mem_odd {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 1) : involute x = -x := by
   refine' odd_induction Q involute_ι _ _ x h
   · rintro x y hx hy ihx ihy
     rw [map_add, ihx, ihy, neg_add]
