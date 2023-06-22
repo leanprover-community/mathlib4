@@ -68,12 +68,25 @@ a structure of commutative monoid.
 The trivial additive character (sending everything to `1`) is `(1 : add_char R R').` -/
 def AddChar : Type max u v :=
   Multiplicative R →* R'
-deriving CommMonoid, Inhabited
+-- deriving CommMonoid, Inhabited
 #align add_char AddChar
 
 end AddCharDef
 
 namespace AddChar
+
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
+section DerivedInstances
+
+variable (R : Type u) [AddMonoid R] (R' : Type v) [CommMonoid R']
+
+instance : CommMonoid (AddChar R R') :=
+  inferInstanceAs (CommMonoid (Multiplicative R →* R'))
+
+instance : Inhabited (AddChar R R') :=
+  inferInstanceAs (Inhabited (Multiplicative R →* R'))
+
+end DerivedInstances
 
 section CoeToFun
 
@@ -86,11 +99,15 @@ def toMonoidHom : AddChar R R' → Multiplicative R →* R' :=
 
 open Multiplicative
 
+-- Porting note: added. Correct?
+@[coe]
+def toFun (ψ : AddChar R R') (x : R) : R' := ψ.toMonoidHom (ofAdd x)
+
 /-- Define coercion to a function so that it includes the move from `R` to `multiplicative R`.
 After we have proved the API lemmas below, we don't need to worry about writing `of_add a`
 when we want to apply an additive character. -/
-instance hasCoeToFun : CoeFun (AddChar R R') fun x => R → R'
-    where coe ψ x := ψ.toMonoidHom (ofAdd x)
+instance hasCoeToFun : CoeFun (AddChar R R') fun _ => R → R' where
+  coe := toFun
 #align add_char.has_coe_to_fun AddChar.hasCoeToFun
 
 theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (ofAdd a) :=
@@ -100,6 +117,11 @@ theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (of
 instance monoidHomClass : MonoidHomClass (AddChar R R') (Multiplicative R) R' :=
   MonoidHom.monoidHomClass
 #align add_char.monoid_hom_class AddChar.monoidHomClass
+
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added. Correct?
+@[ext]
+theorem ext (f g : AddChar R R') (h : ∀ x : R, f x = g x) : f = g :=
+  MonoidHom.ext h
 
 /-- An additive character maps `0` to `1`. -/
 @[simp]
@@ -148,7 +170,9 @@ theorem map_zsmul_zpow {R' : Type v} [CommGroup R'] (ψ : AddChar R R') (n : ℤ
 instance commGroup : CommGroup (AddChar R R') :=
   { MonoidHom.commMonoid with
     inv := Inv.inv
-    mul_left_inv := fun ψ => by ext;
+    mul_left_inv := fun ψ => by
+      ext
+      dsimp only
       rw [MonoidHom.mul_apply, MonoidHom.one_apply, inv_apply, ← map_add_mul, add_left_neg,
         map_zero_one] }
 #align add_char.comm_group AddChar.commGroup
@@ -225,10 +249,10 @@ is injective when `ψ` is primitive. -/
 theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     Function.Injective ψ.mulShift := by
   intro a b h
-  apply_fun fun x => x * mul_shift ψ (-b) at h 
-  simp only [mul_shift_mul, mul_shift_zero, add_right_neg] at h 
+  apply_fun fun x => x * mul_shift ψ (-b) at h
+  simp only [mul_shift_mul, mul_shift_zero, add_right_neg] at h
   have h₂ := hψ (a + -b)
-  rw [h, is_nontrivial_iff_ne_trivial, ← sub_eq_add_neg, sub_ne_zero] at h₂ 
+  rw [h, is_nontrivial_iff_ne_trivial, ← sub_eq_add_neg, sub_ne_zero] at h₂
   exact not_not.mp fun h => h₂ h rfl
 #align add_char.to_mul_shift_inj_of_is_primitive AddChar.to_mulShift_inj_of_isPrimitive
 
@@ -312,7 +336,7 @@ theorem zMod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) : IsNont
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • 1 := by rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
-  rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha 
+  rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zMod_char_isNontrivial_iff
 
@@ -330,7 +354,7 @@ theorem zMod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod
   refine' fun a ha => (is_nontrivial_iff_ne_trivial _).mpr fun hf => _
   have h : mul_shift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg coeFn hf) 1
-  rw [mul_shift_apply, mul_one, MonoidHom.one_apply] at h 
+  rw [mul_shift_apply, mul_one, MonoidHom.one_apply] at h
   exact ha (hψ a h)
 #align add_char.zmod_char_primitive_of_eq_one_only_at_zero AddChar.zMod_char_primitive_of_eq_one_only_at_zero
 
@@ -340,7 +364,7 @@ theorem zmodChar_primitive_of_primitive_root (n : ℕ+) {ζ : C} (h : IsPrimitiv
     IsPrimitive (zmodChar n ((IsPrimitiveRoot.iff_def ζ n).mp h).left) := by
   apply zmod_char_primitive_of_eq_one_only_at_zero
   intro a ha
-  rw [zmod_char_apply, ← pow_zero ζ] at ha 
+  rw [zmod_char_apply, ← pow_zero ζ] at ha
   exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) n.pos ha)
 #align add_char.zmod_char_primitive_of_primitive_root AddChar.zmodChar_primitive_of_primitive_root
 
@@ -377,7 +401,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type _) [Field F] [Fintype F]
   let ψ' := ψ.char.comp (Algebra.trace (ZMod p) F).toAddMonoidHom.toMultiplicative
   have hψ' : is_nontrivial ψ' := by
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zMod_nondegenerate F one_ne_zero
-    rw [one_mul] at ha 
+    rw [one_mul] at ha
     exact ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', hψ'.is_primitive⟩
 #align add_char.primitive_char_finite_field AddChar.primitiveCharFiniteField
@@ -398,17 +422,17 @@ theorem sum_eq_zero_of_isNontrivial [IsDomain R'] {ψ : AddChar R R'} (hψ : IsN
   rcases hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
     Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x => rfl
-  simp_rw [map_add_mul] at h₁ 
+  simp_rw [map_add_mul] at h₁
   have h₂ : ∑ a : R, ψ a = finset.univ.sum ⇑ψ := rfl
-  rw [← Finset.mul_sum, h₂] at h₁ 
+  rw [← Finset.mul_sum, h₂] at h₁
   exact eq_zero_of_mul_eq_self_left hb h₁
 #align add_char.sum_eq_zero_of_is_nontrivial AddChar.sum_eq_zero_of_isNontrivial
 
 /-- The sum over the values of the trivial additive character is the cardinality of the source. -/
 theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) :
     ∑ a, ψ a = Fintype.card R := by
-  simp only [is_nontrivial] at hψ 
-  push_neg at hψ 
+  simp only [is_nontrivial] at hψ
+  push_neg at hψ
   simp only [hψ, Finset.sum_const, Nat.smul_one_eq_coe]
   rfl
 #align add_char.sum_eq_card_of_is_trivial AddChar.sum_eq_card_of_is_trivial
@@ -429,4 +453,3 @@ theorem sum_mul_shift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
 end Additive
 
 end AddChar
-
