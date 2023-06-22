@@ -156,9 +156,9 @@ theorem int_cast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : �
 #align gaussian_int.nat_cast_real_norm GaussianInt.int_cast_real_norm
 
 @[simp]
-theorem nat_cast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
+theorem int_cast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
   cases x; rw [Zsqrtd.norm, normSq]; simp
-#align gaussian_int.nat_cast_complex_norm GaussianInt.nat_cast_complex_norm
+#align gaussian_int.nat_cast_complex_norm GaussianInt.int_cast_complex_norm
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by norm_num) _
