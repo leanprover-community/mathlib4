@@ -35,7 +35,7 @@ We also define actions of `Mᵈᵐᵃ` on:
 
 Right action can be represented in `mathlib` as an action of the opposite group `Mᵐᵒᵖ`. However,
 this "domain shift" action cannot be an instance because this would create a "diamond"
-(a.k.a. ambigous notation): if `M` is a monoid, then how does `Mᵐᵒᵖ` act on `M → M`? On the one
+(a.k.a. ambiguous notation): if `M` is a monoid, then how does `Mᵐᵒᵖ` act on `M → M`? On the one
 hand, `Mᵐᵒᵖ` acts on `M` by `c • a = a * c.unop`, thus we have an action
 `(c • f) a = f a * c.unop`. On the other hand, `M` acts on itself by multiplication on the left, so
 with this new instance we would have `(c • f) a = f (c.unop * a)`. Clearly, these are two different
