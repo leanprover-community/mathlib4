@@ -8,8 +8,8 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.LocalInvariantProperties
-import Mathbin.Topology.Sheaves.LocalPredicate
+import Mathlib.Geometry.Manifold.LocalInvariantProperties
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-! # Generic construction of a sheaf from a `local_invariant_prop` on a manifold
 
@@ -57,8 +57,7 @@ instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
 an induced `local_predicate` on the functions from `M` to `M'`, given by `lift_prop P`. -/
 def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp G G' P) :
-    TopCat.LocalPredicate fun x : TopCat.of M => M'
-    where
+    TopCat.LocalPredicate fun x : TopCat.of M => M' where
   pred {U : Opens (TopCat.of M)} := fun f : U → M' => LiftProp P f
   res := by
     intro U V i f h x
@@ -71,8 +70,7 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
     obtain ⟨U, hxU, i, hU : lift_prop P (f ∘ i)⟩ := h x
     let x' : U := ⟨x, hxU⟩
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    have : lift_prop_at P f (inclusion hUV x') :=
-      by
+    have : lift_prop_at P f (inclusion hUV x') := by
       rw [hG.lift_prop_at_iff_comp_inclusion hUV]
       exact hU x'
     convert this
