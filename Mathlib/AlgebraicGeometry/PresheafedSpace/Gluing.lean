@@ -416,7 +416,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
-  -- Porting note : I don't what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  -- Porting note : I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   . congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
