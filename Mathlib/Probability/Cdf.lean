@@ -9,8 +9,8 @@ import Mathlib.Probability.Kernel.CondCdf
 # Cumulative distribution function of a real probability measure
 
 The cumulative distribution function (cdf) of a probability measure over `ℝ` is a monotone, right
-continuous function with limit 0 at -∞ and 1 at +∞. Two probability measures are equal if and only
-if they have the same cdf.
+continuous function with limit 0 at -∞ and 1 at +∞, such that `cdf μ x = μ (Iic x)` for all `x : ℝ`.
+Two probability measures are equal if and only if they have the same cdf.
 
 ## Main definitions
 
