@@ -420,9 +420,6 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
 #align invertible.mul_right Invertible.mulRight
 
 end Monoid
-
-
-
 section MonoidWithZero
 
 variable [MonoidWithZero α]
