@@ -71,3 +71,38 @@ example {x y : ℕ} : True := by
     guard_hyp h : x ≤ y
     guard_target =ₛ True
     trivial
+
+section Replacing
+
+axiom A : Nat → Prop
+axiom B : Nat → Prop
+axiom C : Nat → Prop
+
+axiom S : {n : Nat} → A n → Prop
+
+example (n : Nat) (h : A n) (h' : B n) : True := by
+  guard_hyp h : A n
+  wlog h'' : C n generalizing n replacing h
+  · guard_hyp this : ∀ (n : ℕ), B n → C n → True
+    trivial
+  · success_if_fail_with_msg "unknown identifier 'h'" guard_hyp h : A n
+    trivial
+
+-- Forward dependencies are accounted for
+example (n : Nat) (h : A n) (_h' : S h) : True := by
+  guard_hyp h : A n
+  guard_hyp _h' : S h
+  wlog h'' : C n generalizing n replacing h
+  · guard_hyp this : ∀ (n : ℕ), C n → True
+    trivial
+  · success_if_fail_with_msg "unknown identifier 'h'" guard_hyp h : A n
+    success_if_fail_with_msg "unknown identifier '_h''" guard_hyp _h' : S h
+    trivial
+
+-- Can't replace something not generalized
+example (n m : Nat) : True := by
+  success_if_fail_with_msg "generalized hypotheses were expected to include [m]"
+    wlog h : True generalizing n replacing m
+  trivial
+
+end Replacing
