@@ -8,7 +8,7 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Norm
 
 /-!
 # Units of a number field
@@ -49,8 +49,7 @@ attribute [local instance] NumberField.ringOfIntegersAlgebra
 variable {K}
 
 theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 :=
-  by
+    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 #align is_unit_iff_norm isUnit_iff_norm
