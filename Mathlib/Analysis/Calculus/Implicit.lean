@@ -16,18 +16,17 @@ import Mathlib.Analysis.NormedSpace.Complemented
 
 We prove three versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
-theorem, see `ImplicitFunctionData.implicitFunction`
-and `implicit_function_data.to_implicit_function`. This version allows a user to choose
-a specific implicit function but provides only a little convenience over the inverse function
-theorem.
+theorem, see `ImplicitFunctionData.implicitFunction` and
+`ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
+specific implicit function but provides only a little convenience over the inverse function theorem.
 
-Then we define `implicit_function_of_complemented`: implicit function defined by `f (g z y) = z`,
-where `f : E → F` is a function strictly differentiable at `a` such that its derivative `f'`
-is surjective and has a `complemented` kernel.
+Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit function defined by
+`f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
+derivative `f'` is surjective and has a `complemented` kernel.
 
 Finally, if the codomain of `f` is a finite dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
-and `f'.range = ⊤`. This version is named `implicit_function`.
+and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
 ## TODO
 
@@ -93,8 +92,7 @@ needs to have a complete control over the choice of the implicit function.
 
 
 /-- Data for the general version of the implicit function theorem. It holds two functions
-`f : E → F` and `g : E → G` (named `left_fun` and `right_fun`) and a point `a` (named `pt`)
-such that
+`f : E → F` and `g : E → G` (named `leftFun` and `rightFun`) and a point `a` (named `pt`) such that
 
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
@@ -152,8 +150,8 @@ def toLocalHomeomorph : LocalHomeomorph E (F × G) :=
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
-complementary subspaces of `E`, then `implicit_function_of_is_compl_ker` is the unique (germ of a)
-map `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
+complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
+`φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFunction : F → G → E :=
   Function.curry <| φ.toLocalHomeomorph.symm
 #align implicit_function_data.implicit_function ImplicitFunctionData.implicitFunction
@@ -236,7 +234,6 @@ embedding `ker f' → E`.
 Note that a map with these properties is not unique. E.g., different choices of a subspace
 complementary to `ker f'` lead to different maps `φ`.
 -/
-
 
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -322,7 +319,7 @@ theorem mem_implicitToLocalHomeomorphOfComplemented_target (hf : HasStrictFDeriv
       hf.mem_implicitToLocalHomeomorphOfComplemented_source hf' hker
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_of_complemented_target HasStrictFDerivAt.mem_implicitToLocalHomeomorphOfComplemented_target
 
-/-- `implicit_function_of_complemented` sends `(z, y)` to a point in `f ⁻¹' z`. -/
+/-- `HasStrictFDerivAt.implicitFunctionOfComplemented` sends `(z, y)` to a point in `f ⁻¹' z`. -/
 theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) :
     ∀ᶠ p : F × ker f' in 𝓝 (f a, 0),
@@ -332,14 +329,12 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
     fun ⟨_, _⟩ h => congr_arg Prod.fst h
 #align has_strict_fderiv_at.map_implicit_function_of_complemented_eq HasStrictFDerivAt.map_implicitFunctionOfComplemented_eq
 
-/-- Any point in some neighborhood of `a` can be represented as `implicit_function`
-of some point. -/
+/-- Any point in some neighborhood of `a` can be represented as
+`HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
 theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) :
-    ∀ᶠ x in 𝓝 a,
-      hf.implicitFunctionOfComplemented f f' hf' hker (f x)
-          (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker x).snd =
-        x :=
+    ∀ᶠ x in 𝓝 a, hf.implicitFunctionOfComplemented f f' hf' hker (f x)
+      (hf.implicitToLocalHomeomorphOfComplemented f f' hf' hker x).snd = x :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction_apply_image
 #align has_strict_fderiv_at.eq_implicit_function_of_complemented HasStrictFDerivAt.eq_implicitFunctionOfComplemented
 
@@ -390,7 +385,6 @@ dimensional space, then applies the previous version.
 Note that a map with these properties is not unique. E.g., different choices of a subspace
 complementary to `ker f'` lead to different maps `φ`.
 -/
-
 
 section FiniteDimensional
 
@@ -460,7 +454,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
 alias tendsto_implicitFunction ← _root_.Filter.Tendsto.implicitFunction
 #align filter.tendsto.implicit_function Filter.Tendsto.implicitFunction
 
-/-- `implicit_function` sends `(z, y)` to a point in `f ⁻¹' z`. -/
+/-- `HasStrictFDerivAt.implicitFunction` sends `(z, y)` to a point in `f ⁻¹' z`. -/
 theorem map_implicitFunction_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     ∀ᶠ p : F × ker f' in 𝓝 (f a, 0), f (hf.implicitFunction f f' hf' p.1 p.2) = p.1 :=
   haveI := FiniteDimensional.complete 𝕜 F
@@ -474,7 +468,7 @@ theorem implicitFunction_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : rang
   apply implicitFunctionOfComplemented_apply_image
 #align has_strict_fderiv_at.implicit_function_apply_image HasStrictFDerivAt.implicitFunction_apply_image
 
-/-- Any point in some neighborhood of `a` can be represented as `implicit_function`
+/-- Any point in some neighborhood of `a` can be represented as `HasStrictFDerivAt.implicitFunction`
 of some point. -/
 theorem eq_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     ∀ᶠ x in 𝓝 a,
