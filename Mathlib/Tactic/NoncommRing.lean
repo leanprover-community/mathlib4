@@ -33,7 +33,7 @@ end nat_lit_mul
 
 An example:
 ```lean
-example {R : Type*} [ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
+example {R : Type _} [Ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
 by noncomm_ring
 ```
 -/
