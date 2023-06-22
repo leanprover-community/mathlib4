@@ -18,19 +18,19 @@ import Mathlib.Topology.UniformSpace.Matrix
 /-!
 # Lemmas about the matrix exponential
 
-In this file, we provide results about `exp` on `matrix`s over a topological or normed algebra.
+In this file, we provide results about `exp` on `Matrix`s over a topological or normed algebra.
 Note that generic results over all topological spaces such as `exp_zero` can be used on matrices
 without issue, so are not repeated here. The topological results specific to matrices are:
 
-* `matrix.exp_transpose`
-* `matrix.exp_conj_transpose`
-* `matrix.exp_diagonal`
-* `matrix.exp_block_diagonal`
-* `matrix.exp_block_diagonal'`
+* `Matrix.exp_transpose`
+* `Matrix.exp_conjTranspose`
+* `Matrix.exp_diagonal`
+* `Matrix.exp_blockDiagonal`
+* `Matrix.exp_blockDiagonal'`
 
 Lemmas like `exp_add_of_commute` require a canonical norm on the type; while there are multiple
-sensible choices for the norm of a `matrix` (`matrix.normed_add_comm_group`,
-`matrix.frobenius_normed_add_comm_group`, `matrix.linfty_op_normed_add_comm_group`), none of them
+sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
+`Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
 are canonical. In an application where a particular norm is chosen using
 `local attribute [instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
 undesirable, the results in this file can be used.
@@ -38,20 +38,20 @@ undesirable, the results in this file can be used.
 In this file, we copy across the lemmas about `exp`, but hide the requirement for a norm inside the
 proof.
 
-* `matrix.exp_add_of_commute`
-* `matrix.exp_sum_of_commute`
-* `matrix.exp_nsmul`
-* `matrix.is_unit_exp`
-* `matrix.exp_units_conj`
-* `matrix.exp_units_conj'`
+* `Matrix.exp_add_of_commute`
+* `Matrix.exp_sum_of_commute`
+* `Matrix.exp_nsmul`
+* `Matrix.isUnit_exp`
+* `Matrix.exp_units_conj`
+* `Matrix.exp_units_conj'`
 
 Additionally, we prove some results about `matrix.has_inv` and `matrix.div_inv_monoid`, as the
-results for general rings are instead stated about `ring.inverse`:
+results for general rings are instead stated about `Ring.inverse`:
 
-* `matrix.exp_neg`
-* `matrix.exp_zsmul`
-* `matrix.exp_conj`
-* `matrix.exp_conj'`
+* `Matrix.exp_neg`
+* `Matrix.exp_zsmul`
+* `Matrix.exp_conj`
+* `Matrix.exp_conj'`
 
 ## Implementation notes
 
@@ -61,7 +61,7 @@ Hopefully we will be able to remove these in Lean 4.
 
 ## TODO
 
-* Show that `matrix.det (exp 𝕂 A) = exp 𝕂 (matrix.trace A)`
+* Show that `Matrix.det (exp 𝕂 A) = exp 𝕂 (Matrix.trace A)`
 
 ## References
 
@@ -73,26 +73,26 @@ open scoped Matrix BigOperators
 
 section HacksForPiInstanceSearch
 
-/-- A special case of `pi.topological_ring` for when `R` is not dependently typed. -/
+/-- A special case of `Pi.instTopologicalRing` for when `R` is not dependently typed. -/
 instance Function.topologicalRing (I : Type _) (R : Type _) [NonUnitalRing R] [TopologicalSpace R]
     [TopologicalRing R] : TopologicalRing (I → R) :=
   Pi.instTopologicalRing
 #align function.topological_ring Function.topologicalRing
 
-/-- A special case of `function.algebra` for when A is a `ring` not a `semiring` -/
+/-- A special case of `Function.algebra` for when A is a `Ring` not a `Semiring` -/
 instance Function.algebraRing (I : Type _) {R : Type _} (A : Type _) [CommSemiring R] [Ring A]
     [Algebra R A] : Algebra R (I → A) :=
   Pi.algebra _ _
 #align function.algebra_ring Function.algebraRing
 
-/-- A special case of `pi.algebra` for when `f = λ i, matrix (m i) (m i) A`. -/
+/-- A special case of `Pi.algebra` for when `f = λ i, Matrix (m i) (m i) A`. -/
 instance Pi.matrixAlgebra (I R A : Type _) (m : I → Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
     Algebra R (∀ i, Matrix (m i) (m i) A) :=
   @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.instAlgebra
 #align pi.matrix_algebra Pi.matrixAlgebra
 
-/-- A special case of `pi.topological_ring` for when `f = λ i, matrix (m i) (m i) A`. -/
+/-- A special case of `Pi.instTopologicalRing` for when `f = λ i, Matrix (m i) (m i) A`. -/
 instance Pi.matrix_topologicalRing (I A : Type _) (m : I → Type _) [Ring A] [TopologicalSpace A]
     [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
   @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.topologicalRing
