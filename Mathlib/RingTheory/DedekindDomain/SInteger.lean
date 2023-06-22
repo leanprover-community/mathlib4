@@ -8,7 +8,7 @@ Authors: David Kurniadi Angdinata
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains
@@ -112,8 +112,7 @@ theorem unit_valuation_eq_one (x : S.Unit K) {v : HeightOneSpectrum R} (hv : v �
 
 /-- The group of `S`-units is the group of units of the ring of `S`-integers. -/
 @[simps]
-def unitEquivUnitsInteger : S.Unit K ≃* (S.integer K)ˣ
-    where
+def unitEquivUnitsInteger : S.Unit K ≃* (S.integer K)ˣ where
   toFun x :=
     ⟨⟨x, fun v hv => (x.property v hv).le⟩, ⟨↑x⁻¹, fun v hv => (x⁻¹.property v hv).le⟩,
       Subtype.ext x.val.val_inv, Subtype.ext x.val.inv_val⟩
