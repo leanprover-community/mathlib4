@@ -76,6 +76,13 @@ section Constants
     | 0   => Vector.nil
     | n+1 => true ::ᵥ Bitvec.zero n
 
+
+  /-- Define the all-zero bitpattern as the bottom element of `Bitvec n` -/
+  instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
+
+  /-- Define the all-ones bitpattern as the top element of `Bitvec n` -/
+  instance : Top (Bitvec n) := ⟨Bitvec.negOne n⟩
+
 end Constants
 
 
