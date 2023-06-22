@@ -266,6 +266,24 @@ def Result.toRat : Result e → Option Rat
   | .isNegNat _ lit _ => some (-lit.natLit!)
   | .isRat _ q .. => some q
 
+/-- If `a = b` and we can evaluate `b`, then we can evaluate `a`. -/
+def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b → Result a
+| .isBool true proof =>
+  have a : Q(Prop) := a
+  have b : Q(Prop) := b
+  have eq : Q($a = $b) := eq
+  have proof : Q($b) := proof
+  Result.isTrue (x := a) q($eq ▸ $proof)
+| .isBool false proof =>
+  have a : Q(Prop) := a
+  have b : Q(Prop) := b
+  have eq : Q($a = $b) := eq
+  have proof : Q(¬ $b) := proof
+ Result.isFalse (x := a) q($eq ▸ $proof)
+| .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
+| .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
+| .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+
 end
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
@@ -359,6 +377,23 @@ def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_redu
     have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
     pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
   | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(.negOfNat $lit), proof⟩
+  | _ => failure
+
+/--
+Extract from a `Result` the integer value (as both a term and an expression),
+and the proof that the original expression is equal to this integer.
+
+This differs from `Result.toInt` in that the output can be used by successive
+calls to `NormNum.derive` (whereas `toInt` returns `negOfNat` which does not
+get parsed successfully).
+-/
+def Result.toIntNumeral {α : Q(Type u)} {e : Q($α)}
+    (_i : Q(Ring $α) := by with_reducible assumption) :
+    Result e → Option (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
+  | .isNat _ lit proof => do
+    have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
+    pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
+  | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(- $lit), proof⟩
   | _ => failure
 
 /--

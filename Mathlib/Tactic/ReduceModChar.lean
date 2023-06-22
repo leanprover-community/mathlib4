@@ -40,97 +40,6 @@ open Qq
 
 namespace Mathlib.Meta.NormNum
 
-/-- If `a = b` and we can evaluate `b`, then we can evaluate `a`. -/
-def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b → Result a
-| .isBool true proof =>
-  have a : Q(Prop) := a
-  have b : Q(Prop) := b
-  have eq : Q($a = $b) := eq
-  have proof : Q($b) := proof
-  Result.isTrue (x := a) q($eq ▸ $proof)
-| .isBool false proof =>
-  have a : Q(Prop) := a
-  have b : Q(Prop) := b
-  have eq : Q($a = $b) := eq
-  have proof : Q(¬ $b) := proof
- Result.isFalse (x := a) q($eq ▸ $proof)
-| .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
-| .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
-| .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
-
-/--
-Extract from a `Result` the integer value (as both a term and an expression),
-and the proof that the original expression is equal to this integer.
-
-This differs from `Result.toInt` in that the output can be used by successive
-calls to `NormNum.derive` (whereas `toInt` returns `negOfNat` which does not
-get parsed successfully).
--/
-def Result.toInt' {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
-    Result e → Option (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
-  | .isNat _ lit proof => do
-    have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
-    pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
-  | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(- $lit), proof⟩
-  | _ => failure
-
-lemma isInt_emod {a b q r m : ℤ} (hm : q * b = m) (h : r + m = a) (h₁ : 0 ≤ r) (h₂ : r < b) :
-    IsInt (a % b) r :=
-  ⟨by rw [← h, ← hm, Int.add_mul_emod_self, Int.emod_eq_of_lt h₁ h₂, Int.cast_id]⟩
-
-lemma isInt_emod_neg {a b c : ℤ} (h : IsInt (a % -b) c) : IsInt (a % b) c :=
-  ⟨(Int.emod_neg _ _).symm.trans h.out⟩
-
-lemma isInt_refl (a : ℤ) : IsInt a a :=
-  ⟨rfl⟩
-
-lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (- b)) :
-    IsNat (-a) b :=
-  ⟨by simp [h.out]⟩
-
-/-- Given expressions `a b` in `ℤ`, evaluate `a % b`.
-
-`a` and `b` should be numeric expressions recognized by `norm_num`.
--/
-partial def evalIntMod.go (a b : Q(ℤ)) : MetaM (NormNum.Result q($a % $b)) := do
-  let ra ← derive (u := Level.zero) a
-  let rb ← derive (u := Level.zero) b
-  let rec core : (b : Q(ℤ)) → Result b → MetaM (Result (u := Level.zero) (α := q(ℤ)) q($a % $b)) :=
-  fun b rb => match rb with
-    | (.isNegNat inst nb pb) => do
-      have : $inst =Q Int.instRingInt := ⟨⟩
-      let pf ← core q(- $b)
-        (.isNat q(AddGroupWithOne.toAddMonoidWithOne) nb q(isNat_neg_of_isNegNat $pb))
-      return pf.eqTrans q((Int.emod_neg _ _).symm)
-    | (.isNat inst nb pb) => do
-      have : $inst =Q AddGroupWithOne.toAddMonoidWithOne := ⟨⟩
-      let ⟨a, na, pa⟩ ← @Result.toInt _ _ _ q(OrderedRing.toRing) ra
-      let q := a / nb.natLit!
-      have nq := mkRawIntLit q
-      let r := a % nb.natLit!
-      have nr := mkRawIntLit r
-      let m := q * nb.natLit!
-      have nm := mkRawIntLit m
-      have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm) :)
-      have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)
-      have pf₃ : Q(decide (0 ≤ $nr) = true) := (q(Eq.refl true) :)
-      have pf₄ : Q(decide ($nr < $nb) = true) := (q(Eq.refl true) :)
-      return (.isInt q(OrderedRing.toRing) nr r
-        q(isInt_emod (($pb).out.symm ▸ (id $pf₁)) (Eq.trans (id $pf₂) ($pa).out.symm)
-          (isInt_le_true (isInt_refl 0) (isInt_refl $nr) $pf₃)
-          (isInt_lt_true (α := ℤ) (isInt_refl $nr) (IsNat.to_isInt $pb) $pf₄)))
-    | _ => failure
-  core b rb
-
-/-- The `norm_num` extension which identifies expressions of the form `Int.mod a b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℤ) % _, Mod.mod (_ : ℤ) _, Int.emod _ _] partial def evalIntMod :
-    NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
-  -- We trust that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
-  guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
-  evalIntMod.go a b
-
 end Mathlib.Meta.NormNum
 
 namespace Tactic
@@ -156,8 +65,8 @@ partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing 
     (instCharP : Q(CharP $α $n)) :
     MetaM (Mathlib.Meta.NormNum.Result e) := do
   let instRingInt := q(Int.instRingInt)
-  let ⟨_, ne, pe⟩ ← Result.toInt' instRing (←derive e)
-  let ⟨r, nr, pr⟩ ← Result.toInt' instRingInt (←evalIntMod.go ne q(($n : ℤ)))
+  let ⟨_, ne, pe⟩ ← Result.toIntNumeral instRing (←derive e)
+  let ⟨r, nr, pr⟩ ← Result.toIntNumeral instRingInt (←evalIntMod.go ne q(($n : ℤ)))
   return .isInt instRing nr r q(CharP.isInt_of_mod $n $instCharP $pe $pr)
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
@@ -233,7 +142,7 @@ match Expr.getAppFnArgs t with
 | (`Polynomial, #[(R : Q(Type u)), _]) => match typeToCharP R with
   | (.intLike n _ _) => .intLike n
     (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
-    (q(Polynomial.instCharPPolynomialToAddMonoidWithOneToAddCommMonoidWithOneToNonAssocSemiringSemiring _) : Q(CharP (Polynomial $R) $n))
+    (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
   | .failure => .failure
 | _ => .failure
 
@@ -255,10 +164,10 @@ partial def matchAndNorm (e : Expr) : MetaM Simp.Result := do
       normNegCoeffMul n e instRing instCharP <|> -- `-(3 * X) → ((n - 1) * 3) * X`
       normNeg n e instRing instCharP -- `-X → (n - 1) * X`
 
-    /- Here we could add a `natLike` result with only an `Semiring` instance,
-       for example for handling `Fin n`. This would activate only the less-powerful procedures
-       that cannot handle subtraction.
-     -/
+    /- Here we could add a `natLike` result using only a `Semiring` instance.
+    This would activate only the less-powerful procedures
+    that cannot handle subtraction.
+    -/
 
     | .failure =>
       throwError "inferred type `{α}` does not have a known characteristic"

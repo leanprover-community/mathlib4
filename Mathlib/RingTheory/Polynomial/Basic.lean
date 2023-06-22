@@ -46,7 +46,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
