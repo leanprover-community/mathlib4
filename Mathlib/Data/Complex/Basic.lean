@@ -431,7 +431,6 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
         rfl
     one := 1 }
 
-
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
