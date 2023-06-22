@@ -73,7 +73,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   one_mem := Submodule.one_le.mp (one_le_evenOdd_zero Q)
-  mul_mem i j p q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
+  mul_mem _i _j _p _q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
 #align clifford_algebra.even_odd.graded_monoid CliffordAlgebra.evenOdd.gradedMonoid
 
 /-- A version of `clifford_algebra.ι` that maps directly into the graded structure. This is
@@ -130,12 +130,11 @@ set_option maxHeartbeats 300000 in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
-    (-- while not necessary, the `by apply` makes this elaborate faster
-      lift
-      Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
-    (-- the proof from here onward is mostly similar to the `tensor_algebra` case, with some extra
+    -- while not necessary, the `by apply` makes this elaborate faster
+    (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
+    -- the proof from here onward is mostly similar to the `tensor_algebra` case, with some extra
     -- handling for the `supr` in `even_odd`.
-    by
+    (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply]
