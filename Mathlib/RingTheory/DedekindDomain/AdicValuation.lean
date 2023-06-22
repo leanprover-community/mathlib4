@@ -24,29 +24,29 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
 `v.adic_completion`,and its ring of integers, denoted `v.adic_completion_integers`.
 
 ## Main definitions
- - `is_dedekind_domain.height_one_spectrum.int_valuation v` is the `v`-adic valuation on `R`.
- - `is_dedekind_domain.height_one_spectrum.valuation v` is the `v`-adic valuation on `K`.
- - `is_dedekind_domain.height_one_spectrum.adic_completion v` is the completion of `K` with respect
+ - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
+ - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
+ - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
     to its `v`-adic valuation.
- - `is_dedekind_domain.height_one_spectrum.adic_completion_integers v` is the ring of integers of
+ - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
     `v.adic_completion`.
 
 ## Main results
-- `is_dedekind_domain.height_one_spectrum.int_valuation_le_one` : The `v`-adic valuation on `R` is
+- `IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
-- `is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd` : The `v`-adic valuation of
+- `IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd` : The `v`-adic valuation of
   `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`.
-- `is_dedekind_domain.height_one_spectrum.int_valuation_le_pow_iff_dvd` : The `v`-adic valuation of
-  `r ∈ R` is less than or equal to `multiplicative.of_add (-n)` if and only if `vⁿ` divides the
+- `IsDedekindDomain.HeightOneSpectrum.int_valuation_le_pow_iff_dvd` : The `v`-adic valuation of
+  `r ∈ R` is less than or equal to `Multiplicative.ofAdd (-n)` if and only if `vⁿ` divides the
   ideal `(r)`.
-- `is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
-  with `v`-adic valuation `multiplicative.of_add (-1)`.
+- `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
+  with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
 - `is_dedekind_domain.height_one_spectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
-- `is_dedekind_domain.height_one_spectrum.valuation_of_algebra_map` : The `v`-adic valuation on `K`
+- `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
-- `is_dedekind_domain.height_one_spectrum.valuation_exists_uniformizer` : There exists `π ∈ K` with
-  `v`-adic valuation `multiplicative.of_add (-1)`.
+- `IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer` : There exists `π ∈ K` with
+  `v`-adic valuation `Multiplicative.ofAdd (-1)`.
 
 ## Implementation notes
 We are only interested in Dedekind domains with Krull dimension 1.
@@ -137,7 +137,7 @@ theorem int_valuation_lt_one_iff_dvd (r : R) :
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
 #align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd
 
-/-- The `v`-adic valuation of `r ∈ R` is less than `multiplicative.of_add (-n)` if and only if
+/-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
 `vⁿ` divides the ideal `(r)`. -/
 theorem int_valuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
@@ -231,7 +231,7 @@ def intValuation : Valuation R ℤₘ₀ where
   map_add_le_max' := IntValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
-/-- There exists `π ∈ R` with `v`-adic valuation `multiplicative.of_add (-1)`. -/
+/-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
     ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
   have hv : _root_.Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
@@ -301,7 +301,7 @@ theorem valuation_lt_one_iff_dvd (r : R) :
 
 variable (K)
 
-/-- There exists `π ∈ K` with `v`-adic valuation `multiplicative.of_add (-1)`. -/
+/-- There exists `π ∈ K` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem valuation_exists_uniformizer : ∃ π : K, v.valuation π = Multiplicative.ofAdd (-1 : ℤ) := by
   obtain ⟨r, hr⟩ := v.int_valuation_exists_uniformizer
   use algebraMap R K r
@@ -368,7 +368,7 @@ instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
 instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
   (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
-/-- The ring of integers of `adic_completion`. -/
+/-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
 #align is_dedekind_domain.height_one_spectrum.adic_completion_integers IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers
