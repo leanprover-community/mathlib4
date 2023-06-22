@@ -139,6 +139,9 @@ theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
+-- Porting note: without `clear b` Lean includes `b` in the statement (because the `rfl`) in the
+-- `rintro` below acts on it.
+  clear b
   ext x
   simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
   constructor
@@ -151,6 +154,9 @@ theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) :
 
 @[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
+-- Porting note: without `clear b` Lean includes `b` in the statement (because the `rfl`) in the
+-- `rintro` below acts on it.
+  clear b
   ext x
   simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
   constructor
@@ -177,13 +183,11 @@ theorem card_Ici : (Ici a).card = n - a := by
   | zero => exact Fin.elim0 a
   | succ =>
     rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.succ_sub_one]
-    assumption
 #align fin.card_Ici Fin.card_Ici
 
 @[simp]
 theorem card_Ioi : (Ioi a).card = n - 1 - a := by
   rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
-  assumption
 #align fin.card_Ioi Fin.card_Ioi
 
 @[simp]
