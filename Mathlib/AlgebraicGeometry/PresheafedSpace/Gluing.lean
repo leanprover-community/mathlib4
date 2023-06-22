@@ -274,7 +274,9 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
 
 /-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
-    (D.U i).presheaf.obj (op U) ⟶ (D.U j).presheaf.obj _ :=
+    (D.U i).presheaf.obj (op U) ⟶
+    (D.U j).presheaf.obj (op <|
+      (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
       (D.f_open j i).invApp (unop _) ≫
@@ -285,17 +287,17 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
     ∃ eq,
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ =
         ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
-          (π₂⁻¹ j, i, k) (unop _) ≫ (D.V (j, k)).presheaf.map (eqToHom Eq) := by
+          (π₂⁻¹ j, i, k) (unop _) ≫ (D.V (j, k)).presheaf.map (eqToHom eq) := by
   constructor
   delta opensImagePreimageMap
   simp_rw [Category.assoc]
-  rw [(D.f j k).c.naturality, f_inv_app_f_app_assoc]
+  rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
   erw [← (D.V (j, k)).presheaf.map_comp]
   simp_rw [← Category.assoc]
   erw [← comp_c_app, ← comp_c_app]
   simp_rw [Category.assoc]
-  dsimp only [functor.op, unop_op, Quiver.Hom.unop_op]
-  rw [eqToHom_map (opens.map _), eqToHom_op, eqToHom_trans]
+  dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
+  rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
   congr
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app' AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app'
 
@@ -304,7 +306,7 @@ theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
     D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ =
       ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
         (π₂⁻¹ j, i, k) (unop _) ≫
-          (D.V (j, k)).presheaf.map (eqToHom (opensImagePreimageMap_app' D i j k U).some) :=
+          (D.V (j, k)).presheaf.map (eqToHom (opensImagePreimageMap_app' D i j k U).choose) :=
   (opensImagePreimageMap_app' D i j k U).choose_spec
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app
 
@@ -314,14 +316,16 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
     D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ f' =
       ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
         (π₂⁻¹ j, i, k) (unop _) ≫
-          (D.V (j, k)).presheaf.map (eqToHom (opensImagePreimageMap_app' D i j k U).some) ≫ f' := by
-  simpa only [Category.assoc] using
-    congr_arg (fun g => g ≫ f') (opens_image_preimage_map_app D i j k U)
+          (D.V (j, k)).presheaf.map
+            (eqToHom (opensImagePreimageMap_app' D i j k U).choose) ≫ f' := by
+  simpa only [Category.assoc] using congr_arg (. ≫ f') (opensImagePreimageMap_app D i j k U)
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app_assoc AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app_assoc
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
 the image `ι '' U` in the glued space is the limit of this diagram. -/
-abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) : (WalkingMultispan _ _)ᵒᵖ ⥤ C :=
+abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
+    -- Portinge note : ↓ these need to be explicit
+    (WalkingMultispan D.diagram.fstFrom D.diagram.sndFrom)ᵒᵖ ⥤ C :=
   componentwiseDiagram 𝖣.diagram.multispan ((D.ι_openEmbedding i).isOpenMap.functor.obj U)
 #align algebraic_geometry.PresheafedSpace.glue_data.diagram_over_open AlgebraicGeometry.PresheafedSpace.GlueData.diagramOverOpen
 
@@ -337,17 +341,23 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     (𝖣.U i).presheaf.obj (op U) ⟶ (D.diagramOverOpen U).obj (op j) := by
   rcases j with (⟨j, k⟩ | j)
   · refine'
-      D.opens_image_preimage_map i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-    rw [functor.op_obj]
+      D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _)
+    rw [Functor.op_obj]
     congr 1; ext1
-    dsimp only [functor.op_obj, opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
+    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
-    congr 3
-    exact colimit.w 𝖣.diagram.multispan (walking_multispan.hom.fst (j, k))
-  · exact D.opens_image_preimage_map i j U
+    -- Porting note : used to be `congr 3`
+    refine congr_arg (. ⁻¹' _) ?_
+    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) .) ?_
+    refine congr_arg (PresheafedSpace.Hom.base (C := C) .) ?_
+    exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
+  · exact D.opensImagePreimageMap i j U
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπApp
 
+-- Porting note : time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
+-- the last congr has a very difficult `rfl : eqToHom _ ≫  eqToHom _ ≫ ... = eqToHom ... `
+set_option maxHeartbeats 600000 in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
 def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
@@ -356,9 +366,9 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
     { pt := (D.U i).presheaf.obj (op U)
       π :=
         { app := fun j => D.ιInvAppπApp U (unop j)
-          naturality' := fun X Y f' => by
-            induction X using Opposite.rec'
-            induction Y using Opposite.rec'
+          naturality := fun {X Y} f' => by
+            induction X using Opposite.rec' with | h X => ?_
+            induction Y using Opposite.rec' with | h Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
             · erw [Category.id_comp, CategoryTheory.Functor.map_id]
@@ -369,68 +379,84 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             -- The proof strategy is illustrated in ![this diagram](https://i.imgur.com/mBzV1Rx.png)
             -- where we prove red = pink = light-blue = green = blue.
             change
-              D.opens_image_preimage_map i j U ≫
+              D.opensImagePreimageMap i j U ≫
                   (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _) =
-                D.opens_image_preimage_map _ _ _ ≫
+                D.opensImagePreimageMap _ _ _ ≫
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-            erw [opens_image_preimage_map_app_assoc]
+            erw [opensImagePreimageMap_app_assoc]
             simp_rw [Category.assoc]
-            erw [opens_image_preimage_map_app_assoc, (D.t j k).c.naturality_assoc]
-            rw [snd_inv_app_t_app_assoc]
+            erw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
+            rw [snd_invApp_t_app_assoc]
             erw [← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
             have :
               D.t' j k i ≫ (π₁ k, i, j) ≫ D.t k i ≫ 𝖣.f i k =
-                (pullback_symmetry _ _).Hom ≫ (π₁ j, i, k) ≫ D.t j i ≫ D.f i j := by
+                (pullbackSymmetry _ _).hom ≫ (π₁ j, i, k) ≫ D.t j i ≫ D.f i j := by
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
-                pullback_symmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
+                pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
             rw [congr_app this]
-            erw [PresheafedSpace.comp_c_app_assoc (pullback_symmetry _ _).Hom]
+            erw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
             rw [← IsIso.eq_inv_comp]
-            erw [IsOpenImmersion.inv_inv_app]
+            erw [IsOpenImmersion.inv_invApp]
             simp_rw [Category.assoc]
-            erw [nat_trans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
-              congr_app (pullback_symmetry_hom_comp_snd _ _)]
+            erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
+              congr_app (pullbackSymmetry_hom_comp_snd _ _)]
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
-              IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app_assoc]
+              IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
             repeat' erw [← (D.V (j, k)).presheaf.map_comp]
-            congr } }
+            -- Porting note : was just `congr`
+            exact congr_arg ((D.V (j, k)).presheaf.map .) rfl } }
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp
 
 /-- `ι_inv_app` is the left inverse of `D.ι i` on `U`. -/
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
-    ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom Eq) := by
-  constructor
-  delta ι_inv_app
+    ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
+  fconstructor
+  -- Porting note : I don't what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  . congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
+    simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
+    refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
+    rintro ⟨y, h1, h2⟩
+    convert h1 using 1
+    delta ι Multicoequalizer.π at h2
+    apply_fun (D.ι _).base
+    . exact h2.symm
+    . have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
+      dsimp at this
+      rw [←this, coe_comp]
+      refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
+      rw [←TopCat.mono_iff_injective]
+      infer_instance
+  delta ιInvApp
   rw [limit.lift_π]
-  change D.opens_image_preimage_map i i U = _
-  dsimp [opens_image_preimage_map]
-  rw [congr_app (D.t_id _), id_c_app, ← functor.map_comp]
+  change D.opensImagePreimageMap i i U = _
+  dsimp [opensImagePreimageMap]
+  rw [congr_app (D.t_id _), id_c_app, ← Functor.map_comp]
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
-  simp only [eqToHom_op, eqToHom_trans, eqToHom_map (functor.op _), ← functor.map_comp]
-  rw [set.range_iff_surjective.mpr _]
-  · simp
-  · rw [← TopCat.epi_iff_surjective]
-    infer_instance
+  . simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
+    rfl
+  . rw [Set.range_iff_surjective.mpr _]
+    . simp
+    . rw [← TopCat.epi_iff_surjective]
+      infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp_π
 
 /-- The `eqToHom` given by `ι_inv_app_π`. -/
 abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
-  (D.U i).presheaf.map (eqToIso (D.ιInvApp_π U).some).inv
+  (D.U i).presheaf.map (eqToIso (D.ιInvApp_π U).choose).inv
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_eq_map AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπEqMap
 
 /-- `ι_inv_app` is the right inverse of `D.ι i` on `U`. -/
 theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U ≫ D.diagramOverOpenπ U j =
       D.diagramOverOpenπ U j := by
-  rw [←
-    cancel_mono
-      ((componentwise_diagram 𝖣.diagram.multispan _).map
-          (Quiver.Hom.op (walking_multispan.hom.snd (i, j))) ≫
+  rw [← cancel_mono
+      ((componentwiseDiagram 𝖣.diagram.multispan _).map
+          (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫
         𝟙 _)]
   simp_rw [Category.assoc]
   rw [limit.w_assoc]
@@ -446,7 +472,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [← (D.V (i, j)).presheaf.map_comp]
   convert
     limit.w (componentwise_diagram 𝖣.diagram.multispan _)
-      (Quiver.Hom.op (walking_multispan.hom.fst (i, j)))
+      (Quiver.Hom.op (WalkingMultispan.hom.fst (i, j)))
   · rw [Category.comp_id]
     apply (config := { instances := false }) mono_comp
     change mono ((_ ≫ D.f j i).c.app _)
@@ -464,7 +490,7 @@ theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
   rcases j with (⟨j, k⟩ | ⟨j⟩)
   · rw [←
       limit.w (componentwise_diagram 𝖣.diagram.multispan _)
-        (Quiver.Hom.op (walking_multispan.hom.fst (j, k))),
+        (Quiver.Hom.op (WalkingMultispan.hom.fst (j, k))),
       ← Category.assoc, Category.id_comp]
     congr 1
     simp_rw [Category.assoc]
