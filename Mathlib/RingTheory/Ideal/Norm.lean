@@ -22,31 +22,31 @@ import Mathlib.RingTheory.Localization.Norm
 
 # Ideal norms
 
-This file defines the absolute ideal norm `ideal.abs_norm (I : ideal R) : ℕ` as the cardinality of
+This file defines the absolute ideal norm `Ideal.absNorm (I : Ideal R) : ℕ` as the cardinality of
 the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite),
-and the relative ideal norm `ideal.span_norm R (I : ideal S) : ideal S` as the ideal spanned by
+and the relative ideal norm `Ideal.spanNorm R (I : Ideal S) : Ideal S` as the ideal spanned by
 the norms of elements in `I`.
 
 ## Main definitions
 
- * `submodule.card_quot (S : submodule R M)`: the cardinality of the quotient `M ⧸ S`, in `ℕ`.
+ * `Submodule.cardQuot (S : Submodule R M)`: the cardinality of the quotient `M ⧸ S`, in `ℕ`.
    This maps `⊥` to `0` and `⊤` to `1`.
- * `ideal.abs_norm (I : ideal R)`: the absolute ideal norm, defined as
+ * `Ideal.absNorm (I : Ideal R)`: the absolute ideal norm, defined as
    the cardinality of the quotient `R ⧸ I`, as a bundled monoid-with-zero homomorphism.
- * `ideal.span_norm R (I : ideal S)`: the ideal spanned by the norms of elements in `I`.
-    This is used to define `ideal.rel_norm`.
- * `ideal.rel_norm R (I : ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
+ * `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
+    This is used to define `Ideal.relNorm`.
+ * `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
    defined as the ideal spanned by the norms of elements in `I`.
 
 ## Main results
 
- * `map_mul ideal.abs_norm`: multiplicativity of the ideal norm is bundled in
-   the definition of `ideal.abs_norm`
- * `ideal.nat_abs_det_basis_change`: the ideal norm is given by the determinant
+ * `map_mul Ideal.absNorm`: multiplicativity of the ideal norm is bundled in
+   the definition of `Ideal.absNorm`
+ * `Ideal.natAbs_det_basis_change`: the ideal norm is given by the determinant
    of the basis change matrix
- * `ideal.abs_norm_span_singleton`: the ideal norm of a principal ideal is the
+ * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
    norm of its generator
- * `map_mul ideal.rel_norm`: multiplicativity of the relative ideal norm
+ * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
 
@@ -63,7 +63,7 @@ variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M]
 section
 
 /-- The cardinality of `(M ⧸ S)`, if `(M ⧸ S)` is finite, and `0` otherwise.
-This is used to define the absolute ideal norm `ideal.abs_norm`.
+This is used to define the absolute ideal norm `Ideal.absNorm`.
 -/
 noncomputable def cardQuot (S : Submodule R M) : ℕ :=
   AddSubgroup.index S.toAddSubgroup
@@ -132,7 +132,7 @@ theorem cardQuot_mul_of_coprime [IsDedekindDomain S] [Module.Free ℤ S] [Module
     Fintype.card_prod]
 #align card_quot_mul_of_coprime cardQuot_mul_of_coprime
 
-/-- If the `d` from `ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
+/-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
 then so are the `c`s, up to `P ^ (i + 1)`.
 Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S) (a_mem : a ∈ P ^ i)
@@ -149,7 +149,7 @@ section PPrime
 variable {P : Ideal S} [P_prime : P.IsPrime] (hP : P ≠ ⊥)
 
 /-- If `a ∈ P^i \ P^(i+1)` and `c ∈ P^i`, then `a * d + e = c` for `e ∈ P^(i+1)`.
-`ideal.mul_add_mem_pow_succ_unique` shows the choice of `d` is unique, up to `P`.
+`Ideal.mul_add_mem_pow_succ_unique` shows the choice of `d` is unique, up to `P`.
 Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] {i : ℕ} (a c : S) (a_mem : a ∈ P ^ i)
     (a_not_mem : a ∉ P ^ (i + 1)) (c_mem : c ∈ P ^ i) :
@@ -174,7 +174,7 @@ theorem Ideal.mem_prime_of_mul_mem_pow [IsDedekindDomain S] {P : Ideal S} [P_pri
   exact (prime_pow_succ_dvd_mul (Ideal.prime_of_isPrime hP P_prime) ab_mem).resolve_left a_not_mem
 #align ideal.mem_prime_of_mul_mem_pow Ideal.mem_prime_of_mul_mem_pow
 
-/-- The choice of `d` in `ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`.
+/-- The choice of `d` in `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`.
 Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] {i : ℕ} (a d d' e e' : S)
     (a_not_mem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))
@@ -249,7 +249,7 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
           (hIJ _ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 #align card_quot_mul cardQuot_mul
 
-/-- The absolute norm of the ideal `I : ideal R` is the cardinality of the quotient `R ⧸ I`. -/
+/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
 noncomputable def Ideal.absNorm [Infinite S] [IsDedekindDomain S] [Module.Free ℤ S]
     [Module.Finite ℤ S] : Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
@@ -285,7 +285,7 @@ theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S 
 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
-See `nat_abs_det_basis_change` for a more familiar formulation of this result. -/
+See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
 theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E) :
     Int.natAbs
         (LinearMap.det
@@ -303,7 +303,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E
   · nontriviality S
     exact (not_nontrivial_iff_subsingleton.mpr
       (Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective) (by infer_instance)).elim
-  -- Thus `(S ⧸ I)` is isomorphic to a product of `zmod`s, so it is a fintype.
+  -- Thus `(S ⧸ I)` is isomorphic to a product of `ZMod`s, so it is a fintype.
   letI := Ideal.fintypeQuotientOfFreeOfNeBot I hI
   -- Use the Smith normal form to choose a nice basis for `I`.
   letI := Classical.decEq ι
@@ -333,7 +333,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E
     _ = ∏ i, Int.natAbs (a i) := (map_prod Int.natAbsHom a Finset.univ)
     _ = Fintype.card (S ⧸ I) := ?_
     _ = absNorm I := (Submodule.cardQuot_apply _).symm
-  -- since `linear_map.to_matrix b' b' f` is the diagonal matrix with `a` along the diagonal.
+  -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
   · congr 2; ext i j
     rw [LinearMap.toMatrix_apply, ha, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_single,
       smul_eq_mul, mul_one]
@@ -341,7 +341,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E
     · rw [h, Matrix.diagonal_apply_eq, Finsupp.single_eq_same]
     · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne (Ne.symm h)]
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → ℤ)`,
-  -- which maps `(S ⧸ I)` to `Π i, zmod (a i).nat_abs`.
+  -- which maps `(S ⧸ I)` to `Π i, ZMod (a i).nat_abs`.
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr (Ideal.smithCoeffs_ne_zero b I hI i)⟩
   simp_rw [Fintype.card_eq.mpr ⟨(Ideal.quotientEquivPiZMod I b hI).toEquiv⟩, Fintype.card_pi,
@@ -458,9 +458,9 @@ open Submodule
 
 variable (R : Type _) [CommRing R] {S : Type _} [CommRing S] [Algebra R S]
 
-/-- `ideal.span_norm R (I : ideal S)` is the ideal generated by mapping `algebra.norm R` over `I`.
+/-- `Ideal.spanNorm R (I : Ideal S)` is the ideal generated by mapping `Algebra.norm R` over `I`.
 
-See also `ideal.rel_norm`.
+See also `Ideal.relNorm`.
 -/
 def spanNorm (I : Ideal S) : Ideal R :=
   Ideal.span (Algebra.norm R '' (I : Set S))
@@ -557,8 +557,8 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
 #align ideal.span_norm_mul_span_norm_le Ideal.spanNorm_mul_spanNorm_le
 
 /-- This condition `eq_bot_or_top` is equivalent to being a field.
-However, `span_norm_mul_of_field` is harder to apply since we'd need to upgrade a `comm_ring R`
-instance to a `field R` instance. -/
+However, `span_norm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
+instance to a `Field R` instance. -/
 theorem spanNorm_mul_of_bot_or_top [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S]
     (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
     spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
@@ -583,7 +583,7 @@ variable [IsDomain R] [IsDomain S] [IsDedekindDomain R] [IsDedekindDomain S]
 
 variable [Module.Finite R S] [Module.Free R S]
 
-/-- Multiplicativity of `ideal.span_norm`. simp-normal form is `map_mul (ideal.rel_norm R)`. -/
+/-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   nontriviality R
   cases subsingleton_or_nontrivial S
@@ -618,7 +618,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
 #align ideal.span_norm_mul Ideal.spanNorm_mul
 
-/-- The relative norm `ideal.rel_norm R (I : ideal S)`, where `R` and `S` are Dedekind domains,
+/-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
 def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
