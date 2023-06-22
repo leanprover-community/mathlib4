@@ -553,6 +553,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
     exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
   rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+-- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
   . simp only [mem_singleton_iff, forall_eq]
     exact ⟨ζ, hζ⟩
