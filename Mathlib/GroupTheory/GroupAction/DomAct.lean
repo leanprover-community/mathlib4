@@ -17,6 +17,22 @@ In some cases, it is useful to consider another action: if `M` acts on `α` on t
 on `α → β` on the right so that `(c • f) a = f (c • a)`. E.g., this action is used to reformulate
 the Mean Ergodic Theorem in terms of an operator on \(L^2\).
 
+## Main definitions
+
+- `DomMulAct M` (notation: `Mᵈᵐᵃ`): type synonym for `Mᵐᵒᵖ`; if `M` multiplicatively acts on `α`,
+  then `Mᵈᵐᵃ` acts on `α → β` for any type `β`;
+- `DomAddAct M` (notation: `Mᵈᵃᵃ`): the additive version.
+
+We also define actions of `Mᵈᵐᵃ` on:
+
+- `α → β` provided that `M` acts on `α`;
+- `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
+- `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
+
+## Implementation details
+
+### Motivation
+
 Right action can be represented in `mathlib` as an action of the opposite group `Mᵐᵒᵖ`. However,
 this "domain shift" action cannot be an instance because this would create a "diamond"
 (a.k.a. ambigous notation): if `M` is a monoid, then how does `Mᵐᵒᵖ` act on `M → M`? On the one
@@ -31,18 +47,26 @@ new action. So, e.g., `Mᵈᵐᵃ` acts on `(M → M) → M` by `DomMulAct.mk c 
 while `(Mᵈᵐᵃ)ᵈᵐᵃ` (which is isomorphic to `M`) acts on `(M → M) → M` by
 `DomMulAct.mk (DomMulAct.mk c) • F f = F (fun a ↦ f (c • a))`.
 
-## Main definitions
+### Action on bundled homomorphisms
 
-- `DomMulAct M` (notation: `Mᵈᵐᵃ`): type synonym for `Mᵐᵒᵖ`; if `M` multiplicatively acts on `α`,
-  then `Mᵈᵐᵃ` acts on `α → β` for any type `β`;
-- `DomAddAct M` (notation: `Mᵈᵃᵃ`): the additive version.
+If the action of `M` on `A` preserves some structure, then `Mᵈᵐᵃ` acts on bundled homomorphisms from
+`A` to any type `B` that preserve the same structure. Examples (some of them are not yet in the
+library) include:
 
-We also define actions of `Mᵈᵐᵃ` on:
+- a `MulDistribMulAction` generates an action on `A →* B`;
+- a `DistribMulAction` generates an action on `A →+ B`;
+- an action on `α` that commutes with action of some other monoid `N` generates an action on
+  `α →[N] β`;
+- a `DistribMulAction` on an `R`-module that commutes with scalar multiplications by `c : R`
+  generates an action on `R`-linear maps from this module;
+- a continuous action on `X` generates an action on `C(X, Y)`;
+- a measurable action on `X` generates an action on `{ f : X → Y // Measurable f }`;
+- a quasi measure preserving action on `X` generates an action on `X →ₘ[μ] Y`;
+- a measure preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
 
-- `α → β` provided that `M` acts on `α`;
-- `A →* B` provided that `M` acts on `A` by a `MulDistribMulAction`;
-- `A →+ B` provided that `M` acts on `A` by a `DistribMulAction`.
+## Keywords
 
+group action, function, domain
 -/
 open Function
 
@@ -160,7 +184,7 @@ section MonoidHom
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
 
 instance : SMul Mᵈᵐᵃ (A →* B) where
-  smul c f := f.comp (MulDistribMulAction.toMonoidEnd _ _ (mk.symm c))
+  smul c f := f.comp (MulDistribMulAction.toMonoidHom _ (mk.symm c))
 
 theorem smul_monoidHom_apply (c : Mᵈᵐᵃ) (f : A →* B) (a : A) : (c • f) a = f (mk.symm c • a) :=
   rfl
@@ -176,7 +200,7 @@ section AddMonoidHom
 
 section DistribSMul
 
-variable [Monoid M] [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
+variable [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
 
 instance : SMul Mᵈᵐᵃ (A →+ B) where
   smul c f := f.comp (DistribSMul.toAddMonoidHom _ (mk.symm c))
