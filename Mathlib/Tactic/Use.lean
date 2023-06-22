@@ -159,8 +159,8 @@ def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) 
 /--
 `use e₁, e₂, ⋯` is similar to `exists`, but unlike `exists` it is equivalent to applying the tactic
 `refine ⟨e₁, e₂, ⋯, ?_, ⋯, ?_⟩` with any number of placeholders (rather than just one) and
-then trying to close goals associated to the placeholders with `try with_reducible trivial` (rather
-than `try trivial`).
+then trying to close goals associated to the placeholders with a configurable discharger (rather
+than just `try trivial`).
 
 Examples:
 
@@ -172,10 +172,11 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two")
 ```
 
-`use! e₁, e₂, ⋯` is similar but it eagerly applies constructors everywhere rather than just for
+`use! e₁, e₂, ⋯` is similar but it applies constructors everywhere rather than just for
 goals that correspond to the last argument of a constructor. This gives the effect that
-nested constructors are being flattened out. Thus, with `use!` one can feed in each `42` one
-at a time:
+nested constructors are being flattened out, with the supplied values being used along the
+leaves and nodes of the tree of constructors.
+With `use!` one can feed in each `42` one at a time:
 
 ```lean
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use! 42, 42
