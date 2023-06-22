@@ -274,14 +274,60 @@ noncomputable def heartEquivalenceInverseCompιHeart :
 
 variable {C}
 
+instance (n : ℤ) (X : DerivedCategory C) : IsGE ((t.truncGE n).obj X) n := by
+  have h : t.IsGE ((t.truncGE n).obj X) n := by infer_instance
+  exact h.mem
+
+instance (n : ℤ) (X : DerivedCategory C) : IsGE ((t.truncGT n).obj X) (n + 1) := by
+  have h : t.IsGE ((t.truncGT n).obj X) (n+1) := by infer_instance
+  exact h.mem
+
+instance (n : ℤ) (X : DerivedCategory C) : IsLE ((t.truncLT n).obj X) (n-1) := by
+  have h : t.IsLE ((t.truncLT n).obj X) (n-1) := by infer_instance
+  exact h.mem
+
+instance (n : ℤ) (X : DerivedCategory C) : IsLE ((t.truncLE n).obj X) n := by
+  have h : t.IsLE ((t.truncLE n).obj X) n := by infer_instance
+  exact h.mem
+
+lemma isIso_homologyFunctor_map_truncLTι_app (X : DerivedCategory C) (a n : ℤ) (hn : n < a) :
+    IsIso ((homologyFunctor C n).map ((t.truncLTι a).app X)) := by
+  have : Mono ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
+    ((homologyFunctor C 0).homology_sequence_mono_shift_map_mor₁_iff _
+      (t.triangleLTGE_distinguished a X) (n-1) n (by linarith)).2 (by
+      apply IsZero.eq_of_src
+      exact isZero_of_isGE ((t.truncGE a).obj X) a (n-1) (by linarith))
+  have : Epi ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
+    ((homologyFunctor C 0).homology_sequence_epi_shift_map_mor₁_iff _
+      (t.triangleLTGE_distinguished a X) n).2 (by
+      apply IsZero.eq_of_tgt
+      exact isZero_of_isGE ((t.truncGE a).obj X) a n (by linarith))
+  apply isIso_of_mono_of_epi
+
 lemma isIso_homologyFunctor_map_truncLEι_app (X : DerivedCategory C) (a n : ℤ) (hn : n ≤ a) :
-    IsIso ((homologyFunctor C n).map ((t.truncLEι a).app X )) := by
-  sorry
+    IsIso ((homologyFunctor C n).map ((t.truncLEι a).app X )) :=
+  isIso_homologyFunctor_map_truncLTι_app X (a+1) n (by linarith)
+
+lemma isIso_homologyFunctor_map_truncGEπ_app (X : DerivedCategory C) (a n : ℤ) (hn : a ≤ n) :
+    IsIso ((homologyFunctor C n).map ((t.truncGEπ a).app X )) := by
+  have : Mono ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
+    ((homologyFunctor C 0).homology_sequence_mono_shift_map_mor₂_iff _
+      (t.triangleLTGE_distinguished a X) n).2 (by
+        apply IsZero.eq_of_src
+        exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) n (by linarith))
+  have : Epi ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
+    ((homologyFunctor C 0).homology_sequence_epi_shift_map_mor₂_iff _
+      (t.triangleLTGE_distinguished a X) n (n+1) rfl).2 (by
+        apply IsZero.eq_of_tgt
+        exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) (n+1) (by linarith))
+  apply isIso_of_mono_of_epi
 
 variable (C)
 
 lemma isIso_whiskerRight_truncLEι_homologyFunctor (a n : ℤ) (hn : n ≤ a) :
-  IsIso (whiskerRight (t.truncLEι a) (homologyFunctor C n)) := sorry
+    IsIso (whiskerRight (t.truncLEι a) (homologyFunctor C n)) :=
+  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
+    (fun X => isIso_homologyFunctor_map_truncLEι_app X a n hn)
 
 noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
     t.truncLE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
@@ -289,7 +335,9 @@ noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
   exact asIso (whiskerRight (t.truncLEι a) (homologyFunctor C n))
 
 lemma isIso_whiskerRight_truncGEπ_homologyFunctor (a n : ℤ) (hn : a ≤ n) :
-  IsIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n)) := sorry
+  IsIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n)) :=
+  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
+    (fun X => isIso_homologyFunctor_map_truncGEπ_app X a n hn)
 
 noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
     t.truncGE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by

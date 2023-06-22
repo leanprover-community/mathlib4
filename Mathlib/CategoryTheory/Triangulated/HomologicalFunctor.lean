@@ -267,6 +267,25 @@ lemma homology_sequence_isIso_shift_map_mor₁_iff :
   . rintro ⟨h₀, h₁⟩
     apply isIso_of_mono_of_epi
 
+lemma homology_sequence_mono_shift_map_mor₂_iff :
+    Mono ((F.shift n₁).map T.mor₂) ↔ (F.shift n₁).map T.mor₁ = 0 := by
+  constructor
+  . intro H
+    rw [← cancel_mono ((F.shift n₁).map T.mor₂), ← Functor.map_comp,
+      comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero, zero_comp]
+  . intro H
+    refine' (ShortComplex.exact_iff_mono _ _).1 ((F.homology_sequence_exact₂ _ hT n₁))
+    exact H
+
+lemma homology_sequence_epi_shift_map_mor₂_iff :
+    Epi ((F.shift n₀).map T.mor₂) ↔ F.homology_sequence_δ T n₀ n₁ h = 0 := by
+  constructor
+  . intro H
+    rw [← cancel_epi ((F.shift n₀).map T.mor₂), comp_zero, F.comp_homology_sequence_δ _ hT]
+  . intro H
+    refine' (ShortComplex.exact_iff_epi _ _).1 (F.homology_sequence_exact₃ _ hT _  _ h)
+    exact H
+
 end
 
 lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :
