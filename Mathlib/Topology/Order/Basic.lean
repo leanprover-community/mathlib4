@@ -791,6 +791,16 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
   hs.exists_mem_open isOpen_Ioo (nonempty_Ioo.2 h)
 #align dense.exists_between Dense.exists_between
 
+theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
+  refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
+  rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
+  exact mem_iUnion₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
+
+theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
+  Dense.Ioi_eq_biUnion (α := αᵒᵈ) hs x
+
 end LinearOrder
 
 end OrderClosedTopology
