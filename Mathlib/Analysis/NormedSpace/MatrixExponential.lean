@@ -242,4 +242,3 @@ theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
 end NormedComm
 
 end Matrix
-
