@@ -189,7 +189,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
       (π₂⁻¹ i, j, k) U ≫ (D.t k i).c.app _ ≫ (D.V (k, i)).presheaf.map (eqToHom eq) =
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
-  -- Porting note : I don't what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  -- Porting note : I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   . delta IsOpenImmersion.openFunctor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr
