@@ -81,6 +81,7 @@ simplify this to `(n - 1) * e`.
 This should be called only when `normIntNumeral` fails, because `normIntNumeral` would otherwise
 be more useful by evaluating `-e` mod `n` to an actual numeral.
 -/
+@[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNeg {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
     MetaM Simp.Result := do
@@ -105,6 +106,7 @@ lemma CharP.neg_mul_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : Cha
 
 /-- Given an expression `-(a * b) : t` such that `t` is a ring of characteristic `n`,
 and `a` is a numeral, simplify this to `((n - 1) * a) * b`. -/
+@[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
     MetaM Simp.Result := do
