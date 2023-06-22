@@ -202,21 +202,21 @@ theorem IntValuation.map_add_le_max' (x y : R) :
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx,
           v.intValuationDef_if_neg hy, WithZero.le_max_iff, IntValuation.le_max_iff_min_le]
         set nmin :=
-          min ((Associates.mk v.as_ideal).count (Associates.mk (Ideal.span {x})).factors)
-            ((Associates.mk v.as_ideal).count (Associates.mk (Ideal.span {y})).factors)
-        have h_dvd_x : x ∈ v.as_ideal ^ nmin := by
+          min ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {x})).factors)
+            ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {y})).factors)
+        have h_dvd_x : x ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff x nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hx) _]
           exact min_le_left _ _
           apply v.associates_irreducible
-        have h_dvd_y : y ∈ v.as_ideal ^ nmin := by
+        have h_dvd_y : y ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff y nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hy) _]
           exact min_le_right _ _
           apply v.associates_irreducible
-        have h_dvd_xy : Associates.mk v.as_ideal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
+        have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
           rw [Associates.le_singleton_iff]
-          exact Ideal.add_mem (v.as_ideal ^ nmin) h_dvd_x h_dvd_y
+          exact Ideal.add_mem (v.asIdeal ^ nmin) h_dvd_x h_dvd_y
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
         exact h_dvd_xy
         apply v.associates_irreducible
@@ -341,8 +341,8 @@ def adicCompletion :=
 #align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
 
 instance : Field (v.adicCompletion K) :=
-  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _ v
-    adicValued.toUniformAddGroup
+  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _
+    v.adicValued.toUniformAddGroup
 
 instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩
@@ -426,13 +426,14 @@ instance : IsScalarTower R K (v.adicCompletion K) :=
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h : (algebraMap R (adicCompletion K v)) r = ((↑) <| algebraMap R K r) := rfl
+      have h :
+        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
-    ⟨(↑) <| algebraMap R K r, by
+    ⟨(algebraMap R K r : adicCompletion K v), by
       simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
         v.valuation_le_one _⟩
   map_one' := by simp only [map_one] <;> rfl
