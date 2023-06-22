@@ -365,6 +365,7 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
+-- porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
 variable {R : Type _} [SMul R ℝ]
