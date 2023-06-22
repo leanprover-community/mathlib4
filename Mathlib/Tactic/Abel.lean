@@ -438,6 +438,7 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+  let atomSt ← IO.mkRef {}
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -452,7 +453,7 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
           guard e.isApp -- all interesting group expressions are applications
-          let (a, pa) ← eval e |>.run (← mkContext e) |>.run cfg.red (evalAtom := evalAtom)
+          let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } atomSt
           guard !a.isAtom
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
