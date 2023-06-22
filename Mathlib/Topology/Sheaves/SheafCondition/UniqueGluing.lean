@@ -55,7 +55,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
@@ -160,7 +160,8 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   choose m m_spec m_uniq using fun x : s.pt =>
     Fsh U ((piOpensIsoSectionsFamily F U).hom (s.ι x)) (h_compatible x)
   refine' ⟨m, _, _⟩
-  · -- Porting note : Lean can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
     simp [res]
     exact m_spec x i
@@ -207,7 +208,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
 
@@ -235,7 +236,7 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
 
@@ -319,7 +320,9 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
       constructor
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up True)
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up False)
-    · rintro ⟨_ | _⟩ <;> simp [h₁, h₂]
+    · rintro ⟨_ | _⟩
+      any_goals exact h₁
+      any_goals exact h₂
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq₂ TopCat.Sheaf.eq_of_locally_eq₂
 

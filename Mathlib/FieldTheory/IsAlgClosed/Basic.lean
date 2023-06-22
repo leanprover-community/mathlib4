@@ -98,7 +98,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 #align is_alg_closed.exists_eq_mul_self IsAlgClosed.exists_eq_mul_self
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
-  p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
+    p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
   cases' le_or_lt (degree p) 0 with hd hd
   · exact eq_C_of_degree_le_zero hd
@@ -159,10 +159,10 @@ theorem algebraMap_surjective_of_isIntegral {k K : Type _} [Field k] [Ring K] [I
   exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 #align is_alg_closed.algebra_map_surjective_of_is_integral IsAlgClosed.algebraMap_surjective_of_isIntegral
 
-theorem algebra_map_surjective_of_is_integral' {k K : Type _} [Field k] [CommRing K] [IsDomain K]
+theorem algebraMap_surjective_of_isIntegral' {k K : Type _} [Field k] [CommRing K] [IsDomain K]
     [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
   @algebraMap_surjective_of_isIntegral k K _ _ _ _ f.toAlgebra hf
-#align is_alg_closed.algebra_map_surjective_of_is_integral' IsAlgClosed.algebra_map_surjective_of_is_integral'
+#align is_alg_closed.algebra_map_surjective_of_is_integral' IsAlgClosed.algebraMap_surjective_of_isIntegral'
 
 theorem algebraMap_surjective_of_isAlgebraic {k K : Type _} [Field k] [Ring K] [IsDomain K]
     [IsAlgClosed k] [Algebra k K] (hf : Algebra.IsAlgebraic k K) :

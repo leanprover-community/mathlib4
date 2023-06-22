@@ -138,6 +138,9 @@ instance hasLimits : HasLimits (ModuleCat.{w} R) :=
   ModuleCat.hasLimitsOfSize.{w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
 
+instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
+  ModuleCat.hasLimitsOfSize.{u, u, u}
+
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ ModuleCatMax.{v, w, u} R) :

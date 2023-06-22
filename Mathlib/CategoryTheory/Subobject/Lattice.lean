@@ -205,7 +205,7 @@ def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f
   intro k₁ k₂
   refine' homMk _ _
   apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  . apply coprod.hom_ext
+  . ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -513,7 +513,7 @@ section SemilatticeSup
 
 variable [HasImages C] [HasBinaryCoproducts C]
 
-/-- The functorial supremum on `MonoOver A` descends to an supremum on `Subobject A`. -/
+/-- The functorial supremum on `MonoOver A` descends to a supremum on `Subobject A`. -/
 def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup

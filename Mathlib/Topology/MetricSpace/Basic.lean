@@ -144,7 +144,7 @@ theorem PseudoMetricSpace.ext {α : Type _} {m m' : PseudoMetricSpace α}
   cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
   obtain rfl : d = d' := h
   congr
-  · ext (x y) : 2
+  · ext x y : 2
     rw [hed, hed']
   · exact uniformSpace_eq (hU.trans hU'.symm)
   · ext : 2

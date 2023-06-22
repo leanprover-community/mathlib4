@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -75,7 +75,7 @@ class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
 add_decl_doc AddEquiv.toEquiv
 #align add_equiv.to_equiv AddEquiv.toEquiv
 
-/-- The `AddHom` underlying a `AddEquiv`. -/
+/-- The `AddHom` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toAddHom
 #align add_equiv.to_add_hom AddEquiv.toAddHom
 
@@ -718,7 +718,7 @@ end MulEquiv
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
-`f.comp g = id`, returns an multiplicative equivalence with `toFun = f` and `invFun = g`. This
+`f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
 @[to_additive
@@ -755,7 +755,7 @@ theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N �
 #align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symm_apply
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
-returns an multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
+returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`

@@ -384,7 +384,7 @@ protected theorem multiset_prod_mem {R} [CommRing R] (s : Subring R) (m : Multis
   multiset_prod_mem _
 #align subring.multiset_prod_mem Subring.multiset_prod_mem
 
-/-- Sum of a multiset of elements in an `Subring` of a `Ring` is
+/-- Sum of a multiset of elements in a `Subring` of a `Ring` is
 in the `Subring`. -/
 protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
@@ -1215,6 +1215,7 @@ theorem range_top_iff_surjective {f : R →+* S} :
 #align ring_hom.range_top_iff_surjective RingHom.range_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_top_iff_surjective.2 hf

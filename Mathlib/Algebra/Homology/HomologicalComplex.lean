@@ -702,7 +702,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
     ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
 #align chain_complex.mk_aux ChainComplex.mkAux
 
-/-- A inductive constructor for `ℕ`-indexed chain complexes.
+/-- An inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
@@ -975,7 +975,7 @@ def mkAux : ∀ _ : ℕ, MkStruct V
     ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
 #align cochain_complex.mk_aux CochainComplex.mkAux
 
-/-- A inductive constructor for `ℕ`-indexed cochain complexes.
+/-- An inductive constructor for `ℕ`-indexed cochain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,

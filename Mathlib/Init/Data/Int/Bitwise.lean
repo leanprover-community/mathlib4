@@ -104,7 +104,7 @@ def lxor' : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => Nat.lxor' m n
 #align int.lxor Int.lxor'
 
-/-- `shiftl m n` produces a integer whose binary representation
+/-- `shiftl m n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/
 def shiftl : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.shiftl' false m n
@@ -113,7 +113,7 @@ def shiftl : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => -[Nat.shiftr m (Nat.succ n) +1]
 #align int.shiftl Int.shiftl
 
-/-- `shiftr m n` produces a integer whose binary representation
+/-- `shiftr m n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
 def shiftr (m n : ℤ) : ℤ :=
   shiftl m (-n)

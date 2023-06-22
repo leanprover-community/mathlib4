@@ -175,21 +175,21 @@ def toSignedMeasure : SignedMeasure α :=
 
 theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 := by
   ext1 i hi
-  -- Porting note: replaced `erw`
+  -- Porting note: replaced `erw` by adding further lemmas
   rw [toSignedMeasure, toSignedMeasure_sub_apply hi, zero_posPart, zero_negPart, sub_self,
     VectorMeasure.coe_zero, Pi.zero_apply]
 #align measure_theory.jordan_decomposition.to_signed_measure_zero MeasureTheory.JordanDecomposition.toSignedMeasure_zero
 
 theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
   ext1 i hi
-  -- Porting note: replaced `rfl`
+  -- Porting note: removed `rfl` after the `rw` by adding further steps.
   rw [neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
     toSignedMeasure_sub_apply hi, neg_sub, neg_posPart, neg_negPart]
 #align measure_theory.jordan_decomposition.to_signed_measure_neg MeasureTheory.JordanDecomposition.toSignedMeasure_neg
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
   ext1 i hi
-  -- Porting note: replaced `rfl`
+  -- Porting note: removed `rfl` after the `rw` by adding further steps.
   rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
     smul_negPart, ← ENNReal.toReal_smul, ← ENNReal.toReal_smul, smul_toOuterMeasure,
@@ -264,9 +264,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
     s.toJordanDecomposition.toSignedMeasure = s := by
   obtain ⟨i, hi₁, hi₂, hi₃, hμ, hν⟩ := s.toJordanDecomposition_spec
   simp only [JordanDecomposition.toSignedMeasure, hμ, hν]
-  -- Porting note: was `ext (k hk)`
-  ext k
-  intro hk
+  ext k hk
   rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_apply _ hi₂ hi₁ hk,
     toMeasureOfLEZero_apply _ hi₃ hi₁.compl hk]
   simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
@@ -440,7 +438,7 @@ namespace SignedMeasure
 open JordanDecomposition
 
 /-- `MeasureTheory.SignedMeasure.toJordanDecomposition` and
-`MeasureTheory.JordanDecomposition.toSignedMeasure` form a `Equiv`. -/
+`MeasureTheory.JordanDecomposition.toSignedMeasure` form an `Equiv`. -/
 @[simps apply symm_apply]
 def toJordanDecompositionEquiv (α : Type _) [MeasurableSpace α] :
     SignedMeasure α ≃ JordanDecomposition α where
