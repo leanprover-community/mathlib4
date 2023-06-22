@@ -1394,18 +1394,6 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 
 end TopologicalGroup
 
-/-- Additive group with a neighbourhood around 0.
-Only used to construct a topology and uniform space.
-
-This is currently only available for commutative groups, but it can be extended to
-non-commutative groups too.
--/
-class AddGroupWithZeroNhd (G : Type u) extends AddCommGroup G where
-  zeroNhd : Filter G
-  zero_le : pure 0 ≤ zeroNhd
-  sub_tendsto : Tendsto (fun p : G × G => p.1 - p.2) (zeroNhd ×ˢ zeroNhd) zeroNhd
-#align add_group_with_zero_nhd AddGroupWithZeroNhd
-
 section FilterMul
 
 section
