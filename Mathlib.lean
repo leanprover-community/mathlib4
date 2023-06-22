@@ -2536,6 +2536,7 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Factorization
+import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.DedekindDomain.PID
