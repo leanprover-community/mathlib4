@@ -179,6 +179,8 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
 
 @[simp]
 theorem card_Ici : (Ici a).card = n - a := by
+-- Porting note: without `clear b` Lean includes `b` in the statement.
+  clear b
   cases n with
   | zero => exact Fin.elim0 a
   | succ =>
@@ -204,14 +206,12 @@ theorem card_Iio : (Iio b).card = b := by
 -- @[simp]
 theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by
   rw [Fintype.card_ofFinset, card_Ici]
-  assumption
 #align fin.card_fintype_Ici Fin.card_fintypeIci
 
 -- Porting note: simp can prove this
 -- @[simp]
 theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by
   rw [Fintype.card_ofFinset, card_Ioi]
-  assumption
 #align fin.card_fintype_Ioi Fin.card_fintypeIoi
 
 -- Porting note: simp can prove this
