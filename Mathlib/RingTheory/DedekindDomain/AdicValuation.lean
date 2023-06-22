@@ -290,13 +290,13 @@ theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.int
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
-  rw [valuation_of_algebra_map]; exact v.int_valuation_le_one r
+  rw [valuation_of_algebraMap]; exact v.int_valuation_le_one r
 #align is_dedekind_domain.height_one_spectrum.valuation_le_one IsDedekindDomain.HeightOneSpectrum.valuation_le_one
 
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem valuation_lt_one_iff_dvd (r : R) :
     v.valuation (algebraMap R K r) < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
-  rw [valuation_of_algebra_map]; exact v.int_valuation_lt_one_iff_dvd r
+  rw [valuation_of_algebraMap]; exact v.int_valuation_lt_one_iff_dvd r
 #align is_dedekind_domain.height_one_spectrum.valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd
 
 variable (K)
@@ -329,19 +329,19 @@ def adicValued : Valued K ℤₘ₀ :=
   Valued.mk' v.valuation
 #align is_dedekind_domain.height_one_spectrum.adic_valued IsDedekindDomain.HeightOneSpectrum.adicValued
 
-theorem adicValued_apply {x : K} : (v.adicValued.V : _) x = v.valuation x :=
+theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
   rfl
 #align is_dedekind_domain.height_one_spectrum.adic_valued_apply IsDedekindDomain.HeightOneSpectrum.adicValued_apply
 
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-def AdicCompletion :=
+def adicCompletion :=
   @UniformSpace.Completion K v.adicValued.toUniformSpace
-#align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.AdicCompletion
+#align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
 
 instance : Field (v.adicCompletion K) :=
-  @UniformSpace.Completion.field K _ v.adicValued.toUniformSpace _ _ v.adicValued.to_uniformAddGroup
+  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _ v.adicValued.toUniformAddGroup
 
 instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩
@@ -359,19 +359,22 @@ instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
   @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion_complete_space IsDedekindDomain.HeightOneSpectrum.adicCompletion_completeSpace
 
-instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
-  (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-#align is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t IsDedekindDomain.HeightOneSpectrum.AdicCompletion.hasLiftT
+instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
+  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+
+-- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
+--   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+-- #align is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t IsDedekindDomain.HeightOneSpectrum.AdicCompletion.hasLiftT
 
 /-- The ring of integers of `adic_completion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
-  Valued.v.ValuationSubring
+  Valued.v.valuationSubring
 #align is_dedekind_domain.height_one_spectrum.adic_completion_integers IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
 
-variable (R K)
+variable (R)
 
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
@@ -405,29 +408,30 @@ instance : Algebra K (v.adicCompletion K) :=
   @UniformSpace.Completion.algebra' K _ v.adicValued.toUniformSpace _ _
 
 theorem algebraMap_adic_completion' :
-    ⇑(algebraMap R <| v.adicCompletion K) = coe ∘ algebraMap R K :=
+    ⇑(algebraMap R <| v.adicCompletion K) = (↑) ∘ algebraMap R K :=
   rfl
 #align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion' IsDedekindDomain.HeightOneSpectrum.algebraMap_adic_completion'
 
-theorem algebraMap_adicCompletion : ⇑(algebraMap K <| v.adicCompletion K) = coe :=
+theorem algebraMap_adicCompletion :
+    ⇑(algebraMap K <| v.adicCompletion K) = ((↑) : K → adicCompletion K v) :=
   rfl
 #align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion IsDedekindDomain.HeightOneSpectrum.algebraMap_adicCompletion
 
 instance : IsScalarTower R K (v.adicCompletion K) :=
-  @UniformSpace.Completion.isScalarTower R K K v.adicValued.toUniformSpace _ _ _
+  @UniformSpace.Completion.instIsScalarTower R K K v.adicValued.toUniformSpace _ _ _
     (adicValued.has_uniform_continuous_const_smul' R K v) _ _
 
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h : (algebraMap R (adicCompletion K v)) r = (coe <| algebraMap R K r) := rfl
+      have h : (algebraMap R (adicCompletion K v)) r = ((↑) <| algebraMap R K r) := rfl
       rw [Algebra.smul_def]
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
-      rw [mem_adic_completion_integers, h, Valued.valuedCompletion_apply]
+      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
-    ⟨coe <| algebraMap R K r, by
-      simpa only [mem_adic_completion_integers, Valued.valuedCompletion_apply] using
+    ⟨(↑) <| algebraMap R K r, by
+      simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
         v.valuation_le_one _⟩
   map_one' := by simp only [map_one] <;> rfl
   map_mul' x y := by
@@ -449,18 +453,18 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
   rfl
 #align is_dedekind_domain.height_one_spectrum.coe_smul_adic_completion_integers IsDedekindDomain.HeightOneSpectrum.coe_smul_adicCompletionIntegers
 
-instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K)
-    where eq_zero_or_eq_zero_of_smul_eq_zero c x hcx := by
+instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
     refine' hcx.imp_left fun hc => _
-    letI : UniformSpace K := v.adic_valued.to_uniform_space
-    rw [← map_zero (algebraMap R (v.adic_completion_integers K))] at hc
+    letI : UniformSpace K := v.adicValued.toUniformSpace
+    rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact
-      IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (subtype.ext_iff.mp hc))
+      IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
 
 instance AdicCompletion.is_scalar_tower' :
-    IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K)
-    where smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
+    IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
+  smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
 #align is_dedekind_domain.height_one_spectrum.adic_completion.is_scalar_tower' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.is_scalar_tower'
 
 end AlgebraInstances
