@@ -297,7 +297,6 @@ def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Inverti
   ⟨⅟ b * ⅟ a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 #align invertible_mul invertibleMul
 
-
 @[simp]
 theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
     ⅟ (a * b) = ⅟ b * ⅟ a :=
@@ -420,6 +419,7 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
 #align invertible.mul_right Invertible.mulRight
 
 end Monoid
+
 section MonoidWithZero
 
 variable [MonoidWithZero α]
