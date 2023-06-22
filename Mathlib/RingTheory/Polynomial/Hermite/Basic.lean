@@ -80,7 +80,7 @@ theorem hermite_one : hermite 1 = X := by
 /-! ### Lemmas about `Polynomial.coeff` -/
 
 
-section Coeff
+section coeff
 
 theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
   simp [coeff_derivative]
@@ -146,7 +146,7 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
-end Coeff
+end coeff
 
 section CoeffExplicit
 
