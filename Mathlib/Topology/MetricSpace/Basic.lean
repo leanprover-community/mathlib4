@@ -2772,7 +2772,7 @@ theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
   simp_rw [← closedBall_diff_ball] at hf1
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_isLocal_min_mem_ball
+#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
 
 end Metric
 
