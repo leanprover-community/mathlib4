@@ -443,18 +443,29 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       --   v.valuation_le_one _
       rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
-  map_one' := by simp only [map_one] <;> rfl
+  map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
+    --Porting note: added instance
+    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_mul, Subring.coe_mul, Subtype.coe_mk, UniformSpace.Completion.coe_mul]
-  map_zero' := by simp only [map_zero] <;> rfl
+  map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
+    --Porting note: added instance
+    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_add, Subring.coe_add, Subtype.coe_mk, UniformSpace.Completion.coe_add]
-  commutes' r x := by rw [mul_comm]
+  commutes' r x := by
+    -- Porting note: added `dsimp` line
+    dsimp
+    rw [mul_comm]
   smul_def' r x := by
     ext
-    simp only [Subring.coe_mul, SetLike.coe_mk, Algebra.smul_def]
+    --Porting note: added `dsimp`
+    dsimp
+    --Porting note: added instance
+    letI : Valued K ℤₘ₀ := adicValued v
+    simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
 @[simp]
