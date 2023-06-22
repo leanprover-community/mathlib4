@@ -113,11 +113,9 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero]
-   -- porting note: mathlib3 also had `simp_rw [WithBot.coe_lt_coe]` but it's not firing
-   -- so we add it manually later
+  simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
   · rintro m hnm
-    exact coeff_hermite_of_lt (WithBot.coe_lt_coe.1 hnm)
+    exact coeff_hermite_of_lt hnm
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
 

@@ -52,8 +52,6 @@ variable {C : Type u} [Category.{v} C]
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=
   Cone (Discrete.functor f)
@@ -167,7 +165,7 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
 
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
-    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂ ) : g₁ = g₂ :=
+    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
   colimit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/

@@ -25,13 +25,13 @@ The result is presented in several versions. First concrete versions giving an a
 up to `ε` in these various contexts, and then abstract versions stating that the topological
 closure of the relevant subgroups of `Lp` are the whole space.
 
-* `mem_ℒp.exists_has_compact_support_snorm_sub_le` states that, in a locally compact space,
-  an `ℒp` function can be approximated by continuous functions with compact support,
+* `MeasureTheory.Memℒp.exists_hasCompactSupport_snorm_sub_le` states that, in a locally compact
+  space, an `ℒp` function can be approximated by continuous functions with compact support,
   in the sense that `snorm (f - g) p μ` is small.
-* `mem_ℒp.exists_has_compact_support_integral_rpow_sub_le`: same result, but expressed in
+* `MeasureTheory.Memℒp.exists_hasCompactSupport_integral_rpow_sub_le`: same result, but expressed in
   terms of `∫ ‖f - g‖^p`.
 
-Versions with `integrable` instead of `mem_ℒp` are specialized to the case `p = 1`.
+Versions with `Integrable` instead of `Memℒp` are specialized to the case `p = 1`.
 Versions with `boundedContinuous` instead of `HasCompactSupport` drop the locally
 compact assumption and give only approximation by a bounded continuous function.
 
@@ -57,7 +57,7 @@ continuous function interpolating between these two sets.
 
 Are you looking for a result on "directional" approximation (above or below with respect to an
 order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?  See the
-Vitali-Carathéodory theorem, in the file `measure_theory.vitali_caratheodory`.
+Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/VitaliCaratheodory.lean`.
 
 -/
 
@@ -112,8 +112,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
       cases' hv with hsv hs
-      ·
-        simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
+      · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
@@ -151,7 +150,7 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and consists of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε;
+  apply hf.induction_dense hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, hf⟩ ⟨g_cont, g_mem, hg⟩
@@ -247,7 +246,7 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and made of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε;
+  apply hf.induction_dense hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, f_bd⟩ ⟨g_cont, g_mem, g_bd⟩

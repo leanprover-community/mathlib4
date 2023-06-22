@@ -491,7 +491,6 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
       w := by
         rintro (_ | _)
         · apply limit.hom_ext
-          dsimp
           simp
         · apply limit.hom_ext
           intros j

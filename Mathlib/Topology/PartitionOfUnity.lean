@@ -161,7 +161,6 @@ that `0 < f i x`. -/
 theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   have H := f.sum_eq_one hx
   contrapose! H
-  simp_rw [not_exists, not_lt] at H
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 #align partition_of_unity.exists_pos PartitionOfUnity.exists_pos
 
