@@ -788,6 +788,32 @@ lemma GoodProducts.spanSingleton :
   rw [nilSpanTop]
 
 noncomputable
+def SwapTrue (o : Ordinal) : (WithTop I → Bool) → WithTop I → Bool :=
+fun f i ↦ if ord I i = o then true else f i
+
+lemma continuous_swapTrue (o : Ordinal) :
+    Continuous (SwapTrue o : (WithTop I → Bool) → WithTop I → Bool) := by
+  refine' continuous_pi _
+  intro i
+  dsimp [SwapTrue]
+  split_ifs
+  · exact continuous_const
+  · exact continuous_apply _
+
+noncomputable
+def SwapFalse (o : Ordinal) : (WithTop I → Bool) → WithTop I → Bool :=
+fun f i ↦ if ord I i = o then false else f i
+
+lemma continuous_swapFalse (o : Ordinal) :
+    Continuous (SwapTrue o : (WithTop I → Bool) → WithTop I → Bool) := by
+  refine' continuous_pi _
+  intro i
+  dsimp [SwapTrue]
+  split_ifs
+  · exact continuous_const
+  · exact continuous_apply _
+
+noncomputable
 def ProjOrd (o : Ordinal) : (WithTop I → Bool) → (WithTop I → Bool) :=
   fun c i ↦ if ord I i < o then c i else false
 
@@ -2195,6 +2221,164 @@ lemma support_C0 : Support (C0 C ho) ⊆ {j | ord I j < o} := by
 lemma support_C1 : Support (Res (C1 C ho) o) ⊆ {j | ord I j < o} :=
   support_Res_le_o _ _
 
+def C' := C0 C ho ∩ Res (C1 C ho) o
+
+lemma isClosed_C' : IsClosed (C' C ho) :=
+IsClosed.inter (isClosed_C0 _ hC _) (isClosed_Res (C1 C ho) o (isClosed_C1 _ hC _))
+
+lemma support_C' : Support (C' C ho) ⊆ {j | ord I j < o} := by
+  dsimp [Support]
+  intro i hi
+  simp only [Set.mem_setOf_eq] at hi ⊢
+  obtain ⟨f,hf⟩ := hi
+  dsimp [C'] at hf
+  have hC1 := support_C1 C ho
+  dsimp [Support] at hC1
+  simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hC1
+  exact hC1 i f hf.1.2 hf.2
+
+
+def CC'₀ : {i // i ∈ C' C ho} → {i // i ∈ C} := fun g ↦ ⟨g.val,g.prop.1.1⟩
+
+lemma continuous_CC'₀ : Continuous (CC'₀ C ho) :=
+Continuous.subtype_mk continuous_subtype_val _
+
+lemma swapTrue_mem_C1 (f : {i // i ∈ Res (C1 C ho) o}) : SwapTrue o f.val ∈ C1 C ho := by
+  obtain ⟨f,hf⟩ := f
+  obtain ⟨g,hg⟩ := hf
+  suffices : SwapTrue o f = g
+  · rw [this]
+    exact hg.1
+  dsimp [SwapTrue]
+  ext i
+  split_ifs with h
+  · dsimp [C1, term] at hg
+    simp_rw [← h] at hg
+    dsimp [ord] at hg
+    simp only [Ordinal.enum_typein, Set.mem_inter_iff, Set.mem_setOf_eq] at hg
+    exact hg.1.2.symm
+  · dsimp [ProjOrd] at hg
+    have := congr_fun hg.2 i
+    split_ifs at this with h'
+    · exact this.symm
+    · simp only [not_lt] at h'
+      have hh := Order.succ_le_of_lt (lt_of_le_of_ne h' (Ne.symm h))
+      dsimp [Support] at hsC
+      simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+      specialize hsC i g hg.1.1
+      rw [← not_imp_not] at hsC
+      simp only [not_lt, Bool.not_eq_true] at hsC
+      rw [← this]
+      exact (hsC hh).symm
+
+lemma swapTrue_mem_C (f : {i // i ∈ C' C ho}) : SwapTrue o f.val ∈ C := by
+  suffices : SwapTrue o f.val ∈ C1 C ho
+  · exact this.1
+  exact (swapTrue_mem_C1 C hsC ho ⟨f.val,f.prop.2⟩)
+
+-- noncomputable
+-- def ResC1C1 : {i // i ∈ Res (C1 C ho) o} → {i // i ∈ C1 C ho} :=
+-- fun f ↦ ⟨SwapTrue o f.val, swapTrue_mem_C1 C ho f⟩
+
+noncomputable
+def CC'₁ : {i // i ∈ C' C ho} → {i // i ∈ C} :=
+fun g ↦ ⟨SwapTrue o g.val, swapTrue_mem_C C hsC ho g⟩
+
+lemma continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
+Continuous.subtype_mk (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
+
+noncomputable
+def Linear_CC'₀ : LocallyConstant {i // i ∈ C} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C' C ho} ℤ :=
+LocallyConstant.comapLinear (CC'₀ C ho) (continuous_CC'₀ C ho)
+
+noncomputable
+def Linear_CC'₁ : LocallyConstant {i // i ∈ C} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C' C ho} ℤ :=
+LocallyConstant.comapLinear (CC'₁ C hsC ho) (continuous_CC'₁ C hsC ho)
+
+noncomputable
+def Linear_CC' : LocallyConstant {i // i ∈ C} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C' C ho} ℤ :=
+Linear_CC'₁ C hsC ho - Linear_CC'₀ C ho
+
+variable (o)
+
+noncomputable
+def Linear_ResC : LocallyConstant {i // i ∈ Res C o} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ :=
+LocallyConstant.comapLinear _ (continuous_ResOnSubset C o)
+
+def GoodProducts.v : GoodProducts (Res C o) → LocallyConstant {i // i ∈ Res C o} ℤ :=
+eval (Res C o)
+
+def GoodProducts.v' : GoodProducts (Res C o) → LocallyConstant {i // i ∈ C} ℤ :=
+fun l ↦ l.1.eval C
+
+def GoodProducts.w' : StartingWithMax C o → LocallyConstant {i // i ∈ C} ℤ :=
+fun l ↦ l.1.eval C
+
+def GoodProducts.u : GoodProducts (Res C o) ⊕ StartingWithMax C o →
+    LocallyConstant {i // i ∈ C} ℤ :=
+Sum.elim (v' C o) (w' C o)
+
+lemma GoodProducts.injective_u : Function.Injective (u C o) := by
+  have := injective C
+  have hu := union_succ C o hsC
+  have hr : GoodProducts (Res C o) ⊆ GoodProducts C
+  · rw [hu]
+    exact Set.subset_union_left _ _
+  have hs : StartingWithMax C o ⊆ GoodProducts C
+  · rw [hu]
+    exact Set.subset_union_right _ _
+  dsimp [eval] at this
+  apply Function.Injective.sum_elim
+  <;> dsimp [v', w']
+  · intro a b h
+    have hra : (⟨a.val, hr a.prop⟩ : GoodProducts C).val = a.val := by rfl
+    have hrb : (⟨b.val, hr b.prop⟩ : GoodProducts C).val = b.val := by rfl
+    dsimp at h
+    rw [← hra, ← hrb] at h
+    ext
+    specialize this h
+    apply_fun fun f ↦ f.val at this
+    rwa [hra, hrb] at this
+  · intro a b h
+    have hsa : (⟨a.val, hs a.prop⟩ : GoodProducts C).val = a.val := by rfl
+    have hsb : (⟨b.val, hs b.prop⟩ : GoodProducts C).val = b.val := by rfl
+    dsimp at h
+    rw [← hsa, ← hsb] at h
+    ext
+    specialize this h
+    apply_fun fun f ↦ f.val at this
+    rwa [hsa, hsb] at this
+  · intro a b h
+    have hra : (⟨a.val, hr a.prop⟩ : GoodProducts C).val = a.val := by rfl
+    have hsb : (⟨b.val, hs b.prop⟩ : GoodProducts C).val = b.val := by rfl
+    rw [← hra, ← hsb] at h
+    specialize this h
+    apply_fun fun f ↦ f.val at this
+    rw [hra, hsb] at this
+    by_cases hanil : a.val.val = []
+    · apply b.prop.2.1
+      rwa [← this]
+    · have ha' := Products.head_lt_ord_of_isGood C a.prop hanil
+      simp_rw [← b.prop.2.2] at ha'
+      dsimp [ord] at ha'
+      simp only [Ordinal.typein_lt_typein] at ha'
+      apply ne_of_lt ha'
+      rw [this]
+
+lemma GoodProducts.huv : u C o ∘ Sum.inl = Linear_ResC C o ∘ v C o := by
+  dsimp [u, v, v', Linear_ResC, LocallyConstant.comapLinear, eval]
+  ext1 l
+  rw [← Products.eval_comapFacC C l.prop]
+  rfl
+
+variable {o}
+
+noncomputable
+def GoodProducts.w : StartingWithMax C o → LocallyConstant {i // i ∈ C' C ho} ℤ :=
+Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr
+
+lemma GoodProducts.huw : Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr = w C hsC ho := by rfl
+
 lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
   ext x
   constructor
@@ -2280,138 +2464,113 @@ noncomputable
 def SumHomeo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ C} :=
   @Continuous.homeoOfEquivCompactToT2 _ _ _ _ (CS C hC ho) _ _ (continuous_sumEquiv C ho)
 
-noncomputable
-def LocConstLinearEquiv₁ : LocallyConstant {i // i ∈ C} ℤ ≃ₗ[ℤ]
-    LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) ℤ  :=
-    LocallyConstant.equivLinear (SumHomeo C hC ho).symm
+lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
+  intro f
+  sorry
+  -- constructor
+  -- · ext x
+  --   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapLinear]
+  --   rw [LocallyConstant.sub_apply]
+  --   · sorry
+  --   · sorry
 
-noncomputable
-def LocConstLinearEquiv₂ : LocallyConstant ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) ℤ
-    ≃ₗ[ℤ] (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) ×
-    (LocallyConstant {i // i ∈ (C1 C ho)} ℤ) := LocallyConstant.LinearSumEquivProd
-
-noncomputable
-def LocConstLinearEquiv : LocallyConstant {i // i ∈ C} ℤ  ≃ₗ[ℤ]
-    (LocallyConstant {i // i ∈ (C0 C ho)} ℤ) × (LocallyConstant {i // i ∈ (C1 C ho)} ℤ) :=
-  LinearEquiv.trans (LocConstLinearEquiv₁ _ hC _) (LocConstLinearEquiv₂ _ _)
-
-lemma GoodProducts.linearIndependent_iff_sum₁ : LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (eval C)) :=
-  (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
-
-lemma GoodProducts.linearIndependent_iff_sum₂ :
-    LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (Sum.elim
-    (fun (l : GoodProducts (Res C o)) ↦ Products.eval C l.1)
-    (fun (l : StartingWithMax C o) ↦ Products.eval C l.1)))  := by
-  rw [linearIndependent_iff_sum C o hsC]
-  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
-
-instance NC01 : Nonempty (C0 C ho) ∨ Nonempty (C1 C ho) := by
-  have h : Set.Nonempty C := Set.nonempty_of_nonempty_subtype
-  obtain ⟨c,hc⟩ := h
-  by_cases c (term I ho) = true
-  · right
-    apply Set.Nonempty.to_subtype
-    use c
-    exact ⟨hc,h⟩
-  · left
-    apply Set.Nonempty.to_subtype
-    use c
-    simp only [Bool.not_eq_true] at h
-    exact ⟨hc,h⟩
-
-lemma Products.eval_proj0 : eval (C0 C ho) =
-    (LinearMap.fst ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C) := by
-  ext l x
-  dsimp [LinearMap.fst, LocConstLinearEquiv, LocConstLinearEquiv₁, LocallyConstant.equivLinear,
-    LocConstLinearEquiv₂, LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd,
-    LocallyConstant.equiv]
-  rw [LocallyConstant.coe_comap_apply _ _ continuous_inl]
-  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo _ hC _).continuous]
-  dsimp [SumHomeo, Continuous.homeoOfEquivCompactToT2]
-  obtain ⟨l,hl⟩ := l
-  induction l with
-  | nil => rfl
-  | cons a as ih =>
-    · rw [evalCons, evalCons]
-      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
-      dsimp
-      rw [ih]
-      rfl
-
---((LinearMap.fst ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C)) l
-
-lemma Products.eval_proj1 : eval (C1 C ho) =
-    (LinearMap.snd ℤ _ _) ∘ (LocConstLinearEquiv C hC ho) ∘ (eval C) := by
-  ext l x
-  dsimp [LinearMap.fst, LocConstLinearEquiv, LocConstLinearEquiv₁, LocallyConstant.equivLinear,
-    LocConstLinearEquiv₂, LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd,
-    LocallyConstant.equiv]
-  rw [LocallyConstant.coe_comap_apply _ _ continuous_inr]
-  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo _ hC _).continuous]
-  dsimp [SumHomeo, Continuous.homeoOfEquivCompactToT2]
-  obtain ⟨l,hl⟩ := l
-  induction l with
-  | nil => rfl
-  | cons a as ih =>
-    · rw [evalCons, evalCons]
-      specialize ih (List.Chain'.sublist hl (List.tail_sublist (a::as)))
-      dsimp
-      rw [ih]
-      rfl
-
-lemma Products.eval_max_zero (l : Products (WithTop I))
-    (hl : l ∈ GoodProducts.StartingWithMax C o) : 0 = l.eval (C0 C ho) := by
+lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := by
+  intro y
+  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁]
   ext x
-  obtain ⟨l,hlc⟩ := l
-  induction l with
-  | nil =>
+  rw [LocallyConstant.sub_apply]
+  dsimp [Linear_ResC, LocallyConstant.comapLinear]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+  suffices : ResOnSubset C o (CC'₁ C hsC ho x) = ResOnSubset C o (CC'₀ C ho x)
+  · rw [this]
+    simp only [sub_self]
+  dsimp [CC'₀, CC'₁, ResOnSubset, ProjOrd]
+  ext i
+  dsimp
+  split_ifs with h
+  · dsimp [SwapTrue]
+    split_ifs with h'
     · exfalso
-      dsimp [GoodProducts.StartingWithMax] at hl
-      exact hl.2.1 rfl
-  | cons a as _ =>
-    · rw [evalCons]
-      dsimp [e]
-      dsimp [GoodProducts.StartingWithMax] at hl
-      suffices : x.val a = false
-      · rw [this]
-        dsimp [BoolToZ]
-        simp only [ite_false, zero_mul]
-      suffices : a = term I ho
-      · rw [this]
-        exact x.prop.2
-      dsimp [term]
-      simp_rw [← hl.2.2]
-      dsimp [ord]
-      simp only [Ordinal.enum_typein]
+      exact (ne_of_lt h) h'
+    · rfl
+  · rfl
 
-lemma Products.eval_max_res (l : Products (WithTop I))
-    (hl : l ∈ GoodProducts.StartingWithMax C o) : 0 = l.eval (Res C o) := by
+lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC ho f = 0) :
+    ∃ y, Linear_ResC C o y = f := by
+  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
+  rw [sub_eq_zero] at hf
+  dsimp [LocallyConstant.comapLinear] at hf
+  sorry
+  -- constructor
+  -- · ext x
+  --   rw [LocallyConstant.ext_iff] at hf
+  --   by_cases hx : x.val ∈ C' C ho
+  --   · specialize hf ⟨x,hx⟩
+  --     rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)] at hf
+  --     rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)] at hf
+  --     dsimp [CC'₀, CC'₁] at hf
+  --     sorry
+  --   · sorry
+  -- · sorry
+
+
+lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
+    (ModuleCat.ofHom (Linear_ResC C o))
+    (ModuleCat.ofHom (Linear_CC' C hsC ho)) :=
+{ mono := by
+    rw [ModuleCat.mono_iff_injective]
+    exact LocallyConstant.comap_injective (ResOnSubset C o)
+      (continuous_ResOnSubset C o) (surjective_ResOnSubset C o)
+  epi := by
+    rw [ModuleCat.epi_iff_surjective]
+    exact CC_surjective _ _ _
+  exact := by
+    rw [ModuleCat.exact_iff]
+    ext f
+    rw [LinearMap.mem_ker, LinearMap.mem_range]
+    constructor
+    <;> intro hf
+    · obtain ⟨y,hy⟩ := hf
+      rw [← hy]
+      dsimp [ModuleCat.ofHom]
+      exact CC_comp_zero _ _ _ y
+    · exact CC_exact _ _ _ hf }
+
+lemma swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
+  intro x
+  dsimp [SwapTrue]
+  split_ifs with h
+  · rfl
+  · dsimp [ord, term] at h
+    simp only [Ordinal.typein_enum, not_true] at h
+
+lemma mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
+  rintro x ⟨_,⟨y,⟨_,hy⟩⟩⟩
+  rw [← hy]
+  dsimp [ProjOrd]
+  split_ifs with h
+  · dsimp [ord, term] at h
+    simp only [Ordinal.typein_enum, lt_self_iff_false] at h
+  · rfl
+
+lemma eo_eq_one : Linear_CC' C hsC ho (e C (term I ho)) = 1 := by
   ext x
-  obtain ⟨l,hlc⟩ := l
-  induction l with
-  | nil =>
-    · exfalso
-      dsimp [GoodProducts.StartingWithMax] at hl
-      exact hl.2.1 rfl
-  | cons a as _ =>
-    · rw [evalCons]
-      dsimp [e]
-      dsimp [GoodProducts.StartingWithMax] at hl
-      suffices : x.val a = false
-      · rw [this]
-        dsimp [BoolToZ]
-        simp only [ite_false, zero_mul]
-      obtain ⟨x,hx⟩ := x
-      dsimp [Res] at hx
-      obtain ⟨y,hy⟩ := hx
-      simp_rw [← hy.2]
-      dsimp [ProjOrd]
-      simp only [ite_eq_right_iff]
-      intro h
-      exfalso
-      exact (ne_of_lt h) hl.2.2
+  dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear]
+  rw [LocallyConstant.sub_apply]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+  dsimp [CC'₀, CC'₁, e, BoolToZ]
+  split_ifs with h₀ h₁
+  · exfalso
+    rwa [mem_C'_eq_false C ho x x.prop, Bool.coe_false] at h₁
+  · rfl
+  · exfalso
+    exact h₀ (swapTrue_eq_true ho x)
+  · exfalso
+    exact h₀ (swapTrue_eq_true ho x)
 
 def LC_eval (x : {i // i ∈ C}) : (LocallyConstant {i // i ∈ C} ℤ) → ℤ :=
 fun f ↦ f x
@@ -2432,92 +2591,192 @@ lemma Products.eval_apply (l : Products (WithTop I)) (x : {i // i ∈ C}) :
       left
       exact ih
 
-lemma Products.eval_res_zero (l : Products (WithTop I))
-    (hl : l ∈ GoodProducts (Res C o)) : 0 = l.eval (C1 C ho) := by
-  rw [eval_proj1 C hC]
-  ext x
-  have : (l.eval C) ⟨x.val, x.prop.1⟩ = 0
-  · rw [eval_apply]
-    simp only [Set.mem_setOf_eq, List.prod_eq_zero_iff]
+lemma Products.eval_eq (l : Products (WithTop I)) (x : {i // i ∈ C}) :
+    l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
+  rw [eval_apply]
+  split_ifs with h
+  · dsimp [Apply]
+    suffices : ∀ y, y ∈ List.map (LC_eval C x ∘ e C) l.val → y = 1
+    · exact List.prod_eq_one this
+    intro y hy
+    simp only [List.mem_map, Function.comp_apply] at hy
+    obtain ⟨i,hi⟩ := hy
+    specialize h i hi.1
+    dsimp [LC_eval, e, BoolToZ] at hi
+    rw [← hi.2]
+    simp only [ite_eq_left_iff]
+    exact fun hx ↦ hx h
+  · simp only [List.prod_eq_zero_iff]
     dsimp [Apply]
     simp only [List.mem_map, Function.comp_apply]
+    push_neg at h
+    obtain ⟨i,hi⟩ := h
+    use i
+    refine' ⟨hi.1,_⟩
     dsimp [LC_eval, e, BoolToZ]
     simp only [ite_eq_right_iff]
-    use (term I ho)
-    by_contra h
-    sorry
-  dsimp
-  rw [← this]
-  dsimp [LocConstLinearEquiv, LocConstLinearEquiv₁, LocConstLinearEquiv₂,
-    LocallyConstant.LinearSumEquivProd, LocallyConstant.SumEquivProd, LocallyConstant.equivLinear]
-  rw [LocallyConstant.coe_comap_apply _ _ continuous_inr]
-  dsimp [LocallyConstant.equiv]
-  rw [LocallyConstant.coe_comap_apply _ _ (SumHomeo C hC ho).continuous]
-  rfl
-  -- obtain ⟨l,hlc⟩ := l
-  -- induction l with
-  -- | nil =>
-  --   · exfalso
+    exact hi.2
 
-  -- | cons a as ih =>
-  --   · sorry
+def GoodProducts.MaxTail (l : StartingWithMax C o) : Products (WithTop I) :=
+⟨l.val.val.tail, List.Chain'.tail l.val.prop⟩
 
-lemma GoodProducts.linearIndependent_iff_sum₃ :
-    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (Sum.elim
-    (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
-    (fun (l : GoodProducts (C1 C ho)) ↦ Products.eval C l.1)) := sorry
+lemma GoodProducts.max_eq_o_cons_tail (l : StartingWithMax C o) :
+    l.val.val = (term I ho) :: (MaxTail C l).val := by
+  rw [← List.cons_head!_tail l.prop.2.1]
+  dsimp [MaxTail]
+  congr
+  dsimp [term]
+  simp_rw [← l.prop.2.2]
+  dsimp [ord]
+  simp only [Ordinal.enum_typein]
 
-lemma GoodProducts.linearIndependent_iff_sum₄ :
-    LinearIndependent ℤ (eval C) ↔
-    LinearIndependent ℤ ((LocConstLinearEquiv C hC ho) ∘ (Sum.elim
-    (fun (l : GoodProducts (C0 C ho)) ↦ Products.eval C l.1)
-    (fun (l : GoodProducts (C1 C ho)) ↦ Products.eval C l.1)))  := by
-  rw [linearIndependent_iff_sum₃ C ho]
-  exact (LinearMap.linearIndependent_iff _ (LocConstLinearEquiv C hC ho).ker).symm
+lemma GoodProducts.max_eq_eval (l : StartingWithMax C o) :
+    Linear_CC' C hsC ho (l.val.eval C) = (MaxTail C l).eval (C' C ho) := by
+  have hl' : l.val.val = (term I ho) :: (MaxTail C l).val := max_eq_o_cons_tail C ho l
+  have hlc : ((term I ho) :: (MaxTail C l).val).Chain' (·>·)
+  · rw [← hl']
+    exact l.val.prop
+  have hl : l.val = ⟨(term I ho) :: (MaxTail C l).val, hlc⟩
+  · simp_rw [← hl']
+    rfl
+  rw [hl]
+  rw [Products.evalCons]
+  ext x
+  dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear]
+  rw [LocallyConstant.sub_apply]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+  dsimp [CC'₀, CC'₁]
+  rw [Products.eval_eq]
+  rw [Products.eval_eq]
+  rw [Products.eval_eq]
+  simp only [mul_ite, mul_one, mul_zero]
+  have hi' : ∀ i, i ∈ (MaxTail C l).val → (x.val i = SwapTrue o x.val i)
+  · intro i hi
+    dsimp [SwapTrue]
+    split_ifs with h₁
+    · exfalso
+      suffices : i < term I ho
+      · dsimp [term] at this
+        simp_rw [← h₁] at this
+        dsimp [ord] at this
+        simp only [Ordinal.enum_typein, lt_self_iff_false] at this
+      rw [← gt_iff_lt]
+      apply List.Chain.rel _ hi
+      exact hlc
+    · rfl
+  split_ifs with h₁ h₂ h₂
+  <;> dsimp [e, BoolToZ]
+  · split_ifs with hh₁ hh₂
+    · exfalso
+      rwa [mem_C'_eq_false C ho x x.prop, Bool.coe_false] at hh₂
+    · rfl
+    · exfalso
+      exact hh₁ (swapTrue_eq_true _ _)
+    · exfalso
+      exact hh₁ (swapTrue_eq_true _ _)
+  · push_neg at h₂
+    obtain ⟨i, hi⟩ := h₂
+    specialize h₁ i hi.1
+    specialize hi' i hi.1
+    exfalso
+    apply hi.2
+    rwa [hi']
+  · push_neg at h₁
+    obtain ⟨i, hi⟩ := h₁
+    specialize h₂ i hi.1
+    specialize hi' i hi.1
+    exfalso
+    apply hi.2
+    rwa [← hi']
+  · rfl
 
-lemma GoodProducts.linearIndependent_of_sums_aux :
-    LinearIndependent ℤ (eval (C0 C ho)) → LinearIndependent ℤ (eval (C1 C ho)) →
-    LinearIndependent ℤ (eval C) := by
-  intro h0 h1
-  have h := LinearIndependent.sum_prod (eval (C0 C ho)) (eval (C1 C ho)) h0 h1
-  rw [linearIndependent_iff_sum C o hsC]
-  dsimp [eval] at h
-  rw [Products.eval_proj0 C hC ho, Products.eval_proj1 C hC ho] at h
-  rw [linearIndependent_sum] at h
-  simp only [Sum.elim_comp_inl, Sum.elim_comp_inr] at h
+lemma GoodProducts.max_eq_eval_unapply :
+    (Linear_CC' C hsC ho) ∘ (fun (l : StartingWithMax C o) ↦ Products.eval C l.val) =
+    (fun l ↦ (MaxTail C l).eval (C' C ho)) := by
+  ext1 l
+  exact max_eq_eval _ _ _ _
+
+lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o) : (MaxTail C l).isGood (C' C ho) := by
   sorry
-  -- rw [Sum.comp_elim]
-  -- suffices hs : (LocConstLinearEquiv C hC ho) ∘ (fun (l : GoodProducts (C0 C ho))  ↦ l.val.eval C) =
-  --   (LinearIndependent.ProdInl ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
-  --   (LocallyConstant { i // i ∈ (C1 C ho) } ℤ)).toFun ∘ (eval (C0 C ho)) ∧
-  --   (LocConstLinearEquiv C hC ho) ∘ (fun (l : GoodProducts (C1 C ho))  ↦ l.val.eval C) =
-  --   (LinearIndependent.ProdInr ℤ (LocallyConstant { i // i ∈ C0 C ho } ℤ)
-  --   (LocallyConstant { i // i ∈ (C1 C ho) } ℤ)).toFun ∘ (eval (C1 C ho))
-  -- · rwa [hs.1, hs.2]
-  -- constructor
-  -- · ext l x
-  --   · dsimp [eval]
-  --     rw [Products.eval_proj0 C hC ho]
-  --     rfl
-  --   · dsimp [eval]
-  --     rw [Products.eval_proj0 C hC ho]
-  --     dsimp [LinearIndependent.ProdInl, Products.eval]
-  --     sorry
-  -- · ext l x
-  --   · sorry
-  --   · dsimp [eval ]
-  --     rw [Products.eval_proj1 C hC ho]
-  --     rfl
 
-def ResHomeo1 : {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ (Res (C1 C ho) o)} := sorry
+lemma Products.head_lt_ord_of_isGood' {l : Products (WithTop I)}
+    (h : l.isGood (C' C ho)) : l.val ≠ [] → ord I (l.val.head!) < o := by
+  intro hn
+  by_contra h'
+  apply h
+  obtain ⟨l,hl⟩ := l
+  dsimp at hn
+  have hl' : List.Chain' (·>·) (l.head! :: l.tail)
+  · rw [List.cons_head!_tail hn]
+    exact hl
+  have : (⟨l,hl⟩ : Products (WithTop I)) = ⟨l.head! :: l.tail, hl'⟩
+  · simp_rw [List.cons_head!_tail hn]
+  rw [this, evalCons (C' C ho) hl']
+  have eZero : e (C' C ho) (List.head! l) = 0
+  · dsimp [e]
+    ext ⟨f,hf⟩
+    dsimp [BoolToZ]
+    dsimp [C',Res, ProjOrd] at hf
+    obtain ⟨g, hg⟩ := hf.2
+    rw [← hg.2]
+    split_ifs
+    · exfalso
+      assumption
+    · rfl
+    · exfalso
+      assumption
+    · rfl
+  rw [eZero]
+  simp only [zero_mul, Submodule.zero_mem]
+
+lemma GoodProducts.cons_o_chain' (l : GoodProducts (C' C ho)) :
+    (term I ho :: l.val.val).Chain' (·>·) := by
+  by_cases hl : l.val.val = []
+  · rw [hl]
+    simp only [List.chain'_singleton]
+  · rw [List.chain'_cons']
+    refine' ⟨_,l.val.prop⟩
+    intro y hy
+    have hy' := List.eq_cons_of_mem_head? hy
+    have h := Products.head_lt_ord_of_isGood' C ho l.prop hl
+    rw [hy'] at h
+    dsimp [term]
+    rw [← List.head!_cons y (List.tail l.val.val)]
+    simp only [gt_iff_lt]
+    rw [← Ordinal.typein_lt_typein (·<·)]
+    dsimp [ord] at h
+    simpa only [List.head!_cons, Ordinal.typein_enum]
+
+
+lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
+    ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ StartingWithMax C o := by
+  dsimp [StartingWithMax]
+  refine' ⟨_,_,_⟩
+  · sorry
+  · simp only [not_false_eq_true]
+  · dsimp [ord, term]
+    simp only [Ordinal.typein_enum]
 
 noncomputable
-def LocConstResLinearEquiv : LocallyConstant {i // i ∈ (C1 C ho)} ℤ ≃ₗ[ℤ]
-    LocallyConstant {i // i ∈ (Res (C1 C ho) o)} ℤ :=
-  LocallyConstant.equivLinear (ResHomeo1 C ho)
+def GoodProducts.StartingWithMaxEquivGood' : StartingWithMax C o ≃ GoodProducts (C' C ho) :=
+{ toFun := fun l ↦ ⟨MaxTail C l, maxTail_isGood C ho l⟩
+  invFun := fun l ↦ ⟨⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩,
+    cons_o_mem_startingWithMax C ho l⟩
+  left_inv := by
+    intro l
+    dsimp
+    congr
+    exact (max_eq_o_cons_tail _ _ _).symm
+  right_inv := by
+    intro l
+    rfl }
 
-lemma GoodProducts.linearIndependent_iff_res : LinearIndependent ℤ (eval (C1 C ho)) ↔
-    LinearIndependent ℤ (eval (Res (C1 C ho) o)) := sorry
+lemma GoodProducts.hw :
+    LinearIndependent ℤ (eval (C' C ho)) ↔ LinearIndependent ℤ (w C hsC ho) := by
+  dsimp [w, u, w']
+  rw [max_eq_eval_unapply C hsC ho]
+  exact (linearIndependent_equiv (StartingWithMaxEquivGood' C ho)).symm
 
 end Successor
 
@@ -2548,7 +2807,18 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
     intro C hC hsC
     by_cases hnC : Nonempty C
     · by_cases ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)
-      · sorry
+      · rw [linearIndependent_iff_sum C o hsC]
+        suffices : LinearIndependent ℤ (u C o)
+        · exact this
+        -- Why so slow?
+        refine' ModuleCat.linearIndependent_shortExact _ _ _
+            (LocallyConstant.ShortExact C hsC ho) (huv C o) (huw C hsC ho)
+        · exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
+        · rw [← hw C hsC ho]
+          exact h (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
+        · exact injective_u C o hsC
+        -- (LocallyConstant.ShortExact C ho)
+        -- (injective_u C o)
         -- New approach -/
         -- apply linearIndependent_of_sums_aux C hsC ho
         -- · exact h (C0 C ho) (isClosed_C0 _ hC _) (support_C0 _ hsC _)
