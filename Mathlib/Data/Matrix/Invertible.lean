@@ -10,6 +10,9 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+-- Porting note: TODO -- check the imports
 
 /-! # Extra lemmas about invertible matrices
 
@@ -124,4 +127,3 @@ def Invertible.matrixMulRight (a : Matrix n n α) {b : Matrix n n α} (ha : Inve
   left_inv hb := Subsingleton.elim _ _
   right_inv hab := Subsingleton.elim _ _
 #align invertible.matrix_mul_right Invertible.matrixMulRight
-
