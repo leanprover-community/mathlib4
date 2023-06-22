@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.SolveByElim
-import Mathbin.Tactic.Interactive
+import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Interactive
 
 namespace Tactic
 
@@ -18,8 +18,7 @@ namespace Hint
 /-- An attribute marking a `tactic unit` or `tactic string` which should be used by the `hint`
 tactic. -/
 @[user_attribute]
-unsafe def hint_tactic_attribute : user_attribute
-    where
+unsafe def hint_tactic_attribute : user_attribute where
   Name := `hint_tactic
   descr := "A tactic that should be tried by `hint`."
 #align tactic.hint.hint_tactic_attribute tactic.hint.hint_tactic_attribute
