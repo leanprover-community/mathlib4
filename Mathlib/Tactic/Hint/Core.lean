@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Tactic.SolveByElim
+import Lean
+import Std
 
 /-!
 # Hint tactic
@@ -22,29 +23,13 @@ initialize hintExtension : SimplePersistentEnvExtension Syntax.Tactic (Array Syn
 /-- `add_hint_tactic t` runs the tactic `t` whenever `hint` is invoked.
 The typical use case is `add_hint_tactic "foo"` for some interactive tactic `foo`.
 -/
-elab "add_hint_tactic" tac:tactic : command => do
+elab (name := addHintTactic) "add_hint_tactic " tac:tactic : command => do
   modifyEnv fun env => hintExtension.addEntry env tac
 
+initialize
+  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``addHintTactic
+
 /-
-add_hint_tactic infer_param
-
-add_hint_tactic dsimp at *
-
-add_hint_tactic simp at *
-
--- TODO hook up to squeeze_simp?
-add_hint_tactic fconstructor
-
-add_hint_tactic injections
-
-add_hint_tactic solve_by_elim
-
-add_hint_tactic unfold_coes
-
-add_hint_tactic unfold_aux
-
-end Hint
-
 /-- Report a list of tactics that can make progress against the current goal,
 and for each such tactic, the number of remaining goals afterwards.
 -/
