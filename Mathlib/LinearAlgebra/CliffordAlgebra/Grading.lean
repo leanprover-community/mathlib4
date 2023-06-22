@@ -15,7 +15,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 /-!
 # Results about the grading structure of the clifford algebra
 
-The main result is `clifford_algebra.graded_algebra`, which says that the clifford algebra is a
+The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford algebra is a
 ℤ₂-graded algebra (or "superalgebra").
 -/
 
@@ -76,8 +76,8 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   mul_mem _i _j _p _q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
 #align clifford_algebra.even_odd.graded_monoid CliffordAlgebra.evenOdd.gradedMonoid
 
-/-- A version of `clifford_algebra.ι` that maps directly into the graded structure. This is
-primarily an auxiliary construction used to provide `clifford_algebra.graded_algebra`. -/
+/-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
+primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
 -- porting note: added `protected`
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
   DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
@@ -132,8 +132,8 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
-    -- the proof from here onward is mostly similar to the `tensor_algebra` case, with some extra
-    -- handling for the `supr` in `even_odd`.
+    -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
+    -- handling for the `iSup` in `even_odd`.
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
