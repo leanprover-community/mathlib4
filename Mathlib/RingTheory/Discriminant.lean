@@ -21,27 +21,27 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 
 ## Main definition
 
-* `algebra.discr A b` : the discriminant of `b : ι → B`.
+* `Algebra.discr A b` : the discriminant of `b : ι → B`.
 
 ## Main results
 
-* `algebra.discr_zero_of_not_linear_independent` : if `b` is not linear independent, then
-  `algebra.discr A b = 0`.
-* `algebra.discr_of_matrix_vec_mul` and `discr_of_matrix_mul_vec` : formulas relating
-  `algebra.discr A ι b` with `algebra.discr A ((P.map (algebra_map A B)).vec_mul b)` and
-  `algebra.discr A ((P.map (algebra_map A B)).mul_vec b)`.
-* `algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
-  `algebra.discr K b ≠ 0`.
-* `algebra.discr_eq_det_embeddings_matrix_reindex_pow_two` : if `L/K` is a field extension and
+* `Algebra.discr_zero_of_not_linearIndependent` : if `b` is not linear independent, then
+  `Algebra.discr A b = 0`.
+* `Algebra.discr_of_matrix_vecMul` and `Algebra.discr_of_matrix_mulVec` : formulas relating
+  `Algebra.discr A ι b` with `Algebra.discr A ((P.map (algebraMap A B)).vecMul b)` and
+  `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`.
+* `Algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
+  `Algebra.discr K b ≠ 0`.
+* `Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two` : if `L/K` is a field extension and
   `b : ι → L`, then `discr K b` is the square of the determinant of the matrix whose `(i, j)`
   coefficient is `σⱼ (b i)`, where `σⱼ : L →ₐ[K] E` is the embedding in an algebraically closed
   field `E` corresponding to `j : ι` via a bijection `e : ι ≃ (L →ₐ[K] E)`.
-* `algebra.discr_of_power_basis_eq_prod` : the discriminant of a power basis.
-* `discr_is_integral` : if `K` and `L` are fields and `is_scalar_tower R K L`, is `b : ι → L`
-  satisfies ` ∀ i, is_integral R (b i)`, then `is_integral R (discr K b)`.
-* `discr_mul_is_integral_mem_adjoin` : let `K` be the fraction field of an integrally closed domain
-  `R` and let `L` be a finite separable extension of `K`. Let `B : power_basis K L` be such that
-  `is_integral R B.gen`. Then for all, `z : L` we have
+* `Algebra.discr_powerBasis_eq_prod` : the discriminant of a power basis.
+* `Algebra.discr_isIntegral` : if `K` and `L` are fields and `IsScalarTower R K L`, if
+  `b : ι → L` satisfies ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
+* `Algebra.discr_mul_isIntegral_mem_adjoin` : let `K` be the fraction field of an integrally
+  closed domain `R` and let `L` be a finite separable extension of `K`. Let `B : PowerBasis K L`
+  be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
   `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`.
 
 ## Implementation details
@@ -66,7 +66,7 @@ variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 section Discr
 
 /-- Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define
-`discr A ι b` as the determinant of `trace_matrix A ι b`. -/
+`discr A ι b` as the determinant of `traceMatrix A ι b`. -/
 -- Porting note: using `[DecidableEq ι]` instead of `by classical...` did not work in
 -- mathlib3.
 noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
@@ -90,7 +90,7 @@ theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.
   classical rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 #align algebra.discr_reindex Algebra.discr_reindex
 
-/-- If `b` is not linear independent, then `algebra.discr A b = 0`. -/
+/-- If `b` is not linear independent, then `Algebra.discr A b = 0`. -/
 theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
   classical
@@ -109,16 +109,16 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
 
 variable {A}
 
-/-- Relation between `algebra.discr A ι b` and
-`algebra.discr A ((P.map (algebra_map A B)).vec_mul b)`. -/
+/-- Relation between `Algebra.discr A ι b` and
+`Algebra.discr A ((P.map (algebraMap A B)).vecMul b)`. -/
 theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
     discr A ((P.map (algebraMap A B)).vecMul b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_vecMul, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_vec_mul Algebra.discr_of_matrix_vecMul
 
-/-- Relation between `algebra.discr A ι b` and
-`algebra.discr A ((P.map (algebra_map A B)).mul_vec b)`. -/
+/-- Relation between `Algebra.discr A ι b` and
+`Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`. -/
 theorem discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
     discr A ((P.map (algebraMap A B)).mulVec b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_mulVec, det_mul, det_mul, det_transpose, mul_comm, ←
@@ -135,7 +135,7 @@ variable [Algebra K L] [Algebra K E]
 
 variable [Module.Finite K L] [IsAlgClosed E]
 
-/-- Over a field, if `b` is a basis, then `algebra.discr K b ≠ 0`. -/
+/-- Over a field, if `b` is a basis, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
   cases isEmpty_or_nonempty ι
@@ -153,7 +153,7 @@ theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
-/-- Over a field, if `b` is a basis, then `algebra.discr K b` is a unit. -/
+/-- Over a field, if `b` is a basis, then `Algebra.discr K b` is a unit. -/
 theorem discr_isUnit_of_basis [IsSeparable K L] (b : Basis ι K L) : IsUnit (discr K b) :=
   IsUnit.mk0 _ (discr_not_zero_of_basis _ _)
 #align algebra.discr_is_unit_of_basis Algebra.discr_isUnit_of_basis
@@ -180,7 +180,7 @@ theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparab
   rw [← prod_pow]
 #align algebra.discr_power_basis_eq_prod Algebra.discr_powerBasis_eq_prod
 
-/-- A variation of `of_power_basis_eq_prod`. -/
+/-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       ∏ i : Fin pb.dim, ∏ j in Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
@@ -191,7 +191,7 @@ theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
 
 local notation "n" => finrank K L
 
-/-- A variation of `of_power_basis_eq_prod`. -/
+/-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       (-1) ^ (n * (n - 1) / 2) *
@@ -288,8 +288,8 @@ section Integral
 
 variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
 
-/-- If `K` and `L` are fields and `is_scalar_tower R K L`, and `b : ι → L` satisfies
-` ∀ i, is_integral R (b i)`, then `is_integral R (discr K b)`. -/
+/-- If `K` and `L` are fields and `IsScalarTower R K L`, and `b : ι → L` satisfies
+` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`. -/
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
   classical
   rw [discr_def]
@@ -297,7 +297,7 @@ theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsInte
 #align algebra.discr_is_integral Algebra.discr_isIntegral
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
-`∀ i j, is_integral ℤ (b.to_matrix b' i j)` and `∀ i j, is_integral ℤ (b'.to_matrix b i j)` then
+`∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
 `discr ℚ b = discr ℚ b'`. -/
 theorem discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K] {b : Basis ι ℚ K}
     {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
@@ -330,7 +330,7 @@ theorem discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K] {b : Basis �
 #align algebra.discr_eq_discr_of_to_matrix_coeff_is_integral Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral
 
 /-- Let `K` be the fraction field of an integrally closed domain `R` and let `L` be a finite
-separable extension of `K`. Let `B : power_basis K L` be such that `is_integral R B.gen`.
+separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R B.gen`.
 Then for all, `z : L` that are integral over `R`, we have
 `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`. -/
 theorem discr_mul_isIntegral_mem_adjoin [IsDomain R] [IsSeparable K L] [IsIntegrallyClosed R]
