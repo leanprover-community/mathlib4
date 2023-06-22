@@ -16,7 +16,7 @@ import Mathlib.Data.Matrix.Basic
 Many of the `Invertible` lemmas are about `*`; this restates them to be about `⬝`.
 
 For lemmas about the matrix inverse in terms of the determinant and adjugate, see `Matrix.inv`
-in `LinearAlgebra/Matrix/NonSingularInverse.lean`.
+in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
 -/
 
 
@@ -65,7 +65,7 @@ protected def invertibleMul (A B : Matrix n n α) [Invertible A] [Invertible B] 
   { invertibleMul _ _ with invOf := ⅟ B ⬝ ⅟ A }
 #align matrix.invertible_mul Matrix.invertibleMul
 
-/-- A copy of `invertible.mul` using `⬝` not `*`.-/
+/-- A copy of `Invertible.mul` using `⬝` not `*`.-/
 @[reducible]
 def _root_.Invertible.matrixMul {A B : Matrix n n α} (_ : Invertible A) (_ : Invertible B) :
     Invertible (A ⬝ B) :=
