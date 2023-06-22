@@ -8,8 +8,8 @@ Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.CliffordAlgebra.Basic
-import Mathbin.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.LinearAlgebra.Alternating
 
 /-!
 # Exterior Algebras
@@ -197,8 +197,7 @@ theorem toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
 
 As an implementation detail, we implement this using `triv_sq_zero_ext` which has a suitable
 algebra structure. -/
-def ιInv : ExteriorAlgebra R M →ₗ[R] M :=
-  by
+def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp to_triv_sq_zero_ext.to_linear_map
@@ -222,8 +221,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 #align exterior_algebra.ι_eq_zero_iff ExteriorAlgebra.ι_eq_zero_iff
 
 @[simp]
-theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 :=
-  by
+theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
   refine' ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -236,8 +234,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 #align exterior_algebra.ι_eq_algebra_map_iff ExteriorAlgebra.ι_eq_algebraMap_iff
 
 @[simp]
-theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 :=
-  by
+theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
   rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne.def, ι_eq_algebra_map_iff]
   exact one_ne_zero ∘ And.right
 #align exterior_algebra.ι_ne_one ExteriorAlgebra.ι_ne_one
@@ -245,8 +242,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 :=
 /-- The generators of the exterior algebra are disjoint from its scalars. -/
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
-      (1 : Submodule R (ExteriorAlgebra R M)) :=
-  by
+      (1 : Submodule R (ExteriorAlgebra R M)) := by
   rw [Submodule.disjoint_def]
   rintro _ ⟨x, hx⟩ ⟨r, rfl : algebraMap _ _ _ = _⟩
   rw [ι_eq_algebra_map_iff x] at hx 
@@ -261,8 +257,7 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
-    (ι R <| f i) * (List.ofFn fun i => ι R <| f i).Prod = 0 :=
-  by
+    (ι R <| f i) * (List.ofFn fun i => ι R <| f i).Prod = 0 := by
   induction' n with n hn
   · exact i.elim0
   · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
@@ -286,8 +281,7 @@ def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
   {-- one of the repeated terms is on the left
     -- ignore the left-most term and induct on the remaining ones, decrementing indices
     F with
-    map_eq_zero_of_eq' := fun f x y hfxy hxy =>
-      by
+    map_eq_zero_of_eq' := fun f x y hfxy hxy => by
       rw [MultilinearMap.compLinearMap_apply, MultilinearMap.mkPiAlgebraFin_apply]
       clear F
       wlog h : x < y
