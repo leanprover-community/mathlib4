@@ -136,8 +136,7 @@ theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : �
   obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
   exact exists_rat_eq_nth_convergent v n
   have : v = (↑q : K) := Eq.trans v_eq_conv conv_eq_q
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-  exact ⟨q, this⟩
+  use q, this
 #align generalized_continued_fraction.exists_rat_eq_of_terminates GeneralizedContinuedFraction.exists_rat_eq_of_terminates
 
 end RatOfTerminates
