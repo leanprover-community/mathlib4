@@ -359,12 +359,13 @@ instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
   @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion_complete_space IsDedekindDomain.HeightOneSpectrum.adicCompletion_completeSpace
 
-instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
-  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-
+-- Porting note: replaced by `Coe`
 -- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
 --   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
--- #align is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t IsDedekindDomain.HeightOneSpectrum.AdicCompletion.hasLiftT
+#noalign is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t
+
+instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
+  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
 /-- The ring of integers of `adic_completion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
