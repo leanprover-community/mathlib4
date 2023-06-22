@@ -898,7 +898,8 @@ variable (u : Rˣ) (r s t : R)
 /-- The elliptic curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
-@[simps]
+--Porting note: was just `@[simps]`
+@[simps (config := { rhsMd := .default}) Δ' a₁ a₂ a₃ a₄ a₆]
 def variableChange : EllipticCurve R :=
   ⟨E.toWeierstrassCurve.variableChange u r s t, u⁻¹ ^ 12 * E.Δ', by
     rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
@@ -929,7 +930,8 @@ section BaseChange
 variable (A : Type v) [CommRing A] [Algebra R A]
 
 /-- The elliptic curve over `R` base changed to `A`. -/
-@[simps]
+--Porting note: was just `@[simps]`
+@[simps (config := { rhsMd := .default}) Δ' a₁ a₂ a₃ a₄ a₆]
 def baseChange : EllipticCurve A :=
   ⟨E.toWeierstrassCurve.baseChange A, Units.map (↑(algebraMap R A)) E.Δ',
     by simp only [Units.coe_map, coe_Δ', E.baseChange_Δ]; rfl⟩
