@@ -57,11 +57,11 @@ In this example, the new goal can be solved using `ring`.
 
 The `using 2` indicates it should iterate the congruence algorithm up to two times,
 where `convert e` would use an unrestricted number of iterations and lead to two
-impossible goals: ` ⊢ HAdd.hAdd = HMul.hMul` and ` ⊢ n = 2`.
+impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
 
 A variant configuration is `convert (config := .unfoldSameFun) e`, which only equates function
 applications for the same function (while doing so at the higher `default` transparency).
-This gives the same goal of ` ⊢ n + n = 2 * n` without needing `using 2`.
+This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
@@ -74,13 +74,13 @@ Limiting the depth of recursion can help with this. For example, `convert h usin
 in this case.
 
 The syntax `convert ← e` will reverse the direction of the new goals
-(producing ` ⊢ 2 * n = n + n` in this example).
+(producing `⊢ 2 * n = n + n` in this example).
 
 Internally, `convert e` works by creating a new goal asserting that
 the goal equals the type of `e`, then simplifying it using
 `congr!`. The syntax `convert e using n` can be used to control the
 depth of matching (like `congr! n`). In the example, `convert e using 1`
-would produce a new goal ` ⊢ n + n + 1 = 2 * n + 1`.
+would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
 
 Refer to the `congr!` tactic to understand the congruence operations. One of its many
 features is that if `x y : t` and an instance `Subsingleton t` is in scope,

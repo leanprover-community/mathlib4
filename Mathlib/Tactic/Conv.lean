@@ -28,8 +28,8 @@ macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
 
 /--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
-  which proves the goal ` ⊢ p`.
-* `discharge` without argument returns ` ⊢ p` as a subgoal.
+  which proves the goal `⊢ p`.
+* `discharge` without argument returns `⊢ p` as a subgoal.
 -/
 syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
 

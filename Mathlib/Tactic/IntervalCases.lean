@@ -46,7 +46,7 @@ structure IntervalCasesSubgoal where
   rhs : Expr
   /-- The numeric value of the target expression -/
   value : Int
-  /-- The new subgoal, of the form ` ⊢ x = rhs → tgt` -/
+  /-- The new subgoal, of the form `⊢ x = rhs → tgt` -/
   goal : MVarId
 
 /--
@@ -256,7 +256,7 @@ def intMethods : Methods where
 `intervalCases` proves goal `g` by splitting into cases for each integer between the given bounds.
 
 Parameters:
-* `g`: the goal, which can have any type ` ⊢ tgt` (it works in both proofs and programs)
+* `g`: the goal, which can have any type `⊢ tgt` (it works in both proofs and programs)
 * `e`: the scrutinee, the expression we are proving is bounded between integers
 * `e'`: a version of `e` used for error messages. (This is used by the `interval_cases` frontend
   tactic because it uses a fresh variable for `e`, so it is more helpful to show the
@@ -273,7 +273,7 @@ Parameters:
 Returns an array of `IntervalCasesSubgoal`, one per subgoal. A subgoal has the following fields:
 * `rhs`: the numeral expression for this case
 * `value`: the integral value of `rhs`
-* `goal`: the subgoal of type ` ⊢ e = rhs → tgt`
+* `goal`: the subgoal of type `⊢ e = rhs → tgt`
 
 Note that this tactic does not perform any substitution or introduction steps -
 all subgoals are in the same context as `goal` itself.

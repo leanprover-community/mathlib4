@@ -308,7 +308,7 @@ variable [GeneralizedHeytingAlgebra α] {a b c d : α}
 
 /- In this section, we'll give interpretations of these results in the Heyting algebra model of
 intuitionistic logic,- where `≤` can be interpreted as "validates", `⇨` as "implies", `⊓` as "and",
-`⊔` as "or", `⊥` as "false" and `⊤` as "true". Note that we confuse `→` and ` ⊢` because those are
+`⊔` as "or", `⊥` as "false" and `⊤` as "true". Note that we confuse `→` and `⊢` because those are
 the same in this logic.
 
 See also `Prop.heytingAlgebra`. -/

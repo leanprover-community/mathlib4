@@ -26,7 +26,7 @@ When called without an argument `apply_congr` will try applying all lemmas marke
 Otherwise `apply_congr e` will apply the lemma `e`.
 
 Recall that a goal that appears as `∣ X` in `conv` mode
-represents a goal of ` ⊢ X = ?m`,
+represents a goal of `⊢ X = ?m`,
 i.e. an equation with a metavariable for the right hand side.
 
 To successfully use `apply_congr e`, `e` will need to be an equation

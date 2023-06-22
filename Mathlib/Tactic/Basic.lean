@@ -106,11 +106,11 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
 /-- `change` can be used to replace the main goal or its local
 variables with definitionally equal ones.
 
-For example, if `n : ℕ` and the current goal is ` ⊢ n + 2 = 2`, then
+For example, if `n : ℕ` and the current goal is `⊢ n + 2 = 2`, then
 ```lean
 change _ + 1 = _
 ```
-changes the goal to ` ⊢ n + 1 + 1 = 2`. The tactic also applies to the local context.
+changes the goal to `⊢ n + 1 + 1 = 2`. The tactic also applies to the local context.
 If `h : n + 2 = 2` and `h' : n + 3 = 4` are in the local context, then
 ```lean
 change _ + 1 = _ at h h'

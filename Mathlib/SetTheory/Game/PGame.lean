@@ -286,7 +286,7 @@ theorem Subsequent.mk_right {xl xr} (xL : xl → PGame) (xR : xr → PGame) (j :
 #align pgame.subsequent.mk_right PGame.Subsequent.mk_right
 
 /--
-Discharges proof obligations of the form ` ⊢ Subsequent ..` arising in termination proofs
+Discharges proof obligations of the form `⊢ Subsequent ..` arising in termination proofs
 of definitions using well-founded recursion on `PGame`.
 -/
 macro "pgame_wf_tac" : tactic =>

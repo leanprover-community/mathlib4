@@ -496,7 +496,7 @@ abbrev DecorationsOf (_p : Prop) := Prop
 open Elab.Tactic
 open Meta
 
-/-- In a goal of the shape ` ⊢ DecorationsOf p`, `mk_decoration` examines
+/-- In a goal of the shape `⊢ DecorationsOf p`, `mk_decoration` examines
 the syntax of `p` and adds `NamedBinder` around universal quantifications
 to improve error messages. This tool can be used in the declaration of a
 function as follows:

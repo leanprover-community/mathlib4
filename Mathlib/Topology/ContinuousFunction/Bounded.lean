@@ -1464,7 +1464,7 @@ instance starAddMonoid : StarAddMonoid (α →ᵇ β) where
   star_add f g := ext fun x => star_add (f x) (g x)
 
 /-- The right-hand side of this equality can be parsed `star ∘ ⇑f` because of the
-instance `Pi.instStarForAll`. Upon inspecting the goal, one sees ` ⊢ ↑(star f) = star ↑f`. -/
+instance `Pi.instStarForAll`. Upon inspecting the goal, one sees `⊢ ↑(star f) = star ↑f`. -/
 @[simp]
 theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 #align bounded_continuous_function.coe_star BoundedContinuousFunction.coe_star
