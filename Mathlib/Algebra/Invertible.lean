@@ -297,11 +297,19 @@ def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Inverti
   ⟨⅟ b * ⅟ a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 #align invertible_mul invertibleMul
 
+
 @[simp]
 theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
     ⅟ (a * b) = ⅟ b * ⅟ a :=
   invOf_eq_right_inv (by simp [← mul_assoc])
 #align inv_of_mul invOf_mul
+
+/-- A copy of `invertibleMul` for dot notation. -/
+@[reducible]
+def Invertible.mul [Monoid α] {a b : α} (_ : Invertible a) (_ : Invertible b) :
+    Invertible (a * b) :=
+  invertibleMul _ _
+#align invertible.mul Invertible.mul
 
 theorem mul_right_inj_of_invertible [Monoid α] (c : α) [Invertible c] :
     a * c = b * c ↔ a = b :=
@@ -369,7 +377,7 @@ section Monoid
 
 variable [Monoid α]
 
-/-- This is the `invertible` version of `units.is_unit_units_mul` -/
+/-- This is the `Invertible` version of `Units.isUnit_units_mul` -/
 @[reducible]
 def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b
     where
@@ -380,7 +388,7 @@ def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : I
       one_mul]
 #align invertible_of_invertible_mul invertibleOfInvertibleMul
 
-/-- This is the `invertible` version of `units.is_unit_mul_units` -/
+/-- This is the `Invertible` version of `Units.isUnit_mul_units` -/
 @[reducible]
 def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a
     where
@@ -391,7 +399,7 @@ def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : I
   mul_invOf_self := by rw [← mul_assoc, mul_invOf_self]
 #align invertible_of_mul_invertible invertibleOfMulInvertible
 
-/-- `invertible_of_invertible_mul` and `invertible_mul` as an equivalence. -/
+/-- `invertibleOfInvertibleMul` and `invertibleMul` as an equivalence. -/
 @[simps]
 def Invertible.mulLeft {a : α} (_ : Invertible a) (b : α) : Invertible b ≃ Invertible (a * b)
     where
@@ -401,7 +409,7 @@ def Invertible.mulLeft {a : α} (_ : Invertible a) (b : α) : Invertible b ≃ I
   right_inv _ := Subsingleton.elim _ _
 #align invertible.mul_left Invertible.mulLeft
 
-/-- `invertible_of_mul_invertible` and `invertible_mul` as an equivalence. -/
+/-- `invertibleOfMulInvertible` and `invertibleMul` as an equivalence. -/
 @[simps]
 def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ Invertible (a * b)
     where
