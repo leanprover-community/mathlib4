@@ -438,7 +438,7 @@ such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate t
 additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l = true`), the
 corresponding integral sum is `ε`-close to the integral.
 
-If `box.integral.integration_params.bRiemann = true`, then `r c x` does not depend on `x`. If
+If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
 `ε ≤ 0`, then we use `r c x = 1`.  -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
