@@ -361,31 +361,72 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
 -/
 section CheckedArith
 
-/--
-  Alternate version of addition on bitvectors, which returns `none` on (signed/unsigned) overflow,
-  instead of wrapping
--/
-def checked_add (no_unsigned_wrap := true) (no_signed_wrap := false) (x y : Bitvec n) :
-    Option (Bitvec n) :=
-  match n with
-    | 0 => some Vector.nil
-    | _+1 =>
-        let res := adc x y false
-        let carry_out := res.head
-        let res := res.tail
+  /--
+    Checked addition of bitvectors, returns `none` on (signed/unsigned) overflow, instead of
+    wrapping
+  -/
+  def checkedAdd (x y : Bitvec n) (no_unsigned_wrap := true) (no_signed_wrap := false) :
+      Option (Bitvec n) :=
+    match n with
+      | 0 => some Vector.nil
+      | _+1 =>
+          let res := adc x y false
+          let carry_out := res.head
+          let res := res.tail
 
-        /-
-          When unsigned overflow happens, the last carry bit is set.
-          Signed overlow occured when adding two positive numbers resulted in a negative number,
-          or two negative numbers resulted in a positive number. That is, if both inputs have the
-          same sign bit, but the output has a different sign
-        -/
-        if (no_unsigned_wrap && carry_out)
-            || (no_signed_wrap && x.head == y.head && x.head != res.head)
-        then
-          none
-        else
-          some res
+          /-
+            When unsigned overflow happens, the last carry bit is set.
+            Signed overlow occured when adding two positive numbers resulted in a negative number,
+            or two negative numbers resulted in a positive number. That is, if both inputs have the
+            same sign bit, but the output has a different sign
+          -/
+          if (no_unsigned_wrap && carry_out)
+              || (no_signed_wrap && x.head == y.head && x.head != res.head)
+          then
+            none
+          else
+            some res
+
+  /--
+    Checked subtraction of bitvectors, returns `none` on (signed/unsigned) overflow, instead of
+    wrapping
+  -/
+  def checkedSub (x y : Bitvec n) (no_unsigned_wrap := true) (no_signed_wrap := false) :
+      Option (Bitvec n) :=
+    match n with
+      | 0 => some Vector.nil
+      | _+1 =>
+          let ⟨borrow_out, res⟩ := sbb x y false
+
+          /-
+            Unsigned overflow is detected with `borrow_out`. Signed overflow is detected by checking
+            whether a positive number minus a negative number resulted in a negative number,
+            or a negative number minus a positive number resulted in a positivec number.
+            That is, if the input signs differ, the output sign should match with the second operand
+          -/
+          if (no_unsigned_wrap && borrow_out)
+              || (no_signed_wrap && x.head != y.head && y.head != res.head)
+          then
+            none
+          else
+            some res
+
+
+  #check Option.bind
+
+  /--
+    Checked multiplication of bitvectors, returns `none` on (signed/unsigned) overflow, instead of
+    wrapping
+  -/
+  def checkedMul (x y : Bitvec n) (no_unsigned_wrap := true) (no_signed_wrap := false) :
+      Option (Bitvec n) :=
+    let add? x y := Bitvec.checkedAdd x y no_unsigned_wrap no_signed_wrap
+    let f r b := do
+      let op₁ ← add? r r
+      let op₂ ← add? op₁ y
+      return cond b op₂ op₁
+    (x.toList).foldlM f 0
+
 
 
 

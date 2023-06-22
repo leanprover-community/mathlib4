@@ -173,4 +173,85 @@ theorem ofFin_toFin {n} (v : Bitvec n) : ofFin (toFin v) = v := by
   rw [toFin_val, ofNat_toNat]
 #align bitvec.of_fin_to_fin Bitvec.ofFin_toFin
 
+/-!
+  ### Checked arithmetic
+-/
+section CheckedArith
+  variable (x y : Bitvec n) (nuw nsw : Bool)
+
+  section Sound
+    variable (z : Bitvec n)
+
+    /-- If `checkedAdd` returns `some ..`, then the result is the same as `add` -/
+    theorem checkedAdd_sound : checkedAdd x y nuw nsw = some z → x.add y = z := by
+      cases n <;> simp[checkedAdd]
+      split_ifs <;> simp[Bitvec.add]
+
+    /-- If `checkedSub` returns `some ..`, then the result is the same as `sub` -/
+    @[simp]
+    theorem checkedSub_sound : checkedSub x y nuw nsw = some z → x.sub y = z := by
+      cases n <;> simp[checkedSub]
+      split_ifs <;> simp[Bitvec.sub]
+
+    #check List.foldlM_eq_foldl
+
+    /-- If `checkedSub` returns `some ..`, then the result is the same as `sub` -/
+    @[simp]
+    theorem checkedMul_sound : checkedMul x y nuw nsw = some z → x.mul y = z := by
+      simp only [checkedMul, Bitvec.mul]
+      suffices ∀ c y, List.foldlM
+              (fun r b ↦ do
+                let op₁ ← checkedAdd r r nuw nsw
+                let op₂ ← checkedAdd op₁ y nuw nsw
+                pure (bif b then op₂ else op₁))
+              c (Vector.toList x) =
+            some z →
+          List.foldl (fun r b ↦ bif b then r + r + y else r + r) c (Vector.toList x) = z
+        from this 0 y
+
+      simp[bind, Option.bind, Option.map]
+      induction x, z using Vector.inductionOn₂
+      next => simp
+      next x₀ z₀ x z ih =>
+        intro c y h
+        simp_all only [List.foldlM, List.foldl, bind, Option.bind]
+        sorry
+
+  end Sound
+
+
+
+
+  /-- If both signed and unsigned wrapping are allowed, `checkedAdd` is just `add` -/
+  @[simp]
+  theorem checkedAdd_false_false : checkedAdd x y false false = some (x.add y) := by
+    cases n <;> simp[Bitvec.add, checkedAdd]
+
+  /-- If both signed and unsigned wrapping are allowed, `checkedSub` is just `sub` -/
+  @[simp]
+  theorem checkedSub_false_false : checkedSub x y false false = some (x.sub y) := by
+    cases n <;> simp[Bitvec.sub, checkedSub]
+
+
+
+  theorem List.foldlM_eq_some_foldl {f : α → β → Option α} (g : α → β → α) (h : ∀ a b, f a b = some (g a b)) :
+      List.foldlM f a xs = some (List.foldl g a xs) := by
+    rw[List.foldlM_eq_foldl]
+    induction xs generalizing a
+    next => simp[pure]
+    next hd tl ih =>
+      simp only [List.foldlM, bind, Option.bind, List.foldl, h a hd]
+      apply ih
+
+
+  /-- If both signed and unsigned wrapping are allowed, `checkedSub` is just `sub` -/
+  @[simp]
+  theorem checkedMul_false_false : checkedMul x y false false = some (x.mul y) := by
+    simp[checkedMul, Bitvec.mul]
+    apply List.foldlM_eq_some_foldl
+    rintro a ⟨⟩ <;> rfl
+
+
+end CheckedArith
+
 end Bitvec
