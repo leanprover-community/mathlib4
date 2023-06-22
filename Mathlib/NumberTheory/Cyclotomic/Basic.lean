@@ -689,9 +689,8 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
               (CyclotomicField.isCyclotomicExtension n K)).2
           x)
         (fun y hy => ?_) (fun k => ?_) ?_ ?_
-    · refine' ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, _⟩
-      simp only [OneMemClass.coe_one, map_one, mul_one]
-      rfl
+-- Porting note: the last goal was `by simpa` that now fails.
+    · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj
       obtain ⟨⟨z, w⟩, hw⟩ := this k
