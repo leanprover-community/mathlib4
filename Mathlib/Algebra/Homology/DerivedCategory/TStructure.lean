@@ -4,6 +4,37 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
+namespace CategoryTheory
+
+lemma Full.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) (hFG : Full (F ⋙ G)) (hF : EssSurj F) :
+    Full G := Functor.fullOfSurjective _ (fun X' Y' f => by
+  let φ : (F ⋙ G).obj _ ⟶ (F ⋙ G).obj _ :=
+    G.map (F.objObjPreimageIso X').hom ≫ f ≫ G.map (F.objObjPreimageIso Y').inv
+  let f' := (F ⋙ G).preimage φ
+  have hf' : G.map (F.map f') = _ := (F ⋙ G).image_preimage φ
+  refine' ⟨(F.objObjPreimageIso X').inv ≫ F.map f' ≫ (F.objObjPreimageIso Y').hom, _⟩
+  rw [G.map_comp, G.map_comp, hf']
+  simp only [Functor.comp_obj, assoc, ← G.map_comp, ← G.map_comp_assoc,
+    Iso.inv_hom_id, G.map_id, id_comp, comp_id])
+
+lemma Faithful.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) (hFG : Faithful (F ⋙ G)) (hF : EssSurj F) (hF' : Full F) :
+    Faithful G where
+  map_injective {X' Y'} := fun f₁ f₂ hf => by
+    obtain ⟨g₁, hg₁⟩ := F.map_surjective
+      ((Functor.objObjPreimageIso F X').hom ≫ f₁ ≫ (Functor.objObjPreimageIso F Y').inv)
+    obtain ⟨g₂, hg₂⟩ := F.map_surjective
+      ((Functor.objObjPreimageIso F X').hom ≫ f₂ ≫ (Functor.objObjPreimageIso F Y').inv)
+    suffices g₁ = g₂ by
+      rw [← cancel_mono (F.objObjPreimageIso Y').inv,
+        ← cancel_epi (F.objObjPreimageIso X').hom, ← hg₁, ← hg₂, this]
+    apply (F ⋙ G).map_injective
+    dsimp
+    simp only [hg₁, hg₂, G.map_comp, hf]
+
+end CategoryTheory
+
 namespace DerivedCategory
 
 variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory C]
@@ -172,36 +203,121 @@ lemma singleFunctor_obj_mem_heart (X : C) :
 
 variable (C)
 
-noncomputable def singleFunctor₀ToHeart : C ⥤ (t : TStructure (DerivedCategory C)).Heart :=
+namespace HeartEquivalence
+
+variable {C}
+
+noncomputable def functor : (t : TStructure (DerivedCategory C)).Heart ⥤ C :=
+  t.ιHeart ⋙ homologyFunctor C 0
+
+noncomputable def inverse : C ⥤ (t : TStructure (DerivedCategory C)).Heart :=
   FullSubcategory.lift _ (singleFunctor C 0) singleFunctor_obj_mem_heart
 
-noncomputable instance : Full (singleFunctor₀ToHeart C) := Functor.fullOfSurjective  _ (by
+noncomputable def inverseCompιHeart : (inverse : C ⥤ _) ⋙ t.ιHeart ≅ singleFunctor C 0 :=
+  FullSubcategory.lift_comp_inclusion _ _ _
+
+noncomputable instance : Full (inverse : C ⥤ _) := Functor.fullOfSurjective  _ (by
   intro A B (φ : (singleFunctor C 0).obj A ⟶ (singleFunctor C 0).obj B)
   obtain ⟨f, rfl⟩ := (singleFunctor C 0).map_surjective φ
   exact ⟨_, rfl⟩)
 
-instance : Faithful (singleFunctor₀ToHeart C) := ⟨by
+instance : Faithful (inverse : C ⥤ _) := ⟨by
   intro A B f₁ f₂ h
   exact (singleFunctor C 0).map_injective h⟩
 
-instance : EssSurj (singleFunctor₀ToHeart C) := ⟨fun X => by
+instance : EssSurj (inverse : C ⥤ _) := ⟨fun X => by
   have : X.obj.IsLE 0 := X.2.1
   have : X.obj.IsGE 0 := X.2.2
   obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X.obj 0
   exact ⟨A, ⟨t.ιHeart.preimageIso e.symm⟩⟩⟩
 
-noncomputable instance : IsEquivalence (singleFunctor₀ToHeart C) :=
-  Equivalence.ofFullyFaithfullyEssSurj _
+noncomputable def counitIso : inverse ⋙ functor ≅ 𝟭 C :=
+  (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight inverseCompιHeart _ ≪≫ singleFunctorCompHomologyFunctorIso C 0
 
--- this should be redone with better definitional properties for the inverse
-noncomputable def singleFunctor₀ToHeartEquivalence :
-    C ≌ (t : TStructure (DerivedCategory C)).Heart :=
-  Functor.asEquivalence (singleFunctor₀ToHeart C)
+noncomputable instance : Full (functor : _ ⥤ C) :=
+  Full.ofCompLeft (inverse : C ⥤ _) functor (Full.ofIso counitIso.symm) inferInstance
+
+instance : Faithful (functor : _ ⥤ C) :=
+  Faithful.ofCompLeft (inverse : C ⥤ _) functor (Faithful.of_iso counitIso.symm)
+    inferInstance inferInstance
+
+noncomputable def unitIso :
+    𝟭 (t : TStructure (DerivedCategory C)).Heart ≅ functor ⋙ inverse :=
+  natIsoOfCompFullyFaithful functor
+    (Functor.leftUnitor _ ≪≫ (Functor.rightUnitor _).symm ≪≫
+    isoWhiskerLeft _ counitIso.symm ≪≫ (Functor.associator _ _ _).symm)
+
+@[simp]
+lemma functor_map_unitIso_hom_app (X : (t : TStructure (DerivedCategory C)).Heart) :
+    functor.map (unitIso.hom.app X) = counitIso.inv.app (functor.obj X) := by
+  simp [unitIso]
+
+@[simp]
+lemma functor_map_unitIso_inv_app (X : (t : TStructure (DerivedCategory C)).Heart) :
+    functor.map (unitIso.inv.app X) = counitIso.hom.app (functor.obj X) := by
+  simp [unitIso]
+
+end HeartEquivalence
+
+@[simps]
+noncomputable def heartEquivalence :
+    (t : TStructure (DerivedCategory C)).Heart ≌ C where
+  functor := HeartEquivalence.functor
+  inverse := HeartEquivalence.inverse
+  unitIso := HeartEquivalence.unitIso
+  counitIso := HeartEquivalence.counitIso
+
+noncomputable def heartEquivalenceInverseCompιHeart :
+    (heartEquivalence C).inverse ⋙ t.ιHeart ≅ singleFunctor C 0 :=
+  HeartEquivalence.inverseCompιHeart
+
+variable {C}
+
+lemma isIso_homologyFunctor_map_truncLEι_app (X : DerivedCategory C) (a n : ℤ) (hn : n ≤ a) :
+    IsIso ((homologyFunctor C n).map ((t.truncLEι a).app X )) := by
+  sorry
+
+variable (C)
+
+lemma isIso_whiskerRight_truncLEι_homologyFunctor (a n : ℤ) (hn : n ≤ a) :
+  IsIso (whiskerRight (t.truncLEι a) (homologyFunctor C n)) := sorry
+
+noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
+    t.truncLE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
+  have := isIso_whiskerRight_truncLEι_homologyFunctor C a n hn
+  exact asIso (whiskerRight (t.truncLEι a) (homologyFunctor C n))
+
+lemma isIso_whiskerRight_truncGEπ_homologyFunctor (a n : ℤ) (hn : a ≤ n) :
+  IsIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n)) := sorry
+
+noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
+    t.truncGE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
+  have := isIso_whiskerRight_truncGEπ_homologyFunctor C a n hn
+  exact (asIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
+
+noncomputable def homologyCompFunctorIso (q : ℤ) :
+    t.homology q ⋙ (heartEquivalence C).functor ≅
+      homologyFunctor C q := by
+  refine' (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (t.homologyCompιHeart q) _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ ((homologyFunctor C 0).shiftIso q 0 q (add_zero q)) ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (truncGECompHomologyFunctorIso C q q (by rfl)) ≪≫
+    truncLECompHomologyFunctorIso C q q (by rfl)
+
+noncomputable def homologyIsoHomologyFunctorCompInverse (q : ℤ) :
+    t.homology q ≅ homologyFunctor C q ⋙ (heartEquivalence C).inverse :=
+  natIsoOfCompFullyFaithful (heartEquivalence C).functor
+    (homologyCompFunctorIso C q ≪≫ (Functor.rightUnitor _).symm ≪≫
+    isoWhiskerLeft _ (heartEquivalence C).counitIso.symm ≪≫ (Functor.associator _ _ _).symm)
 
 noncomputable def homologyιHeart (q : ℤ) :
-    t.homology q ⋙ t.ιHeart ≅ homologyFunctor C q ⋙ singleFunctor C 0 := by
-  refine' t.homologyCompιHeart q ≪≫ _
-  sorry
+    t.homology q ⋙ t.ιHeart ≅ homologyFunctor C q ⋙ singleFunctor C 0 :=
+  isoWhiskerRight (homologyIsoHomologyFunctorCompInverse C q) _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (heartEquivalenceInverseCompιHeart C).symm
 
 end TStructure
 
@@ -209,7 +325,7 @@ open DerivedCategory.TStructure
 
 variable (C)
 
-/-abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.category
 abbrev Plus := (t : TStructure (DerivedCategory C)).plus.category
 abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.category
 
@@ -217,6 +333,6 @@ variable {C}
 
 abbrev ιMinus : Minus C ⥤ DerivedCategory C := t.minus.ι
 abbrev ιPlus : Plus C ⥤ DerivedCategory C := t.plus.ι
-abbrev ιBounded : Bounded C ⥤ DerivedCategory C := t.bounded.ι-/
+abbrev ιBounded : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory
