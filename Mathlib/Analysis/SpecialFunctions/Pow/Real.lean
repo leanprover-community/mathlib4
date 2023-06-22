@@ -707,9 +707,9 @@ end Real
 
 section Tactics
 
--- /-!
--- ## Tactic extensions for real powers
--- -/
+/-!
+## Tactic extensions for real powers
+-/
 
 
 -- namespace NormNum

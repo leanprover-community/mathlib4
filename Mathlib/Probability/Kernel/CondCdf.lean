@@ -991,7 +991,8 @@ theorem measure_condCdf_univ (ρ : Measure (α × ℝ)) (a : α) : (condCdf ρ a
   exact StieltjesFunction.measure_univ _ (tendsto_condCdf_atBot ρ a) (tendsto_condCdf_atTop ρ a)
 #align probability_theory.measure_cond_cdf_univ ProbabilityTheory.measure_condCdf_univ
 
-instance (ρ : Measure (α × ℝ)) (a : α) : IsProbabilityMeasure (condCdf ρ a).measure :=
+instance instIsProbabilityMeasure (ρ : Measure (α × ℝ)) (a : α) :
+    IsProbabilityMeasure (condCdf ρ a).measure :=
   ⟨measure_condCdf_univ ρ a⟩
 
 /-- The function `a ↦ (condCdf ρ a).measure` is measurable. -/

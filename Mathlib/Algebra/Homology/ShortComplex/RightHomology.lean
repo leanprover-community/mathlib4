@@ -16,7 +16,7 @@ that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morph
 to the kernel of the induced map `g' : Q ⟶ X₃`.
 
 When such a `S.RightHomologyData` exists, we shall say that `[S.HasRightHomology]`
-and we define `S.rightHomology` to be the `H` field of a chosen right homology data.
+and (TODO) we define `S.rightHomology` to be the `H` field of a chosen right homology data.
 Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
@@ -62,8 +62,9 @@ namespace RightHomologyData
 
 /-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
-noncomputable def ofHasCokernelOfHasKernel [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.RightHomologyData :=
+noncomputable def ofHasCokernelOfHasKernel
+    [HasCokernel S.f] [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    S.RightHomologyData :=
 { Q := cokernel S.f,
   H := kernel (cokernel.desc S.f S.g S.zero),
   p := cokernel.π _,
@@ -85,12 +86,12 @@ instance : Mono h.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
 /-- Any morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends
 to a morphism `Q ⟶ A` -/
 def descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.Q ⟶ A :=
-h.hp.desc (CokernelCofork.ofπ k hk)
+  h.hp.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
 lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) :
   h.p ≫ h.descQ k hk = k :=
-h.hp.fac _ WalkingParallelPair.one
+  h.hp.fac _ WalkingParallelPair.one
 
 /-- The morphism from the (right) homology attached to a morphism
 `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0`. -/
@@ -208,9 +209,11 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
 
 end RightHomologyData
 
+/-- A short complex `S` has right homology when there exists a `S.RightHomologyData` -/
 class HasRightHomology : Prop :=
 (condition : Nonempty S.RightHomologyData)
 
+/-- A chosen `S.RightHomologyData` for a short complex `S` that has right homology -/
 noncomputable def rightHomologyData [HasRightHomology S] :
   S.RightHomologyData := HasRightHomology.condition.some
 
