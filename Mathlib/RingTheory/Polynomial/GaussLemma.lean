@@ -103,7 +103,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
   refine' ⟨map algeq.toAlgHom.toRingHom _, _⟩
-  · use Classical.choose H
+  · use! Classical.choose H
   · rw [map_map, this]
     exact Classical.choose_spec H
 set_option linter.uppercaseLean3 false in

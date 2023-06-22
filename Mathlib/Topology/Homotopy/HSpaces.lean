@@ -98,8 +98,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    -- porting note: was `use ⟨G, hG⟩`
-    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
+    use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
     · rintro ⟨x, y⟩
@@ -118,8 +117,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.hmulE.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
-    -- porting note: was `use ⟨G, hG⟩`
-    refine ⟨⟨⟨G, hG⟩, ?_, ?_⟩, ?_⟩
+    use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
     · rintro ⟨x, y⟩
