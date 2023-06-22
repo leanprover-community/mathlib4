@@ -64,6 +64,16 @@ library) include:
 - a quasi measure preserving action on `X` generates an action on `X →ₘ[μ] Y`;
 - a measure preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
 
+### Left action vs right action
+
+It is common in the literature to consider the left action given by `(c • f) a = f (c⁻¹ • a)`
+instead of the action defined in this file. However, this left action is defined only if `c` belongs
+to a group, not to a monoid, so we decided to go with the right action.
+
+The left action can be written in terms of `DomMulAct` as `(DomMulAct.mk c)⁻¹ • f`. As for higher
+level dynamics objects (orbits, invariant functions etc), they coincide for the left and for the
+right action, so lemmas can be formulated in terms of `DomMulAct`.
+
 ## Keywords
 
 group action, function, domain
