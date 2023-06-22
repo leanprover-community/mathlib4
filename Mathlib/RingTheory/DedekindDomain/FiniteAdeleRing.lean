@@ -15,11 +15,11 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `dedekind_domain.finite_integral_adeles` : product of `adic_completion_integers`, where `v`
+- `DedekindDomain.FiniteIntegralAdeles` : product of `adic_completion_integers`, where `v`
   runs over all maximal ideals of `R`.
-- `dedekind_domain.prod_adic_completions` : the product of `adic_completion`, where `v` runs over
+- `DedekindDomain.ProdAdicCompletions` : the product of `adicCompletion`, where `v` runs over
   all maximal ideals of `R`.
-- `dedekind_domain.finite_adele_ring` : The finite adèle ring of `R`, defined as the
+- `DedekindDomain.finiteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Π'_v K_v`.
 
 ## Implementation notes
@@ -65,7 +65,7 @@ end DerivedInstances
 
 local notation "R_hat" => FiniteIntegralAdeles
 
-/-- The product of all `adic_completion`, where `v` runs over the maximal ideals of `R`. -/
+/-- The product of all `adicCompletion`, where `v` runs over the maximal ideals of `R`. -/
 def ProdAdicCompletions :=
   ∀ v : HeightOneSpectrum R, v.adicCompletion K
 -- deriving NonUnitalNonAssocRing, TopologicalSpace, TopologicalRing, CommRing, Inhabited
@@ -173,7 +173,7 @@ end FiniteIntegralAdeles
 
 /-! ### The finite adèle ring of a Dedekind domain
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
-of `adic_completion` with respect to `adic_completion_integers`. We prove that it is a commutative
+of `adicCompletion` with respect to `adic_completion_integers`. We prove that it is a commutative
 ring. TODO: show that it is a topological ring with the restricted product topology. -/
 
 
@@ -277,7 +277,7 @@ end ProdAdicCompletions
 open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
-of `adic_completion` with respect to `adic_completion_integers`. -/
+of `adicCompletion` with respect to `adic_completion_integers`. -/
 noncomputable def finiteAdeleRing : Subring (K_hat R K) where
   carrier := {x : K_hat R K | x.IsFiniteAdele}
   mul_mem' hx hy := mul hx hy
