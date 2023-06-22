@@ -58,7 +58,7 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 `IsCyclotomicExtension.finite`, `IsCyclotomicExtension.numberField`,
 `IsCyclotomicExtension.finiteDimensional`, `IsCyclotomicExtension.isGalois` and
 `CyclotomicField.algebraBase` are lemmas, but they can be made local instances. Some of them are
-included in the `cyclotomic` locale.
+included in the `Cyclotomic` locale.
 
 -/
 
@@ -491,7 +491,7 @@ def algEquiv (L' : Type _) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} 
     (@IsSplittingField.algEquiv K L' _ _ _ (X ^ (n : ℕ) - 1) h₂).symm
 #align is_cyclotomic_extension.alg_equiv IsCyclotomicExtension.algEquiv
 
-scoped[cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
+scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 theorem isGalois : IsGalois K L :=
   letI := isSplittingField_X_pow_sub_one n K L
@@ -510,7 +510,7 @@ theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 #align is_cyclotomic_extension.splitting_field_cyclotomic IsCyclotomicExtension.splitting_field_cyclotomic
 
-scoped[cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
+scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
 
 end Singleton
 
