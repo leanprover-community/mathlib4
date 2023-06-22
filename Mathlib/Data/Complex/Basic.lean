@@ -365,22 +365,46 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
+section SMul
+
+variable {R : Type _} [SMul R ℝ]
+
+/- The useless `0` multiplication in `smul` is to make sure that
+`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
+instance : SMul R ℂ where
+  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
+#align complex.smul_re Complex.smul_re
+
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
+#align complex.smul_im Complex.smul_im
+
+@[simp]
+theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
+  rfl
+#align complex.real_smul Complex.real_smul
+
+end SMul
+
 -- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ :=
   { zero := (0 : ℂ)
     add := (· + ·)
     neg := Neg.neg
     sub := Sub.sub
-    nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-    zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-    zsmul_zero' := by intros; ext <;> simp
-    nsmul_zero := by intros; ext <;> simp
+    nsmul := fun n z => n • z
+    zsmul := fun n z => n • z
+    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
     nsmul_succ := by
-      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm]
+      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
+        smul_re, smul_im]
     zsmul_succ' := by
-      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm]
+      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm,
+        smul_re, smul_im]
     zsmul_neg' := by
-      intros; ext <;> simp [zsmul_neg', add_mul]
+      intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
     add_assoc := by intros; ext <;> simp [add_assoc]
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
@@ -405,6 +429,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
         show im ⟨n, 0⟩ = 0
         rfl
     one := 1 }
+
 
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
@@ -808,8 +833,8 @@ noncomputable instance instField : Field ℂ :=
 {
 /- We define `qsmul` in this way to ensure it is equal to the more general instance
 `SMul R ℝ → SMul R ℂ` found in `Data.Complex.Module`. -/
-  qsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def]
+  qsmul := fun n z => n • z
+  qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
   inv := Inv.inv
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero }
@@ -890,6 +915,9 @@ instance charZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by
     rwa [← ofReal_nat_cast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 #align complex.char_zero_complex Complex.charZero
+
+-- Test if the `ℚ` smul instance is correct.
+example : (Complex.instSMulComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
