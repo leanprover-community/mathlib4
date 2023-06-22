@@ -6,6 +6,10 @@ Authors: Alex Keizer
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 
+/-!
+  Show how bitwise negation interacts with the predefined `Bitvec` constants
+-/
+
 namespace Bitvec
 
 open Bitvec (zero one not)
