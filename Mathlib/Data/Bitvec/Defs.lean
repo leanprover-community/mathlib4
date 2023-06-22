@@ -54,7 +54,8 @@ section Constants
   #align bitvec.one Bitvec.one
 
   /-- The bitvector `1111..`, whose entries are all `1`, represents the value `-1` as a signed
-      integer, or `(2^n)-1` as an unsigned integer -/
+      integer, or `(2^n)-1` as an unsigned integer. This corresponds to the maximal unsigned value
+  -/
   def negOne (n : ℕ) : Bitvec n :=
     replicate n true
 

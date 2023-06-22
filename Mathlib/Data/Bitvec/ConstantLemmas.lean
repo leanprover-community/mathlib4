@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Alex Keizer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Keizer
+-/
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 
@@ -7,61 +12,30 @@ open Bitvec (zero one not)
 
 
 /-!
-  ### Negation
-  Show how bitwise negation relates various constants
+  ### Bitwise Negation
+  Show how bitwise negation relates the various constants
 -/
-section NegateConstants
+section Not
   @[simp]
-  theorem not_zero : not (negOne n) = zero n := by
-    ext; simp
-
-  @[simp]
-  theorem not_ones : not (zero n) = (negOne n) := by
-    ext; simp
-end NegateConstants
-
-
-
-
-section NegOne
-  private theorem toList_neg_one_aux : ∀ (n : ℕ),
-  (List.mapAccumr (fun y c ↦ (y || c, xor y c))
-    (List.replicate n false ++ [true]) false) =
-    (true, List.replicate (n+1) true)
-  | 0 => rfl
-  | n+1 => by rw [List.replicate_succ, List.cons_append, List.mapAccumr,
-    toList_neg_one_aux n]; simp
-
-
-  theorem neg_one : ∀ {n : ℕ}, (-1: Bitvec n) = Vector.replicate n true
-    | 0 => rfl
-    | n+1 => by
-      show (Bitvec.one (n+1)).neg = Vector.replicate (n+1) true
-      simp [Bitvec.neg, Bitvec.one, Vector.mapAccumr, Vector.replicate,
-        Vector.append, List.cons_append, List.mapAccumr, toList_neg_one_aux n]
-
-
-  theorem toList_neg_one : ∀ {n : ℕ}, (-1 : Bitvec n).toList = List.replicate n true := by
-    simp only [neg_one, Vector.replicate, Vector.toList_mk, forall_const, toList]
-
-  /-- The all-ones bit pattern is also spelled `-1` -/
-  @[simp]
-  theorem neg_one_eq_allOnes : (-1 : Bitvec n) = negOne n :=
-    neg_one
+  theorem not_negOne : not (negOne n) = zero n := by
+    simp[Bitvec.not, negOne, zero]
 
   @[simp]
-  theorem ofInt_neg_one_eq_negOne : (Bitvec.ofInt n (-1)) = negOne n := by
-    simp only [Bitvec.ofInt, Neg.neg, Int.neg, Int.negOfNat, ofNat_zero_eq_zero, not_ones]
+  theorem not_zero : not (zero n) = (negOne n) := by
+    simp[Bitvec.not, negOne, zero]
 
+  @[simp]
+  theorem not_intMax : not (intMax n) = intMin n := by
+    cases n
+    . rfl
+    . simp[Bitvec.not, intMax, intMin, negOne, zero, Vector.map_cons]
 
-end NegOne
-
-
-
-
-
-
-
+  @[simp]
+  theorem not_intMin : not (intMin n) = intMax n := by
+    cases n
+    . rfl
+    . simp[Bitvec.not, intMax, intMin, negOne, zero, Vector.map_cons]
+end Not
 
 
 end Bitvec

@@ -736,4 +736,10 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 --       q(α) q(n) q(x) ih
 -- #align vector.reflect vector.reflect
 
+
+@[simp]
+theorem map_replicate (f : α → β) (n : Nat) (a : α) :
+    map f (replicate n a) = replicate n (f a) := by
+  simp[map, replicate]
+
 end Vector
