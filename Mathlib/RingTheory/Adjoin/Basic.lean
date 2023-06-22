@@ -113,6 +113,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
 #align algebra.adjoin_induction₂ Algebra.adjoin_induction₂
 
 /-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
     (Halg : ∀ r, p (algebraMap R _ r)) (Hadd : ∀ x y, p x → p y → p (x + y))
     (Hmul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
