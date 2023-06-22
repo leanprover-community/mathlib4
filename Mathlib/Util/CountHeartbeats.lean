@@ -36,7 +36,7 @@ If you do so, please resist the temptation to set the limit as low as possible.
 As the `simp` set and other features of the library evolve,
 other contributors will find that their (likely unrelated) changes
 have pushed the declaration over the limit.
-`count_heartbearts in` will automatically suggest via "Try this:"
+`count_heartbearts in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
 using the least number of the form `2^k * 200000` that suffices.
 
 Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
