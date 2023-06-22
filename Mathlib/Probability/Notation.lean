@@ -10,6 +10,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+import Mathlib.MeasureTheory.Decomposition.Lebesgue
 
 /-! # Notations for probability theory
 
@@ -52,7 +53,6 @@ scoped[ProbabilityTheory] notation:50 X " =ₐₛ " Y:50 => X =ᵐ[MeasureTheory
 
 scoped[ProbabilityTheory] notation:50 X " ≤ₐₛ " Y:50 => X ≤ᵐ[MeasureTheory.MeasureSpace.volume] Y
 
-set_option quotPrecheck false in
-scoped[ProbabilityTheory] notation "∂" _P "/∂" Q:50 => P.rnDeriv Q
+scoped[ProbabilityTheory] notation "∂" P "/∂" Q:100 => MeasureTheory.Measure.rnDeriv P Q
 
 scoped[ProbabilityTheory] notation "ℙ" => MeasureTheory.MeasureSpace.volume
