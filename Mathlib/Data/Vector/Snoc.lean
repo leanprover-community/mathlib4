@@ -102,7 +102,8 @@ namespace Vector
       v.reverse
       w.reverse
       nil
-      (@fun n x y xs ys (r : C xs.reverse ys.reverse) => cast (by simp) <| snoc xs.reverse ys.reverse x y r)
+      (@fun n x y xs ys (r : C xs.reverse ys.reverse) =>
+        cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
   /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
       separately -/
