@@ -15,7 +15,7 @@ import Mathlib.RingTheory.DedekindDomain.AdicValuation
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `DedekindDomain.FiniteIntegralAdeles` : product of `adic_completion_integers`, where `v`
+- `DedekindDomain.FiniteIntegralAdeles` : product of `adicCompletionIntegers`, where `v`
   runs over all maximal ideals of `R`.
 - `DedekindDomain.ProdAdicCompletions` : the product of `adicCompletion`, where `v` runs over
   all maximal ideals of `R`.
@@ -43,7 +43,7 @@ namespace DedekindDomain
 variable (R K : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-/-- The product of all `adic_completion_integers`, where `v` runs over the maximal ideals of `R`. -/
+/-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
 def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
 -- deriving CommRing, TopologicalSpace, Inhabited
@@ -173,7 +173,7 @@ end FiniteIntegralAdeles
 
 /-! ### The finite adèle ring of a Dedekind domain
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
-of `adicCompletion` with respect to `adic_completion_integers`. We prove that it is a commutative
+of `adicCompletion` with respect to `adicCompletionIntegers`. We prove that it is a commutative
 ring. TODO: show that it is a topological ring with the restricted product topology. -/
 
 
@@ -277,7 +277,7 @@ end ProdAdicCompletions
 open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
-of `adicCompletion` with respect to `adic_completion_integers`. -/
+of `adicCompletion` with respect to `adicCompletionIntegers`. -/
 noncomputable def finiteAdeleRing : Subring (K_hat R K) where
   carrier := {x : K_hat R K | x.IsFiniteAdele}
   mul_mem' hx hy := mul hx hy
