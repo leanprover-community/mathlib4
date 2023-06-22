@@ -539,7 +539,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
         replace this := reassoc_of% this
         exact this _
       rw [← Set.image_subset_iff, ← Set.image_univ, ← Set.image_comp, Set.image_univ]
-      -- Portinge note : change `rw` to `erw`
+      -- Porting note : change `rw` to `erw`
       erw [← coe_comp]
       rw [this, coe_comp, ← Set.image_univ, Set.image_comp]
       exact Set.image_subset_range _ _
@@ -547,7 +547,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
     · rw [← cancel_mono (𝖣.ι j), Category.assoc, ← (𝖣.vPullbackCone i j).condition]
       conv_rhs => rw [← s.condition]
       erw [IsOpenImmersion.lift_fac_assoc]
-    · intro m e₁ e₂; rw [← cancel_mono (D.f i j)]; erw [e₁]; rw [IsOpenImmersion.lift_fac]
+    · intro m e₁ _; rw [← cancel_mono (D.f i j)]; erw [e₁]; rw [IsOpenImmersion.lift_fac]
 #align algebraic_geometry.PresheafedSpace.glue_data.V_pullback_cone_is_limit AlgebraicGeometry.PresheafedSpace.GlueData.vPullbackConeIsLimit
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
@@ -671,7 +671,7 @@ attribute [instance] GlueData.f_open
 
 namespace GlueData
 
-variable (D : GlueData)
+variable (D : GlueData.{u})
 
 local notation "𝖣" => D.toGlueData
 
@@ -692,8 +692,10 @@ theorem ι_isoSheafedSpace_inv (i : D.J) :
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_iso_SheafedSpace_inv AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isoSheafedSpace_inv
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  delta IsOpenImmersion; rw [← D.ι_iso_SheafedSpace_inv]
-  apply PresheafedSpace.IsOpenImmersion.comp
+  delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
+  apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
+  -- Porting note : this was automatic
+  exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
@@ -701,7 +703,8 @@ instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forge
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=
   𝖣.ι_jointly_surjective
-    ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) ⋙ forget TopCat) x
+    ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
+      forget TopCat.{u}) x
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_jointly_surjective AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_jointly_surjective
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
