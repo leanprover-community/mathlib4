@@ -151,6 +151,24 @@ but is expected to have type
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)
 
+structure DecidableType where
+  (α : Type)
+  [deq : DecidableEq α]
+
+-- Auto-synthesizes instance
+example : DecidableType := by
+  use Nat
+
+example (β : Type) [DecidableEq β] : DecidableType := by
+  use β
+
+-- Leaves instances as extra goals when synthesis fails
+noncomputable
+example (β : Type) : DecidableType := by
+  use β
+  guard_target = DecidableEq β
+  apply Classical.typeDecidableEq
+
 -- https://github.com/leanprover-community/mathlib4/issues/5072
 example (n : Nat) : Nat := by use n
 

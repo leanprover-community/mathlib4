@@ -30,11 +30,14 @@ this applies that constructor, then returns metavariables for the non-parameter 
 along with metavariables for the parameters and implicit arguments.
 
 The first list of returned metavariables correspond to the arguments that `⟨x,y,...⟩` notation uses.
+The second list corresponds to everything else: the parameters and implicit arguments.
+The third list consists of those implicit arguments that are instance implicits, which one can
+try to synthesize; this list is a sublist of the second list.
 
 Returns metavariables for all arguments whether or not the metavariables are assigned.
 -/
 def _root_.Lean.MVarId.constructor1 (mvarId : MVarId) :
-    MetaM (List MVarId × List MVarId) := do
+    MetaM (List MVarId × List MVarId × List MVarId) := do
   mvarId.withContext do
     mvarId.checkNotAssigned `constructor
     let target ← mvarId.getType'
@@ -49,17 +52,20 @@ def _root_.Lean.MVarId.constructor1 (mvarId : MVarId) :
           let (args, binderInfos, _) ← forallMetaTelescopeReducing (← inferType ctorConst)
           let mut explicit := #[]
           let mut implicit := #[]
+          let mut insts := #[]
           for arg in args, binderInfo in binderInfos, i in [0:args.size] do
             if cinfo.numParams ≤ i ∧ binderInfo.isExplicit then
               explicit := explicit.push arg.mvarId!
             else
               implicit := implicit.push arg.mvarId!
+              if binderInfo.isInstImplicit then
+                insts := insts.push arg.mvarId!
           let e := mkAppN ctorConst args
           let eType ← inferType e
           unless (← withAssignableSyntheticOpaque <| isDefEq eType target) do
             throwError m!"type mismatch{indentExpr e}\n{← mkHasTypeButIsExpectedMsg eType target}"
           mvarId.assign e
-          return (explicit.toList, implicit.toList)
+          return (explicit.toList, implicit.toList, insts.toList)
         | _ => throwTacticEx `constructor mvarId
                 m!"target inductive type does not have exactly one constructor{indentExpr target}"
 
@@ -68,14 +74,15 @@ goal remaining then first try applying a single constructor if it's for a single
 inductive type. In `eager` mode, instead we always first try to refine, and if that fails we
 always try to apply such a constructor no matter if it's the last goal.
 
-Returns the remaining explicit goals `gs` and any goals `acc` due to `refine`. The new set
-of goals should be `gs ++ acc`. -/
+Returns the remaining explicit goals `gs`, any goals `acc` due to `refine`, and a sublist of these
+of instance arguments that we should try synthesizing after the loop.
+The new set of goals should be `gs ++ acc`. -/
 partial
-def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVarId) :
-    TermElabM (List MVarId × List MVarId) := do
+def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : List MVarId) :
+    TermElabM (List MVarId × List MVarId × List MVarId) := do
   trace[tactic.use] "gs = {gs}\nargs = {args}\nacc = {acc}"
   if args.isEmpty then
-    return (gs, acc)
+    return (gs, acc, insts)
   else if gs.isEmpty then
     throwErrorAt args[0]! "too many arguments supplied to `use`"
   else if let (g :: gs', arg :: args') := (gs, args) then
@@ -86,33 +93,39 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc : List MVa
       unless ← isDefEq e (.mvar g) do
         throwErrorAt arg
           "argument is not definitionally equal to inferred value{indentExpr (.mvar g)}"
-      return ← useLoop eager gs' args' acc
+      return ← useLoop eager gs' args' acc insts
     -- Type ascription is a workaround for fact that `refine` doesn't seem to ensure the type.
     let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
       if let some newGoals ← observing? (run g do withoutRecover <| evalTactic refineArg) then
-        return ← useLoop eager gs' args' (acc ++ newGoals)
+        return ← useLoop eager gs' args' (acc ++ newGoals) insts
     if eager || gs'.isEmpty then
-      if let some (expl, impl) ← observing? do
+      if let some (expl, impl, insts') ← observing? do
                 try g.constructor1 catch e => trace[tactic.use] "{e.toMessageData}"; throw e then
         trace[tactic.use] "expl.length = {expl.length}, impl.length = {impl.length}"
-        return ← useLoop eager (expl ++ gs') args (acc ++ impl)
-    -- In eager mode, this will give an error, which hopefully is more informative than
+        return ← useLoop eager (expl ++ gs') args (acc ++ impl) (insts ++ insts')
+    -- In eager mode, the following will give an error, which hopefully is more informative than
     -- the one provided by `constructor1`.
     let newGoals ← run g do evalTactic refineArg
-    useLoop eager gs' args' (acc ++ newGoals)
+    useLoop eager gs' args' (acc ++ newGoals) insts
   else
     throwError "useLoop: impossible"
 
 /-- Run the `useLoop` on the main goal then discharge remaining explicit `Prop` arguments. -/
 def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : TacticM Unit := do
   let egoals ← focus do
-    let (egoals, acc) ← useLoop eager (← getGoals) args []
+    let (egoals, acc, insts) ← useLoop eager (← getGoals) args [] []
+    -- Try synthesizing instance arguments
+    for inst in insts do
+      if !(← inst.isAssigned) then
+        discard <| observing? do inst.assign (← synthInstance (← inst.getType))
+    -- Set the goals.
     setGoals (egoals ++ acc)
+    pruneSolvedGoals
     pure egoals
   -- Run the discharger on non-assigned proposition metavariables
-  -- (`trivial` uses `assumption`, which would be bad for non-propositions)
+  -- (`trivial` uses `assumption`, which isn't great for non-propositions)
   for g in egoals do
     if !(← g.isAssigned) then
       if ← isProp (← g.getType) then
