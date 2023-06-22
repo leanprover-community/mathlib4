@@ -82,7 +82,7 @@ protected def invertibleMul (A B : Matrix n n α) [Invertible A] [Invertible B] 
 
 /-- A copy of `invertible.mul` using `⬝` not `*`.-/
 @[reducible]
-def Invertible.matrixMul {A B : Matrix n n α} (ha : Invertible A) (hb : Invertible B) :
+def _root_.Invertible.matrixMul {A B : Matrix n n α} (_ : Invertible A) (_ : Invertible B) :
     Invertible (A ⬝ B) :=
   invertibleMul _ _
 #align invertible.matrix_mul Invertible.matrixMul
