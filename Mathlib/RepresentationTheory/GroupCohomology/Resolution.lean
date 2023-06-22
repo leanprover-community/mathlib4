@@ -8,10 +8,10 @@ Authors: Amelia Livingston
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Projective
-import Mathbin.AlgebraicTopology.ExtraDegeneracy
-import Mathbin.CategoryTheory.Abelian.Ext
-import Mathbin.RepresentationTheory.Rep
+import Mathlib.Algebra.Category.Module.Projective
+import Mathlib.AlgebraicTopology.ExtraDegeneracy
+import Mathlib.CategoryTheory.Abelian.Ext
+import Mathlib.RepresentationTheory.Rep
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`
@@ -106,8 +106,7 @@ def actionDiagonalSucc (G : Type u) [Group G] :
 #align group_cohomology.resolution.Action_diagonal_succ GroupCohomology.Resolution.actionDiagonalSucc
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f i.cast_succ)⁻¹ * f i.succ) :=
-  by
+    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f i.cast_succ)⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · ext
@@ -122,8 +121,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply GroupCohomology.Resolution.actionDiagonalSucc_hom_apply
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
-    (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) :=
-  by
+    (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
   revert g
   induction' n with n hn
   · intro g
@@ -163,8 +161,7 @@ variable {k G n}
 
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f i.cast_succ)⁻¹ * f i.succ) a :=
-  by
+      single (f 0) 1 ⊗ₜ single (fun i => (f i.cast_succ)⁻¹ * f i.succ) a := by
   dsimp only [diagonal_succ]
   simpa only [iso.trans_hom, iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
     LinearMap.comp_apply, functor.map_iso_hom,
@@ -176,8 +173,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
-      single (g • partialProd f) (a * b) :=
-  by
+      single (g • partialProd f) (a * b) := by
   dsimp only [diagonal_succ]
   simp only [iso.trans_inv, iso.symm_inv, iso.refl_inv, tensor_iso_inv, Action.tensorHom,
     Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply, as_iso_hom, functor.map_iso_inv,
@@ -190,8 +186,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
 
 theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
-      Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f :=
-  by
+      Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
   refine' f.induction _ _
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x ha hb hx
@@ -202,8 +197,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
-      Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g :=
-  by
+      Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
   refine' g.induction _ _
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
@@ -227,8 +221,7 @@ def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
-    map_smul' := fun r x =>
-      by
+    map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -282,8 +275,7 @@ the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. 
 sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
 `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
 theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
-    diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) :=
-  by
+    diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
   unfold diagonal_hom_equiv
   simpa only [LinearEquiv.trans_apply, Rep.leftRegularHomEquiv_apply,
     monoidal_closed.linear_hom_equiv_comm_hom, Finsupp.llift_symm_apply, TensorProduct.curry_apply,
@@ -299,8 +291,7 @@ inverse map sends a function `f : Gⁿ → A` to the representation morphism sen
 to `A`. -/
 theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x i.cast_succ)⁻¹ * x i.succ) :=
-  by
+      A.ρ (x 0) (f fun i : Fin n => (x i.cast_succ)⁻¹ * x i.succ) := by
   unfold diagonal_hom_equiv
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Rep.leftRegularHomEquiv_symm_apply, linear.hom_congr_symm_apply, Action.comp_hom, iso.refl_inv,
@@ -317,8 +308,7 @@ group cohomology. -/
 theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
     (a : Fin (n + 1)) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1) =
-      f (Fin.contractNth a (· * ·) g) :=
-  by
+      f (Fin.contractNth a (· * ·) g) := by
   simp only [diagonal_hom_equiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
     Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
     Fin.partialProd_succ]
@@ -391,8 +381,7 @@ def extraDegeneracyAugmentedCechNerve :
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
-def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) :=
-  by
+def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
   refine'
     extra_degeneracy.of_iso (_ : (arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
       (extra_degeneracy_augmented_cech_nerve G)
@@ -469,8 +458,7 @@ theorem x_projective (G : Type u) [Group G] (n : ℕ) :
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) :=
-  by
+theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
   ext x y
   dsimp [GroupCohomology.resolution]
   simpa [← @intCast_smul k, simplicial_object.δ]
@@ -512,8 +500,7 @@ def forget₂ToModuleHomotopyEquiv :
 #align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv GroupCohomology.resolution.forget₂ToModuleHomotopyEquiv
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k
-    where
+def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := Finsupp.total _ _ _ fun f => (1 : k)
   comm' g := by
     ext
@@ -527,8 +514,7 @@ def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleHomotopyEquiv_f_0_eq :
-    (forget₂ToModuleHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) :=
-  by
+    (forget₂ToModuleHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   show (HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _).f 0 = _
   simp only [HomologicalComplex.comp_f]
   convert category.id_comp _
@@ -551,8 +537,7 @@ theorem forget₂ToModuleHomotopyEquiv_f_0_eq :
     · exact @Subsingleton.elim _ (@Unique.subsingleton _ (limits.unique_to_terminal _)) _ _
 #align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq GroupCohomology.resolution.forget₂ToModuleHomotopyEquiv_f_0_eq
 
-theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 :=
-  by
+theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext1
   refine' LinearMap.ext fun x => _
   have : (forget₂_to_Module k G).d 1 0 ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
@@ -572,8 +557,7 @@ def εToSingle₀ :
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (ChainComplex.single₀MapHomologicalComplex _).hom.app _ =
-      (forget₂ToModuleHomotopyEquiv k G).hom :=
-  by
+      (forget₂ToModuleHomotopyEquiv k G).hom := by
   refine' ChainComplex.to_single₀_ext _ _ _
   dsimp
   rw [category.comp_id]
@@ -581,8 +565,7 @@ theorem εToSingle₀_comp_eq :
 #align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.resolution.εToSingle₀_comp_eq
 
 theorem quasiIsoOfForget₂εToSingle₀ :
-    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) :=
-  by
+    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂_to_Module_homotopy_equiv k G).hom := HomotopyEquiv.toQuasiIso _
   rw [← ε_to_single₀_comp_eq k G] at h 
   haveI := h
@@ -616,8 +599,7 @@ def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
               (GroupCohomology.resolution k G)).homology
-          n).unop :=
-  by
+          n).unop := by
   let this.1 :=
       (((linear_yoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
             (GroupCohomology.projectiveResolution k G)).unop.symm <;>
