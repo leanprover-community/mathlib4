@@ -179,6 +179,10 @@ instance [Monoid M] [MulAction M α] : MulAction Mᵈᵐᵃ (α → β) where
   one_smul f := funext fun _ ↦ congr_arg f (one_smul _ _)
   mul_smul _ _ f := funext fun _ ↦ congr_arg f (mul_smul _ _ _)
 
+instance [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
+  smul_zero _ := rfl
+  smul_add _ _ _ := rfl
+
 section MonoidHom
 
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
@@ -215,5 +219,9 @@ end DistribSMul
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
     MulAction Mᵈᵐᵃ (A →+ B) := FunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+
+instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
+    DistribMulAction Mᵈᵐᵃ (A →+ B) :=
+  FunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom
