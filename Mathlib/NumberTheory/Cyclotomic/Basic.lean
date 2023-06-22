@@ -83,7 +83,7 @@ over `A` by the roots of `X ^ n - 1`. -/
 
 @[mk_iff]
 class IsCyclotomicExtension : Prop where
-  /-- For all `n ∈ S`, there existe a primitive `n`-th root of unity in `B`. -/
+  /-- For all `n ∈ S`, there exists a primitive `n`-th root of unity in `B`. -/
   exists_prim_root {n : ℕ+} (ha : n ∈ S) : ∃ r : B, IsPrimitiveRoot r n
   /-- The `n`-th roots of unity, for `n ∈ S`, generate `B` as an `A`-algebra. -/
   adjoin_roots : ∀ x : B, x ∈ adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}
