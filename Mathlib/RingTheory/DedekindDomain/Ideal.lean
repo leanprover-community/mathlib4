@@ -982,7 +982,7 @@ variable [IsDomain R] [IsDedekindDomain R]
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R
-  IsPrime : asIdeal.IsPrime
+  isPrime : asIdeal.IsPrime
   ne_bot : asIdeal ≠ ⊥
 #align is_dedekind_domain.height_one_spectrum IsDedekindDomain.HeightOneSpectrum
 
