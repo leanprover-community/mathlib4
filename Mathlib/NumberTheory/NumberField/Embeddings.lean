@@ -506,7 +506,8 @@ theorem prod_eq_abs_norm (x : K) :
       convert Finset.prod_fiberwise Finset.univ (fun φ => mkComplex K φ)
         (fun φ => Complex.abs (φ.val x)) using 2
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ, not_isReal_iff_isComplex]
-      · rename_i w _ -- Porting note : need to recover the name of `w`
+      · rename_i w _ -- Porting note : need to recover the name of the variable
+                     -- generated automatically by the `convert`
         rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
             (mkComplex.apply K φ x).symm.trans ?_, Finset.prod_const, mkComplex.filter_card K w]
         norm_num
