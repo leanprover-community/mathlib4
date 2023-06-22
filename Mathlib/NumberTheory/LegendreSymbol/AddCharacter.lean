@@ -227,14 +227,14 @@ theorem pow_mulShift (ψ : AddChar R R') (n : ℕ) : ψ ^ n = mulShift ψ n := b
 theorem mulShift_mul (ψ : AddChar R R') (a b : R) :
     mulShift ψ a * mulShift ψ b = mulShift ψ (a + b) := by
   ext
-  simp only [right_distrib, MonoidHom.mul_apply, mulShift_apply, map_add_mul]
+  rw [mulShift_apply, right_distrib, map_add_mul]; norm_cast
 #align add_char.mul_shift_mul AddChar.mulShift_mul
 
 /-- `mulShift ψ 0` is the trivial character. -/
 @[simp]
 theorem mulShift_zero (ψ : AddChar R R') : mulShift ψ 0 = 1 := by
   ext
-  rw [mulShift_apply, zero_mul, map_zero_one, MonoidHom.one_apply]
+  rw [mulShift_apply, zero_mul, map_zero_one]; norm_cast
 #align add_char.mul_shift_zero AddChar.mulShift_zero
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
@@ -331,12 +331,13 @@ theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ)
 end ZmodCharDef
 
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
-theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) : IsNontrivial ψ ↔ ψ 1 ≠ 1 :=
-  by
+theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
+    IsNontrivial ψ ↔ ψ 1 ≠ 1 := by
   refine' ⟨_, fun h => ⟨1, h⟩⟩
   contrapose!
   rintro h₁ ⟨a, ha⟩
-  have ha₁ : a = a.val • 1 := by rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
+  have ha₁ : a = a.val • (1 : ZMod ↑n) := by
+    rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
   rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_isNontrivial_iff
@@ -355,7 +356,7 @@ theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod
   refine' fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => _
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
-  rw [mulShift_apply, mul_one, MonoidHom.one_apply] at h
+  rw [mulShift_apply, mul_one] at h; norm_cast at h
   exact ha (hψ a h)
 #align add_char.zmod_char_primitive_of_eq_one_only_at_zero AddChar.zmod_char_primitive_of_eq_one_only_at_zero
 
@@ -401,7 +402,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type _) [Field F] [Fintype F]
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
   let ψ' := ψ.char.comp (AddMonoidHom.toMultiplicative (Algebra.trace (ZMod p) F).toAddMonoidHom)
   have hψ' : IsNontrivial ψ' := by
-    obtain ⟨a, ha⟩ := FiniteField.trace_to_zMod_nondegenerate F one_ne_zero
+    obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha
     exact ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', hψ'.isPrimitive⟩
