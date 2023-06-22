@@ -245,7 +245,7 @@ def finsuppAddEquivDfinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decida
 
 variable (R)
 
-/-- The additive version of `Finsupp.toTinsupp`. Note that this is `noncomputable` because
+/-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
 -- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
 --@[simps? (config := { fullyApplied := false })]
@@ -327,7 +327,7 @@ theorem sigmaFinsuppEquivDfinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η 
     sigmaFinsuppEquivDfinsupp (Finsupp.single a n) =
       @Dfinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a
-  ext (j b)
+  ext j b
   by_cases h : i = j
   · subst h
     classical simp [split_apply, Finsupp.single_apply]

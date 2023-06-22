@@ -37,15 +37,14 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
--- avoid name collision with `_root_.max`.
 namespace MonCat.FilteredColimits
 
 section
 
--- We use parameters here, mainly so we can have the abbreviations `M` and `M.mk` below, without
--- passing around `F` all the time.
+-- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
+-- `M.mk` below, without passing around `F` all the time.
 variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget Mon` in the category of types.
@@ -72,7 +71,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem M.mk_eq (x y : Σ j, F.obj j)
-    (h : ∃ (k : J)(f : x.1 ⟶ k)(g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
+    (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
   M.mk.{v, u} F x = M.mk F y :=
   Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
 set_option linter.uppercaseLean3 false in
@@ -114,13 +113,13 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
 
 /-- The "unlifted" version of multiplication in the colimit. To multiply two dependent pairs
-`⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `is_filtered.max`)
+`⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂` (given by `IsFiltered.max`)
 and multiply them there.
 -/
 @[to_additive
       "The \"unlifted\" version of addition in the colimit. To add two dependent pairs
       `⟨j₁, x⟩` and `⟨j₂, y⟩`, we pass to a common successor of `j₁` and `j₂`
-      (given by `is_filtered.max`) and add them there."]
+      (given by `IsFiltered.max`) and add them there."]
 noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
   M.mk F ⟨IsFiltered.max x.fst y.fst, F.map (IsFiltered.leftToMax x.1 y.1) x.2 *
     F.map (IsFiltered.rightToMax x.1 y.1) y.2⟩
@@ -183,8 +182,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_add_aux_eq_of_rel_right AddMonCat.FilteredColimits.colimitAddAux_eq_of_rel_right
 
-/-- Multiplication in the colimit. See also `colimit_mul_aux`. -/
-@[to_additive "Addition in the colimit. See also `colimit_add_aux`."]
+/-- Multiplication in the colimit. See also `colimitMulAux`. -/
+@[to_additive "Addition in the colimit. See also `colimitAddAux`."]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
     refine' Quot.lift₂ (colimitMulAux F) _ _ x y
@@ -237,7 +236,7 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         one_mul, F.map_id]
-      -- Porting note : `id_apply` does not work hear, but the two handsides are def-eq
+      -- Porting note : `id_apply` does not work here, but the two sides are def-eq
       rfl
     mul_one := fun x => by
       refine Quot.inductionOn x ?_
@@ -245,7 +244,7 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id]
-      -- Porting note : `id_apply` does not work hear, but the two handsides are def-eq
+      -- Porting note : `id_apply` does not work here, but the two sides are def-eq
       rfl
     mul_assoc := fun x y z => by
       refine Quot.induction_on₃ x y z ?_

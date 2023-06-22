@@ -70,7 +70,7 @@ arrows over `X` with `f` as the cone point. This is the underlying diagram.
 @[simps]
 def toDiagram : J ⥤ StructuredArrow c.pt K where
   obj j := StructuredArrow.mk (c.π.app j)
-  map g := StructuredArrow.homMk g (by simp)
+  map g := StructuredArrow.homMk g
 #align category_theory.structured_arrow_cone.to_diagram CategoryTheory.StructuredArrowCone.toDiagram
 
 /-- Given a diagram of `structured_arrow X F`s, we may obtain a cone with cone point `X`. -/
@@ -364,6 +364,9 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (by
       intro G H i
       -- porting note: was `ext` in lean 3
+      -- Now `ext` can't see that `lan` is a colimit.
+      -- Uncertain whether it makes sense to add another `@[ext]` lemma.
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply colimit.hom_ext
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,

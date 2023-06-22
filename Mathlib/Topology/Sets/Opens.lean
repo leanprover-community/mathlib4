@@ -64,7 +64,7 @@ variable (α)
 
 /-- The type of open subsets of a topological space. -/
 structure Opens where
-  /-- The underlying set of a bundled `TopoogicalSpace.Opens` object. -/
+  /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier

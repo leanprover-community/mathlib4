@@ -16,11 +16,11 @@ import Mathlib.MeasureTheory.Function.L1Space
 
 This file contains the definitions for uniform integrability (both in the measure theory sense
 as well as the probability theory sense). This file also contains the Vitali convergence theorem
-which estabishes a relation between uniform integrability, convergence in measure and
+which establishes a relation between uniform integrability, convergence in measure and
 Lp convergence.
 
 Uniform integrability plays a vital role in the theory of martingales most notably is used to
-fomulate the martingale convergence theorem.
+formulate the martingale convergence theorem.
 
 ## Main definitions
 
@@ -64,7 +64,7 @@ A sequence of functions `f` is said to be uniformly integrable if for all `ε > 
 some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-norm of `f i`
 restricted on `s` is less than `ε`.
 
-Uniform integrablility is also known as uniformly absolutely continuous integrals. -/
+Uniform integrability is also known as uniformly absolutely continuous integrals. -/
 def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ⦃ε : ℝ⦄ (_ : 0 < ε), ∃ (δ : ℝ) (_ : 0 < δ), ∀ i s,
     MeasurableSet s → μ s ≤ ENNReal.ofReal δ → snorm (s.indicator (f i)) p μ ≤ ENNReal.ofReal ε
@@ -834,7 +834,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
         ENNReal.one_ne_top⟩
 #align measure_theory.uniform_integrable_of' MeasureTheory.uniformIntegrable_of'
 
-/-- A sequene of functions `(fₙ)` is uniformly integrable in the probability sense if for all
+/-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
 theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ)
