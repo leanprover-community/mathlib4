@@ -186,7 +186,7 @@ theorem IsCompact.exists_isGreatest {s : Set α} (hs : IsCompact s) (ne_s : s.No
 
 theorem IsCompact.exists_isGLB {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempty) :
     ∃ x ∈ s, IsGLB s x :=
-  Exists.imp (fun x (hx : IsLeast s x) => ⟨hx.1, hx.isGLB⟩) (hs.exists_isLeast ne_s)
+  (hs.exists_isLeast ne_s).imp (fun x (hx : IsLeast s x) => ⟨hx.1, hx.isGLB⟩)
 #align is_compact.exists_is_glb IsCompact.exists_isGLB
 
 theorem IsCompact.exists_isLUB {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempty) :
