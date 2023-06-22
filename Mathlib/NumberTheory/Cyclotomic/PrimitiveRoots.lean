@@ -18,45 +18,45 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Primitive roots in cyclotomic fields
-If `is_cyclotomic_extension {n} A B`, we define an element `zeta n A B : B` that is a primitive
+If `IsCyclotomicExtension {n} A B`, we define an element `zeta n A B : B` that is a primitive
 `n`th-root of unity in `B` and we study its properties. We also prove related theorems under the
 more general assumption of just being a primitive root, for reasons described in the implementation
 details section.
 
 ## Main definitions
-* `is_cyclotomic_extension.zeta n A B`: if `is_cyclotomic_extension {n} A B`, than `zeta n A B`
+* `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, than `zeta n A B`
   is a primitive `n`-th root of unity in `B`.
-* `is_primitive_root.power_basis`: if `K` and `L` are fields such that
-  `is_cyclotomic_extension {n} K L`, then `is_primitive_root.power_basis`
-  gives a K-power basis for L given a primitive root `ζ`.
-* `is_primitive_root.embeddings_equiv_primitive_roots`: the equivalence between `L →ₐ[K] A`
-  and `primitive_roots n A` given by the choice of `ζ`.
+* `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
+  `IsCyclotomicExtension {n} K L`, then `IsPrimitiveRoot.powerBasis`
+  gives a `K`-power basis for `L` given a primitive root `ζ`.
+* `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
+  and `primitiveroots n A` given by the choice of `ζ`.
 
 ## Main results
-* `is_cyclotomic_extension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
-* `is_cyclotomic_extension.finrank`: if `irreducible (cyclotomic n K)` (in particular for
+* `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
+* `IsCyclotomicExtension.finrank`: if `Irreducible (cyclotomic n K)` (in particular for
   `K = ℚ`), then the `finrank` of a cyclotomic extension is `n.totient`.
-* `is_primitive_root.norm_eq_one`: if `irreducible (cyclotomic n K)` (in particular for `K = ℚ`),
+* `IsPrimitiveRoot.norm_eq_one`: if `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`),
   the norm of a primitive root is `1` if `n ≠ 2`.
-* `is_primitive_root.sub_one_norm_eq_eval_cyclotomic`: if `irreducible (cyclotomic n K)`
+* `IsPrimitiveRoot.sub_one_norm_eq_eval_cyclotomic`: if `Irreducible (cyclotomic n K)`
   (in particular for `K = ℚ`), then the norm of `ζ - 1` is `eval 1 (cyclotomic n ℤ)`, for a
   primitive root `ζ`. We also prove the analogous of this result for `zeta`.
-* `is_primitive_root.pow_sub_one_norm_prime_pow_ne_two` : if
-  `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
+* `IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two` : if
+  `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
   then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` `p ^ (k - s + 1) ≠ 2`. See the following
   lemmas for similar results. We also prove the analogous of this result for `zeta`.
-* `is_primitive_root.sub_one_norm_prime_ne_two` : if `irreducible (cyclotomic (p ^ (k + 1)) K)`
+* `IsPrimitiveRoot.sub_one_norm_prime_ne_two` : if `Irreducible (cyclotomic (p ^ (k + 1)) K)`
   (in particular for `K = ℚ`) and `p` is an odd prime, then the norm of `ζ - 1` is `p`. We also
   prove the analogous of this result for `zeta`.
-* `is_primitive_root.embeddings_equiv_primitive_roots`: the equivalence between `L →ₐ[K] A`
-  and `primitive_roots n A` given by the choice of `ζ`.
+* `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
+  and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Implementation details
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
-`is_cyclotomic_extension`. It is not true in general that it is a root of `cyclotomic n B`,
-but this holds if `is_domain B` and `ne_zero (↑n : B)`.
+`IsCyclotomicExtension`. It is not true in general that it is a root of `cyclotomic n B`,
+but this holds if `isDomain B` and `NeZero (↑n : B)`.
 
-`zeta n A B` is defined using `exists.some`, which means we cannot control it.
+`zeta n A B` is defined using `Exists.choose`, which means we cannot control it.
 For example, in normal mathematics, we can demand that `(zeta p ℤ ℤ[ζₚ] : ℚ(ζₚ))` is equal to
 `zeta p ℚ ℚ(ζₚ)`, as we are just choosing "an arbitrary primitive root" and we can internally
 specify that our choices agree. This is not the case here, and it is indeed impossible to prove that
@@ -121,7 +121,7 @@ namespace IsPrimitiveRoot
 
 variable {C}
 
-/-- The `power_basis` given by a primitive root `η`. -/
+/-- The `PowerBasis` given by a primitive root `η`. -/
 @[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
   PowerBasis.map (Algebra.adjoin.powerBasis <| integral {n} K L ζ) <|
@@ -135,7 +135,7 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
   exact ⟨X + 1, by simp⟩
 #align is_primitive_root.power_basis_gen_mem_adjoin_zeta_sub_one IsPrimitiveRoot.powerBasis_gen_mem_adjoin_zeta_sub_one
 
-/-- The `power_basis` given by `η - 1`. -/
+/-- The `PowerBasis` given by `η - 1`. -/
 @[simps!]
 noncomputable def subOnePowerBasis : PowerBasis K L :=
   (hζ.powerBasis K).ofGenMemAdjoin
@@ -146,7 +146,7 @@ noncomputable def subOnePowerBasis : PowerBasis K L :=
 variable {K} (C)
 
 -- We are not using @[simps] to avoid a timeout.
-/-- The equivalence between `L →ₐ[K] C` and `primitive_roots n C` given by a primitive root `ζ`. -/
+/-- The equivalence between `L →ₐ[K] C` and `primitiveRoots n C` given by a primitive root `ζ`. -/
 noncomputable def embeddingsEquivPrimitiveRoots (C : Type _) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
   (hζ.powerBasis K).liftEquiv.trans
@@ -184,7 +184,7 @@ namespace IsCyclotomicExtension
 
 variable {K} (L)
 
-/-- If `irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the `finrank` of a
+/-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the `finrank` of a
 cyclotomic extension is `n.totient`. -/
 theorem finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = (n : ℕ).totient := by
   haveI := IsCyclotomicExtension.ne_zero' n K L
@@ -214,7 +214,7 @@ theorem norm_eq_neg_one_pow (hζ : IsPrimitiveRoot ζ 2) [IsDomain L] :
   simp
 #align is_primitive_root.norm_eq_neg_one_pow IsPrimitiveRoot.norm_eq_neg_one_pow
 
-/-- If `irreducible (cyclotomic n K)` (in particular for `K = ℚ`), the norm of a primitive root is
+/-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), the norm of a primitive root is
 `1` if `n ≠ 2`. -/
 theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     (hirr : Irreducible (cyclotomic n K)) : norm K ζ = 1 := by
@@ -261,7 +261,7 @@ variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
 
 variable {K} [Field K] [Algebra K L]
 
-/-- If `irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
+/-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
 `ζ - 1` is `eval 1 (cyclotomic n ℤ)`. -/
 theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 < (n : ℕ))
     (hirr : Irreducible (cyclotomic n K)) : norm K (ζ - 1) = ↑(eval 1 (cyclotomic n ℤ)) := by
@@ -289,8 +289,8 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     Int.cast_id]
 #align is_primitive_root.sub_one_norm_eq_eval_cyclotomic IsPrimitiveRoot.sub_one_norm_eq_eval_cyclotomic
 
-/-- If `is_prime_pow (n : ℕ)`, `n ≠ 2` and `irreducible (cyclotomic n K)` (in particular for
-`K = ℚ`), then the norm of `ζ - 1` is `(n : ℕ).min_fac`. -/
+/-- If `IsPrimePow (n : ℕ)`, `n ≠ 2` and `Irreducible (cyclotomic n K)` (in particular for
+`K = ℚ`), then the norm of `ζ - 1` is `(n : ℕ).minFac`. -/
 theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
     (hirr : Irreducible (cyclotomic (n : ℕ) K)) (h : n ≠ 2) : norm K (ζ - 1) = (n : ℕ).minFac := by
   have :=
@@ -323,7 +323,7 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
 
 open scoped Cyclotomic
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `p ^ (k - s + 1) ≠ 2`. See the next lemmas
 for similar results. -/
 theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
@@ -393,7 +393,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
     exact mul_left_cancel₀ (pow_ne_zero _ hpri.out.ne_zero) this
 #align is_primitive_root.pow_sub_one_norm_prime_pow_ne_two IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `p ≠ 2`. -/
 theorem pow_sub_one_norm_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
@@ -408,7 +408,7 @@ theorem pow_sub_one_norm_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p 
 
 #align is_primitive_root.pow_sub_one_norm_prime_ne_two IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is an odd
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is an odd
 prime, then the norm of `ζ - 1` is `p`. -/
 theorem sub_one_norm_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
@@ -416,7 +416,7 @@ theorem sub_one_norm_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k
   simpa using hζ.pow_sub_one_norm_prime_ne_two hirr k.zero_le h
 #align is_primitive_root.sub_one_norm_prime_ne_two IsPrimitiveRoot.sub_one_norm_prime_ne_two
 
-/-- If `irreducible (cyclotomic p K)` (in particular for `K = ℚ`) and `p` is an odd prime,
+/-- If `Irreducible (cyclotomic p K)` (in particular for `K = ℚ`) and `p` is an odd prime,
 then the norm of `ζ - 1` is `p`. -/
 theorem sub_one_norm_prime [hpri : Fact (p : ℕ).Prime] [hcyc : IsCyclotomicExtension {p} K L]
     (hζ : IsPrimitiveRoot ζ p) (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) :
@@ -427,7 +427,7 @@ theorem sub_one_norm_prime [hpri : Fact (p : ℕ).Prime] [hcyc : IsCyclotomicExt
   simpa using sub_one_norm_prime_ne_two hζ hirr h
 #align is_primitive_root.sub_one_norm_prime IsPrimitiveRoot.sub_one_norm_prime
 
-/-- If `irreducible (cyclotomic (2 ^ (k + 1)) K)` (in particular for `K = ℚ`), then the norm of
+/-- If `Irreducible (cyclotomic (2 ^ (k + 1)) K)` (in particular for `K = ℚ`), then the norm of
 `ζ ^ (2 ^ k) - 1` is `(-2) ^ (2 ^ k)`. -/
 -- Porting note: writing `(2 : ℕ+)` was not needed (similarly everywhere).
 theorem pow_sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
@@ -447,7 +447,7 @@ theorem pow_sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
   simp
 #align is_primitive_root.pow_sub_one_norm_two IsPrimitiveRoot.pow_sub_one_norm_two
 
-/-- If `irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
+/-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `ζ - 1` is `2`. -/
 theorem sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 ≤ k)
     [H : IsCyclotomicExtension {(2 : ℕ+) ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
@@ -465,7 +465,7 @@ theorem sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 �
   simpa [hk₁, show ((2 : ℕ+) : ℕ) = 2 from rfl] using sub_one_norm_eq_eval_cyclotomic hζ this hirr
 #align is_primitive_root.sub_one_norm_two IsPrimitiveRoot.sub_one_norm_two
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `k ≠ 0` and `s ≤ k`. -/
 theorem pow_sub_one_norm_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
     [hpri : Fact (p : ℕ).Prime] [hcycl : IsCyclotomicExtension {p ^ (k + 1)} K L]
@@ -504,22 +504,22 @@ open IsPrimitiveRoot
 
 variable {K} (L) [Field K] [Field L] [Algebra K L]
 
-/-- If `irreducible (cyclotomic n K)` (in particular for `K = ℚ`), the norm of `zeta n K L` is `1`
+/-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), the norm of `zeta n K L` is `1`
 if `n` is odd. -/
 theorem norm_zeta_eq_one [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
     (hirr : Irreducible (cyclotomic n K)) : norm K (zeta n K L) = 1 :=
   (zeta_spec n K L).norm_eq_one hn hirr
 #align is_cyclotomic_extension.norm_zeta_eq_one IsCyclotomicExtension.norm_zeta_eq_one
 
-/-- If `is_prime_pow (n : ℕ)`, `n ≠ 2` and `irreducible (cyclotomic n K)` (in particular for
-`K = ℚ`), then the norm of `zeta n K L - 1` is `(n : ℕ).min_fac`. -/
+/-- If `IsPrimePow (n : ℕ)`, `n ≠ 2` and `Irreducible (cyclotomic n K)` (in particular for
+`K = ℚ`), then the norm of `zeta n K L - 1` is `(n : ℕ).minFac`. -/
 theorem isPrimePow_norm_zeta_sub_one (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtension {n} K L]
     (hirr : Irreducible (cyclotomic (n : ℕ) K)) (h : n ≠ 2) :
     norm K (zeta n K L - 1) = (n : ℕ).minFac :=
   (zeta_spec n K L).sub_one_norm_isPrimePow hn hirr h
 #align is_cyclotomic_extension.is_prime_pow_norm_zeta_sub_one IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `(zeta (p ^ (k + 1)) K L) ^ (p ^ s) - 1` is `p ^ (p ^ s)`
 if `p ^ (k - s + 1) ≠ 2`. -/
 theorem prime_ne_two_pow_norm_zeta_pow_sub_one {k : ℕ} [Fact (p : ℕ).Prime]
@@ -530,7 +530,7 @@ theorem prime_ne_two_pow_norm_zeta_pow_sub_one {k : ℕ} [Fact (p : ℕ).Prime]
   (zeta_spec _ K L).pow_sub_one_norm_prime_pow_ne_two hirr hs htwo
 #align is_cyclotomic_extension.prime_ne_two_pow_norm_zeta_pow_sub_one IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one
 
-/-- If `irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is an odd
+/-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is an odd
 prime, then the norm of `zeta (p ^ (k + 1)) K L - 1` is `p`. -/
 theorem prime_ne_two_pow_norm_zeta_sub_one {k : ℕ} [Fact (p : ℕ).Prime]
     [IsCyclotomicExtension {p ^ (k + 1)} K L]
@@ -539,7 +539,7 @@ theorem prime_ne_two_pow_norm_zeta_sub_one {k : ℕ} [Fact (p : ℕ).Prime]
   (zeta_spec _ K L).sub_one_norm_prime_ne_two hirr h
 #align is_cyclotomic_extension.prime_ne_two_pow_norm_zeta_sub_one IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one
 
-/-- If `irreducible (cyclotomic p K)` (in particular for `K = ℚ`) and `p` is an odd prime,
+/-- If `Irreducible (cyclotomic p K)` (in particular for `K = ℚ`) and `p` is an odd prime,
 then the norm of `zeta p K L - 1` is `p`. -/
 theorem prime_ne_two_norm_zeta_sub_one [Fact (p : ℕ).Prime]
     [IsCyclotomicExtension {p} K L] (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) :
@@ -547,7 +547,7 @@ theorem prime_ne_two_norm_zeta_sub_one [Fact (p : ℕ).Prime]
   (zeta_spec _ K L).sub_one_norm_prime hirr h
 #align is_cyclotomic_extension.prime_ne_two_norm_zeta_sub_one IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one
 
-/-- If `irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
+/-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `zeta (2 ^ k) K L - 1` is `2`. -/
 theorem two_pow_norm_zeta_sub_one {k : ℕ} (hk : 2 ≤ k) [IsCyclotomicExtension {(2 : ℕ+) ^ k} K L]
     (hirr : Irreducible (cyclotomic (2 ^ k) K)) : norm K (zeta ((2 : ℕ+) ^ k) K L - 1) = 2 :=
