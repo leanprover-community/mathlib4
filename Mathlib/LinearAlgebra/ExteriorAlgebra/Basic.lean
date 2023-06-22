@@ -18,29 +18,29 @@ We construct the exterior algebra of a module `M` over a commutative semiring `R
 
 ## Notation
 
-The exterior algebra of the `R`-module `M` is denoted as `exterior_algebra R M`.
+The exterior algebra of the `R`-module `M` is denoted as `ExteriorAlgebra R M`.
 It is endowed with the structure of an `R`-algebra.
 
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
 `cond : ∀ m : M, f m * f m = 0`, there is a (unique) lift of `f` to an `R`-algebra morphism,
-which is denoted `exterior_algebra.lift R f cond`.
+which is denoted `ExteriorAlgebra.lift R f cond`.
 
-The canonical linear map `M → exterior_algebra R M` is denoted `exterior_algebra.ι R`.
+The canonical linear map `M → ExteriorAlgebra R M` is denoted `ExteriorAlgebra.ι R`.
 
 ## Theorems
 
-The main theorems proved ensure that `exterior_algebra R M` satisfies the universal property
+The main theorems proved ensure that `ExteriorAlgebra R M` satisfies the universal property
 of the exterior algebra.
-1. `ι_comp_lift` is  fact that the composition of `ι R` with `lift R f cond` agrees with `f`.
+1. `ι_comp_lift` is the fact that the composition of `ι R` with `lift R f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift R f cond` with respect to 1.
 
 ## Definitions
 
-* `ι_multi` is the `alternating_map` corresponding to the wedge product of `ι R m` terms.
+* `ιMulti` is the `AlternatingMap` corresponding to the wedge product of `ι R m` terms.
 
 ## Implementation details
 
-The exterior algebra of `M` is constructed as simply `clifford_algebra (0 : quadratic_form R M)`,
+The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.
 -/
 
@@ -62,7 +62,7 @@ namespace ExteriorAlgebra
 
 variable {M}
 
-/-- The canonical linear map `M →ₗ[R] exterior_algebra R M`.
+/-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
 @[reducible]
 def ι : M →ₗ[R] ExteriorAlgebra R M :=
@@ -71,7 +71,7 @@ def ι : M →ₗ[R] ExteriorAlgebra R M :=
 
 variable {R}
 
-/-- As well as being linear, `ι m` squares to zero -/
+/-- As well as being linear, `ι m` squares to zero. -/
 @[simp]
 theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
@@ -88,7 +88,7 @@ variable (R)
 
 /-- Given a linear map `f : M →ₗ[R] A` into an `R`-algebra `A`, which satisfies the condition:
 `cond : ∀ m : M, f m * f m = 0`, this is the canonical lift of `f` to a morphism of `R`-algebras
-from `exterior_algebra R M` to `A`.
+from `ExteriorAlgebra R M` to `A`.
 -/
 @[simps! symm_apply]
 def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = 0 } ≃ (ExteriorAlgebra R M →ₐ[R] A) :=
@@ -128,8 +128,8 @@ theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
   CliffordAlgebra.hom_ext h
 #align exterior_algebra.hom_ext ExteriorAlgebra.hom_ext
 
-/-- If `C` holds for the `algebra_map` of `r : R` into `exterior_algebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `exterior_algebra R M`.
+/-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
+and is preserved under addition and muliplication, then it holds for all of `ExteriorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
@@ -139,7 +139,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
   CliffordAlgebra.induction h_grade0 h_grade1 h_mul h_add a
 #align exterior_algebra.induction ExteriorAlgebra.induction
 
-/-- The left-inverse of `algebra_map`. -/
+/-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
   ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
@@ -180,8 +180,8 @@ def invertibleAlgebraMapEquiv (r : R) :
 
 variable {M}
 
-/-- The canonical map from `exterior_algebra R M` into `triv_sq_zero_ext R M` that sends
-`exterior_algebra.ι` to `triv_sq_zero_ext.inr`. -/
+/-- The canonical map from `ExteriorAlgebra R M` into `TrivSqZeroExt R M` that sends
+`ExteriorAlgebra.ι` to `TrivSqZeroExt.inr`. -/
 def toTrivSqZeroExt [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     ExteriorAlgebra R M →ₐ[R] TrivSqZeroExt R M :=
   lift R ⟨TrivSqZeroExt.inrHom R M, fun m => TrivSqZeroExt.inr_mul_inr R m m⟩
@@ -195,7 +195,7 @@ theorem toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
 
 /-- The left-inverse of `ι`.
 
-As an implementation detail, we implement this using `triv_sq_zero_ext` which has a suitable
+As an implementation detail, we implement this using `TrivSqZeroExt` which has a suitable
 algebra structure. -/
 def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
@@ -276,8 +276,8 @@ variable (R)
 
 /-- The product of `n` terms of the form `ι R m` is an alternating map.
 
-This is a special case of `multilinear_map.mk_pi_algebra_fin`, and the exterior algebra version of
-`tensor_algebra.tprod`. -/
+This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
+`TensorAlgebra.tprod`. -/
 def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
@@ -335,8 +335,8 @@ namespace TensorAlgebra
 
 variable {R M}
 
-/-- The canonical image of the `tensor_algebra` in the `exterior_algebra`, which maps
-`tensor_algebra.ι R x` to `exterior_algebra.ι R x`. -/
+/-- The canonical image of the `TensorAlgebra` in the `ExteriorAlgebra`, which maps
+`TensorAlgebra.ι R x` to `ExteriorAlgebra.ι R x`. -/
 def toExterior : TensorAlgebra R M →ₐ[R] ExteriorAlgebra R M :=
   TensorAlgebra.lift R (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M)
 #align tensor_algebra.to_exterior TensorAlgebra.toExterior
