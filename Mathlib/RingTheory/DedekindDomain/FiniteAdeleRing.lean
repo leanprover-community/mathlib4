@@ -8,7 +8,7 @@ Authors: María Inés de Frutos-Fernández
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -69,8 +69,7 @@ theorem coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v 
 
 /-- The inclusion of `R_hat` in `K_hat` as a homomorphism of additive monoids. -/
 @[simps]
-def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K)
-    where
+def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   toFun := coe
   map_zero' := rfl
   map_add' x y := by ext v; simp only [coe_apply, Pi.add_apply, Subring.coe_add]
@@ -149,14 +148,12 @@ namespace IsFiniteAdele
 
 /-- The sum of two finite adèles is a finite adèle. -/
 theorem add {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
-    (x + y).IsFiniteAdele :=
-  by
+    (x + y).IsFiniteAdele := by
   rw [is_finite_adele, Filter.eventually_cofinite] at hx hy ⊢
   have h_subset :
     {v : height_one_spectrum R | ¬(x + y) v ∈ v.adicCompletionIntegers K} ⊆
       {v : height_one_spectrum R | ¬x v ∈ v.adicCompletionIntegers K} ∪
-        {v : height_one_spectrum R | ¬y v ∈ v.adicCompletionIntegers K} :=
-    by
+        {v : height_one_spectrum R | ¬y v ∈ v.adicCompletionIntegers K} := by
     intro v hv
     rw [mem_union, mem_set_of_eq, mem_set_of_eq]
     rw [mem_set_of_eq] at hv 
@@ -168,12 +165,10 @@ theorem add {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
 #align dedekind_domain.prod_adic_completions.is_finite_adele.add DedekindDomain.ProdAdicCompletions.IsFiniteAdele.add
 
 /-- The tuple `(0)_v` is a finite adèle. -/
-theorem zero : (0 : K_hat R K).IsFiniteAdele :=
-  by
+theorem zero : (0 : K_hat R K).IsFiniteAdele := by
   rw [is_finite_adele, Filter.eventually_cofinite]
   have h_empty :
-    {v : height_one_spectrum R | ¬(0 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ :=
-    by
+    {v : height_one_spectrum R | ¬(0 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
     rw [mem_set_of_eq] at hv ; apply hv; rw [mem_adic_completion_integers]
     have h_zero : (Valued.v (0 : v.adic_completion K) : WithZero (Multiplicative ℤ)) = 0 :=
@@ -184,13 +179,11 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele :=
 #align dedekind_domain.prod_adic_completions.is_finite_adele.zero DedekindDomain.ProdAdicCompletions.IsFiniteAdele.zero
 
 /-- The negative of a finite adèle is a finite adèle. -/
-theorem neg {x : K_hat R K} (hx : x.IsFiniteAdele) : (-x).IsFiniteAdele :=
-  by
+theorem neg {x : K_hat R K} (hx : x.IsFiniteAdele) : (-x).IsFiniteAdele := by
   rw [is_finite_adele] at hx ⊢
   have h :
     ∀ v : height_one_spectrum R,
-      -x v ∈ v.adicCompletionIntegers K ↔ x v ∈ v.adicCompletionIntegers K :=
-    by
+      -x v ∈ v.adicCompletionIntegers K ↔ x v ∈ v.adicCompletionIntegers K := by
     intro v
     rw [mem_adic_completion_integers, mem_adic_completion_integers, Valuation.map_neg]
   simpa only [Pi.neg_apply, h] using hx
@@ -198,14 +191,12 @@ theorem neg {x : K_hat R K} (hx : x.IsFiniteAdele) : (-x).IsFiniteAdele :=
 
 /-- The product of two finite adèles is a finite adèle. -/
 theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
-    (x * y).IsFiniteAdele :=
-  by
+    (x * y).IsFiniteAdele := by
   rw [is_finite_adele, Filter.eventually_cofinite] at hx hy ⊢
   have h_subset :
     {v : height_one_spectrum R | ¬(x * y) v ∈ v.adicCompletionIntegers K} ⊆
       {v : height_one_spectrum R | ¬x v ∈ v.adicCompletionIntegers K} ∪
-        {v : height_one_spectrum R | ¬y v ∈ v.adicCompletionIntegers K} :=
-    by
+        {v : height_one_spectrum R | ¬y v ∈ v.adicCompletionIntegers K} := by
     intro v hv
     rw [mem_union, mem_set_of_eq, mem_set_of_eq]
     rw [mem_set_of_eq] at hv 
@@ -221,12 +212,10 @@ theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
 #align dedekind_domain.prod_adic_completions.is_finite_adele.mul DedekindDomain.ProdAdicCompletions.IsFiniteAdele.mul
 
 /-- The tuple `(1)_v` is a finite adèle. -/
-theorem one : (1 : K_hat R K).IsFiniteAdele :=
-  by
+theorem one : (1 : K_hat R K).IsFiniteAdele := by
   rw [is_finite_adele, Filter.eventually_cofinite]
   have h_empty :
-    {v : height_one_spectrum R | ¬(1 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ :=
-    by
+    {v : height_one_spectrum R | ¬(1 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
     rw [mem_set_of_eq] at hv ; apply hv; rw [mem_adic_completion_integers]
     exact le_of_eq valued.v.map_one'
@@ -244,8 +233,7 @@ variable (R K)
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
 of `adic_completion` with respect to `adic_completion_integers`. -/
-noncomputable def finiteAdeleRing : Subring (K_hat R K)
-    where
+noncomputable def finiteAdeleRing : Subring (K_hat R K) where
   carrier := {x : K_hat R K | x.IsFiniteAdele}
   mul_mem' _ _ hx hy := mul hx hy
   one_mem' := one
