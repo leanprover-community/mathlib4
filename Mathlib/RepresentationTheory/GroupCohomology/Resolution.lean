@@ -8,7 +8,7 @@ Authors: Amelia Livingston
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.Projective
+import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RepresentationTheory.Rep
@@ -567,7 +567,7 @@ theorem εToSingle₀_comp_eq :
 theorem quasiIsoOfForget₂εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂_to_Module_homotopy_equiv k G).hom := HomotopyEquiv.toQuasiIso _
-  rw [← ε_to_single₀_comp_eq k G] at h 
+  rw [← ε_to_single₀_comp_eq k G] at h
   haveI := h
   exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.resolution.quasiIsoOfForget₂εToSingle₀
@@ -605,4 +605,3 @@ def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
             (GroupCohomology.projectiveResolution k G)).unop.symm <;>
     exact this
 #align group_cohomology.Ext_iso GroupCohomology.extIso
-
