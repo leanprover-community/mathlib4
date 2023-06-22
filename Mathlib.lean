@@ -518,6 +518,7 @@ import Mathlib.Analysis.Calculus.FDerivAnalytic
 import Mathlib.Analysis.Calculus.FDerivMeasurable
 import Mathlib.Analysis.Calculus.FDerivSymmetric
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Analysis.Calculus.Implicit
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
@@ -2283,6 +2284,7 @@ import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.Divisors
@@ -2307,6 +2309,7 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Units
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -2326,6 +2329,7 @@ import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
 import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
@@ -2556,6 +2560,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
