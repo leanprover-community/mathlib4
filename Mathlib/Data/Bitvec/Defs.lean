@@ -50,7 +50,7 @@ protected def zero (n : ℕ) : Bitvec n :=
 
 /-- Create a bitvector of length `n` whose `n-1`st entry is 1 and other entries are 0. -/
 @[reducible]
-protected def one : ∀ n : ℕ, Bitvec n
+protected def one : ∀ n, Bitvec n
   | 0 => nil
   | succ n => replicate n false++ₜtrue ::ᵥ nil
 #align bitvec.one Bitvec.one
@@ -59,6 +59,24 @@ protected def one : ∀ n : ℕ, Bitvec n
 @[reducible]
 def allOnes (n : ℕ) : Bitvec n :=
   replicate n true
+
+/--
+  The maximal positive (signed) integer for a given bitwidth has bitpattern `011111..`, representing
+  the value `2^n-1`
+-/
+@[reducible]
+def intMax : ∀ n, Bitvec n
+  | 0   => Vector.nil
+  | n+1 => false ::ᵥ allOnes n
+
+/--
+  The minimal negative integer for a given bitwidth has bitpattern `10000...`, representing
+  `-2^n` as a signed integer (`Int`), or `2^(n-1)` as an unsigned integer (`Nat`)
+ -/
+@[reducible]
+def intMin : ∀ n, Bitvec n
+  | 0   => Vector.nil
+  | n+1 => true ::ᵥ zero n
 
 
 instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
