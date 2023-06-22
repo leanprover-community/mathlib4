@@ -760,10 +760,11 @@ protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
 /-! ### Field instance and lemmas -/
 
 
-noncomputable instance : Field ℂ :=
+noncomputable instance instField : Field ℂ :=
 { inv := Inv.inv
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero }
+#align complex.field Complex.instField
 
 section
 set_option linter.deprecated false
