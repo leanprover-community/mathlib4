@@ -2557,6 +2557,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
