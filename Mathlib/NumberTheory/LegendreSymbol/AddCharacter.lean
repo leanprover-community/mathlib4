@@ -114,6 +114,14 @@ theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (of
   rfl
 #align add_char.coe_to_fun_apply AddChar.coe_to_fun_apply
 
+-- porting note: added
+theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
+  rfl
+
+-- porting note: added
+@[simp]
+theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
+
 instance monoidHomClass : MonoidHomClass (AddChar R R') (Multiplicative R) R' :=
   MonoidHom.monoidHomClass
 #align add_char.monoid_hom_class AddChar.monoidHomClass
@@ -172,7 +180,7 @@ instance commGroup : CommGroup (AddChar R R') :=
     inv := Inv.inv
     mul_left_inv := fun ψ => by
       ext x
-      rw [MonoidHom.mul_apply, MonoidHom.one_apply, inv_apply, ← map_add_mul, add_left_neg,
+      rw [AddChar.mul_apply, AddChar.one_apply, inv_apply, ← map_add_mul, add_left_neg,
         map_zero_one] }
 #align add_char.comm_group AddChar.commGroup
 
