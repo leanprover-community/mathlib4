@@ -53,14 +53,6 @@ open ComplexConjugate
 
 variable {R : Type _} {S : Type _}
 
-section
-
-variable [SMul R ℝ]
-
-
-
-end
-
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
