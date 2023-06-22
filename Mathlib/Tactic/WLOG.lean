@@ -62,8 +62,8 @@ hypotheses are reverted (and any that depend on them).
 
 If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
-    (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
-    TacticM WLOGResult := goal.withContext do
+    (xs : Option (TSyntaxArray `ident) := none) (ys : TSyntaxArray `ident := #[])
+    (H : Option Name := none) : TacticM WLOGResult := goal.withContext do
   goal.checkNotAssigned `wlog
   let H := H.getD `this
   let inaccessible := h.isNone
@@ -71,15 +71,27 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
   let HSuffix := Expr.forallE h P (← goal.getType) .default
-  let fvars ← getFVarIdsAt goal xs
-  let fvars := fvars.map Expr.fvar
+  let gfvars ← getFVarIdsAt goal xs
+  let gfvars := gfvars.map Expr.fvar
+  let rfvars ← getFVarIdsAt goal ys
+  let rfvars := rfvars.map Expr.fvar
   let lctx := (← goal.getDecl).lctx
-  let (revertedFVars, HType) ← liftMkBindingM <| fun ctx => (do
-    let f ← collectForwardDeps lctx fvars
-    let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
+  let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM <| fun ctx => (do
+    let gf ← collectForwardDeps lctx gfvars
+    let revertedFVars := filterOutImplementationDetails lctx (gf.map Expr.fvarId!)
+    -- Ensure the replaced fvars are among the reverted ones
+    let rf ← collectForwardDeps lctx rfvars
+    let replacedFVars := filterOutImplementationDetails lctx (rf.map Expr.fvarId!)
+    unless replacedFVars.all revertedFVars.contains do
+      return (revertedFVars, replacedFVars, none)
+    let revertedFVars := revertedFVars.filter (not ∘ replacedFVars.contains)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
-    return (revertedFVars, HType))
+    return (revertedFVars, replacedFVars, some HType))
       { preserveOrder := false, mainModule := ctx.mainModule }
+  let some HType := HType?
+    | let unrevertedReplaced := replacedFVars.filter (not ∘ revertedFVars.contains)
+      let unrevertedReplaced ← unrevertedReplaced.mapM (·.getUserName)
+      throwError "generalized hypotheses were expected to include {unrevertedReplaced}"
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
@@ -89,7 +101,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (HFVarId, reductionGoal) ← goal.assertHypotheses #[⟨H, HType, HExpr⟩]
   let HFVarId := HFVarId[0]!
   /- Clear the reverted fvars from the branch that will contain `h` as a hypothesis. -/
-  let hGoal ← hGoal.tryClearMany revertedFVars
+  let hGoal ← hGoal.tryClearMany (revertedFVars ++ replacedFVars)
   /- Introduce all of the reverted fvars to the context in order to restore the original target as
   well as finally introduce the hypothesis `h`. -/
   let (_, hGoal) ← hGoal.introNP revertedFVars.size
