@@ -19,10 +19,10 @@ import Mathlib.Topology.Instances.Complex
 This file defines the embeddings of a number field into an algebraic closed field.
 
 ## Main Results
-* `number_field.embeddings.range_eval_eq_root_set_minpoly`: let `x ∈ K` with `K` number field and
+* `NumberField.Embeddings.range_eval_eq_rootSet_minpoly`: let `x ∈ K` with `K` number field and
   let `A` be an algebraic closed field of char. 0, then the images of `x` by the embeddings of `K`
    in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
-* `number_field.embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
+* `NumberField.Embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
   all of norm one is a root of unity.
 
 ## Tags
@@ -398,7 +398,7 @@ noncomputable def IsReal.embedding {w : InfinitePlace K} (hw : IsReal w) : K →
   (isReal_iff.mp hw).embedding
 #align number_field.infinite_place.is_real.embedding NumberField.InfinitePlace.IsReal.embedding
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem IsReal.place_embedding_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) :
     place (IsReal.embedding hw) x = w x := by
   rw [IsReal.embedding, ComplexEmbedding.IsReal.place_embedding, ← coe_mk]
@@ -446,14 +446,12 @@ theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }
     (mkComplex K φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
--- Porting note: TODO -- make sure it's useful
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem mkReal.apply (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) (x : K) :
     (mkReal K φ).val x = Complex.abs (φ.val x) := rfl
 #align number_field.infinite_place.mk_real.apply NumberField.InfinitePlace.mkReal.apply
 
--- Porting note: TODO -- make sure it's useful
-@[simp]
+-- @[simp] -- Porting note: not in simpNF
 theorem mkComplex.apply (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) (x : K) :
     (mkComplex K φ).val x = Complex.abs (φ.val x) := rfl
 #align number_field.infinite_place.mk_complex.apply NumberField.InfinitePlace.mkComplex.apply
