@@ -84,7 +84,7 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
@@ -179,7 +179,6 @@ Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] {i : ℕ} (a d d' e e' : S)
     (a_not_mem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))
     (h : a * d + e - (a * d' + e') ∈ P ^ (i + 1)) : d - d' ∈ P := by
-  have : e' - e ∈ P ^ (i + 1) := Ideal.sub_mem _ e'_mem e_mem
   have h' : a * (d - d') ∈ P ^ (i + 1) := by
     convert Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
     ring
@@ -209,22 +208,21 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_not_mem hc
   choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
     Submodule.mem_map.mp hc'
-  refine' Equiv.ofBijective (fun c' => Quotient.mk'' (f (k c' c'.prop) (hk_mem c' c'.prop))) ⟨_, _⟩
+  refine Equiv.ofBijective (fun c' => Quotient.mk'' (f (k c' c'.prop) (hk_mem c' c'.prop))) ⟨?_, ?_⟩
   · rintro ⟨c₁', hc₁'⟩ ⟨c₂', hc₂'⟩ h
     rw [Subtype.mk_eq_mk, ← hk_eq _ hc₁', ← hk_eq _ hc₂', mkQ_apply, mkQ_apply,
       Submodule.Quotient.eq, ← hf _ (hk_mem _ hc₁'), ← hf _ (hk_mem _ hc₂')]
-    refine' Ideal.mul_add_mem_pow_succ_inj _ _ _ _ _ _ a_mem (hg _ _) (hg _ _) _
+    refine Ideal.mul_add_mem_pow_succ_inj _ _ _ _ _ _ a_mem (hg _ _) (hg _ _) ?_
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
     refine Quotient.inductionOn' d' fun d => ?_
-    have := Ideal.mul_mem_right d _ a_mem
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq,
       Subtype.coe_mk]
-    refine'
-      Ideal.mul_add_mem_pow_succ_unique hP a _ _ _ _ a_not_mem (hg _ (hk_mem _ hd')) (zero_mem _) _
+    refine
+      Ideal.mul_add_mem_pow_succ_unique hP a _ _ _ _ a_not_mem (hg _ (hk_mem _ hd')) (zero_mem _) ?_
     rw [hf, add_zero]
     exact (Submodule.Quotient.eq _).mp (hk_eq _ hd')
 #align card_quot_pow_of_prime cardQuot_pow_of_prime
@@ -303,10 +301,8 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E
   let b := Module.Free.chooseBasis ℤ S
   cases isEmpty_or_nonempty ι
   · nontriviality S
-    exact
-      (not_nontrivial_iff_subsingleton.mpr
-          (Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective)
-          (by infer_instance)).elim
+    exact (not_nontrivial_iff_subsingleton.mpr
+      (Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective) (by infer_instance)).elim
   -- Thus `(S ⧸ I)` is isomorphic to a product of `zmod`s, so it is a fintype.
   letI := Ideal.fintypeQuotientOfFreeOfNeBot I hI
   -- Use the Smith normal form to choose a nice basis for `I`.
@@ -327,15 +323,6 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type _} [AddEquivClass E S I] (e : E
       _ = absNorm I := this
   have ha : ∀ i, f (b' i) = a i • b' i := by
     intro i; rw [f_apply, b'.equiv_apply, Equiv.refl_apply, ab_eq]
-  have : ∀ x, x ∈ I ↔ ∀ i, a i ∣ b'.repr x i := by
-    intro x; simp_rw [ab.mem_ideal_iff', ab_eq]
-    have : ∀ (c : ι → ℤ) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
-      intro c i
-      simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
-    constructor
-    · rintro ⟨c, rfl⟩ i; exact ⟨c i, this c i⟩
-    · rintro ha
-      choose c hc using ha; exact ⟨c, b'.ext_elem fun i => _root_.trans (hc i) (this c i).symm⟩
   -- `det f` is equal to `∏ i, a i`,
   letI := Classical.decEq ι
   calc
