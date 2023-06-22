@@ -89,13 +89,13 @@ instance Function.algebraRing (I : Type _) {R : Type _} (A : Type _) [CommSemiri
 instance Pi.matrixAlgebra (I R A : Type _) (m : I → Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ i, Fintype (m i)] [∀ i, DecidableEq (m i)] :
     Algebra R (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.instAlgebra
+  @Pi.algebra I R (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.instAlgebra
 #align pi.matrix_algebra Pi.matrixAlgebra
 
 /-- A special case of `pi.topological_ring` for when `f = λ i, matrix (m i) (m i) A`. -/
 instance Pi.matrix_topologicalRing (I A : Type _) (m : I → Type _) [Ring A] [TopologicalSpace A]
     [TopologicalRing A] [∀ i, Fintype (m i)] : TopologicalRing (∀ i, Matrix (m i) (m i) A) :=
-  @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun i => Matrix.topologicalRing
+  @Pi.instTopologicalRing _ (fun i => Matrix (m i) (m i) A) _ _ fun _ => Matrix.topologicalRing
 #align pi.matrix_topological_ring Pi.matrix_topologicalRing
 
 end HacksForPiInstanceSearch
