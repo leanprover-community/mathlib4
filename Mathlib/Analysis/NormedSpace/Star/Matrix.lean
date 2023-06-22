@@ -8,10 +8,10 @@ Authors: Hans Parshall
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Matrix
-import Mathbin.Analysis.NormedSpace.Basic
-import Mathbin.Data.IsROrC.Basic
-import Mathbin.LinearAlgebra.UnitaryGroup
+import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Data.IsROrC.Basic
+import Mathlib.LinearAlgebra.UnitaryGroup
 
 /-!
 # Unitary matrices
@@ -29,11 +29,9 @@ section EntrywiseSupNorm
 variable [IsROrC 𝕜] [Fintype n] [DecidableEq n]
 
 theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜)
-    (i j : n) : ‖U i j‖ ≤ 1 :=
-  by
+    (i j : n) : ‖U i j‖ ≤ 1 := by
   -- The norm squared of an entry is at most the L2 norm of its row.
-  have norm_sum : ‖U i j‖ ^ 2 ≤ ∑ x, ‖U i x‖ ^ 2 :=
-    by
+  have norm_sum : ‖U i j‖ ^ 2 ≤ ∑ x, ‖U i x‖ ^ 2 := by
     apply Multiset.single_le_sum
     · intro x h_x
       rw [Multiset.mem_map] at h_x 
@@ -48,8 +46,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, IsROrC.mul_conj,
       IsROrC.normSq_eq_def', IsROrC.ofReal_pow]
   -- The L2 norm of a row is a diagonal entry of U ⬝ Uᴴ, real part
-  have re_diag_eq_norm_sum : IsROrC.re ((U ⬝ Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 :=
-    by
+  have re_diag_eq_norm_sum : IsROrC.re ((U ⬝ Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
     rw [IsROrC.ext_iff] at diag_eq_norm_sum 
     rw [diag_eq_norm_sum.1]
     norm_cast
