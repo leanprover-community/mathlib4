@@ -178,32 +178,57 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
   apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
   refine' Subtype.rec _
-  -- TODO: this `simp_rw` is not actually doing anything, lean4#1926
-  simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
+  -- porting note: was `simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]`
+  -- leanprover/lean4#1926 is to blame.
+  dsimp only [Subtype.coe_mk]
+  let hlean1926 : ∀ val : ℕ, ↑val = n ↔ ∃ k, val = 2 * k + ZMod.val n := by
+    intro val
+    simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
+  have := fun val : ℕ => forall_prop_congr'
+    (q := fun property => ∀ x (hx : x ∈ LinearMap.range (ι Q) ^ val),
+      P x (Submodule.mem_iSup_of_mem { val := val, property := property } hx))
+    (hq := fun property => Iff.rfl) (hp := hlean1926 val)
+  simp_rw [this]; clear this
+  -- end porting note
   rintro n' ⟨k, rfl⟩ xv
-  simp_rw [pow_add, pow_mul]
-  refine' Submodule.mul_induction_on' _ _
-  · intro a ha b hb
-    refine' Submodule.pow_induction_on_left' ((ι Q).range ^ 2) _ _ _ ha
-    · intro r
+  -- porting note: was `simp_rw [pow_add, pow_mul]`
+  -- leanprover/lean4#1926 is to blame.
+  refine (forall_prop_congr' (hq := fun property => Iff.rfl) (
+    show xv ∈ LinearMap.range (ι Q) ^ (2 * k + ZMod.val n)
+        ↔ xv ∈ (LinearMap.range (ι Q) ^ 2) ^ k * LinearMap.range (ι Q) ^ ZMod.val n by
+      simp_rw [pow_add, pow_mul])).mpr ?_
+  -- end porting note
+  intro hxv
+  induction hxv using Submodule.mul_induction_on' with
+  | hm a ha b hb =>
+    induction ha using Submodule.pow_induction_on_left' with
+    | hr r =>
       simp_rw [← Algebra.smul_def]
       exact hr _ (Submodule.smul_mem _ _ hb)
-    · intro x y n hx hy
+    | hadd x y n hx hy ihx ihy =>
       simp_rw [add_mul]
-      apply hadd
-    · intro x hx n y hy ihy
+      apply hadd ihx ihy
+    | hmul x hx n'' y hy ihy =>
       revert hx
-      simp_rw [pow_two]
-      refine' Submodule.mul_induction_on' _ _
-      · simp_rw [LinearMap.mem_range]
-        rintro _ ⟨m₁, rfl⟩ _ ⟨m₂, rfl⟩
+      -- porting note: was `simp_rw [pow_two]`
+      -- leanprover/lean4#1926 is to blame.
+      let hlean1926'' : x ∈ LinearMap.range (ι Q) ^ 2
+          ↔ x ∈ LinearMap.range (ι Q) * LinearMap.range (ι Q) := by
+        rw [pow_two]
+      refine (forall_prop_congr' (hq := fun property => Iff.rfl) hlean1926'').mpr ?_
+      -- end porting note
+      intro hx2
+      induction hx2 using Submodule.mul_induction_on' with
+      | hm m hm n hn =>
+        simp_rw [LinearMap.mem_range] at hm hn
+        obtain ⟨m₁, rfl⟩ := hm; obtain ⟨m₂, rfl⟩ := hn
         simp_rw [mul_assoc _ y b]
         refine' hιι_mul _ _ ihy
-      · intro x hx y hy ihx ihy
+      | ha x hx y hy ihx ihy =>
         simp_rw [add_mul]
         apply hadd ihx ihy
-  · intro x y hx hy
-    apply hadd
+  | ha x y hx hy ihx ihy =>
+    apply hadd ihx ihy
 #align clifford_algebra.even_odd_induction CliffordAlgebra.evenOdd_induction
 
 /-- To show a property is true on the even parts, it suffices to show it is true on the
