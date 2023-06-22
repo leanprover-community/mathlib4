@@ -92,29 +92,23 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   specialize hf c hc
   have hcs : c ∈ s := by
-    cases' hc.1.eq_or_lt with heq hlt
-    · rwa [← heq]
+    rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
     refine' ⟨hc, fun hcf => hf fun U hU => _⟩
-    rcases(mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU) with
-      ⟨x, hxc, hxU⟩
-    rcases((hsc.frequently_mem ⟨a, ha⟩).and_eventually
-          (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with
-      ⟨y, ⟨_hyab, hyf⟩, hy⟩
+    rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
+      with ⟨x, hxc, hxU⟩
+    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
+      (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with ⟨y, ⟨_hyab, hyf⟩, hy⟩
     refine' mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans _ hxU)
     rw [diff_subset_iff]
-    exact
-      Subset.trans Icc_subset_Icc_union_Ioc
-        (union_subset_union Subset.rfl <| Ioc_subset_Ioc_left hy.1.le)
-  cases' hc.2.eq_or_lt with heq hlt
-  · rw [← heq]
-    exact hcs.2
+    exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
+      Ioc_subset_Ioc_left hy.1.le
+  rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
   contrapose! hf
   intro U hU
   rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
-  refine' mem_of_superset _ hyU
-  clear! U
+  refine' mem_of_superset _ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f
   · refine' mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) _
@@ -187,7 +181,7 @@ theorem IsCompact.exists_isLeast {s : Set α} (hs : IsCompact s) (ne_s : s.Nonem
 
 theorem IsCompact.exists_isGreatest {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempty) :
     ∃ x, IsGreatest s x :=
-  @IsCompact.exists_isLeast αᵒᵈ _ _ _ _ hs ne_s
+  IsCompact.exists_isLeast (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_is_greatest IsCompact.exists_isGreatest
 
 theorem IsCompact.exists_isGLB {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempty) :
@@ -197,7 +191,7 @@ theorem IsCompact.exists_isGLB {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempt
 
 theorem IsCompact.exists_isLUB {s : Set α} (hs : IsCompact s) (ne_s : s.Nonempty) :
     ∃ x ∈ s, IsLUB s x :=
-  @IsCompact.exists_isGLB αᵒᵈ _ _ _ _ hs ne_s
+  IsCompact.exists_isGLB (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_is_lub IsCompact.exists_isLUB
 
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
@@ -218,7 +212,7 @@ theorem IsCompact.exists_forall_le {s : Set β} (hs : IsCompact s) (ne_s : s.Non
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn : ∀ {s : Set β}, IsCompact s → s.Nonempty → ∀ {f : β → α},
     ContinuousOn f s → ∃ x ∈ s, IsMaxOn f s x :=
-  @IsCompact.exists_isMinOn αᵒᵈ _ _ _ _ _
+  IsCompact.exists_isMinOn (α := αᵒᵈ)
 
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 @[deprecated IsCompact.exists_isMaxOn]
@@ -254,7 +248,7 @@ smaller than a value in its image away from compact sets, then it has a maximum 
 theorem ContinuousOn.exists_isMaxOn' {s : Set β} {f : β → α} (hf : ContinuousOn f s)
     (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s) (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x ≤ f x₀) :
     ∃ x ∈ s, IsMaxOn f s x :=
-  @ContinuousOn.exists_isMinOn' αᵒᵈ _ _ _ _ _ _ _ hf hsc _ h₀ hc
+  ContinuousOn.exists_isMinOn' (α := αᵒᵈ) hf hsc h₀ hc
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 smaller than a value in its image away from compact sets, then it has a maximum on this set. -/
