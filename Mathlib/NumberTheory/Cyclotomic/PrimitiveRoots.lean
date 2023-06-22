@@ -381,8 +381,8 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
     simp only [pow_coe, cast_pow]
     congr
     have := FiniteDimensional.finrank_mul_finrank K K⟮η⟯ L
-    rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁, PNat.pow_coe,
-      PNat.pow_coe, Nat.totient_prime_pow hpri.out (k - s).succ_pos,
+    rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,
+      PNat.pow_coe, PNat.pow_coe, Nat.totient_prime_pow hpri.out (k - s).succ_pos,
       Nat.totient_prime_pow hpri.out k.succ_pos, mul_comm _ ((p : ℕ) - 1), mul_assoc,
       mul_comm ((p : ℕ) ^ (k.succ - 1))] at this
     replace this := mul_left_cancel₀ (tsub_pos_iff_lt.2 hpri.out.one_lt).ne' this
