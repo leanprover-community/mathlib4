@@ -23,13 +23,13 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 ## Main definitions
 
- * `set.integer`: `S`-integers.
- * `set.unit`: `S`-units.
+ * `Set.integer`: `S`-integers.
+ * `Set.unit`: `S`-units.
  * TODO: localised notation for `S`-integers.
 
 ## Main statements
 
- * `set.unit_equiv_units_integer`: `S`-units are units of `S`-integers.
+ * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
  * TODO: proof that `S`-units is the kernel of a map to a product.
  * TODO: proof that `∅`-integers is the usual ring of integers.
  * TODO: finite generation of `S`-units and Dirichlet's `S`-unit theorem.
