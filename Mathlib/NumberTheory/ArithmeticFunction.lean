@@ -1218,7 +1218,6 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_prop [CommGroup R] {f g : ℕ → R}
       ∀ n : ℕ, 0 < n → P n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
   @sum_eq_iff_sum_smul_moebius_eq_on_prop (Additive R) _ _ _ P hP
 
-
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
 values satisfying a well-behaved property. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero_on_prop [CommGroupWithZero R] {f g : ℕ → R}
@@ -1252,4 +1251,3 @@ end SpecialFunctions
 end ArithmeticFunction
 
 end Nat
-#lint
