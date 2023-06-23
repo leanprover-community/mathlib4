@@ -34,11 +34,6 @@ section GetElem
 
 end GetElem
 
--- Get rid of the following simp lemmas, so that we can keep `v[i]` as normal form, rather than
--- `v[i.1]`, when `i : Fin n`
--- TODO: remove this after https://github.com/leanprover/std4/pull/162 is merged
-attribute [-simp] getElem_fin getElem?_fin getElem!_fin
-
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
 def Vector (α : Type u) (n : ℕ) :=
