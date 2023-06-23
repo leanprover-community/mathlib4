@@ -233,16 +233,16 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
     constructor <;> · intro hj; simp [← hj] at hi
   rw [← sum_subset fs.subset_univ _]
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
-      pointsWithCircumcenter_point, Pi.sub_apply, pointsWithCircumcenter]
+      pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]
     rw [← sum_subset fs.subset_univ _]
     · simp_rw [sum_insert (not_mem_singleton.2 h), sum_singleton]
-      repeat' rw [← sum_subset fs.subset_univ _]
+      repeat rw [← sum_subset fs.subset_univ _]
       · simp_rw [sum_insert (not_mem_singleton.2 h), sum_singleton]
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
-      all_goals intro i hu hi; simp [hfs i hi]
-    · intro i hu hi
+      all_goals intro i _ hi; simp [hfs i hi]
+    · intro i _ hi
       simp [hfs i hi, pointsWithCircumcenter]
-  · intro i hu hi
+  · intro i _ hi
     simp [hfs i hi]
 #align affine.simplex.inner_monge_point_vsub_face_centroid_vsub Affine.Simplex.inner_mongePoint_vsub_face_centroid_vsub
 
