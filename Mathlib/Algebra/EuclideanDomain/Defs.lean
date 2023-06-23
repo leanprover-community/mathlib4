@@ -228,7 +228,7 @@ def xgcdAux (r s t r' s' t' : R) : R × R × R :=
   if _hr : r = 0 then (r', s', t')
   else
     let q := r' / r
-    have := mod_lt r' _hr
+    have _ := mod_lt r' _hr
     xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
 termination_by _ => r
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
