@@ -52,12 +52,11 @@ elab_rules : tactic
       let (fvar, goal) ← (← goal.define a.getId ty vale).intro1P
       pure (fvar, [goal])
     Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
-    let tt ← Term.exprToSyntax ty
     if rw.isNone then
       evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $tt) := rfl))
+      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $(← Term.exprToSyntax ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have%$tk $h : ($val : $tt) = $a := rfl))
+      evalTactic (← `(tactic| have%$tk $h : ($val : $(← Term.exprToSyntax ty)) = $a := rfl))
     | _, _ => pure ()
