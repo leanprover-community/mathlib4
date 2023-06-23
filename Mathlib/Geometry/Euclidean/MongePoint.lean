@@ -221,8 +221,8 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · simp [h]
   simp_rw [mongePoint_vsub_face_centroid_eq_weightedVSub_of_pointsWithCircumcenter s h,
     point_eq_affineCombination_of_pointsWithCircumcenter, affineCombination_vsub]
-  have hs : ∑ i, (pointWeightsWithCircumcenter i₁ - pointWeightsWithCircumcenter i₂) i = 0 :=
-    by simp
+  have hs : ∑ i, (pointWeightsWithCircumcenter i₁ - pointWeightsWithCircumcenter i₂) i = 0 := by
+    simp
   rw [inner_weightedVSub _ (sum_mongePointVSubFaceCentroidWeightsWithCircumcenter h) _ hs,
     sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter]
   simp only [mongePointVSubFaceCentroidWeightsWithCircumcenter,
@@ -360,8 +360,7 @@ theorem mem_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
 /-- The direction of an altitude. -/
 theorem direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     (s.altitude i).direction =
-      (vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) :=
-  by
+      (vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
   rw [altitude_def,
     direction_inf_of_mem (self_mem_mk' (s.points i) _) (mem_affineSpan ℝ (Set.mem_range_self _)),
     direction_mk', direction_affineSpan, direction_affineSpan]
@@ -492,12 +491,12 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
   simp [h₂₃, Submodule.span_insert_eq_span]
   -- porting note: this didn't need the `congr` and the `fin_cases`
   congr
-  fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+  fin_cases i₂ <;> fin_cases i₃ <;> simp at h₂₃ ⊢
 #align affine.triangle.altitude_eq_monge_plane Affine.Triangle.altitude_eq_mongePlane
 
 /-- The orthocenter lies in the altitudes. -/
-theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} : t.orthocenter ∈ t.altitude i₁ :=
-  by
+theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
+    t.orthocenter ∈ t.altitude i₁ := by
   obtain ⟨i₂, i₃, h₁₂, h₂₃, h₁₃⟩ : ∃ i₂ i₃, i₁ ≠ i₂ ∧ i₂ ≠ i₃ ∧ i₁ ≠ i₃ := by
     -- porting note: was `decide!`
     fin_cases i₁ <;> decide
@@ -593,10 +592,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- porting note: was `decide!`
-        sorry
-        /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
-        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
-        simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢-/
+        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₁₂ hj₁₃ hj₂₃ ⊢
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
@@ -611,10 +607,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
     clear h₁ h₂ h₃
     -- porting note: was `decide!`
-    sorry
-    /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
-    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
-    simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢ -/
+    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₁₂ hj₁₃ hj₂₃ ⊢
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
@@ -622,10 +615,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
     clear hle h₂ h₃
     -- porting note: was `decide!`
-    sorry
-    /-fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;>
-    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;>
-    simp at hi₁₂ hi₁₃ hi₂₃ hj₁₂ hj₁₃ hj₂₃ ⊢-/
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at hi₁₂ hi₁₃ hi₂₃ ⊢
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
   refine' vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 #align affine.triangle.altitude_replace_orthocenter_eq_affine_span Affine.Triangle.altitude_replace_orthocenter_eq_affineSpan
@@ -800,10 +790,9 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
     (⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩ | hs)
   · obtain ⟨j₁, hj₁₂, hj₁₃, hj₁₂₃⟩ :
       ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by
-      clear h₂ h₃;
+      clear h₂ h₃
       -- porting note: was `decide!`
-      fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> fin_cases j₂ <;> fin_cases j₃ <;>
-      simp at h₁₂ h₁₃ h₂₃ hj₂₃ ⊢
+      fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₂₃ ⊢
     suffices h : t₀.points j₁ = t.orthocenter
     · have hui : (Set.univ : Set (Fin 3)) = {i₁, i₂, i₃} := by ext x; simpa using h₁₂₃ x
       have huj : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by ext x; simpa using hj₁₂₃ x
