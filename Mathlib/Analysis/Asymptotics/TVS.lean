@@ -1,7 +1,9 @@
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.Convex.Gauge
 
 open Set Filter Topology Pointwise Asymptotics Metric
+open scoped ENNReal
 
 section TVS
 
@@ -9,15 +11,17 @@ variable  (𝕜 : Type _) [NontriviallyNormedField 𝕜] {α E F : Type _}
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
+-- I would argue this should be the general replacement for `gauge`, but I could be wrong
+noncomputable def gauge' (s : Set E) (x : E) : ℝ≥0∞ := sInf ((↑‖·‖₊) '' {k : 𝕜 | x ∈ k • s})
+
 def IsLittleOTVS (f : α → E) (g : α → F) (l : Filter α) : Prop :=
-  ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ c : ℝ, 0 < c →
-    ∀ᶠ x in l, ∀ b : 𝕜, b ≠ 0 → g x ∈ b • V → ∃ a : 𝕜, ‖a‖ ≤ c * ‖b‖ ∧ f x ∈ a • U
+  ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ (c : ℝ≥0∞), 0 < c → ∀ᶠ x in l, (gauge' 𝕜 U (f x)) ≤ c * (gauge' 𝕜 V (g x))
 
 theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type _} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
-    IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ c : ℝ, 0 < c →
-      ∀ᶠ x in l, ∀ b : 𝕜, b ≠ 0 → g x ∈ b • sF j → ∃ a : 𝕜, ‖a‖ ≤ c * ‖b‖ ∧ f x ∈ a • sE i := by
+    IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧
+     ((gauge' 𝕜 (sE i)) ∘ f) =o[l] ((gauge' 𝕜 (sF j)) ∘ g):= by
   refine (hE.forall_iff ?_).trans <| forall₂_congr fun i _ ↦ (hF.exists_iff ?_)
   · rintro U U' hUU' ⟨V, hV, hU⟩
     refine ⟨V, hV, fun c hc ↦ (hU c hc).mono fun x hx ↦ fun b hb₀ hb ↦ ?_⟩
