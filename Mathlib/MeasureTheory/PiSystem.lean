@@ -107,7 +107,7 @@ theorem IsPiSystem.insert_univ {α} {S : Set (Set α)} (h_pi : IsPiSystem S) :
 theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : α → β) :
     IsPiSystem { s : Set α | ∃ t ∈ S, f ⁻¹' t = s } := by
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
-  rw [← Set.preimage_inter] at hst⊢
+  rw [← Set.preimage_inter] at hst ⊢
   refine' ⟨s ∩ t, h_pi s hs_mem t ht_mem _, rfl⟩
   by_contra h
   rw [Set.not_nonempty_iff_eq_empty] at h
@@ -119,7 +119,7 @@ theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
     IsPiSystem (⋃ n, p n) := by
   intro t1 ht1 t2 ht2 h
-  rw [Set.mem_iUnion] at ht1 ht2⊢
+  rw [Set.mem_iUnion] at ht1 ht2 ⊢
   cases' ht1 with n ht1
   cases' ht2 with m ht2
   obtain ⟨k, hpnk, hpmk⟩ : ∃ k, p n ≤ p k ∧ p m ≤ p k := hp_directed n m
@@ -297,7 +297,7 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
       constructor <;> intro h1 b <;> by_cases hbs : b ∈ T_s <;> by_cases hbt : b ∈ T_t' <;>
           specialize h1 b <;>
         simp only [hbs, hbt, if_true, if_false, true_imp_iff, and_self_iff, false_imp_iff,
-          and_true_iff, true_and_iff] at h1⊢
+          and_true_iff, true_and_iff] at h1 ⊢
       all_goals exact h1
     intro b h_b
     -- Porting note: `simp only` required for a beta reduction
@@ -439,7 +439,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     simp only [inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
     refine' ⟨fun h i _ => _, fun h => ⟨fun i hi1 => _, fun i hi2 => _⟩⟩
     · split_ifs with h_1 h_2 h_2
-      exacts[⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
+      exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
         ⟨Set.mem_univ _, Set.mem_univ _⟩]
     · specialize h i (Or.inl hi1)
       rw [if_pos hi1] at h

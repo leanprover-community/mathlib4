@@ -32,7 +32,7 @@ The relevant constructions needed for the universal properties of these construc
   functor which was lifted.
 3. `liftUnique` provides the uniqueness property of `lift`.
 
-In addition to this, we provide `WithTerminal.map` and `WithInitinal.map` providing the
+In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
 functoriality of these constructions with respect to functors on the base categories.
 
 -/

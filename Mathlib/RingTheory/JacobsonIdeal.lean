@@ -169,7 +169,7 @@ theorem eq_jacobson_iff_not_mem :
   constructor
   · intro h x hx
     erw [← h, mem_sInf] at hx
-    push_neg  at hx
+    push_neg at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
@@ -233,7 +233,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx⊢
+  erw [mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 #align ideal.jacobson_mono Ideal.jacobson_mono
 
@@ -341,7 +341,7 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
   simp only [coeff_add, mul_coeff_zero, coeff_X_zero, mul_zero, coeff_one_zero, zero_add] at r2
   erw [add_left_eq_self] at r2
   simpa using (mul_eq_zero.mp r2).resolve_right r1
-  -- Poring note: this is golfed to much
+  -- Porting note: this is golfed to much
   -- simpa [(fun hX => by simpa using congr_arg (fun f => coeff f 1) hX : (X : (R ⧸ j)[X]) ≠ 0)]
   --   using eq_C_of_degree_eq_zero (degree_eq_zero_of_is_unit ((mem_jacobson_bot.1 hf) X))
 #align ideal.jacobson_bot_polynomial_le_Inf_map_maximal Ideal.jacobson_bot_polynomial_le_sInf_map_maximal

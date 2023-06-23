@@ -87,7 +87,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α
     rw [Finset.sup'_le_iff]
     intro k hk
     refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range] at hk⊢
+    rw [Finset.mem_range] at hk ⊢
     exact hk.trans_le (add_le_add_right hij _)
   refine' ⟨xs, h_mono, _⟩
   · refine' tendsto_atTop_atTop_of_monotone h_mono _

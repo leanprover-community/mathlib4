@@ -213,7 +213,7 @@ theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
-    exacts[sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
+    exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 #align real.sqrt_eq_cases Real.sqrt_eq_cases
 
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : sqrt x = y ↔ y * y = x :=

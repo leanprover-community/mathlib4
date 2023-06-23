@@ -86,7 +86,7 @@ theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
 #align real.cocompact_eq Real.cocompact_eq
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
-lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (λp:ℚ, p + r) :=
+lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
 
 lemma uniform_embedding_mul_rat {q : ℚ} (hq : q ≠ 0) : uniform_embedding ((*) q) :=
@@ -171,12 +171,13 @@ theorem closure_of_rat_image_lt {q : ℚ} :
 #align closure_of_rat_image_lt closure_of_rat_image_lt
 
 /- TODO(Mario): Put these back only if needed later
-lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe:ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
-_
+lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
+  _
 
 lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
-  closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
-_-/
+    closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
+  _
+-/
 theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelow s ∧ BddAbove s :=
   ⟨by
     intro bdd

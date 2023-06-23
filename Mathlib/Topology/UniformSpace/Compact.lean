@@ -108,8 +108,8 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
     -- Since γ is compact and Hausdorff, it is normal, hence T₃.
     haveI : NormalSpace γ := normalOfCompactT2
-    -- So there are closed neighboords V₁ and V₂ of x and y contained in disjoint open neighborhoods
-    -- U₁ and U₂.
+    -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
+    -- disjoint open neighborhoods U₁ and U₂.
     obtain
       ⟨U₁, _, V₁, V₁_in, U₂, _, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
       disjoint_nested_nhds x_ne_y
@@ -201,7 +201,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
   refine' ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
-  exacts[mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
+  exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}

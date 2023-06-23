@@ -89,7 +89,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     haveI : HasEqualizer (𝟙 X) p := h X p hp
     refine' ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), _, equalizer.lift_ι _ _⟩
-    apply equalizer.hom_ext
+    ext
     simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
@@ -131,8 +131,9 @@ instance (priority := 100) isIdempotentComplete_of_abelian (D : Type _) [Categor
 variable {C}
 
 theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
-    (hpp' : p ≫ φ.hom = φ.hom ≫ p') (h : ∃ (Y : C)(i : Y ⟶ X)(e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
-    ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
+    (hpp' : p ≫ φ.hom = φ.hom ≫ p')
+    (h : ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
+    ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   rcases h with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
   use Y, i ≫ φ.hom, φ.inv ≫ e
   constructor
@@ -144,8 +145,8 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
 
 theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
-    (∃ (Y : C)(i : Y ⟶ X)(e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) ↔
-      ∃ (Y' : C)(i' : Y' ⟶ X')(e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
+    (∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) ↔
+      ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   constructor
   · exact split_imp_of_iso φ p p' hpp'
   · apply split_imp_of_iso φ.symm p' p

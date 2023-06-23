@@ -75,7 +75,7 @@ variable (r : α → α → Prop) (s : β → β → Prop)
 instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) :=
   ⟨by
     rintro (a | a)
-    exacts[Lex.inl (refl _), Lex.inr (refl _)]⟩
+    exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
 instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
@@ -83,7 +83,7 @@ instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
 instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
-    exacts[.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
+    exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩

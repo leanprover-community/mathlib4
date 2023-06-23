@@ -21,9 +21,9 @@ def orElse : Ordering → Ordering → Ordering
 
 /-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
 def toRel [LT α] : Ordering → α → α → Prop
-| .lt => (· < ·)
-| .eq => Eq
-| .gt => (· > ·)
+  | .lt => (· < ·)
+  | .eq => Eq
+  | .gt => (· > ·)
 
 end Ordering
 

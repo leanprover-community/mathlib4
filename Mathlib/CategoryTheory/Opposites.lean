@@ -576,13 +576,13 @@ adjunctions.
 Note that this (definitionally) gives variants
 ```
 def opEquiv' (A : C) (B : Cᵒᵖ) : (Opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
-opEquiv _ _
+  opEquiv _ _
 
 def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ Opposite.op B) ≃ (B ⟶ A.unop) :=
-opEquiv _ _
+  opEquiv _ _
 
 def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
-opEquiv _ _
+  opEquiv _ _
 ```
 -/
 @[simps]
