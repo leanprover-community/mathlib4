@@ -277,7 +277,7 @@ theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
       fun a t hat ih ht => _
-  rw [Finset.forall_mem_insert] at ht⊢
+  rw [Finset.forall_mem_insert] at ht ⊢
   rw [Finset.prod_insert hat, splits_mul_iff i ht.1 (Finset.prod_ne_zero_iff.2 ht.2), ih ht.2]
 #align polynomial.splits_prod_iff Polynomial.splits_prod_iff
 

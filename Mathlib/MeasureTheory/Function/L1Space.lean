@@ -521,13 +521,13 @@ theorem Integrable.mono_measure {f : α → β} (h : Integrable f ν) (hμ : μ 
 
 theorem Integrable.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → β} (hf : Integrable f μ) : Integrable f μ' := by
-  rw [← memℒp_one_iff_integrable] at hf⊢
+  rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.of_measure_le_smul c hc hμ'_le
 #align measure_theory.integrable.of_measure_le_smul MeasureTheory.Integrable.of_measure_le_smul
 
 theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : Integrable f ν) :
     Integrable f (μ + ν) := by
-  simp_rw [← memℒp_one_iff_integrable] at hμ hν⊢
+  simp_rw [← memℒp_one_iff_integrable] at hμ hν ⊢
   refine' ⟨hμ.aestronglyMeasurable.add_measure hν.aestronglyMeasurable, _⟩
   rw [snorm_one_add_measure, ENNReal.add_lt_top]
   exact ⟨hμ.snorm_lt_top, hν.snorm_lt_top⟩
@@ -696,19 +696,19 @@ theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun
 
 theorem Integrable.inf {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊓ g) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hg⊢
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.inf hg
 #align measure_theory.integrable.inf MeasureTheory.Integrable.inf
 
 theorem Integrable.sup {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊔ g) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hg⊢
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 #align measure_theory.integrable.sup MeasureTheory.Integrable.sup
 
 theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
-  rw [← memℒp_one_iff_integrable] at hf⊢
+  rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.abs
 #align measure_theory.integrable.abs MeasureTheory.Integrable.abs
 
