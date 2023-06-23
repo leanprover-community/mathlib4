@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Geometry.Manifold.ContMdiff
+import Mathlib.Geometry.Manifold.ContMDiff
 import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
