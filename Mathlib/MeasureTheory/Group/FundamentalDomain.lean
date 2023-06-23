@@ -752,7 +752,11 @@ lemma _root_.Set.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s 
   · exact measurableSet_quotient.mp meas_U
   · intro g
     simp only
-    sorry
+    ext x
+    have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x
+    · sorry
+    aesop
+
 
 end FundamentalDomainMeasure
 
