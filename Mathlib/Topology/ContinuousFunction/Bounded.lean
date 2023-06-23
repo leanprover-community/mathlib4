@@ -329,7 +329,7 @@ theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x 
 /-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
 @[continuity]
 theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
-  (continuous_prod_of_continuous_lipschitz _ 1 fun f => f.continuous) <| lipschitz_evalx
+  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f => f.continuous) <| lipschitz_evalx
 #align bounded_continuous_function.continuous_eval BoundedContinuousFunction.continuous_eval
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
