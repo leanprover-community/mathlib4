@@ -1886,6 +1886,63 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
   PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_cast n⟩
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
+theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
+  toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    simp only [toPartENat_apply_of_lt_aleph0 hc, PartENat.natCast_ne_top, false_iff, not_le, hc]
+  | inr hc => simp only [toPartENat_apply_of_aleph0_le hc, eq_self_iff_true, true_iff]; exact hc
+#align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
+
+lemma toPartENat_le_iff_le_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+    | inr hc' =>
+      simp only [toPartENat_apply_of_aleph0_le hc',
+      le_top, true_iff]
+      exact le_trans h hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0,
+    le_antisymm h hc]
+#align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_le_of_le_aleph0
+
+lemma toPartENat_le_iff_le_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+    exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0]
+    rw [← not_iff_not, not_le, not_le]
+    simp only [hc', lt_of_lt_of_le hc' hc]
+#align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_le_of_lt_aleph0
+
+theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
+  toPartENat c ≤ toPartENat c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_of_le_of_lt_aleph0 hc' h
+    | inr hc' =>
+        rw [toPartENat_apply_of_aleph0_le hc']
+        exact le_top
+  | inr hc =>
+      rw [toPartENat_apply_of_aleph0_le hc,
+      toPartENat_apply_of_aleph0_le (le_trans hc h)]
+#align cardinal.to_part_enat_mono Cardinal.toPartENat_mono
 
 theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPartENat c := by
   cases' lt_or_ge c ℵ₀ with hc hc

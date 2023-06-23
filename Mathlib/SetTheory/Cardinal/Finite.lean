@@ -169,20 +169,19 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
 
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s :=
-  card_congr (Equiv.Set.imageOfInjOn f s (Set.injOn_of_injective h s)).symm
+  card_image_of_injOn (Set.injOn_of_injective h s)
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
-
--- Add other similar lemmas?
-theorem succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
-  rw [coe_lt_iff, coe_le_iff]
-  apply forall_congr'; intro a; rw [Nat.succ_le_iff]
-#align part_enat.succ_le_iff PartENat.succ_le_iff
 
 /- The line
 -- obtain ⟨m, hm⟩ := cardinal.lt_aleph_0.mp h,
 extract an integer m from a cardinal c such that h : c < ℵ₀
 It may appear easier to use than the rewrites I finally use … -/
-theorem natCast_le_iff_le {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
+
+theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
+  rw [← toPartENat_cast n, toPartENat_le_iff_le_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+#align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
+
+/- theorem natCast_le_iff_le {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   cases lt_or_ge c ℵ₀ with
   | inl h =>
     . rw [toPartENat_apply_of_lt_aleph0 h, coe_le_coe, ← toNat_cast n];
@@ -196,7 +195,13 @@ theorem natCast_le_iff_le {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ �
         rw [lt_aleph0]
         use n
 #align part_enat.coe_nat_le_iff_le PartENat.natCast_le_iff_le
+-/
 
+theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
+  rw [← toPartENat_cast n, toPartENat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 n)]
+#align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
+
+/-
 theorem le_natCast_iff_le {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
   cases lt_or_ge c ℵ₀ with
   | inl h =>
@@ -210,8 +215,14 @@ theorem le_natCast_iff_le {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c �
       · rw [not_le]
         apply lt_of_lt_of_le (nat_lt_aleph0 n) h
 #align part_enat.le_coe_nat_iff_le PartENat.le_natCast_iff_le
+-/
 
-theorem natCast_eq_iff_eq {n : ℕ} {c : Cardinal} : ↑n = toPartENat c ↔ ↑n = c := by
+theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
+  ↑n = toPartENat c ↔ ↑n = c := by
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff, Cardinal.natCast_le_toPartENat_iff]
+#align cardinal.coe_nat_eq_to_part_enat_iff Cardinal.natCast_eq_toPartENat_iff
+
+/- theorem natCast_eq_iff_eq {n : ℕ} {c : Cardinal} : ↑n = toPartENat c ↔ ↑n = c := by
   cases lt_or_ge c Cardinal.aleph0 with
   | inl h =>
     · rw [toPartENat_apply_of_lt_aleph0 h, natCast_inj]
@@ -225,12 +236,13 @@ theorem natCast_eq_iff_eq {n : ℕ} {c : Cardinal} : ↑n = toPartENat c ↔ ↑
       · apply ne_of_lt
         apply lt_of_lt_of_le (nat_lt_aleph0 n) h
 #align part_enat.coe_nat_eq_iff_eq PartENat.natCast_eq_iff_eq
+-/
 
-theorem eq_natCast_iff_eq {c : Cardinal} {n : ℕ} : Cardinal.toPartENat c = n ↔ c = n := by
-  constructor
-  · intro h; apply symm; exact natCast_eq_iff_eq.mp h.symm
-  · intro h; apply symm; exact natCast_eq_iff_eq.mpr h.symm
-#align part_enat.eq_coe_nat_iff_eq PartENat.eq_natCast_iff_eq
+theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} : Cardinal.toPartENat c = n ↔ c = n := by
+rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+#align cardinal.to_part_nat_eq_coe_nat_iff_eq Cardinal.toPartENat_eq_natCast_iff
+
+-- TODO
 
 theorem natCast_lt_coe_iff_lt {n : ℕ} {c : Cardinal} : ↑n < toPartENat c ↔ ↑n < c := by
   cases lt_or_ge c ℵ₀ with
