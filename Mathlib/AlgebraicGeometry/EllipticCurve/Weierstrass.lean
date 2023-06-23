@@ -99,6 +99,21 @@ structure WeierstrassCurve (R : Type u) where
 
 namespace WeierstrassCurve
 
+/-- The `a₁` coefficient of a Weierstrass curve. -/
+add_decl_doc a₁
+
+/-- The `a₂` coefficient of a Weierstrass curve. -/
+add_decl_doc a₂
+
+/-- The `a₃` coefficient of a Weierstrass curve. -/
+add_decl_doc a₃
+
+/-- The `a₄` coefficient of a Weierstrass curve. -/
+add_decl_doc a₄
+
+/-- The `a₆` coefficient of a Weierstrass curve. -/
+add_decl_doc a₆
+
 instance [Inhabited R] : Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
 #align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
@@ -109,26 +124,26 @@ section Quantity
 
 /-! ### Standard quantities -/
 
+-- porting note: removed `@[simp]`
 /-- The `b₂` coefficient of a Weierstrass curve. -/
-@[simp]
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
 #align weierstrass_curve.b₂ WeierstrassCurve.b₂
 
+-- porting note: removed `@[simp]`
 /-- The `b₄` coefficient of a Weierstrass curve. -/
-@[simp]
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
 #align weierstrass_curve.b₄ WeierstrassCurve.b₄
 
+-- porting note: removed `@[simp]`
 /-- The `b₆` coefficient of a Weierstrass curve. -/
-@[simp]
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
 #align weierstrass_curve.b₆ WeierstrassCurve.b₆
 
+-- porting note: removed `@[simp]`
 /-- The `b₈` coefficient of a Weierstrass curve. -/
-@[simp]
 def b₈ : R :=
   W.a₁ ^ 2 * W.a₆ + 4 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2
 #align weierstrass_curve.b₈ WeierstrassCurve.b₈
@@ -138,23 +153,23 @@ lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   ring1
 #align weierstrass_curve.b_relation WeierstrassCurve.b_relation
 
+-- porting note: removed `@[simp]`
 /-- The `c₄` coefficient of a Weierstrass curve. -/
-@[simp]
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
 #align weierstrass_curve.c₄ WeierstrassCurve.c₄
 
+-- porting note: removed `@[simp]`
 /-- The `c₆` coefficient of a Weierstrass curve. -/
-@[simp]
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
 #align weierstrass_curve.c₆ WeierstrassCurve.c₆
 
+-- porting note: removed `@[simp]`
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
 [the LMFDB page on discriminants](https://www.lmfdb.org/knowledge/show/ec.discriminant). -/
-@[simp]
 def Δ : R :=
   -W.b₂ ^ 2 * W.b₈ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2 + 9 * W.b₂ * W.b₄ * W.b₆
 #align weierstrass_curve.Δ WeierstrassCurve.Δ
@@ -227,7 +242,8 @@ lemma variableChange_c₆ : (W.variableChange u r s t).c₆ = (↑u⁻¹ : R) ^ 
 
 @[simp]
 lemma variableChange_Δ : (W.variableChange u r s t).Δ = (↑u⁻¹ : R) ^ 12 * W.Δ := by
-  dsimp
+  simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
+    variableChange_a₄, variableChange_a₆]
   ring1
 #align weierstrass_curve.variable_change_Δ WeierstrassCurve.variableChange_Δ
 
@@ -283,7 +299,7 @@ lemma baseChange_c₆ : (W.baseChange A).c₆ = algebraMap R A W.c₆ := by
   map_simp
 #align weierstrass_curve.base_change_c₆ WeierstrassCurve.baseChange_c₆
 
-@[simp, nolint simpNF]
+@[simp]
 lemma baseChange_Δ : (W.baseChange A).Δ = algebraMap R A W.Δ := by
   simp only [Δ, baseChange_b₂, baseChange_b₄, baseChange_b₆, baseChange_b₈]
   map_simp
@@ -311,7 +327,7 @@ def twoTorsionPolynomial : Cubic R :=
 #align weierstrass_curve.two_torsion_polynomial WeierstrassCurve.twoTorsionPolynomial
 
 lemma twoTorsionPolynomial_disc : W.twoTorsionPolynomial.disc = 16 * W.Δ := by
-  dsimp [twoTorsionPolynomial, Cubic.disc]
+  simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.disc]
   ring1
 #align weierstrass_curve.two_torsion_polynomial_disc WeierstrassCurve.twoTorsionPolynomial_disc
 
@@ -328,8 +344,10 @@ lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] (hΔ
 
 end TorsionPolynomial
 
+/-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
 scoped[PolynomialPolynomial] notation "Y" => Polynomial.X
 
+/-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
 scoped[PolynomialPolynomial] notation R "[X][Y]" => Polynomial (Polynomial R)
 
 section Polynomial
@@ -352,7 +370,7 @@ open scoped Polynomial PolynomialPolynomial
 Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
 of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
 For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `PolynomialPolynomial`
-locale to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
+scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 protected noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
 #align weierstrass_curve.polynomial WeierstrassCurve.polynomial
@@ -371,13 +389,13 @@ lemma polynomial_ne_zero [Nontrivial R] : W.polynomial ≠ 0 := by
   exact Cubic.ne_zero_of_b_ne_zero one_ne_zero
 #align weierstrass_curve.polynomial_ne_zero WeierstrassCurve.polynomial_ne_zero
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma degree_polynomial [Nontrivial R] : W.polynomial.degree = 2 := by
   rw [polynomial_eq]
   exact Cubic.degree_of_b_ne_zero' one_ne_zero
 #align weierstrass_curve.degree_polynomial WeierstrassCurve.degree_polynomial
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma natDegree_polynomial [Nontrivial R] : W.polynomial.natDegree = 2 := by
   rw [polynomial_eq]
   exact Cubic.natDegree_of_b_ne_zero' one_ne_zero
@@ -404,7 +422,7 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   · rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.irreducible_polynomial
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma eval_polynomial (x y : R) :
     (W.polynomial.eval <| C y).eval x =
       y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
@@ -431,7 +449,7 @@ lemma equation_iff' (x y : R) :
   rw [WeierstrassCurve.equation, eval_polynomial]
 #align weierstrass_curve.equation_iff' WeierstrassCurve.equation_iff'
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma equation_iff (x y : R) :
     W.equation x y ↔ y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ := by
   rw [equation_iff', sub_eq_zero]
@@ -474,7 +492,7 @@ protected noncomputable def polynomialX : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_X WeierstrassCurve.polynomialX
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma eval_polynomialX (x y : R) :
     (W.polynomialX.eval <| C y).eval x = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [WeierstrassCurve.polynomialX]
@@ -498,7 +516,7 @@ protected noncomputable def polynomialY : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_Y WeierstrassCurve.polynomialY
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma eval_polynomialY (x y : R) :
     (W.polynomialY.eval <| C y).eval x = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [WeierstrassCurve.polynomialY]
@@ -527,7 +545,7 @@ lemma nonsingular_iff' (x y : R) :
   rw [WeierstrassCurve.nonsingular, equation_iff', eval_polynomialX, eval_polynomialY]
 #align weierstrass_curve.nonsingular_iff' WeierstrassCurve.nonsingular_iff'
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma nonsingular_iff (x y : R) :
     W.nonsingular x y ↔
       W.equation x y ∧ (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
@@ -568,7 +586,8 @@ lemma nonsingular_iff_baseChange_of_baseChange [Nontrivial B] [NoZeroSMulDivisor
 lemma nonsingular_zero_of_Δ_ne_zero (h : W.equation 0 0) (hΔ : W.Δ ≠ 0) : W.nonsingular 0 0 := by
   simp only [equation_zero, nonsingular_zero] at *
   contrapose! hΔ
-  simp [h, hΔ]
+  simp only [b₂, b₄, b₆, b₈, Δ, h, hΔ]
+  ring1
 #align weierstrass_curve.nonsingular_zero_of_Δ_ne_zero WeierstrassCurve.nonsingular_zero_of_Δ_ne_zero
 
 /-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
@@ -624,8 +643,8 @@ instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Weierst
 
 variable (x : R) (y : R[X])
 
+-- porting note: removed `@[simp]`
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
-@[simp]
 noncomputable def XClass : W.CoordinateRing :=
   mk W <| C <| X - C x
 set_option linter.uppercaseLean3 false in
@@ -637,8 +656,8 @@ lemma XClass_ne_zero [Nontrivial R] : XClass W x ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_class_ne_zero WeierstrassCurve.CoordinateRing.XClass_ne_zero
 
+-- porting note: removed `@[simp]`
 /-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
-@[simp]
 noncomputable def YClass : W.CoordinateRing :=
   mk W <| Y - C y
 set_option linter.uppercaseLean3 false in
@@ -650,22 +669,22 @@ lemma YClass_ne_zero [Nontrivial R] : YClass W y ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_class_ne_zero WeierstrassCurve.CoordinateRing.YClass_ne_zero
 
+-- porting note: removed `@[simp]`
 /-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
-@[simp]
 noncomputable def XIdeal : Ideal W.CoordinateRing :=
   span {XClass W x}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_ideal WeierstrassCurve.CoordinateRing.XIdeal
 
+-- porting note: removed `@[simp]`
 /-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
-@[simp]
 noncomputable def YIdeal : Ideal W.CoordinateRing :=
   span {YClass W y}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_ideal WeierstrassCurve.CoordinateRing.YIdeal
 
+-- porting note: removed `@[simp]`
 /-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
-@[simp]
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
 set_option linter.uppercaseLean3 false in
@@ -718,15 +737,19 @@ lemma basis_apply (n : Fin 2) :
   rfl
 #align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.CoordinateRing.basis_apply
 
+-- porting note: added `@[simp]`
+@[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 #align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.CoordinateRing.basis_zero
 
+-- porting note: added `@[simp]`
+@[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 #align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.CoordinateRing.basis_one
 
-@[simp]
+-- porting note: removed `@[simp]`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -868,14 +891,22 @@ structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R whe
 
 namespace EllipticCurve
 
+/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
+add_decl_doc Δ'
+
+/-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
+add_decl_doc coe_Δ'
+
 instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve ℚ :=
-  ⟨⟨⟨0, 0, 1, -1, 0⟩, ⟨37, 37⁻¹, by norm_num1, by norm_num1⟩, by dsimp; ring1⟩⟩
+  ⟨⟨⟨0, 0, 1, -1, 0⟩, ⟨37, 37⁻¹, by norm_num1, by norm_num1⟩,
+    by simp only [WeierstrassCurve.b₂, WeierstrassCurve.b₄, WeierstrassCurve.b₆,
+      WeierstrassCurve.b₈, WeierstrassCurve.Δ]; ring1⟩⟩
 #align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 
 variable [CommRing R] (E : EllipticCurve R)
 
+-- porting note: removed `@[simp]`
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
-@[simp]
 def j : R :=
   ↑E.Δ'⁻¹ * E.c₄ ^ 3
 #align elliptic_curve.j EllipticCurve.j
@@ -895,11 +926,11 @@ section VariableChange
 
 variable (u : Rˣ) (r s t : R)
 
+-- porting note: was just `@[simps]`
 /-- The elliptic curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
---Porting note: was just `@[simps]`
-@[simps (config := { rhsMd := .default}) Δ' a₁ a₂ a₃ a₄ a₆]
+@[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
 def variableChange : EllipticCurve R :=
   ⟨E.toWeierstrassCurve.variableChange u r s t, u⁻¹ ^ 12 * E.Δ', by
     rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
@@ -918,7 +949,8 @@ lemma coe_inv_variableChange_Δ' :
 lemma variableChange_j : (E.variableChange u r s t).j = E.j := by
   rw [j, coe_inv_variableChange_Δ']
   have hu : (u * ↑u⁻¹ : R) ^ 12 = 1 := by rw [u.mul_inv, one_pow]
-  linear_combination (norm := (dsimp; ring1)) E.j * hu
+  linear_combination (norm := (rw [variableChange_toWeierstrassCurve,
+    WeierstrassCurve.variableChange_c₄, j]; ring1)) E.j * hu
 #align elliptic_curve.variable_change_j EllipticCurve.variableChange_j
 
 end VariableChange
@@ -929,9 +961,9 @@ section BaseChange
 
 variable (A : Type v) [CommRing A] [Algebra R A]
 
+-- porting note: was just `@[simps]`
 /-- The elliptic curve over `R` base changed to `A`. -/
---Porting note: was just `@[simps]`
-@[simps (config := { rhsMd := .default}) Δ' a₁ a₂ a₃ a₄ a₆]
+@[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
 def baseChange : EllipticCurve A :=
   ⟨E.toWeierstrassCurve.baseChange A, Units.map (↑(algebraMap R A)) E.Δ',
     by simp only [Units.coe_map, coe_Δ', E.baseChange_Δ]; rfl⟩
