@@ -545,8 +545,11 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
     ∃ i₃, univ \ ({i₁, i₂} : Finset (Fin 3)) = {i₃} ∧ i₃ ≠ i₁ ∧ i₃ ≠ i₂ := by
       -- porting note: was `decide!`
       fin_cases i₁ <;> fin_cases i₂ <;> simp at h <;> decide
-  simp_rw [← sum_sdiff hu, hi₃]
-  simp [hi₃₁, hi₃₂]
+  -- Porting note: Original proof was `simp_rw [← sum_sdiff hu, hi₃]; simp [hi₃₁, hi₃₂]; norm_num`
+  rw [← sum_sdiff hu, ← sum_sdiff hu, hi₃, sum_singleton, ← sum_sdiff hu, hi₃]
+  split_ifs with h
+  · exact (h.elim hi₃₁ hi₃₂).elim
+  simp [h]
   norm_num
 #align affine.triangle.dist_orthocenter_reflection_circumcenter Affine.Triangle.dist_orthocenter_reflection_circumcenter
 
