@@ -134,9 +134,7 @@ instance : Xor (Bitvec n) :=
 
 end Bitwise
 
-/-! ### Arithmetic operators -/
-
-
+/-! ### Addition, Subtraction and Negation -/
 section Arith
 
 variable {n : ℕ}
@@ -189,15 +187,6 @@ instance : Sub (Bitvec n) :=
 instance : Neg (Bitvec n) :=
   ⟨Bitvec.neg⟩
 
-/-- The product of two bitvectors -/
-protected def mul (x y : Bitvec n) : Bitvec n :=
-  let f r b := cond b (r + r + y) (r + r)
-  (toList x).foldl f 0
-#align bitvec.mul Bitvec.mul
-
-instance : Mul (Bitvec n) :=
-  ⟨Bitvec.mul⟩
-
 end Arith
 
 
@@ -219,10 +208,18 @@ section Constants
     | succ n => replicate n false++ₜtrue ::ᵥ nil
   #align bitvec.one Bitvec.one
 
+  instance : Zero (Bitvec n) :=
+    ⟨Bitvec.zero n⟩
+
+  instance : One (Bitvec n) :=
+    ⟨Bitvec.one n⟩
+
+
   /-- The bitvector `1111..`, whose entries are all `1`, represents the value `-1` as a signed
       integer, or `(2^n)-1` as an unsigned integer. This corresponds to the maximal unsigned value
   -/
-  abbrev negOne (n : ℕ) : Bitvec n :=
+  @[reducible, simp]
+  def negOne (n : ℕ) : Bitvec n :=
     -1
 
   /--
@@ -244,12 +241,6 @@ section Constants
     | n+1 => true ::ᵥ Bitvec.zero n
 
 
-  instance : Zero (Bitvec n) :=
-    ⟨Bitvec.zero n⟩
-
-  instance : One (Bitvec n) :=
-    ⟨Bitvec.one n⟩
-
   /-- Define the all-zero bitpattern as the bottom element of `Bitvec n` -/
   instance : Bot (Bitvec n) :=
     ⟨Bitvec.zero n⟩
@@ -259,6 +250,21 @@ section Constants
     ⟨Bitvec.negOne n⟩
 
 end Constants
+
+
+
+/-! ### Multiplication -/
+section Arith
+
+/-- The product of two bitvectors -/
+protected def mul (x y : Bitvec n) : Bitvec n :=
+  let f r b := cond b (r + r + y) (r + r)
+  (toList x).foldl f 0
+#align bitvec.mul Bitvec.mul
+
+instance : Mul (Bitvec n) :=
+  ⟨Bitvec.mul⟩
+end Arith
 
 
 
