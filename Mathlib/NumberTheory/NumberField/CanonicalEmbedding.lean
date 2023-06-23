@@ -8,7 +8,7 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.Embeddings
 
 /-!
 # Canonical embedding of a number field
@@ -45,8 +45,7 @@ scoped[CanonicalEmbedding]
   notation "E" =>
     ({ w : InfinitePlace K // IsReal w } → ℝ) × ({ w : InfinitePlace K // IsComplex w } → ℂ)
 
-theorem space_rank [NumberField K] : finrank ℝ E = finrank ℚ K :=
-  by
+theorem space_rank [NumberField K] : finrank ℝ E = finrank ℚ K := by
   haveI : Module.Free ℝ ℂ := inferInstance
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
     Finset.card_univ, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm, ←
@@ -54,8 +53,7 @@ theorem space_rank [NumberField K] : finrank ℝ E = finrank ℚ K :=
     Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 #align number_field.canonical_embedding.space_rank NumberField.CanonicalEmbedding.space_rank
 
-theorem non_trivial_space [NumberField K] : Nontrivial E :=
-  by
+theorem non_trivial_space [NumberField K] : Nontrivial E := by
   obtain ⟨w⟩ := infinite_place.nonempty K
   obtain hw | hw := w.is_real_or_is_complex
   · haveI : Nonempty { w : infinite_place K // is_real w } := ⟨⟨w, hw⟩⟩
@@ -120,8 +118,7 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 #align number_field.canonical_embedding.nnnorm_eq NumberField.canonicalEmbedding.nnnorm_eq
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
-    ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ w : InfinitePlace K, w x ≤ r :=
-  by
+    ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ w : InfinitePlace K, w x ≤ r := by
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨w⟩ := infinite_place.nonempty K
     exact
@@ -154,12 +151,10 @@ def equivIntegerLattice [NumberField K] : 𝓞 K ≃ₗ[ℤ] integerLattice K :=
 #align number_field.canonical_embedding.equiv_integer_lattice NumberField.canonicalEmbedding.equivIntegerLattice
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
-    ((integerLattice K : Set E) ∩ closedBall 0 r).Finite :=
-  by
+    ((integerLattice K : Set E) ∩ closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_le r 0
   · simp [closed_ball_eq_empty.2 hr]
-  have heq : ∀ x, canonical_embedding K x ∈ closed_ball (0 : E) r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r :=
-    by
+  have heq : ∀ x, canonical_embedding K x ∈ closed_ball (0 : E) r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
     simp only [← place_apply, ← infinite_place.coe_mk, mem_closedBall_zero_iff, norm_le_iff]
     exact fun x => le_iff_le x r
   convert (embeddings.finite_of_norm_le K ℂ r).image (canonical_embedding K)
@@ -170,8 +165,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (HEq x).mpr hx2⟩
 #align number_field.canonical_embedding.integer_lattice.inter_ball_finite NumberField.canonicalEmbedding.integerLattice.inter_ball_finite
 
-instance [NumberField K] : Countable (integerLattice K) :=
-  by
+instance [NumberField K] : Countable (integerLattice K) := by
   have : (⋃ n : ℕ, (integer_lattice K : Set E) ∩ closed_ball 0 n).Countable :=
     Set.countable_iUnion fun n => (integer_lattice.inter_ball_finite K n).Countable
   refine' (this.mono _).to_subtype
