@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.monotone.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
+! leanprover-community/mathlib commit 554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -117,6 +117,30 @@ def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
 #align strict_anti_on StrictAntiOn
 
 end MonotoneDef
+
+section Decidable
+
+variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
+
+instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
+instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f a ≤ f b)] :
+    Decidable (MonotoneOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f b ≤ f a)] :
+    Decidable (AntitoneOn f s) := i
+
+instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
+instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f a < f b)] :
+    Decidable (StrictMonoOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f b < f a)] :
+    Decidable (StrictAntiOn f s) := i
+
+end Decidable
 
 /-! ### Monotonicity on the dual order
 
