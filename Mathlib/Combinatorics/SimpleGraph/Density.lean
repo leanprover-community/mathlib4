@@ -87,7 +87,7 @@ theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β
 
 theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
     Disjoint (interedges r s t) (interedges r s' t) := by
-  rw [Finset.disjoint_left] at hs⊢
+  rw [Finset.disjoint_left] at hs ⊢
   intro _ hx hy
   rw [mem_interedges_iff] at hx hy
   exact hs hx.1 hy.1
@@ -95,7 +95,7 @@ theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Fi
 
 theorem interedges_disjoint_right (s : Finset α) {t t' : Finset β} (ht : Disjoint t t') :
     Disjoint (interedges r s t) (interedges r s t') := by
-  rw [Finset.disjoint_left] at ht⊢
+  rw [Finset.disjoint_left] at ht ⊢
   intro _ hx hy
   rw [mem_interedges_iff] at hx hy
   exact ht hx.2.1 hy.2.1

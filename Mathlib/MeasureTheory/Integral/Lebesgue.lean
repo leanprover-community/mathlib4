@@ -1798,7 +1798,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
     (∫⁻ a, g a ∂μ.withDensity f) = ∫⁻ a, (f * g) a ∂μ := by
   let f' := hf.mk f
   have : μ.withDensity f = μ.withDensity f' := withDensity_congr_ae hf.ae_eq_mk
-  rw [this] at hg⊢
+  rw [this] at hg ⊢
   let g' := hg.mk g
   calc
     (∫⁻ a, g a ∂μ.withDensity f') = ∫⁻ a, g' a ∂μ.withDensity f' := lintegral_congr_ae hg.ae_eq_mk
@@ -1999,7 +1999,7 @@ theorem lintegral_le_of_forall_fin_meas_le_of_measurable {μ : Measure α} (hm :
       · by_cases hxi : x ∈ S i <;> simp [hxi]
     · simp only [hx_mem, if_false]
       rw [mem_iUnion] at hx_mem
-      push_neg  at hx_mem
+      push_neg at hx_mem
       refine' le_antisymm (zero_le _) (iSup_le fun n => _)
       simp only [hx_mem n, if_false, nonpos_iff_eq_zero]
   · exact fun n => hf_meas.indicator (hm _ (hS_meas n))
