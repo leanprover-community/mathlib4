@@ -94,7 +94,6 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
-
 /-- The definition of the "one" in the colimit is independent of the chosen object of `J`.
 In particular, this lemma allows us to "unfold" the definition of `colimit_one` at a custom chosen
 object `j`.
@@ -227,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
 @[to_additive]
-noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
+noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
     one_mul := fun x => by
@@ -245,7 +244,11 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id]
       -- Porting note : `id_apply` does not work here, but the two sides are def-eq
-      rfl
+      rfl }
+
+@[to_additive]
+noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
+  { colimitMulOneClass F with
     mul_assoc := fun x y z => by
       refine Quot.induction_on₃ x y z ?_
       clear x y z
