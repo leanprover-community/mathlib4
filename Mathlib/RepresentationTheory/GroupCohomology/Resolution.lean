@@ -454,7 +454,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- If we augment the universal cover of the classifying space of `G` as a simplicial set by the
 map from `Fin 1 → G` to the terminal object in `Type u`, then apply the free functor
-`Type u ⥤ ModuleCat.{u} k`, the resulting augmented simplicial `k`-module has an extra degeneracy. -/
+`Type u ⥤ ModuleCat.{u} k`, the resulting augmented simplicial `k`-module has an extra
+degeneracy. -/
 def extraDegeneracyCompForgetAugmentedToModule :
     ExtraDegeneracy (compForgetAugmented.toModule k G) :=
   ExtraDegeneracy.map (extraDegeneracyCompForgetAugmented G) (ModuleCat.free k)
@@ -543,9 +544,9 @@ def forget₂ToModuleCat :=
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.forget₂_to_Module GroupCohomology.Resolution.forget₂ToModuleCat
 
-/-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the classifying
-space of `G` as a simplicial set, then take the alternating face map complex, the result is
-isomorphic to the standard resolution of the trivial `G`-representation `k` as a complex of
+/-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
+classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
+is isomorphic to the standard resolution of the trivial `G`-representation `k` as a complex of
 `k`-modules. -/
 def compForgetAugmentedIso :
     AlternatingFaceMapComplex.obj
@@ -613,8 +614,8 @@ set_option linter.uppercaseLean3 false in
 theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
   refine' LinearMap.ext fun x => _
-  have : (forget₂ToModuleCat k G).d 1 0 ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 :=
-    by
+  have : (forget₂ToModuleCat k G).d 1 0
+      ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
       ←(forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
