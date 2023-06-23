@@ -3,8 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std
-import Mathlib.Tactic.FailIfNoProgress
+import Mathlib.Data.List.Sort
 
 /-!
 # Hint tactic
@@ -34,7 +33,7 @@ and for each such tactic, the number of remaining goals afterwards.
 -/
 def tryHint : TacticM (List (Syntax.Tactic × Nat)) := do
   let tacs ← hintExtension.getState <$> getEnv
-  focus <| tacs.filterMapM fun (tac : Syntax.Tactic) => do
+  let l ← focus <| tacs.filterMapM fun (tac : Syntax.Tactic) => do
     let st ← saveState
     try
       let goal ← getMainGoal
@@ -44,6 +43,7 @@ def tryHint : TacticM (List (Syntax.Tactic × Nat)) := do
       return none
     finally
       restoreState st
+  return l.mergeSort (fun p₁ p₂ => p₁.2 < p₂.2)
 
 /--
 `hint` lists possible tactics which will make progress (that is, not fail) against the current goal.
@@ -67,14 +67,14 @@ elab "hint" : tactic => do
   if hints.isEmpty then throwError "no hints available"
   else
     let (ts, tp) := hints.partitionMap fun (t, n) => if n = 0 then Sum.inl t else Sum.inr t
-    let ms := if ts.isEmpty then nil else
-      nest 2
+    let ms := if ts.isEmpty then [] else
+      [nest 2
         (joinSep (m!"the following tactics solve the goal:" :: ts.map toMessageData)
-          (ofFormat Format.line))
-    let mp := if tp.isEmpty then nil else
-      nest 2
+          (ofFormat Format.line))]
+    let mp := if tp.isEmpty then [] else
+      [nest 2
         (joinSep (m!"the following tactics make progress:" :: tp.map toMessageData)
-          (ofFormat Format.line))
-    logInfo (ms ++ ofFormat Format.line ++ mp)
+          (ofFormat Format.line))]
+    logInfo (joinSep (ms ++ mp) (ofFormat Format.line))
 
 end Mathlib.Tactic.Hint
