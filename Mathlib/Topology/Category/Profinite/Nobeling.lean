@@ -177,11 +177,13 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 lemma hom_inv_id_apply (e : P ≅ N) (x : P) : e.inv (e.hom x) = x := by
+  apply Eq.symm _
   nth_rw 2 [← ModuleCat.id_apply x]
   rw [← e.hom_inv_id]
   rfl
 
 lemma inv_hom_id_apply (e : P ≅ N) (x : N) : e.hom (e.inv x) = x := by
+  apply Eq.symm _
   nth_rw 2 [← ModuleCat.id_apply x]
   rw [← e.inv_hom_id]
   rfl
@@ -201,6 +203,7 @@ lemma iso_hom_inj (e : P ≅ N) : Function.Injective e.hom := by
 @[simp]
 lemma biprod.inl_fst_apply (x : N) :
     (biprod.fst : N ⊞ P ⟶ N) ((biprod.inl : N ⟶ N ⊞ P) x) = x := by
+  apply Eq.symm _
   nth_rw 2 [← ModuleCat.id_apply x]
   rw [← biprod.inl_fst]
   rfl
@@ -208,6 +211,8 @@ lemma biprod.inl_fst_apply (x : N) :
 @[simp]
 lemma biprod.inl_snd_apply (x : N) :
     (biprod.snd : N ⊞ P ⟶ P) ((biprod.inl : N ⟶ N ⊞ P) x) = 0 := by
+  rw [← forget_map]
+  rw [← forget_map]
   rw [← types_comp_apply ((forget (ModuleCat R)).map _)
     ((forget (ModuleCat R)).map _) x]
   simp only [← CategoryTheory.Functor.map_comp]
@@ -217,6 +222,8 @@ lemma biprod.inl_snd_apply (x : N) :
 @[simp]
 lemma biprod.inr_fst_apply (x : P) :
     (biprod.fst : N ⊞ P ⟶ N) ((biprod.inr : P ⟶ N ⊞ P) x) = 0 := by
+  rw [← forget_map]
+  rw [← forget_map]
   rw [← types_comp_apply ((forget (ModuleCat R)).map _)
     ((forget (ModuleCat R)).map _) x]
   simp only [← CategoryTheory.Functor.map_comp]
@@ -226,6 +233,7 @@ lemma biprod.inr_fst_apply (x : P) :
 @[simp]
 lemma biprod.inr_snd_apply (x : P) :
     (biprod.snd : N ⊞ P ⟶ P) ((biprod.inr : P ⟶ N ⊞ P) x) = x := by
+  apply Eq.symm _
   nth_rw 2 [← ModuleCat.id_apply x]
   rw [← biprod.inr_snd]
   rfl
@@ -269,7 +277,7 @@ lemma linearIndependent_sum_prod : LinearIndependent R
       nth_rw 1 [← ModuleCat.id_apply n,  ← biprod.inr_snd]
       rfl
   have h := LinearIndependent.sum_prod v w hv hw
-  rw [hN, hP, Function.comp.assoc, Function.comp.assoc,
+  rw [hN, hP, Function.comp.assoc, Function.comp.assoc, ← forget_map, ← forget_map,
      ← Sum.comp_elim ((forget (ModuleCat R)).map (biprodIsoProd N P).hom) _ _] at h
   have h_inj : LinearMap.ker (biprodIsoProd N P).hom = ⊥
   · rw [LinearMap.ker_eq_bot]
@@ -300,7 +308,6 @@ lemma linearIndependent_shortExact : LinearIndependent R u := by
       Submodule.span_mono (Set.range_comp_subset_range v f) hml
     have h₁ : Set.range f ⊆ LinearMap.range f
     · rw [LinearMap.range_coe]
-      exact Set.Subset.rfl
     have h₂ : LinearMap.range f ≤ Submodule.span R (Set.range f)
     · intro x hx
       exact Submodule.subset_span hx
@@ -2066,6 +2073,7 @@ lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
     dsimp [OrdCone, ResOnSubset, ProjOrd]
     congr
     ext j
+    simp only [comp_apply]
     split_ifs with h
     <;> dsimp [OrdConeIsLimitLift, OrdConeIsLimitLiftFun, OrdConeIsLimitLiftFunAux]
     · split_ifs with hj
