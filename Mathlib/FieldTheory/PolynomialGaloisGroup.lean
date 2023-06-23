@@ -44,9 +44,6 @@ equals the number of real roots plus the number of roots not fixed by complex co
 -/
 
 
-example :=
-  AlgEquiv.restrictScalars ℚ Complex.conjAe
-
 noncomputable section
 
 open scoped Polynomial
