@@ -1929,7 +1929,8 @@ lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
 
 lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
   toPartENat c = toPartENat c' ↔ c = c' := by
-  rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc, toPartENat_le_iff_of_le_aleph0 hc']
+  rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc,
+    toPartENat_le_iff_of_le_aleph0 hc']
 #align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :

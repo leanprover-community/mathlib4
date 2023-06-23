@@ -174,12 +174,14 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
 
 -- Should I keeep the 6 following lemmas ?
 @[simp]
-theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
+theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
+  ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
 @[simp]
-theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
+theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+  toPartENat c ≤ n ↔ c ≤ n := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
@@ -190,12 +192,14 @@ theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
 #align cardinal.coe_nat_eq_to_part_enat_iff Cardinal.natCast_eq_toPartENat_iff
 
 @[simp]
-theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} : Cardinal.toPartENat c = n ↔ c = n := by
+theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+  Cardinal.toPartENat c = n ↔ c = n := by
 rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 #align cardinal.to_part_nat_eq_coe_nat_iff_eq Cardinal.toPartENat_eq_natCast_iff
 
 @[simp]
-theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n < toPartENat c ↔ ↑n < c := by
+theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
+  ↑n < toPartENat c ↔ ↑n < c := by
   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
 #align part_enat.coe_nat_lt_coe_iff_lt Cardinal.natCast_lt_toPartENat_iff
 
