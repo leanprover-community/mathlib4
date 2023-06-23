@@ -13,24 +13,24 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 /-!
 # Recursive computation rules for the Clifford algebra
 
-This file provides API for a special case `clifford_algebra.foldr` of the universal property
-`clifford_algebra.lift` with `A = module.End R N` for some arbitrary module `N`. This specialization
+This file provides API for a special case `CliffordAlgebra.foldr` of the universal property
+`CliffordAlgebra.lift` with `A = Module.End R N` for some arbitrary module `N`. This specialization
 resembles the `list.foldr` operation, allowing a bilinear map to be "folded" along the generators.
 
-For convenience, this file also provides `clifford_algebra.foldl`, implemented via
-`clifford_algebra.reverse`
+For convenience, this file also provides `CliffordAlgebra.foldl`, implemented via
+`CliffordAlgebra.reverse`
 
 ## Main definitions
 
-* `clifford_algebra.foldr`: a computation rule for building linear maps out of the clifford
+* `CliffordAlgebra.foldr`: a computation rule for building linear maps out of the clifford
   algebra starting on the right, analogous to using `list.foldr` on the generators.
-* `clifford_algebra.foldl`: a computation rule for building linear maps out of the clifford
+* `CliffordAlgebra.foldl`: a computation rule for building linear maps out of the clifford
   algebra starting on the left, analogous to using `list.foldl` on the generators.
 
 ## Main statements
 
-* `clifford_algebra.right_induction`: an induction rule that adds generators from the right.
-* `clifford_algebra.left_induction`: an induction rule that adds generators from the left.
+* `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
+* `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
 
 
@@ -147,7 +147,7 @@ end Foldl
 theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
     (h_add : ∀ x y, P x → P y → P (x + y)) (h_ι_mul : ∀ m x, P x → P (x * ι Q m)) : ∀ x, P x := by
   /- It would be neat if we could prove this via `foldr` like how we prove
-    `clifford_algebra.induction`, but going via the grading seems easier. -/
+    `CliffordAlgebra.induction`, but going via the grading seems easier. -/
   intro x
   have : x ∈ ⊤ := Submodule.mem_top (R := R)
   rw [← iSup_ι_range_eq_top] at this
@@ -177,7 +177,7 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (alge
 /-! ### Versions with extra state -/
 
 
-/-- Auxiliary definition for `clifford_algebra.foldr'` -/
+/-- Auxiliary definition for `CliffordAlgebra.foldr'` -/
 def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
     M →ₗ[R] Module.End R (CliffordAlgebra Q × N) := by
   have v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
@@ -208,7 +208,7 @@ theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
 
 /-- Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
 given by `foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x)`.
-Note this is like `clifford_algebra.foldr`, but with an extra `x` argument.
+Note this is like `CliffordAlgebra.foldr`, but with an extra `x` argument.
 Implement the recursion scheme `F[n0](m * x) = f(m, (x, F[n0](x)))`. -/
 def foldr' (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n : N) : CliffordAlgebra Q →ₗ[R] N :=
