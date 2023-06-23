@@ -147,8 +147,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  cases' i with i hi
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simpa using hi⟩]
+  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
   simp only [get_eq_get]
   congr <;> simp [Fin.heq_ext_iff]
 #align vector.nth_of_fn Vector.get_ofFn
