@@ -175,12 +175,12 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
 -- Should I keeep the 6 following lemmas ?
 @[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
-  rw [← toPartENat_cast n, toPartENat_le_iff_le_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toPartENat_cast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
-  rw [← toPartENat_cast n, toPartENat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 n)]
+  rw [← toPartENat_cast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
 @[simp]
@@ -208,25 +208,22 @@ by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 theorem card_eq_zero_iff_empty (α : Type _) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   conv_rhs => rw [← Nat.cast_zero]
-  rw [← Cardinal.toPartENat_eq_natCast_iff]
-  unfold PartENat.card
-  simp only [Nat.cast_zero]
+  simp only [← Cardinal.toPartENat_eq_natCast_iff]
+  simp only [PartENat.card, Nat.cast_zero]
 #align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
 
 theorem card_le_one_iff_subsingleton (α : Type _) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   conv_rhs => rw [← Nat.cast_one]
-  rw [← toPartENat_le_natCast_iff]
-  unfold PartENat.card
-  simp only [Nat.cast_one]
+  rw [← Cardinal.toPartENat_le_natCast_iff]
+  simp only [PartENat.card, Nat.cast_one]
 #align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
 
 theorem one_lt_card_iff_nontrivial (α : Type _) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toPartENat_iff]
-  unfold PartENat.card
-  simp only [Nat.cast_one]
+  simp only [PartENat.card, Nat.cast_one]
 #align part_enat.one_lt_card_iff_nontrivial PartENat.one_lt_card_iff_nontrivial
 
 end PartENat

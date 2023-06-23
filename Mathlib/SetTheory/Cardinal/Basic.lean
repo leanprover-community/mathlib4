@@ -1894,7 +1894,7 @@ theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
   | inr hc => simp only [toPartENat_apply_of_aleph0_le hc, eq_self_iff_true, true_iff]; exact hc
 #align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
 
-lemma toPartENat_le_iff_le_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
   toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
@@ -1911,9 +1911,9 @@ lemma toPartENat_le_iff_le_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
     rw [toPartENat_apply_of_aleph0_le hc]
     simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0,
     le_antisymm h hc]
-#align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_le_of_le_aleph0
+#align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
 
-lemma toPartENat_le_iff_le_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
   toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
@@ -1925,7 +1925,12 @@ lemma toPartENat_le_iff_le_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
     simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0]
     rw [← not_iff_not, not_le, not_le]
     simp only [hc', lt_of_lt_of_le hc' hc]
-#align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_le_of_lt_aleph0
+#align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
+
+lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+  toPartENat c = toPartENat c' ↔ c = c' := by
+  rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc, toPartENat_le_iff_of_le_aleph0 hc']
+#align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
   toPartENat c ≤ toPartENat c' := by
