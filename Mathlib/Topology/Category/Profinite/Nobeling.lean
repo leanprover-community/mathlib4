@@ -12,6 +12,78 @@ set_option autoImplicit false
 
 universe u
 
+def setHomeoSubtype {X : Type _} [TopologicalSpace X] (s : Set X) : s ≃ₜ {x // x ∈ s} :=
+{ toFun := fun x ↦ ⟨x.val, x.prop⟩
+  invFun := fun x ↦ x
+  left_inv := by
+    intro x
+    dsimp
+  right_inv := by
+    intro x
+    dsimp }
+
+namespace Function
+
+open Classical
+
+noncomputable
+def ExtendBy {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) : X → Y :=
+fun x ↦ if hx : x ∈ C then f ⟨x, hx⟩ else junk
+
+lemma restrict_extendBy_eq_self {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y) :
+    C.restrict (f.ExtendBy junk) = f := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Subtype.coe_prop, Subtype.coe_eta, dite_eq_ite, ite_true]
+
+lemma extendBy_preimage_of_junk_ne_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
+    (s : Set Y) (hj : ¬ junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Set.mem_preimage, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  constructor
+  <;> intro hx
+  · split_ifs at hx with h
+    · use h
+      exact hx
+    · exfalso
+      exact hj hx
+  · obtain ⟨hx,hfx⟩ := hx
+    split_ifs
+    exact hfx
+
+lemma extendBy_preimage_of_junk_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ C} → Y) (junk : Y)
+    (s : Set Y) (hj : junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) ∪ Cᶜ := by
+  ext x
+  dsimp [ExtendBy]
+  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+    Set.mem_compl_iff]
+  constructor
+  <;> intro hx
+  · split_ifs at hx with h
+    · left
+      use h
+      exact hx
+    · right
+      exact h
+  · obtain ⟨hx,hfx⟩ := hx
+    split_ifs
+    · exact hfx
+    · split_ifs
+      assumption
+
+end Function
+
+namespace Set
+
+open Classical
+
+noncomputable
+def piecewise' {X Y : Type _} {C : Set X} {p : X → Prop} (f : {i // i ∈ C} → Y)
+    (g : (Subtype p) → Y) (junk : Y) : X → Y := C.piecewise (f.ExtendBy junk) (g.ExtendBy junk)
+
+end Set
+
 namespace LinearIndependent
 
 variable {ι₁ : Type _} {ι₂ : Type _} (R : Type _) (M₁ : Type _) (M₂ : Type _)
@@ -336,6 +408,83 @@ def SumEquivProd : LocallyConstant (X ⊕ Y) Z ≃ LocallyConstant X Z × Locall
     · dsimp
       rw [coe_comap_apply _ _ continuous_inr]
       rfl }
+
+lemma closure_compl_subset {C₁ C₂ : Set X} (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) : closure (C₁ᶜ) ⊆ C₂ := by
+  have h' := Set.compl_subset_iff_union.mpr h
+  rwa [← h₂.closure_subset_iff] at h'
+
+lemma frontier_subset_inter {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ) : (C₁ ∪ C₂) ∩ (frontier C₁) ⊆ C₁ ∩ C₂ := by
+  intro x hx
+  rw [h] at hx
+  simp only [Set.univ_inter] at hx
+  rw [h₁.frontier_eq, Set.diff_eq_compl_inter] at hx
+  rw [← @closure_compl _ _ C₁] at hx
+  have h' := Set.compl_subset_iff_union.mpr h
+  rw [← h₂.closure_subset_iff] at h'
+  exact ⟨hx.2, h' hx.1⟩
+
+open Classical
+
+lemma isLocallyConstant_piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant {i // i ∈ C₁} Z)
+    (g : LocallyConstant {i // i ∈ C₂} Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
+    (junk : Z) : IsLocallyConstant (C₁.piecewise' f.toFun g.toFun junk) := by
+  let dZ : TopologicalSpace Z := ⊥
+  haveI : DiscreteTopology Z := discreteTopology_bot Z
+  obtain ⟨f, hf⟩ := f
+  obtain ⟨g, hg⟩ := g
+  rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
+  dsimp
+  rw [continuous_iff_continuousOn_univ]
+  rw [← h]
+  dsimp [Set.piecewise']
+  apply ContinuousOn.piecewise
+  · intro x hx
+    specialize hfg x (frontier_subset_inter h₁ h₂ h hx)
+    dsimp [Function.ExtendBy]
+    split_ifs with hh₁ hh₂
+    · exact hfg
+    · exfalso
+      exact hh₂ (frontier_subset_inter h₁ h₂ h hx).2
+    · exfalso
+      exact hh₁ (frontier_subset_inter h₁ h₂ h hx).1
+    · rfl
+  · rw [h₁.closure_eq, h]
+    simp only [Set.univ_inter]
+    rw [continuousOn_iff_continuous_restrict]
+    rwa [f.restrict_extendBy_eq_self junk]
+  · rw [h]
+    simp only [Set.univ_inter]
+    apply ContinuousOn.mono _ (closure_compl_subset h₂ h)
+    rw [continuousOn_iff_continuous_restrict]
+    rwa [g.restrict_extendBy_eq_self junk]
+
+noncomputable
+def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)
+    (h : C₁ ∪ C₂ = Set.univ)
+    (f : LocallyConstant {i // i ∈ C₁} Z)
+    (g : LocallyConstant {i // i ∈ C₂} Z)
+    (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f.toFun ⟨x, hx.1⟩ = g.toFun ⟨x, hx.2⟩)
+    (junk : Z) : LocallyConstant X Z :=
+{ toFun := C₁.piecewise' f.toFun g.toFun junk
+  isLocallyConstant := isLocallyConstant_piecewise h₁ h₂ h f g hfg junk}
+
+noncomputable
+def ExtendBy {C : Set X} (hC : IsClopen C) (f : LocallyConstant {i // i ∈ C} Z) (junk : Z) :
+    LocallyConstant X Z :=
+{ toFun := f.toFun.ExtendBy junk
+  isLocallyConstant := by
+    intro s
+    by_cases hj : junk ∈ s
+    · rw [Function.extendBy_preimage_of_junk_mem _ _ _ hj]
+      refine' IsOpen.union _ hC.compl.1
+      exact IsOpen.isOpenMap_subtype_val hC.1 (f.toFun ⁻¹' s) (f.isLocallyConstant s)
+    · rw [Function.extendBy_preimage_of_junk_ne_mem _ _ _ hj]
+      exact IsOpen.isOpenMap_subtype_val hC.1 (f.toFun ⁻¹' s) (f.isLocallyConstant s)   }
 
 variable {R : Type _} [Ring R] [AddCommMonoid Z] [Module R Z]
 
@@ -2397,76 +2546,99 @@ lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
     · right
       simpa only [← Bool.not_eq_false]
 
-def SumCsTo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} → ((WithTop I) → Bool) :=
-  Sum.elim Subtype.val Subtype.val
+def C0' : Set {i // i ∈ C} := {f | f.val ∈ C0 C ho}
 
-lemma SumCsToInC (x : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) : SumCsTo C ho x ∈ C := by
-  dsimp [SumCsTo]
-  induction x with
-  | inl x =>
-    · simp only [Sum.elim_inl]
-      exact x.prop.1
-  | inr x =>
-    · simp only [Sum.elim_inr]
-      exact x.prop.1
+def C1' : Set {i // i ∈ C} := {f | f.val ∈ C1 C ho}
 
-lemma sumCsTo_set_range : Set.range (SumCsTo C ho) = C := by
-  dsimp [SumCsTo]
-  simp only [Set.Sum.elim_range, Subtype.range_coe_subtype, Set.setOf_mem_eq]
-  exact UnionEq _ _
+lemma isOpen_false : IsOpen {f : WithTop I → Bool | f (term I ho) = false} := by
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact IsOpen.preimage h (isOpen_discrete {false})
 
-lemma injective_sumCsTo : Function.Injective (SumCsTo C ho) := by
-  refine' Function.Injective.sum_elim _ _ _
-  · exact Subtype.coe_injective
-  · exact Subtype.coe_injective
-  · intro a b
-    refine' ne_of_apply_ne (fun f ↦ f (term I ho)) _
-    dsimp
-    have ha := a.prop.2
-    have hb := b.prop.2
-    simp only [Set.mem_setOf_eq] at ha hb
-    rw [ha, hb]
-    simp
+lemma isOpen_true : IsOpen {f : WithTop I → Bool | f (term I ho) = true} := by
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact IsOpen.preimage h (isOpen_discrete {true})
 
-noncomputable
-def SumEquiv : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} ≃ {i // i ∈ C} :=
-Equiv.trans (Equiv.ofInjective (SumCsTo C ho) (injective_sumCsTo C ho))
-  (Equiv.Set.ofEq (sumCsTo_set_range C ho))
+lemma isClopen_C0' : IsClopen (C0' C ho) := by
+  constructor
+  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isOpen_false ho)
+    suffices h : C0' C ho = Subtype.val ⁻¹' {f | f (term I ho) = false}
+    · rw [h]
+      exact this
+    ext x
+    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
+  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isClosed_C0 C hC ho)
+    suffices h : C0' C ho = Subtype.val ⁻¹' (C0 C ho)
+    · rw [h]
+      exact this
+    rfl
 
-lemma continuous_sumEquiv : Continuous (SumEquiv C ho) := by
-  dsimp [SumEquiv]
-  refine' Continuous.comp _ _
-  · refine' Continuous.subtype_mk _ _
-    dsimp
-    exact Continuous.comp continuous_subtype_val continuous_id
-  · refine' Continuous.subtype_mk _ _
-    dsimp [SumCsTo]
-    refine' Continuous.sum_elim _ _
-    · exact continuous_subtype_val
-    · exact continuous_subtype_val
+lemma isClopen_C1' : IsClopen (C1' C ho) := by
+  constructor
+  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isOpen_true ho)
+    suffices h : C1' C ho = Subtype.val ⁻¹' {f | f (term I ho) = true}
+    · rw [h]
+      exact this
+    ext x
+    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
+  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isClosed_C1 C hC ho)
+    suffices h : C1' C ho = Subtype.val ⁻¹' (C1 C ho)
+    · rw [h]
+      exact this
+    rfl
 
-instance CS₁ : CompactSpace {i // i ∈ (C0 C ho)} := by
-  rw [← isCompact_iff_compactSpace]
-  apply IsClosed.isCompact
-  exact isClosed_C0 _ hC _
+lemma union_C0'C1'_eq_univ : (C0' C ho) ∪ (C1' C ho) = Set.univ := by
+  rw [(by rfl : C0' C ho = Subtype.val ⁻¹' (C0 C ho)),
+    (by rfl : C1' C ho = Subtype.val ⁻¹' (C1 C ho)),
+    (by simp only [← Subtype.coe_preimage_self] :
+    (Set.univ : Set {i // i ∈ C}) = Subtype.val ⁻¹' C)]
+  simp only [← Set.preimage_union]
+  rw [UnionEq]
 
-instance CS₂ : CompactSpace {i // i ∈ (C1 C ho)} := by
-  rw [← isCompact_iff_compactSpace]
-  apply IsClosed.isCompact
-  exact isClosed_C1 _ hC _
+def rC1' : Set {i // i ∈ C} := {f | f.val ∈ Res (C1 C ho) o}
 
-instance CS : CompactSpace ({i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)}) := by
-  haveI h₁ := CS₁ C hC ho
-  haveI h₂ := CS₂ C hC ho
-  exact @instCompactSpaceSumInstTopologicalSpaceSum _ _ _ _ h₁ h₂
+-- def SwapFalseC : {i // i ∈ C}
 
-noncomputable
-def SumHomeo : {i // i ∈ (C0 C ho)} ⊕ {i // i ∈ (C1 C ho)} ≃ₜ {i // i ∈ C} :=
-  @Continuous.homeoOfEquivCompactToT2 _ _ _ _ (CS C hC ho) _ _ (continuous_sumEquiv C ho)
+lemma isOpenMap_swapFalse : IsOpenMap (SwapFalse o : (WithTop I → Bool) → (WithTop I → Bool)) := by
+  sorry
+
+lemma isClopen_rC1' : IsClopen (rC1' C ho) := by
+  constructor
+  · have : rC1' C ho = {f | f.val ∈ (SwapFalse o) '' (C1 C ho)}
+    · sorry
+    sorry
+  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isClosed_Res _ o (isClosed_C1 C hC ho))
+    suffices h : rC1' C ho = Subtype.val ⁻¹' (Res (C1 C ho) o)
+    · rw [h]
+      exact this
+    rfl
+
+def C'' : Set {i // i ∈ C} := {f | f.val ∈ C' C ho}
+
+lemma isClopen_C'' : IsClopen (C'' C ho) := by
+  suffices : C'' C ho = C0' C ho ∩ rC1' C ho
+  · rw [this]
+    exact IsClopen.inter (isClopen_C0' _ hC _) (isClopen_rC1' _ hC _)
+  dsimp [C'', C', C0', rC1']
+  rfl
 
 lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   intro f
-  sorry
+  have : {i // i ∈ C' C ho} = ↑(C' C ho) := by rfl
+  simp_rw [this] at f
+  use LocallyConstant.piecewise (isClopen_C0' C hC ho).2 (isClopen_C1' C hC ho).2
+    (union_C0'C1'_eq_univ C ho) ?_ ?_ ?_ 0
+  · sorry
+    -- let g := ((LocallyConstant.equiv (setHomeoSubtype (C'' C ho))).toFun f).ExtendBy (isClopen_C'' _ hC _) (0 : ℤ)
+  · sorry
+  · sorry
+  · sorry
   -- constructor
   -- · ext x
   --   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapLinear]
@@ -2526,7 +2698,7 @@ lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
       (continuous_ResOnSubset C o) (surjective_ResOnSubset C o)
   epi := by
     rw [ModuleCat.epi_iff_surjective]
-    exact CC_surjective _ _ _
+    exact CC_surjective _ hC _ _
   exact := by
     rw [ModuleCat.exact_iff]
     ext f
@@ -2812,7 +2984,7 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
         · exact this
         -- Why so slow?
         refine' ModuleCat.linearIndependent_shortExact _ _ _
-            (LocallyConstant.ShortExact C hsC ho) (huv C o) (huw C hsC ho)
+            (LocallyConstant.ShortExact C hC hsC ho) (huv C o) (huw C hsC ho)
         · exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
         · rw [← hw C hsC ho]
           exact h (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
