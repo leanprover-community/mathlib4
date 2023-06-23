@@ -1235,15 +1235,10 @@ See Note [forgetful inheritance].
 -/
 @[reducible]
 def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α where
-  toDist := m.toDist
-  dist_self := dist_self
-  dist_comm := dist_comm
-  dist_triangle := dist_triangle
-  edist := edist
-  edist_dist := edist_dist
-  toUniformSpace := U
-  uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
+  { m with
+    toUniformSpace := U
+    uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist }
 #align pseudo_metric_space.replace_uniformity PseudoMetricSpace.replaceUniformity
 
 theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
