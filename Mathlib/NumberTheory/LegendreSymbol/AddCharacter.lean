@@ -98,7 +98,7 @@ def toMonoidHom : AddChar R R' → Multiplicative R →* R' :=
 
 open Multiplicative
 
--- Porting note: added. Correct?
+-- Porting note: added.
 @[coe]
 def toFun (ψ : AddChar R R') (x : R) : R' := ψ.toMonoidHom (ofAdd x)
 
@@ -125,7 +125,7 @@ instance monoidHomClass : MonoidHomClass (AddChar R R') (Multiplicative R) R' :=
   MonoidHom.monoidHomClass
 #align add_char.monoid_hom_class AddChar.monoidHomClass
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added. Correct?
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
 @[ext]
 theorem ext (f g : AddChar R R') (h : ∀ x : R, f x = g x) : f = g :=
   MonoidHom.ext h
@@ -275,7 +275,7 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
   rwa [mulShift_apply, mul_inv_cancel_left₀ ha]
 #align add_char.is_nontrivial.is_primitive AddChar.IsNontrivial.isPrimitive
 
--- Using `structure` gives a timeout, see
+-- Porting note: Using `structure` gives a timeout, see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
 -- In Lean4, `set_option genInjectivity false in` may solve this issue.
