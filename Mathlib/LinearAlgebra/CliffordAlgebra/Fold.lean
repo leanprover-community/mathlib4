@@ -81,7 +81,7 @@ theorem foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAl
 
 /-- This lemma demonstrates the origin of the `foldr` name. -/
 theorem foldr_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
-    foldr Q f hf n (l.map <| ι Q).Prod = List.foldr (fun m n => f m n) n l := by
+    foldr Q f hf n (l.map <| ι Q).prod = List.foldr (fun m n => f m n) n l := by
   induction' l with hd tl ih
   · rw [List.map_nil, List.prod_nil, List.foldr_nil, foldr_one]
   · rw [List.map_cons, List.prod_cons, List.foldr_cons, foldr_mul, foldr_ι, ih]
@@ -102,13 +102,15 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
-    foldl Q f hf n (reverse x) = foldr Q f hf n x :=
+    -- porting note: cannot infer `Q`
+    foldl Q f hf n (reverse (Q := Q) x) = foldr Q f hf n x :=
   FunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
 #align clifford_algebra.foldl_reverse CliffordAlgebra.foldl_reverse
 
 @[simp]
 theorem foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
-    foldr Q f hf n (reverse x) = foldl Q f hf n x :=
+    -- porting note: cannot infer `Q`
+    foldr Q f hf n (reverse (Q := Q) x) = foldl Q f hf n x :=
   rfl
 #align clifford_algebra.foldr_reverse CliffordAlgebra.foldr_reverse
 
@@ -120,7 +122,7 @@ theorem foldl_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldl Q 
 @[simp]
 theorem foldl_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
     foldl Q f hf n (algebraMap R _ r) = r • n := by
-  rw [← foldr_reverse, reverse.commutes, foldr_algebra_map]
+  rw [← foldr_reverse, reverse.commutes, foldr_algebraMap]
 #align clifford_algebra.foldl_algebra_map CliffordAlgebra.foldl_algebraMap
 
 @[simp]
@@ -136,7 +138,7 @@ theorem foldl_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAl
 
 /-- This lemma demonstrates the origin of the `foldl` name. -/
 theorem foldl_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
-    foldl Q f hf n (l.map <| ι Q).Prod = List.foldl (fun m n => f n m) n l := by
+    foldl Q f hf n (l.map <| ι Q).prod = List.foldl (fun m n => f n m) n l := by
   rw [← foldr_reverse, reverse_prod_map_ι, ← List.map_reverse, foldr_prod_map_ι, List.foldr_reverse]
 #align clifford_algebra.foldl_prod_map_ι CliffordAlgebra.foldl_prod_map_ι
 
@@ -147,13 +149,19 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (alg
   /- It would be neat if we could prove this via `foldr` like how we prove
     `clifford_algebra.induction`, but going via the grading seems easier. -/
   intro x
-  have : x ∈ ⊤ := Submodule.mem_top
-  rw [← supr_ι_range_eq_top] at this 
-  apply Submodule.iSup_induction _ this (fun i x hx => _) _ h_add
-  · refine' Submodule.pow_induction_on_right _ hr h_add (fun x px m => _) hx
-    rintro ⟨m, rfl⟩
-    exact h_ι_mul _ _ px
-  · simpa only [map_zero] using hr 0
+  have : x ∈ ⊤ := Submodule.mem_top (R := R)
+  rw [← iSup_ι_range_eq_top] at this
+  induction this using Submodule.iSup_induction' with -- _ this (fun i x hx => ?_) _ h_add
+  | hp i x hx =>
+    induction hx using Submodule.pow_induction_on_right' with
+    | hr r => exact hr r
+    | hadd _x _y _i _ _ ihx ihy => exact h_add _ _ ihx ihy
+    | hmul _i x _hx px m hm =>
+      obtain ⟨m, rfl⟩ := hm
+      exact h_ι_mul _ _ px
+  | h0 => simpa only [map_zero] using hr 0
+  | hadd _x _y _ _ ihx ihy =>
+    exact h_add _ _ ihx ihy
 #align clifford_algebra.right_induction CliffordAlgebra.right_induction
 
 theorem left_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (algebraMap _ _ r))
@@ -175,7 +183,7 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
   have v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   have l := v_mul.compl₂ (LinearMap.fst _ _ N)
   exact
-    { toFun := fun m => (l m).Prod (f m)
+    { toFun := fun m => (l m).prod (f m)
       map_add' := fun v₂ v₂ =>
         LinearMap.ext fun x =>
           Prod.ext (LinearMap.congr_fun (l.map_add _ _) x) (LinearMap.congr_fun (f.map_add _ _) x)
@@ -194,7 +202,7 @@ theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
   cases' x_fx with x fx
-  simp only [foldr'_aux_apply_apply]
+  simp only [foldr'Aux_apply_apply]
   rw [← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, hf, Prod.smul_mk]
 #align clifford_algebra.foldr'_aux_foldr'_aux CliffordAlgebra.foldr'Aux_foldr'Aux
 
@@ -223,14 +231,13 @@ theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (n m) (x) :
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by
   dsimp [foldr']
-  rw [foldr_mul, foldr_ι, foldr'_aux_apply_apply]
-  refine' congr_arg (f m) (prod.mk.eta.symm.trans _)
+  rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply]
+  refine' congr_arg (f m) (Prod.mk.eta.symm.trans _)
   congr 1
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
-  · simp_rw [foldr_algebra_map, Prod.smul_mk, Algebra.algebraMap_eq_smul_one]
+  · simp_rw [foldr_algebraMap, Prod.smul_mk, Algebra.algebraMap_eq_smul_one]
   · rw [map_add, Prod.fst_add, hx, hy]
-  · rw [foldr_mul, foldr_ι, foldr'_aux_apply_apply, hx]
+  · rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply, hx]
 #align clifford_algebra.foldr'_ι_mul CliffordAlgebra.foldr'_ι_mul
 
 end CliffordAlgebra
-
