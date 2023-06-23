@@ -95,11 +95,6 @@ def get : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
 #align vector.nth Vector.get
 
-/-- nth element of a vector, indexed by a `Nat`.
-Returns `none` if vector is not long enough-/
-def get? : ∀ _ : Vector α n, Nat → Option α
-  | v, i => if h : i < n then some (v.get ⟨i,h⟩) else none
-
 /-- Appending a vector to another. -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
