@@ -9,7 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.BumpFunctionFindim
-import Mathlib.Geometry.Manifold.ContMdiff
+import Mathlib.Geometry.Manifold.ContMDiff
 
 /-!
 # Smooth bump functions on a smooth manifold
