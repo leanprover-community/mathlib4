@@ -112,12 +112,7 @@ theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) (as : List α)
     cases bs
     . rfl
     next b bs =>
-      simp only [mapAccumr₂, foldr]
-      specialize ih bs
-      revert ih
-      rcases mapAccumr₂ f as bs s with ⟨out_state₁, res₁⟩
-      rw[Prod.mk.injEq]
-      rintro ⟨⟨⟩, ⟨⟩⟩
+      simp only [mapAccumr₂, foldr, ih bs]
       rfl
 
 end MapAccumr
