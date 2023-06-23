@@ -34,8 +34,7 @@ open scoped Classical
 
 open CategoryTheory CategoryTheory.Limits
 
--- avoid name collision with `_root_.max`.
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
