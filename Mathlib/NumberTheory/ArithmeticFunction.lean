@@ -39,10 +39,16 @@ to form the Dirichlet ring.
 
 ## Main Results
  * Several forms of Möbius inversion:
- * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
+ * `sum_eq_iff_sum_mul_moebius_eq` for fun`ctions to a `CommRing`
  * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
+ * And variants that apply when the equalities only hold on a property `P : ℕ → Prop` such that
+  `m ∣ n → P n → P m`:
+ * `sum_eq_iff_sum_mul_moebius_eq_on_prop` for functions to a `CommRing`
+ * `sum_eq_iff_sum_smul_moebius_eq_on_prop` for functions to an `AddCommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq_on_prop` for functions to a `CommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero_on_prop` for functions to a `CommGroupWithZero`
 
 ## Notation
 The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
@@ -1163,6 +1169,81 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
     rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq_of_nonzero Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq_of_nonzero
+
+/-- Möbius inversion for functions to an `add_comm_group`, where the equalities only hold on values
+satisfying a well-behaved property. -/
+theorem sum_eq_iff_sum_smul_moebius_eq_on_prop [AddCommGroup R] {f g : ℕ → R}
+    (P : ℕ → Prop) (hP : ∀ m n, m ∣ n → P n → P m) :
+    (∀ n : ℕ, 0 < n → P n → (∑ i in n.divisors, f i) = g n) ↔
+      ∀ n : ℕ, 0 < n → P n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+  constructor
+  · intro h
+    let G := fun (n:ℕ) => (∑ i in n.divisors, f i)
+    intro n hn hnP
+    suffices ∑ d in n.divisors, μ (n/d) • G d = f n from by
+      rw [Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • g y), ←this, sum_congr rfl]
+      intro d hd
+      rw [←h d (Nat.pos_of_mem_divisors hd) $ hP d n (Nat.dvd_of_mem_divisors hd) hnP]
+    rw [←Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • G y)]
+    apply Nat.ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
+    intro _ _; rfl
+  · intro h
+    let F := fun (n:ℕ) => ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd
+    intro n hn hnP
+    suffices ∑ d in n.divisors, F d = g n from by
+      rw [←this, sum_congr rfl]
+      intro d hd
+      rw [←h d (Nat.pos_of_mem_divisors hd) $ hP d n (Nat.dvd_of_mem_divisors hd) hnP]
+    apply Nat.ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
+    intro _ _; rfl
+
+/-- Möbius inversion for functions to a `Ring`, where the equalities only hold on values satisfying
+a well-behaved property. -/
+theorem sum_eq_iff_sum_mul_moebius_eq_on_prop [Ring R] {f g : ℕ → R}
+    (P : ℕ → Prop) (hP : ∀ m n, m ∣ n → P n → P m) :
+    (∀ n : ℕ, 0 < n → P n → (∑ i in n.divisors, f i) = g n) ↔
+      ∀ n : ℕ, 0 < n → P n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+  rw [sum_eq_iff_sum_smul_moebius_eq_on_prop P hP]
+  apply forall_congr'
+  refine' fun a => imp_congr_right fun _ => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
+  rw [zsmul_eq_mul]
+
+/-- Möbius inversion for functions to a `CommGroup`, where the equalities only hold on values
+satisfying a well-behaved property. -/
+theorem prod_eq_iff_prod_pow_moebius_eq_on_prop [CommGroup R] {f g : ℕ → R}
+    (P : ℕ → Prop) (hP : ∀ m n, m ∣ n → P n → P m) :
+    (∀ n : ℕ, 0 < n → P n → (∏ i in n.divisors, f i) = g n) ↔
+      ∀ n : ℕ, 0 < n → P n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
+  @sum_eq_iff_sum_smul_moebius_eq_on_prop (Additive R) _ _ _ P hP
+
+
+/-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
+values satisfying a well-behaved property. -/
+theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero_on_prop [CommGroupWithZero R] {f g : ℕ → R}
+    (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0)
+    (P : ℕ → Prop) (hP : ∀ m n, m ∣ n → P n → P m):
+    (∀ n : ℕ, 0 < n → P n → (∏ i in n.divisors, f i) = g n) ↔
+      ∀ n : ℕ, 0 < n → P n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
+  refine'
+      Iff.trans
+        (Iff.trans (forall_congr' fun n => _)
+          (@prod_eq_iff_prod_pow_moebius_eq_on_prop Rˣ _
+            (fun n => if h : 0 < n then Units.mk0 (f n) (hf n h) else 1)
+            (fun n => if h : 0 < n then Units.mk0 (g n) (hg n h) else 1)
+            P hP) )
+        (forall_congr' fun n => _) <;>
+    refine' imp_congr_right fun hn => _
+  · dsimp
+    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+      prod_congr rfl _]
+    intro x hx
+    rw [dif_pos (Nat.pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
+  · dsimp
+    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+      prod_congr rfl _]
+    intro x hx
+    rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
+      Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 
 end SpecialFunctions
 
