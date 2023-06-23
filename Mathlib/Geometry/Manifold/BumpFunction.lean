@@ -67,8 +67,6 @@ structure SmoothBumpFunction (c : M) extends ContDiffBump (extChartAt I c c) whe
   closedBall_subset : closedBall (extChartAt I c c) R ∩ range I ⊆ (extChartAt I c).target
 #align smooth_bump_function SmoothBumpFunction
 
-variable {M}
-
 namespace SmoothBumpFunction
 
 variable {c : M} (f : SmoothBumpFunction I c) {x : M} {I}
@@ -88,6 +86,7 @@ theorem coe_def : ⇑f = indicator (chartAt H c).source (f.toContDiffBump ∘ ex
 
 theorem rOut_pos : 0 < f.rOut :=
   f.toContDiffBump.rOut_pos
+set_option linter.uppercaseLean3 false in
 #align smooth_bump_function.R_pos SmoothBumpFunction.rOut_pos
 
 theorem ball_subset : ball (extChartAt I c c) f.rOut ∩ range I ⊆ (extChartAt I c).target :=
@@ -100,12 +99,12 @@ theorem eqOn_source : EqOn f (f.toContDiffBump ∘ extChartAt I c) (chartAt H c)
 
 theorem eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
     f =ᶠ[𝓝 x] f.toContDiffBump ∘ extChartAt I c :=
-  f.EqOnSource.eventuallyEq_of_mem <| IsOpen.mem_nhds (chartAt H c).open_source hx
+  f.eqOn_source.eventuallyEq_of_mem <| IsOpen.mem_nhds (chartAt H c).open_source hx
 #align smooth_bump_function.eventually_eq_of_mem_source SmoothBumpFunction.eventuallyEq_of_mem_source
 
 theorem one_of_dist_le (hs : x ∈ (chartAt H c).source)
-    (hd : dist (extChartAt I c x) (extChartAt I c c) ≤ f.R) : f x = 1 := by
-  simp only [f.eq_on_source hs, (· ∘ ·), f.to_cont_diff_bump.one_of_mem_closed_ball hd]
+    (hd : dist (extChartAt I c x) (extChartAt I c c) ≤ f.rIn) : f x = 1 := by
+  simp only [f.eqOn_source hs, (· ∘ ·), f.one_of_mem_closedBall hd]
 #align smooth_bump_function.one_of_dist_le SmoothBumpFunction.one_of_dist_le
 
 theorem support_eq_inter_preimage :
@@ -115,8 +114,9 @@ theorem support_eq_inter_preimage :
     f.to_cont_diff_bump.support_eq]
 #align smooth_bump_function.support_eq_inter_preimage SmoothBumpFunction.support_eq_inter_preimage
 
-theorem isOpen_support : IsOpen (support f) := by rw [support_eq_inter_preimage];
-  exact isOpen_extChartAt_preimage I c is_open_ball
+theorem isOpen_support : IsOpen (support f) := by
+  rw [support_eq_inter_preimage]
+  exact isOpen_extChartAt_preimage I c isOpen_ball
 #align smooth_bump_function.is_open_support SmoothBumpFunction.isOpen_support
 
 theorem support_eq_symm_image :
@@ -138,19 +138,19 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
       closedBall (extChartAt I c c) f.rOut ∩ range I ∩ (extChartAt I c).symm ⁻¹' s := by
   rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs 
   cases' hs with hse hsf
-  apply subset.antisymm
-  · refine' subset_inter (subset_inter (subset.trans hsf ball_subset_closed_ball) _) _
+  apply Subset.antisymm
+  · refine' subset_inter (subset_inter (hsf.trans ball_subset_closedBall) _) _
     · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
     · rw [(extChartAt I c).image_eq_target_inter_inv_preimage hse]
       exact inter_subset_right _ _
-  · refine' subset.trans (inter_subset_inter_left _ f.closed_ball_subset) _
+  · refine' Subset.trans (inter_subset_inter_left _ f.closedBall_subset) _
     rw [(extChartAt I c).image_eq_target_inter_inv_preimage hse]
 #align smooth_bump_function.image_eq_inter_preimage_of_subset_support SmoothBumpFunction.image_eq_inter_preimage_of_subset_support
 
 theorem mem_Icc : f x ∈ Icc (0 : ℝ) 1 := by
   have : f x = 0 ∨ f x = _ := indicator_eq_zero_or_self _ _ _
-  cases this <;> rw [this]
-  exacts [left_mem_Icc.2 zero_le_one, ⟨f.to_cont_diff_bump.nonneg, f.to_cont_diff_bump.le_one⟩]
+  cases' this with h h <;> rw [h]
+  exacts [left_mem_Icc.2 zero_le_one, ⟨f.nonneg, f.le_one⟩]
 #align smooth_bump_function.mem_Icc SmoothBumpFunction.mem_Icc
 
 theorem nonneg : 0 ≤ f x :=
