@@ -1247,6 +1247,11 @@ theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : P
   rfl
 #align pseudo_metric_space.replace_uniformity_eq PseudoMetricSpace.replaceUniformity_eq
 
+-- ensure that the bornology is unchanged when replacing the uniformity.
+example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) :
+  (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := rfl
+
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
@@ -1315,6 +1320,11 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
   ext
   rfl
 #align pseudo_metric_space.replace_bornology_eq PseudoMetricSpace.replaceBornology_eq
+
+-- ensure that the uniformity is unchanged when replacing the bornology.
+example {α} [B : Bornology α] (m : PseudoMetricSpace α)
+    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
+  (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := rfl
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
 which satisfy a bound of the form `dist (u n) (u m) < B N` for all `n m ≥ N` are
