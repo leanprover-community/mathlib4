@@ -30,6 +30,8 @@ that is solvable by radicals has a solvable Galois group.
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
+set_option linter.uppercaseLean3 false
+
 noncomputable section
 
 open scoped Classical Polynomial
@@ -311,15 +313,15 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
     cases' comp_eq_zero_iff.mp h with h' h'
-    · exact minpoly.ne_zero (IsIntegral (α ^ n)) h'
-    · exact hn (by rw [← natDegree_C _, ← h'.2, nat_degree_X_pow])
+    · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
+    · exact hn (by rw [← natDegree_C ((X ^ n : F[X]).coeff 0), ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
   · exact
-      ⟨splits_of_splits_of_dvd _ hp (SplittingField.Splits (p.comp (X ^ n)))
+      ⟨splits_of_splits_of_dvd _ hp (SplittingField.splits (p.comp (X ^ n)))
           (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval]))⟩
   · refine' gal_isSolvable_tower p (p.comp (X ^ n)) _ hα _
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [nat_degree_X_pow])
-    · obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).1 (SplittingField.Splits p)
+    · obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).1 (SplittingField.splits p)
       rw [map_comp, Polynomial.map_pow, map_X, hs, mul_comp, C_comp]
       apply gal_mul_isSolvable (gal_C_isSolvable _)
       rw [multiset_prod_comp]
@@ -338,29 +340,30 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- An auxiliary induction lemma, which is generalized by `solvable_by_rad.is_solvable`. -/
-theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮⟯) (hα : P α) (hβ : P β) : P γ := by
+theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
   let q := minpoly F β
   have hpq :=
     Polynomial.splits_of_splits_mul _
-      (mul_ne_zero (minpoly.ne_zero (IsIntegral α)) (minpoly.ne_zero (IsIntegral β)))
-      (SplittingField.Splits (p * q))
-  let f : F⟮⟯ →ₐ[F] (p * q).SplittingField :=
+      (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
+      (SplittingField.splits (p * q))
+  let f : F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice
-      (alg_hom_mk_adjoin_splits
+      (algHom_mk_adjoin_splits (S := {β, α})
         (by
           intro x hx
-          cases hx
-          rw [hx]
-          exact ⟨IsIntegral α, hpq.1⟩
-          cases hx
-          exact ⟨IsIntegral β, hpq.2⟩))
+          simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hx
+          cases' hx with hx hx
+          · rw [hx]
+            exact ⟨IsIntegral α, hpq.1⟩
+          · rw [hx]
+            exact ⟨IsIntegral β, hpq.2⟩))
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) :=
     minpoly.eq_of_irreducible_of_monic (minpoly.irreducible (IsIntegral γ))
       (by
-        suffices aeval (⟨γ, hγ⟩ : F⟮⟯) (minpoly F γ) = 0 by
+        suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
           rw [aeval_alg_hom_apply, this, AlgHom.map_zero]
-        apply (algebraMap F⟮⟯ (solvableByRad F E)).Injective
+        apply (algebraMap F⟮α, β⟯ (solvableByRad F E)).Injective
         rw [RingHom.map_zero, ← aeval_algebra_map_apply]
         exact minpoly.aeval F γ)
       (minpoly.monic (IsIntegral γ))
@@ -371,7 +374,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮⟯) (hα : 
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:192:11: unsupported (impossible) -/
 /-- An auxiliary induction lemma, which is generalized by `solvable_by_rad.is_solvable`. -/
-theorem induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮⟯) (hα : P α) : P β :=
+theorem induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P α) : P β :=
   induction2 (adjoin.mono F _ _ (ge_of_eq (Set.pair_eq_singleton α)) hβ) hα hα
 #align solvable_by_rad.induction1 solvableByRad.induction1
 
@@ -396,14 +399,14 @@ theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := b
 `is_solvable_by_rad` root has solvable Galois group -/
 theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
     (hα : IsSolvableByRad F α) : IsSolvable q.Gal := by
-  have : _root_.IsSolvable (q * C q.leading_coeff⁻¹).Gal := by
+  have : _root_.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
     rw [minpoly.eq_of_irreducible q_irred q_aeval, ←
       show minpoly F (⟨α, hα⟩ : solvableByRad F E) = minpoly F α from
         minpoly.eq_of_algebraMap_eq (RingHom.injective _) (IsIntegral ⟨α, hα⟩) rfl]
     exact IsSolvable ⟨α, hα⟩
-  refine' solvable_of_surjective (gal.restrict_dvd_surjective ⟨C q.leading_coeff⁻¹, rfl⟩ _)
+  refine' solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ _)
   rw [mul_ne_zero_iff, Ne, Ne, C_eq_zero, inv_eq_zero]
-  exact ⟨q_irred.ne_zero, leading_coeff_ne_zero.mpr q_irred.ne_zero⟩
+  exact ⟨q_irred.ne_zero, leadingCoeff_ne_zero.mpr q_irred.ne_zero⟩
 #align solvable_by_rad.is_solvable' solvableByRad.isSolvable'
 
 end solvableByRad
