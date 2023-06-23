@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
+! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -236,16 +236,30 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter α} (hs : IsCompact s) :
 #align is_compact.disjoint_nhds_set_right IsCompact.disjoint_nhdsSet_right
 
 -- porting note: todo: reformulate using `Disjoint`
+/-- For every directed family of closed sets whose intersection avoids a compact set,
+there exists a single element of the family which itself avoids this compact set. -/
+theorem IsCompact.elim_directed_family_closed {ι : Type v} [hι : Nonempty ι] (hs : IsCompact s)
+    (Z : ι → Set α) (hZc : ∀ i, IsClosed (Z i)) (hsZ : (s ∩ ⋂ i, Z i) = ∅)
+    (hdZ : Directed (· ⊇ ·) Z) : ∃ i : ι, s ∩ Z i = ∅ :=
+  let ⟨t, ht⟩ :=
+    hs.elim_directed_cover (compl ∘ Z) (fun i => (hZc i).isOpen_compl)
+      (by
+        simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
+          mem_inter_iff, not_and, iff_self_iff, mem_iInter, mem_compl_iff] using hsZ)
+      (hdZ.mono_comp _ fun _ _ => compl_subset_compl.mpr)
+  ⟨t, by
+    simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
+      mem_inter_iff, not_and, iff_self_iff, mem_iInter, mem_compl_iff] using ht⟩
+#align is_compact.elim_directed_family_closed IsCompact.elim_directed_family_closed
+
+-- porting note: todo: reformulate using `Disjoint`
 /-- For every family of closed sets whose intersection avoids a compact set,
 there exists a finite subfamily whose intersection avoids this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {s : Set α} {ι : Type v} (hs : IsCompact s)
     (Z : ι → Set α) (hZc : ∀ i, IsClosed (Z i)) (hsZ : (s ∩ ⋂ i, Z i) = ∅) :
     ∃ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i) = ∅ :=
-  let ⟨t, ht⟩ := hs.elim_finite_subcover (fun i => Z iᶜ) (fun i => (hZc i).isOpen_compl) <| by
-    simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
-      mem_inter_iff, not_and, iff_self_iff, mem_iInter, mem_compl_iff] using hsZ
-  ⟨t, by simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
-    mem_inter_iff, not_and, iff_self_iff, mem_iInter, mem_compl_iff] using ht⟩
+  hs.elim_directed_family_closed _ (fun t ↦ isClosed_biInter fun _ _ ↦ hZc _)
+    (by rwa [← iInter_eq_iInter_finset]) (directed_of_sup fun _ _ h ↦ biInter_subset_biInter_left h)
 #align is_compact.elim_finite_subfamily_closed IsCompact.elim_finite_subfamily_closed
 
 /-- If `s` is a compact set in a topological space `α` and `f : ι → Set α` is a locally finite
@@ -274,25 +288,16 @@ the intersection of a directed family of nonempty compact closed sets is nonempt
 theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type v} [hι : Nonempty ι]
     (Z : ι → Set α) (hZd : Directed (· ⊇ ·) Z) (hZn : ∀ i, (Z i).Nonempty)
     (hZc : ∀ i, IsCompact (Z i)) (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty := by
-  apply hι.elim
-  intro i₀
-  let Z' i := Z i ∩ Z i₀
-  suffices (⋂ i, Z' i).Nonempty by
-    exact this.mono (iInter_mono fun i => inter_subset_left (Z i) (Z i₀))
-  rw [nonempty_iff_ne_empty]
-  intro H
-  obtain ⟨t, ht⟩ : ∃ t : Finset ι, (Z i₀ ∩ ⋂ i ∈ t, Z' i) = ∅
-  exact (hZc i₀).elim_finite_subfamily_closed Z' (fun i => IsClosed.inter (hZcl i) (hZcl i₀))
-    (by rw [H, inter_empty])
-  obtain ⟨i₁, hi₁⟩ : ∃ i₁ : ι, Z i₁ ⊆ Z i₀ ∧ ∀ i ∈ t, Z i₁ ⊆ Z' i := by
-    rcases Directed.finset_le hZd t with ⟨i, hi⟩
-    rcases hZd i i₀ with ⟨i₁, hi₁, hi₁₀⟩
-    refine ⟨i₁, hi₁₀, fun j hj => ?_⟩
-    exact subset_inter (hi₁.trans (hi j hj)) hi₁₀
-  suffices (Z i₀ ∩ ⋂ i ∈ t, Z' i).Nonempty by
-    rw [nonempty_iff_ne_empty] at this
-    contradiction
-  exact (hZn i₁).mono (subset_inter hi₁.left <| subset_iInter₂ hi₁.right)
+  let i₀ := hι.some
+  suffices (Z i₀ ∩ ⋂ i, Z i).Nonempty by
+    rwa [inter_eq_right_iff_subset.mpr (iInter_subset _ i₀)] at this
+  simp only [nonempty_iff_ne_empty] at hZn ⊢
+  apply mt ((hZc i₀).elim_directed_family_closed Z hZcl)
+  push_neg
+  simp only [← nonempty_iff_ne_empty] at hZn ⊢
+  refine' ⟨hZd, fun i => _⟩
+  rcases hZd i₀ i with ⟨j, hji₀, hji⟩
+  exact (hZn j).mono (subset_inter hji₀ hji)
 #align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
 
 /-- Cantor's intersection theorem for sequences indexed by `ℕ`:
