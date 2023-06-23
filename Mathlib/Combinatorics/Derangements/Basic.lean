@@ -146,7 +146,7 @@ theorem RemoveNone.fiber_some (a : α) :
   · rw [RemoveNone.mem_fiber]
     rintro ⟨F, F_derangement, F_none, rfl⟩ x x_fixed
     rw [mem_fixedPoints_iff] at x_fixed
-    apply_fun some  at x_fixed
+    apply_fun some at x_fixed
     cases' Fx : F (some x) with y
     · rwa [removeNone_none F Fx, F_none, Option.some_inj, eq_comm] at x_fixed
     · exfalso

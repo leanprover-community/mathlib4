@@ -584,7 +584,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
     ContDiffOn 𝕜 n (g ∘ f) s := by
   induction' n using ENat.nat_induction with n IH Itop generalizing Eu Fu Gu
-  · rw [contDiffOn_zero] at hf hg⊢
+  · rw [contDiffOn_zero] at hf hg ⊢
     exact ContinuousOn.comp hg hf st
   · rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
