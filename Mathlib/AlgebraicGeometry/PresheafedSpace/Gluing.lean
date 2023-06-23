@@ -189,8 +189,8 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
       (π₂⁻¹ i, j, k) U ≫ (D.t k i).c.app _ ≫ (D.V (k, i)).presheaf.map (eqToHom eq) =
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
-  -- Porting note : I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  . delta IsOpenImmersion.openFunctor
+  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  · delta IsOpenImmersion.openFunctor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr
     have := (𝖣.t_fac k i j).symm
@@ -201,16 +201,16 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     rw [coe_comp, coe_comp] at this
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
-    . refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
+    · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
       rw [←comp_apply, ←comp_base, D.t_inv, id_base, id_apply]
     refine congr_arg (_ '' .) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
-    . intro x
+    · intro x
       rw [←comp_apply, ←comp_base, IsIso.inv_hom_id, id_base, id_apply]
-    . intro x
+    · intro x
       rw [←comp_apply, ←comp_base, IsIso.hom_inv_id, id_base, id_apply]
-  . rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
+  · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
     erw [← comp_c_app]
@@ -258,13 +258,13 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
-  . refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
+  · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
     dsimp
     rw [coe_comp, Set.image_comp]
     refine congr_arg (_ '' .) ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
-    . apply CategoryTheory.ConcreteCategory.bijective_of_isIso
+    · apply CategoryTheory.ConcreteCategory.bijective_of_isIso
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
@@ -416,16 +416,16 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
 theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
-  -- Porting note : I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  . congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
+  -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
+  · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
     delta ι Multicoequalizer.π at h2
     apply_fun (D.ι _).base
-    . exact h2.symm
-    . have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
+    · exact h2.symm
+    · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
       rw [←this, coe_comp]
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
@@ -437,11 +437,11 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   dsimp [opensImagePreimageMap]
   rw [congr_app (D.t_id _), id_c_app, ← Functor.map_comp]
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
-  . simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
+  · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
     rfl
-  . rw [Set.range_iff_surjective.mpr _]
-    . simp
-    . rw [← TopCat.epi_iff_surjective]
+  · rw [Set.range_iff_surjective.mpr _]
+    · simp
+    · rw [← TopCat.epi_iff_surjective]
       infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp_π
 
@@ -464,8 +464,8 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     rw [comp_c_app]
     apply (config := { allowSynthFailures := true }) mono_comp
     erw [D.ι_image_preimage_eq i j U]
-    . infer_instance
-    . have : IsIso (D.t i j).c := by apply c_isIso_of_iso
+    · infer_instance
+    · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
       infer_instance)]
   simp_rw [Category.assoc]
   rw [limit.w_assoc]
