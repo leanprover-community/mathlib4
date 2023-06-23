@@ -39,7 +39,7 @@ to form the Dirichlet ring.
 
 ## Main Results
  * Several forms of Möbius inversion:
- * `sum_eq_iff_sum_mul_moebius_eq` for fun`ctions to a `CommRing`
+ * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
  * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
