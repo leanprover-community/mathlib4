@@ -1253,7 +1253,8 @@ theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n 
 #align has_ftaylor_series_up_to.has_ftaylor_series_up_to_on HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn
 
 theorem HasFTaylorSeriesUpTo.ofLe (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤ n) :
-    HasFTaylorSeriesUpTo m f p := by rw [← hasFTaylorSeriesUpToOn_univ_iff] at h⊢; exact h.of_le hmn
+    HasFTaylorSeriesUpTo m f p := by
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
 #align has_ftaylor_series_up_to.of_le HasFTaylorSeriesUpTo.ofLe
 
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by

@@ -57,7 +57,7 @@ then it is in the convex hull of a strict subset of `t`. -/
 theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndependent 𝕜 ((↑) : t → E))
     {x : E} (m : x ∈ convexHull 𝕜 (↑t : Set E)) :
     ∃ y : (↑t : Set E), x ∈ convexHull 𝕜 (↑(t.erase y) : Set E) := by
-  simp only [Finset.convexHull_eq, mem_setOf_eq] at m⊢
+  simp only [Finset.convexHull_eq, mem_setOf_eq] at m ⊢
   obtain ⟨f, fpos, fsum, rfl⟩ := m
   obtain ⟨g, gcombo, gsum, gpos⟩ := exists_nontrivial_relation_sum_zero_of_not_affine_ind h
   replace gpos := exists_pos_of_sum_zero_of_exists_nonzero g gsum gpos
