@@ -834,6 +834,11 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     exact measure_univ
 #align measure_theory.measure.fst.measure_theory.is_probability_measure MeasureTheory.Measure.fst.instIsProbabilityMeasure
 
+@[simp]
+lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
+  ext1 s hs
+  rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
+
 theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
   ext1 s hs
@@ -869,6 +874,11 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [snd_univ]
     exact measure_univ
 #align measure_theory.measure.snd.measure_theory.is_probability_measure MeasureTheory.Measure.snd.instIsProbabilityMeasure
+
+@[simp]
+lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
+  ext1 s hs
+  rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
 theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ)
     (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
