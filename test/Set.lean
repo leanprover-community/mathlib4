@@ -7,6 +7,7 @@ Authors: Ian Benway.
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
 import Mathlib.Util.SleepHeartbeats
+import Qq
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
