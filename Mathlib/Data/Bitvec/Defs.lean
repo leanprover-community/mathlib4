@@ -76,7 +76,7 @@ def intMax : ∀ n, Bitvec n
 @[reducible]
 def intMin : ∀ n, Bitvec n
   | 0   => Vector.nil
-  | n+1 => true ::ᵥ zero n
+  | n+1 => true ::ᵥ Bitvec.zero n
 
 
 instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩

@@ -15,6 +15,56 @@ import Mathlib.Data.Vector.Snoc
 -/
 
 namespace Vector
+
+  #check List.mapAccumr
+  #check mapAccumr₂
+
+  /--
+    Given a nested vector, where the inner vectors are non-empty, we can separate the head and tail
+    of each inner vector
+  -/
+  def dest_nested : {m : ℕ} → Vector (Vector α (n+1)) m → Vector α m × Vector (Vector α n) m
+    | 0,    _             => (Vector.nil, Vector.nil)
+    | _+1,  ⟨v :: vs, h⟩  =>
+        let r := dest_nested ⟨vs, by simp_all[h]⟩
+        (
+          v.head ::ᵥ r.1,
+          v.tail ::ᵥ r.2
+        )
+
+  /--
+    Given a nested vector, where the inner vectors are non-empty, return a vector with the head of
+    each inner vector
+  -/
+  def head_nested (vs : Vector (Vector α (n+1)) m) : Vector α m :=
+    (dest_nested vs).fst
+
+  /--
+    Given a nested vector, where the inner vectors are non-empty, return a nested vector with the
+    tail of each inner vector
+  -/
+  def tail_nested (vs : Vector (Vector α (n+1)) m) : Vector (Vector α n) m :=
+    (dest_nested vs).snd
+
+  /--
+    Map an `n`-ary function over `n` vectors
+  -/
+  def mapₙ {n : ℕ} (f : Vector α n → β) : {m : ℕ} → Vector (Vector α m) n → Vector β m
+    | 0,   _  => Vector.nil
+    | _+1, vs => f vs.head_nested ::ᵥ mapₙ f vs.tail_nested
+
+  /--
+    Map an `n`-ary function over `n` vectors, right-to-left, while accumulating a state.
+    Returns both the final state, and the mapped vector
+  -/
+  def mapAccumrₙ {n : ℕ} (f : Vector α n → σ → σ × β) :
+      {m : ℕ} → Vector (Vector α m) n → σ → σ × Vector β m
+    | 0,   _,   s => (s, Vector.nil)
+    | _+1, vs,  s =>
+        let r := mapAccumrₙ f vs.tail_nested s
+        let z := f vs.head_nested r.1
+        (z.1, z.2 ::ᵥ r.2)
+
   /-!
   ## Normalization
   Try to rewrite all operations in terms of `mapAccumr`
@@ -40,6 +90,11 @@ namespace Vector
         induction xs, ys using revInductionOn₂ <;> simp_all
 
     end Binary
+
+    section NAry
+      variable (xs : Vector (Vector α m) n)
+
+    end NAry
 
   end Norm
 
@@ -76,13 +131,18 @@ namespace Vector
             ) xs s).snd := by
         induction xs using Vector.revInductionOn generalizing s <;> simp_all
 
+      @[simp]
+      theorem map_map (f₁ : β → γ) (f₂ : α → β) :
+          map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
+        induction xs <;> simp_all
+
     end Unary
 
 
 
     section Binary
       variable (xs : Vector α n) (ys : Vector β n)
-      variable (f₁ : β' → β → σ₁ → σ₁ × γ) (f₂ : α → σ₂ → σ₂ × β')
+      variable (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ)
 
       protected abbrev mapAccumr₂_mapAccumr_left.g (x : α) (y : β) (s : σ₁ × σ₂) :=
         let r₂ := f₂ x s.snd
@@ -96,21 +156,31 @@ namespace Vector
             (m.fst.fst, m.snd) := by
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
+      @[simp]
+      theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
+          map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
+        induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 
-      variable (f₁ : β → γ → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ)
+
+      variable (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ)
 
       protected abbrev mapAccumr₂_mapAccumr_right.g (x : α) (y : β) (s : σ₁ × σ₂) :=
-        let r₂ := f₂ x s.snd
-        let r₁ := f₁ y r₂.snd s.fst
+        let r₂ := f₂ y s.snd
+        let r₁ := f₁ x r₂.snd s.fst
         ((r₁.fst, r₂.fst), r₁.snd)
 
       @[simp]
       theorem mapAccumr₂_mapAccumr_right :
-          (mapAccumr₂ f₁ ys (mapAccumr f₂ xs s₂).snd s₁)
+          (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
           = let m := (mapAccumr₂ (mapAccumr₂_mapAccumr_right.g f₁ f₂) xs ys (s₁, s₂))
             (m.fst.fst, m.snd) := by
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
+
+      @[simp]
+      theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
+          map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
+        induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 
       variable (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ)
@@ -126,6 +196,11 @@ namespace Vector
           = let m := mapAccumr₂ (mapAccumr_mapAccumr₂.g f₁ f₂) xs ys (s₁, s₂);
             (m.fst.fst, m.snd) := by
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
+
+      @[simp]
+      theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
+          map f₁ (map₂ f₂ xs ys) = map₂ (fun x y => f₁ <| f₂ x y) xs ys := by
+        induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
       @[simp]
       theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ)
@@ -178,6 +253,8 @@ namespace Vector
                   xs ys (s₁, s₂);
           (m.fst.fst, m.snd) := by
         induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
+
+
     end Binary
 
 
