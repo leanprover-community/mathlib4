@@ -6,19 +6,7 @@ Authors: Ian Benway.
 
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
-import Mathlib.Data.Complex.Basic
--- import Mathlib.RingTheory.Ideal.Operations
--- import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Equiv
--- import Mathlib.Algebra.Module.Submodule.Pointwise
--- import Mathlib.Algebra.Module.Submodule.Bilinear
--- import Mathlib.Algebra.Module.Opposites
-import Mathlib.Algebra.Order.Kleene
--- import Mathlib.Data.Finset.Pointwise
--- import Mathlib.Data.Set.Semiring
--- import Mathlib.Data.Set.Pointwise.BigOperators
--- import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+import Qq
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
@@ -49,24 +37,30 @@ example : True := by
   set g : Nat → Int := (fun ε => ε) with h
   trivial
 
-open Complex
-open scoped Real
-/-
-example : True := by
-  let a : ℝ := sorry
-  let d : ℝ  := sorry
-  set aff : ℂ → ℂ := (fun w => d * (w - a * I) )
-  set g : ℝ → ℂ → ℂ  := fun ε w => exp (ε * (exp (aff w) + exp (-aff w)))
-  -/
---en Set Function Filter Asymptotics Metric Complex
---en scoped Topology Filter Real
+open Lean Elab
 
+def sleepAtLeastHeartbeats (n : Nat) : CoreM Unit := do
+  let i ← IO.getNumHeartbeats
+  while (← IO.getNumHeartbeats) < i + n do
+    continue
 
-variable {a b C l o p m n b v c j l k u y : ℝ}
--- set_option trace.Meta.synthInstance true
--- set_option trace.profiler true
-theorem horizontal_strip
-   : True := by
-  set aff : ℂ → ℂ := sorry
-  set g : ℝ → ℂ → ℂ  := fun ε w => (ε * ( (aff w) ))
-  sorry
+elab "sleep_heartbeats" n:num : tactic => do
+  match Syntax.isNatLit? n with
+  | none    => throwIllFormedSyntax
+  | some m => sleepAtLeastHeartbeats (m * 1000)
+
+example {a b c d e f g h : ℕ} : 1 = 1 := by
+  sleep_heartbeats 1000
+  rfl
+
+-- simulate a slow to elaborate term
+open Qq in
+elab "test" : term => do
+  sleepAtLeastHeartbeats (1000 * 1000)
+  return q((1 : Nat))
+
+-- this will timeout if test is elaborated multiple times
+set_option maxHeartbeats 2000 in
+example {a b c d e f g h : Nat} : 1 = 1 := by
+  set a : Nat := test with h
+  trivial
