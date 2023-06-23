@@ -58,7 +58,7 @@ theorem gal_X_sub_C_isSolvable (x : F) : IsSolvable (X - C x).Gal := by infer_in
 theorem gal_X_pow_isSolvable (n : ℕ) : IsSolvable (X ^ n : F[X]).Gal := by infer_instance
 #align gal_X_pow_is_solvable gal_X_pow_isSolvable
 
-theorem gal_mul_isSolvable {p q : F[X]} (hp : IsSolvable p.Gal) (hq : IsSolvable q.Gal) :
+theorem gal_mul_isSolvable {p q : F[X]} (_ : IsSolvable p.Gal) (_ : IsSolvable q.Gal) :
     IsSolvable (p * q).Gal :=
   solvable_of_solvable_injective (Gal.restrictProd_injective p q)
 #align gal_mul_is_solvable gal_mul_isSolvable
@@ -67,13 +67,13 @@ theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (G
     IsSolvable s.prod.Gal := by
   apply Multiset.induction_on' s
   · exact gal_one_isSolvable
-  · intro p t hps hts ht
+  · intro p t hps _ ht
     rw [Multiset.insert_eq_cons, Multiset.prod_cons]
     exact gal_mul_isSolvable (hs p hps) ht
 #align gal_prod_is_solvable gal_prod_isSolvable
 
 theorem gal_isSolvable_of_splits {p q : F[X]}
-    (hpq : Fact (p.Splits (algebraMap F q.SplittingField))) (hq : IsSolvable q.Gal) :
+    (_ : Fact (p.Splits (algebraMap F q.SplittingField))) (hq : IsSolvable q.Gal) :
     IsSolvable p.Gal :=
   haveI : IsSolvable (q.SplittingField ≃ₐ[F] q.SplittingField) := hq
   solvable_of_surjective (AlgEquiv.restrictNormalHom_surjective q.SplittingField)
@@ -260,16 +260,16 @@ theorem induction (P : solvableByRad F E → Prop)
     exact Subtype.ext hα₀.symm
   apply IsSolvableByRad.rec
   · exact fun α => ⟨algebraMap F (solvableByRad F E) α, rfl, base α⟩
-  · intro α β hα hβ Pα Pβ
+  · intro α β _ _ Pα Pβ
     obtain ⟨⟨α₀, hα₀, Pα⟩, β₀, hβ₀, Pβ⟩ := Pα, Pβ
     exact ⟨α₀ + β₀, by rw [← hα₀, ← hβ₀]; rfl, add α₀ β₀ Pα Pβ⟩
-  · intro α hα Pα
+  · intro α _ Pα
     obtain ⟨α₀, hα₀, Pα⟩ := Pα
     exact ⟨-α₀, by rw [← hα₀]; rfl, neg α₀ Pα⟩
-  · intro α β hα hβ Pα Pβ
+  · intro α β _ _ Pα Pβ
     obtain ⟨⟨α₀, hα₀, Pα⟩, β₀, hβ₀, Pβ⟩ := Pα, Pβ
     exact ⟨α₀ * β₀, by rw [← hα₀, ← hβ₀]; rfl, mul α₀ β₀ Pα Pβ⟩
-  · intro α hα Pα
+  · intro α _ Pα
     obtain ⟨α₀, hα₀, Pα⟩ := Pα
     exact ⟨α₀⁻¹, by rw [← hα₀]; rfl, inv α₀ Pα⟩
   · intro α n hn hα Pα
@@ -287,17 +287,17 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   · exact fun _ => isIntegral_neg
   · exact fun _ _ => isIntegral_mul
   · exact fun α hα =>
-      Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
+      (Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
         (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from
-          isAlgebraic_iff_isIntegral.mpr hα)
+          isAlgebraic_iff_isIntegral.mpr hα) : )
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := isAlgebraic_iff_isIntegral.mpr hα
     refine'
       isAlgebraic_iff_isIntegral.mp
         ⟨p.comp (X ^ n),
-          ⟨fun h => h1 (leading_coeff_eq_zero.mp _), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
-    rwa [← leading_coeff_eq_zero, leading_coeff_comp, leading_coeff_X_pow, one_pow, mul_one] at h
-    rwa [nat_degree_X_pow]
+          ⟨fun h => h1 (leadingCoeff_eq_zero.mp _), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
+    rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
+    rwa [natDegree_X_pow]
 #align solvable_by_rad.is_integral solvableByRad.isIntegral
 
 /-- The statement to be proved inductively -/
