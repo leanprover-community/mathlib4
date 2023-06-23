@@ -76,11 +76,11 @@ We define the degree of a rational function, with values in `ℤ`:
 To provide good API encapsulation and speed up unification problems,
 `RatFunc` is defined as a structure, and all operations are `@[irreducible] def`s
 
-We need a couple of maps to set up the `field` and `IsFractionRing` structure,
-namely `RatFunc.of_fraction_ring`, `RatFunc.to_fraction_ring`, `RatFunc.mk` and
-`RatFunc.to_fraction_ring_ring_equiv`.
-All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (RatFunc K)`
-and `is_localization.alg_equiv`.
+We need a couple of maps to set up the `Field` and `IsFractionRing` structure,
+namely `RatFunc.ofFractionRing`, `RatFunc.toFractionRing`, `RatFunc.mk` and
+`RatFunc.toFractionRingRingEquiv`.
+All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] (RatFunc K)`
+and `IsLocalization.algEquiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
 the codomain is not a field or even an integral domain.

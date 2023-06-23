@@ -19,15 +19,15 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 ## Main results
 
- * `is_integrally_closed_eq_field_fractions`: For integrally closed domains, the minimal polynomial
-    over the ring is the same as the minimal polynomial over the fraction field.
+ * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
+    polynomial over the ring is the same as the minimal polynomial over the fraction field.
 
- * `is_integrally_closed_dvd` : For integrally closed domains, the minimal polynomial divides any
-    primitive polynomial that has the integral element as root.
+ * `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
+    any primitive polynomial that has the integral element as root.
 
- * `is_integrally_closed_unique` : The minimal polynomial of an element `x` is uniquely
-    characterized by its defining property: if there is another monic polynomial of minimal degree
-    that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
+ * `minpoly.IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
+    uniquely characterized by its defining property: if there is another monic polynomial of minimal
+    degree that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
 
@@ -48,7 +48,7 @@ variable (K L : Type _) [Field K] [Algebra R K] [IsFractionRing R K] [Field L] [
 variable [IsIntegrallyClosed R]
 
 /-- For integrally closed domains, the minimal polynomial over the ring is the same as the minimal
-polynomial over the fraction field. See `minpoly.is_integrally_closed_eq_field_fractions'` if
+polynomial over the fraction field. See `minpoly.isIntegrallyClosed_eq_field_fractions'` if
 `S` is already a `K`-algebra. -/
 theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsIntegral R s) :
     minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) := by
@@ -60,7 +60,7 @@ theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsInteg
 #align minpoly.is_integrally_closed_eq_field_fractions minpoly.isIntegrallyClosed_eq_field_fractions
 
 /-- For integrally closed domains, the minimal polynomial over the ring is the same as the minimal
-polynomial over the fraction field. Compared to `minpoly.is_integrally_closed_eq_field_fractions`,
+polynomial over the fraction field. Compared to `minpoly.isIntegrallyClosed_eq_field_fractions`,
 this version is useful if the element is in a ring that is already a `K`-algebra. -/
 theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsScalarTower R K S]
     {s : S} (hs : IsIntegral R s) : minpoly K s = (minpoly R s).map (algebraMap R K) := by
@@ -157,8 +157,6 @@ noncomputable section AdjoinRoot
 
 open Algebra Polynomial AdjoinRoot
 
--- porting note: commented out because of redundant binder annotation update
---variable {R}
 variable {x : S}
 
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
@@ -172,14 +170,14 @@ theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.t
   rw [← hP, hQ, RingHom.map_mul, mk_self, MulZeroClass.zero_mul]
 #align minpoly.to_adjoin.injective minpoly.ToAdjoin.injective
 
-/-- The algebra isomorphism `adjoin_root (minpoly R x) ≃ₐ[R] adjoin R x` -/
+/-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
 @[simps!]
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
 #align minpoly.equiv_adjoin minpoly.equivAdjoin
 
-/-- The `power_basis` of `adjoin R {x}` given by `x`. See `algebra.adjoin.power_basis` for a version
+/-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
 @[simps!]
 def Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
