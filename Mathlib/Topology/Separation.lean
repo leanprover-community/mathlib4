@@ -751,6 +751,13 @@ theorem ContinuousAt.eventually_ne [TopologicalSpace β] [T1Space β] {g : α �
   hg1.tendsto.eventually_ne hg2
 #align continuous_at.eventually_ne ContinuousAt.eventually_ne
 
+theorem eventually_ne_nhds [T1Space α] {a b : α} (h : a ≠ b) : ∀ᶠ x in 𝓝 a, x ≠ b :=
+  IsOpen.eventually_mem isOpen_ne h
+
+theorem eventually_ne_nhdsWithin [T1Space α] {a b : α} {s : Set α} (h : a ≠ b) :
+    ∀ᶠ x in 𝓝[s] a, x ≠ b :=
+  Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
+
 /-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
 `f` admits *some* limit at `a`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
