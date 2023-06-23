@@ -2053,7 +2053,7 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     have Hf : ∀ x, f (g x) =
         typein ((· < ·) : (succ (#ι)).ord.out.α → (succ (#ι)).ord.out.α → Prop) x :=
       fun a => Classical.choose_spec (H a)
-    apply_fun f  at h'
+    apply_fun f at h'
     rwa [Hf, Hf, typein_inj] at h'
   convert Cardinal.mk_le_of_injective hg
   rw [Cardinal.mk_ord_out (succ (#ι))]

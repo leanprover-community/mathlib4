@@ -117,8 +117,8 @@ theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 #align clifford_algebra.reverse.map_mul CliffordAlgebra.reverse.map_mul
 
 @[simp]
-theorem reverse_comp_reverse : reverse.comp reverse = (LinearMap.id : _ →ₗ[R] CliffordAlgebra Q) :=
-  by
+theorem reverse_comp_reverse :
+    reverse.comp reverse = (LinearMap.id : _ →ₗ[R] CliffordAlgebra Q) := by
   ext m
   simp only [LinearMap.id_apply, LinearMap.comp_apply]
   induction m using CliffordAlgebra.induction

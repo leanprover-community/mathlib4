@@ -20,7 +20,7 @@ import Mathlib.Data.MvPolynomial.PDeriv
 
 The definition of the Bernstein polynomials
 ```
-bernsteinPolynomial (R : Type*) [comm_ring R] (n ν : ℕ) : R[X] :=
+bernsteinPolynomial (R : Type _) [CommRing R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
 and the fact that for `ν : fin (n+1)` these are linearly independent over `ℚ`.

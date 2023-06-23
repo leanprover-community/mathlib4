@@ -2765,14 +2765,14 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
 
 end Diam
 
-theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
+theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
   simp_rw [← closedBall_diff_ball] at hf1
-  exact (isCompact_closedBall a r).exists_local_min_mem_open ball_subset_closedBall hf hz hf1
+  exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_local_min_mem_ball
+#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
 
 end Metric
 

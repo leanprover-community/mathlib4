@@ -493,7 +493,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     conv at nf => simp [HAdd.hAdd, Add.add]
     conv in _ + o => simp [HAdd.hAdd, Add.add]
     cases' h : add a o with e' n' a' <;>
-      simp only [Add.add, add, addAux, h'.symm, h, add_assoc, repr] at nf h₁⊢
+      simp only [Add.add, add, addAux, h'.symm, h, add_assoc, repr] at nf h₁ ⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he: cmp e e' <;> simp [he] at ee ⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
@@ -712,7 +712,7 @@ theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) 
 theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → split o = (scale 1 o', m)
   | 0, o', m, _, p => by injection p ; substs o' m ; rfl
   | oadd e n a, o', m, h, p => by
-    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p⊢
+    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
       exact ⟨rfl, rfl⟩
     · revert p
@@ -735,7 +735,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
   | 0, o', m, _, p => by injection p ; substs o' m ; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
-    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p⊢
+    by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
       simp [h.zero_of_zero e0, NF.zero]
     · revert p
@@ -750,7 +750,7 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
         have := mt repr_inj.1 e0
         rw [← opow_add, Ordinal.add_sub_cancel_of_le (one_le_iff_ne_zero.2 this)]
       refine' ⟨NF.oadd (by infer_instance) _ _, _⟩
-      · simp at this⊢
+      · simp at this ⊢
         refine'
           IH₁.below_of_lt'
             ((Ordinal.mul_lt_mul_iff_left omega_pos).1 <| lt_of_le_of_lt (le_add_right _ m') _)
