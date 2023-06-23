@@ -106,3 +106,5 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
+import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.WhatsNew
