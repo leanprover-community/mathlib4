@@ -181,7 +181,7 @@ instance IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {p ^ k} ℚ
 cyclotomic extension of `ℚ`. -/
 noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) : PowerBasis ℤ (𝓞 K) :=
-  (minpoly.Algebra.adjoin.powerBasis' (hζ.isIntegral (p ^ k).pos)).map hζ.adjoinEquivRingOfIntegers
+  (Algebra.adjoin.powerBasis' (hζ.isIntegral (p ^ k).pos)).map hζ.adjoinEquivRingOfIntegers
 #align is_primitive_root.integral_power_basis IsPrimitiveRoot.integralPowerBasis
 
 @[simp]
@@ -189,8 +189,8 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     hζ.integralPowerBasis.gen = ⟨ζ, hζ.isIntegral (p ^ k).pos⟩ :=
   Subtype.ext <| show algebraMap (𝓞 K) K hζ.integralPowerBasis.gen = _ by
-    simp only [integralPowerBasis, PowerBasis.map_gen, minpoly.Algebra.adjoin.powerBasis'_gen, adjoin_equiv_ring_of_integers_apply,
-  is_integral_closure.algebra_map_lift, subtype.coe_mk]
+    simp only [integralPowerBasis, PowerBasis.map_gen, Algebra.adjoin.powerBasis'_gen, adjoinEquivRingOfIntegers_apply,
+  IsIntegralClosure.algebraMap_lift, Subtype.coe_mk]
 #align is_primitive_root.integral_power_basis_gen IsPrimitiveRoot.integralPowerBasis_gen
 
 @[simp]
