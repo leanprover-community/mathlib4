@@ -22,16 +22,16 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 
 ## Main definitions
 
-* `clifford_algebra.involute`: the grade involution, negating each basis vector
-* `clifford_algebra.reverse`: the grade reversion, reversing the order of a product of vectors
+* `CliffordAlgebra.involute`: the grade involution, negating each basis vector
+* `CliffordAlgebra.reverse`: the grade reversion, reversing the order of a product of vectors
 
 ## Main statements
 
-* `clifford_algebra.involute_involutive`
-* `clifford_algebra.reverse_involutive`
-* `clifford_algebra.reverse_involute_commute`
-* `clifford_algebra.involute_mem_even_odd_iff`
-* `clifford_algebra.reverse_mem_even_odd_iff`
+* `CliffordAlgebra.involute_involutive`
+* `CliffordAlgebra.reverse_involutive`
+* `CliffordAlgebra.reverse_involute_commute`
+* `CliffordAlgebra.involute_mem_evenOdd_iff`
+* `CliffordAlgebra.reverse_mem_evenOdd_iff`
 
 -/
 
@@ -70,7 +70,7 @@ theorem involute_involute : ∀ a : CliffordAlgebra Q, involute (involute a) = a
   involute_involutive
 #align clifford_algebra.involute_involute CliffordAlgebra.involute_involute
 
-/-- `clifford_algebra.involute` as an `alg_equiv`. -/
+/-- `CliffordAlgebra.involute` as an `AlgEquiv`. -/
 @[simps!]
 def involuteEquiv : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra Q :=
   AlgEquiv.ofAlgHom involute involute (AlgHom.ext <| involute_involute)
@@ -140,7 +140,7 @@ theorem reverse_reverse : ∀ a : CliffordAlgebra Q, reverse (Q := Q) (reverse (
   reverse_involutive
 #align clifford_algebra.reverse_reverse CliffordAlgebra.reverse_reverse
 
-/-- `clifford_algebra.reverse` as a `linear_equiv`. -/
+/-- `CliffordAlgebra.reverse` as a `LinearEquiv`. -/
 @[simps!]
 def reverseEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q :=
   LinearEquiv.ofInvolutive reverse reverse_involutive
@@ -158,7 +158,7 @@ theorem reverse_comp_involute :
   case h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
-/-- `clifford_algebra.reverse` and `clifford_algebra.inverse` commute. Note that the composition
+/-- `CliffordAlgebra.reverse` and `clifford_algebra.inverse` commute. Note that the composition
 is sometimes referred to as the "clifford conjugate". -/
 theorem reverse_involute_commute : Function.Commute (reverse (Q := Q)) involute :=
   LinearMap.congr_fun reverse_comp_involute
@@ -199,7 +199,7 @@ theorem involute_prod_map_ι :
 end List
 
 /-!
-### Statements about `submodule.map` and `submodule.comap`
+### Statements about `Submodule.map` and `Submodule.comap`
 -/
 
 
@@ -268,7 +268,7 @@ theorem ι_range_comap_reverse :
   rw [← submodule_map_reverse_eq_comap, ι_range_map_reverse]
 #align clifford_algebra.ι_range_comap_reverse CliffordAlgebra.ι_range_comap_reverse
 
-/-- Like `submodule.map_mul`, but with the multiplication reversed. -/
+/-- Like `Submodule.map_mul`, but with the multiplication reversed. -/
 theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       q.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
@@ -283,7 +283,7 @@ theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
   by simp_rw [← submodule_map_reverse_eq_comap, submodule_map_mul_reverse]
 #align clifford_algebra.submodule_comap_mul_reverse CliffordAlgebra.submodule_comap_mul_reverse
 
-/-- Like `submodule.map_pow` -/
+/-- Like `Submodule.map_pow` -/
 theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       p.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
@@ -328,7 +328,7 @@ end Submodule
 /-!
 ### Related properties of the even and odd submodules
 
-TODO: show that these are `iff`s when `invertible (2 : R)`.
+TODO: show that these are `iff`s when `Invertible (2 : R)`.
 -/
 
 
