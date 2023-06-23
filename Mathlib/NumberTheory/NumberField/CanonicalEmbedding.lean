@@ -57,7 +57,8 @@ theorem space_rank [NumberField K] : finrank ℝ E = finrank ℚ K := by
 #align number_field.canonical_embedding.space_rank NumberField.canonicalEmbedding.space_rank
 
 theorem nontrivial_space [NumberField K] : Nontrivial E := by
-  obtain ⟨w⟩ := InfinitePlace.instNonempty K
+  have : Nonempty <| InfinitePlace K := inferInstance
+  rcases this with ⟨w⟩
   obtain hw | hw := w.isReal_or_isComplex
   · haveI : Nonempty { w : InfinitePlace K // IsReal w } := ⟨⟨w, hw⟩⟩
     exact nontrivial_prod_left
@@ -121,7 +122,8 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ w : InfinitePlace K, w x ≤ r := by
   obtain hr | hr := lt_or_le r 0
-  · obtain ⟨w⟩ := InfinitePlace.instNonempty K
+  · have : Nonempty <| InfinitePlace K := inferInstance
+    rcases this with ⟨w⟩
     exact iff_of_false
       (hr.trans_le <| norm_nonneg _).not_le fun h => hr.not_le <| (map_nonneg w _).trans <| h _
   · lift r to NNReal using hr
