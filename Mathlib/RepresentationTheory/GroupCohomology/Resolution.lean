@@ -36,27 +36,27 @@ We then use this isomorphism to deduce that as a complex of `k`-modules, the sta
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
 elsewhere.
 
-Putting this material together allows us to define `group_cohomology.ProjectiveResolution`, the
+Putting this material together allows us to define `GroupCohomology.projectiveResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
 
 ## Main definitions
 
- * `group_cohomology.resolution.Action_diagonal_succ`
- * `group_cohomology.resolution.diagonal_succ`
- * `group_cohomology.resolution.of_mul_action_basis`
- * `classifying_space_universal_cover`
- * `group_cohomology.resolution.forget₂_to_Module_homotopy_equiv`
- * `group_cohomology.ProjectiveResolution`
+ * `GroupCohomology.Resolution.actionDiagonalSucc`
+ * `GroupCohomology.Resolution.diagonalSucc`
+ * `GroupCohomology.Resolution.ofMulActionBasis`
+ * `classifyingSpaceUniversalCover`
+ * `GroupCohomology.Resolution.forget₂ToModuleCatHomotopyEquiv`
+ * `GroupCohomology.projectiveResolution`
 
 ## Implementation notes
 
-We express `k[G]`-module structures on a module `k`-module `V` using the `representation`
-definition. We avoid using instances `module (G →₀ k) V` so that we do not run into possible
+We express `k[G]`-module structures on a module `k`-module `V` using the `Representation`
+definition. We avoid using instances `Module (G →₀ k) V` so that we do not run into possible
 scalar action diamonds.
 
 We also use the category theory library to bundle the type `k[Gⁿ]` - or more generally `k[H]` when
 `H` has `G`-action - and the representation together, as a term of type `Rep k G`, and call it
-`Rep.of_mul_action k G H.` This enables us to express the fact that certain maps are
+`Rep.ofMulAction k G H.` This enables us to express the fact that certain maps are
 `G`-equivariant by constructing morphisms in the category `Rep k G`, i.e., representations of `G`
 over `k`.
 -/
@@ -260,8 +260,8 @@ open scoped TensorProduct
 open Representation
 
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
-the lefthand side is `tensor_product.left_module`, whilst that of the righthand side comes from
-`representation.as_module`. Allows us to use `basis.algebra_tensor_product` to get a `k[G]`-basis
+the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
+`Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
 of the righthand side. -/
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
@@ -318,7 +318,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {n A}
 
-/-- Given a `k`-linear `G`-representation `A`, `diagonal_hom_equiv` is a `k`-linear isomorphism of
+/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
 sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
 `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
@@ -336,7 +336,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-/-- Given a `k`-linear `G`-representation `A`, `diagonal_hom_equiv` is a `k`-linear isomorphism of
+/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
 `(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
@@ -357,7 +357,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply
 
 /-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
-`diagonal_hom_equiv` commutes with the differentials in two complexes which compute
+`diagonalHomEquiv` commutes with the differentials in two complexes which compute
 group cohomology. -/
 theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
     (a : Fin (n + 1)) :
@@ -393,7 +393,7 @@ open CategoryTheory CategoryTheory.Limits
 
 variable [Monoid G]
 
-/-- When the category is `G`-Set, `cech_nerve_terminal_from` of `G` with the left regular action is
+/-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
 def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
@@ -405,7 +405,7 @@ def cechNerveTerminalFromIso :
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso
 
-/-- As a simplicial set, `cech_nerve_terminal_from` of a monoid `G` is isomorphic to the universal
+/-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
 cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
@@ -418,13 +418,13 @@ variable (k)
 open AlgebraicTopology SimplicialObject.Augmented SimplicialObject CategoryTheory.Arrow
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
-from `fin 1 → G` to the terminal object in `Type u`. -/
+from `Fin 1 → G` to the terminal object in `Type u`. -/
 def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 #align classifying_space_universal_cover.comp_forget_augmented classifyingSpaceUniversalCover.compForgetAugmented
 
-/-- The augmented Čech nerve of the map from `fin 1 → G` to the terminal object in `Type u` has an
+/-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
@@ -434,7 +434,7 @@ def extraDegeneracyAugmentedCechNerve :
 #align classifying_space_universal_cover.extra_degeneracy_augmented_cech_nerve classifyingSpaceUniversalCover.extraDegeneracyAugmentedCechNerve
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
-from `fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
+from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
 def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
   refine'
     ExtraDegeneracy.ofIso (_ : (Arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
@@ -444,8 +444,8 @@ def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G)
       (Iso.refl _) (by ext : 1; exact IsTerminal.hom_ext terminalIsTerminal _ _)
 #align classifying_space_universal_cover.extra_degeneracy_comp_forget_augmented classifyingSpaceUniversalCover.extraDegeneracyCompForgetAugmented
 
-/-- The free functor `Type u ⥤ Module.{u} k` applied to the universal cover of the classifying
-space of `G` as a simplicial set, augmented by the map from `fin 1 → G` to the terminal object
+/-- The free functor `Type u ⥤ ModuleCat.{u} k` applied to the universal cover of the classifying
+space of `G` as a simplicial set, augmented by the map from `Fin 1 → G` to the terminal object
 in `Type u`. -/
 def compForgetAugmented.toModule : SimplicialObject.Augmented (ModuleCat.{u} k) :=
   ((SimplicialObject.Augmented.whiskering _ _).obj (ModuleCat.free k)).obj (compForgetAugmented G)
@@ -453,8 +453,8 @@ set_option linter.uppercaseLean3 false in
 #align classifying_space_universal_cover.comp_forget_augmented.to_Module classifyingSpaceUniversalCover.compForgetAugmented.toModule
 
 /-- If we augment the universal cover of the classifying space of `G` as a simplicial set by the
-map from `fin 1 → G` to the terminal object in `Type u`, then apply the free functor
-`Type u ⥤ Module.{u} k`, the resulting augmented simplicial `k`-module has an extra degeneracy. -/
+map from `Fin 1 → G` to the terminal object in `Type u`, then apply the free functor
+`Type u ⥤ ModuleCat.{u} k`, the resulting augmented simplicial `k`-module has an extra degeneracy. -/
 def extraDegeneracyCompForgetAugmentedToModule :
     ExtraDegeneracy (compForgetAugmented.toModule k G) :=
   ExtraDegeneracy.map (extraDegeneracyCompForgetAugmented G) (ModuleCat.free k)
@@ -543,7 +543,7 @@ def forget₂ToModuleCat :=
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.forget₂_to_Module GroupCohomology.Resolution.forget₂ToModuleCat
 
-/-- If we apply the free functor `Type u ⥤ Module.{u} k` to the universal cover of the classifying
+/-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the classifying
 space of `G` as a simplicial set, then take the alternating face map complex, the result is
 isomorphic to the standard resolution of the trivial `G`-representation `k` as a complex of
 `k`-modules. -/
@@ -670,7 +670,7 @@ instance : EnoughProjectives (Rep k G) :=
 set_option maxHeartbeats 1150000
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k` called `group_cohomology.resolution k G`. -/
+standard resolution of `k` called `GroupCohomology.resolution k G`. -/
 def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
