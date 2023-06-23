@@ -83,9 +83,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
     countably many such functions, say `g i`.
     Then `∑ i, r i • g i` will be the desired function if `r i` is a sequence of positive numbers
-    tending quickly enough to zero. Indeed, this ensures that, for any `k ≤ i`, the `k`-th derivative
-    of `r i • g i` is bounded by a prescribed (summable) sequence `u i`. From this, the summability
-    of the series and of its successive derivatives follows. -/
+    tending quickly enough to zero. Indeed, this ensures that, for any `k ≤ i`, the `k`-th
+    derivative of `r i • g i` is bounded by a prescribed (summable) sequence `u i`. From this, the
+    summability of the series and of its successive derivatives follows. -/
   rcases eq_empty_or_nonempty s with (rfl | h's)
   · exact
       ⟨fun _ => 0, Function.support_zero, contDiff_const, by
