@@ -110,7 +110,7 @@ protected theorem lipschitzOnWith {t} (ht : t ∈ Icc v.tMin v.tMax) :
 protected theorem continuousOn :
     ContinuousOn (uncurry v) (Icc v.tMin v.tMax ×ˢ closedBall v.x₀ v.R) :=
   have : ContinuousOn (uncurry (flip v)) (closedBall v.x₀ v.R ×ˢ Icc v.tMin v.tMax) :=
-    continuousOn_prod_of_continuousOn_lipschitz_on _ v.L v.isPicardLindelof.cont
+    continuousOn_prod_of_continuousOn_lipschitzOnWith _ v.L v.isPicardLindelof.cont
       v.isPicardLindelof.lipschitz
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 #align picard_lindelof.continuous_on PicardLindelof.continuousOn
