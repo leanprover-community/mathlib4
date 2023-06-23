@@ -18,6 +18,9 @@ Two probability measures are equal if and only if they have the same cdf.
   conditional cdf (`ProbabilityTheory.condCdf`) of the product measure
   `(Measure.dirac Unit.unit).prod μ` evaluated at `Unit.unit`.
 
+The definition could be replaced by the more elementary `cdf μ x = (μ (Iic x)).toReal`, but using
+`condCdf` gives us access to its API, from which most properties of the cdf follow directly.
+
 ## Main statements
 
 * `ProbabilityTheory.ofReal_cdf`: for a probability measure `μ` and `x : ℝ`,
@@ -41,12 +44,14 @@ open scoped Topology
 
 namespace ProbabilityTheory
 
-/-- Cumulative distribution function of a real measure. -/
+/-- Cumulative distribution function of a real measure. The definition currently makes sense only
+for probability measures. In that case, it satisfies `cdf μ x = (μ (Iic x)).toReal` (see
+`ProbabilityTheory.cdf_eq_toReal`). -/
 noncomputable
 def cdf (μ : Measure ℝ) : StieltjesFunction :=
   condCdf ((Measure.dirac Unit.unit).prod μ) Unit.unit
 
-variable {μ : Measure ℝ}
+variable (μ : Measure ℝ)
 
 /-- The cdf is non-negative. -/
 lemma cdf_nonneg (x : ℝ) : 0 ≤ cdf μ x := condCdf_nonneg _ _ _
@@ -68,15 +73,18 @@ lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x)
   simpa only [MeasureTheory.Measure.fst_prod, Measure.prod_prod, measure_univ, one_mul,
     lintegral_dirac] using h
 
+lemma cdf_eq_toReal [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = (μ (Iic x)).toReal := by
+  rw [← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
+
 instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
   constructor
-  simp only [StieltjesFunction.measure_univ _ tendsto_cdf_atBot tendsto_cdf_atTop, sub_zero,
+  simp only [StieltjesFunction.measure_univ _ (tendsto_cdf_atBot μ) (tendsto_cdf_atTop μ), sub_zero,
     ENNReal.ofReal_one]
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/
 lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
   refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
-  rw [StieltjesFunction.measure_Iic _ tendsto_cdf_atBot, sub_zero, ofReal_cdf]
+  rw [StieltjesFunction.measure_Iic _ (tendsto_cdf_atBot μ), sub_zero, ofReal_cdf]
 
 end ProbabilityTheory
 
@@ -85,4 +93,4 @@ open ProbabilityTheory
 /-- If two real probability distributions have the same cdf, they are equal. -/
 lemma MeasureTheory.Measure.ext_of_cdf (μ ν : Measure ℝ) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] (h : cdf μ = cdf ν) : μ = ν := by
-  rw [← @measure_cdf μ, ← @measure_cdf ν, h]
+  rw [← measure_cdf μ, ← measure_cdf ν, h]
