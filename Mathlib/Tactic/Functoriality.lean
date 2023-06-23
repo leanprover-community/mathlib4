@@ -225,7 +225,7 @@ def transportForall (_f : Expr) (_cont : Transporter) : Transporter := fun t g =
 def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => g.withContext do
   let g_ty ← g.getType
   let t_ty ← inferType t
-  withTraceNode `Tactic.transport ((return m!"{·.emoji} transporting from {t_ty} to {g_ty}")) do
+  withTraceNode `Tactic.transport ((return m!"{·.emoji} transporting {t} from {t_ty} to {g_ty}")) do
   if ← isDefEq g_ty t_ty then do
     withTraceNode `Tactic.transport ((return m!"{·.emoji} assigning {t}")) do
       g.assign t
