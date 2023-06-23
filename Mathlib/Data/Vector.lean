@@ -25,12 +25,12 @@ The type `Vector` represents lists with fixed length.
   the actual value of the `Fin` was less than `n`.
   This extra proof causes problems in rewrites.
 -/
-attribute [-instance] instGetElemFinVal
 section GetElem
   variable (cont : ℕ → Type u)
 
-instance [GetElem (cont n) Nat elem (fun _ i => i < n)] : GetElem (cont n) (Fin n) elem fun _ _ => True where
-  getElem xs i _ := getElem xs i.1 i.2
+  instance [GetElem (cont n) Nat elem (fun _ i => i < n)] :
+      GetElem (cont n) (Fin n) elem fun _ _ => True where
+    getElem xs i _ := getElem xs i.1 i.2
 
 end GetElem
 

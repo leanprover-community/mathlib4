@@ -20,8 +20,6 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
-attribute [-instance] instGetElemFinVal
-
 universe u
 
 variable {n : ℕ}
