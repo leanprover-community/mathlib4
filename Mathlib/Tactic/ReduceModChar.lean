@@ -9,7 +9,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
-# `reduce_mod_char` tacctic
+# `reduce_mod_char` tactic
 
 Define the `reduce_mod_char` tactic, which traverses expressions looking for numerals `n`,
 such that the type of `n` is a ring of (positive) characteristic `p`, and reduces these
