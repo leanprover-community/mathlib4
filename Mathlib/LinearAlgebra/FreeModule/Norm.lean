@@ -65,7 +65,9 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   refine PowerBasis.finiteDimensional ?_
   exact AdjoinRoot.powerBasis (I.smithCoeffs_ne_zero b hI i)
 
-set_option maxHeartbeats 600000 in
+-- Porting note: this proof was already slow in mathlib3 and it is even slower now
+-- See: https://github.com/leanprover-community/mathlib4/issues/5028
+set_option maxHeartbeats 1000000 in
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]
@@ -78,23 +80,7 @@ theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F
   rw [natDegree_prod _ _ fun i _ => smithCoeffs_ne_zero b _ h i, finrank_quotient_eq_sum F h b]
   -- finrank_quotient_eq_sum slow
   congr with i
-  -- Porting note: TODO
-  -- rw [← AdjoinRoot.powerBasis_dim <| smithCoeffs_ne_zero b _ h i]
-  have := AdjoinRoot.powerBasis (smithCoeffs_ne_zero b _ h i)
-  have t1 := PowerBasis.finrank (AdjoinRoot.powerBasis (smithCoeffs_ne_zero b _ h i))
-  dsimp [AdjoinRoot] at t1
-  -- (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i)
-  rw [← t1]
-  simp
-
-#exit
-
-  rw [natDegree_eq_of_degree_eq
-      (degree_eq_degree_of_associated <| associated_norm_prod_smith b hf),
-    natDegree_prod _ _ fun i _ => smithCoeffs_ne_zero b _ h i, finrank_quotient_eq_sum F h b]
-  -- finrank_quotient_eq_sum slow
-  congr with i
-  exact (AdjoinRoot.powerBasis <| smith_coeffs_ne_zero b _ h i).finrank
+  exact (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i).finrank
 #align finrank_quotient_span_eq_nat_degree_norm finrank_quotient_span_eq_natDegree_norm
 
 end Field
