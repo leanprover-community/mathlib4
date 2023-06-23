@@ -391,7 +391,7 @@ theorem scanl_head : (scanl f b v).head = b := by
     simp only [←get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, List.get]
 #align vector.scanl_head Vector.scanl_head
 
-/- For an index `i : Fin n`, the nth element of `scanl` of a
+/-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
 function `f : β → α → β` of the `castSucc i` element of
 `scanl f b v` and `get v i`.
