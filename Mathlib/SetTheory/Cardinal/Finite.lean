@@ -172,94 +172,43 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
   card_image_of_injOn (Set.injOn_of_injective h s)
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
-/- The line
--- obtain ⟨m, hm⟩ := cardinal.lt_aleph_0.mp h,
-extract an integer m from a cardinal c such that h : c < ℵ₀
-It may appear easier to use than the rewrites I finally use … -/
-
+-- Should I keeep the 6 following lemmas ?
+@[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   rw [← toPartENat_cast n, toPartENat_le_iff_le_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
-/- theorem natCast_le_iff_le {n : ℕ} {c : Cardinal} : ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
-  cases lt_or_ge c ℵ₀ with
-  | inl h =>
-    . rw [toPartENat_apply_of_lt_aleph0 h, coe_le_coe, ← toNat_cast n];
-      rw [toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 n) h]
-      simp only [toNat_cast]
-  | inr h =>
-    . apply iff_of_true
-      . rw [toPartENat_apply_of_aleph0_le h]
-        exact le_top
-      · apply le_trans (le_of_lt _) h
-        rw [lt_aleph0]
-        use n
-#align part_enat.coe_nat_le_iff_le PartENat.natCast_le_iff_le
--/
-
+@[simp]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
   rw [← toPartENat_cast n, toPartENat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 n)]
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
-/-
-theorem le_natCast_iff_le {c : Cardinal} {n : ℕ} : toPartENat c ≤ n ↔ c ≤ n := by
-  cases lt_or_ge c ℵ₀ with
-  | inl h =>
-    · rw [toPartENat_apply_of_lt_aleph0 h, coe_le_coe, ← toNat_cast n]
-      rw [toNat_le_iff_le_of_lt_aleph0 h (nat_lt_aleph0 n)]
-      simp only [toNat_cast]
-  | inr h =>
-    · apply iff_of_false
-      · rw [toPartENat_apply_of_aleph0_le h]
-        simp only [top_le_iff, natCast_ne_top, not_false_iff]
-      · rw [not_le]
-        apply lt_of_lt_of_le (nat_lt_aleph0 n) h
-#align part_enat.le_coe_nat_iff_le PartENat.le_natCast_iff_le
--/
-
+@[simp]
 theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
   ↑n = toPartENat c ↔ ↑n = c := by
   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff, Cardinal.natCast_le_toPartENat_iff]
 #align cardinal.coe_nat_eq_to_part_enat_iff Cardinal.natCast_eq_toPartENat_iff
 
-/- theorem natCast_eq_iff_eq {n : ℕ} {c : Cardinal} : ↑n = toPartENat c ↔ ↑n = c := by
-  cases lt_or_ge c Cardinal.aleph0 with
-  | inl h =>
-    · rw [toPartENat_apply_of_lt_aleph0 h, natCast_inj]
-      rw [← toNat_cast n]
-      rw [toNat_eq_iff_eq_of_lt_aleph0 (nat_lt_aleph0 n) h]
-      simp only [toNat_cast]
-  | inr h =>
-    · apply iff_of_false
-      · rw [toPartENat_apply_of_aleph0_le h]
-        exact natCast_ne_top n
-      · apply ne_of_lt
-        apply lt_of_lt_of_le (nat_lt_aleph0 n) h
-#align part_enat.coe_nat_eq_iff_eq PartENat.natCast_eq_iff_eq
--/
-
+@[simp]
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} : Cardinal.toPartENat c = n ↔ c = n := by
 rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 #align cardinal.to_part_nat_eq_coe_nat_iff_eq Cardinal.toPartENat_eq_natCast_iff
 
--- TODO
+@[simp]
+theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} : ↑n < toPartENat c ↔ ↑n < c := by
+  simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
+#align part_enat.coe_nat_lt_coe_iff_lt Cardinal.natCast_lt_toPartENat_iff
 
-theorem natCast_lt_coe_iff_lt {n : ℕ} {c : Cardinal} : ↑n < toPartENat c ↔ ↑n < c := by
-  cases lt_or_ge c ℵ₀ with
-  | inl h =>
-    · rw [toPartENat_apply_of_lt_aleph0 h, coe_lt_coe, ← toNat_cast n]
-      rw [toNat_lt_iff_lt_of_lt_aleph0 (nat_lt_aleph0 n) h]
-      simp only [toNat_cast]
-  | inr h =>
-    · apply iff_of_true
-      · rw [toPartENat_apply_of_aleph0_le h]; exact natCast_lt_top n
-      · exact lt_of_lt_of_le (nat_lt_aleph0 n) h
-#align part_enat.coe_nat_lt_coe_iff_lt PartENat.natCast_lt_coe_iff_lt
+@[simp]
+theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+   toPartENat c < ↑n ↔ c < ↑n :=
+by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+#align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
 theorem card_eq_zero_iff_empty (α : Type _) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   conv_rhs => rw [← Nat.cast_zero]
-  rw [← eq_natCast_iff_eq]
+  rw [← Cardinal.toPartENat_eq_natCast_iff]
   unfold PartENat.card
   simp only [Nat.cast_zero]
 #align part_enat.card_eq_zero_iff_empty PartENat.card_eq_zero_iff_empty
@@ -267,7 +216,7 @@ theorem card_eq_zero_iff_empty (α : Type _) : card α = 0 ↔ IsEmpty α := by
 theorem card_le_one_iff_subsingleton (α : Type _) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   conv_rhs => rw [← Nat.cast_one]
-  rw [← le_natCast_iff_le]
+  rw [← toPartENat_le_natCast_iff]
   unfold PartENat.card
   simp only [Nat.cast_one]
 #align part_enat.card_le_one_iff_subsingleton PartENat.card_le_one_iff_subsingleton
@@ -275,7 +224,7 @@ theorem card_le_one_iff_subsingleton (α : Type _) : card α ≤ 1 ↔ Subsingle
 theorem one_lt_card_iff_nontrivial (α : Type _) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
-  rw [← natCast_lt_coe_iff_lt]
+  rw [← natCast_lt_toPartENat_iff]
   unfold PartENat.card
   simp only [Nat.cast_one]
 #align part_enat.one_lt_card_iff_nontrivial PartENat.one_lt_card_iff_nontrivial
