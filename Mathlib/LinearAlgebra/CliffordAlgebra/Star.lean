@@ -11,7 +11,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
-# Star structure on `clifford_algebra`
+# Star structure on `CliffordAlgebra`
 
 This file defines the "clifford conjugation", equal to `reverse (involute x)`, and assigns it the
 `star` notation.
@@ -19,7 +19,7 @@ This file defines the "clifford conjugation", equal to `reverse (involute x)`, a
 This choice is somewhat non-canonical; a star structure is also possible under `reverse` alone.
 However, defining it gives us access to constructions like `unitary`.
 
-Most results about `star` can be obtained by unfolding it via `clifford_algebra.star_def`.
+Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.star_def`.
 
 ## Main definitions
 
@@ -58,7 +58,7 @@ theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse (Q := Q) 
 theorem star_ι (m : M) : star (ι Q m) = -ι Q m := by rw [star_def, involute_ι, map_neg, reverse_ι]
 #align clifford_algebra.star_ι CliffordAlgebra.star_ι
 
-/-- Note that this not match the `star_smul` implied by `star_module`; it certainly could if we
+/-- Note that this not match the `star_smul` implied by `StarModule`; it certainly could if we
 also conjugated all the scalars, but there appears to be nothing in the literature that advocates
 doing this. -/
 @[simp]
