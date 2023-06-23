@@ -22,7 +22,7 @@ exactly the support of a smooth function taking values in `[0, 1]`,
 in `IsOpen.exists_smooth_support_eq`.
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
-the indicator function of `closed_ball 0 1` with a function as above with `s = ball 0 D`.
+the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
 -/
 
 
@@ -470,7 +470,6 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
 
 variable (E)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : Set E)) := by
   have hs : IsOpen (Ioo (0 : ℝ) (1 : ℝ)) := isOpen_Ioo
   have hk : IsCompact (closedBall (0 : E) 1) := ProperSpace.isCompact_closedBall _ _
@@ -510,7 +509,6 @@ variable {E}
 
 end HelperDefinitions
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance (priority := 100) {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
   refine' ⟨⟨_⟩⟩
