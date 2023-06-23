@@ -386,7 +386,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
         convert this
-        ext (y v)
+        ext y v
         change
           (p x (Nat.succ (Nat.succ m))) (cons y v) =
             (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
@@ -1253,7 +1253,8 @@ theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n 
 #align has_ftaylor_series_up_to.has_ftaylor_series_up_to_on HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn
 
 theorem HasFTaylorSeriesUpTo.ofLe (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤ n) :
-    HasFTaylorSeriesUpTo m f p := by rw [← hasFTaylorSeriesUpToOn_univ_iff] at h⊢; exact h.of_le hmn
+    HasFTaylorSeriesUpTo m f p := by
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
 #align has_ftaylor_series_up_to.of_le HasFTaylorSeriesUpTo.ofLe
 
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
@@ -1575,7 +1576,7 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
     iteratedFDerivWithin 𝕜 n f univ = iteratedFDeriv 𝕜 n f := by
   induction' n with n IH
   · ext x; simp
-  · ext (x m)
+  · ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 #align iterated_fderiv_within_univ iteratedFDerivWithin_univ
 

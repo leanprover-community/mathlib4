@@ -220,17 +220,19 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def addBorelInstance (t : Term) : TacticM Unit := do
+/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
+def addBorelInstance (e : Expr) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $t := borel $t
       haveI : BorelSpace $t := ⟨rfl⟩
       ?_)
 
-/-- Given a type `$t`, an assumption `i : MeasurableSpace $t`, and an instance `[BorelSpace $t]`,
-replace `i` with `borel $t`. -/
-def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
+/-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
+replace `i` with `borel e`. -/
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $t _ _ _)
   liftMetaTactic fun m => return [← subst m i]
@@ -242,11 +244,11 @@ def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := do
+def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
-  let e ← Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance t) (borelToRefl t)
+  i?.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
@@ -1233,7 +1235,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
     exact ne_of_lt (hy.2.trans_le (h₀ _))
   · apply measurableSet_of_mem_nhdsWithin_Ioi_aux h
     simp only [IsTop] at H
-    push_neg  at H
+    push_neg at H
     exact H
 #align measurable_set_of_mem_nhds_within_Ioi measurableSet_of_mem_nhdsWithin_Ioi
 
@@ -1371,7 +1373,7 @@ theorem measurable_cInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countab
 theorem measurable_ciSup {ι : Type _} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i))
     (bdd : ∀ x, BddAbove (range fun i => f i x)) : Measurable fun x => ⨆ i, f i x := by
   change Measurable fun x => sSup (range fun i : ι => f i x)
-  simp_rw [← image_univ] at bdd⊢
+  simp_rw [← image_univ] at bdd ⊢
   refine' measurable_cSup countable_univ hf bdd
 #align measurable_csupr measurable_ciSup
 

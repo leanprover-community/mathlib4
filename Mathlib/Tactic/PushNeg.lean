@@ -24,6 +24,8 @@ theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
 theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
+theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
+  _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
@@ -65,6 +67,8 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (←mkAppM ``not_and_or_eq #[p, q])
   | (``Or, #[p, q]) =>
       return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
+  | (``Iff, #[p, q]) =>
+      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (←mkAppM ``not_iff #[p, q])
   | (``Eq, #[_ty, e₁, e₂]) =>
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
@@ -80,7 +84,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return none
   | _ => match ex with
           | .forallE name ty body binfo => do
-              if (← isProp ty) then
+              if (← isProp ty) && !body.hasLooseBVars then
                 return mkSimpStep (← mkAppM ``And #[ty, mkNot body])
                   (← mkAppM ``not_implies_eq #[ty, body])
               else

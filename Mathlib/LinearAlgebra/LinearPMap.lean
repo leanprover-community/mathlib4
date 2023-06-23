@@ -453,10 +453,9 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
   ⟨fun f => by
-    ext x
+    ext x y hxy
     · rfl
-    · intros y hxy
-      simp only [neg_apply, neg_neg]
+    · simp only [neg_apply, neg_neg]
       cases x
       congr⟩
 
@@ -475,29 +474,25 @@ theorem add_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule
 
 instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
   ⟨fun f g h => by
-    ext x
+    ext x y hxy
     · simp only [add_domain, inf_assoc]
-    · intro y hxy
-      simp only [add_apply, hxy, add_assoc]⟩
+    · simp only [add_apply, hxy, add_assoc]⟩
 
 instance instAddCommSemigroup : AddCommSemigroup (E →ₗ.[R] F) :=
   ⟨fun f g => by
-    ext x
+    ext x y hxy
     · simp only [add_domain, inf_comm]
-    · intro y hxy
-      simp only [add_apply, hxy, add_comm]⟩
+    · simp only [add_apply, hxy, add_comm]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
   ⟨fun f => by
-    ext x
+    ext x y hxy
     · simp [add_domain]
-    · intro y hxy
-      simp only [add_apply, hxy, zero_apply, zero_add],
+    · simp only [add_apply, hxy, zero_apply, zero_add],
   fun f => by
-    ext x
+    ext x y hxy
     · simp [add_domain]
-    · intro y hxy
-      simp only [add_apply, hxy, zero_apply, add_zero]⟩
+    · simp only [add_apply, hxy, zero_apply, add_zero]⟩
 
 end Add
 
@@ -773,7 +768,7 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.smul_apply,
     Prod.mk.inj_iff] at h
-  rw [mem_graph_iff] at hx'⊢
+  rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
   rw [← h.1, ← h.2]
@@ -799,7 +794,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id.def, LinearMap.neg_apply,
     Prod.mk.inj_iff] at h
-  rw [mem_graph_iff] at hx'⊢
+  rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
   rw [← h.1, ← h.2]
@@ -881,7 +876,7 @@ theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph
 theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ g := by
   constructor
   · intro x hx
-    rw [mem_domain_iff] at hx⊢
+    rw [mem_domain_iff] at hx ⊢
     cases' hx with y hx
     use y
     exact h hx
@@ -896,7 +891,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
 
 theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.graph := by
   intro x hx
-  rw [mem_graph_iff] at hx⊢
+  rw [mem_graph_iff] at hx ⊢
   cases' hx with y hx
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
