@@ -99,12 +99,7 @@ theorem mapAccumr_eq_foldr (f : α → σ → σ × β) (as : List α) (s : σ) 
   induction as
   . rfl
   next a as ih =>
-    simp only [mapAccumr, foldr]
-    revert ih
-    rcases mapAccumr f as s with ⟨out_state₁, res₁⟩
-    rw [Prod.mk.injEq]
-    rintro ⟨⟨⟩, ⟨⟩⟩
-    rfl
+    simp only [mapAccumr, foldr, ih]
 
 theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) (as : List α) (bs : List β) (s : σ) :
     mapAccumr₂ f as bs s = foldr (fun (a, b) (s, cs) =>
