@@ -110,7 +110,7 @@ and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality fo
 theorem bound_of_shell {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
-  rcases em (∃ i, m i = 0) with (⟨i, hi⟩ | hm) <;> [skip; push_neg  at hm]
+  rcases em (∃ i, m i = 0) with (⟨i, hi⟩ | hm) <;> [skip; push_neg at hm]
   · simp [f.map_coord_zero i hi, prod_eq_zero (mem_univ i), hi]
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
@@ -671,7 +671,7 @@ theorem continuous_eval_left (m : ∀ i, E i) :
 theorem hasSum_eval {α : Type _} {p : α → ContinuousMultilinearMap 𝕜 E G}
     {q : ContinuousMultilinearMap 𝕜 E G} (h : HasSum p q) (m : ∀ i, E i) :
     HasSum (fun a => p a m) (q m) := by
-  dsimp [HasSum] at h⊢
+  dsimp [HasSum] at h ⊢
   convert ((continuous_eval_left m).tendsto _).comp h using 1
   ext s
   simp
@@ -1370,7 +1370,7 @@ theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap �
 theorem ContinuousLinearMap.curry_uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     f.uncurryLeft.curryLeft = f := by
-  ext (m x)
+  ext m x
   simp only [tail_cons, ContinuousLinearMap.uncurryLeft_apply,
     ContinuousMultilinearMap.curryLeft_apply]
   rw [cons_zero]
@@ -1498,7 +1498,7 @@ theorem ContinuousMultilinearMap.curryRight_apply (f : ContinuousMultilinearMap 
 theorem ContinuousMultilinearMap.curry_uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     f.uncurryRight.curryRight = f := by
-  ext (m x)
+  ext m x
   simp only [snoc_last, ContinuousMultilinearMap.curryRight_apply,
     ContinuousMultilinearMap.uncurryRight_apply]
   rw [init_snoc]
@@ -1829,7 +1829,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G' �
         ext m
         exact congr_arg f (Sum.elim_comp_inl_inr m)
       right_inv := fun f => by
-        ext (m₁ m₂)
+        ext m₁ m₂
         rfl }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
       simp only [LinearEquiv.coe_symm_mk]

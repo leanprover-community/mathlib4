@@ -677,7 +677,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
   refine' ⟨fun h ↦ Or.inr ⟨x, (singleton_subset_iff.mpr hx).antisymm' fun y hy ↦ h hy hx⟩, _⟩
   rintro (rfl | ⟨a, rfl⟩)
   · exact (not_mem_empty _ hx).elim
-  simp_rw [mem_singleton_iff] at hx⊢; subst hx
+  simp_rw [mem_singleton_iff] at hx ⊢; subst hx
   simp only [forall_eq_apply_imp_iff', imp_self, implies_true]
 #align set.ncard_le_one_iff_eq Set.ncard_le_one_iff_eq
 

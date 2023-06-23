@@ -159,7 +159,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
         rwa [H] at this
       rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
-      rw [Valued.cauchy_iff] at hF⊢
+      rw [Valued.cauchy_iff] at hF ⊢
       refine' ⟨hF.1.map _, _⟩
       replace hF := hF.2
       intro γ
