@@ -265,12 +265,12 @@ monadicity theorem, the converse is given in `monadic_of_creates_G_split_coequal
 -/
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
-  apply monadic_creates_colimit_of_preserves_colimit _ _
+  apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
   infer_instance
-  · apply preserves_colimit_of_iso_diagram _ (diagramIsoParallelPair.{v₁} _).symm
+  · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair.{v₁} _).symm
     dsimp
     infer_instance
-  · apply preserves_colimit_of_iso_diagram _ (diagramIsoParallelPair.{v₁} _).symm
+  · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair.{v₁} _).symm
     dsimp
     infer_instance
 #align category_theory.monad.creates_G_split_coequalizers_of_monadic CategoryTheory.Monad.createsGSplitCoequalizersOfMonadic
@@ -287,35 +287,36 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers
     [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G]
     [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G] :
     MonadicRightAdjoint G := by
-  let L : (adjunction.of_right_adjoint G).toMonad.Algebra ⥤ D := left_adjoint_comparison
-  letI i : is_right_adjoint (comparison (of_right_adjoint G)) := ⟨_, comparison_adjunction⟩
+  let L : (Adjunction.ofRightAdjoint G).toMonad.Algebra ⥤ D := leftAdjointComparison
+  letI i : IsRightAdjoint (comparison (ofRightAdjoint G)) := ⟨_, comparisonAdjunction⟩
   constructor
-  let this.1 :
-    ∀ X : (of_right_adjoint G).toMonad.Algebra,
-      is_iso ((of_right_adjoint (comparison (of_right_adjoint G))).Unit.app X) := by
+  let :
+    ∀ X : (ofRightAdjoint G).toMonad.Algebra,
+      IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).unit.app X) := by
     intro X
-    apply is_iso_of_reflects_iso _ (monad.forget (of_right_adjoint G).toMonad)
-    · change is_iso (comparison_adjunction.unit.app X).f
-      rw [comparison_adjunction_unit_f]
+    apply isIso_of_reflects_iso _ (Monad.forget (ofRightAdjoint G).toMonad)
+    · change IsIso (comparisonAdjunction.unit.app X).f
+      rw [comparisonAdjunction_unit_f]
       change
-        is_iso
+        IsIso
           (is_colimit.cocone_point_unique_up_to_iso (beck_coequalizer X)
               (unit_colimit_of_preserves_coequalizer X)).Hom
-      refine' is_iso.of_iso (is_colimit.cocone_point_unique_up_to_iso _ _)
-  let this.1 :
-    ∀ Y : D, is_iso ((of_right_adjoint (comparison (of_right_adjoint G))).counit.app Y) := by
+      refine' IsIso.of_iso (is_colimit.cocone_point_unique_up_to_iso _ _)
+  let :
+    ∀ Y : D, IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).counit.app Y) := by
     intro Y
-    change is_iso (comparison_adjunction.counit.app Y)
-    rw [comparison_adjunction_counit_app]
-    change is_iso (is_colimit.cocone_point_unique_up_to_iso _ _).Hom
+    change IsIso (comparisonAdjunction.counit.app Y)
+    rw [comparisonAdjunction_counit_app]
+    change IsIso (is_colimit.cocone_point_unique_up_to_iso _ _).Hom
     infer_instance
     apply counit_coequalizer_of_reflects_coequalizer _
     letI :
-      G.is_split_pair ((left_adjoint G).map (G.map ((adjunction.of_right_adjoint G).counit.app Y)))
-        ((adjunction.of_right_adjoint G).counit.app ((left_adjoint G).obj (G.obj Y))) :=
-      monadicity_internal.main_pair_G_split ((comparison (adjunction.of_right_adjoint G)).obj Y)
+      G.is_split_pair ((left_adjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app Y)))
+        ((Adjunction.ofRightAdjoint G).counit.app ((left_adjoint G).obj (G.obj Y))) :=
+      monadicity_internal.main_pair_G_split ((comparison (Adjunction.ofRightAdjoint G)).obj Y)
     infer_instance
-  exact adjunction.is_right_adjoint_to_is_equivalence
+  exact Adjunction.isRightAdjointToIsEquivalence
+set_option linter.uppercaseLean3 false in
 #align category_theory.monad.monadic_of_has_preserves_reflects_G_split_coequalizers CategoryTheory.Monad.monadicOfHasPreservesReflectsGSplitCoequalizers
 
 /--
@@ -326,7 +327,7 @@ This is the converse of `creates_G_split_of_monadic`.
 def monadicOfCreatesGSplitCoequalizers
     [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G] :
     MonadicRightAdjoint G := by
-  let this.1 : ∀ ⦃A B⦄ (f g : A ⟶ B) [G.is_split_pair f g], has_colimit (parallel_pair f g ⋙ G) :=
+  let : ∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasColimit (parallelPair f g ⋙ G) :=
     by
     intro A B f g i
     apply has_colimit_of_iso (diagramIsoParallelPair.{v₁} _)
@@ -369,35 +370,35 @@ variable [∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit 
 reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
 -/
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G := by
-  let L : (adjunction.of_right_adjoint G).toMonad.Algebra ⥤ D := left_adjoint_comparison
-  letI i : is_right_adjoint (comparison (adjunction.of_right_adjoint G)) :=
-    ⟨_, comparison_adjunction⟩
+  let L : (Adjunction.ofRightAdjoint G).toMonad.Algebra ⥤ D := leftAdjointComparison
+  letI i : IsRightAdjoint (comparison (Adjunction.ofRightAdjoint G)) :=
+    ⟨_, comparisonAdjunction⟩
   constructor
-  let this.1 :
-    ∀ X : (adjunction.of_right_adjoint G).toMonad.Algebra,
-      is_iso
-        ((adjunction.of_right_adjoint (comparison (adjunction.of_right_adjoint G))).Unit.app X) :=
+  let :
+    ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
+      IsIso
+        ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X) :=
     by
     intro X
-    apply is_iso_of_reflects_iso _ (monad.forget (adjunction.of_right_adjoint G).toMonad)
-    · change is_iso (comparison_adjunction.unit.app X).f
-      rw [comparison_adjunction_unit_f]
+    apply isIso_of_reflects_iso _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad)
+    · change IsIso (comparisonAdjunction.unit.app X).f
+      rw [comparisonAdjunction_unit_f]
       change
-        is_iso
-          (is_colimit.cocone_point_unique_up_to_iso (beck_coequalizer X)
-              (unit_colimit_of_preserves_coequalizer X)).Hom
-      apply is_iso.of_iso (is_colimit.cocone_point_unique_up_to_iso _ _)
-  let this.1 :
+        IsIso
+          (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
+              (unit_colimit_of_preserves_coequalizer X)).hom
+      apply IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
+  let :
     ∀ Y : D,
-      is_iso ((of_right_adjoint (comparison (adjunction.of_right_adjoint G))).counit.app Y) := by
+      IsIso ((ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).counit.app Y) := by
     intro Y
-    change is_iso (comparison_adjunction.counit.app Y)
-    rw [comparison_adjunction_counit_app]
-    change is_iso (is_colimit.cocone_point_unique_up_to_iso _ _).Hom
+    change IsIso (comparisonAdjunction.counit.app Y)
+    rw [comparisonAdjunction_counit_app]
+    change IsIso (IsColimit.coconePointUniqueUpToIso _ _).hom
     infer_instance
     apply counit_coequalizer_of_reflects_coequalizer _
     apply reflects_colimit_of_reflects_isomorphisms
-  exact adjunction.is_right_adjoint_to_is_equivalence
+  exact Adjunction.isRightAdjointToIsEquivalence
 #align category_theory.monad.monadic_of_has_preserves_reflexive_coequalizers_of_reflects_isomorphisms CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms
 
 end ReflexiveMonadicity
