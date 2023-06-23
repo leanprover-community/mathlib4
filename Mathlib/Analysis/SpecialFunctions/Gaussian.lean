@@ -40,6 +40,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `number_theory.modular_forms.jacobi_theta`.)
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 noncomputable section
 
@@ -56,53 +57,48 @@ notation "rexp" => Real.exp
 theorem exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-x) := by
   have A : (fun x : ℝ => -x - -b * x ^ 2) = fun x => x * (b * x + -1) := by ext x; ring
-  rw [is_o_exp_comp_exp_comp, A]
-  apply tendsto.at_top_mul_at_top tendsto_id
-  apply tendsto_at_top_add_const_right at_top (-1 : ℝ)
-  exact tendsto.const_mul_at_top hb tendsto_id
+  rw [isLittleO_exp_comp_exp_comp, A]
+  apply Tendsto.atTop_mul_atTop tendsto_id
+  exact tendsto_atTop_add_const_right atTop (-1 : ℝ) (Tendsto.const_mul_atTop hb tendsto_id)
 #align exp_neg_mul_sq_is_o_exp_neg exp_neg_mul_sq_isLittleO_exp_neg
 
 theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : ℝ) :
     (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-(1 / 2) * x) := by
-  apply
-    ((is_O_refl (fun x : ℝ => x ^ s) at_top).mul_isLittleO
-        (exp_neg_mul_sq_isLittleO_exp_neg hb)).trans
-  convert Gamma_integrand_is_o s
-  simp_rw [mul_comm]
+  apply ((isBigO_refl (fun x : ℝ => x ^ s) atTop).mul_isLittleO
+      (exp_neg_mul_sq_isLittleO_exp_neg hb)).trans
+  simpa only [mul_comm] using Gamma_integrand_isLittleO s
 #align rpow_mul_exp_neg_mul_sq_is_o_exp_neg rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg
 
 theorem integrableOn_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) (Ioi 0) := by
-  rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrable_on_union]
+  rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine' integrable_on.mul_continuous_on _ _ is_compact_Icc
+    refine' IntegrableOn.mul_continuousOn _ _ isCompact_Icc
     · refine' (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp _
       exact intervalIntegral.intervalIntegrable_rpow' hs
-    · exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).ContinuousOn
+    · exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousOn
   · have B : (0 : ℝ) < 1 / 2 := by norm_num
-    apply
-      integrable_of_isBigO_exp_neg B _ (is_o.is_O (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg hb _))
+    apply integrable_of_isBigO_exp_neg
+      B _ (IsLittleO.isBigO (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg hb _))
     intro x hx
     have N : x ≠ 0 := by refine' (zero_lt_one.trans_le _).ne'; exact hx
-    apply ((continuous_at_rpow_const _ _ (Or.inl N)).mul _).ContinuousWithinAt
-    exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).ContinuousAt
+    apply ((continuousAt_rpow_const _ _ (Or.inl N)).mul _).continuousWithinAt
+    exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousAt
 #align integrable_on_rpow_mul_exp_neg_mul_sq integrableOn_rpow_mul_exp_neg_mul_sq
 
 theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
     Integrable fun x : ℝ => x ^ s * exp (-b * x ^ 2) := by
-  rw [← integrable_on_univ, ← @Iio_union_Ici _ _ (0 : ℝ), integrable_on_union,
+  rw [← integrableOn_univ, ← @Iio_union_Ici _ _ (0 : ℝ), integrableOn_union,
     integrableOn_Ici_iff_integrableOn_Ioi]
   refine' ⟨_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
-  rw [←
-    (measure.measure_preserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
-      (Homeomorph.neg ℝ).toMeasurableEquiv.MeasurableEmbedding]
+  rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
+      (Homeomorph.neg ℝ).toMeasurableEquiv.measurableEmbedding]
   simp only [Function.comp, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
-  apply integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
+  apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
-    exact
-      (measurable_id'.neg.pow measurable_const).mul
-        ((measurable_id'.pow measurable_const).const_mul (-b)).exp
+    exact (measurable_id'.neg.pow measurable_const).mul
+      ((measurable_id'.pow measurable_const).const_mul (-b)).exp
   · have : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
     filter_upwards [ae_restrict_mem this] with x hx
     have h'x : 0 ≤ x := le_of_lt hx
@@ -117,19 +113,19 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : �
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
-  refine' ⟨fun h => _, fun h => (integrable_exp_neg_mul_sq h).IntegrableOn⟩
+  refine' ⟨fun h => _, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
   by_contra' hb
-  have : ∫⁻ x : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
-    apply lintegral_mono fun x => _
-    simp only [neg_mul, ENNReal.one_le_coe_iff, ← to_nnreal_one, to_nnreal_le_iff_le_coe,
+  have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
+    apply lintegral_mono (fun x ↦ _)
+    simp only [neg_mul, ENNReal.one_le_coe_iff, ← toNNReal_one, toNNReal_le_iff_le_coe,
       Real.norm_of_nonneg (exp_pos _).le, coe_nnnorm, one_le_exp_iff, Right.nonneg_neg_iff]
-    exact mul_nonpos_of_nonpos_of_nonneg hb (sq_nonneg _)
+    exact fun x ↦ mul_nonpos_of_nonpos_of_nonneg hb (sq_nonneg x)
   simpa using this.trans_lt h.2
 #align integrable_on_Ioi_exp_neg_mul_sq_iff integrableOn_Ioi_exp_neg_mul_sq_iff
 
 theorem integrable_exp_neg_mul_sq_iff {b : ℝ} :
     (Integrable fun x : ℝ => exp (-b * x ^ 2)) ↔ 0 < b :=
-  ⟨fun h => integrableOn_Ioi_exp_neg_mul_sq_iff.mp h.IntegrableOn, integrable_exp_neg_mul_sq⟩
+  ⟨fun h => integrableOn_Ioi_exp_neg_mul_sq_iff.mp h.integrableOn, integrable_exp_neg_mul_sq⟩
 #align integrable_exp_neg_mul_sq_iff integrable_exp_neg_mul_sq_iff
 
 theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
@@ -137,74 +133,73 @@ theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
   simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 1)
 #align integrable_mul_exp_neg_mul_sq integrable_mul_exp_neg_mul_sq
 
-theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) : ‖Complex.exp (-b * x ^ 2)‖ = exp (-b.re * x ^ 2) :=
-  by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, ← of_real_pow, mul_comm (-b) _, of_real_mul_re, neg_re,
+theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
+    ‖Complex.exp (-b * (x : ℂ) ^ 2)‖ = exp (-b.re * x ^ 2) := by
+  rw [Complex.norm_eq_abs, Complex.abs_exp, ←ofReal_pow, mul_comm (-b) _, ofReal_mul_re, neg_re,
     mul_comm]
 #align norm_cexp_neg_mul_sq norm_cexp_neg_mul_sq
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
-    Integrable fun x : ℝ => cexp (-b * x ^ 2) := by
-  refine'
-    ⟨(complex.continuous_exp.comp
-          (continuous_const.mul (continuous_of_real.pow 2))).AEStronglyMeasurable,
-      _⟩
-  rw [← has_finite_integral_norm_iff]
+    Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
+  refine' ⟨(Complex.continuous_exp.comp
+    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, _⟩
+  rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq]
   exact (integrable_exp_neg_mul_sq hb).2
 #align integrable_cexp_neg_mul_sq integrable_cexp_neg_mul_sq
 
 theorem integrable_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
-    Integrable fun x : ℝ => ↑x * cexp (-b * x ^ 2) := by
-  refine' ⟨(continuous_of_real.mul (complex.continuous_exp.comp _)).AEStronglyMeasurable, _⟩
-  · exact continuous_const.mul (continuous_of_real.pow 2)
-  have := (integrable_mul_exp_neg_mul_sq hb).HasFiniteIntegral
-  rw [← has_finite_integral_norm_iff] at this ⊢
+    Integrable fun x : ℝ => ↑x * cexp (-b * (x : ℂ) ^ 2) := by
+  refine' ⟨(continuous_ofReal.mul (Complex.continuous_exp.comp _)).aestronglyMeasurable, _⟩
+  · exact continuous_const.mul (continuous_ofReal.pow 2)
+  have := (integrable_mul_exp_neg_mul_sq hb).hasFiniteIntegral
+  rw [← hasFiniteIntegral_norm_iff] at this ⊢
   convert this
-  ext1 x
-  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, Complex.norm_eq_abs, abs_of_real,
-    Real.norm_eq_abs, norm_of_nonneg (exp_pos _).le]
+  rw [norm_mul, norm_mul, norm_cexp_neg_mul_sq b, Complex.norm_eq_abs, abs_ofReal, Real.norm_eq_abs,
+    norm_of_nonneg (exp_pos _).le]
 #align integrable_mul_cexp_neg_mul_sq integrable_mul_cexp_neg_mul_sq
 
 theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
-    ∫ r : ℝ in Ioi 0, (r : ℂ) * cexp (-b * r ^ 2) = (2 * b)⁻¹ := by
+    ∫ r : ℝ in Ioi 0, (r : ℂ) * cexp (-b * (r : ℂ) ^ 2) = (2 * b)⁻¹ := by
   have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
-  have A :
-    ∀ x : ℂ, HasDerivAt (fun x => -(2 * b)⁻¹ * cexp (-b * x ^ 2)) (x * cexp (-b * x ^ 2)) x := by
+  have A : ∀ x : ℂ, HasDerivAt (fun x => -(2 * b)⁻¹ * cexp (-b * x ^ 2))
+    (x * cexp (-b * x ^ 2)) x := by
     intro x
     convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
     field_simp [hb']
     ring
-  have B : tendsto (fun y : ℝ => -(2 * b)⁻¹ * cexp (-b * ↑y ^ 2)) at_top (𝓝 (-(2 * b)⁻¹ * 0)) := by
-    refine' tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr _)
+  have B : Tendsto (fun y : ℝ ↦ -(2 * b)⁻¹ * cexp (-b * (y : ℂ) ^ 2))
+    atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
+    refine' Tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr _)
     simp_rw [norm_cexp_neg_mul_sq b]
-    exact
-      tendsto_exp_at_bot.comp
-        (tendsto.neg_const_mul_at_top (neg_lt_zero.2 hb) (tendsto_pow_at_top two_ne_zero))
-  convert
-    integral_Ioi_of_has_deriv_at_of_tendsto' (fun x hx => (A ↑x).comp_ofReal)
-      (integrable_mul_cexp_neg_mul_sq hb).IntegrableOn B
-  simp only [MulZeroClass.mul_zero, of_real_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+    exact tendsto_exp_atBot.comp (Tendsto.neg_const_mul_atTop (neg_lt_zero.2 hb)
+        (tendsto_pow_atTop two_ne_zero))
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
+    (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
+  simp only [MulZeroClass.mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
 /-- The *square* of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`. -/
 theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
-    (∫ x : ℝ, cexp (-b * x ^ 2)) ^ 2 = π / b :=
-  by/- We compute `(∫ exp (-b x^2))^2` as an integral over `ℝ^2`, and then make a polar change
-    of coordinates. We are left with `∫ r * exp (-b r^2)`, which has been computed in
-    `integral_mul_cexp_neg_mul_sq` using the fact that this function has an obvious primitive. -/
+    (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 = π / b := by
+  /- We compute `(∫ exp (-b x^2))^2` as an integral over `ℝ^2`, and then make a polar change
+  of coordinates. We are left with `∫ r * exp (-b r^2)`, which has been computed in
+  `integral_mul_cexp_neg_mul_sq` using the fact that this function has an obvious primitive. -/
   calc
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 =
         ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) :=
       by rw [pow_two, ← integral_prod_mul]; rfl
-    _ = ∫ p : ℝ × ℝ, cexp (-b * (p.1 ^ 2 + p.2 ^ 2)) := by congr; ext1 p;
+    _ = ∫ p : ℝ × ℝ, cexp (-b * ((p.1 : ℂ)^ 2 + (p.2 : ℂ) ^ 2)) := by
+      congr
+      ext1 p
       rw [← Complex.exp_add, mul_add]
-    _ = ∫ p in polar_coord.target, p.1 • cexp (-b * ((p.1 * cos p.2) ^ 2 + (p.1 * sin p.2) ^ 2)) :=
+    _ = ∫ p in polarCoord.target, p.1 •
+        cexp (-b * ((p.1 * Complex.cos p.2) ^ 2 + (p.1 * Complex.sin p.2) ^ 2)) :=
       by
       rw [← integral_comp_polarCoord_symm]
-      simp only [polarCoord_symm_apply, of_real_mul, of_real_cos, of_real_sin]
-    _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * r ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
+      simp only [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
+    _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * (r : ℂ) ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
       rw [← set_integral_prod_mul]
       congr with p : 1
       rw [mul_one]
@@ -213,15 +208,14 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       ring
     _ = ↑π / b := by
       have : 0 ≤ π + π := by linarith [Real.pi_pos]
-      simp only [integral_const, measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
+      simp only [integral_const, Measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
         sub_neg_eq_add, ENNReal.toReal_ofReal, this]
-      rw [← two_mul, real_smul, mul_one, of_real_mul, of_real_bit0, of_real_one,
-        integral_mul_cexp_neg_mul_sq hb]
+      rw [← two_mul, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]
       field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
       ring
 #align integral_gaussian_sq_complex integral_gaussian_sq_complex
 
-theorem integral_gaussian (b : ℝ) : ∫ x, exp (-b * x ^ 2) = sqrt (π / b) := by
+theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π / b) := by
   -- First we deal with the crazy case where `b ≤ 0`: then both sides vanish.
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos]
@@ -230,10 +224,16 @@ theorem integral_gaussian (b : ℝ) : ∫ x, exp (-b * x ^ 2) = sqrt (π / b) :=
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
   refine' (sq_eq_sq _ (sqrt_nonneg _)).1 _
   · exact integral_nonneg fun x => (exp_pos _).le
-  rw [← of_real_inj, of_real_pow, ← integral_ofReal, sq_sqrt (div_pos pi_pos hb).le, of_real_div]
-  convert integral_gaussian_sq_complex (by rwa [of_real_re] : 0 < (b : ℂ).re)
+  rw [← ofReal_inj, ofReal_pow, sq_sqrt (div_pos pi_pos hb).le, ofReal_div]
+  convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) using 1
+  -- Porting note: the following `convert` statements were plain rewrites before, but the rewriter
+  -- no longer seems to correctly identify the relevant terms
+  congr 1
+  convert (@integral_ofReal ℝ _ _ _ _ _).symm using 2
   ext1 x
-  rw [of_real_exp, of_real_mul, of_real_pow, of_real_neg]
+  convert (ofReal_exp _).symm
+  push_cast
+  rfl
 #align integral_gaussian integral_gaussian
 
 theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
@@ -302,9 +302,9 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ in Ioi 0, cexp (-b * x ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by
   have full_integral := integral_gaussian_complex hb
   have : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
-  rw [← integral_add_compl this (integrable_cexp_neg_mul_sq hb), compl_Ioi] at full_integral 
+  rw [← integral_add_compl this (integrable_cexp_neg_mul_sq hb), compl_Ioi] at full_integral
   suffices ∫ x : ℝ in Iic 0, cexp (-b * x ^ 2) = ∫ x : ℝ in Ioi 0, cexp (-b * x ^ 2) by
-    rw [this, ← mul_two] at full_integral 
+    rw [this, ← mul_two] at full_integral
     rwa [eq_div_iff]; exact two_ne_zero
   have : ∀ c : ℝ, ∫ x in 0 ..c, cexp (-b * x ^ 2) = ∫ x in -c..0, cexp (-b * x ^ 2) := by
     intro c
@@ -429,15 +429,15 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
   · intro y hy
     have absy : |y| ≤ |c| := by
       rcases le_or_lt 0 c with ⟨⟩
-      · rw [uIoc_of_le h] at hy 
+      · rw [uIoc_of_le h] at hy
         rw [abs_of_nonneg h, abs_of_pos hy.1]
         exact hy.2
-      · rw [uIoc_of_lt h] at hy 
+      · rw [uIoc_of_lt h] at hy
         rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
         exact hy.1.le
     rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
     refine' (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) _)
-    rw [← abs_neg y] at absy 
+    rw [← abs_neg y] at absy
     simpa only [neg_mul, of_real_neg] using vert_norm_bound hT absy
 #align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
 
@@ -500,7 +500,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_i (hb : 0 < b.re) (c : ℝ) :
   have : I₁ = fun T : ℝ => I₂ T + vertical_integral b c T := by
     ext1 T
     specialize C T
-    rw [sub_eq_zero] at C 
+    rw [sub_eq_zero] at C
     unfold vertical_integral
     rw [integral_const_mul, intervalIntegral.integral_sub]
     · simp_rw [(fun a b => by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
@@ -630,4 +630,3 @@ theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :
 #align real.tsum_exp_neg_mul_int_sq Real.tsum_exp_neg_mul_int_sq
 
 end GaussianPoisson
-
