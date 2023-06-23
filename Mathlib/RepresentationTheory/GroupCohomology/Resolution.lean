@@ -131,7 +131,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
   induction' n with n hn
   · intro g
     funext (x : Fin 1)
-    simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one];
+    simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
     rfl
   · intro g
 /- Porting note: broken proof was
@@ -509,11 +509,21 @@ theorem x_projective (G : Type u) [Group G] (n : ℕ) :
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((GroupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  ext x y
+  refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
   dsimp [GroupCohomology.resolution]
 /- Porting note: broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
-  sorry
+  simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
+    Functor.comp_map, ← intCast_smul (k := k) ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
+    Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
+  rw [LinearMap.coeFn_sum, Fintype.sum_apply]
+  erw [d_of (k := k) x]
+/- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
+so using Finset.sum_congr to get rid of the binder -/
+  refine' Finset.sum_congr rfl fun _ _ => _
+  erw [LinearMap.smul_apply]
+  rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
+  rfl
 #align group_cohomology.resolution.d_eq GroupCohomology.Resolution.d_eq
 
 section Exactness
@@ -568,42 +578,42 @@ theorem forget₂ToModuleHomotopyEquiv_f_0_eq :
     (forget₂ToModuleHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   show (HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _).f 0 = _
   simp only [HomologicalComplex.comp_f]
-  convert category.id_comp _
-  · dsimp only [HomotopyEquiv.ofIso, comp_forget_augmented_iso, map_alternating_face_map_complex]
-    simp only [iso.symm_hom, eq_to_iso.inv, HomologicalComplex.eqToHom_f, eq_to_hom_refl]
-  trans (Finsupp.total _ _ _ fun f => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
+  dsimp
+  convert Category.id_comp (X := (forget₂ToModule k G).X 0) _
+  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso, map_alternatingFaceMapComplex]
+    simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
+  trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
-    rw [@Finsupp.lmapDomain_total (Fin 1 → G) k k _ _ _ (⊤_ Type u) k _ _ (fun i => (1 : k))
-        (fun i => (1 : k))
+    erw [@Finsupp.lmapDomain_total (Fin 1 → G) k k (⊤_ Type u) k _ _ _ _ _ (fun _ => (1 : k))
+        (fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
         LinearMap.id fun i => rfl,
       LinearMap.id_comp]
     rfl
   · congr
-    · ext
-      dsimp [HomotopyEquiv.ofIso]
-      rw [Finsupp.total_single, one_smul, @Unique.eq_default _ types.terminal_iso.to_equiv.unique a,
+    · ext x
+      dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
+      rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
         Finsupp.single_eq_same]
-    · exact @Subsingleton.elim _ (@Unique.subsingleton _ (limits.unique_to_terminal _)) _ _
-#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq GroupCohomology.resolution.forget₂ToModuleHomotopyEquiv_f_0_eq
+    · exact @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _
+#align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq GroupCohomology.Resolution.forget₂ToModuleHomotopyEquiv_f_0_eq
 
 theorem d_comp_ε : (GroupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
-  ext1
+  ext : 1
   refine' LinearMap.ext fun x => _
-  have : (forget₂_to_Module k G).d 1 0 ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
-    rw [← forget₂_to_Module_homotopy_equiv_f_0_eq, ←
-        (forget₂_to_Module_homotopy_equiv k G).1.2 1 0 rfl] <;>
-      exact comp_zero
+  have : (forget₂ToModule k G).d 1 0 ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
+    rw [← forget₂ToModuleHomotopyEquiv_f_0_eq, ←(forget₂ToModuleHomotopyEquiv k G).1.2 1 0 rfl]
+    exact comp_zero
   exact LinearMap.ext_iff.1 this _
-#align group_cohomology.resolution.d_comp_ε GroupCohomology.resolution.d_comp_ε
+#align group_cohomology.resolution.d_comp_ε GroupCohomology.Resolution.d_comp_ε
 
 /-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
 degree zero. -/
 def εToSingle₀ :
     GroupCohomology.resolution k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
   ((GroupCohomology.resolution k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
-#align group_cohomology.resolution.ε_to_single₀ GroupCohomology.resolution.εToSingle₀
+#align group_cohomology.resolution.ε_to_single₀ GroupCohomology.Resolution.εToSingle₀
 
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
@@ -611,38 +621,39 @@ theorem εToSingle₀_comp_eq :
       (forget₂ToModuleHomotopyEquiv k G).hom := by
   refine' ChainComplex.to_single₀_ext _ _ _
   dsimp
-  rw [category.comp_id]
-  exact (forget₂_to_Module_homotopy_equiv_f_0_eq k G).symm
-#align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.resolution.εToSingle₀_comp_eq
+  rw [Category.comp_id]
+  exact (forget₂ToModuleHomotopyEquiv_f_0_eq k G).symm
+#align group_cohomology.resolution.ε_to_single₀_comp_eq GroupCohomology.Resolution.εToSingle₀_comp_eq
 
 theorem quasiIsoOfForget₂εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso (forget₂_to_Module_homotopy_equiv k G).hom := HomotopyEquiv.toQuasiIso _
-  rw [← ε_to_single₀_comp_eq k G] at h
+  have h : QuasiIso (forget₂ToModuleHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso _
+  rw [← εToSingle₀_comp_eq k G] at h
   haveI := h
   exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
-#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.resolution.quasiIsoOfForget₂εToSingle₀
+#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ GroupCohomology.Resolution.quasiIsoOfForget₂εToSingle₀
 
 instance : QuasiIso (εToSingle₀ k G) :=
   (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso _ (quasiIsoOfForget₂εToSingle₀ k G)
 
 end Exactness
 
-end GroupCohomology.resolution
+end GroupCohomology.Resolution
 
-open GroupCohomology.resolution
+open GroupCohomology.Resolution HomologicalComplex.Hom
 
 variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def GroupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) :=
-  (εToSingle₀ k G).toSingle₀ProjectiveResolution (x_projective k G)
+  toSingle₀ProjectiveResolution (εToSingle₀ k G) (x_projective k G)
 #align group_cohomology.ProjectiveResolution GroupCohomology.projectiveResolution
 
 instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 
+set_option maxHeartbeats 1150000
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `group_cohomology.resolution k G`. -/
@@ -651,8 +662,7 @@ def GroupCohomology.extIso (V : Rep k G) (n : ℕ) :
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
               (GroupCohomology.resolution k G)).homology
           n).unop := by
-  let this.1 :=
-      (((linear_yoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-            (GroupCohomology.projectiveResolution k G)).unop.symm <;>
-    exact this
+  let E := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
+     (GroupCohomology.projectiveResolution k G)).unop.symm
+  exact E
 #align group_cohomology.Ext_iso GroupCohomology.extIso
