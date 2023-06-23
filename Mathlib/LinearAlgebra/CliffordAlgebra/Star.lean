@@ -8,7 +8,7 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Star structure on `clifford_algebra`
@@ -36,8 +36,7 @@ variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
-instance : StarRing (CliffordAlgebra Q)
-    where
+instance : StarRing (CliffordAlgebra Q) where
   unit x := reverse (involute x)
   star_involutive x := by
     simp only [reverse_involute_commute.eq, reverse_reverse, involute_involute]
