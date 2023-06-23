@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.ContMdiff
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Geometry.Manifold.ContMdiff
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Smooth bundled map
@@ -53,8 +53,7 @@ namespace ContMdiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance funLike : FunLike C^n⟮I, M; I', M'⟯ M fun _ => M'
-    where
+instance funLike : FunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 #align cont_mdiff_map.fun_like ContMdiffMap.funLike
@@ -89,8 +88,7 @@ theorem coe_inj ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g) : f =
 theorem ext (h : ∀ x, f x = g x) : f = g := by cases f <;> cases g <;> congr <;> exact funext h
 #align cont_mdiff_map.ext ContMdiffMap.ext
 
-instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M'
-    where
+instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
   coe f := ⇑f
   coe_injective' := coe_inj
   map_continuous f := f.ContMdiff.Continuous
@@ -101,8 +99,7 @@ def id : C^n⟮I, M; I, M⟯ :=
 #align cont_mdiff_map.id ContMdiffMap.id
 
 /-- The composition of smooth maps, as a smooth map. -/
-def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, M; I'', M''⟯
-    where
+def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, M; I'', M''⟯ where
   val a := f (g a)
   property := f.ContMdiff.comp g.ContMdiff
 #align cont_mdiff_map.comp ContMdiffMap.comp
