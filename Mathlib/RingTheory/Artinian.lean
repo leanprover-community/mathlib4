@@ -287,7 +287,7 @@ theorem range_smul_pow_stabilizes (r : R) :
   monotone_stabilizes
     ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
       ⟨r ^ (m - n) • y, by
-        dsimp at hy⊢
+        dsimp at hy ⊢
         rw [← smul_assoc, smul_eq_mul, ← pow_add, ← hy, add_tsub_cancel_of_le h]⟩⟩
 #align is_artinian.range_smul_pow_stabilizes IsArtinian.range_smul_pow_stabilizes
 
@@ -333,7 +333,7 @@ theorem isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Mo
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
 theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M := by
-  rw [isArtinian_iff_wellFounded] at h⊢
+  rw [isArtinian_iff_wellFounded] at h ⊢
   refine' (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
@@ -370,7 +370,7 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
 
 theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F} [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
-  rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H⊢
+  rw [isArtinianRing_iff, isArtinian_iff_wellFounded] at H ⊢
   exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H
 #align function.surjective.is_artinian_ring Function.Surjective.isArtinianRing
 

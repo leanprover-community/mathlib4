@@ -309,7 +309,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [Vector.cons_val, Vector.tail_val] at hf hg
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons, Vector.head_cons,
       PFun.coe_val, Vector.tail_val]
-    simp only [← Part.pure_eq_some] at hf hg⊢
+    simp only [← Part.pure_eq_some] at hf hg ⊢
     induction' v.head with n _ <;>
       simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
@@ -340,7 +340,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     obtain ⟨cf, hf⟩ := IHf; refine' ⟨rfind cf, fun v => _⟩
     replace hf := fun a => hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
-      show ∀ x, pure x = [x] from fun _ => rfl] at hf⊢
+      show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine' Part.ext fun x => _
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
@@ -2007,7 +2007,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHf H'.2, _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun h => _
-    · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
+    · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine' supports_union.2 ⟨IHfs _, _⟩
     · rw [codeSupp, contSupp_cons₁] at H'
@@ -2020,7 +2020,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHg H', _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
-    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
+    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2, H.2⟩
     exact IHf (Finset.union_subset_right H')
   case case f g IHf IHg =>
@@ -2033,7 +2033,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' supports_union.2 ⟨IHf H'.2, _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp, trStmts₁,
-        Finset.insert_subset] at h H⊢
+        Finset.insert_subset] at h H ⊢
       exact ⟨h.1, ⟨H.1.1, h⟩, H.2⟩
     exact supports_singleton.2 (ret_supports <| Finset.union_subset_right H)
 #align turing.partrec_to_TM2.code_supp'_supports Turing.PartrecToTM2.codeSupp'_supports

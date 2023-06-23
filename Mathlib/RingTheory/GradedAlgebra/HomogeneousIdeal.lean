@@ -267,7 +267,7 @@ theorem inf {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
 
 theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
     (I ⊔ J).IsHomogeneous 𝒜 := by
-  rw [iff_exists] at HI HJ⊢
+  rw [iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
   refine' ⟨s₁ ∪ s₂, _⟩
   rw [Set.image_union]
@@ -276,7 +276,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
 
 protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨆ i, f i).IsHomogeneous 𝒜 := by
-  simp_rw [iff_exists] at h⊢
+  simp_rw [iff_exists] at h ⊢
   choose s hs using h
   refine' ⟨⋃ i, s i, _⟩
   simp_rw [Set.image_iUnion, Ideal.span_iUnion]
@@ -287,7 +287,7 @@ protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHo
 protected theorem iInf {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨅ i, f i).IsHomogeneous 𝒜 := by
   intro i x hx
-  simp only [Ideal.mem_iInf] at hx⊢
+  simp only [Ideal.mem_iInf] at hx ⊢
   exact fun j => h _ _ (hx j)
 #align ideal.is_homogeneous.infi Ideal.IsHomogeneous.iInf
 
@@ -454,7 +454,7 @@ variable (I : Ideal A)
 
 theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
     (I * J).IsHomogeneous 𝒜 := by
-  rw [Ideal.IsHomogeneous.iff_exists] at HI HJ⊢
+  rw [Ideal.IsHomogeneous.iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
   rw [Ideal.span_mul_span']
   exact ⟨s₁ * s₂, congr_arg _ <| (Set.image_mul (homogeneousSubmonoid 𝒜).subtype).symm⟩

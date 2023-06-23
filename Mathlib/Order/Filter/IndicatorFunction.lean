@@ -85,7 +85,7 @@ theorem Antitone.tendsto_indicator {ι} [Preorder ι] [Zero β] (s : ι → Set 
     · intro h
       have := hs hn h
       contradiction
-  · push_neg  at h
+  · push_neg at h
     simp only [indicator_of_mem, h, mem_iInter.2 h, tendsto_const_pure]
 #align antitone.tendsto_indicator Antitone.tendsto_indicator
 

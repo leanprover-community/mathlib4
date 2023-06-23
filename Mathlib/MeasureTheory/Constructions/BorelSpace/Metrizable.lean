@@ -52,9 +52,9 @@ theorem measurable_of_tendsto_ennreal {f : ℕ → α → ℝ≥0∞} {g : α �
 theorem measurable_of_tendsto_nnreal' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
-  simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf⊢
+  simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
   refine' measurable_of_tendsto_ennreal' u hf _
-  rw [tendsto_pi_nhds] at lim⊢
+  rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 #align measurable_of_tendsto_nnreal' measurable_of_tendsto_nnreal'
 
@@ -75,7 +75,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
     exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
-    rw [tendsto_pi_nhds] at lim⊢
+    rw [tendsto_pi_nhds] at lim ⊢
     intro x
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
   have h4s : g ⁻¹' s = (fun x => infNndist (g x) s) ⁻¹' {0} := by

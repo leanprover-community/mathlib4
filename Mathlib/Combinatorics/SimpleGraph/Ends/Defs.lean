@@ -50,7 +50,7 @@ theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine' ConnectedComponent.ind₂ _
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
-  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h⊢
+  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 #align simple_graph.component_compl.supp_injective SimpleGraph.ComponentCompl.supp_injective
 

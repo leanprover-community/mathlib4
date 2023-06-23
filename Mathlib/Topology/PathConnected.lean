@@ -924,7 +924,7 @@ theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = path
     rw [pathComponent_symm]
     exact (h.trans h').symm
   · intro h'
-    rw [pathComponent_symm] at h'⊢
+    rw [pathComponent_symm] at h' ⊢
     exact h'.trans h
 #align path_component_congr pathComponent_congr
 

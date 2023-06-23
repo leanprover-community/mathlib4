@@ -450,8 +450,8 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
       have h2 : g.norm = 0 := (norm_zero_iff _).2 hg
       rw [h1, h2, max_eq_left (norm_nonneg _)]
     else by
-      unfold norm at hfgne⊢; split_ifs  at hfgne⊢
-      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne⊢`
+      unfold norm at hfgne ⊢; split_ifs at hfgne ⊢
+      -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne ⊢`
       rw [lift_index_left hf, lift_index_right hg] at hfgne
       rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
       exact padicNorm.add_eq_max_of_ne hfgne
@@ -826,7 +826,7 @@ theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := 
 #align padic_norm_e.nonarchimedean padicNormE.nonarchimedean
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
-  dsimp [norm] at h⊢
+  dsimp [norm] at h ⊢
   have : padicNormE q ≠ padicNormE r := by exact_mod_cast h
   exact_mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
@@ -980,7 +980,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     exists q
     intro ε hε
     cases' exists_rat_btwn hε with ε' hε'
-    norm_cast  at hε'
+    norm_cast at hε'
     cases' hq ε' hε'.1 with N hN
     exists N
     intro i hi

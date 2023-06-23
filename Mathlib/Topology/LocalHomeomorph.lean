@@ -1169,7 +1169,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : γ → α} {s :
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
   refine' ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => _⟩
-  rw [← continuousWithinAt_inter' h] at fe_cont⊢
+  rw [← continuousWithinAt_inter' h] at fe_cont ⊢
   have : ContinuousWithinAt (e.symm ∘ e ∘ f) (s ∩ f ⁻¹' e.source) x :=
     haveI : ContinuousWithinAt e.symm univ (e (f x)) :=
       (e.continuousAt_symm (e.map_source hx)).continuousWithinAt

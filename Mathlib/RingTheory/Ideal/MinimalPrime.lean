@@ -90,7 +90,7 @@ theorem Ideal.sInf_minimalPrimes : sInf I.minimalPrimes = I.radical := by
   rw [I.radical_eq_sInf]
   apply le_antisymm
   · intro x hx
-    rw [Ideal.mem_sInf] at hx⊢
+    rw [Ideal.mem_sInf] at hx ⊢
     rintro J ⟨e, hJ⟩
     obtain ⟨p, hp, hp'⟩ := Ideal.exists_minimalPrimes_le e
     exact hp' (hx hp)

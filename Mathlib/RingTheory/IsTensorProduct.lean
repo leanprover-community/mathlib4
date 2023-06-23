@@ -449,10 +449,10 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
     · rw [MulZeroClass.zero_mul, map_zero, MulZeroClass.zero_mul]
     rotate_left
     · intro s s' e
-      dsimp only [LinearMap.restrictScalars_apply] at e⊢
+      dsimp only [LinearMap.restrictScalars_apply] at e ⊢
       rw [LinearMap.map_smul, smul_mul_assoc, LinearMap.map_smul, e, smul_mul_assoc]
     · intro s s' e₁ e₂
-      dsimp only [LinearMap.restrictScalars_apply] at e₁ e₂⊢
+      dsimp only [LinearMap.restrictScalars_apply] at e₁ e₂ ⊢
       rw [add_mul, map_add, map_add, add_mul, e₁, e₂]
     intro x
     dsimp

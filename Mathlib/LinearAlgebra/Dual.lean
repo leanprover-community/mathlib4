@@ -966,7 +966,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     rintro rfl
     exact hw'n (Submodule.zero_mem W)
   rw [Ne.def, ← Module.forall_dual_apply_eq_zero_iff K w'] at hw'nz
-  push_neg  at hw'nz
+  push_neg at hw'nz
   obtain ⟨φ, hφ⟩ := hw'nz
   exists ((LinearMap.ofIsComplProd hW).comp (LinearMap.inr _ _ _)) φ
   simp only [coe_comp, coe_inr, Function.comp_apply, ofIsComplProd_apply, map_add,
@@ -1452,7 +1452,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K
 to direct sum decompositions. -/
 theorem isCompl_dualAnnihilator {W W' : Subspace K V₁} (h : IsCompl W W') :
     IsCompl W.dualAnnihilator W'.dualAnnihilator := by
-  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h⊢
+  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h ⊢
   rw [← dualAnnihilator_inf_eq, ← dualAnnihilator_sup_eq, h.1, h.2, dualAnnihilator_top,
     dualAnnihilator_bot]
   exact ⟨rfl, rfl⟩

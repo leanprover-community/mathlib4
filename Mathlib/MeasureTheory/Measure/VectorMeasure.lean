@@ -175,7 +175,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     · exact (v.m_iUnion hg₁ hg₂).summable
     · intro x hx
       convert v.empty
-      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx⊢
+      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
       intro i hi
       exact False.elim ((hx i) ((Encodable.decode₂_is_partial_inv _ _).1 hi))
 #align measure_theory.vector_measure.has_sum_of_disjoint_Union MeasureTheory.VectorMeasure.hasSum_of_disjoint_iUnion
@@ -1138,7 +1138,7 @@ theorem smul {R : Type _} [Semiring R] [DistribMulAction R M] [ContinuousConstSM
 theorem map [MeasureSpace β] (h : v ≪ᵥ w) (f : α → β) : v.map f ≪ᵥ w.map f := by
   by_cases hf : Measurable f
   · refine' mk fun s hs hws => _
-    rw [map_apply _ hf hs] at hws⊢
+    rw [map_apply _ hf hs] at hws ⊢
     exact h hws
   · intro s _
     rw [map_not_measurable v hf, zero_apply]

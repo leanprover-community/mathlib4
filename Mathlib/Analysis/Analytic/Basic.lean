@@ -1409,7 +1409,7 @@ theorem hasFPowerSeriesAt_iff :
     simp only [ENNReal.coe_pos]
     exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
   · simp only [EMetric.mem_ball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
-      dist_zero_right] at h⊢
+      dist_zero_right] at h ⊢
     refine' fun {y} _ hyr => h _
     simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 #align has_fpower_series_at_iff hasFPowerSeriesAt_iff

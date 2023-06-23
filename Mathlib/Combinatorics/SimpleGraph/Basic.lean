@@ -1800,7 +1800,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
-    rw [Subtype.mk_eq_mk] at h⊢
+    rw [Subtype.mk_eq_mk] at h ⊢
     exact f.inj' h
 #align simple_graph.embedding.map_neighbor_set SimpleGraph.Embedding.mapNeighborSet
 

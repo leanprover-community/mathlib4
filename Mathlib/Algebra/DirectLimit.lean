@@ -227,7 +227,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
           · intro i0 hi0
             rw [Dfinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
               DirectSum.single_eq_lof, Dfinsupp.single_apply, Dfinsupp.single_apply] at hi0
-            split_ifs  at hi0 with hi hj hj
+            split_ifs at hi0 with hi hj hj
             · rwa [hi] at hik
             · rwa [hi] at hik
             · rwa [hj] at hjk

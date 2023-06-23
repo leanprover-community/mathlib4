@@ -137,7 +137,7 @@ theorem isIntegral_map_of_comp_eq_of_isIntegral {R S T U : Type _} [CommRing R] 
     [CommRing T] [CommRing U] [Algebra R S] [Algebra T U] (φ : R →+* T) (ψ : S →+* U)
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) {a : S} (ha : IsIntegral R a) :
     IsIntegral T (ψ a) := by
-  rw [IsIntegral, RingHom.IsIntegralElem] at ha⊢
+  rw [IsIntegral, RingHom.IsIntegralElem] at ha ⊢
   obtain ⟨p, hp⟩ := ha
   refine' ⟨p.map φ, hp.left.map _, _⟩
   rw [← eval_map, map_map, h, ← map_map, eval_map, eval₂_at_apply, eval_map, hp.right,
@@ -215,7 +215,7 @@ theorem FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
   rw [← aeval_def] at hfx
   rw [AlgHom.map_add, AlgHom.map_mul, hfx, MulZeroClass.zero_mul, add_zero]
   have : degree (p %ₘ f) ≤ degree f := degree_modByMonic_le p hfm
-  generalize p %ₘ f = q at this⊢
+  generalize p %ₘ f = q at this ⊢
   rw [← sum_C_mul_X_pow_eq q, aeval_def, eval₂_sum, sum_def]
   refine' sum_mem fun k hkq => _
   rw [eval₂_mul, eval₂_C, eval₂_pow, eval₂_X, ← Algebra.smul_def]
@@ -384,7 +384,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type _} [AddCommGroup M] [Module R
       (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
     by_contra h'
-    push_neg  at h'
+    push_neg at h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
@@ -785,7 +785,7 @@ theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     use normalizeScaleRoots_monic p this
     rw [normalizeScaleRoots_eval₂_leadingCoeff_mul p h' f x, h, MulZeroClass.mul_zero]
   · by_cases hp : p.map f = 0
-    · apply_fun fun q => coeff q p.natDegree  at hp
+    · apply_fun fun q => coeff q p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
       rw [hp, MulZeroClass.zero_mul]
       exact f.is_integral_zero

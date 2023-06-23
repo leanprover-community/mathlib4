@@ -208,7 +208,7 @@ theorem index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
-    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm⊢
+    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all

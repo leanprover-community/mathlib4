@@ -482,7 +482,7 @@ protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g := by
 #align measure_theory.ae_eq_fun.le_sup_right MeasureTheory.AEEqFun.le_sup_right
 
 protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' := by
-  rw [← coeFn_le] at hf hg⊢
+  rw [← coeFn_le] at hf hg ⊢
   filter_upwards [hf, hg, coeFn_sup f g] with _ haf hag ha_sup
   rw [ha_sup]
   exact sup_le haf hag
@@ -516,7 +516,7 @@ protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g := by
 #align measure_theory.ae_eq_fun.inf_le_right MeasureTheory.AEEqFun.inf_le_right
 
 protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g := by
-  rw [← coeFn_le] at hf hg⊢
+  rw [← coeFn_le] at hf hg ⊢
   filter_upwards [hf, hg, coeFn_inf f g] with _ haf hag ha_inf
   rw [ha_inf]
   exact le_inf haf hag

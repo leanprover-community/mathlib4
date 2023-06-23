@@ -251,7 +251,7 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
     (Submodule.pi Set.univ p).FG := by
   classical
-    simp_rw [fg_def] at hsb⊢
+    simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     -- Porting note: `refine'` doesn't work here
     refine
@@ -585,7 +585,7 @@ variable (M)
 theorem of_restrictScalars_finite (R A M : Type _) [CommSemiring R] [Semiring A] [AddCommMonoid M]
     [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
     Finite A M := by
-  rw [finite_def, Submodule.fg_def] at hM⊢
+  rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine' ⟨S, hSfin, eq_top_iff.2 _⟩
   have := Submodule.span_le_restrictScalars R A S

@@ -129,7 +129,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
     · -- Porting note: was `simp_intro p q hp hq`
       intros p q hp hq
       simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, map_add, Quotient.lift_mk,
-        coe_eval₂RingHom] at hp hq⊢
+        coe_eval₂RingHom] at hp hq ⊢
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,

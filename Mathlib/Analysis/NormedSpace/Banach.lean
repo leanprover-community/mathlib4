@@ -329,7 +329,7 @@ theorem continuous_symm (e : E ≃ₗ[𝕜] F) (h : Continuous e) : Continuous e
   rw [continuous_def]
   intro s hs
   rw [← e.image_eq_preimage]
-  rw [← e.coe_coe] at h⊢
+  rw [← e.coe_coe] at h ⊢
   exact ContinuousLinearMap.isOpenMap (𝕜 := 𝕜) ⟨↑e, h⟩ e.surjective s hs
 #align linear_equiv.continuous_symm LinearEquiv.continuous_symm
 

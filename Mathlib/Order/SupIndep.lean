@@ -214,7 +214,7 @@ alias supIndep_iff_pairwiseDisjoint ↔
 theorem SupIndep.sup [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset ι} {f : ι → α}
     (hs : s.SupIndep fun i => (g i).sup f) (hg : ∀ i' ∈ s, (g i').SupIndep f) :
     (s.sup g).SupIndep f := by
-  simp_rw [supIndep_iff_pairwiseDisjoint] at hs hg⊢
+  simp_rw [supIndep_iff_pairwiseDisjoint] at hs hg ⊢
   rw [sup_eq_biUnion, coe_biUnion]
   exact hs.biUnion_finset hg
 #align finset.sup_indep.sup Finset.SupIndep.sup

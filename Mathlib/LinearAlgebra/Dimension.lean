@@ -404,7 +404,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     have l₀ : l none = 0 := by
       rw [← eq_neg_iff_add_eq_zero] at z
       replace z := neg_eq_iff_eq_neg.mpr z
-      apply_fun fun x => b.repr x b'  at z
+      apply_fun fun x => b.repr x b' at z
       simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
         Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
       erw [FunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
@@ -889,7 +889,7 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
   obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr hI)
   have : LinearIndependent R fun i => b i • a := by
     have hb := b.linearIndependent
-    rw [Fintype.linearIndependent_iff] at hb⊢
+    rw [Fintype.linearIndependent_iff] at hb ⊢
     intro g hg
     apply hb g
     simp only [← smul_assoc, ← Finset.sum_smul, smul_eq_zero] at hg
@@ -1130,7 +1130,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, SetLike.mem_coe,
-      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h⊢
+      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
     refine' ⟨c, h₁, _⟩
@@ -1272,7 +1272,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) :
         rintro rfl
         simp at hw0
       rwa [span_singleton_smul_eq (IsUnit.mk0 _ h0) _]
-    · push_neg  at hw
+    · push_neg at hw
       rw [← Submodule.eq_bot_iff] at hw
       simp [hw]
 #align rank_submodule_le_one_iff' rank_submodule_le_one_iff'

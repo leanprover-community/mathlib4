@@ -237,7 +237,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
   have M'_le_M : M' ≤ M := M.map_subtype_le (LinearMap.ker ϕ)
   have N'_le_M' : N' ≤ M' := by
     intro x hx
-    simp only [mem_map, LinearMap.mem_ker] at hx⊢
+    simp only [mem_map, LinearMap.mem_ker] at hx ⊢
     obtain ⟨⟨x, xN⟩, hx, rfl⟩ := hx
     exact ⟨⟨x, N_le_M xN⟩, hx, rfl⟩
   have N'_le_N : N' ≤ N := N.map_subtype_le (LinearMap.ker (ϕ.comp (ofLe N_le_M)))

@@ -514,7 +514,7 @@ instance : DivisionRing (PerfectClosure K p) :=
         rw [mk_inv, mk_mul_mk]
         refine (eq_iff K p _ _).2 ?_
         simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
-            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this⊢
+            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this ⊢
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
 

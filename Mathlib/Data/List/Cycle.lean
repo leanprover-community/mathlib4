@@ -325,7 +325,7 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
         List.nthLe, Nat.succ_add_sub_one, zero_add, getLast_eq_get,
         Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
     · simp only [mem_cons, nodup_cons] at h
-      push_neg  at h
+      push_neg at h
       simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, Nat.zero_eq, List.length,
         List.nthLe, add_comm, eq_self_iff_true, Nat.succ_add_sub_one, Nat.mod_self, zero_add,
         List.get]
@@ -975,7 +975,7 @@ theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r�
     Chain r₂ s := by
   induction s using Cycle.induction_on
   · triv
-  · rw [chain_coe_cons] at p⊢
+  · rw [chain_coe_cons] at p ⊢
     exact p.imp H
 #align cycle.chain.imp Cycle.Chain.imp
 

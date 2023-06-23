@@ -437,7 +437,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 @[coe]
 def ofList (l : List α) : Seq α :=
   ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none] at h⊢
+    rw [List.get?_eq_none] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 #align stream.seq.of_list Stream'.Seq.ofList
 

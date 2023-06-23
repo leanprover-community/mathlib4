@@ -457,7 +457,7 @@ def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [Com
     refine' Metric.continuous_iff.mpr _
     intro g ε ε_pos
     refine' ⟨ε, ε_pos, fun g' h => _⟩
-    rw [ContinuousMap.dist_lt_iff ε_pos] at h⊢
+    rw [ContinuousMap.dist_lt_iff ε_pos] at h ⊢
     exact fun x => h (f x)
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 

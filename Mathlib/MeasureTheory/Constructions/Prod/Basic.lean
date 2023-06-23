@@ -217,7 +217,7 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type _} {mα : MeasurableSpac
   have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
     intro x y hxy
     rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
-    simp only [Prod.mk.inj_iff] at hxy⊢
+    simp only [Prod.mk.inj_iff] at hxy ⊢
     exact ⟨hg.injective hxy.1, hf.injective hxy.2⟩
   refine' ⟨h_inj, _, _⟩
   · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)

@@ -125,7 +125,7 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
       rw [if_neg hnik]
-    · push_neg  at hkn
+    · push_neg at hkn
       rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, MulZeroClass.zero_mul, ite_self]
 #align polynomial.hasse_deriv_monomial Polynomial.hasseDeriv_monomial
 

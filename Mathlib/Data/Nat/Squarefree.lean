@@ -146,7 +146,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
         contradiction
     (coprime_mul_iff_right.2 ⟨this, this⟩).mul_dvd_of_dvd_of_dvd dk dp
   cases' o with d
-  · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H⊢
+  · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H ⊢
     exact fun p pp dp => H p pp ((dvd_div_iff dk).2 (this _ pp dp))
   · obtain ⟨H1, H2, H3⟩ := H
     simp only [dvd_div_iff dk] at H2 H3

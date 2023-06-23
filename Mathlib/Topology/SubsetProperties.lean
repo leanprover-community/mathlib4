@@ -265,7 +265,7 @@ theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type _} {f : ι → Se
 theorem IsCompact.inter_iInter_nonempty {s : Set α} {ι : Type v} (hs : IsCompact s) (Z : ι → Set α)
     (hZc : ∀ i, IsClosed (Z i)) (hsZ : ∀ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i).Nonempty) :
     (s ∩ ⋂ i, Z i).Nonempty := by
-  simp only [nonempty_iff_ne_empty] at hsZ⊢
+  simp only [nonempty_iff_ne_empty] at hsZ ⊢
   apply mt (hs.elim_finite_subfamily_closed Z hZc); push_neg; exact hsZ
 #align is_compact.inter_Inter_nonempty IsCompact.inter_iInter_nonempty
 
@@ -985,7 +985,7 @@ theorem Filter.coprod_cocompact :
   · rintro ⟨⟨A, ⟨t, ht, hAt⟩, hAS⟩, B, ⟨t', ht', hBt'⟩, hBS⟩
     refine' ⟨t ×ˢ t', ht.prod ht', _⟩
     refine' Subset.trans _ (union_subset hAS hBS)
-    rw [compl_subset_comm] at hAt hBt'⊢
+    rw [compl_subset_comm] at hAt hBt' ⊢
     refine' Subset.trans (fun x => _) (Set.prod_mono hAt hBt')
     simp only [compl_union, mem_inter_iff, mem_prod, mem_preimage, mem_compl_iff]
     tauto
@@ -993,11 +993,11 @@ theorem Filter.coprod_cocompact :
     refine' ⟨⟨(Prod.fst '' t)ᶜ, _, _⟩, ⟨(Prod.snd '' t)ᶜ, _, _⟩⟩
     · exact ⟨Prod.fst '' t, ht.image continuous_fst, Subset.rfl⟩
     · rw [preimage_compl]
-      rw [compl_subset_comm] at htS⊢
+      rw [compl_subset_comm] at htS ⊢
       exact htS.trans (subset_preimage_image Prod.fst _)
     · exact ⟨Prod.snd '' t, ht.image continuous_snd, Subset.rfl⟩
     · rw [preimage_compl]
-      rw [compl_subset_comm] at htS⊢
+      rw [compl_subset_comm] at htS ⊢
       exact htS.trans (subset_preimage_image Prod.snd _)
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
@@ -1056,7 +1056,7 @@ theorem Filter.coprodᵢ_cocompact {δ : Type _} {κ : δ → Type _} [∀ d, To
     (Filter.coprodᵢ fun d => Filter.cocompact (κ d)) = Filter.cocompact (∀ d, κ d) := by
   refine' le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) _
   refine' compl_surjective.forall.2 fun s H => _
-  simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H⊢
+  simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢
   choose K hKc htK using H
   exact ⟨Set.pi univ K, isCompact_univ_pi hKc, fun f hf i _ => htK i hf⟩
 set_option linter.uppercaseLean3 false in

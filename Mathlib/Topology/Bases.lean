@@ -757,7 +757,7 @@ theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set 
   have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
   refine' ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => _⟩
-  simp only [biUnion_image, eq_univ_iff_forall, ← preimage_iUnion, mem_preimage] at htU⊢
+  simp only [biUnion_image, eq_univ_iff_forall, ← preimage_iUnion, mem_preimage] at htU ⊢
   exact htU ⟨x, hx⟩
 #align topological_space.countable_cover_nhds_within TopologicalSpace.countable_cover_nhdsWithin
 

@@ -172,7 +172,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
     · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
-    · push_neg  at hne
+    · push_neg at hne
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 

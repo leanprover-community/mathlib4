@@ -194,7 +194,7 @@ theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot := by
-  simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf⊢
+  simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf ⊢
   exact hf.atTop_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
 
@@ -242,7 +242,7 @@ theorem Tendsto.atTop_zsmul_neg_const {f : α → ℤ} (hr : r < 0) (hf : Tendst
 
 theorem Tendsto.atBot_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x • r) l atBot := by
-  simp only [← tendsto_neg_atTop_iff, ← neg_zsmul] at hf⊢
+  simp only [← tendsto_neg_atTop_iff, ← neg_zsmul] at hf ⊢
   exact hf.atTop_zsmul_const hr
 #align filter.tendsto.at_bot_zsmul_const Filter.Tendsto.atBot_zsmul_const
 

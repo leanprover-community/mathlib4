@@ -100,7 +100,7 @@ def upperCentralSeriesStep : Subgroup G where
     group
   inv_mem' {x hx y} := by
     specialize hx y⁻¹
-    rw [mul_assoc, inv_inv] at hx⊢
+    rw [mul_assoc, inv_inv] at hx ⊢
     exact Subgroup.Normal.mem_comm inferInstance hx
 #align upper_central_series_step upperCentralSeriesStep
 
@@ -250,12 +250,12 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   cases' hdesc with h0 hH
   refine' ⟨hn, fun x m hx g => _⟩
-  dsimp only at hx⊢
+  dsimp only at hx ⊢
   by_cases hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · push_neg  at hm
+  · push_neg at hm
     convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_sub_succ]
 #align is_ascending_rev_series_of_is_descending is_ascending_rev_series_of_is_descending

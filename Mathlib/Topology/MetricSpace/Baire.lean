@@ -174,7 +174,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   have hK_subset : (⋂ n, (K n).carrier : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
     simp only [mem_iInter] at hx
-    simp only [mem_inter_iff, mem_inter] at hx⊢
+    simp only [mem_inter_iff, mem_inter] at hx ⊢
     refine' ⟨hK₀ <| hx 0, _⟩
     simp only [mem_iInter]
     exact fun n => (hK_decreasing n (hx (n + 1))).1

@@ -1962,7 +1962,7 @@ instance partialOrder : PartialOrder (Localization s) where
   le_refl a := Localization.induction_on a fun a => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
-      simp only [mk_le_mk] at hab hbc⊢
+      simp only [mk_le_mk] at hab hbc ⊢
       refine' le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
@@ -1983,11 +1983,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
     mul_le_mul_left := fun a b =>
       Localization.induction_on₂ a b fun a b hab c =>
         Localization.induction_on c fun c => by
-          simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab⊢
+          simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
           exact mul_le_mul_left' hab _
     le_of_mul_le_mul_left := fun a b c =>
       Localization.induction_on₃ a b c fun a b c hab => by
-        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab⊢
+        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab ⊢
         exact le_of_mul_le_mul_left' hab }
 
 @[to_additive]

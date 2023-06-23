@@ -501,7 +501,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
         dsimp
         rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
       · intro y y' h h'
-        dsimp at h h'⊢
+        dsimp at h h' ⊢
         rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
         -- no longer works for some reason
     smul_def' := fun r x => by

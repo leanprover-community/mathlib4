@@ -355,7 +355,7 @@ noncomputable instance omegaCompletePartialOrder :
   ωSup := Part.ωSup
   le_ωSup c i := by
     intro x hx
-    rw [← eq_some_iff] at hx⊢
+    rw [← eq_some_iff] at hx ⊢
     rw [ωSup_eq_some, ← hx]
     rw [← hx]
     exact ⟨i, rfl⟩

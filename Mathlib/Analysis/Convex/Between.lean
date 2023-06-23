@@ -638,7 +638,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
-      (Finset.mem_univ _)] at h₁'⊢
+      (Finset.mem_univ _)] at h₁' ⊢
   refine'
     Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
       (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))

@@ -241,7 +241,7 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     apply Nat.succ_pos
   refine' eq_of_direction_eq_of_nonempty_of_le _ ((hn.image p).to_set.affineSpan k) hle
   have hd := direction_le hle
-  rw [direction_affineSpan] at hd⊢
+  rw [direction_affineSpan] at hd ⊢
   exact hi.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hd hc
 #align affine_independent.affine_span_image_finset_eq_of_le_of_card_eq_finrank_add_one AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one
 
@@ -253,7 +253,7 @@ theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
     (hle : affineSpan k (Set.range p) ≤ sp) (hc : Fintype.card ι = finrank k sp.direction + 1) :
     affineSpan k (Set.range p) = sp := by
   rw [← Finset.card_univ] at hc
-  rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle⊢
+  rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle ⊢
   exact hi.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hle hc
 #align affine_independent.affine_span_eq_of_le_of_card_eq_finrank_add_one AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
 

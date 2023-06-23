@@ -71,7 +71,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   · rw [if_pos (add_tsub_cancel_right n 1).symm, mul_one, Nat.cast_add, Nat.cast_one,
       mem_support_iff]
     intro h
-    push_neg  at h
+    push_neg at h
     simp [h]
 #align polynomial.coeff_derivative Polynomial.coeff_derivative
 

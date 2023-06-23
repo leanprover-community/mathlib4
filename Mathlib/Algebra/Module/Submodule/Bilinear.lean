@@ -93,7 +93,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=
   eq_bot_iff.2 <|
     map₂_le.2 fun m hm n hn => by
-      rw [Submodule.mem_bot] at hm⊢
+      rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 #align submodule.map₂_bot_left Submodule.map₂_bot_left
 

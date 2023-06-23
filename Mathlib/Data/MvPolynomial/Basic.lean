@@ -1293,7 +1293,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
   intro p q h
-  simp only [ext_iff, coeff_map] at h⊢
+  simp only [ext_iff, coeff_map] at h ⊢
   intro m
   exact hf (h m)
 #align mv_polynomial.map_injective MvPolynomial.map_injective

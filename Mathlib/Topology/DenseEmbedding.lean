@@ -370,7 +370,7 @@ end
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
-  rw [Filter.hasBasis_iff] at h⊢
+  rw [Filter.hasBasis_iff] at h ⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
   · obtain ⟨T', hT₁, hT₂, hT₃⟩ := exists_mem_nhds_isClosed_subset hT

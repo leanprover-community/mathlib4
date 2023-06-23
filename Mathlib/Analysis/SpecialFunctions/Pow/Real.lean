@@ -230,7 +230,7 @@ theorem rpow_sub {x : ℝ} (hx : 0 < x) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ 
 #align real.rpow_sub Real.rpow_sub
 
 theorem rpow_sub' {x : ℝ} (hx : 0 ≤ x) {y z : ℝ} (h : y - z ≠ 0) : x ^ (y - z) = x ^ y / x ^ z := by
-  simp only [sub_eq_add_neg] at h⊢
+  simp only [sub_eq_add_neg] at h ⊢
   simp only [rpow_add' hx h, rpow_neg hx, div_eq_mul_inv]
 #align real.rpow_sub' Real.rpow_sub'
 
@@ -698,7 +698,7 @@ theorem exists_rat_pow_btwn {α : Type _} [LinearOrderedField α] [Archimedean �
   obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
   obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
   have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
-  norm_cast  at hq₁₂ this
+  norm_cast at hq₁₂ this
   obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
   refine' ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans _, hy₂.trans' _⟩ <;> assumption_mod_cast
 #align real.exists_rat_pow_btwn Real.exists_rat_pow_btwn
