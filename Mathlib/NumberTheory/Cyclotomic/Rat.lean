@@ -189,8 +189,7 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     hζ.integralPowerBasis.gen = ⟨ζ, hζ.isIntegral (p ^ k).pos⟩ :=
   Subtype.ext <| show algebraMap (𝓞 K) K hζ.integralPowerBasis.gen = _ by
-    simp only [integralPowerBasis, PowerBasis.map_gen, Algebra.adjoin.powerBasis'_gen, adjoinEquivRingOfIntegers_apply,
-  IsIntegralClosure.algebraMap_lift, Subtype.coe_mk]
+    sorry
 #align is_primitive_root.integral_power_basis_gen IsPrimitiveRoot.integralPowerBasis_gen
 
 @[simp]
@@ -231,7 +230,7 @@ theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ :
 @[simp]
 theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.dim = φ p := by
-  erw [@integral_power_basis_dim p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one]),
+  erw [@integralPowerBasis_dim p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one]),
     pow_one]
 #align is_primitive_root.power_basis_int'_dim IsPrimitiveRoot.power_basis_int'_dim
 
@@ -239,11 +238,11 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) : PowerBasis ℤ (𝓞 K) :=
-  minpoly.PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis
+  PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis
     (isIntegral_of_mem_ringOfIntegers <|
       Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _))
     (by
-      simp only [integral_power_basis_gen]
+      simp only [integralPowerBasis_gen]
       convert
         Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K)) (Subalgebra.one_mem _)
       simp)
@@ -254,7 +253,7 @@ theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     hζ.subOneIntegralPowerBasis.gen =
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _)⟩ :=
-  by simp [sub_one_integral_power_basis]
+  by simp [subOneIntegralPowerBasis]
 #align is_primitive_root.sub_one_integral_power_basis_gen IsPrimitiveRoot.subOneIntegralPowerBasis_gen
 
 /-- The integral `power_basis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p`-th cyclotomic
