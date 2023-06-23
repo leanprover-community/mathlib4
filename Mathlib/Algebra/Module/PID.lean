@@ -216,7 +216,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
                       (fun i => R ⧸ R ∙ p ^ @Option.rec _ (fun _ => ℕ) (pOrder hN <| s j) k i) _
                       _).symm).trans <|
               DirectSum.lequivCongrLeft R (finSuccEquiv d).symm⟩⟩
-      · rw [range_subtype, LinearEquiv.toLinearMap_eq_coe, LinearEquiv.ker_comp, ker_mkq]
+      · rw [range_subtype, LinearEquiv.toLinearMap_eq_coe, LinearEquiv.ker_comp, ker_mkQ]
       · rw [LinearEquiv.toLinearMap_eq_coe, ← f.comp_coe, LinearMap.comp_assoc,
           LinearMap.comp_assoc, ← LinearEquiv.toLinearMap_eq_coe,
           LinearEquiv.toLinearMap_symm_comp_eq, LinearMap.comp_id, ← LinearMap.comp_assoc, ←
@@ -224,9 +224,9 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         suffices (f.toLinearMap.comp (R ∙ s j).mkQ).comp _ = LinearMap.id by
           rw [← f.toLinearMap_eq_coe, this, LinearMap.id_comp]
         ext i : 3
-        simp only [LinearMap.coe_comp, Function.comp_apply, mkq_apply]
+        simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
         rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-          liftq_span_singleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+          liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
           map_one, (this i).choose_spec.right]
     · exact
         (mk_surjective _).forall.mpr fun x =>
