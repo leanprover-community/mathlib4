@@ -168,7 +168,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 #align clifford_algebra.lift_comp_ι CliffordAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
   intro h
