@@ -198,7 +198,7 @@ namespace PartENat
 theorem card_eq_coe_nat_card (α : Type _) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
-  rw [natCast_eq_iff_eq]
+  rw [Cardinal.natCast_eq_toPartENat_iff]
   exact Finite.cast_card_eq_mk
 #align part_enat.card_of_finite PartENat.card_eq_coe_nat_card
 
