@@ -263,8 +263,6 @@ syntax (name := pushCast) "push_cast " (config)? (discharger)? (&" only")?
   dischargeWrapper.with fun discharge? ↦
     discard <| simpLocation ctx discharge? (expandOptLocation stx[5])
 
--- add_hint_tactic "norm_cast at *"
-
 /-
 The `norm_cast` family of tactics is used to normalize casts inside expressions.
 It is basically a simp tactic with a specific set of lemmas to move casts

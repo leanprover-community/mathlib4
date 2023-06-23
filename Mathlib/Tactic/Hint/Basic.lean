@@ -7,6 +7,12 @@ import Mathlib.Tactic.Hint.Core
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
 
 /-!
 # Tactics for `hint`
@@ -37,3 +43,26 @@ add_hint_tactic solve_by_elim
 
 -- Porting note: TODO port this
 -- add_hint_tactic unfold_aux
+
+add_hint_tactic split_ifs
+
+-- Porting note: TODO port this
+-- add_hint_tactic omega
+
+add_hint_tactic tauto
+
+-- Porting note: TODO port this
+-- add_hint_tactic finish
+
+add_hint_tactic norm_cast at *
+
+add_hint_tactic norm_num
+
+add_hint_tactic ring
+
+-- Porting note: TODO port this
+-- add_hint_tactic itauto
+
+add_hint_tactic linarith
+
+add_hint_tactic nlinarith
