@@ -2072,7 +2072,7 @@ theorem IsBigOWith.right_le_sub_of_lt_1 {f₁ f₂ : α → E'} (h : IsBigOWith 
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
-      simp only [mem_setOf_eq] at hx⊢
+      simp only [mem_setOf_eq] at hx ⊢
       rw [mul_comm, one_div, ← div_eq_mul_inv, _root_.le_div_iff, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc

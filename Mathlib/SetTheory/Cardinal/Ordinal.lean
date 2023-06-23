@@ -64,7 +64,7 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   refine' ⟨fun h => aleph0_ne_zero _, fun a => lt_imp_lt_of_le_imp_le fun h => _⟩
   · rw [← Ordinal.le_zero, ord_le] at h
     simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
-  · rw [ord_le] at h⊢
+  · rw [ord_le] at h ⊢
     rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
@@ -698,7 +698,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     contradiction
     rw [← Ne] at h2a
     rw [← one_le_iff_ne_zero] at h2a hb
-    norm_cast  at h2a hb h⊢
+    norm_cast at h2a hb h ⊢
     apply le_antisymm _ hb
     rw [← not_lt]
     apply fun h2b => ne_of_gt _ h
@@ -797,7 +797,7 @@ theorem add_eq_left_iff {a b : Cardinal} : a + b = a ↔ max ℵ₀ b ≤ a ∨ 
     right
     rw [← h, add_lt_aleph0_iff, lt_aleph0, lt_aleph0] at ha
     rcases ha with ⟨⟨n, rfl⟩, ⟨m, rfl⟩⟩
-    norm_cast  at h⊢
+    norm_cast at h ⊢
     rw [← add_right_inj, h, add_zero]
   · rintro (⟨h1, h2⟩ | h3)
     · rw [add_eq_max h1, max_eq_left h2]
@@ -838,7 +838,7 @@ protected theorem eq_of_add_eq_add_left {a b c : Cardinal} (h : a + b = a + c) (
     rcases ha with ⟨n, rfl⟩
     rcases hb with ⟨m, rfl⟩
     rcases hc with ⟨k, rfl⟩
-    norm_cast  at h⊢
+    norm_cast at h ⊢
     apply add_left_cancel h
 #align cardinal.eq_of_add_eq_add_left Cardinal.eq_of_add_eq_add_left
 
@@ -881,7 +881,7 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < Cardinal
     α + γ ≤ β + γ ↔ α ≤ β := by
   refine' ⟨fun h => _, fun h => add_le_add_right h γ⟩
   contrapose h
-  rw [not_le, lt_iff_le_and_ne, Ne] at h⊢
+  rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
   exact ⟨add_le_add_right h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 #align cardinal.add_le_add_iff_of_lt_aleph_0 Cardinal.add_le_add_iff_of_lt_aleph0
 
@@ -1138,7 +1138,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
   use fun t => (↑) ⁻¹' t.1
   · rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.eq
-    dsimp only at h⊢
+    dsimp only at h ⊢
     refine' (preimage_eq_preimage' _ _).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 #align cardinal.mk_bounded_subset_le Cardinal.mk_bounded_subset_le
@@ -1218,7 +1218,7 @@ theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs :
   · apply extend_function f
     cases' id h with g
     haveI := Infinite.of_injective _ g.injective
-    rw [← lift_mk_eq'] at h⊢
+    rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt

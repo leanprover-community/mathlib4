@@ -252,14 +252,14 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
   simp_rw [Set.mem_smul_set, Set.mem_sep_iff]
   constructor
   · rintro ⟨hr, hx⟩
-    simp_rw [mem_Ioi] at hr⊢
+    simp_rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos (inv_pos.2 ha') hr
     refine' ⟨a⁻¹ • r, ⟨this, _⟩, smul_inv_smul₀ ha'.ne' _⟩
     rwa [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc,
       mem_smul_set_iff_inv_smul_mem₀ (inv_ne_zero ha'.ne'), inv_inv]
   · rintro ⟨r, ⟨hr, hx⟩, rfl⟩
-    rw [mem_Ioi] at hr⊢
+    rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos ha' hr
     refine' ⟨this, _⟩
@@ -279,11 +279,11 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
   simp_rw [Set.mem_smul_set, Set.mem_sep_iff]
   constructor
   · rintro ⟨hr, y, hy, h⟩
-    simp_rw [mem_Ioi] at hr⊢
+    simp_rw [mem_Ioi] at hr ⊢
     refine' ⟨a • r, ⟨smul_pos ha' hr, _⟩, inv_smul_smul₀ ha'.ne' _⟩
     rwa [smul_inv₀, smul_assoc, ← h, inv_smul_smul₀ ha'.ne']
   · rintro ⟨r, ⟨hr, hx⟩, rfl⟩
-    rw [mem_Ioi] at hr⊢
+    rw [mem_Ioi] at hr ⊢
     refine' ⟨smul_pos (inv_pos.2 ha') hr, r⁻¹ • x, hx, _⟩
     rw [smul_inv₀, smul_assoc, inv_inv]
 #align gauge_smul_left_of_nonneg gauge_smul_left_of_nonneg

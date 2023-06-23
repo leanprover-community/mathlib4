@@ -80,7 +80,7 @@ theorem hermite_one : hermite 1 = X := by
 /-! ### Lemmas about `Polynomial.coeff` -/
 
 
-section Coeff
+section coeff
 
 theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
   simp [coeff_derivative]
@@ -146,7 +146,7 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
-end Coeff
+end coeff
 
 section CoeffExplicit
 
@@ -190,9 +190,9 @@ theorem coeff_hermite_explicit :
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
       rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
-      Int.negSucc_eq]
+        Int.negSucc_eq]
       -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring
+      ring_nf
       simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
       norm_cast
       simp only [← add_assoc, add_comm]
