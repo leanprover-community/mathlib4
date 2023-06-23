@@ -88,7 +88,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     of the series and of its successive derivatives follows. -/
   rcases eq_empty_or_nonempty s with (rfl | h's)
   · exact
-      ⟨fun x => 0, Function.support_zero, contDiff_const, by
+      ⟨fun _ => 0, Function.support_zero, contDiff_const, by
         simp only [range_const, singleton_subset_iff, left_mem_Icc, zero_le_one]⟩
   let ι := { f : E → ℝ // f.support ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 }
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set ι, T.Countable ∧ (⋃ f ∈ T, support (f : E → ℝ)) = s := by
@@ -116,7 +116,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   have s_g : ∀ x ∈ s, ∃ n, x ∈ support (g n) := by
     intro x hx
     rw [← hT] at hx
-    obtain ⟨i, iT, hi⟩ : ∃ (i : ι) (hi : i ∈ T), x ∈ support (i : E → ℝ) := by
+    obtain ⟨i, iT, hi⟩ : ∃ (i : ι) (_ : i ∈ T), x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion] using hx
     rw [hg, mem_range] at iT
     rcases iT with ⟨n, hn⟩
@@ -181,9 +181,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
       exact ne_of_gt (tsum_pos (S x) (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
   · refine'
-      contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul rn)
-        (fun k hk => (NNReal.hasSum_coe.2 δc).summable) _
-    intro i hi
+      contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
+        (fun k _ => (NNReal.hasSum_coe.2 δc).summable) _
+    intro i _
     simp only [Nat.cofinite_eq_atTop, Pi.smul_apply, Algebra.id.smul_eq_mul,
       Filter.eventually_atTop, ge_iff_le]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
@@ -206,7 +206,7 @@ namespace ExistsContDiffBumpBase
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces.
 It is the characteristic function of the closed unit ball. -/
 def φ : E → ℝ :=
-  (closedBall (0 : E) 1).indicator fun y => (1 : ℝ)
+  (closedBall (0 : E) 1).indicator fun _ => (1 : ℝ)
 #align exists_cont_diff_bump_base.φ ExistsContDiffBumpBase.φ
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
