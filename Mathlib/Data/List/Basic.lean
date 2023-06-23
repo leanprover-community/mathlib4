@@ -2060,7 +2060,7 @@ theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.dro
   · simp only [take_eq_take, length_take, length_drop]
     generalize l.length = k; by_cases h : m ≤ k
     · simp [min_eq_left_iff.mpr h]
-    · push_neg  at h
+    · push_neg at h
       simp [Nat.sub_eq_zero_of_le (le_of_lt h)]
   · trans m
     · apply length_take_le
@@ -3012,7 +3012,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     specialize ih _ _
     · intro l hl
       apply hx l
-      simp at hl⊢
+      simp at hl ⊢
       exact Or.inr hl
     · exact List.noConfusion
     have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
@@ -3020,7 +3020,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
       intro y hy H
       rw [eq_of_beq H] at hy
       exact hx hd (.head _) hy
-    simp only [splitOn] at ih⊢
+    simp only [splitOn] at ih ⊢
     rw [this, ih]
 #align list.split_on_intercalate List.splitOn_intercalate
 
@@ -3553,7 +3553,7 @@ theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p
 theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l') :
     filter p l ⊆ filter p l' := by
   intro x hx
-  rw [mem_filter] at hx⊢
+  rw [mem_filter] at hx ⊢
   exact ⟨h hx.left, hx.right⟩
 #align list.monotone_filter_left List.monotone_filter_left
 

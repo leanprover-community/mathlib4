@@ -788,7 +788,7 @@ theorem srange_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
 
 /-- The range of a surjective semigroup hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
-  "The range of a surjective `add_semigroup` hom is the whole of the codomain."]
+  "The range of a surjective `AddSemigroup` hom is the whole of the codomain."]
 theorem srange_top_of_surjective {N} [Mul N] (f : M →ₙ* N) (hf : Function.Surjective f) :
     f.srange = (⊤ : Subsemigroup N) :=
   srange_top_iff_surjective.2 hf

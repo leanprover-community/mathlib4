@@ -55,7 +55,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     f.limsup (a * u ·) = a * f.limsup u := by
   by_cases ha_top : a ≠ ⊤
   · exact limsup_const_mul_of_ne_top ha_top
-  push_neg  at ha_top
+  push_neg at ha_top
   by_cases hu : u =ᶠ[f] 0
   · have hau : (a * u ·) =ᶠ[f] 0 := hu.mono fun x hx => by simp [hx]
     simp only [limsup_congr hu, limsup_congr hau, Pi.zero_apply, ← ENNReal.bot_eq_zero,

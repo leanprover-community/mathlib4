@@ -544,7 +544,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     intro h
     replace h := congr_arg (coeff R (single s 1)) h
     rw [coeff_X, if_pos rfl, coeff_X] at h
-    split_ifs  at h with H
+    split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
       cases' H with H H
       · exact H.1
@@ -2005,10 +2005,10 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     · rw [ih j hj, MulZeroClass.mul_zero]
     by_cases hi : i < m
     · specialize hm₂ _ hi
-      push_neg  at hm₂
+      push_neg at hm₂
       rw [hm₂, MulZeroClass.zero_mul]
     rw [Finset.Nat.mem_antidiagonal] at hij
-    push_neg  at hi hj
+    push_neg at hi hj
     suffices m < i by
       have : m + n < i + j := add_lt_add_of_lt_of_le this hj
       exfalso

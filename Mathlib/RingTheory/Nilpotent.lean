@@ -224,14 +224,14 @@ variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn⊢ <;>
+      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_left_iff LinearMap.isNilpotent_mulLeft_iff
 
 @[simp]
 theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn⊢ <;>
+      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
 
