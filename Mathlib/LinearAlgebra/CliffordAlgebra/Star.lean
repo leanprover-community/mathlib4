@@ -37,17 +37,20 @@ variable {Q : QuadraticForm R M}
 namespace CliffordAlgebra
 
 instance : StarRing (CliffordAlgebra Q) where
-  unit x := reverse (involute x)
+  -- porting note: cannot infer `Q`
+  star x := reverse (Q := Q) (involute x)
   star_involutive x := by
     simp only [reverse_involute_commute.eq, reverse_reverse, involute_involute]
   star_mul x y := by simp only [map_mul, reverse.map_mul]
   star_add x y := by simp only [map_add]
 
-theorem star_def (x : CliffordAlgebra Q) : star x = reverse (involute x) :=
+-- porting note: cannot infer `Q`
+theorem star_def (x : CliffordAlgebra Q) : star x = reverse (Q := Q) (involute x) :=
   rfl
 #align clifford_algebra.star_def CliffordAlgebra.star_def
 
-theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse x) :=
+-- porting note: cannot infer `Q`
+theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse (Q := Q) x) :=
   reverse_involute _
 #align clifford_algebra.star_def' CliffordAlgebra.star_def'
 
@@ -70,4 +73,3 @@ theorem star_algebraMap (r : R) :
 #align clifford_algebra.star_algebra_map CliffordAlgebra.star_algebraMap
 
 end CliffordAlgebra
-
