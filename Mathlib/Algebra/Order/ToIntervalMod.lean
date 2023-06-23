@@ -918,7 +918,7 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
     by_contra h
     rw [(modEq_iff_toIcoMod_eq_left hp).1 h] at h₁₂₃
     exact h₁₂₃.2 (left_lt_toIocMod _ _ _).le
-  · rw [not_le] at h₁₂₃ h₂₃₄⊢
+  · rw [not_le] at h₁₂₃ h₂₃₄ ⊢
     exact (h₁₂₃.2.trans_le (toIcoMod_le_toIocMod _ x₃ x₂)).trans h₂₃₄.2
 
 namespace QuotientAddGroup
@@ -947,7 +947,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
     induction x₁ using QuotientAddGroup.induction_on'
     induction x₂ using QuotientAddGroup.induction_on'
     induction x₃ using QuotientAddGroup.induction_on'
-    simp_rw [btw_coe_iff] at h⊢
+    simp_rw [btw_coe_iff] at h ⊢
     apply toIxxMod_cyclic_left _ h
   sbtw := _
   sbtw_iff_btw_not_btw := Iff.rfl
@@ -957,7 +957,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
       induction x₂ using QuotientAddGroup.induction_on'
       induction x₃ using QuotientAddGroup.induction_on'
       induction x₄ using QuotientAddGroup.induction_on'
-      simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄⊢
+      simp_rw [btw_coe_iff] at h₁₂₃ h₂₃₄ ⊢
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 #align quotient_add_group.circular_preorder QuotientAddGroup.circularPreorder
 

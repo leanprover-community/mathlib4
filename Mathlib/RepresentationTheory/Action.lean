@@ -321,10 +321,12 @@ def functorCategoryEquivalenceCompEvaluation :
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_comp_evaluation Action.functorCategoryEquivalenceCompEvaluation
 
-noncomputable instance [HasLimits V] : Limits.PreservesLimits (forget V G) :=
+noncomputable instance instPreservesLimitsForget [HasLimits V] :
+    Limits.PreservesLimits (forget V G) :=
   Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance [HasColimits V] : PreservesColimits (forget V G) :=
+noncomputable instance instPreservesColimitsForget [HasColimits V] :
+    PreservesColimits (forget V G) :=
   preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
 -- TODO construct categorical images?

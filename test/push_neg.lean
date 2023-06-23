@@ -141,3 +141,7 @@ example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
   exact h
 
 end use_distrib
+
+example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
+  push_neg at h
+  exact h
