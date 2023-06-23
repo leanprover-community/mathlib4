@@ -48,7 +48,15 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
-  let l ← run goal tacs
+  let l ← do
+    let gs ← getGoals
+    try
+      setGoals [goal]
+      tacs
+      pruneSolvedGoals
+      getGoals
+    finally
+      setGoals gs
   try
     let [newGoal] := l | failure
     guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
