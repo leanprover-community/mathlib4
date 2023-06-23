@@ -18,6 +18,27 @@ import Mathlib.Init.Data.List.Lemmas
 The type `Vector` represents lists with fixed length.
 -/
 
+/-
+  Replace the exisiting instance for indexing a collection with `Fin n`.
+  The new instance is more strict, only allowing a `Vector _ n` to be indexed by `Fin n`, where the
+  older version allowed the same vector to be indexed by, say `Fin (n+1)` if it could be proven that
+  the actual value of the `Fin` was less than `n`.
+  This extra proof causes problems in rewrites.
+-/
+attribute [-instance] instGetElemFinVal
+section GetElem
+  variable (cont : ℕ → Type u)
+
+instance [GetElem (cont n) Nat elem (fun _ i => i < n)] : GetElem (cont n) (Fin n) elem fun _ _ => True where
+  getElem xs i _ := getElem xs i.1 i.2
+
+end GetElem
+
+-- Get rid of the following simp lemmas, so that we can keep `v[i]` as normal form, rather than
+-- `v[i.1]`, when `i : Fin n`
+-- TODO: remove this after https://github.com/leanprover/std4/pull/162 is merged
+attribute [-simp] getElem_fin getElem?_fin getElem!_fin
+
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
 def Vector (α : Type u) (n : ℕ) :=
@@ -259,7 +280,7 @@ instance : GetElem (Vector α n) Nat α fun _ i => i < n where
 -- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
 abbrev get (v : Vector α n)  (i : Fin n) : α :=
-  v[i.1]
+  v[i]
 #align vector.nth Vector.get
 
 end Vector
