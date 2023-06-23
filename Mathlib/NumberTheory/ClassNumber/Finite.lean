@@ -131,23 +131,27 @@ theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 #align class_group.norm_lt ClassGroup.norm_lt
 
+
 /-- A nonzero ideal has an element of minimal norm. -/
+-- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c = (0 : S) :=
   by
-  obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ :=
-    @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _ _
+  classical
+  obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
+      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
+    (by
+      use 0
+      rintro _ ⟨b, _, _, rfl⟩
+      apply abv.nonneg)
+    (by
+      obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
+      exact ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩⟩)
   · refine' ⟨b, b_mem, b_ne_zero, _⟩
     intro c hc lt
     contrapose! lt with c_ne_zero
     exact min _ ⟨c, hc, c_ne_zero, rfl⟩
-  · use 0
-    rintro _ ⟨b, b_mem, b_ne_zero, rfl⟩
-    apply abv.nonneg
-  · obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
-    exact ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩⟩
 #align class_group.exists_min ClassGroup.exists_min
 
 section IsAdmissible
