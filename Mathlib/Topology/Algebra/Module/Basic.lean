@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.algebra.module.basic
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
+! leanprover-community/mathlib commit 6285167a053ad0990fc88e56c48ccd9fae6550eb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1207,6 +1207,44 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
   ext
   simp [mul_smul]
 #align continuous_linear_map.smul_right_comp ContinuousLinearMap.smulRight_comp
+
+section ToSpanSingleton
+
+variable (R₁)
+
+variable [ContinuousSMul R₁ M₁]
+
+/-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
+linear map from `R` to `M` by taking multiples of `x`.-/
+def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
+    where
+  toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
+  cont := continuous_id.smul continuous_const
+#align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
+
+theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
+  rfl
+#align continuous_linear_map.to_span_singleton_apply ContinuousLinearMap.toSpanSingleton_apply
+
+theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
+    toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y := by
+  ext1; simp [toSpanSingleton_apply]
+#align continuous_linear_map.to_span_singleton_add ContinuousLinearMap.toSpanSingleton_add
+
+theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
+    [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
+    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
+  by ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+#align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
+
+/-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/
+theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
+    [TopologicalSpace R] [TopologicalSpace M₁] [ContinuousSMul R M₁] (c : R) (x : M₁) :
+    toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
+  toSpanSingleton_smul' R c x
+#align continuous_linear_map.to_span_singleton_smul ContinuousLinearMap.toSpanSingleton_smul
+
+end ToSpanSingleton
 
 end Semiring
 
