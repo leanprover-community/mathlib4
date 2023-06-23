@@ -6,7 +6,7 @@ Authors: Ian Benway.
 
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Basic
-import Qq
+import Mathlib.Util.SleepHeartbeats
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
@@ -36,22 +36,6 @@ example (x : Nat) (h : x - x = 0) : x = x := by
 example : True := by
   set g : Nat → Int := (fun ε => ε) with h
   trivial
-
-open Lean Elab
-
-def sleepAtLeastHeartbeats (n : Nat) : CoreM Unit := do
-  let i ← IO.getNumHeartbeats
-  while (← IO.getNumHeartbeats) < i + n do
-    continue
-
-elab "sleep_heartbeats" n:num : tactic => do
-  match Syntax.isNatLit? n with
-  | none    => throwIllFormedSyntax
-  | some m => sleepAtLeastHeartbeats (m * 1000)
-
-example {a b c d e f g h : ℕ} : 1 = 1 := by
-  sleep_heartbeats 1000
-  rfl
 
 -- simulate a slow to elaborate term
 open Qq in
