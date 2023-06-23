@@ -188,7 +188,8 @@ theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
 @[simp]
 theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
   ↑n = toPartENat c ↔ ↑n = c := by
-  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff, Cardinal.natCast_le_toPartENat_iff]
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff,
+    Cardinal.natCast_le_toPartENat_iff]
 #align cardinal.coe_nat_eq_to_part_enat_iff Cardinal.natCast_eq_toPartENat_iff
 
 @[simp]
