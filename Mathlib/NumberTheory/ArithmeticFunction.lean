@@ -1202,7 +1202,8 @@ a well-behaved property. -/
 theorem sum_eq_iff_sum_mul_moebius_eq_on_prop [Ring R] {f g : ℕ → R}
     (P : ℕ → Prop) (hP : ∀ m n, m ∣ n → P n → P m) :
     (∀ n : ℕ, 0 < n → P n → (∑ i in n.divisors, f i) = g n) ↔
-      ∀ n : ℕ, 0 < n → P n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+      ∀ n : ℕ, 0 < n → P n →
+        (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq_on_prop P hP]
   apply forall_congr'
   refine' fun a => imp_congr_right fun _ => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
