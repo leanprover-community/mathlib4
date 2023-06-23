@@ -22,13 +22,13 @@ basic properties of these notions.
 Let `M ` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
 `f : M → M'`.
 
-* `cont_mdiff_within_at I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`
+* `ContMDiffWithinAt I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`
   around the point `x`.
-* `cont_mdiff_at I I' n f x` states that the function `f` is `Cⁿ` around `x`.
-* `cont_mdiff_on I I' n f s` states that the function `f` is `Cⁿ` on the set `s`
-* `cont_mdiff I I' n f` states that the function `f` is `Cⁿ`.
-* `cont_mdiff_on.comp` gives the invariance of the `Cⁿ` property under composition
-* `cont_mdiff_iff_cont_diff` states that, for functions between vector spaces,
+* `ContMDiffAt I I' n f x` states that the function `f` is `Cⁿ` around `x`.
+* `ContMDiffOn I I' n f s` states that the function `f` is `Cⁿ` on the set `s`
+* `ContMDiff I I' n f` states that the function `f` is `Cⁿ`.
+* `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
+* `contMDiff_iff_contDiff` states that, for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 
 We also give many basic properties of smooth functions between manifolds, following the API of
@@ -42,9 +42,9 @@ general machinery developed in `local_invariant_properties.lean` to get these pr
 automatically. For instance, the fact that being `Cⁿ` does not depend on the chart one considers
 is given by `lift_prop_within_at_indep_chart`.
 
-For this to work, the definition of `cont_mdiff_within_at` and friends has to
+For this to work, the definition of `ContMDiffWithinAt` and friends has to
 follow definitionally the setup of local invariant properties. Still, we recast the definition
-in terms of extended charts in `cont_mdiff_on_iff` and `cont_mdiff_iff`.
+in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 -/
 
 
@@ -181,7 +181,7 @@ def ContMDiffWithinAt (n : ℕ∞) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 #align cont_mdiff_within_at ContMDiffWithinAt
 
-/-- Abbreviation for `cont_mdiff_within_at I I' ⊤ f s x`. See also documentation for `smooth`.
+/-- Abbreviation for `ContMDiffWithinAt I I' ⊤ f s x`. See also documentation for `Smooth`.
 -/
 @[reducible]
 def SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
@@ -203,7 +203,7 @@ theorem contMDiffAt_iff {n : ℕ∞} {f : M → M'} {x : M} :
   liftPropAt_iff.trans <| by rw [ContDiffWithinAtProp, preimage_univ, univ_inter]; rfl
 #align cont_mdiff_at_iff contMDiffAt_iff
 
-/-- Abbreviation for `cont_mdiff_at I I' ⊤ f x`. See also documentation for `smooth`. -/
+/-- Abbreviation for `ContMDiffAt I I' ⊤ f x`. See also documentation for `Smooth`. -/
 @[reducible]
 def SmoothAt (f : M → M') (x : M) :=
   ContMDiffAt I I' ⊤ f x
@@ -216,7 +216,7 @@ def ContMDiffOn (n : ℕ∞) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 #align cont_mdiff_on ContMDiffOn
 
-/-- Abbreviation for `cont_mdiff_on I I' ⊤ f s`. See also documentation for `smooth`. -/
+/-- Abbreviation for `ContMDiffOn I I' ⊤ f s`. See also documentation for `Smooth`. -/
 @[reducible]
 def SmoothOn (f : M → M') (s : Set M) :=
   ContMDiffOn I I' ⊤ f s
@@ -229,13 +229,13 @@ def ContMDiff (n : ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 #align cont_mdiff ContMDiff
 
-/-- Abbreviation for `cont_mdiff I I' ⊤ f`.
+/-- Abbreviation for `ContMDiff I I' ⊤ f`.
 Short note to work with these abbreviations: a lemma of the form `cont_mdiff_foo.bar` will
 apply fine to an assumption `smooth_foo` using dot notation or normal notation.
-If the consequence `bar` of the lemma involves `cont_diff`, it is still better to restate
-the lemma replacing `cont_diff` with `smooth` both in the assumption and in the conclusion,
-to make it possible to use `smooth` consistently.
-This also applies to `smooth_at`, `smooth_on` and `smooth_within_at`.-/
+If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
+the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
+to make it possible to use `Smooth` consistently.
+This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`.-/
 @[reducible]
 def Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f
@@ -318,8 +318,8 @@ theorem contMDiffWithinAt_iff :
 point, and smoothness in the corresponding extended chart. This form states smoothness of `f`
 written in such a way that the set is restricted to lie within the domain/codomain of the
 corresponding charts.
-Even though this expression is more complicated than the one in `cont_mdiff_within_at_iff`, it is
-a smaller set, but their germs at `ext_chart_at I x x` are equal. It is sometimes useful to rewrite
+Even though this expression is more complicated than the one in `contMDiffWithinAt_iff`, it is
+a smaller set, but their germs at `extChartAt I x x` are equal. It is sometimes useful to rewrite
 using this in the goal.
 -/
 theorem contMDiffWithinAt_iff' :
@@ -383,7 +383,7 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtl
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_indep_chart he hx he' hy
 #align cont_mdiff_within_at_iff_of_mem_maximal_atlas contMDiffWithinAt_iff_of_mem_maximalAtlas
 
-/-- An alternative formulation of `cont_mdiff_within_at_iff_of_mem_maximal_atlas`
+/-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
   if the set if `s` lies in `e.source`. -/
 theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
     (he' : e' ∈ maximalAtlas I' M') (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
@@ -505,8 +505,8 @@ theorem contMDiffOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I M)
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
   into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
   these charts.
-  Note: this lemma uses `ext_chart_at I x '' s` instead of `(ext_chart_at I x).symm ⁻¹' s` to ensure
-  that this set lies in `(ext_chart_at I x).target`. -/
+  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+  that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
     (h2s : MapsTo f s (chartAt H' y).source) :
     ContMDiffOn I I' n f s ↔
@@ -519,8 +519,8 @@ theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H
 /-- If the set where you want `f` to be smooth lies entirely in a single chart, and `f` maps it
   into a single chart, the smoothness of `f` on that set can be expressed by purely looking in
   these charts.
-  Note: this lemma uses `ext_chart_at I x '' s` instead of `(ext_chart_at I x).symm ⁻¹' s` to ensure
-  that this set lies in `(ext_chart_at I x).target`. -/
+  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+  that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     ContMDiffOn I I' n f s ↔
@@ -1155,7 +1155,7 @@ theorem contMDiffOn_extChartAt_symm (x : M) :
   rw [extChartAt_target, I.image_eq]
 #align cont_mdiff_on_ext_chart_at_symm contMDiffOn_extChartAt_symm
 
-/-- An element of `cont_diff_groupoid ⊤ I` is `C^n` for any `n`. -/
+/-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : LocalHomeomorph H H}
     (h : e' ∈ contDiffGroupoid ⊤ I) : ContMDiffOn I I n e' e'.source :=
   (contDiffWithinAt_localInvariantProp I I n).liftPropOn_of_mem_groupoid
@@ -1729,7 +1729,7 @@ section PiSpace
 /-!
 ### Smoothness of functions with codomain `Π i, F i`
 
-We have no `model_with_corners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
+We have no `ModelWithCorners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
 use `𝓘(𝕜, Π i, F i)` as the model space.
 -/
 
@@ -1940,7 +1940,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : LocalHomeomorph M M'
   let c' := chartAt H (f x)
   obtain ⟨-, hxf⟩ := hf x hx
   -- Since `f` is a local structomorph, it is locally equal to some transferred element `e` of
-  -- the `cont_diff_groupoid`.
+  -- the `contDiffGroupoid`.
   obtain
     ⟨e, he, he' : EqOn (c' ∘ f ∘ c.symm) e (c.symm ⁻¹' f.source ∩ e.source), hex :
       c x ∈ e.source⟩ :=
@@ -1950,9 +1950,9 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : LocalHomeomorph M M'
   refine' ⟨s, (f.trans c').open_source.inter ((c.trans e).trans c'.symm).open_source, _, _⟩
   · simp only [mfld_simps]
     rw [← he'] <;> simp only [hx, hex, mfld_simps]
-  -- We need to show `f` is `cont_mdiff_on` the domain `s ∩ f.source`.  We show this in two
+  -- We need to show `f` is `ContMDiffOn` the domain `s ∩ f.source`.  We show this in two
   -- steps: `f` is equal to `c'.symm ∘ e ∘ c` on that domain and that function is
-  -- `cont_mdiff_on` it.
+  -- `ContMDiffOn` it.
   have H₁ : ContMDiffOn I I ⊤ (c'.symm ∘ e ∘ c) s := by
     have hc' : ContMDiffOn I I ⊤ c'.symm _ := contMDiffOn_chart_symm
     have he'' : ContMDiffOn I I ⊤ e _ := contMDiffOn_of_mem_contDiffGroupoid he
