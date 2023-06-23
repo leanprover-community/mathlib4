@@ -3,14 +3,19 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.DomAct
+import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.Algebra.Hom.GroupAction
 /-!
-# Action of `Mᵈᵐᵃ` on `α →[N] β` etc
+# Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 
 In this file we define action of `DomMulAction M = Mᵈᵐᵃ` on `α →[N] β` and on `A →+[N] B`. At the
 time of writing, these homomorphisms are not widely used in the library, so we put these instances
 into a separate file, not with the definition of `DomMulAction`.
+
+## TODO
+
+Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib.Algebra.Hom.GroupAction` and
+`SMulCommClass` instances saying that left and right actions commute.
 -/
 
 namespace DomMulAct
