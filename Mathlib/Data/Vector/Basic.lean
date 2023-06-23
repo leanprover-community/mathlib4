@@ -198,8 +198,6 @@ theorem singleton_tail : ∀ (v : Vector α 1), v.tail = Vector.nil
   | ⟨[_], _⟩ => rfl
 #align vector.singleton_tail Vector.singleton_tail
 
-set_option pp.analyze true
-
 @[simp]
 theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
   (ofFn_get _).symm.trans <| by
