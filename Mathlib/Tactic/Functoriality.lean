@@ -197,11 +197,11 @@ end compact
 --   term : Expr
 --   goal : MVarId
 
-def Transporter : Type := Expr → MVarId → MetaM (List (Expr × MVarId))
+def Transporter : Type := Expr → MVarId → MetaM (List (Expr × MVarId) × List (Expr × MVarId))
 
 -- This is never actually used: it exists so we can write `partial` definitions.
 instance : Inhabited Transporter where
-  default _ _ := pure []
+  default _ _ := pure ([], [])
 
 def Lean.Expr.forallE? : Expr → Option (Name × Expr × Expr × BinderInfo)
   | .forallE n t b bi => some (n, t, b, bi)
@@ -214,39 +214,45 @@ def Lean.Expr.lam? : Expr → Option (Name × Expr × Expr × BinderInfo)
 def transportForall (_f : Expr) (_cont : Transporter) : Transporter := fun t g => do
   let (h, g) ← g.intro1P
   g.withContext do
-    -- We need to get the `Expr` corresponding to `h` (which is just an `FVarId`)
-    let h := (← h.getDecl).toExpr -- FIXME what is the colloquialism here?
-    -- TODO we need to transport `h` along `f` to whatever the type of the first argument of `t` is!
-    -- FIXME cleanup!!
-    trace[Tactic.transport] t
-    let .some (_, t_arg_type, _, _) := (← inferType t).forallE? | throwError "foo"
-    let synthetic_goal ← mkFreshExprMVar t_arg_type
-    let [] ← _cont h synthetic_goal.mvarId! | throwError "transporting the argument failed"
-    let t' ← mkAppM' t #[synthetic_goal]
-    return [(t', g)]
+    -- we transport `h` along `f` to whatever the type of the first argument of `t` is!
+    let .some (_, t_arg_type, _, _) := (← inferType t).forallE?
+      | throwError "transport failed, expected {t} to be a pi type!"
+    let h' ← mkFreshExprMVar t_arg_type
+    let (todo, suspended) ← _cont (.fvar h) h'.mvarId!
+    let t' ← mkAppM' t #[h']
+    return ((t', g) :: todo, suspended)
 
-def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => do
-  let ty ← g.getType
-  if ← isDefEq ty (← inferType t) then
-    g.assign t
-    return []
+def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => g.withContext do
+  let g_ty ← g.getType
+  let t_ty ← inferType t
+  withTraceNode `Tactic.transport ((return m!"{·.emoji} transporting from {t_ty} to {g_ty}")) do
+  if ← isDefEq g_ty t_ty then do
+    withTraceNode `Tactic.transport ((return m!"{·.emoji} assigning {t}")) do
+      g.assign t
+    return ([], [])
   if let .some t' ← try? (mkAppM' f #[t]) then
     -- code smell: this is just doing the first branch now, can we refactor?
-    if ← isDefEq ty (← inferType t') then
-      g.assign t'
-      return []
-  if ty.isForall then
+    if ← isDefEq g_ty (← inferType t') then
+      withTraceNode `Tactic.transport ((return m!"{·.emoji} assigning {t'}")) do
+        g.assign t'
+      return ([], [])
+  if g_ty.isForall then
     return ← transportForall f cont t g
-  throwError "transport doesn't know what to do yet!"
+  withTraceNode `Tactic.transport (fun _ => return m!"{crossEmoji} giving up") do
+  return ([], [(t, g)])
 
--- FIXME probably better to use fuel rather than a `partial` def.
-partial def transportMany (f : Expr) : Transporter := fun t g => do
-  -- TODO call transport1 repeatedly not just once
-  transport1 f (transportMany f) t g
+def transportMany (f : Expr) : ℕ → Transporter
+  | 0, _, _ => throwError "out of fuel"
+  | (n+1), t, g => do
+    let (todo, suspended) ← transport1 f (transportMany f n) t g
+    let recursing ← todo.mapM fun ⟨t', g'⟩ => transportMany f n t' g'
+    return (recursing.map (·.1) |>.join, suspended :: recursing.map (·.2) |>.join)
 
 def transport (f t : Expr) (g : MVarId) : MetaM (List MVarId) := do
-  (← transportMany f t g).mapM fun ⟨t', g'⟩ => do
-    -- FIXME don't use a hardcoded name `w
+  let ([], suspended) ← transportMany f 100 t g
+    | throwError "transport finished, but there were still active subtasks!"
+  suspended.mapM fun ⟨t', g'⟩ => do
+    -- FIXME don't use a hardcoded name (if `t` was a local hypothesis, replace it?)
     let (_, g'') ← g'.note `w t'
     pure g''
 
@@ -257,16 +263,8 @@ syntax "transport" ppSpace term:max "along" ppSpace term:max : tactic
 -- or `syntax` and `elab_rules`.
 elab_rules : tactic
   | `(tactic| transport $t:term along $f:term) => do
-    -- Let's hand off to a "plumbing" function in `MetaM` right away.
-    -- This means we need to 1) change `f` and `t` from ``TSyntax `term`` to `Expr`,
-    -- and we need to 2) get the main goal, and afterwards reset the user's goals.
-    -- For 1), we need `elabTerm`:
     let t ← Term.elabTerm t none
     let f ← Term.elabTerm f none
-    -- For 2):
-    -- let g ← getMainGoal
-    -- let gs ← ourAwesomeTactic g t f
-    -- replaceMainGoal gs
     liftMetaTactic (transport f t)
 
 set_option trace.Tactic.transport true
@@ -279,11 +277,20 @@ example (w : α) (f : α → β) : β := by
 
 example (w : ∀ n : Nat, n > 1) : ∀ n : Nat, n > 0 := by
   transport w along id
+  guard_hyp w : n > 1
+  guard_target = n > 0
+  admit
 
 example (w : ∀ n : Int, n > 1) : ∀ n : Nat, n > 0 := by
   transport w along Int.ofNat
+  guard_hyp w : Int.ofNat n > 1
+  guard_target = n > 0
+  admit
 
 example (w : ∀ n : Int, n > 0) : ∀ n : Nat, n > 0 := by
   transport w along Int.ofNat
+  -- TODO transport should be able to finish
+  simp at w
+  assumption
 
 example : (by transport (0 : ℕ) along (fun (n : ℕ) => (n+1, n+2)) : ℕ × ℕ) = (1, 2) := rfl
