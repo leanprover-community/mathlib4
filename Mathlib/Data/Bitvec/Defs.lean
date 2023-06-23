@@ -36,57 +36,6 @@ open Vector
 -- mathport name: «expr ++ₜ »
 local infixl:65 "++ₜ" => Vector.append
 
-/-! ### Constant Bitvectors -/
-section Constants
-
-  /-- The bitvector `0000..`, whose entries are all `0`, represents the value `0` -/
-  @[reducible]
-  protected def zero (n : ℕ) : Bitvec n :=
-    replicate n false
-  #align bitvec.zero Bitvec.zero
-
-  /-- The bitvector `1000..`, whose `n-1`st entry is `1` and other entries are `0`, represents the
-      value `1` -/
-  @[reducible]
-  protected def one : ∀ (n : ℕ), Bitvec n
-    | 0 => nil
-    | succ n => replicate n false++ₜtrue ::ᵥ nil
-  #align bitvec.one Bitvec.one
-
-  /-- The bitvector `1111..`, whose entries are all `1`, represents the value `-1` as a signed
-      integer, or `(2^n)-1` as an unsigned integer. This corresponds to the maximal unsigned value
-  -/
-  def negOne (n : ℕ) : Bitvec n :=
-    replicate n true
-
-  /--
-  The maximal positive (signed) integer for a given bitwidth has bitpattern `011111..`, representing
-  the value `2^n-1`
-  -/
-  @[reducible]
-  def intMax : ∀ n, Bitvec n
-    | 0   => Vector.nil
-    | n+1 => false ::ᵥ negOne n
-
-  /--
-    The minimal negative integer for a given bitwidth has bitpattern `10000...`, representing
-    `-2^n` as a signed integer, or `2^(n-1)` as an unsigned integer
-   -/
-  @[reducible]
-  def intMin : ∀ n, Bitvec n
-    | 0   => Vector.nil
-    | n+1 => true ::ᵥ Bitvec.zero n
-
-
-  /-- Define the all-zero bitpattern as the bottom element of `Bitvec n` -/
-  instance : Bot (Bitvec n) := ⟨Bitvec.zero n⟩
-
-  /-- Define the all-ones bitpattern as the top element of `Bitvec n` -/
-  instance : Top (Bitvec n) := ⟨Bitvec.negOne n⟩
-
-end Constants
-
-
 
 
 /-- Create a bitvector from another with a provably equal length. -/
@@ -231,12 +180,6 @@ protected def sub (x y : Bitvec n) : Bitvec n :=
   Prod.snd (sbb x y false)
 #align bitvec.sub Bitvec.sub
 
-instance : Zero (Bitvec n) :=
-  ⟨Bitvec.zero n⟩
-
-instance : One (Bitvec n) :=
-  ⟨Bitvec.one n⟩
-
 instance : Add (Bitvec n) :=
   ⟨Bitvec.add⟩
 
@@ -257,8 +200,69 @@ instance : Mul (Bitvec n) :=
 
 end Arith
 
-/-! ### Comparison operators -/
 
+
+/-! ### Constant Bitvectors -/
+section Constants
+
+  /-- The bitvector `0000..`, whose entries are all `0`, represents the value `0` -/
+  @[reducible]
+  protected def zero (n : ℕ) : Bitvec n :=
+    replicate n false
+  #align bitvec.zero Bitvec.zero
+
+  /-- The bitvector `1000..`, whose `n-1`st entry is `1` and other entries are `0`, represents the
+      value `1` -/
+  @[reducible]
+  protected def one : ∀ (n : ℕ), Bitvec n
+    | 0 => nil
+    | succ n => replicate n false++ₜtrue ::ᵥ nil
+  #align bitvec.one Bitvec.one
+
+  /-- The bitvector `1111..`, whose entries are all `1`, represents the value `-1` as a signed
+      integer, or `(2^n)-1` as an unsigned integer. This corresponds to the maximal unsigned value
+  -/
+  abbrev negOne (n : ℕ) : Bitvec n :=
+    -1
+
+  /--
+  The maximal positive (signed) integer for a given bitwidth has bitpattern `011111..`, representing
+  the value `2^n-1`
+  -/
+  @[reducible]
+  def intMax : ∀ n, Bitvec n
+    | 0   => Vector.nil
+    | n+1 => false ::ᵥ negOne n
+
+  /--
+    The minimal negative integer for a given bitwidth has bitpattern `10000...`, representing
+    `-2^n` as a signed integer, or `2^(n-1)` as an unsigned integer
+   -/
+  @[reducible]
+  def intMin : ∀ n, Bitvec n
+    | 0   => Vector.nil
+    | n+1 => true ::ᵥ Bitvec.zero n
+
+
+  instance : Zero (Bitvec n) :=
+    ⟨Bitvec.zero n⟩
+
+  instance : One (Bitvec n) :=
+    ⟨Bitvec.one n⟩
+
+  /-- Define the all-zero bitpattern as the bottom element of `Bitvec n` -/
+  instance : Bot (Bitvec n) :=
+    ⟨Bitvec.zero n⟩
+
+  /-- Define the all-ones bitpattern as the top element of `Bitvec n` -/
+  instance : Top (Bitvec n) :=
+    ⟨Bitvec.negOne n⟩
+
+end Constants
+
+
+
+/-! ### Comparison operators -/
 
 section Comparison
 
