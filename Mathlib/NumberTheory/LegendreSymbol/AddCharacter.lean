@@ -68,7 +68,6 @@ a structure of commutative monoid.
 The trivial additive character (sending everything to `1`) is `(1 : AddChar R R').` -/
 def AddChar : Type max u v :=
   Multiplicative R →* R'
--- deriving CommMonoid, Inhabited
 #align add_char AddChar
 
 end AddCharDef
