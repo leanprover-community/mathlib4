@@ -211,16 +211,21 @@ def Lean.Expr.lam? : Expr → Option (Name × Expr × Expr × BinderInfo)
   | .lam n t b bi => some (n, t, b, bi)
   | _ => none
 
-def transportForall (_f : Expr) (_cont : Transporter) : Transporter := fun t g => do
+def transportForall (cont : Transporter) : Transporter := fun t g => do
   let (h, g) ← g.intro1P
   g.withContext do
     -- we transport `h` along `f` to whatever the type of the first argument of `t` is!
     let .some (_, t_arg_type, _, _) := (← inferType t).forallE?
       | throwError "transport failed, expected {t} to be a pi type!"
     let h' ← mkFreshExprMVar t_arg_type
-    let (todo, suspended) ← _cont (.fvar h) h'.mvarId!
+    let (todo, suspended) ← cont (.fvar h) h'.mvarId!
     let t' ← mkAppM' t #[h']
     return ((t', g) :: todo, suspended)
+
+def aesop : Transporter := fun t g => do
+  let (_, g') ← g.note `w t
+  let (gs, _) ← Aesop.search g' (options := { warnOnNonterminal := false })
+  return ([], gs.toList.map fun g => (t, g))
 
 def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => g.withContext do
   let g_ty ← g.getType
@@ -237,9 +242,13 @@ def transport1 (f : Expr) (cont : Transporter) : Transporter := fun t g => g.wit
         g.assign t'
       return ([], [])
   if g_ty.isForall then
-    return ← transportForall f cont t g
-  withTraceNode `Tactic.transport (fun _ => return m!"{crossEmoji} giving up") do
-  return ([], [(t, g)])
+    return ← transportForall cont t g
+  try
+    withTraceNode `Tactic.transport (return m!"{·.emoji} trying aesop") do
+      aesop t g
+  catch _ =>
+    withTraceNode `Tactic.transport (fun _ => return m!"{crossEmoji} giving up") do
+    return ([], [(t, g)])
 
 def transportMany (f : Expr) : ℕ → Transporter
   | 0, _, _ => throwError "out of fuel"
@@ -289,8 +298,5 @@ example (w : ∀ n : Int, n > 1) : ∀ n : Nat, n > 0 := by
 
 example (w : ∀ n : Int, n > 0) : ∀ n : Nat, n > 0 := by
   transport w along Int.ofNat
-  -- TODO transport should be able to finish
-  simp at w
-  assumption
 
 example : (by transport (0 : ℕ) along (fun (n : ℕ) => (n+1, n+2)) : ℕ × ℕ) = (1, 2) := rfl
