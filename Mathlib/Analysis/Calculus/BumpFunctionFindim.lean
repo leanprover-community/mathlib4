@@ -300,6 +300,8 @@ theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
 #align exists_cont_diff_bump_base.u_int_pos ExistsContDiffBumpBase.u_int_pos
 
 variable {E}
+-- porting note: `W` upper case
+set_option linter.uppercaseLean3 false
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
 which is smooth, symmetric, with support equal to the ball of radius `D` and integral `1`. -/
@@ -316,6 +318,7 @@ theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
   apply mul_nonneg _ (u_nonneg _)
   apply inv_nonneg.2
   apply mul_nonneg (u_int_pos E).le
+  norm_cast
   apply pow_nonneg (abs_nonneg D)
 #align exists_cont_diff_bump_base.W_nonneg ExistsContDiffBumpBase.w_nonneg
 
@@ -334,15 +337,17 @@ theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
 theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
   have B : D • ball (0 : E) 1 = ball 0 D := by
     rw [smul_unitBall Dpos.ne', Real.norm_of_nonneg Dpos.le]
-  have C : D ^ finrank ℝ E ≠ 0 := pow_ne_zero _ Dpos.ne'
-  simp only [W_def, Algebra.id.smul_eq_mul, support_mul, support_inv, univ_inter,
+  have C : D ^ finrank ℝ E ≠ 0 := by
+    norm_cast
+    exact pow_ne_zero _ Dpos.ne'
+  simp only [w_def, Algebra.id.smul_eq_mul, support_mul, support_inv, univ_inter,
     support_comp_inv_smul₀ Dpos.ne', u_support, B, support_const (u_int_pos E).ne', support_const C,
     abs_of_nonneg Dpos.le]
 #align exists_cont_diff_bump_base.W_support ExistsContDiffBumpBase.w_support
 
 theorem w_compact_support {D : ℝ} (Dpos : 0 < D) : HasCompactSupport (w D : E → ℝ) := by
-  rw [hasCompactSupport_def, W_support E Dpos, closure_ball (0 : E) Dpos.ne']
-  exact is_compact_closed_ball _ _
+  rw [hasCompactSupport_def, w_support E Dpos, closure_ball (0 : E) Dpos.ne']
+  exact isCompact_closedBall _ _
 #align exists_cont_diff_bump_base.W_compact_support ExistsContDiffBumpBase.w_compact_support
 
 variable {E}
