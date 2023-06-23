@@ -91,29 +91,27 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
 -/
 section MapAccumr
 
-theorem mapAccumr_eq_foldr (f : α → σ → σ × β) (as : List α) (s : σ) :
+theorem mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
     mapAccumr f as s = List.foldr (fun a s =>
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
-                                  ) (s, []) as := by
-  induction as
-  . rfl
-  next a as ih =>
-    simp only [mapAccumr, foldr, ih]
+                                  ) (s, []) as
+  | [], s => rfl
+  | a :: as, s => by
+    simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
-theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) (as : List α) (bs : List β) (s : σ) :
+theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) :
+    ∀ (as : List α) (bs : List β) (s : σ),
     mapAccumr₂ f as bs s = foldr (fun ab s =>
                               let r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
-                            ) (s, []) (as.zip bs) := by
-  induction as generalizing bs
-  . cases bs <;> rfl
-  next a as ih =>
-    cases bs
-    . rfl
-    next b bs =>
-      simp only [mapAccumr₂, foldr, ih bs]
-      rfl
+                            ) (s, []) (as.zip bs)
+  | [], [], s => rfl
+  | a :: as, [], s => rfl
+  | [], b :: bs, s => rfl
+  | a :: as, b :: bs, s => by
+    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    rfl
 
 end MapAccumr
 
