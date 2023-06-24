@@ -31,7 +31,7 @@ open scoped DirectSum
 variable (Q)
 
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
-`(ι Q).range`. `even_odd 0` is the even submodule, and `even_odd 1` is the odd submodule. -/
+`(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
 def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
@@ -133,7 +133,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
     -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
-    -- handling for the `iSup` in `even_odd`.
+    -- handling for the `iSup` in `evenOdd`.
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
