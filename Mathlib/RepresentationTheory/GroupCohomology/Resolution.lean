@@ -268,17 +268,15 @@ def ofMulActionBasisAux :
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
-/- Porting note: broken proof was
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
+/- Porting note: broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
         show (r * x) ⊗ₜ y = _
         rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
       · rw [smul_add, hz, hy, smul_add] -/
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
-      congr 1
       show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -345,6 +343,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
+set_option maxHeartbeats 370000
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -352,9 +351,9 @@ inverse map sends a function `f : Gⁿ → A` to the representation morphism sen
 to `A`. -/
 theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by sorry
-/- Porting note: broken proof was
+      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
+/- Porting note: broken proof was
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
     Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom, Iso.trans_hom,
@@ -362,6 +361,21 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     diagonalSucc_hom_single x (1 : k), TensorProduct.uncurry_apply, Rep.leftRegularHom_hom,
     Finsupp.lift_apply, ihom_obj_ρ_def, Rep.ihom_obj_ρ_apply, Finsupp.sum_single_index, zero_smul,
     one_smul, Rep.of_ρ, Rep.Action_ρ_eq_ρ, Rep.trivial_def (x 0)⁻¹, Finsupp.llift_apply A k k] -/
+  simp only [LinearEquiv.trans_symm, LinearEquiv.trans_apply,
+    leftRegularHomEquiv_symm_apply, LinearEquiv.symm_symm, Linear.homCongr_symm_apply,
+    Action.comp_hom, Iso.refl_inv, Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom,
+    Iso.trans_hom, ModuleCat.coe_comp, Function.comp_apply]
+  rw [diagonalSucc_hom_single]
+  erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
+  simp only [one_smul]
+  erw [Representation.linHom_apply]
+  simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+  erw [Finsupp.llift_apply]
+  rw [Finsupp.lift_apply]
+  erw [Finsupp.sum_single_index]
+  rw [one_smul]
+  · rw [zero_smul]
+  · rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply
 
