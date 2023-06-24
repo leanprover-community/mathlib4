@@ -637,6 +637,11 @@ def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [Topologic
   chart_mem_atlas p := ⟨chartAt _ p, chartAt _ _, chart_mem_atlas _ p, chart_mem_atlas _ _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
 
+theorem chartAt_comp (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H']
+    {M : Type _} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
+    (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
+  rfl
+
 end
 
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
