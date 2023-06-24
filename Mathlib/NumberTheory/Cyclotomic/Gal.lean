@@ -156,14 +156,16 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
       ((zeta_spec n K L).pow_iff_coprime n.pos hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ
 #align is_cyclotomic_extension.from_zeta_aut IsCyclotomicExtension.fromZetaAut
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([4]) } -/
+set_option pp.proofs true in
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
-  generalize_proofs hζ h _ hμ _
-  rw [← hζ.powerBasis_gen K]
-  rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
-  convert h.choose_spec.choose_spec
-  exact ZMod.val_cast_of_lt h.some_spec.some
+-- Porting note: `generalize_proofs` did not generalize the same proofs, making the proof different.
+  generalize_proofs h1 h2
+  nth_rewrite 4 [← (zeta_spec n K L).powerBasis_gen K]
+  have := Exists.choose_spec ((zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one n.pos)
+  rw [PowerBasis.equivOfMinpoly_gen, h1.powerBasis_gen K, ZMod.coe_unitOfCoprime,
+    ZMod.val_cast_of_lt this.1]
+  exact this.2
 #align is_cyclotomic_extension.from_zeta_aut_spec IsCyclotomicExtension.fromZetaAut_spec
 
 end IsCyclotomicExtension
