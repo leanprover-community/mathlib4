@@ -31,14 +31,14 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [Topologica
 /-- A smooth (semi)ring is a (semi)ring `R` where addition and multiplication are smooth.
 If `R` is a ring, then negation is automatically smooth, as it is multiplication with `-1`. -/
 class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R] [TopologicalSpace R]
-    [ChartedSpace H R] extends HasSmoothAdd I R : Prop where
+    [ChartedSpace H R] extends SmoothAdd I R : Prop where
   smooth_mul : Smooth (I.prod I) I fun p : R × R => p.1 * p.2
 #align smooth_ring SmoothRing
 
-instance SmoothRing.toHasSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R]
-    [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] : HasSmoothMul I R :=
+instance SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R]
+    [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] : SmoothMul I R :=
   { h with }
-#align smooth_ring.to_has_smooth_mul SmoothRing.toHasSmoothMul
+#align smooth_ring.to_has_smooth_mul SmoothRing.toSmoothMul
 
 instance SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [Ring R]
     [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
