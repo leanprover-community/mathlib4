@@ -266,22 +266,17 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
   contractLeft_apply f x
 #align fgModule.fgModule_evaluation_apply FGModuleCat.FGModuleCatEvaluation_apply
 
+-- Porting note: extremely slow, was fast in mathlib3.
+-- I tried many things using `dsimp` and `change`, but couldn't find anything faster than this.
+set_option maxHeartbeats 1600000 in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
       (ρ_ V').hom ≫ (λ_ V').inv := by
-  -- Porting note: this used to be just:
-  -- apply contractLeft_assoc_coevaluation K V
-  -- FIXME: unfinished struggle:
-  have := contractLeft_assoc_coevaluation K V
-  rw [← Category.assoc]
-  change LinearMap.comp _ (LinearMap.comp _ _) = LinearMap.comp _ _
-  dsimp
-  change LinearMap.comp (LinearMap.rTensor _ _) _ = _
-  dsimp
-  change LinearMap.comp (LinearMap.rTensor (Module.Dual K V) _) _ = _
-  dsimp only [FGModuleCatEvaluation, FGModuleCatCoevaluation]
+  apply contractLeft_assoc_coevaluation K V
 
+-- Porting note: extremely slow, was fast in mathlib3.
+set_option maxHeartbeats 1600000 in
 private theorem evaluation_coevaluation :
     (FGModuleCatCoevaluation K V ⊗ 𝟙 V) ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =
