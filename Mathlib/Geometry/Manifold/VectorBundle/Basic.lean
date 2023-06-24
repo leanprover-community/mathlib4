@@ -99,7 +99,7 @@ section
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
 instance FiberBundle.chartedSpace' : ChartedSpace (ModelProd HB F) (TotalSpace E) :=
-  ChartedSpace.comp _ (ModelProd B F) _
+  ChartedSpace.comp _ (B × F) _
 #align fiber_bundle.charted_space' FiberBundle.chartedSpace'
 
 end
@@ -321,11 +321,12 @@ instance Bundle.TotalSpace.smoothManifoldWithCorners :
   rw [mem_smoothFiberwiseLinear_iff] at he
   obtain ⟨φ, U, hU, hφ, h2φ, heφ⟩ := he
   rw [isLocalStructomorphOn_contDiffGroupoid_iff]
-  refine' ⟨ContMDiffOn.congr _ heφ.eq_on, ContMDiffOn.congr _ heφ.symm'.eq_on⟩
-  · rw [heφ.source_eq]
+  refine' ⟨ContMDiffOn.congr _ (EqOnSource.eqOn heφ),
+      ContMDiffOn.congr _ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
+  · rw [EqOnSource.source_eq heφ]
     apply smoothOn_fst.prod_mk
     exact (hφ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
-  · rw [heφ.target_eq]
+  · rw [EqOnSource.target_eq heφ]
     apply smoothOn_fst.prod_mk
     exact (h2φ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
 #align bundle.total_space.smooth_manifold_with_corners Bundle.TotalSpace.smoothManifoldWithCorners
