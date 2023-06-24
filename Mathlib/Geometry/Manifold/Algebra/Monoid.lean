@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.ContMdiffMap
+import Mathlib.Geometry.Manifold.ContMdiffMap
 
 /-!
 # Smooth monoid
@@ -414,8 +414,7 @@ open Function Filter
 
 @[to_additive]
 theorem contMdiff_finprod (h : ∀ i, ContMdiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMdiff I' I n fun x => ∏ᶠ i, f i x :=
-  by
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMdiff I' I n fun x => ∏ᶠ i, f i x := by
   intro x
   rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
   exact (contMdiff_finset_prod (fun i hi => h i) x).congr_of_eventuallyEq hs
@@ -425,8 +424,7 @@ theorem contMdiff_finprod (h : ∀ i, ContMdiff I' I n (f i))
 @[to_additive]
 theorem contMdiff_finprod_cond (hc : ∀ i, p i → ContMdiff I' I n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
-    ContMdiff I' I n fun x => ∏ᶠ (i) (hi : p i), f i x :=
-  by
+    ContMdiff I' I n fun x => ∏ᶠ (i) (hi : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMdiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 #align cont_mdiff_finprod_cond contMdiff_finprod_cond
