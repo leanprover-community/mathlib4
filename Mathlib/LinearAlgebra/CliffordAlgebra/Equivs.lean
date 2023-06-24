@@ -18,46 +18,46 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
 /-!
 # Other constructions isomorphic to Clifford Algebras
 
-This file contains isomorphisms showing that other types are equivalent to some `clifford_algebra`.
+This file contains isomorphisms showing that other types are equivalent to some `CliffordAlgebra`.
 
 ## Rings
 
-* `clifford_algebra_ring.equiv`: any ring is equivalent to a `clifford_algebra` over a
+* `CliffordAlgebraRing.equiv`: any ring is equivalent to a `CliffordAlgebra` over a
   zero-dimensional vector space.
 
 ## Complex numbers
 
-* `clifford_algebra_complex.equiv`: the `complex` numbers are equivalent as an `ℝ`-algebra to a
-  `clifford_algebra` over a one-dimensional vector space with a quadratic form that satisfies
+* `CliffordAlgebraComplex.equiv`: the `Complex` numbers are equivalent as an `ℝ`-algebra to a
+  `CliffordAlgebra` over a one-dimensional vector space with a quadratic form that satisfies
   `Q (ι Q 1) = -1`.
-* `clifford_algebra_complex.to_complex`: the forward direction of this equiv
-* `clifford_algebra_complex.of_complex`: the reverse direction of this equiv
+* `CliffordAlgebraComplex.toComplex`: the forward direction of this equiv
+* `CliffordAlgebraComplex.ofComplex`: the reverse direction of this equiv
 
-We show additionally that this equivalence sends `complex.conj` to `clifford_algebra.involute` and
+We show additionally that this equivalence sends `Complex.conj` to `CliffordAlgebra.involute` and
 vice-versa:
 
-* `clifford_algebra_complex.to_complex_involute`
-* `clifford_algebra_complex.of_complex_conj`
+* `CliffordAlgebraComplex.toComplex_involute`
+* `CliffordAlgebraComplex.ofComplex_conj`
 
-Note that in this algebra `clifford_algebra.reverse` is the identity and so the clifford conjugate
-is the same as `clifford_algebra.involute`.
+Note that in this algebra `CliffordAlgebra.reverse` is the identity and so the clifford conjugate
+is the same as `CliffordAlgebra.involute`.
 
 ## Quaternion algebras
 
-* `clifford_algebra_quaternion.equiv`: a `quaternion_algebra` over `R` is equivalent as an
+* `CliffordAlgebraQuaternion.equiv`: a `QuaternionAlgebra` over `R` is equivalent as an
   `R`-algebra to a clifford algebra over `R × R`, sending `i` to `(0, 1)` and `j` to `(1, 0)`.
-* `clifford_algebra_quaternion.to_quaternion`: the forward direction of this equiv
-* `clifford_algebra_quaternion.of_quaternion`: the reverse direction of this equiv
+* `CliffordAlgebraQuaternion.toQuaternion`: the forward direction of this equiv
+* `CliffordAlgebraQuaternion.ofQuaternion`: the reverse direction of this equiv
 
-We show additionally that this equivalence sends `quaternion_algebra.conj` to the clifford conjugate
+We show additionally that this equivalence sends `QuaternionAlgebra.conj` to the clifford conjugate
 and vice-versa:
 
-* `clifford_algebra_quaternion.to_quaternion_star`
-* `clifford_algebra_quaternion.of_quaternion_star`
+* `CliffordAlgebraQuaternion.toQuaternion_star`
+* `CliffordAlgebraQuaternion.ofQuaternion_star`
 
 ## Dual numbers
 
-* `clifford_algebra_dual_number.equiv`: `R[ε]` is is equivalent as an `R`-algebra to a clifford
+* `CliffordAlgebraDualNumber.equiv`: `R[ε]` is is equivalent as an `R`-algebra to a clifford
   algebra over `R` where `Q = 0`.
 
 -/
@@ -140,8 +140,8 @@ theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra_complex.Q_apply CliffordAlgebraComplex.Q_apply
 
-/-- Intermediate result for `clifford_algebra_complex.equiv`: clifford algebras over
-`clifford_algebra_complex.Q` above can be converted to `ℂ`. -/
+/-- Intermediate result for `CliffordAlgebraComplex.equiv`: clifford algebras over
+`CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
   CliffordAlgebra.lift Q
     ⟨LinearMap.toSpanSingleton _ _ Complex.I, fun r => by
@@ -155,7 +155,7 @@ theorem toComplex_ι (r : ℝ) : toComplex (ι Q r) = r • Complex.I :=
   CliffordAlgebra.lift_ι_apply _ _ r
 #align clifford_algebra_complex.to_complex_ι CliffordAlgebraComplex.toComplex_ι
 
-/-- `clifford_algebra.involute` is analogous to `complex.conj`. -/
+/-- `CliffordAlgebra.involute` is analogous to `Complex.conj`. -/
 @[simp]
 theorem toComplex_involute (c : CliffordAlgebra Q) :
     toComplex (involute c) = conj (toComplex c) := by
@@ -167,8 +167,8 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
   exact this
 #align clifford_algebra_complex.to_complex_involute CliffordAlgebraComplex.toComplex_involute
 
-/-- Intermediate result for `clifford_algebra_complex.equiv`: `ℂ` can be converted to
-`clifford_algebra_complex.Q` above can be converted to. -/
+/-- Intermediate result for `CliffordAlgebraComplex.equiv`: `ℂ` can be converted to
+`CliffordAlgebraComplex.Q` above can be converted to. -/
 def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
   Complex.lift
     ⟨CliffordAlgebra.ι Q 1, by
@@ -206,8 +206,7 @@ theorem ofComplex_toComplex (c : CliffordAlgebra Q) : ofComplex (toComplex c) = 
   AlgHom.congr_fun ofComplex_comp_toComplex c
 #align clifford_algebra_complex.of_complex_to_complex CliffordAlgebraComplex.ofComplex_toComplex
 
-/-- The clifford algebras over `clifford_algebra_complex.Q` is isomorphic as an `ℝ`-algebra to
-`ℂ`. -/
+/-- The clifford algebras over `CliffordAlgebraComplex.Q` is isomorphic as an `ℝ`-algebra to `ℂ`. -/
 @[simps!]
 protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
   AlgEquiv.ofAlgHom toComplex ofComplex toComplex_comp_ofComplex ofComplex_comp_toComplex
@@ -215,7 +214,7 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 
 /-- The clifford algebra is commutative since it is isomorphic to the complex numbers.
 
-TODO: prove this is true for all `clifford_algebra`s over a 1-dimensional vector space. -/
+TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
 instance : CommRing (CliffordAlgebra Q) :=
   { CliffordAlgebra.instRing _ with
     mul_comm := fun x y =>
@@ -223,7 +222,7 @@ instance : CommRing (CliffordAlgebra Q) :=
         rw [AlgEquiv.map_mul, mul_comm, AlgEquiv.map_mul] }
 
 -- Porting note: Changed `x.reverse` to `reverse (R := ℝ) x`
-/-- `reverse` is a no-op over `clifford_algebra_complex.Q`. -/
+/-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/
 theorem reverse_apply (x : CliffordAlgebra Q) : reverse (R := ℝ) x = x := by
   induction x using CliffordAlgebra.induction
   case h_grade0 r => exact reverse.commutes _
@@ -237,14 +236,14 @@ theorem reverse_eq_id : (reverse : CliffordAlgebra Q →ₗ[ℝ] _) = LinearMap.
   LinearMap.ext reverse_apply
 #align clifford_algebra_complex.reverse_eq_id CliffordAlgebraComplex.reverse_eq_id
 
-/-- `complex.conj` is analogous to `clifford_algebra.involute`. -/
+/-- `Complex.conj` is analogous to `CliffordAlgebra.involute`. -/
 @[simp]
 theorem ofComplex_conj (c : ℂ) : ofComplex (conj c) = involute (ofComplex c) :=
   CliffordAlgebraComplex.equiv.injective <| by
     rw [equiv_apply, equiv_apply, toComplex_involute, toComplex_ofComplex, toComplex_ofComplex]
 #align clifford_algebra_complex.of_complex_conj CliffordAlgebraComplex.ofComplex_conj
 
--- this name is too short for us to want it visible after `open clifford_algebra_complex`
+-- this name is too short for us to want it visible after `open CliffordAlgebraComplex`
 --attribute [protected] Q -- Porting note: removed
 
 end CliffordAlgebraComplex
@@ -260,7 +259,7 @@ open QuaternionAlgebra
 
 variable {R : Type _} [CommRing R] (c₁ c₂ : R)
 
-/-- `Q c₁ c₂` is a quadratic form over `R × R` such that `clifford_algebra (Q c₁ c₂)` is isomorphic
+/-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
 def Q : QuadraticForm R (R × R) :=
   (c₁ • QuadraticForm.sq (R := R)).prod (c₂ • QuadraticForm.sq) -- Porting note: Added `(R := R)`
@@ -293,8 +292,8 @@ def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c�
 
 variable {c₁ c₂}
 
-/-- Intermediate result of `clifford_algebra_quaternion.equiv`: clifford algebras over
-`clifford_algebra_quaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
+/-- Intermediate result of `CliffordAlgebraQuaternion.equiv`: clifford algebras over
+`CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
     ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
@@ -343,8 +342,7 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
 theorem ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
   ext : 1
-  dsimp
-  -- before we end up with two goals and have to do this twice
+  dsimp -- before we end up with two goals and have to do this twice
   ext
   all_goals
     dsimp
@@ -371,7 +369,7 @@ theorem toQuaternion_ofQuaternion (q : ℍ[R,c₁,c₂]) : toQuaternion (ofQuate
   AlgHom.congr_fun toQuaternion_comp_ofQuaternion q
 #align clifford_algebra_quaternion.to_quaternion_of_quaternion CliffordAlgebraQuaternion.toQuaternion_ofQuaternion
 
-/-- The clifford algebra over `clifford_algebra_quaternion.Q c₁ c₂` is isomorphic as an `R`-algebra
+/-- The clifford algebra over `CliffordAlgebraQuaternion.Q c₁ c₂` is isomorphic as an `R`-algebra
 to `ℍ[R,c₁,c₂]`. -/
 @[simps!]
 protected def equiv : CliffordAlgebra (Q c₁ c₂) ≃ₐ[R] ℍ[R,c₁,c₂] :=
@@ -387,7 +385,7 @@ theorem ofQuaternion_star (q : ℍ[R,c₁,c₂]) : ofQuaternion (star q) = star 
       toQuaternion_ofQuaternion]
 #align clifford_algebra_quaternion.of_quaternion_star CliffordAlgebraQuaternion.ofQuaternion_star
 
--- this name is too short for us to want it visible after `open clifford_algebra_quaternion`
+-- this name is too short for us to want it visible after `open CliffordAlgebraQuaternion`
 --attribute [protected] Q -- Porting note: removed
 
 end CliffordAlgebraQuaternion
