@@ -24,7 +24,7 @@ by radicals, then its minimal polynomial has solvable Galois group.
 
 ## Main results
 
-* the Abel-Ruffini Theorem `solvableByRad.is_solvable'` : An irreducible polynomial with a root
+* the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
 that is solvable by radicals has a solvable Galois group.
 -/
 
@@ -365,7 +365,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
       (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
--- Porting note: end of the proof was `exact minpoly.aeval F γ`.
+    -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
     simp [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
   rw [P, key]
@@ -382,22 +382,18 @@ theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := b
   revert α
   apply solvableByRad.induction
   · exact fun α => by rw [minpoly.eq_X_sub_C (solvableByRad F E)]; exact gal_X_sub_C_isSolvable α
-  · exact fun α β =>
-      induction2
-        (add_mem (subset_adjoin F _ (Set.mem_insert α _))
-          (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
+  · exact fun α β => induction2 (add_mem (subset_adjoin F _ (Set.mem_insert α _))
+      (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
   · exact fun α => induction1 (neg_mem (mem_adjoin_simple_self F α))
-  · exact fun α β =>
-      induction2
-        (mul_mem (subset_adjoin F _ (Set.mem_insert α _))
-          (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
+  · exact fun α β => induction2 (mul_mem (subset_adjoin F _ (Set.mem_insert α _))
+      (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
   · exact fun α => induction1 (inv_mem (mem_adjoin_simple_self F α))
   · exact fun α n => induction3
 #align solvable_by_rad.is_solvable solvableByRad.isSolvable
 
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with an
 `IsSolvableByRad` root has solvable Galois group -/
-theorem is_solvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
+theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
     (hα : IsSolvableByRad F α) : IsSolvable q.Gal := by
   have : _root_.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
     rw [minpoly.eq_of_irreducible q_irred q_aeval, ←
@@ -407,7 +403,7 @@ theorem is_solvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : ae
   refine' solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ _)
   rw [mul_ne_zero_iff, Ne, Ne, C_eq_zero, inv_eq_zero]
   exact ⟨q_irred.ne_zero, leadingCoeff_ne_zero.mpr q_irred.ne_zero⟩
-#align solvable_by_rad.is_solvable' solvableByRad.is_solvable'
+#align solvable_by_rad.is_solvable' solvableByRad.isSolvable'
 
 end solvableByRad
 
