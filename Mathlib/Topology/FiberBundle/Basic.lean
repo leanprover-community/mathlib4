@@ -923,7 +923,7 @@ theorem continuousOn_of_comp_right {X : Type _} [TopologicalSpace X] {f : TotalS
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,
       ContinuousOn (f ∘ (a.pretrivializationAt b).toLocalEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
-    @ContinuousOn _ _ a.totalSpaceTopology _ f ((π E) ⁻¹' s) := by
+    @ContinuousOn _ _ a.totalSpaceTopology _ f (π E ⁻¹' s) := by
   letI := a.totalSpaceTopology
   intro z hz
   let e : Trivialization F (π E) :=
