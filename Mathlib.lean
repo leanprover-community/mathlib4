@@ -2307,6 +2307,7 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
 import Mathlib.NumberTheory.ClassNumber.Finite
+import Mathlib.NumberTheory.ClassNumber.FunctionField
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
