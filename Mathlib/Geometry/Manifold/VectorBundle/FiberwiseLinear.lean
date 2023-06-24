@@ -13,7 +13,7 @@ import Mathlib.Geometry.Manifold.ContMDiff
 /-! # The groupoid of smooth, fiberwise-linear maps
 
 This file contains preliminaries for the definition of a smooth vector bundle: an associated
-`structure_groupoid`, the groupoid of `smooth_fiberwise_linear` functions.
+`StructureGroupoid`, the groupoid of `smoothFiberwiseLinear` functions.
 -/
 
 
@@ -34,7 +34,7 @@ namespace FiberwiseLinear
 
 variable {φ φ' : B → F ≃L[𝕜] F} {U U' : Set B}
 
-/-- For `B` a topological space and `F` a `𝕜`-normed space, a map from `U : set B` to `F ≃L[𝕜] F`
+/-- For `B` a topological space and `F` a `𝕜`-normed space, a map from `U : Set B` to `F ≃L[𝕜] F`
 determines a local homeomorphism from `B × F` to itself by its action fiberwise. -/
 def localHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
     (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
@@ -157,11 +157,11 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B �
 some bi-smooth fiberwise linear local homeomorphism.
 
 This is the key mathematical point of the `locality` condition in the construction of the
-`structure_groupoid` of bi-smooth fiberwise linear local homeomorphisms.  The proof is by gluing
+`StructureGroupoid` of bi-smooth fiberwise linear local homeomorphisms.  The proof is by gluing
 together the various bi-smooth fiberwise linear local homeomorphism which exist locally.
 
 The `U` in the conclusion is the same `U` as in the hypothesis. We state it like this, because this
-is exactly what we need for `smooth_fiberwise_linear`. -/
+is exactly what we need for `smoothFiberwiseLinear`. -/
 theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B × F)) (U : Set B)
     (hU : e.source = U ×ˢ univ)
     (h : ∀ x ∈ U,
