@@ -241,19 +241,16 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type _) [UniformSpace 
       refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
     · exact (dif_neg H).trans_le (zero_le _)
+  -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
+  -- `Subtype.val` applications instead of `NNReal.toReal`.
+  rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
   refine' ⟨I, uniformSpace_eq <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
   · refine' fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt _⟩
-    -- Porting note: for some reason, some coercions are `Subtype.val` instead of
-    -- `NNReal.toReal`, which messes up the rewrites. So we have to `change` them in the goal
-    change _ < (toReal _) ^ _
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not, Prod.mk.eta]
   · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
     refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
-    -- Porting note: for some reason, some coercions are `Subtype.val` instead of
-    -- `NNReal.toReal`, which messes up the rewrites. So we have to `change` them in the goal
-    change (toReal _) ^ _ ≤ _
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ',
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel _ (two_ne_zero' ℝ≥0), hle_d,
       Prod.mk.eta]

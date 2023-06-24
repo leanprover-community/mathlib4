@@ -557,7 +557,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
 #align ideal.span_norm_mul_span_norm_le Ideal.spanNorm_mul_spanNorm_le
 
 /-- This condition `eq_bot_or_top` is equivalent to being a field.
-However, `span_norm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
+However, `Ideal.spanNorm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
 instance to a `Field R` instance. -/
 theorem spanNorm_mul_of_bot_or_top [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S]
     (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
