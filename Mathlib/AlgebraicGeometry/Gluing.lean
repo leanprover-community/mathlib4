@@ -18,30 +18,30 @@ Given a family of gluing data of schemes, we may glue them together.
 
 ## Main definitions
 
-* `algebraic_geometry.Scheme.glue_data`: A structure containing the family of gluing data.
-* `algebraic_geometry.Scheme.glue_data.glued`: The glued scheme.
+* `AlgebraicGeometry.Scheme.GlueData`: A structure containing the family of gluing data.
+* `AlgebraicGeometry.Scheme.GlueData.glued`: The glued scheme.
     This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
     can be used.
-* `algebraic_geometry.Scheme.glue_data.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
-* `algebraic_geometry.Scheme.glue_data.iso_carrier`: The isomorphism between the underlying space
+* `AlgebraicGeometry.Scheme.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
+* `AlgebraicGeometry.Scheme.GlueData.isoCarrier`: The isomorphism between the underlying space
   of the glued scheme and the gluing of the underlying topological spaces.
 * `algebraic_geometry.Scheme.open_cover.glue_data`: The glue data associated with an open cover.
 * `algebraic_geometry.Scheme.open_cover.from_glue_data`: The canonical morphism
   `𝒰.glue_data.glued ⟶ X`. This has an `is_iso` instance.
-* `algebraic_geometry.Scheme.open_cover.glue_morphisms`: We may glue a family of compatible
+* `AlgebraicGeometry.Scheme.OpenCover.glueMorphisms`: We may glue a family of compatible
   morphisms defined on an open cover of a scheme.
 
 ## Main results
 
-* `algebraic_geometry.Scheme.glue_data.ι_is_open_immersion`: The map `ι i : U i ⟶ glued`
+* `AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersionCat`: The map `ι i : U i ⟶ glued`
   is an open immersion for each `i : J`.
-* `algebraic_geometry.Scheme.glue_data.ι_jointly_surjective` : The underlying maps of
+* `AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective` : The underlying maps of
   `ι i : U i ⟶ glued` are jointly surjective.
-* `algebraic_geometry.Scheme.glue_data.V_pullback_cone_is_limit` : `V i j` is the pullback
+* `AlgebraicGeometry.Scheme.GlueData.vPullbackConeIsLimit` : `V i j` is the pullback
   (intersection) of `U i` and `U j` over the glued space.
 * `algebraic_geometry.Scheme.glue_data.ι_eq_iff_rel` : `ι i x = ι j y` if and only if they coincide
   when restricted to `V i i`.
-* `algebraic_geometry.Scheme.glue_data.is_open_iff` : An subset of the glued scheme is open iff
+* `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : An subset of the glued scheme is open iff
   all its preimages in `U i` are open.
 
 ## Implementation details
