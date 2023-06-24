@@ -101,7 +101,6 @@ noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
 
 variable (h : Irreducible (cyclotomic n K)) {K} (L)
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1, 5]) } -/
 /-- The `mul_equiv` that takes an automorphism `f` to the element `k : (zmod n)ˣ` such that
   `f μ = μ ^ k` for any root of unity `μ`. A  strengthening of `is_primitive_root.aut_to_pow`. -/
 @[simps]
@@ -133,8 +132,13 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
       rw [this, IsPrimitiveRoot.powerBasis_gen] at key
-      rw [← hζ.toRootsOfUnity_coe_val] at key
-      simp only [← coe_coe, ← rootsOfUnity.coe_pow] at key
+-- Porting note: was `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
+      conv at key =>
+        congr; congr
+        rw [← hζ.toRootsOfUnity_coe_val]
+        rfl; rfl
+        rw [← hζ.toRootsOfUnity_coe_val]
+      simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
       rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hζ.toRootsOfUnity_coe_val, ←
         (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
