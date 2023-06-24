@@ -14,18 +14,18 @@ import Mathlib.FieldTheory.PolynomialGaloisGroup
 /-!
 # Galois group of cyclotomic extensions
 
-In this file, we show the relationship between the Galois group of `K(ζₙ)` and `(zmod n)ˣ`;
+In this file, we show the relationship between the Galois group of `K(ζₙ)` and `(ZMod n)ˣ`;
 it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, they are isomorphic.
 
 ## Main results
 
-* `is_primitive_root.aut_to_pow_injective`: `is_primitive_root.aut_to_pow` is injective
+* `IsPrimitiveRoot.autToPow_injective`: `IsPrimitiveRoot.autToPow` is injective
   in the case that it's considered over a cyclotomic field extension.
-* `is_cyclotomic_extension.aut_equiv_pow`: If the `n`th cyclotomic polynomial is irreducible in `K`,
-  then `is_primitive_root.aut_to_pow` is a `mul_equiv` (for example, in `ℚ` and certain `𝔽ₚ`).
-* `gal_X_pow_equiv_units_zmod`, `gal_cyclotomic_equiv_units_zmod`: Repackage
-  `is_cyclotomic_extension.aut_equiv_pow` in terms of `polynomial.gal`.
-* `is_cyclotomic_extension.aut.comm_group`: Cyclotomic extensions are abelian.
+* `IsCyclotomicExtension.autEquivPow`: If the `n`th cyclotomic polynomial is irreducible in `K`,
+  then `IsPrimitiveRoot.autToPow` is a `MulEquiv` (for example, in `ℚ` and certain `𝔽ₚ`).
+* `galXPowEquivUnitsZMod`, `galCyclotomicEquivUnitsZMod`: Repackage
+  `IsCyclotomicExtension.autEquivPow` in terms of `Polynomial.Gal`.
+* `IsCyclotomicExtension.Aut.commGroup`: Cyclotomic extensions are abelian.
 
 ## References
 
@@ -53,7 +53,7 @@ namespace IsPrimitiveRoot
 variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
 
-/-- `is_primitive_root.aut_to_pow` is injective in the case that it's considered over a cyclotomic
+/-- `IsPrimitiveRoot.autToPow` is injective in the case that it's considered over a cyclotomic
 field extension. -/
 theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
@@ -100,8 +100,8 @@ noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
 
 variable (h : Irreducible (cyclotomic n K)) {K} (L)
 
-/-- The `mul_equiv` that takes an automorphism `f` to the element `k : (zmod n)ˣ` such that
-  `f μ = μ ^ k` for any root of unity `μ`. A  strengthening of `is_primitive_root.aut_to_pow`. -/
+/-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
+  `f μ = μ ^ k` for any root of unity `μ`. A  strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
 noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
@@ -147,7 +147,7 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
 
 variable {L}
 
-/-- Maps `μ` to the `alg_equiv` that sends `is_cyclotomic_extension.zeta` to `μ`. -/
+/-- Maps `μ` to the `AlgEquiv` that sends `IsCyclotomicExtension.zeta` to `μ`. -/
 noncomputable def fromZetaAut : L ≃ₐ[K] L :=
   let hζ := (zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one n.pos
   (autEquivPow L h).symm <|
@@ -173,8 +173,8 @@ section Gal
 variable [Field L] (hμ : IsPrimitiveRoot μ n) [Algebra K L] [IsCyclotomicExtension {n} K L]
   (h : Irreducible (cyclotomic n K)) {K}
 
-/-- `is_cyclotomic_extension.aut_equiv_pow` repackaged in terms of `gal`.
-Asserts that the Galois group of `cyclotomic n K` is equivalent to `(zmod n)ˣ`
+/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `gal`.
+Asserts that the Galois group of `cyclotomic n K` is equivalent to `(ZMod n)ˣ`
 if `cyclotomic n K` is irreducible in the base field. -/
 noncomputable def galCyclotomicEquivUnitsZMod : (cyclotomic n K).Gal ≃* (ZMod n)ˣ :=
   (AlgEquiv.autCongr
@@ -182,8 +182,8 @@ noncomputable def galCyclotomicEquivUnitsZMod : (cyclotomic n K).Gal ≃* (ZMod 
     (IsCyclotomicExtension.autEquivPow L h)
 #align gal_cyclotomic_equiv_units_zmod galCyclotomicEquivUnitsZMod
 
-/-- `is_cyclotomic_extension.aut_equiv_pow` repackaged in terms of `gal`.
-Asserts that the Galois group of `X ^ n - 1` is equivalent to `(zmod n)ˣ`
+/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `gal`.
+Asserts that the Galois group of `X ^ n - 1` is equivalent to `(ZMod n)ˣ`
 if `cyclotomic n K` is irreducible in the base field. -/
 noncomputable def galXPowEquivUnitsZMod : (X ^ (n : ℕ) - 1 : K[X]).Gal ≃* (ZMod n)ˣ :=
   (AlgEquiv.autCongr
