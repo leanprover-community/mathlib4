@@ -464,9 +464,9 @@ theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
 variable (IB)
 
 /-- Make a `SmoothVectorBundle` from a `SmoothVectorPrebundle`. -/
-theorem smoothVectorBundle :
-    @SmoothVectorBundle _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle
-      a.to_vectorBundle :=
+theorem smoothVectorBundle : @SmoothVectorBundle
+    _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
+  letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChange := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine' (a.smoothOn_smoothCoordChange he he').congr _
