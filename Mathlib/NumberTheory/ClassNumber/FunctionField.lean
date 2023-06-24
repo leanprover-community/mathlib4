@@ -20,7 +20,7 @@ the class group of its ring of integers. It also proves some elementary results
 on the class number.
 
 ## Main definitions
-- `function_field.class_number`: the class number of a function field is the (finite)
+- `FunctionField.classNumber`: the class number of a function field is the (finite)
 cardinality of the class group of its ring of integers
 -/
 
@@ -62,4 +62,3 @@ theorem classNumber_eq_one_iff :
 #align function_field.class_number_eq_one_iff FunctionField.classNumber_eq_one_iff
 
 end FunctionField
-
