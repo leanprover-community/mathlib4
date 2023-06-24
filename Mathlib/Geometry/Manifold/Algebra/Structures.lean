@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # Smooth structures
@@ -43,8 +43,7 @@ instance SmoothRing.toHasSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) 
 #align smooth_ring.to_has_smooth_mul SmoothRing.toHasSmoothMul
 
 instance SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [Ring R]
-    [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R
-    where
+    [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
   compatible e e' := HasGroupoid.compatible (contDiffGroupoid ⊤ I)
   smooth_add := smooth_add I
   smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
