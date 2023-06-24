@@ -8,11 +8,11 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Calculus.LocalExtr
-import Mathbin.Data.Nat.PrimeNormNum
-import Mathbin.FieldTheory.AbelRuffini
-import Mathbin.RingTheory.RootsOfUnity.Minpoly
-import Mathbin.RingTheory.EisensteinCriterion
+import Mathlib.Analysis.Calculus.LocalExtr
+import Mathlib.Data.Nat.PrimeNormNum
+import Mathlib.FieldTheory.AbelRuffini
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.RingTheory.EisensteinCriterion
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
@@ -62,10 +62,8 @@ theorem coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
 
 variable [Nontrivial R]
 
-theorem degree_Phi : (Φ R a b).degree = ↑5 :=
-  by
-  suffices degree (X ^ 5 - C ↑a * X) = ↑5
-    by
+theorem degree_Phi : (Φ R a b).degree = ↑5 := by
+  suffices degree (X ^ 5 - C ↑a * X) = ↑5 by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
     convert degree_C_le.trans_lt (with_bot.coe_lt_coe.mpr (Nat.zero_lt_bit1 2))
   rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
@@ -85,8 +83,7 @@ theorem monic_Phi : (Φ R a b).Monic :=
 #align abel_ruffini.monic_Phi AbelRuffini.monic_Phi
 
 theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) :
-    Irreducible (Φ ℚ a b) :=
-  by
+    Irreducible (Φ ℚ a b) := by
   rw [← map_Phi a b (Int.castRingHom ℚ), ← is_primitive.int.irreducible_iff_irreducible_map_cast]
   apply irreducible_of_eisenstein_criterion
   · rwa [span_singleton_prime (int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
@@ -107,8 +104,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   all_goals exact monic.is_primitive (monic_Phi a b)
 #align abel_ruffini.irreducible_Phi AbelRuffini.irreducible_Phi
 
-theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 :=
-  by
+theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine'
     (card_root_set_le_derivative _).trans
@@ -119,8 +115,7 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 :=
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
 theorem real_roots_Phi_ge_aux (hab : b < a) :
-    ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 :=
-  by
+    ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
   let f := fun x : ℝ => aeval x (Φ ℚ a b)
   have hf : f = fun x => x ^ 5 - a * x + b := by simp [f, Φ]
   have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
@@ -149,8 +144,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     exact ⟨x, 1, (hx1.trans_lt zero_lt_one).Ne, hx2, hf1⟩
 #align abel_ruffini.real_roots_Phi_ge_aux AbelRuffini.real_roots_Phi_ge_aux
 
-theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootSet ℝ) :=
-  by
+theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootSet ℝ) := by
   have q_ne_zero : Φ ℚ a b ≠ 0 := (monic_Phi a b).NeZero
   obtain ⟨x, y, hxy, hx, hy⟩ := real_roots_Phi_ge_aux a b hab
   have key : ↑({x, y} : Finset ℝ) ⊆ (Φ ℚ a b).rootSet ℝ := by
@@ -165,8 +159,7 @@ theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a
 #align abel_ruffini.complex_roots_Phi AbelRuffini.complex_roots_Phi
 
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
-    Bijective (galActionHom (Φ ℚ a b) ℂ) :=
-  by
+    Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply gal_action_hom_bijective_of_prime_degree' h_irred
   · norm_num [nat_degree_Phi]
   · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
@@ -176,8 +169,7 @@ theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
 #align abel_ruffini.gal_Phi AbelRuffini.gal_Phi
 
 theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) (hab : b < a)
-    (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : ¬IsSolvableByRad ℚ x :=
-  by
+    (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b) (hp2b : ¬p ^ 2 ∣ b) : ¬IsSolvableByRad ℚ x := by
   have h_irred := irreducible_Phi a b p hp hpa hpb hp2b
   apply mt (solvableByRad.is_solvable' h_irred hx)
   intro h
@@ -191,8 +183,7 @@ theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSol
 #align abel_ruffini.not_solvable_by_rad' AbelRuffini.not_solvable_by_rad'
 
 /-- **Abel-Ruffini Theorem** -/
-theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x :=
-  by
+theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
   obtain ⟨x, hx⟩ :=
     exists_root_of_splits (algebraMap ℚ ℂ) (IsAlgClosed.splits_codomain (Φ ℚ 4 2))
       (ne_of_eq_of_ne (degree_Phi 4 2) (mt with_bot.coe_eq_coe.mp (Nat.bit1_ne_zero 2)))
