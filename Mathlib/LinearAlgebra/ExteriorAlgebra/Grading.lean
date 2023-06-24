@@ -31,20 +31,23 @@ open scoped DirectSum
 
 /-- A version of `exterior_algebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `exterior_algebra.graded_algebra`. -/
-def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥((ι R : M →ₗ[_] _).range ^ i) :=
-  DirectSum.lof R ℕ (fun i => ↥((ι R : M →ₗ[_] _).range ^ i)) 1 ∘ₗ
+-- porting note: protected
+protected def GradedAlgebra.ι :
+    M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) :=
+  DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
+-- porting note: replaced coercion to sort with an explicit subtype notation
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
-      DirectSum.of (fun i => ↥((ι R : M →ₗ[_] _).range ^ i)) 1
+      DirectSum.of (fun i => {x // x ∈ (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)}) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
-  rw [graded_algebra.ι_apply, DirectSum.of_mul_of]
+  rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   refine' dfinsupp.single_eq_zero.mpr (Subtype.ext <| ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
@@ -76,7 +79,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
 
 /-- The exterior algebra is graded by the powers of the submodule `(exterior_algebra.ι R).range`. -/
 instance gradedAlgebra :
-    GradedAlgebra ((· ^ ·) (ι R : M →ₗ[R] ExteriorAlgebra R M).range : ℕ → Submodule R _) :=
+    GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) • · : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply graded_algebra.lift_ι R M)
