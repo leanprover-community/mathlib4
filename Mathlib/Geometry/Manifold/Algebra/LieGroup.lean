@@ -23,21 +23,21 @@ groups here are not necessarily finite dimensional.
 
 ## Main definitions and statements
 
-* `lie_add_group I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
-* `lie_group I G`     : a Lie multiplicative group where `G` is a manifold on the model with
+* `LieAddGroup I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
+* `LieGroup I G`     : a Lie multiplicative group where `G` is a manifold on the model with
                         corners `I`.
-* `normed_space_lie_add_group` : a normed vector space over a nontrivially normed field
+* `normedSpaceLieAddGroup` : a normed vector space over a nontrivially normed field
                                  is an additive Lie group.
 
 ## Implementation notes
 
 A priori, a Lie group here is a manifold with corners.
 
-The definition of Lie group cannot require `I : model_with_corners 𝕜 E E` with the same space as the
+The definition of Lie group cannot require `I : ModelWithCorners 𝕜 E E` with the same space as the
 model space and as the model vector space, as one might hope, beause in the product situation,
-the model space is `model_prod E E'` and the model vector space is `E × E'`, which are not the same,
+the model space is `ModelProd E E'` and the model vector space is `E × E'`, which are not the same,
 so the definition does not apply. Hence the definition should be more general, allowing
-`I : model_with_corners 𝕜 E H`.
+`I : ModelWithCorners 𝕜 E H`.
 -/
 
 
