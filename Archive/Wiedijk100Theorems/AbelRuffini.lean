@@ -98,7 +98,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
     rw [degree_Phi] at hn; norm_cast at hn
     interval_cases hn : n <;>
     simp only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb, if_true, coeff_C_mul, if_false,
-      coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub, add_zero,  zero_sub, dvd_neg,
+      coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub, add_zero, zero_sub, dvd_neg,
       neg_zero, dvd_mul_of_dvd_left]
   · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
   · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
@@ -136,9 +136,9 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hfa :=
       calc
         f (-a) = ↑a ^ 2 - ↑a ^ 5 + b := by simp [hf, ← sq]; rw [Odd.neg_pow]; ring; norm_num
-        _ ≤ ↑a ^ 2 - ↑a ^ 3 + (↑a - 1) := by
+        _ ≤ ↑a ^ 2 - ↑a ^ 3 + (a - 1) := by
           refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
-        _ = -((a : ℝ) - 1) ^ 2 * (↑a + 1) := by ring
+        _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Icc ha' (hc _) (Set.mem_Icc.mpr ⟨hfa, hf0⟩)
