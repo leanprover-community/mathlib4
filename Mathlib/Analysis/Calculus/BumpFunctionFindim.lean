@@ -570,8 +570,7 @@ instance (priority := 100) {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ 
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine' congr (congr_arg ball (Eq.refl 0)) _
         field_simp [A'.ne']
-        ring
-         }
+        ring }
 
 end ExistsContDiffBumpBase
 
