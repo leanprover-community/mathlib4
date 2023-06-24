@@ -46,11 +46,11 @@ instance Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) :=
   ⟨fun _a => default⟩
 #align mvqpf.pi.inhabited MvQPF.Pi.inhabited
 
-variable [∀ α, MvFunctor <| F α]
-
 namespace Sigma
 
-instance : MvFunctor (Sigma F) where map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
+instance [∀ α, MvFunctor <| F α] : MvFunctor (Sigma F) where
+  map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
+
 
 variable [∀ α, MvQPF <| F α]
 
@@ -74,8 +74,8 @@ protected def repr ⦃α⦄ : Sigma F α → (Sigma.P F).Obj α
 
 instance : MvQPF (Sigma F) where
   P := Sigma.P F
-  abs {α} := @Sigma.abs _ _ F _ _ α
-  repr {α} := @Sigma.repr _ _ F _ _ α
+  abs {α} := @Sigma.abs _ _ F _ α
+  repr {α} := @Sigma.repr _ _ F _ α
   abs_repr := by rintro α ⟨x, f⟩; simp only [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Sigma.abs, MvPFunctor.map_eq]
                 simp only [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
@@ -84,7 +84,8 @@ end Sigma
 
 namespace Pi
 
-instance : MvFunctor (Pi F) where map f x a := f <$$> x a
+instance [∀ α, MvFunctor <| F α] : MvFunctor (Pi F) where
+  map f x a := f <$$> x a
 
 variable [∀ α, MvQPF <| F α]
 
@@ -106,8 +107,8 @@ protected def repr ⦃α⦄ : Pi F α → (Pi.P F).Obj α
 
 instance : MvQPF (Pi F) where
   P := Pi.P F
-  abs := @Pi.abs _ _ F _ _
-  repr := @Pi.repr _ _ F _ _
+  abs := @Pi.abs _ _ F _
+  repr := @Pi.repr _ _ F _
   abs_repr := by rintro α f; simp only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Pi.abs, (· <$$> ·), ← abs_map]; rfl
 

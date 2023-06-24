@@ -85,7 +85,7 @@ open MvFunctor
 
 /-- Multivariate quotients of polynomial functors.
 -/
-class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
+class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) extends MvFunctor F where
   P : MvPFunctor.{u} n
   abs : ∀ {α}, P.Obj α → F α
   repr : ∀ {α}, F α → P.Obj α
@@ -95,7 +95,7 @@ class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
 
 namespace MvQPF
 
-variable {n : ℕ} {F : TypeVec.{u} n → Type _} [MvFunctor F] [q : MvQPF F]
+variable {n : ℕ} {F : TypeVec.{u} n → Type _} [q : MvQPF F]
 
 open MvFunctor (LiftP LiftR)
 
@@ -121,8 +121,8 @@ theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F �
 #align mvqpf.comp_map MvQPF.comp_map
 
 instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
-  id_map := @MvQPF.id_map n F _ _
-  comp_map := @comp_map n F _ _
+  id_map := @MvQPF.id_map n F _
+  comp_map := @comp_map n F _
 #align mvqpf.is_lawful_mvfunctor MvQPF.lawfulMvFunctor
 
 -- Lifting predicates and relations
