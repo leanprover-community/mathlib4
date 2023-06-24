@@ -16,7 +16,7 @@ By inspecting the declarations and syntax in the current file,
 we can suggest a minimal set of imports.
 -/
 
-open Lean Meta
+open Lean
 
 namespace Lean.Environment
 
@@ -51,7 +51,7 @@ end Lean.Environment
 Return the redundant imports (i.e. those transitively implied by another import)
 of a specified module (or the current module if `none` is specified).
 -/
-def redundantImports (n? : Option Name := none) : MetaM (List Name) := do
+def redundantImports (n? : Option Name := none) : CoreM (List Name) := do
   let env ← getEnv
   let imports := env.importsOf (n?.getD ((← getEnv).header.mainModule)) |>.erase `Init
   let run := visit env.importGraph imports
@@ -71,7 +71,7 @@ List the imports in this file which can be removed
 because they are transitively implied by another import.
 -/
 elab "#redundant_imports" : command => do
-  let redundant := (← Elab.Command.liftCoreM <| MetaM.run' do redundantImports)
+  let redundant := (← Elab.Command.liftCoreM do redundantImports)
   if redundant.isEmpty then
     logInfo "No transitively redundant imports found."
   else
