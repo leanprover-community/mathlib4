@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathbin.RingTheory.GradedAlgebra.Basic
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the exterior algebra
@@ -43,8 +43,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
 
-theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 :=
-  by
+theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [graded_algebra.ι_apply, DirectSum.of_mul_of]
   refine' dfinsupp.single_eq_zero.mpr (Subtype.ext <| ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
@@ -61,8 +60,7 @@ variable (R M)
 theorem GradedAlgebra.liftι_eq (i : ℕ)
     (x : ((ι R : M →ₗ[R] ExteriorAlgebra R M).range ^ i : Submodule R (ExteriorAlgebra R M))) :
     GradedAlgebra.liftι R M x =
-      DirectSum.of (fun i => ↥((ι R).range ^ i : Submodule R (ExteriorAlgebra R M))) i x :=
-  by
+      DirectSum.of (fun i => ↥((ι R).range ^ i : Submodule R (ExteriorAlgebra R M))) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   refine'
@@ -82,8 +80,7 @@ instance gradedAlgebra :
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply graded_algebra.lift_ι R M)
-    (-- the proof from here onward is identical to the `tensor_algebra` case
-    by
+    (-- the proof from here onward is identical to the `tensor_algebra` case by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
         AlgHom.id_apply, graded_algebra.lift_ι]
