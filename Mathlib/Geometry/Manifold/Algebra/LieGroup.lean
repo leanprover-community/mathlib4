@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.Algebra.Monoid
+import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Lie groups
