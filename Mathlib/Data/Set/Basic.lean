@@ -1393,8 +1393,8 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 -- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    Set.singleton_subset_iff]
+  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
+    Set.mem_singleton_iff, Set.singleton_subset_iff]
   constructor
   · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
