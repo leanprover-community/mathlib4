@@ -84,32 +84,36 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace E)] [∀ x, Topologi
 
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
-instance FiberBundle.chartedSpace : ChartedSpace (B × F) (TotalSpace E) where
+instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace E) where
   atlas := (fun e : Trivialization F (π E) => e.toLocalHomeomorph) '' trivializationAtlas F E
   chartAt x := (trivializationAt F E x.proj).toLocalHomeomorph
   mem_chart_source x :=
     (trivializationAt F E x.proj).mem_source.mpr (mem_baseSet_trivializationAt F E x.proj)
   chart_mem_atlas _ := mem_image_of_mem _ (trivialization_mem_atlas F E _)
-#align fiber_bundle.charted_space FiberBundle.chartedSpace
+#align fiber_bundle.charted_space FiberBundle.chartedSpace'
 
-section
+theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace E) :
+    chartAt (B × F) x = (trivializationAt F E x.proj).toLocalHomeomorph :=
+  rfl
 
---attribute [local reducible] ModelProd -- Porting note: removed
+/- Porting note: In Lean 3, the next instance was inside a section with locally reducible
+`model_prod` and it used `model_prod B F` as the intermediate space. Using `B × F` in the middle
+gives the same instance.
+-/
+--attribute [local reducible] ModelProd
 
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
-instance FiberBundle.chartedSpace' : ChartedSpace (ModelProd HB F) (TotalSpace E) :=
+instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace E) :=
   ChartedSpace.comp _ (B × F) _
-#align fiber_bundle.charted_space' FiberBundle.chartedSpace'
-
-end
+#align fiber_bundle.charted_space' FiberBundle.chartedSpace
 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toLocalHomeomorph ≫ₕ
         (chartAt HB x.proj).prod (LocalHomeomorph.refl F) := by
-  dsimp only [FiberBundle.chartedSpace', ChartedSpace.comp, FiberBundle.chartedSpace,
-    prodChartedSpace, chartedSpaceSelf]
+  dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt,
+    chartAt_self_eq]
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
 #align fiber_bundle.charted_space_chart_at FiberBundle.chartedSpace_chartAt
 
@@ -140,6 +144,8 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace E) :
         (extChartAt IB x.proj).prod (LocalEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [LocalEquiv.trans_assoc, mfld_simps]
+  -- porting note: should not be needed
+  rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
 /-! ### Smoothness of maps in/out fiber bundles
@@ -339,15 +345,15 @@ namespace VectorBundleCore
 variable {ι : Type _} {F}
 variable (Z : VectorBundleCore 𝕜 B F ι)
 
-/- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`smoothOn_coord_change] [] -/
 /-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
 class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where
   smoothOn_coordChange :
     ∀ i j, SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
 #align vector_bundle_core.is_smooth VectorBundleCore.IsSmooth
 
-/- ./././Mathport/Syntax/Translate/Command.lean:240:13: unsupported: advanced export style -/
-export IsSmooth ()
+theorem smoothOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsSmooth IB] (i j : ι) :
+    SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
+  h.1 i j
 
 variable [Z.IsSmooth IB]
 
