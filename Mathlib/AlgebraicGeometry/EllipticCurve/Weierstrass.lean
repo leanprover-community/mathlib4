@@ -708,18 +708,24 @@ instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.CoordinateRing.instSubsingletonCoordinateRing
 
--- porting note: TODO define `quotientXYIdealEquiv` without timing out
--- /-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
--- evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
--- noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
---     (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
---   (quotientEquivAlgOfEq R <| by
---         simpa only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]).trans <|
---     (DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
---           mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h).trans <|
---       ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <|
---         quotientSpanXSubCAlgEquiv x
--- #align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.CoordinateRing.quotientXYIdealEquiv
+/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to
+$R[X, Y] / \langle X - x, Y - y(X) \rangle$ provided that $W(x, y(x)) = 0$. -/
+noncomputable def quotientXYIdealEquiv' {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
+    (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R]
+      R[X][Y] ⧸ (span {C (X - C x), Y - C y} : Ideal <| R[X][Y]) :=
+  (quotientEquivAlgOfEq R <| by
+    simp only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]; rfl).trans <|
+    DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
+      mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h
+
+-- porting note: split into `quotientXYIdealEquiv'` to avoid deterministic timeout
+/-- The $R$-algebra isomorphism from $R[W] / \langle X - x, Y - y(X) \rangle$ to $R$ obtained by
+evaluation at $y(X)$ and at $x$ provided that $W(x, y(x)) = 0$. -/
+noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eval y).eval x = 0) :
+    (W.CoordinateRing ⧸ XYIdeal W x y) ≃ₐ[R] R :=
+  (quotientXYIdealEquiv' W h).trans quotientSpanCXSubCXSubCAlgEquiv
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.CoordinateRing.quotientXYIdealEquiv
 
 -- porting note: added `classical` explicitly
 /-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
