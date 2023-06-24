@@ -61,7 +61,9 @@ We also use the category theory library to bundle the type `k[Gⁿ]` - or more g
 over `k`.
 -/
 
-
+/- Porting note: most altered proofs in this file involved changing `simp` to `rw` or `erw`, so
+https://github.com/leanprover-community/mathlib4/issues/5026 and
+https://github.com/leanprover-community/mathlib4/issues/5164 are relevant. -/
 noncomputable section
 
 universe u v w
