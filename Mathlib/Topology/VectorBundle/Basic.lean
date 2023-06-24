@@ -1033,7 +1033,7 @@ def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL
     ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
 #align continuous_linear_map.in_coordinates ContinuousLinearMap.inCoordinates
 
-variable {F}
+variable {F F'}
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences. -/
 theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)

@@ -722,6 +722,10 @@ instance prodChartedSpace (H : Type _) [TopologicalSpace H] (M : Type _) [Topolo
 
 section prodChartedSpace
 
+@[ext]
+theorem ModelProd.ext {x y : ModelProd α β} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
+  Prod.ext h₁ h₂
+
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']
   [TopologicalSpace M'] [ChartedSpace H' M'] {x : M × M'}
 
