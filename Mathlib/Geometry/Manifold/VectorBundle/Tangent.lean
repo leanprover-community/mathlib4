@@ -15,21 +15,21 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 This file defines the tangent bundle as a smooth vector bundle.
 
 Let `M` be a smooth manifold with corners with model `I` on `(E, H)`. We define the tangent bundle
-of `M` using the `vector_bundle_core` construction indexed by the charts of `M` with fibers `E`.
-Given two charts `i, j : local_homeomorph M H`, the coordinate change between `i` and `j` at a point
+of `M` using the `VectorBundleCore` construction indexed by the charts of `M` with fibers `E`.
+Given two charts `i, j : LocalHomeomorph M H`, the coordinate change between `i` and `j` at a point
 `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
 ```
 within the set `range I ⊆ E` at `I (i x) : E`.
-This defines a smooth vector bundle `tangent_bundle` with fibers `tangent_space`.
+This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
 
 ## Main definitions
 
-* `tangent_space I M x` is the fiber of the tangent bundle at `x : M`, which is defined to be `E`.
+* `TangentSpace I M x` is the fiber of the tangent bundle at `x : M`, which is defined to be `E`.
 
-* `tangent_bundle I M` is the total space of `tangent_space I M`, proven to be a smooth vector
+* `TangentBundle I M` is the total space of `TangentSpace I M`, proven to be a smooth vector
   bundle.
 -/
 
@@ -70,7 +70,7 @@ variable (M)
 open SmoothManifoldWithCorners
 
 /-- Let `M` be a smooth manifold with corners with model `I` on `(E, H)`.
-Then `vector_bundle_core I M` is the vector bundle core for the tangent bundle over `M`.
+Then `VectorBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
 ```
@@ -126,7 +126,7 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
 #align tangent_bundle_core_coord_change_achart tangentBundleCore_coordChange_achart
 
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
-`(tangent_bundle_core I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
+`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
 kernel.
 -/
 @[nolint unusedArguments]
@@ -144,7 +144,7 @@ variable (M)
 
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
-`bundle.total_space` to be able to put a suitable topology on it. -/
+`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 @[reducible] -- porting note: was nolint has_nonempty_instance
 def TangentBundle :=
   Bundle.TotalSpace (TangentSpace I : M → Type _)
@@ -321,7 +321,7 @@ end TangentBundleInstances
 
 
 /-- In the tangent bundle to the model space, the charts are just the canonical identification
-between a product type and a sigma type, a.k.a. `equiv.sigma_equiv_prod`. -/
+between a product type and a sigma type, a.k.a. `Equiv.sigmaEquivProd`. -/
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     (chartAt (ModelProd H E) p).toLocalEquiv = (Equiv.sigmaEquivProd H E).toLocalEquiv := by
@@ -404,12 +404,12 @@ theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H')
 #align in_coordinates_tangent_bundle_core_model_space inCoordinates_tangent_bundle_core_model_space
 
 /-- When `ϕ x` is a continuous linear map that changes vectors in charts around `f x` to vectors
-in charts around `g x`, `in_tangent_coordinates I I' f g ϕ x₀ x` is a coordinate change of
+in charts around `g x`, `inTangentCoordinates I I' f g ϕ x₀ x` is a coordinate change of
 this continuous linear map that makes sense from charts around `f x₀` to charts around `g x₀`
 by composing it with appropriate coordinate changes.
 Note that the type of `ϕ` is more accurately
-`Π x : N, tangent_space I (f x) →L[𝕜] tangent_space I' (g x)`.
-We are unfolding `tangent_space` in this type so that Lean recognizes that the type of `ϕ` doesn't
+`Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)`.
+We are unfolding `TangentSpace` in this type so that Lean recognizes that the type of `ϕ` doesn't
 actually depend on `f` or `g`.
 
 This is the underlying function of the trivializations of the hom of (pullbacks of) tangent spaces.
