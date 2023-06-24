@@ -84,43 +84,55 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
       | _ => pure .none
     | _ => pure .none
 
-/-- The `positivity` extension which identifies expressions of the form `a + b`,
-such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ + _, Add.add _ _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not +"
-  let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(AddZeroClass $α) : Q(Type u))
-  assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HAdd.hAdd)
-  let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
-    pure (.positive q(add_pos $pa $pb))
-  | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (swap (·+·)) (·<·)) : Q(Prop))
-    pure (.positive q(lt_add_of_pos_of_le $pa $pb))
-  | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
-    pure (.positive q(lt_add_of_le_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·≤·)) : Q(Prop))
-    pure (.nonnegative q(add_nonneg $pa $pb))
-  | _, _ => failure
+attribute [positivity] add_pos add_nonneg
+@[positivity] theorem add_pos_of_pos_of_nonneg {α : Type u_1} [AddZeroClass α] [Preorder α]
+  [CovariantClass α α (swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x < x_1] {a c : α} :
+  0 < a → 0 ≤ c → 0 < a + c := lt_add_of_pos_of_le
+@[positivity] theorem add_pos_of_nonneg_of_pos {α : Type u_1} [AddZeroClass α] [Preorder α]
+  [CovariantClass α α (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x < x_1] {a c : α} :
+  0 ≤ a → 0 < c → 0 < a + c := lt_add_of_le_of_pos
 
+-- /-- The `positivity` extension which identifies expressions of the form `a + b`,
+-- such that `positivity` successfully recognises both `a` and `b`. -/
+-- @[positivity _ + _, Add.add _ _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
+--   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+--     | throwError "not +"
+--   let _e_eq : $e =Q $f $a $b := ⟨⟩
+--   let _a ← synthInstanceQ (q(AddZeroClass $α) : Q(Type u))
+--   assumeInstancesCommute
+--   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HAdd.hAdd)
+--   let ra ← core zα pα a; let rb ← core zα pα b
+--   match ra, rb with
+--   | .positive pa, .positive pb =>
+--     let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
+--     pure (.positive q(add_pos $pa $pb))
+--   | .positive pa, .nonnegative pb =>
+--     let _a ← synthInstanceQ (q(CovariantClass $α $α (swap (·+·)) (·<·)) : Q(Prop))
+--     pure (.positive q(lt_add_of_pos_of_le $pa $pb))
+--   | .nonnegative pa, .positive pb =>
+--     let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·<·)) : Q(Prop))
+--     pure (.positive q(lt_add_of_le_of_pos $pa $pb))
+--   | .nonnegative pa, .nonnegative pb =>
+--     let _a ← synthInstanceQ (q(CovariantClass $α $α (·+·) (·≤·)) : Q(Prop))
+--     pure (.nonnegative q(add_nonneg $pa $pb))
+--   | _, _ => failure
+
+@[positivity]
 private theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
   mul_nonneg ha.le hb
 
+@[positivity]
 private theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
     (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b :=
   mul_nonneg ha hb.le
 
+@[positivity]
 private theorem mul_ne_zero_of_ne_zero_of_pos [OrderedSemiring α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
   mul_ne_zero ha (ne_of_gt hb)
 
+@[positivity]
 private theorem mul_ne_zero_of_pos_of_ne_zero [OrderedSemiring α] [NoZeroDivisors α]
     {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
   mul_ne_zero (ne_of_gt ha) hb
@@ -152,17 +164,23 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | _, _ => pure .none
 
 
+-- @[positivity]
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a :=
 by { rw [Int.ediv_self ha.ne']; exact zero_lt_one }
 
+@[positivity]
 private lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
 Int.ediv_nonneg ha.le hb
 
+@[positivity]
 private lemma int_div_nonneg_of_nonneg_of_pos {a b : ℤ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
 Int.ediv_nonneg ha hb.le
 
+@[positivity]
 private lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤ a / b :=
 Int.ediv_nonneg ha.le hb.le
+
+attribute [positivity] Int.ediv_nonneg
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 where `a` and `b` are integers. -/
@@ -195,6 +213,7 @@ where `a` and `b` are integers. -/
 section LinearOrderedSemifield
 variable [LinearOrderedSemifield R] {a b : R}
 
+@[positivity]
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
 div_nonneg ha.le hb
 
@@ -209,41 +228,45 @@ div_ne_zero ha hb.ne'
 
 end LinearOrderedSemifield
 
-/-- The `positivity` extension which identifies expressions of the form `a / b`,
-such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not /"
-  let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
-  let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
-  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
-  | _, _ => pure .none
+attribute [positivity] div_pos div_nonneg_of_pos_of_nonneg div_nonneg_of_nonneg_of_pos div_nonneg
+  div_ne_zero_of_pos_of_ne_zero div_ne_zero_of_ne_zero_of_pos div_ne_zero
 
-/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
-such that `positivity` successfully recognises `a`. -/
-@[positivity (_ : α)⁻¹]
-def evalInv : PositivityExt where eval {u α} zα pα e := do
-  let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
-  let _e_eq : $e =Q $f $a := ⟨⟩
-  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assumeInstancesCommute
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
-  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
-  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
-  | .none => pure .none
+-- /-- The `positivity` extension which identifies expressions of the form `a / b`,
+-- such that `positivity` successfully recognises both `a` and `b`. -/
+-- @[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+--   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+--     | throwError "not /"
+--   let _e_eq : $e =Q $f $a $b := ⟨⟩
+--   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+--   assumeInstancesCommute
+--   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+--   let ra ← core zα pα a; let rb ← core zα pα b
+--   match ra, rb with
+--   | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+--   | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+--   | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+--   | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+--   | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+--   | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+--   | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
+--   | _, _ => pure .none
+
+attribute [positivity] inv_pos_of_pos inv_nonneg_of_nonneg inv_ne_zero
+-- /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
+-- such that `positivity` successfully recognises `a`. -/
+-- @[positivity (_ : α)⁻¹]
+-- def evalInv : PositivityExt where eval {u α} zα pα e := do
+--   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
+--   let _e_eq : $e =Q $f $a := ⟨⟩
+--   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+--   assumeInstancesCommute
+--   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+--   let ra ← core zα pα a
+--   match ra with
+--   | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
+--   | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
+--   | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
+--   | .none => pure .none
 
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge

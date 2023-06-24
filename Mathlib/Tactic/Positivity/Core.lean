@@ -24,7 +24,7 @@ open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
-syntax (name := positivity) "positivity " term,+ : attr
+syntax (name := positivity) "positivity " term,* : attr
 
 lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
@@ -80,11 +80,107 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     exportEntriesFn := fun s => s.1.reverse.toArray
   }
 
+inductive StrictnessKind where
+  | positive
+  | nonnegative
+  | nonzero
+  deriving Inhabited, BEq, Repr
+
+structure PositivityLemmaEntry where
+  declName : Name
+  goalKind : StrictnessKind
+  fvars : Array Nat
+  hypKinds : Array ((_hyp : Nat) × (_target : Nat) × StrictnessKind)
+  numHyps : Nat
+  deriving Inhabited, Repr
+
+structure PositivityLemmaData where
+  goalExpr : Expr
+  declName : Name
+  discriminants : Array Nat := #[]
+  lemmas : Array PositivityLemmaEntry := #[]
+  deriving Inhabited, Repr
+
+def PositivityLemmaData.insert
+    (data : PositivityLemmaData) (e : PositivityLemmaEntry) :
+    PositivityLemmaData := Id.run do
+  let mut discriminants := data.discriminants
+  for ⟨_, target, _⟩ in e.hypKinds do
+    discriminants := discriminants.binInsert (· < ·) target
+  pure { data with discriminants, lemmas := data.lemmas.push e }
+
+def PositivityLemmaData.pushArray (data : Array PositivityLemmaData)
+    (goalExpr : Expr) (declName : Name) (e : PositivityLemmaEntry) : Array PositivityLemmaData :=
+  #[data.back?.getD { goalExpr, declName } |>.insert e]
+
+/-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
+initialize positivityLemmaExt : SimpleScopedEnvExtension
+    (Array (DiscrTree.Key true) × Expr × Name × PositivityLemmaEntry)
+    (DiscrTree PositivityLemmaData true) ←
+  registerSimpleScopedEnvExtension {
+    addEntry := fun m (ks, goalExpr, declName, e) =>
+      m.modifyCore ks (PositivityLemmaData.pushArray · goalExpr declName e)
+    initial := {}
+  }
+
+def parsePositivityKind (e : Expr) : MetaM (StrictnessKind × Expr) := do
+  let e ← whnfR e
+  if e.isAppOfArity ``LE.le 4 then
+    let z := e.getRevArg! 1
+    let z ← whnfR z
+    if z.isAppOfArity ``OfNat.ofNat 3 && (z.getRevArg! 1).natLit? == some 0 then
+      return (.nonnegative, e.getRevArg! 0)
+  if e.isAppOfArity ``LT.lt 4 then
+    let z := e.getRevArg! 1
+    let z ← whnfR z
+    if z.isAppOfArity ``OfNat.ofNat 3 && (z.getRevArg! 1).natLit? == some 0 then
+      return (.positive, e.getRevArg! 0)
+  if e.isAppOfArity ``Not 1 && e.appArg!.isEq then
+    let z := e.appArg!.getRevArg! 0
+    let z ← whnfR z
+    if z.isAppOfArity ``OfNat.ofNat 3 && (z.getRevArg! 1).natLit? == some 0 then
+      return (.nonzero, e.appArg!.getRevArg! 1)
+  throwError "not a positivity expression: {e}"
+
+def parsePositivityLemma (decl : Name) :
+    MetaM (Array (DiscrTree.Key true) × Expr × PositivityLemmaEntry) := do
+  let declTy := (← getConstInfo decl).type
+  withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
+  let (goalKind, goalExpr) ← parsePositivityKind targetTy
+  let goalFVarsSet := (← goalExpr.collectFVars.run {}).2.fvarSet
+  let (fvarIdxs, goalFVars) := xs.toList.enum.filter (goalFVarsSet.contains ·.2.fvarId!) |>.unzip
+  let goalFVars := goalFVars.toArray
+  let mut hypKinds := #[]
+  let lctx ← getLCtx
+  for i in [0:xs.size] do
+    let fvar := xs[i]!
+    if goalFVarsSet.contains fvar.fvarId! ||
+      (lctx.getFVar! fvar).binderInfo == .instImplicit then
+      continue
+    let fvarType ← inferType fvar
+    let (hypKind, hypExpr) ← parsePositivityKind fvarType
+    let .fvar hypFVar := hypExpr | throwError "hypothesis is too complicated: {fvarType}"
+    let some targetIdx := goalFVars.findIdx? (·.fvarId! == hypFVar)
+      | throwError "hypothesis is too complicated: {fvarType}"
+    hypKinds := hypKinds.push ⟨i, targetIdx, hypKind⟩
+  let goalExpr ← mkLambdaFVars goalFVars goalExpr
+  let keys ← DiscrTree.mkPath (← lambdaMetaTelescope goalExpr).2.2
+  pure (keys, goalExpr, {
+    declName := decl
+    goalKind
+    hypKinds
+    fvars := fvarIdxs.toArray
+    numHyps := xs.size
+  })
+
 initialize registerBuiltinAttribute {
   name := `positivity
   descr := "adds a positivity extension"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
+    | `(attr| positivity) => MetaM.run' do
+      let (keys, goalExpr, ext) ← parsePositivityLemma declName
+      setEnv <| positivityLemmaExt.addEntry (← getEnv) (keys, goalExpr, declName, ext)
     | `(attr| positivity $es,*) => do
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
@@ -279,15 +375,69 @@ def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
     | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
     | _ => pure (.nonzero p₁)
 
+def PositivityLemmaEntry.eval (entry : PositivityLemmaEntry)
+    {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α))
+    (proofs : Array (Nat × Option (StrictnessKind × Expr)))
+    (xs : Array Expr) (binderInfos : Array BinderInfo) :
+    MetaM (Strictness zα pα e) := catchNone do
+  let mut args := mkArray entry.numHyps none
+  for i in entry.fvars, x in xs, bi in binderInfos do
+    if bi != .instImplicit then
+      args := args.set! i (some x)
+  trace[Tactic.positivity] "{e}: working on lemma {entry.declName} - {repr entry.hypKinds}"
+  for ⟨hypIdx, target, kind⟩ in entry.hypKinds do
+    let some (kind', p) := proofs.find? (·.1 == target) |>.get!.2
+      | trace[Tactic.positivity] "{e}: failed subproof {target}"
+        return .none
+    unless kind == kind' do
+      trace[Tactic.positivity] "{e}: failed subproof {target}: {repr kind} != {repr kind'}"
+      return .none
+    args := args.set! hypIdx (some p)
+  trace[Tactic.positivity] "{e}: working on lemma {entry.declName} - {repr entry.hypKinds}"
+  let proof ← try
+    mkAppOptM entry.declName args
+  catch err =>
+    trace[Tactic.positivity] "{e}: mkAppOptM failed: {err.toMessageData}"
+    throw err
+  match entry.goalKind with
+  | .positive => pure (.positive proof)
+  | .nonnegative => pure (.nonnegative proof)
+  | .nonzero => pure (.nonzero proof)
+
+mutual
+
+partial def PositivityLemmaData.eval
+    (data : PositivityLemmaData) (e : Q($α)) : MetaM (Strictness zα pα e) := do
+  withNewMCtxDepth do
+  let levels := (← getConstInfo data.declName).levelParams
+  let (xs, binderInfos, goalExpr) ← lambdaMetaTelescope <|
+    data.goalExpr.instantiateLevelParams levels (← mkFreshLevelMVars levels.length)
+  let .true ← withReducible (isDefEq e goalExpr) | throwError "match failed"
+  let args : Array (Nat × Option (StrictnessKind × Expr)) ← data.discriminants.mapM fun i => do
+    let value := match ← catchNone <| core (← instantiateMVars xs[i]!) with
+    | .positive p => some (.positive, p)
+    | .nonnegative p => some (.nonnegative, p)
+    | .nonzero p => some (.nonzero, p)
+    | .none => none
+    pure (i, value)
+  let mut result := .none
+  for lem in data.lemmas do
+    result ← orElse result <| lem.eval zα pα e args xs binderInfos
+  pure result
+
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
+partial def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
-    try
-      result ← orElse result <| ext.eval zα pα e
+    result ← orElse result <| ext.eval zα pα e
+  for lem in ← (positivityLemmaExt.getState (← getEnv)).getMatch e do
+    trace[Tactic.positivity] "processing {e}: {lem.goalExpr}"
+    result ← orElse result try
+      lem.eval e
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
+      throw err
   result ← orElse result <| normNumPositivity zα pα e
   result ← orElse result <| positivityCanon zα pα e
   if let .positive _ := result then
@@ -298,6 +448,8 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
       result ← orElse result <| compareHyp zα pα e ldecl
   trace[Tactic.positivity] "{e} => {result.toString}"
   throwNone (pure result)
+
+end
 
 private inductive OrderRel : Type
 | le : OrderRel -- `0 ≤ a`
