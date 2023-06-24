@@ -8,8 +8,8 @@ Authors: Floris van Doorn, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.ContMdiffMap
-import Mathbin.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.ContMdiffMap
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Pullbacks of smooth vector bundles
 
@@ -41,8 +41,7 @@ variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the pullback
 vector bundle `f *ᵖ E` is a smooth vector bundle. -/
 instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB'
-    where smoothOn_coord_change :=
-    by
+    where smoothOn_coord_change := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩; skip
     refine' ((smooth_on_coord_change e e').comp f.smooth.smooth_on fun b hb => hb).congr _
     rintro b (hb : f b ∈ e.base_set ∩ e'.base_set); ext v
