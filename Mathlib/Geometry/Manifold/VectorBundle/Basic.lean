@@ -18,46 +18,46 @@ This file defines smooth vector bundles over a smooth manifold.
 Let `E` be a topological vector bundle, with model fiber `F` and base space `B`.  We consider `E` as
 carrying a charted space structure given by its trivializations -- these are charts to `B × F`.
 Then, by "composition", if `B` is itself a charted space over `H` (e.g. a smooth manifold), then `E`
-is also a charted space over `H × F`
+is also a charted space over `H × F`.
 
-Now, we define `smooth_vector_bundle` as the `Prop` of having smooth transition functions.
-Recall the structure groupoid `smooth_fiberwise_linear` on `B × F` consisting of smooth, fiberwise
+Now, we define `SmoothVectorBundle` as the `Prop` of having smooth transition functions.
+Recall the structure groupoid `smoothFiberwiseLinear` on `B × F` consisting of smooth, fiberwise
 linear local homeomorphisms.  We show that our definition of "smooth vector bundle" implies
-`has_groupoid` for this groupoid, and show (by a "composition" of `has_groupoid` instances) that
+`HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
 this means that a smooth vector bundle is a smooth manifold.
 
-Since `smooth_vector_bundle` is a mixin, it should be easy to make variants and for many such
+Since `SmoothVectorBundle` is a mixin, it should be easy to make variants and for many such
 variants to coexist -- vector bundles can be smooth vector bundles over several different base
 fields, they can also be C^k vector bundles, etc.
 
 ## Main definitions and constructions
 
-* `fiber_bundle.charted_space`: A fiber bundle `E` over a base `B` with model fiber `F` is naturally
+* `FiberBundle.chartedSpace`: A fiber bundle `E` over a base `B` with model fiber `F` is naturally
   a charted space modelled on `B × F`.
 
-* `fiber_bundle.charted_space'`: Let `B` be a charted space modelled on `HB`.  Then a fiber bundle
+* `FiberBundle.chartedSpace'`: Let `B` be a charted space modelled on `HB`.  Then a fiber bundle
   `E` over a base `B` with model fiber `F` is naturally a charted space modelled on `HB.prod F`.
 
-* `smooth_vector_bundle`: Mixin class stating that a (topological) `vector_bundle` is smooth, in the
+* `SmoothVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is smooth, in the
   sense of having smooth transition functions.
 
-* `smooth_fiberwise_linear.has_groupoid`: For a smooth vector bundle `E` over `B` with fiber
+* `SmoothFiberwiseLinear.hasGroupoid`: For a smooth vector bundle `E` over `B` with fiber
   modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
   considered as charts to `B × F`, is smooth and fiberwise linear, in the sense of belonging to the
-  structure groupoid `smooth_fiberwise_linear`.
+  structure groupoid `smoothFiberwiseLinear`.
 
-* `bundle.total_space.smooth_manifold_with_corners`: A smooth vector bundle is naturally a smooth
+* `Bundle.TotalSpace.smoothManifoldWithCorners`: A smooth vector bundle is naturally a smooth
   manifold.
 
-* `vector_bundle_core.smooth_vector_bundle`: If a (topological) `vector_bundle_core` is smooth,
-  in the sense of having smooth transition functions (cf. `vector_bundle_core.is_smooth`),
+* `VectorBundleCore.smoothVectorBundle`: If a (topological) `VectorBundleCore` is smooth,
+  in the sense of having smooth transition functions (cf. `VectorBundleCore.IsSmooth`),
   then the vector bundle constructed from it is a smooth vector bundle.
 
-* `vector_prebundle.smooth_vector_bundle`: If a `vector_prebundle` is smooth,
-  in the sense of having smooth transition functions (cf. `vector_prebundle.is_smooth`),
+* `VectorPrebundle.smoothVectorBundle`: If a `VectorPrebundle` is smooth,
+  in the sense of having smooth transition functions (cf. `VectorPrebundle.IsSmooth`),
   then the vector bundle constructed from it is a smooth vector bundle.
 
-* `bundle.prod.smooth_vector_bundle`: The direct sum of two smooth vector bundles is a smooth vector
+* `Bundle.Prod.smoothVectorBundle`: The direct sum of two smooth vector bundles is a smooth vector
   bundle.
 -/
 
@@ -275,9 +275,9 @@ variable [TopologicalSpace (TotalSpace E)] [∀ x, TopologicalSpace (E x)] (F E)
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 /-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a
-topological vector bundle over `B` with fibers isomorphic to `F`, then `smooth_vector_bundle F E IB`
+topological vector bundle over `B` with fibers isomorphic to `F`, then `SmoothVectorBundle F E IB`
 registers that the bundle is smooth, in the sense of having smooth transition functions.
-This is a mixin, not carrying any new data`. -/
+This is a mixin, not carrying any new data. -/
 class SmoothVectorBundle : Prop where
   smoothOn_coordChange :
     ∀ (e e' : Trivialization F (π E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
@@ -292,7 +292,8 @@ variable [SmoothVectorBundle F E IB]
 /-- For a smooth vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
 between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is smooth and
 fiberwise linear. -/
-instance : HasGroupoid (TotalSpace E) (smoothFiberwiseLinear B F IB) where
+instance SmoothFiberwiseLinear.hasGroupoid :
+    HasGroupoid (TotalSpace E) (smoothFiberwiseLinear B F IB) where
   compatible := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
     haveI : MemTrivializationAtlas e := ⟨he⟩
@@ -310,9 +311,11 @@ instance : HasGroupoid (TotalSpace E) (smoothFiberwiseLinear B F IB) where
         simpa only [trans_toLocalEquiv, symm_toLocalEquiv, e.symm_trans_source_eq e',
           coe_coe_symm, prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hb
       exact e.apply_symm_apply_eq_coordChangeL e' hb' v
+#align smooth_fiberwise_linear.has_groupoid SmoothFiberwiseLinear.hasGroupoid
 
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
-instance : SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace E) := by
+instance Bundle.TotalSpace.smoothManifoldWithCorners :
+    SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace E) := by
   refine' { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) _ with }
   intro e he
   rw [mem_smoothFiberwiseLinear_iff] at he
@@ -325,6 +328,7 @@ instance : SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace E) := b
   · rw [heφ.target_eq]
     apply smoothOn_fst.prod_mk
     exact (h2φ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
+#align bundle.total_space.smooth_manifold_with_corners Bundle.TotalSpace.smoothManifoldWithCorners
 
 /-! ### Core construction for smooth vector bundles -/
 
@@ -335,7 +339,7 @@ variable {ι : Type _} {F}
 variable (Z : VectorBundleCore 𝕜 B F ι)
 
 /- ./././Mathport/Syntax/Translate/Command.lean:393:30: infer kinds are unsupported in Lean 4: #[`smoothOn_coord_change] [] -/
-/-- Mixin for a `vector_bundle_core` stating smoothness (of transition functions). -/
+/-- Mixin for a `VectorBundleCore` stating smoothness (of transition functions). -/
 class IsSmooth (IB : ModelWithCorners 𝕜 EB HB) : Prop where
   smoothOn_coordChange :
     ∀ i j, SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
@@ -346,7 +350,7 @@ export IsSmooth ()
 
 variable [Z.IsSmooth IB]
 
-/-- If a `vector_bundle_core` has the `is_smooth` mixin, then the vector bundle constructed from it
+/-- If a `VectorBundleCore` has the `IsSmooth` mixin, then the vector bundle constructed from it
 is a smooth vector bundle. -/
 instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChange := by
@@ -414,7 +418,7 @@ namespace VectorPrebundle
 
 variable [∀ x, TopologicalSpace (E x)]
 
-/-- Mixin for a `vector_prebundle` stating smoothness of coordinate changes. -/
+/-- Mixin for a `VectorPrebundle` stating smoothness of coordinate changes. -/
 class IsSmooth (a : VectorPrebundle 𝕜 F E) : Prop where
   exists_smoothCoordChange :
     ∀ (e) (_ : e ∈ a.pretrivializationAtlas) (e') (_ : e' ∈ a.pretrivializationAtlas),
@@ -426,9 +430,9 @@ class IsSmooth (a : VectorPrebundle 𝕜 F E) : Prop where
 
 variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsSmooth IB] {e e' : Pretrivialization F (π E)}
 
-/-- A randomly chosen coordinate change on a `smooth_vector_prebundle`, given by
-  the field `exists_coord_change`. Note that `a.smooth_coord_change` need not be the same as
-  `a.coord_change`. -/
+/-- A randomly chosen coordinate change on a `SmoothVectorPrebundle`, given by
+  the field `exists_coordChange`. Note that `a.smoothCoordChange` need not be the same as
+  `a.coordChange`. -/
 noncomputable def smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_smoothCoordChange e he e' he') b
@@ -459,7 +463,7 @@ theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
 
 variable (IB)
 
-/-- Make a `smooth_vector_bundle` from a `smooth_vector_prebundle`.  -/
+/-- Make a `SmoothVectorBundle` from a `SmoothVectorPrebundle`. -/
 theorem smoothVectorBundle :
     @SmoothVectorBundle _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle
       a.to_vectorBundle :=
