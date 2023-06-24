@@ -51,8 +51,6 @@ presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
 
-set_option linter.uppercaseLean3 false
-
 noncomputable section
 
 universe u
@@ -125,15 +123,6 @@ def gluedScheme : Scheme := by
     exact (D.U i).affineCover.Covers y
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.glued_Scheme AlgebraicGeometry.Scheme.GlueData.gluedScheme
-
-set_option pp.universes true
-
-#check 𝖣.diagram
-#check MultispanIndex.multispan 𝖣.diagram
-#check forgetToTop
-#check SheafedSpace.forget.{u + 1, u , u}
-#check Limits.compPreservesColimit forgetToLocallyRingedSpace.{u}
-  (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget.{u + 1, u , u} CommRingCat)
 
 instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
@@ -235,8 +224,6 @@ def isoCarrier : Iso.{u, u+1}
   case eq4 =>
     apply GlueData.gluedIso _ (PresheafedSpace.forget _)
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
-
-#print isoCarrier
 
 @[simp]
 theorem ι_isoCarrier_inv (i : D.J) :
