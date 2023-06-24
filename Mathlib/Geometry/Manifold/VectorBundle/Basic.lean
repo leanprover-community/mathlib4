@@ -97,7 +97,7 @@ theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace E) :
   rfl
 
 /- Porting note: In Lean 3, the next instance was inside a section with locally reducible
-`model_prod` and it used `model_prod B F` as the intermediate space. Using `B × F` in the middle
+`ModelProd` and it used `ModelProd B F` as the intermediate space. Using `B × F` in the middle
 gives the same instance.
 -/
 --attribute [local reducible] ModelProd
