@@ -31,20 +31,16 @@ variable {F : TypeVec.{u} n → Type u}
 
 section repr
 
-variable [q : MvQPF F]
-
-variable {G : TypeVec.{u} n → Type u} [MvFunctor G]
-
-variable {FG_abs : ∀ {α}, F α → G α}
-
-variable {FG_repr : ∀ {α}, G α → F α}
-
 /-- If `F` is a QPF then `G` is a QPF as well. Can be used to
 construct `MvQPF` instances by transporting them across
 surjective functions -/
-def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
-    (FG_abs_map : ∀ {α β} (f : α ⟹ β) (x : F α), FG_abs (f <$$> x) = f <$$> FG_abs x) : MvQPF G
-    where
+def quotientQPF (F) [q : MvQPF F]
+                {G : TypeVec.{u} n → Type u} [MvFunctor G]
+                {FG_abs : ∀ {α}, F α → G α}
+                {FG_repr : ∀ {α}, G α → F α}
+                (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
+                (FG_abs_map : ∀ {α β} (f : α ⟹ β) (x : F α), FG_abs (f <$$> x) = f <$$> FG_abs x) :
+      MvQPF G where
   P := q.P
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
