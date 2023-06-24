@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.ContMdiff
+import Mathlib.Geometry.Manifold.ContMdiff
 
 /-! # The groupoid of smooth, fiberwise-linear maps
 
@@ -138,8 +138,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B �
           SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x : F →L[𝕜] F)) u) (h2φ :
           SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => ((φ x).symm : F →L[𝕜] F)) u),
           (e.restr (u ×ˢ univ)).EqOnSource
-            (FiberwiseLinear.localHomeomorph φ hu hφ.ContinuousOn h2φ.ContinuousOn) :=
-  by
+            (FiberwiseLinear.localHomeomorph φ hu hφ.ContinuousOn h2φ.ContinuousOn) := by
   rw [SetCoe.forall'] at h 
   -- choose s hs hsp φ u hu hφ h2φ heφ using h,
   -- the following 2 lines should be `choose s hs hsp φ u hu hφ h2φ heφ using h,`
@@ -147,24 +146,20 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B �
   -- porting note: todo: try using `choose` again in Lean 4
   simp only [Classical.skolem, ← exists_prop] at h 
   rcases h with ⟨s, hs, hsp, φ, u, hu, hφ, h2φ, heφ⟩
-  have hesu : ∀ p : e.source, e.source ∩ s p = u p ×ˢ univ :=
-    by
+  have hesu : ∀ p : e.source, e.source ∩ s p = u p ×ˢ univ := by
     intro p
     rw [← e.restr_source' (s _) (hs _)]
     exact (heφ p).1
-  have hu' : ∀ p : e.source, (p : B × F).fst ∈ u p :=
-    by
+  have hu' : ∀ p : e.source, (p : B × F).fst ∈ u p := by
     intro p
     have : (p : B × F) ∈ e.source ∩ s p := ⟨p.prop, hsp p⟩
     simpa only [hesu, mem_prod, mem_univ, and_true_iff] using this
-  have heu : ∀ p : e.source, ∀ q : B × F, q.fst ∈ u p → q ∈ e.source :=
-    by
+  have heu : ∀ p : e.source, ∀ q : B × F, q.fst ∈ u p → q ∈ e.source := by
     intro p q hq
     have : q ∈ u p ×ˢ (univ : Set F) := ⟨hq, trivial⟩
     rw [← hesu p] at this 
     exact this.1
-  have he : e.source = (Prod.fst '' e.source) ×ˢ (univ : Set F) :=
-    by
+  have he : e.source = (Prod.fst '' e.source) ×ˢ (univ : Set F) := by
     apply HasSubset.Subset.antisymm
     · intro p hp
       exact ⟨⟨p, hp, rfl⟩, trivial⟩
@@ -204,19 +199,16 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
     ∃ (Φ : B → F ≃L[𝕜] F) (U : Set B) (hU₀ : IsOpen U) (hΦ :
       SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (Φ x : F →L[𝕜] F)) U) (h2Φ :
       SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => ((Φ x).symm : F →L[𝕜] F)) U),
-      e.EqOnSource (FiberwiseLinear.localHomeomorph Φ hU₀ hΦ.ContinuousOn h2Φ.ContinuousOn) :=
-  by
+      e.EqOnSource (FiberwiseLinear.localHomeomorph Φ hU₀ hΦ.ContinuousOn h2Φ.ContinuousOn) := by
   classical
   rw [SetCoe.forall'] at h 
   choose! φ u hu hUu hux hφ h2φ heφ using h
-  have heuφ : ∀ x : U, eq_on e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) :=
-    by
+  have heuφ : ∀ x : U, eq_on e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := by
     intro x p hp
     refine' (heφ x).2 _
     rw [(heφ x).1]
     exact hp
-  have huφ : ∀ (x x' : U) (y : B) (hyx : y ∈ u x) (hyx' : y ∈ u x'), φ x y = φ x' y :=
-    by
+  have huφ : ∀ (x x' : U) (y : B) (hyx : y ∈ u x) (hyx' : y ∈ u x'), φ x y = φ x' y := by
     intro p p' y hyp hyp'
     ext v
     have h1 : e (y, v) = (y, φ p y v) := heuφ _ ⟨(id hyp : (y, v).fst ∈ u p), trivial⟩
@@ -235,21 +227,18 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
   let Φ : B → F ≃L[𝕜] F := fun y =>
     if hy : y ∈ U then Φ₀ ⟨y, hy⟩ else ContinuousLinearEquiv.refl 𝕜 F
   have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
-  have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y :=
-    by
+  have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y := by
     intro x y hyu
     refine' (hΦ y (hUu x hyu)).trans _
     exact Union_lift_mk ⟨y, hyu⟩ _
-  have hΦ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => (Φ y : F →L[𝕜] F)) U :=
-    by
+  have hΦ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => (Φ y : F →L[𝕜] F)) U := by
     apply contMdiffOn_of_locally_contMdiffOn
     intro x hx
     refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
     refine' (ContMdiffOn.congr (hφ ⟨x, hx⟩) _).mono (inter_subset_right _ _)
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
-  have h2Φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => ((Φ y).symm : F →L[𝕜] F)) U :=
-    by
+  have h2Φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMdiffOn_of_locally_contMdiffOn
     intro x hx
     refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
@@ -272,8 +261,7 @@ variable (F B IB)
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated
 to the vector bundle belong to this groupoid. -/
-def smoothFiberwiseLinear : StructureGroupoid (B × F)
-    where
+def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   members :=
     ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :
       SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :
@@ -312,8 +300,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F)
     ·
       simp only [FiberwiseLinear.localHomeomorph, LocalHomeomorph.refl_apply, Prod.mk.eta, id.def,
         ContinuousLinearEquiv.coe_refl', LocalHomeomorph.mk_coe, LocalEquiv.coe_mk]
-  locality' :=
-    by
+  locality' := by
     -- the hard work has been extracted to `locality_aux₁` and `locality_aux₂`
     simp_rw [mem_Union]
     intro e he
