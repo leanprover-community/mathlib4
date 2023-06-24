@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module geometry.manifold.charted_space
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -352,7 +352,7 @@ theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : LocalHomeomorph H 
 theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
     (h : ∀ f s, PG₁.property f s → PG₂.property f s) : PG₁.groupoid ≤ PG₂.groupoid := by
   refine' StructureGroupoid.le_iff.2 fun e he ↦ _
-  rw [mem_groupoid_of_pregroupoid] at he⊢
+  rw [mem_groupoid_of_pregroupoid] at he ⊢
   exact ⟨h _ _ he.1, h _ _ he.2⟩
 #align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
 
@@ -636,6 +636,11 @@ def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [Topologic
   mem_chart_source p := by simp only [mfld_simps]
   chart_mem_atlas p := ⟨chartAt _ p, chartAt _ _, chart_mem_atlas _ p, chart_mem_atlas _ _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
+
+theorem chartAt_comp (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H']
+    {M : Type _} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
+    (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
+  rfl
 
 end
 
@@ -1079,6 +1084,20 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact preimage_open_of_open_symm (chartAt _ _) s.2
 #align topological_space.opens.has_groupoid TopologicalSpace.Opens.instHasGroupoid
+
+theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
+    (chartAt H (Set.inclusion hUV x)).symm
+    =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
+    Set.inclusion hUV ∘ (chartAt H x).symm := by
+  set i := Set.inclusion hUV
+  set e := chartAt H (x : M)
+  haveI : Nonempty U := ⟨x⟩
+  haveI : Nonempty V := ⟨i x⟩
+  have heUx_nhds : (e.subtypeRestr U).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr U).open_target.mem_nhds
+    exact e.map_subtype_source (mem_chart_source _ _)
+  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn_of_le hUV)
+#align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
 
 end TopologicalSpace.Opens
 

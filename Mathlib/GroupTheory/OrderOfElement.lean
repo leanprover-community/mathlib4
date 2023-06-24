@@ -516,7 +516,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have hs : s ⊆ { y : G | ¬IsOfFinOrder y } := by
     rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))
     apply h
-    rw [isOfFinOrder_iff_pow_eq_one] at contra⊢
+    rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢
     obtain ⟨m, hm, hm'⟩ := contra
     exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩
   suffices s.Infinite by exact this.mono hs
@@ -689,9 +689,9 @@ variable [LeftCancelMonoid G] [AddLeftCancelMonoid A]
 -- TODO: Use this to show that a finite left cancellative monoid is a group.
 @[to_additive]
 theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
-  have H : (Set.univ : Set G).Finite := Set.univ.toFinite
-  contrapose! H -- Porting note: `contrapose!` doesn't like `this`
-  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder H)
+  have : (Set.univ : Set G).Finite := Set.univ.toFinite
+  contrapose! this
+  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder this)
 #align exists_pow_eq_one exists_pow_eq_one
 #align exists_nsmul_eq_zero exists_nsmul_eq_zero
 

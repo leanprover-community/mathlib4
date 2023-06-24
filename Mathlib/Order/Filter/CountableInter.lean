@@ -177,7 +177,7 @@ instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
   refine' ⟨fun S hSc hS => _⟩
-  simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS⊢
+  simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
 /-- Infimum of two `CountableInterFilter`s is a `CountableInterFilter`. This is useful, e.g.,

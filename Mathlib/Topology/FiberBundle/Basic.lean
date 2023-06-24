@@ -396,7 +396,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg  at he
+    push_neg at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 #align fiber_bundle.exists_trivialization_Icc_subset FiberBundle.exists_trivialization_Icc_subset
@@ -910,6 +910,11 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π E) := by
   letI := a.toFiberBundle
   exact FiberBundle.continuous_proj F E
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
+
+instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
+    (letI := a.totalSpaceTopology; letI := a.toFiberBundle;
+      MemTrivializationAtlas (a.trivializationOfMemPretrivializationAtlas he₀)) :=
+  letI := a.totalSpaceTopology; letI := a.toFiberBundle; ⟨e₀, he₀, rfl⟩
 
 /-- For a fiber bundle `E` over `B` constructed using the `FiberPrebundle` mechanism,
 continuity of a function `TotalSpace E → X` on an open set `s` can be checked by precomposing at
