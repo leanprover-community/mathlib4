@@ -25,7 +25,6 @@ and define `class_number` as the order of this group.
  - `class_group.fintype_of_admissible`: if `R` has an admissible absolute value,
    its integral closure has a finite class group
 -/
-set_option autoImplicit false -- **TODO** delete this later
 
 open scoped BigOperators
 
@@ -228,12 +227,11 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have dim_pos := Fintype.card_pos_iff.mpr bS.index_nonempty
   set ε : ℝ := normBound abv bS ^ (-1 / Fintype.card ι : ℝ) with ε_eq
   have hε : 0 < ε := Real.rpow_pos_of_pos (Int.cast_pos.mpr (normBound_pos abv bS)) _
-  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι :=
-    by
+  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι := by
     have := normBound_pos abv bS
     have := abv.nonneg b
-    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one, mul_left_comm,
-        mul_inv_cancel, mul_one, rpow_nat_cast] <;>
+    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
+      mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
       try norm_cast; linarith
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
@@ -247,15 +245,13 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have μ_eq : ∀ i j, μ j * s i = b * qs j i + rs j i := by
     intro i j
     rw [q_eq, r_eq, EuclideanDomain.div_add_mod]
-  have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i :=
-    by
+  have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
-      Finset.sum_congr rfl fun i _ =>
-        _
-          -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
+      Finset.sum_congr rfl fun i _ =>  _
+-- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
   have hjk' : ∀ i, (abv (rs k i - rs j i) : ℝ) < abv b • ε := by simpa only [r_eq] using hjk
@@ -263,7 +259,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   set r := μ k - μ j with r_eq
   refine' ⟨q, r, (mem_finsetApprox bS adm).mpr _, _⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
-  have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) :=  by
+  have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
     simp only [r_eq, sub_smul, μ_mul_a_eq, q_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
       ← Finset.sum_sub_distrib, smul_sub]
     refine' Finset.sum_congr rfl fun x _ => _
