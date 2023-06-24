@@ -22,9 +22,7 @@ Multiplicative morphisms induced monoidal functors.
 
 universe u
 
-open CategoryTheory
-
-open CategoryTheory.Discrete
+open CategoryTheory Discrete MonoidalCategory
 
 variable (M : Type u) [Monoid M]
 

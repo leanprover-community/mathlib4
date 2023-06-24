@@ -113,7 +113,7 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     · rintro ⟨f, h, hy⟩
       refine' ⟨f, _, hy⟩
       by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h⊢
+      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
         first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
       simp_all only [degree_eq_natDegree hf]
       · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
@@ -334,8 +334,9 @@ polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 noncomputable def liftEquiv' (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ ((minpoly A pb.gen).map (algebraMap A B)).roots } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
-    rw [mem_roots, IsRoot.def, Equiv.refl_apply, ← eval₂_eq_eval_map, ← aeval_def]
-    exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))
+    rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
+    · simp
+    · exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))
 #align power_basis.lift_equiv' PowerBasis.liftEquiv'
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`

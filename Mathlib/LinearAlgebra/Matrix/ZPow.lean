@@ -294,11 +294,7 @@ theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
-  -- Porting note: was `contrapose! this`
-  revert this
-  contrapose!
-  rw [ne_eq, not_not]
-  intro this
+  contrapose! this
   rw [this, det_zero ‹_›]
   exact not_isUnit_zero
 #align matrix.zpow_ne_zero_of_is_unit_det Matrix.zpow_ne_zero_of_isUnit_det

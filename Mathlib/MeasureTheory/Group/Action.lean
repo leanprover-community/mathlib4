@@ -23,9 +23,7 @@ some basic properties of such measures.
 -/
 
 
-open ENNReal NNReal Pointwise Topology
-
-open MeasureTheory MeasureTheory.Measure Set Function
+open ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
 
 namespace MeasureTheory
 
@@ -159,7 +157,7 @@ theorem smulInvariantMeasure_tfae :
 
 /-- Equivalent definitions of a measure invariant under an additive action of a group.
 
-- 0: `vadd_invariant_measure G α μ`;
+- 0: `VAddInvariantMeasure G α μ`;
 
 - 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
      vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
@@ -227,14 +225,14 @@ instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
 @[to_additive]
-theorem locallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
-    LocallyFiniteMeasure μ :=
+theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
+    IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
     ⟨(· • ·) g ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
-#align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.locallyFiniteMeasure_of_smulInvariant
-#align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.locallyFiniteMeasure_of_vaddInvariant
+#align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.isLocallyFiniteMeasure_of_smulInvariant
+#align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.isLocallyFiniteMeasure_of_vaddInvariant
 
 variable [Measure.Regular μ]
 

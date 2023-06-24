@@ -349,7 +349,7 @@ theorem ndrec_mk {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk
 /-- Non-dependent recursion principle for localizations: given elements `f a b : p`
 for all `a b`, such that `r S (a, b) (c, d)` implies `f a b = f c d`,
 then `f` is defined on the whole `Localization S`. -/
--- Porting note: the attibute `elab_as_elim` fails with `unexpected eliminator resulting type p`
+-- Porting note: the attribute `elab_as_elim` fails with `unexpected eliminator resulting type p`
 -- @[to_additive (attr := elab_as_elim)
 @[to_additive
     "Non-dependent recursion principle for `AddLocalization`s: given elements `f a b : p`
@@ -382,7 +382,7 @@ theorem induction_on {p : Localization S → Prop} (x) (H : ∀ y : M × S, p (m
 /-- Non-dependent recursion principle for localizations: given elements `f x y : p`
 for all `x` and `y`, such that `r S x x'` and `r S y y'` implies `f x y = f x' y'`,
 then `f` is defined on the whole `Localization S`. -/
--- Porting note: the attibute `elab_as_elim` fails with `unexpected eliminator resulting type p`
+-- Porting note: the attribute `elab_as_elim` fails with `unexpected eliminator resulting type p`
 -- @[to_additive (attr := elab_as_elim)
 @[to_additive
     "Non-dependent recursion principle for localizations: given elements `f x y : p`
@@ -616,7 +616,7 @@ theorem sec_spec' {f : LocalizationMap S N} (z : N) :
 @[to_additive
     "Given an AddMonoidHom `f : M →+ N` and Submonoid `S ⊆ M` such that
 `f(S) ⊆ AddUnits N`, for all `w, z : N` and `y ∈ S`, we have `w - f y = z ↔ w = f y + z`."]
-theorem mul_inv_left {f : M →* N} (h : ∀ y : S, IsUnit (f y)) (y : S) (w z : N):
+theorem mul_inv_left {f : M →* N} (h : ∀ y : S, IsUnit (f y)) (y : S) (w z : N) :
     w * (IsUnit.liftRight (f.restrict S) h y)⁻¹ = z ↔ w = f y * z := by
   rw [mul_comm]
   exact Units.inv_mul_eq_iff_eq_mul (IsUnit.liftRight (f.restrict S) h y)
@@ -733,7 +733,7 @@ theorem mk'_sec (z : N) : f.mk' (f.sec z).1 (f.sec z).2 = z :=
 #align add_submonoid.localization_map.mk'_sec AddSubmonoid.LocalizationMap.mk'_sec
 
 @[to_additive]
-theorem mk'_surjective (z : N) : ∃ (x : _)(y : S), f.mk' x y = z :=
+theorem mk'_surjective (z : N) : ∃ (x : _) (y : S), f.mk' x y = z :=
   ⟨(f.sec z).1, (f.sec z).2, f.mk'_sec z⟩
 #align submonoid.localization_map.mk'_surjective Submonoid.LocalizationMap.mk'_surjective
 #align add_submonoid.localization_map.mk'_surjective AddSubmonoid.LocalizationMap.mk'_surjective
@@ -1124,7 +1124,7 @@ Localization of `P` at `T`: if `f : M →* N` and `k : P →* Q` are Localizatio
 `T` respectively, we send `z : N` to `k (g x) * (k (g y))⁻¹`, where `(x, y) : M × S` are such
 that `z = f x * (f y)⁻¹`. -/
 @[to_additive
-    "Given a `AddCommMonoid` homomorphism `g : M →+ P` where for Submonoids `S ⊆ M, T ⊆ P` we have
+    "Given an `AddCommMonoid` homomorphism `g : M →+ P` where for Submonoids `S ⊆ M, T ⊆ P` we have
 `g(S) ⊆ T`, the induced AddMonoid homomorphism from the Localization of `M` at `S` to the
 Localization of `P` at `T`: if `f : M →+ N` and `k : P →+ Q` are Localization maps for `S` and
 `T` respectively, we send `z : N` to `k (g x) - k (g y)`, where `(x, y) : M × S` are such
@@ -1359,7 +1359,7 @@ variable (f : S.LocalizationMap N) {g : M →* P} (hg : ∀ y : S, IsUnit (g y))
 /-- If `f : M →* N` and `k : M →* P` are Localization maps for a Submonoid `S`, we get an
 isomorphism of `N` and `P`. -/
 @[to_additive
-    "If `f : M →+ N` and `k : M →+ R` are Localization maps for a AddSubmonoid `S`, we get an
+    "If `f : M →+ N` and `k : M →+ R` are Localization maps for an AddSubmonoid `S`, we get an
 isomorphism of `N` and `R`."]
 noncomputable def mulEquivOfLocalizations (k : LocalizationMap S P) : N ≃* P :=
 { toFun := f.lift k.map_units
@@ -1962,7 +1962,7 @@ instance partialOrder : PartialOrder (Localization s) where
   le_refl a := Localization.induction_on a fun a => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
-      simp only [mk_le_mk] at hab hbc⊢
+      simp only [mk_le_mk] at hab hbc ⊢
       refine' le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
@@ -1983,11 +1983,11 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
     mul_le_mul_left := fun a b =>
       Localization.induction_on₂ a b fun a b hab c =>
         Localization.induction_on c fun c => by
-          simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab⊢
+          simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
           exact mul_le_mul_left' hab _
     le_of_mul_le_mul_left := fun a b c =>
       Localization.induction_on₃ a b c fun a b c hab => by
-        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab⊢
+        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab ⊢
         exact le_of_mul_le_mul_left' hab }
 
 @[to_additive]

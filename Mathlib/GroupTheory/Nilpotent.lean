@@ -100,7 +100,7 @@ def upperCentralSeriesStep : Subgroup G where
     group
   inv_mem' {x hx y} := by
     specialize hx y⁻¹
-    rw [mul_assoc, inv_inv] at hx⊢
+    rw [mul_assoc, inv_inv] at hx ⊢
     exact Subgroup.Normal.mem_comm inferInstance hx
 #align upper_central_series_step upperCentralSeriesStep
 
@@ -187,7 +187,7 @@ def IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop :=
 #align is_ascending_central_series IsAscendingCentralSeries
 
 /-- A sequence of subgroups of `G` is a descending central series if `H 0` is `G` and
-  `⁅H n, G⁆ ⊆ H (n + 1)` for all `n`. Note that we do not requre that `H n = {1}` for some `n`. -/
+  `⁅H n, G⁆ ⊆ H (n + 1)` for all `n`. Note that we do not require that `H n = {1}` for some `n`. -/
 def IsDescendingCentralSeries (H : ℕ → Subgroup G) :=
   H 0 = ⊤ ∧ ∀ (x : G) (n : ℕ), x ∈ H n → ∀ g, x * g * x⁻¹ * g⁻¹ ∈ H (n + 1)
 #align is_descending_central_series IsDescendingCentralSeries
@@ -250,12 +250,12 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   cases' hdesc with h0 hH
   refine' ⟨hn, fun x m hx g => _⟩
-  dsimp only at hx⊢
+  dsimp only at hx ⊢
   by_cases hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · push_neg  at hm
+  · push_neg at hm
     convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_sub_succ]
 #align is_ascending_rev_series_of_is_descending is_ascending_rev_series_of_is_descending
@@ -468,7 +468,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.is_nilpotent Subgroup.isNilpotent
 
-/-- A the nilpotency class of a subgroup is less or equal the the nilpotency class of the group -/
+/-- A the nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
@@ -553,7 +553,7 @@ theorem nilpotent_of_surjective {G' : Type _} [Group G'] [h : IsNilpotent G] (f 
 
 #align nilpotent_of_surjective nilpotent_of_surjective
 
-/-- The nilpotency class of the range of a surejctive homomorphism from a
+/-- The nilpotency class of the range of a surjective homomorphism from a
 nilpotent group is less or equal the nilpotency class of the domain -/
 theorem nilpotencyClass_le_of_surjective {G' : Type _} [Group G'] (f : G →* G')
     (hf : Function.Surjective f) [h : IsNilpotent G] :
@@ -765,7 +765,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
 
 #align lower_central_series_pi_le lowerCentralSeries_pi_le
 
-/-- products of nilpotent groups are nilpotent if their nipotency class is bounded -/
+/-- products of nilpotent groups are nilpotent if their nilpotency class is bounded -/
 theorem isNilpotent_pi_of_bounded_class [∀ i, IsNilpotent (Gs i)] (n : ℕ)
     (h : ∀ i, Group.nilpotencyClass (Gs i) ≤ n) : IsNilpotent (∀ i, Gs i) := by
   rw [nilpotent_iff_lowerCentralSeries]

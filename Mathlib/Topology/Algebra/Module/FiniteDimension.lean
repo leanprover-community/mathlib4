@@ -112,7 +112,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       refine' (balancedCore_balanced _).smul_mem _ hξ
       rw [norm_mul, norm_inv, mul_inv_le_iff (norm_pos_iff.mpr hξ0), mul_one]
       exact (hξ₀ε.trans h).le
-  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (λ x, x • 1)` is continuous from
+  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
     -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.
     calc
       @nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0 =
@@ -271,7 +271,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 
 /-- In finite dimensions over a non-discrete complete normed field, the canonical identification
 (in terms of a basis) with `𝕜^n` (endowed with the product topology) is continuous.
-This is the key fact wich makes all linear maps from a T2 finite dimensional TVS over such a field
+This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type _} [Fintype ι] (ξ : Basis ι 𝕜 E) :

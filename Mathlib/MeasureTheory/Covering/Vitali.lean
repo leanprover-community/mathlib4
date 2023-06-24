@@ -204,7 +204,7 @@ Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
 For more flexibility, we give a statement with a parameterized family of sets.
 -/
 theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
     (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
     (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
@@ -403,7 +403,7 @@ doubling. Then the set of closed sets `a` with nonempty interior contained in `c
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
 protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (C : ℝ≥0)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : ℝ≥0)
     (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧

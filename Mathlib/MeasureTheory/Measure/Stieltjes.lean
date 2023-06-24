@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.Order.LeftRightLim
 # Stieltjes measures on the real line
 
 Consider a function `f : ℝ → ℝ` which is monotone and right-continuous. Then one can define a
-corrresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
+corresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
 
 ## Main definitions
 
@@ -87,7 +87,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α
     rw [Finset.sup'_le_iff]
     intro k hk
     refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range] at hk⊢
+    rw [Finset.mem_range] at hk ⊢
     exact hk.trans_le (add_le_add_right hij _)
   refine' ⟨xs, h_mono, _⟩
   · refine' tendsto_atTop_atTop_of_monotone h_mono _
@@ -310,7 +310,7 @@ theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftL
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
 def length (s : Set ℝ) : ℝ≥0∞ :=
-  ⨅ (a) (b) (_h : s ⊆ Ioc a b), ofReal (f b - f a)
+  ⨅ (a) (b) (_ : s ⊆ Ioc a b), ofReal (f b - f a)
 #align stieltjes_function.length StieltjesFunction.length
 
 @[simp]
@@ -609,8 +609,8 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
 
-instance instLocallyFiniteMeasure : LocallyFiniteMeasure f.measure :=
+instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
-#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instLocallyFiniteMeasure
+#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
 
 end StieltjesFunction

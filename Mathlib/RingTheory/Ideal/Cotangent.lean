@@ -35,7 +35,7 @@ variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [
 
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: instances that were derived automically need to be proved by hand (see below)
+-- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 #align ideal.cotangent Ideal.Cotangent
