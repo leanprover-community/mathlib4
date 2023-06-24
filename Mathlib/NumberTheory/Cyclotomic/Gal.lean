@@ -8,8 +8,8 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathbin.FieldTheory.PolynomialGaloisGroup
+import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+import Mathlib.FieldTheory.PolynomialGaloisGroup
 
 /-!
 # Galois group of cyclotomic extensions
@@ -56,8 +56,7 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([2]) } -/
 /-- `is_primitive_root.aut_to_pow` is injective in the case that it's considered over a cyclotomic
 field extension. -/
-theorem autToPow_injective : Function.Injective <| hμ.autToPow K :=
-  by
+theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   apply_fun Units.val at hfg 
   simp only [IsPrimitiveRoot.coe_autToPow_apply, Units.val_eq_coe] at hfg 
@@ -65,8 +64,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K :=
   have hf := hf'.some_spec
   have hg := hg'.some_spec
   generalize_proofs hζ at hf hg 
-  suffices f hμ.to_roots_of_unity = g hμ.to_roots_of_unity
-    by
+  suffices f hμ.to_roots_of_unity = g hμ.to_roots_of_unity by
     apply AlgEquiv.coe_algHom_injective
     apply (hμ.power_basis K).algHom_ext
     exact this
@@ -149,8 +147,7 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
 #align is_cyclotomic_extension.from_zeta_aut IsCyclotomicExtension.fromZetaAut
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([4]) } -/
-theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ :=
-  by
+theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [from_zeta_aut, aut_equiv_pow_symm_apply]
   generalize_proofs hζ h _ hμ _
   rw [← hζ.power_basis_gen K]
