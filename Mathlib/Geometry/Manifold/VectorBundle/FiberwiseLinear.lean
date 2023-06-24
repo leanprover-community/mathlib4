@@ -16,7 +16,6 @@ This file contains preliminaries for the definition of a smooth vector bundle: a
 `StructureGroupoid`, the groupoid of `smoothFiberwiseLinear` functions.
 -/
 
-
 noncomputable section
 
 open Set TopologicalSpace
@@ -226,6 +225,20 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
   apply hux
 #align smooth_fiberwise_linear.locality_aux₂ SmoothFiberwiseLinear.locality_aux₂
 
+/- Porting note: `simp only [mem_iUnion]` fails in the next definition. This aux lemma is a
+workaround. -/
+private theorem mem_aux {e : LocalHomeomorph (B × F) (B × F)} :
+    (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
+      (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
+      (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+        {e | e.EqOnSource (FiberwiseLinear.localHomeomorph φ hU hφ.continuousOn
+          h2φ.continuousOn)}) ↔
+      ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
+        (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)
+        (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+          e.EqOnSource (FiberwiseLinear.localHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
+  simp only [mem_iUnion, mem_setOf_eq]
+
 variable (F B IB)
 
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
@@ -239,7 +252,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
       (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
         {e | e.EqOnSource (FiberwiseLinear.localHomeomorph φ hU hφ.continuousOn h2φ.continuousOn)}
   trans' := by
-    simp_rw [mem_iUnion]
+    simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
     refine' ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
       Setoid.trans (LocalHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
@@ -253,31 +266,32 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
           (U ∩ U')
       exact (h2φ.mono <| inter_subset_left _ _).clm_comp (h2φ'.mono <| inter_subset_right _ _)
     · apply FiberwiseLinear.source_trans_localHomeomorph
-    · rintro ⟨b, v⟩ hb; apply FiberwiseLinear.trans_localHomeomorph_apply
-  symm' := by
-    -- the first `simp only` fails
+    · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_localHomeomorph_apply
+  -- porting note: without introducing `e` first, the first `simp only` fails
+  symm' := fun e ↦ by
     simp only [mem_iUnion]
-    -- rintro e ⟨φ, U, hU, hφ, h2φ, heφ⟩
-    -- refine' ⟨fun b => (φ b).symm, U, hU, h2φ, _, heφ.symm'⟩
-    -- simp_rw [ContinuousLinearEquiv.symm_symm]
-    -- exact hφ
+    rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
+    refine' ⟨fun b => (φ b).symm, U, hU, h2φ, _, LocalHomeomorph.EqOnSource.symm' heφ⟩
+    simp_rw [ContinuousLinearEquiv.symm_symm]
+    exact hφ
   id_mem' := by
+    /- porting note: `simp_rw [mem_iUnion]` failed; expanding. Was:
     simp_rw [mem_iUnion]
     refine' ⟨fun b => ContinuousLinearEquiv.refl 𝕜 F, univ, isOpen_univ, _, _, ⟨_, fun b hb => _⟩⟩
-    · apply contMDiffOn_const
-    · apply contMDiffOn_const
+    -/
+    refine mem_iUnion.2 ⟨fun _ ↦ .refl 𝕜 F, mem_iUnion.2 ⟨univ, mem_iUnion.2 ⟨isOpen_univ, ?_⟩⟩⟩
+    refine mem_iUnion.2 ⟨contMDiffOn_const, mem_iUnion.2 ⟨contMDiffOn_const, ?_, ?_⟩⟩
     · simp only [FiberwiseLinear.localHomeomorph, LocalHomeomorph.refl_localEquiv,
         LocalEquiv.refl_source, univ_prod_univ]
-    · simp only [FiberwiseLinear.localHomeomorph, LocalHomeomorph.refl_apply, Prod.mk.eta, id.def,
-        ContinuousLinearEquiv.coe_refl', LocalHomeomorph.mk_coe, LocalEquiv.coe_mk]
+    · exact eqOn_refl id _
   locality' := by
     -- the hard work has been extracted to `locality_aux₁` and `locality_aux₂`
-    simp_rw [mem_iUnion]
+    simp only [mem_aux]
     intro e he
     obtain ⟨U, hU, h⟩ := SmoothFiberwiseLinear.locality_aux₁ e he
     exact SmoothFiberwiseLinear.locality_aux₂ e U hU h
   eq_on_source' := by
-    simp_rw [mem_iUnion]
+    simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 #align smooth_fiberwise_linear smoothFiberwiseLinear
@@ -289,6 +303,5 @@ theorem mem_smoothFiberwiseLinear_iff (e : LocalHomeomorph (B × F) (B × F)) :
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => (φ x).symm : B → F →L[𝕜] F) U),
         e.EqOnSource (FiberwiseLinear.localHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
-  show e ∈ Set.iUnion _ ↔ _ by simp only [mem_iUnion]; rfl
+  mem_aux
 #align mem_smooth_fiberwise_linear_iff mem_smoothFiberwiseLinear_iff
-
