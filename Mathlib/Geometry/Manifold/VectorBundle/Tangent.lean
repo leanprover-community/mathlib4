@@ -239,8 +239,13 @@ theorem mem_chart_source_iff (p q : TM) :
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
     p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
+  /- porting note: was
   simp (config := { contextual := true }) only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
+  -/
+  simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
+  rw [LocalEquiv.prod_symm]
+  simp (config := { contextual := true }) only [and_iff_left_iff_imp, mfld_simps]
 #align tangent_bundle.mem_chart_target_iff TangentBundle.mem_chart_target_iff
 
 @[simp, mfld_simps]
@@ -418,6 +423,7 @@ theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N �
   simp_rw [inTangentCoordinates, inCoordinates_tangent_bundle_core_model_space]
 #align in_tangent_coordinates_model_space inTangentCoordinates_model_space
 
+#check VectorBundleCore.inCoordinates_eq
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
