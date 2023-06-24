@@ -88,8 +88,8 @@ theorem smooth_inv : Smooth I I fun x : G => x⁻¹ :=
 
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive
-      "An additive Lie group is an additive topological group. This is not an instance for technical\nreasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive "An additive Lie group is an additive topological group. This is not an instance for
+technical reasons, see note [Design choices about smooth algebraic structures]."]
 theorem topologicalGroup_of_lieGroup : TopologicalGroup G :=
   { continuousMul_of_smooth I with continuous_inv := (smooth_inv I).continuous }
 #align topological_group_of_lie_group topologicalGroup_of_lieGroup
