@@ -179,14 +179,24 @@ def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoi
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
-@[simps!]
 def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
     PowerBasis R (Algebra.adjoin R ({x} : Set S)) :=
   PowerBasis.map (AdjoinRoot.powerBasis' (minpoly.monic hx)) (minpoly.equivAdjoin hx)
 #align algebra.adjoin.power_basis' Algebra.adjoin.powerBasis'
 
+@[simp]
+theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
+  (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
+#align algebra.adjoin.power_basis'_dim Algebra.adjoin.powerBasis'_dim
+
+@[simp]
+theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
+    (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
+  rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
+    AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftHom_root]
+#align algebra.adjoin.power_basis'_gen Algebra.adjoin.powerBasis'_gen
+
 /-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
-@[simps!]
 noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsIntegral R x)
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : PowerBasis R S :=
   (Algebra.adjoin.powerBasis' hint).map <|
@@ -194,6 +204,18 @@ noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint :
       Subalgebra.topEquiv
 #align power_basis.of_gen_mem_adjoin' PowerBasis.ofGenMemAdjoin'
 
+@[simp]
+theorem _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
+    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
+    (B.ofGenMemAdjoin' hint hx).dim = (minpoly R x).natDegree := rfl
+#align power_basis.of_gen_mem_adjoin'_dim PowerBasis.ofGenMemAdjoin'_dim
+
+@[simp]
+theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
+    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
+    (B.ofGenMemAdjoin' hint hx).gen = x := by
+  simp [PowerBasis.ofGenMemAdjoin']
+#align power_basis.of_gen_mem_adjoin'_gen PowerBasis.ofGenMemAdjoin'_gen
 
 end AdjoinRoot
 
