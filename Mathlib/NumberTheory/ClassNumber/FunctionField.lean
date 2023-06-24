@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.ClassNumber.AdmissibleCardPowDegree
-import Mathbin.NumberTheory.ClassNumber.Finite
-import Mathbin.NumberTheory.FunctionField
+import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+import Mathlib.NumberTheory.ClassNumber.Finite
+import Mathlib.NumberTheory.FunctionField
 
 /-!
 # Class numbers of function fields
