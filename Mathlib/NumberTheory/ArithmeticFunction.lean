@@ -308,7 +308,7 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _H
     exact ⟨(k, l * j), (l, j)⟩
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H
-    simp only [Finset.mem_sigma, mem_divisorsAntidiagonal] at H⊢
+    simp only [Finset.mem_sigma, mem_divisorsAntidiagonal] at H ⊢
     rcases H with ⟨⟨rfl, n0⟩, rfl, i0⟩
     refine' ⟨⟨(mul_assoc _ _ _).symm, n0⟩, trivial, _⟩
     rw [mul_ne_zero_iff] at *
@@ -317,20 +317,20 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     simp only [mul_assoc]
   · rintro ⟨⟨a, b⟩, ⟨c, d⟩⟩ ⟨⟨i, j⟩, ⟨k, l⟩⟩ H₁ H₂
     simp only [Finset.mem_sigma, mem_divisorsAntidiagonal, and_imp, Prod.mk.inj_iff, add_comm,
-      heq_iff_eq] at H₁ H₂⊢
+      heq_iff_eq] at H₁ H₂ ⊢
     simp only [Sigma.mk.inj_iff, Prod.mk.injEq, heq_eq_eq, and_imp] -- porting note: added
     rintro h h2 rfl rfl
     subst h -- porting note: added.  The `rintro h ...` above was `rintro rfl ...`
     exact ⟨⟨Eq.trans H₁.2.1.symm H₂.2.1, rfl⟩, rfl, rfl⟩
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H
     refine' ⟨⟨(i * k, l), (i, k)⟩, _, _⟩
-    · simp only [Finset.mem_sigma, mem_divisorsAntidiagonal] at H⊢
+    · simp only [Finset.mem_sigma, mem_divisorsAntidiagonal] at H ⊢
       rcases H with ⟨⟨rfl, n0⟩, rfl, j0⟩
       refine' ⟨⟨mul_assoc _ _ _, n0⟩, trivial, _⟩
       rw [mul_ne_zero_iff] at *
       exact ⟨n0.1, j0.1⟩
     · simp only [true_and_iff, mem_divisorsAntidiagonal, and_true_iff, Prod.mk.inj_iff,
-        eq_self_iff_true, Ne.def, mem_sigma, heq_iff_eq] at H⊢
+        eq_self_iff_true, Ne.def, mem_sigma, heq_iff_eq] at H ⊢
       rw [H.2.1]
 #align nat.arithmetic_function.mul_smul' Nat.ArithmeticFunction.mul_smul'
 
