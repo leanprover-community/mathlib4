@@ -223,12 +223,8 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
     all_goals
       repeat rw [Bool.cond_true]
       repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH]
-      try congr 1; rw [Q.succ_n_eq]; finish
-      try
-        erw [(ε _).map_zero]
-        have : p ≠ q := by intro h; rw [p.succ_n_eq q] at h; finish
-        simp [this]
+      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 #align sensitivity.duality Sensitivity.duality
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
