@@ -105,18 +105,14 @@ open MvFunctor (LiftP LiftR)
 
 
 protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x := by
-  rw [← abs_repr x]
-  cases' repr x with a f
-  rw [← abs_map]
+  rw [← abs_repr x, ← abs_map]
   rfl
 #align mvqpf.id_map MvQPF.id_map
 
 @[simp]
 theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F α) :
     (g ⊚ f) <$$> x = g <$$> f <$$> x := by
-  rw [← abs_repr x]
-  cases' repr x with a f
-  rw [← abs_map, ← abs_map, ← abs_map]
+  rw [← abs_repr x, ← abs_map, ← abs_map, ← abs_map]
   rfl
 #align mvqpf.comp_map MvQPF.comp_map
 
