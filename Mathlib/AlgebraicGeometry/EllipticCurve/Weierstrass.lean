@@ -82,7 +82,7 @@ elliptic curve, weierstrass equation, j invariant
 -/
 
 -- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
-macro "map_simp" : tactic =>
+local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
 universe u v w
@@ -357,11 +357,11 @@ section Polynomial
 open Polynomial
 
 -- porting note: relocated into `Polynomial` section
-macro "eval_simp" : tactic =>
+local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
 
 -- porting note: relocated into `Polynomial` section
-macro "C_simp" : tactic =>
+local macro "C_simp" : tactic =>
   `(tactic| simp only [C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
 
 open scoped Polynomial PolynomialPolynomial
