@@ -18,11 +18,11 @@ generalization, the Monge point of a simplex.
 
 ## Main definitions
 
-* `monge_point` is the Monge point of a simplex, defined in terms of
+* `mongePoint` is the Monge point of a simplex, defined in terms of
   its position on the Euler line and then shown to be the point of
   concurrence of the Monge planes.
 
-* `monge_plane` is a Monge plane of an (n+2)-simplex, which is the
+* `mongePlane` is a Monge plane of an (n+2)-simplex, which is the
   (n+1)-dimensional affine subspace of the subspace spanned by the
   simplex that passes through the centroid of an n-dimensional face
   and is orthogonal to the opposite edge (in 2 dimensions, this is the
@@ -35,7 +35,7 @@ generalization, the Monge point of a simplex.
   as its Monge point, then shown to be the point of concurrence of the
   altitudes.
 
-* `orthocentric_system` is a predicate on sets of points that says
+* `OrthocentricSystem` is a predicate on sets of points that says
   whether they are four points, one of which is the orthocenter of the
   other three (in which case various other properties hold, including
   that each is the orthocenter of the other three).
@@ -112,13 +112,13 @@ theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 #align affine.simplex.monge_point_eq_of_range_eq Affine.Simplex.mongePoint_eq_of_range_eq
 
 /-- The weights for the Monge point of an (n+2)-simplex, in terms of
-`points_with_circumcenter`. -/
+`pointsWithCircumcenter`. -/
 def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n + 2) → ℝ
   | point_index _ => ((n + 1 : ℕ) : ℝ)⁻¹
   | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_weights_with_circumcenter Affine.Simplex.mongePointWeightsWithCircumcenter
 
-/-- `monge_point_weights_with_circumcenter` sums to 1. -/
+/-- `mongePointWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
@@ -131,7 +131,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
 #align affine.simplex.sum_monge_point_weights_with_circumcenter Affine.Simplex.sum_mongePointWeightsWithCircumcenter
 
 /-- The Monge point of an (n+2)-simplex, in terms of
-`points_with_circumcenter`. -/
+`pointsWithCircumcenter`. -/
 theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) :
     s.mongePoint =
@@ -161,16 +161,16 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the
 centroid of an n-dimensional face, in terms of
-`points_with_circumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
+`pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
 def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
   | point_index i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
   | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter
 
-/-- `monge_point_vsub_face_centroid_weights_with_circumcenter` is the
-result of subtracting `centroid_weights_with_circumcenter` from
-`monge_point_weights_with_circumcenter`. -/
+/-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` is the
+result of subtracting `centroidWeightsWithCircumcenter` from
+`mongePointWeightsWithCircumcenter`. -/
 theorem mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub {n : ℕ} {i₁ i₂ : Fin (n + 3)}
     (h : i₁ ≠ i₂) :
     mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂ =
@@ -187,7 +187,7 @@ theorem mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub {n : ℕ} {i₁
       mongePointVSubFaceCentroidWeightsWithCircumcenter]
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter_eq_sub Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter_eq_sub
 
-/-- `monge_point_vsub_face_centroid_weights_with_circumcenter` sums to 0. -/
+/-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` sums to 0. -/
 @[simp]
 theorem sum_mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} {i₁ i₂ : Fin (n + 3)}
     (h : i₁ ≠ i₂) : ∑ i, mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂ i = 0 := by
@@ -198,7 +198,7 @@ theorem sum_mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} {i₁ i�
 #align affine.simplex.sum_monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.sum_mongePointVSubFaceCentroidWeightsWithCircumcenter
 
 /-- The Monge point of an (n+2)-simplex, minus the centroid of an
-n-dimensional face, in terms of `points_with_circumcenter`. -/
+n-dimensional face, in terms of `pointsWithCircumcenter`. -/
 theorem mongePoint_vsub_face_centroid_eq_weightedVSub_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} (h : i₁ ≠ i₂) :
     s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points =
@@ -555,7 +555,7 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
 
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius, variant using a
-`finset`. -/
+`Finset`. -/
 theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
     (h : i₁ ≠ i₂) :
     dist t.orthocenter
