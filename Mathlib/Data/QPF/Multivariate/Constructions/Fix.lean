@@ -188,11 +188,9 @@ than the input. For `F a b c` a ternary functor, `Fix F` is a binary functor suc
 Fix F a b = F a b (Fix F a b)
 ```
 -/
-def Fix {n : ℕ} (F : TypeVec (n + 1) → Type _) [MvFunctor F] [q : MvQPF F] (α : TypeVec n) :=
+def Fix {n : ℕ} (F : TypeVec (n + 1) → Type _) [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
-
---attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/
 def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
