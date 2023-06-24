@@ -239,12 +239,11 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   let s : ι →₀ R := bS.repr a
   have s_eq : ∀ i, s i = bS.repr a i := fun i => rfl
   let qs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i / b
-  have q_eq : ∀ j i, qs j i = μ j * s i / b := fun i j => rfl
   let rs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i % b
   have r_eq : ∀ j i, rs j i = μ j * s i % b := fun i j => rfl
   have μ_eq : ∀ i j, μ j * s i = b * qs j i + rs j i := by
     intro i j
-    rw [q_eq, r_eq, EuclideanDomain.div_add_mod]
+    rw [r_eq, EuclideanDomain.div_add_mod]
   have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
