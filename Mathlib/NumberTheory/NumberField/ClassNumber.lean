@@ -8,9 +8,9 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.ClassNumber.AdmissibleAbs
-import Mathbin.NumberTheory.ClassNumber.Finite
-import Mathbin.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
+import Mathlib.NumberTheory.ClassNumber.Finite
+import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Class numbers of number fields
