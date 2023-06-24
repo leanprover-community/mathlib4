@@ -15,8 +15,8 @@ import Mathlib.Geometry.Manifold.ContMDiffMap
 A smooth monoid is a monoid that is also a smooth manifold, in which multiplication is a smooth map
 of the product manifold `G` × `G` into `G`.
 
-In this file we define the basic structures to talk about smooth monoids: `has_smooth_mul` and its
-additive counterpart `has_smooth_add`. These structures are general enough to also talk about smooth
+In this file we define the basic structures to talk about smooth monoids: `HasSmoothMul` and its
+additive counterpart `HasSmoothAdd`. These structures are general enough to also talk about smooth
 semigroups.
 -/
 
@@ -25,26 +25,26 @@ open scoped Manifold
 
 library_note "Design choices about smooth algebraic structures"/--
 1. All smooth algebraic structures on `G` are `Prop`-valued classes that extend
-`smooth_manifold_with_corners I G`. This way we save users from adding both
-`[smooth_manifold_with_corners I G]` and `[has_smooth_mul I G]` to the assumptions. While many API
-lemmas hold true without the `smooth_manifold_with_corners I G` assumption, we're not aware of a
+`SmoothManifoldWithCorners I G`. This way we save users from adding both
+`[SmoothManifoldWithCorners I G]` and `[HasSmoothMul I G]` to the assumptions. While many API
+lemmas hold true without the `SmoothManifoldWithCorners I G` assumption, we're not aware of a
 mathematically interesting monoid on a topological manifold such that (a) the space is not a
-`smooth_manifold_with_corners`; (b) the multiplication is smooth at `(a, b)` in the charts
-`ext_chart_at I a`, `ext_chart_at I b`, `ext_chart_at I (a * b)`.
+`SmoothManifoldWithCorners`; (b) the multiplication is smooth at `(a, b)` in the charts
+`extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
 
-2. Because of `model_prod` we can't assume, e.g., that a `lie_group` is modelled on `𝓘(𝕜, E)`. So,
+2. Because of `ModelProd` we can't assume, e.g., that a `lie_group` is modelled on `𝓘(𝕜, E)`. So,
 we formulate the definitions and lemmas for any model.
 
 3. While smoothness of an operation implies its continuity, lemmas like
-`has_continuous_mul_of_smooth` can't be instances becausen otherwise Lean would have to search for
-`has_smooth_mul I G` with unknown `𝕜`, `E`, `H`, and `I : model_with_corners 𝕜 E H`. If users needs
-`[has_continuous_mul G]` in a proof about a smooth monoid, then they need to either add
-`[has_continuous_mul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
+`continuousMul_of_smooth` can't be instances becausen otherwise Lean would have to search for
+`HasSmoothMul I G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users needs
+`[ContinuousMul G]` in a proof about a smooth monoid, then they need to either add
+`[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a smooth (Lie) additive monoid or a smooth additive
 semigroup. A smooth additive monoid over `α`, for example, is obtained by requiring both the
-instances `add_monoid α` and `has_smooth_add α`. -/
+instances `AddMonoid α` and `HasSmoothAdd α`. -/
 class HasSmoothAdd {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
     [Add G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothManifoldWithCorners I G :
@@ -54,8 +54,8 @@ class HasSmoothAdd {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a smooth (Lie) monoid or a smooth semigroup.
-A smooth monoid over `G`, for example, is obtained by requiring both the instances `monoid G`
-and `has_smooth_mul I G`. -/
+A smooth monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
+and `HasSmoothMul I G`. -/
 @[to_additive]
 class HasSmoothMul {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
@@ -167,14 +167,14 @@ end
 variable (I) (g h : G)
 
 /-- Left multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
-Lemmas involving `smooth_left_mul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
+Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
 names. -/
 def smoothLeftMul : C^∞⟮I, G; I, G⟯ :=
   ⟨leftMul g, smooth_mul_left⟩
 #align smooth_left_mul smoothLeftMul
 
 /-- Right multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
-Lemmas involving `smooth_right_mul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
+Lemmas involving `smoothRightMul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
 names. -/
 def smoothRightMul : C^∞⟮I, G; I, G⟯ :=
   ⟨rightMul g, smooth_mul_right⟩
