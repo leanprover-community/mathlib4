@@ -18,7 +18,6 @@ In this file we define the type `cont_mdiff_map` of `n` times continuously diffe
 bundled maps.
 -/
 
-
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type _}
   [TopologicalSpace H] {H' : Type _} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
@@ -66,7 +65,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
   f.prop
 #align cont_mdiff_map.smooth ContMDiffMap.smooth
 
--- porting note: TODO: restore?
+-- porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
@@ -77,7 +76,7 @@ variable {f g : C^n⟮I, M; I', M'⟯}
 
 @[simp]
 theorem coeFn_mk (f : M → M') (hf : ContMDiff I I' n f) :
-    ((Subtype.mk f hf : C^n⟮I, M; I', M'⟯) : M → M') = f :=
+    FunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
   rfl
 #align cont_mdiff_map.coe_fn_mk ContMDiffMap.coeFn_mk
 
@@ -136,6 +135,5 @@ end ContMDiffMap
 
 instance ContinuousLinearMap.hasCoeToContMDiffMap :
     Coe (E →L[𝕜] E') C^n⟮𝓘(𝕜, E), E; 𝓘(𝕜, E'), E'⟯ :=
-  ⟨fun f => ⟨f.toFun, f.contMDiff⟩⟩
+  ⟨fun f => ⟨f, f.contMDiff⟩⟩
 #align continuous_linear_map.has_coe_to_cont_mdiff_map ContinuousLinearMap.hasCoeToContMDiffMap
-
