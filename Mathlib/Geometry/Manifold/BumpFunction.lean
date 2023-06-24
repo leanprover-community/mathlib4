@@ -14,17 +14,17 @@ import Mathlib.Geometry.Manifold.ContMDiff
 /-!
 # Smooth bump functions on a smooth manifold
 
-In this file we define `smooth_bump_function I c` to be a bundled smooth "bump" function centered at
+In this file we define `SmoothBumpFunction I c` to be a bundled smooth "bump" function centered at
 `c`. It is a structure that consists of two real numbers `0 < r < R` with small enough `R`. We
-define a coercion to function for this type, and for `f : smooth_bump_function I c`, the function
+define a coercion to function for this type, and for `f : SmoothBumpFunction I c`, the function
 `⇑f` written in the extended chart at `c` has the following properties:
 
 * `f x = 1` in the closed ball of radius `f.r` centered at `c`;
 * `f x = 0` outside of the ball of radius `f.R` centered at `c`;
 * `0 ≤ f x ≤ 1` for all `x`.
 
-The actual statements involve (pre)images under `ext_chart_at I f` and are given as lemmas in the
-`smooth_bump_function` namespace.
+The actual statements involve (pre)images under `extChartAt I f` and are given as lemmas in the
+`SmoothBumpFunction` namespace.
 
 ## Tags
 
@@ -50,7 +50,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 -/
 
 /-- Given a smooth manifold modelled on a finite dimensional space `E`,
-`f : smooth_bump_function I M` is a smooth function on `M` such that in the extended chart `e` at
+`f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
 * `f x = 1` in the closed ball of radius `f.r` centered at `f.c`;
@@ -59,7 +59,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 
 The structure contains data required to construct a function with these properties. The function is
 available as `⇑f` or `f x`. Formal statements of the properties listed above involve some
-(pre)images under `ext_chart_at I f.c` and are given as lemmas in the `smooth_bump_function`
+(pre)images under `extChartAt I f.c` and are given as lemmas in the `SmoothBumpFunction`
 namespace. -/
 structure SmoothBumpFunction (c : M) extends ContDiffBump (extChartAt I c c) where
   closedBall_subset : closedBall (extChartAt I c c) rOut ∩ range I ⊆ (extChartAt I c).target
@@ -69,7 +69,7 @@ namespace SmoothBumpFunction
 
 variable {c : M} (f : SmoothBumpFunction I c) {x : M} {I}
 
-/-- The function defined by `f : smooth_bump_function c`. Use automatic coercion to function
+/-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/
 @[coe] def toFun : M → ℝ :=
   indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c)
@@ -200,9 +200,9 @@ theorem isCompact_symm_image_closedBall :
     (continuousOn_extChartAt_symm _ _).mono f.closedBall_subset
 #align smooth_bump_function.is_compact_symm_image_closed_ball SmoothBumpFunction.isCompact_symm_image_closedBall
 
-/-- Given a smooth bump function `f : smooth_bump_function I c`, the closed ball of radius `f.R` is
+/-- Given a smooth bump function `f : SmoothBumpFunction I c`, the closed ball of radius `f.R` is
 known to include the support of `f`. These closed balls (in the model normed space `E`) intersected
-with `set.range I` form a basis of `𝓝[range I] (ext_chart_at I c c)`. -/
+with `Set.range I` form a basis of `𝓝[range I] (extChartAt I c c)`. -/
 theorem nhdsWithin_range_basis :
     (𝓝[range I] extChartAt I c c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f =>
       closedBall (extChartAt I c c) f.rOut ∩ range I := by
@@ -224,7 +224,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
 ball of radius `f.R`), then there exists `0 < r < f.R` such that `s` is a subset of the open ball of
-radius `r`. Formally, `s ⊆ e.source ∩ e ⁻¹' (ball (e c) r)`, where `e = ext_chart_at I c`. -/
+radius `r`. Formally, `s ⊆ e.source ∩ e ⁻¹' (ball (e c) r)`, where `e = extChartAt I c`. -/
 theorem exists_r_pos_lt_subset_ball {s : Set M} (hsc : IsClosed s) (hs : s ⊆ support f) :
     ∃ r ∈ Ioo 0 f.rOut,
       s ⊆ (chartAt H c).source ∩ extChartAt I c ⁻¹' ball (extChartAt I c c) r := by
@@ -250,7 +250,7 @@ theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
   simp only [support_eq_inter_preimage, updateRIn_rOut]
 #align smooth_bump_function.support_update_r SmoothBumpFunction.support_updateRIn
 
--- porting note: was an `inhabited` instance
+-- porting note: was an `Inhabited` instance
 instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
 
 variable [T2Space M]
@@ -288,7 +288,7 @@ variable (I c)
 
 /-- The closures of supports of smooth bump functions centered at `c` form a basis of `𝓝 c`.
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
-includes `tsupport f` for some `f : smooth_bump_function I c`. -/
+includes `tsupport f` for some `f : SmoothBumpFunction I c`. -/
 theorem nhds_basis_tsupport :
     (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f => tsupport f := by
   have :
@@ -302,10 +302,10 @@ theorem nhds_basis_tsupport :
 
 variable {c}
 
-/-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : smooth_bump_function I c` such that
+/-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
 `tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a
 neighborhood of `c` and each neighborhood of `c` includes `support f` for some `f :
-smooth_bump_function I c` such that `tsupport f ⊆ s`. -/
+SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
     (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f => support f :=
   ((nhds_basis_tsupport I c).restrict_subset hs).to_has_basis'
@@ -331,7 +331,7 @@ protected theorem continuous : Continuous f :=
   f.smooth.continuous
 #align smooth_bump_function.continuous SmoothBumpFunction.continuous
 
-/-- If `f : smooth_bump_function I c` is a smooth bump function and `g : M → G` is a function smooth
+/-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : SmoothOn I 𝓘(ℝ, G) g (chartAt H c).source) : Smooth I 𝓘(ℝ, G) fun x => f x • g x := by
