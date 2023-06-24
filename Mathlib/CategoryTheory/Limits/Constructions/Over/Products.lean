@@ -76,7 +76,9 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
           rfl }
 #align category_theory.over.construct_products.cones_equiv_inverse CategoryTheory.Over.ConstructProducts.conesEquivInverse
 
---attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
+-- Porting note: this should help with the additional `naturality` proof we now have to give in
+-- `conesEquivFunctor`, but doesn't.
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -91,33 +93,33 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   map f := { Hom := Over.homMk f.Hom }
 #align category_theory.over.construct_products.cones_equiv_functor CategoryTheory.Over.ConstructProducts.conesEquivFunctor
 
---attribute [local tidy] tactic.case_bash -- Porting note: no tidy
+-- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
+-- `WidePullbackShape`.
+-- attribute [local aesop safe cases (rule_sets [CategoryTheory])] WidePullbackShape
+-- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simp]
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents
-    (fun _ => Cones.ext
-      { hom := 𝟙 _
-        inv := 𝟙 _ } (by rintro (j | j) <;> aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents fun _ => Cones.ext
+    { hom := 𝟙 _
+      inv := 𝟙 _ }
+    (by rintro (j | j) <;> aesop_cat)
 #align category_theory.over.construct_products.cones_equiv_unit_iso CategoryTheory.Over.ConstructProducts.conesEquivUnitIso
 
+-- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
+--       `Cones.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simp]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents
-    (fun _ => Cones.ext
-      { hom := Over.homMk (𝟙 _)
-        inv := Over.homMk (𝟙 _) } (by aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents fun _ => Cones.ext
+    { hom := Over.homMk (𝟙 _)
+      inv := Over.homMk (𝟙 _) }
 #align category_theory.over.construct_products.cones_equiv_counit_iso CategoryTheory.Over.ConstructProducts.conesEquivCounitIso
 
--- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
---       `Cones.ext`?
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
 @[simps]
@@ -163,8 +165,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
---attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
-
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by
@@ -175,17 +175,14 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
     { cone :=
         { pt := Over.mk (𝟙 _)
           π :=
-            { app := fun p => p.as.elim
-              -- Porting note: Added a proof for `naturality`
-              naturality := fun X => X.as.elim } }
+            { app := fun p => p.as.elim } }
       isLimit :=
         { lift := fun s => Over.homMk _
           fac := fun _ j => j.as.elim
           uniq := fun s m _ => by
             simp only
             ext
-            -- Porting note: Added a proof to `Over.homMk_left`
-            rw [Over.homMk_left _ (by dsimp; rw [Category.comp_id])]
+            rw [Over.homMk_left _]
             have := m.w
             dsimp at this
             rwa [Category.comp_id, Category.comp_id] at this } }

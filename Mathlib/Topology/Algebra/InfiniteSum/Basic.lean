@@ -71,7 +71,7 @@ irreducible_def tsum {β} (f : β → α) :=
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tsum]
-notation3"∑' "(...)", "r:(scoped f => tsum f) => r
+notation3 "∑' "(...)", "r:(scoped f => tsum f) => r
 
 variable {f g : β → α} {a b : α} {s : Finset β}
 
@@ -460,7 +460,7 @@ theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
     (∑' x : s, f x) = ∑' x : t, f x := by rw [h]
 #align tsum_congr_subtype tsum_congr_subtype
 
-theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _b : β, (0 : α)) = 0 := by
+theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _ : β, (0 : α)) = 0 := by
   classical
     rw [tsum_def, dif_pos summable_zero]
     suffices ∀ x : α, HasSum (fun _ : β => (0 : α)) x → x = 0 by
@@ -473,7 +473,7 @@ theorem tsum_zero' (hz : IsClosed ({0} : Set α)) : (∑' _b : β, (0 : α)) = 0
 #align tsum_zero' tsum_zero'
 
 @[simp]
-theorem tsum_zero [T1Space α] : (∑' _b : β, (0 : α)) = 0 :=
+theorem tsum_zero [T1Space α] : (∑' _ : β, (0 : α)) = 0 :=
   tsum_zero' isClosed_singleton
 #align tsum_zero tsum_zero
 
@@ -707,7 +707,7 @@ theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0
     rwa [← e, mem_decode₂.1 (Option.get_mem (H m hm))] at this
   · intro b h
     refine' ⟨⟨encode b, _⟩, _⟩
-    · simp only [mem_support, encodek₂] at h⊢
+    · simp only [mem_support, encodek₂] at h ⊢
       convert h
       simp [Set.ext_iff, encodek₂]
     · exact Option.get_of_mem _ (encodek₂ _)
@@ -853,7 +853,7 @@ theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :
 theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
     HasSum (f ∘ (↑) : ↑(sᶜ) → α) a₂ ↔ HasSum f (a₁ + a₂) := by
   refine' ⟨fun h => hf.add_compl h, fun h => _⟩
-  rw [hasSum_subtype_iff_indicator] at hf⊢
+  rw [hasSum_subtype_iff_indicator] at hf ⊢
   rw [Set.indicator_compl]
   simpa only [add_sub_cancel'] using h.sub hf
 #align has_sum.has_sum_compl_iff HasSum.hasSum_compl_iff
@@ -1009,7 +1009,7 @@ theorem HasSum.int_rec {b : α} {f g : ℕ → α} (hf : HasSum f a) (hg : HasSu
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) _
-      exacts[Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
+      exacts [Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
   exact HasSum.add_isCompl this (h₁.hasSum_range_iff.mpr hf) (h₂.hasSum_range_iff.mpr hg)
 #align has_sum.int_rec HasSum.int_rec
 

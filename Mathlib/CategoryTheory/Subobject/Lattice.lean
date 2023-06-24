@@ -105,12 +105,12 @@ theorem bot_arrow {X : C} : (⊥ : MonoOver X).arrow = initial.to X :=
 
 /-- The (unique) morphism from `⊥ : MonoOver X` to any other `f : MonoOver X`. -/
 def botLE {X : C} (f : MonoOver X) : ⊥ ⟶ f :=
-  homMk (initial.to _) (by simp)
+  homMk (initial.to _)
 #align category_theory.mono_over.bot_le CategoryTheory.MonoOver.botLE
 
 /-- `map f` sends `⊥ : MonoOver X` to `⊥ : MonoOver Y`. -/
 def mapBot (f : X ⟶ Y) [Mono f] : (map f).obj ⊥ ≅ ⊥ :=
-  iso_of_both_ways (homMk (initial.to _) (by simp)) (homMk (𝟙 _) (by simp))
+  iso_of_both_ways (homMk (initial.to _)) (homMk (𝟙 _))
 #align category_theory.mono_over.map_bot CategoryTheory.MonoOver.mapBot
 
 end Bot
@@ -205,7 +205,7 @@ def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f
   intro k₁ k₂
   refine' homMk _ _
   apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  . apply coprod.hom_ext
+  . ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -513,7 +513,7 @@ section SemilatticeSup
 
 variable [HasImages C] [HasBinaryCoproducts C]
 
-/-- The functorial supremum on `MonoOver A` descends to an supremum on `Subobject A`. -/
+/-- The functorial supremum on `MonoOver A` descends to a supremum on `Subobject A`. -/
 def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup
@@ -670,7 +670,7 @@ section Sup
 
 variable [WellPowered C] [HasCoproducts.{v₁} C]
 
-/-- The univesal morphism out of the coproduct of a set of subobjects,
+/-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
 -/
 def smallCoproductDesc {A : C} (s : Set (Subobject A)) :=

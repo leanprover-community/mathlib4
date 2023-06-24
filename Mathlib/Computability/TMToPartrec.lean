@@ -309,7 +309,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [Vector.cons_val, Vector.tail_val] at hf hg
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, Vector.tail_cons, Vector.head_cons,
       PFun.coe_val, Vector.tail_val]
-    simp only [← Part.pure_eq_some] at hf hg⊢
+    simp only [← Part.pure_eq_some] at hf hg ⊢
     induction' v.head with n _ <;>
       simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
@@ -340,7 +340,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     obtain ⟨cf, hf⟩ := IHf; refine' ⟨rfind cf, fun v => _⟩
     replace hf := fun a => hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
-      show ∀ x, pure x = [x] from fun _ => rfl] at hf⊢
+      show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine' Part.ext fun x => _
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
@@ -371,7 +371,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine' IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => _
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
-        exacts[hm _ h, h]
+        exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
       refine' ⟨n.succ::v.1, _, rfl⟩
       have : (n.succ::v.1 : List ℕ) ∈
@@ -940,34 +940,10 @@ inductive Λ'
 #align turing.partrec_to_TM2.Λ'.ret Turing.PartrecToTM2.Λ'.ret
 
 -- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
-
-/-- A computable version of `Turing.PartrecToTM2.Λ'.rec`.
-Workaround until Lean has native support for this. The compiler fails to check the termination,
-so this should be `unsafe`. -/
-@[elab_as_elim] private unsafe abbrev Λ'.recU.{u} {motive : Λ' → Sort u}
-    (move : (p : Γ' → Bool) → (k₁ k₂ : K') → (q : Λ') → motive q → motive (Λ'.move p k₁ k₂ q))
-    (clear : (p : Γ' → Bool) → (k : K') → (q : Λ') → motive q → motive (Λ'.clear p k q))
-    (copy : (q : Λ') → motive q → motive (Λ'.copy q))
-    (push : (k : K') → (s : Option Γ' → Option Γ') → (q : Λ') → motive q → motive (Λ'.push k s q))
-    (read : (f : Option Γ' → Λ') → ((a : Option Γ') → motive (f a)) → motive (Λ'.read f))
-    (succ : (q : Λ') → motive q → motive (Λ'.succ q))
-    (pred : (q₁ q₂ : Λ') → motive q₁ → motive q₂ → motive (Λ'.pred q₁ q₂))
-    (ret : (k : Cont') → motive (Λ'.ret k)) :
-    (t : Λ') → motive t
-  | Λ'.move p k₁ k₂ q => move p k₁ k₂ q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.clear p k q => clear p k q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.copy q => copy q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.push k s q => push k s q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.read f => read f (fun a => Λ'.recU move clear copy push read succ pred ret (f a))
-  | Λ'.succ q => succ q (Λ'.recU move clear copy push read succ pred ret q)
-  | Λ'.pred q₁ q₂ => pred q₁ q₂
-      (Λ'.recU move clear copy push read succ pred ret q₁)
-      (Λ'.recU move clear copy push read succ pred ret q₂)
-  | Λ'.ret k => ret k
-
-@[elab_as_elim, implemented_by Λ'.recU] private abbrev Λ'.recC.{u} := @Λ'.rec.{u}
-
-@[csimp] private theorem Λ'.rec_eq_recC : @Λ'.rec = @Λ'.recC := rfl
+compile_inductive% Code
+compile_inductive% Cont'
+compile_inductive% K'
+compile_inductive% Λ'
 
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
@@ -2031,7 +2007,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHf H'.2, _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun h => _
-    · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
+    · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine' supports_union.2 ⟨IHfs _, _⟩
     · rw [codeSupp, contSupp_cons₁] at H'
@@ -2044,7 +2020,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHg H', _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
-    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H⊢
+    · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2, H.2⟩
     exact IHf (Finset.union_subset_right H')
   case case f g IHf IHg =>
@@ -2057,7 +2033,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     refine' supports_union.2 ⟨IHf H'.2, _⟩
     refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun _ => _
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp, trStmts₁,
-        Finset.insert_subset] at h H⊢
+        Finset.insert_subset] at h H ⊢
       exact ⟨h.1, ⟨H.1.1, h⟩, H.2⟩
     exact supports_singleton.2 (ret_supports <| Finset.union_subset_right H)
 #align turing.partrec_to_TM2.code_supp'_supports Turing.PartrecToTM2.codeSupp'_supports

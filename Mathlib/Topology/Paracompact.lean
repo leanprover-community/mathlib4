@@ -30,7 +30,7 @@ We also prove the following facts.
 
 * A locally compact sigma compact Hausdorff space is paracompact, see instance
   `paracompact_of_locallyCompact_sigmaCompact`. Moreover, we can choose a locally finite
-  refinement with sets in a given collection of filter bases of `𝓝 x, `x : X`, see
+  refinement with sets in a given collection of filter bases of `𝓝 x`, `x : X`, see
   `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis`. For example, in a proper metric space
   every open covering `⋃ i, s i` admits a refinement `⋃ i, Metric.ball (c i) (r i)`.
 
@@ -84,7 +84,7 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   choose t_inv ht_inv using hXt
   choose U hxU hU using htf
   -- Send each `i` to the union of `t a` over `a ∈ ind ⁻¹' {i}`
-  refine' ⟨fun i ↦ ⋃ (a : α) (_ha : ind a = i), t a, _, _, _, _⟩
+  refine' ⟨fun i ↦ ⋃ (a : α) (_ : ind a = i), t a, _, _, _, _⟩
   · exact fun a ↦ isOpen_iUnion fun a ↦ isOpen_iUnion fun _ ↦ hto a
   · simp only [eq_univ_iff_forall, mem_iUnion]
     exact fun x ↦ ⟨ind (t_inv x), _, rfl, ht_inv _⟩
@@ -245,10 +245,8 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine' ⟨k, _, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)
-      revert this
-      contrapose!
-      simp only [ge_iff_le, not_le]
-      exact fun hnk ↦ K.subset hnk (interior_subset hxK)
+      contrapose! this with hnk
+      exact K.subset hnk (interior_subset hxK)
 #align refinement_of_locally_compact_sigma_compact_of_nhds_basis_set refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each

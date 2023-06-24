@@ -410,7 +410,7 @@ def map (f : R →+* S) [IsLocalRingHom f] : ResidueField R →+* ResidueField S
     exact map_nonunit f a ha
 #align local_ring.residue_field.map LocalRing.ResidueField.map
 
-/-- Applying `residue_field.map` to the identity ring homomorphism gives the identity
+/-- Applying `LocalRing.ResidueField.map` to the identity ring homomorphism gives the identity
 ring homomorphism. -/
 @[simp]
 theorem map_id :
@@ -418,7 +418,8 @@ theorem map_id :
   Ideal.Quotient.ringHom_ext <| RingHom.ext fun _ => rfl
 #align local_ring.residue_field.map_id LocalRing.ResidueField.map_id
 
-/-- The composite of two `residue_field.map`s is the `residue_field.map` of the composite. -/
+/-- The composite of two `LocalRing.ResidueField.map`s is the `LocalRing.ResidueField.map` of the
+composite. -/
 theorem map_comp (f : T →+* R) (g : R →+* S) [IsLocalRingHom f] [IsLocalRingHom g] :
     LocalRing.ResidueField.map (g.comp f) =
       (LocalRing.ResidueField.map g).comp (LocalRing.ResidueField.map f) :=
@@ -485,7 +486,7 @@ section MulSemiringAction
 
 variable (G : Type _) [Group G] [MulSemiringAction G R]
 
-/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `residue_field R`. -/
+/-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `LocalRing.ResidueField R`. -/
 instance : MulSemiringAction G (LocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 

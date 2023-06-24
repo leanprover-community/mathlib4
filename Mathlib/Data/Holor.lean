@@ -295,12 +295,12 @@ theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
-  ext (i hid)
+  ext i hid
   rw [← slice_sum]
   simp only [slice_unitVec_mul hid]
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]
   · simp
-  · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach)(hbi : b ≠ ⟨i, _⟩)
+  · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach) (hbi : b ≠ ⟨i, _⟩)
     have hbi' : i ≠ b := by simpa only [Ne.def, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
     simp [hbi']
   · intro (hid' : Subtype.mk i _ ∉ Finset.attach (Finset.range d))
@@ -372,7 +372,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
       simp only [Nat.one_mul, Nat.add_comm]
       have ih' : CPRankMax (Finset.card s * n) (∑ x in s, f x) := by
         apply ih
-        intro (x : β)(h_x_in_s : x ∈ s)
+        intro (x : β) (h_x_in_s : x ∈ s)
         simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 #align holor.cprank_max_sum Holor.cprankMax_sum

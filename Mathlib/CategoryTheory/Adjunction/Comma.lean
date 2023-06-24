@@ -52,9 +52,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
   left_inv g := by
     let B' : StructuredArrow A G := StructuredArrow.mk ((⊥_ StructuredArrow A G).hom ≫ G.map g)
     let g' : ⊥_ StructuredArrow A G ⟶ B' := StructuredArrow.homMk g rfl
-    have : initial.to _ = g' := by
-      apply colimit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : initial.to _ = g' := by aesop_cat
     change CommaMorphism.right (initial.to B') = _
     rw [this]
     rfl
@@ -106,9 +104,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have : terminal.from _ = g' := by
-      apply limit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : terminal.from _ = g' := by aesop_cat
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl
@@ -132,7 +128,7 @@ def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArr
   Adjunction.adjunctionOfEquivRight _ _
 #align category_theory.adjunction_of_costructured_arrow_terminals CategoryTheory.adjunctionOfCostructuredArrowTerminals
 
-/-- If each costructured arrow category on `G` has an terminal object, `G` is a left adjoint. -/
+/-- If each costructured arrow category on `G` has a terminal object, `G` is a left adjoint. -/
 def isLeftAdjointOfCostructuredArrowTerminals : IsLeftAdjoint G
     where
   right := rightAdjointOfCostructuredArrowTerminals G
@@ -145,16 +141,12 @@ section
 
 variable {F : C ⥤ D}
 
--- porting note: aesop can't seem to add something locally. Also no tactic.discrete_cases.
--- attribute [local tidy] tactic.discrete_cases
-
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
     IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G)
     where
-  desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom) (by aesop_cat)
-  fac _ := by rintro ⟨⟨⟩⟩
+  desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
     dsimp
@@ -167,8 +159,7 @@ category on `F`. -/
 def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
     IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A)
     where
-  lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom) (by aesop_cat)
-  fac _ := by rintro ⟨⟨⟩⟩
+  lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext
     dsimp

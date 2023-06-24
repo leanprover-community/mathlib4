@@ -134,10 +134,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
-  calc
-    _ = _ := by field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring
-    _ ≤ _ := H
-    _ = _ := by field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring
+  convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
 #align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
 
 end EuclideanGeometry

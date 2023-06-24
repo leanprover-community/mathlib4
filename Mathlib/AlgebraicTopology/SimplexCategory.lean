@@ -54,7 +54,7 @@ section
 
 
 -- porting note: the definition of `SimplexCategory` is made irreducible below
-/-- Interpet a natural number as an object of the simplex category. -/
+/-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
 #align simplex_category.mk SimplexCategory.mk
@@ -174,7 +174,7 @@ theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
 #align simplex_category.const_comp SimplexCategory.const_comp
 
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
-This is useful for constructing morphisms beetween `[n]` directly
+This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
 -/
 @[simp]
@@ -531,7 +531,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   · use b.succ
     rw [Fin.predAbove_above i b.succ _, Fin.pred_succ]
     rw [not_le] at h
-    rw [Fin.lt_iff_val_lt_val] at h⊢
+    rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
 instance : ReflectsIsomorphisms (forget SimplexCategory) :=
@@ -624,7 +624,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     · dsimp [δ]
       erw [Fin.succAbove_above i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
-        Nat.lt_succ_iff, Fin.ext_iff] at h' h''⊢
+        Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
@@ -637,7 +637,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
-    ∃ (i : Fin (n + 1))(θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
+    ∃ (i : Fin (n + 1)) (θ' : mk n ⟶ Δ'), θ = σ i ≫ θ' := by
   simp only [Function.Injective, exists_prop, not_forall] at hθ
   -- as θ is not injective, there exists `x<y` such that `θ x = θ y`
   -- and then, `θ x = θ (x+1)`
@@ -704,7 +704,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (hθ : ¬Function.Surjective θ.toOrderHom) :
-    ∃ (i : Fin (n + 2))(θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
+    ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
   cases' not_forall.mp hθ with i hi
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)

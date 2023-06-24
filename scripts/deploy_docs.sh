@@ -35,7 +35,7 @@ if [ "$(cd ../mathlib4_docs && git log -1 --pretty=format:%s)" == "automatic upd
   exit 0
 fi
 
-lake build Mathlib:docs Std:docs
+lake build Std:docs Qq:docs Mathlib:docs Archive:docs Counterexamples:docs
 
 cd ..
 rm -rf mathlib4_docs/docs/

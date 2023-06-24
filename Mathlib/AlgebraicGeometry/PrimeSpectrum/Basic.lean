@@ -157,7 +157,7 @@ At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in 
 consisting of all "functions" that vanish on all of `t`.
 -/
 def vanishingIdeal (t : Set (PrimeSpectrum R)) : Ideal R :=
-  ⨅ (x : PrimeSpectrum R) (__ : x ∈ t), x.asIdeal
+  ⨅ (x : PrimeSpectrum R) (_ : x ∈ t), x.asIdeal
 #align prime_spectrum.vanishing_ideal PrimeSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
@@ -543,7 +543,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
       · simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ←
           Ideal.span_singleton_mul_span_singleton]
         refine' fun h x y h' => h _ _ _
-        rw [← hI.radical_le_iff] at h'⊢
+        rw [← hI.radical_le_iff] at h' ⊢
         simpa only [Ideal.radical_inf, Ideal.radical_mul] using h'
       · simp_rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
         rintro h s t h' ⟨x, hx, hx'⟩ y hy
@@ -899,10 +899,10 @@ end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
 instance : CompactSpace (PrimeSpectrum R) :=
-{ isCompact_univ := by
-    convert isCompact_basicOpen (1 : R)
-    rw [basicOpen_one]
-    rfl }
+  { isCompact_univ := by
+      convert isCompact_basicOpen (1 : R)
+      rw [basicOpen_one]
+      rfl }
 
 section Order
 

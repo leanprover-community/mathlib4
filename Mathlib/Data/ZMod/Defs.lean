@@ -38,7 +38,7 @@ namespace Fin
 ## Ring structure on `Fin n`
 
 We define a commutative ring structure on `Fin n`.
-Afterwords, when we define `ZMod n` in terms of `Fin n`, we use these definitions
+Afterwards, when we define `ZMod n` in terms of `Fin n`, we use these definitions
 to register the ring structure on `ZMod n` as type class instance.
 -/
 

@@ -15,7 +15,7 @@ import Mathlib.Algebra.Ring.Defs
 /-!
 # Idempotents
 
-This file defines idempotents for an arbitary multiplication and proves some basic results,
+This file defines idempotents for an arbitrary multiplication and proves some basic results,
 including:
 
 * `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is

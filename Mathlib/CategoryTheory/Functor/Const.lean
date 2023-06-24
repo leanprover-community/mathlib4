@@ -50,7 +50,7 @@ open Opposite
 
 variable {J}
 
-/-- The contant functor `Jᵒᵖ ⥤ Cᵒᵖ` sending everything to `op X`
+/-- The constant functor `Jᵒᵖ ⥤ Cᵒᵖ` sending everything to `op X`
 is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` sending everything to `X`.
 -/
 @[simps]
@@ -60,7 +60,7 @@ def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op
   inv := { app := fun j => 𝟙 _ }
 #align category_theory.functor.const.op_obj_op CategoryTheory.Functor.const.opObjOp
 
-/-- The contant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
+/-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
 the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/

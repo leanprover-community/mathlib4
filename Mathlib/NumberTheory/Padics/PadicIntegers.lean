@@ -348,10 +348,11 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
   · exact_mod_cast hp.1.pos
 #align padic_int.exists_pow_neg_lt PadicInt.exists_pow_neg_lt
 
-theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
+theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (by exact_mod_cast hε)
   use k
-  rwa [show (p : ℝ) = (p : ℚ) by simp] at hk
+  rw [show (p : ℝ) = (p : ℚ) by simp] at hk
+  exact_mod_cast hk
 #align padic_int.exists_pow_neg_lt_rat PadicInt.exists_pow_neg_lt_rat
 
 variable {p}

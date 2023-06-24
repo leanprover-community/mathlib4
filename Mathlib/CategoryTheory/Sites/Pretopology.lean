@@ -181,7 +181,7 @@ def trivial : Pretopology C where
     rintro ⟨Z, g, i, rfl⟩
     refine' ⟨pullback g f, pullback.snd, _, _⟩
     · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
-      apply pullback.hom_ext
+      ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp
       · simp

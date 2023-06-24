@@ -20,7 +20,7 @@ respect to the weights of the variables. The weights are represented by a functi
 where `σ` are the indeterminates.
 
 A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m : M` if all monomials
-occuring in `φ` have the same weighted degree `m`.
+occurring in `φ` have the same weighted degree `m`.
 
 ## Main definitions/lemmas
 
@@ -131,7 +131,7 @@ end OrderBot
 end SemilatticeSup
 
 /-- A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m` if all monomials
-  occuring in `φ` have weighted degree `m`. -/
+  occurring in `φ` have weighted degree `m`. -/
 def IsWeightedHomogeneous (w : σ → M) (φ : MvPolynomial σ R) (m : M) : Prop :=
   ∀ ⦃d⦄, coeff d φ ≠ 0 → weightedDegree' w d = m
 #align mv_polynomial.is_weighted_homogeneous MvPolynomial.IsWeightedHomogeneous

@@ -681,7 +681,7 @@ theorem connectedComponent_eq_iff_mem {x y : α} :
 theorem connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedComponentIn F x) :
     connectedComponentIn F x = connectedComponentIn F y := by
   have hx : x ∈ F := connectedComponentIn_nonempty_iff.mp ⟨y, h⟩
-  simp_rw [connectedComponentIn_eq_image hx] at h⊢
+  simp_rw [connectedComponentIn_eq_image hx] at h ⊢
   obtain ⟨⟨y, hy⟩, h2y, rfl⟩ := h
   simp_rw [connectedComponentIn_eq_image hy, connectedComponent_eq h2y]
 #align connected_component_in_eq connectedComponentIn_eq
@@ -1435,7 +1435,7 @@ def ConnectedComponents (α : Type u) [TopologicalSpace α] :=
 
 namespace ConnectedComponents
 
-/-- Coersion from a topological space to the set of connected components of this space. -/
+/-- Coercion from a topological space to the set of connected components of this space. -/
 def mk : α → ConnectedComponents α := Quotient.mk''
 
 instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.maps
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -273,10 +273,16 @@ def QuotientMap {α : Type _} {β : Type _} [tα : TopologicalSpace α] [tβ : T
   Surjective f ∧ tβ = tα.coinduced f
 #align quotient_map QuotientMap
 
-theorem quotientMap_iff {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+theorem quotientMap_iff [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   and_congr Iff.rfl topologicalSpace_eq_iff
 #align quotient_map_iff quotientMap_iff
+
+theorem quotientMap_iff_closed [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+    QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
+  quotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
+    simp only [isOpen_compl_iff, preimage_compl]
+#align quotient_map_iff_closed quotientMap_iff_closed
 
 namespace QuotientMap
 
@@ -321,8 +327,8 @@ protected theorem isOpen_preimage (hf : QuotientMap f) {s : Set β} : IsOpen (f 
 #align quotient_map.is_open_preimage QuotientMap.isOpen_preimage
 
 protected theorem isClosed_preimage (hf : QuotientMap f) {s : Set β} :
-    IsClosed (f ⁻¹' s) ↔ IsClosed s := by
-  simp only [← isOpen_compl_iff, ← preimage_compl, hf.isOpen_preimage]
+    IsClosed (f ⁻¹' s) ↔ IsClosed s :=
+  ((quotientMap_iff_closed.1 hf).2 s).symm
 #align quotient_map.is_closed_preimage QuotientMap.isClosed_preimage
 
 end QuotientMap
@@ -505,6 +511,12 @@ theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → Is
 theorem closed_range {f : α → β} (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.closed_range
+
+theorem to_quotientMap {f : α → β} (hcl : IsClosedMap f) (hcont : Continuous f)
+    (hsurj : Surjective f) : QuotientMap f :=
+  quotientMap_iff_closed.2 ⟨hsurj, fun s =>
+    ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
+#align is_closed_map.to_quotient_map IsClosedMap.to_quotientMap
 
 end IsClosedMap
 

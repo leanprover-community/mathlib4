@@ -44,7 +44,7 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
 def convexHull : ClosureOperator (Set E) :=
-  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t) (Convex 𝕜)
+  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t) (Convex 𝕜)
     (fun _ =>
       Set.subset_iInter fun _ => Set.subset_iInter fun hst => Set.subset_iInter fun _ => hst)
     (fun _ => convex_iInter fun _ => convex_iInter fun _ => convex_iInter id) fun _ t hst ht =>
@@ -62,7 +62,7 @@ theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) :=
 #align convex_convex_hull convex_convexHull
 
 theorem convexHull_eq_iInter : convexHull 𝕜 s =
-    ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t :=
+    ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t :=
   rfl
 #align convex_hull_eq_Inter convexHull_eq_iInter
 
