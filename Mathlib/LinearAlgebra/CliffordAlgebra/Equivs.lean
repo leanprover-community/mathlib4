@@ -413,8 +413,8 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m => inr_mul_inr _ m m⟩)
     (DualNumber.lift ⟨ι (R := R) _ 1, ι_mul_ι (1 : R) 1⟩)
-    (by ext x : 1; dsimp; rw [lift_apply_eps, Subtype.coe_mk, lift_ι_apply, inrHom_apply, eps])
-    (by ext : 2; dsimp; rw [lift_ι_apply, inrHom_apply, ← eps, lift_apply_eps, Subtype.coe_mk])
+    (by ext : 1; simp)
+    (by ext : 2; simp)
 #align clifford_algebra_dual_number.equiv CliffordAlgebraDualNumber.equiv
 
 @[simp]
