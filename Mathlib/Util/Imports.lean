@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean.Elab.Command
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Tools for analyzing imports.
@@ -51,18 +51,19 @@ end Lean.Environment
 Return the redundant imports (i.e. those transitively implied by another import)
 amongst a candidate list of imports.
 -/
-def findRedundantImports (env : Environment) (imports : Array Name) : Array Name := Id.run do
+partial def findRedundantImports (env : Environment) (imports : Array Name) : Array Name :=
   let run := visit env.importGraph imports
   let (_, seen) := imports.foldl (fun ⟨v, s⟩ n => run v s n) ({}, {})
-  return seen.toArray
+  seen.toArray
 where
-  visit (graph) (targets) (visited) (seen) (n) : NameSet × NameSet := Id.run do
+  visit (Γ) (targets) (visited) (seen) (n) : NameSet × NameSet :=
     if visited.contains n then
       (visited, seen)
     else
-      let imports := (graph.find? n).getD #[]
-      (visited.insert n,
-        targets.foldl (fun s t => if imports.contains t then s.insert t else s) seen)
+      let imports := (Γ.find? n).getD #[]
+      let (visited', seen') := imports.foldl (fun ⟨v, s⟩ t => visit Γ targets v s t) (visited, seen)
+      (visited'.insert n,
+        imports.foldl (fun s t => if targets.contains t then s.insert t else s) seen')
 
 /--
 Return the redundant imports (i.e. those transitively implied by another import)
@@ -84,3 +85,30 @@ elab "#redundant_imports" : command => do
   else
     logInfo <| "Found the following transitively redundant imports:\n" ++
       m!"{Format.joinSep redundant.toList "\n"}"
+
+/--
+Return the names of the modules in which constants used in the current file were defined,
+with modules already transitively imported removed.
+
+Note that this will *not* account for tactics and syntax used in the file,
+so the results may not suffice as imports.
+-/
+def Lean.Environment.minimalRequiredModules (env : Environment) : Array Name :=
+  let required := env.requiredModules.toArray
+  let redundant := findRedundantImports env required
+  required.filter fun n => ¬ redundant.contains n
+
+/--
+Try to compute a minimal set of imports for this file,
+by analyzing the declarations.
+
+This must be run at the end of the file,
+and is not aware of syntax and tactics,
+so the results will likely need to be adjusted by hand.
+-/
+elab "#minimize_imports" : command => do
+  let imports := (← getEnv).minimalRequiredModules.qsort Name.lt
+    |>.toList.map (fun n => "import " ++ n.toString)
+  logInfo <| Format.joinSep imports "\n"
+
+#minimize_imports
