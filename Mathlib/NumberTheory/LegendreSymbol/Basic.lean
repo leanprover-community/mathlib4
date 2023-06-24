@@ -65,7 +65,8 @@ theorem euler_criterion_units (x : (ZMod p)ˣ) : (∃ y : (ZMod p)ˣ, y ^ 2 = x)
 theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ a ^ (p / 2) = 1 := by
   apply (iff_congr _ (by simp [Units.ext_iff])).mp (euler_criterion_units p (Units.mk0 a ha))
   simp only [Units.ext_iff, sq, Units.val_mk0, Units.val_mul]
-  constructor; · rintro ⟨y, hy⟩; exact ⟨y, hy.symm⟩
+  constructor
+  · rintro ⟨y, hy⟩; exact ⟨y, hy.symm⟩
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by
       rintro rfl
@@ -126,7 +127,9 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       rw [legendreSym, quadraticChar_eq_one_of_char_two hc ha]
       revert ha
       push_cast
-      generalize (a : ZMod 2) = b; fin_cases b; tauto; simp
+      generalize (a : ZMod 2) = b; fin_cases b
+      · tauto
+      · simp
   · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
     norm_cast
     congr

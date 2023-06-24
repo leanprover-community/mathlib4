@@ -34,7 +34,7 @@ i.e. `LinearMap.mulLeft`).
 For now, the definitions assume `S` is commutative, so the choice doesn't
 matter anyway.
 
-See also `algebra.trace`, which is defined similarly as the trace of
+See also `Algebra.trace`, which is defined similarly as the trace of
 `Algebra.leftMulMatrix`.
 
 ## References
@@ -342,8 +342,7 @@ variable {F} (L)
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F
-  · haveI := hKF
-    let A := AlgebraicClosure K
+  · let A := AlgebraicClosure K
     apply (algebraMap K A).injective
     haveI : FiniteDimensional L F := FiniteDimensional.right K L F
     haveI : FiniteDimensional K L := FiniteDimensional.left K L F

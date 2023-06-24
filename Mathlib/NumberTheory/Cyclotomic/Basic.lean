@@ -295,14 +295,14 @@ theorem equiv {C : Type _} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension
 protected
 theorem neZero [h : IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero ((n : ℕ) : B) := by
   obtain ⟨⟨r, hr⟩, -⟩ := (iff_singleton n A B).1 h
-  exact hr.ne_zero'
+  exact hr.neZero'
 #align is_cyclotomic_extension.ne_zero IsCyclotomicExtension.neZero
 
 protected
-theorem ne_zero' [IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero ((n : ℕ) : A) := by
+theorem neZero' [IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero ((n : ℕ) : A) := by
   haveI := IsCyclotomicExtension.neZero n A B
   exact NeZero.nat_of_neZero (algebraMap A B)
-#align is_cyclotomic_extension.ne_zero' IsCyclotomicExtension.ne_zero'
+#align is_cyclotomic_extension.ne_zero' IsCyclotomicExtension.neZero'
 
 end Basic
 
@@ -496,7 +496,7 @@ scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X
 theorem isGalois : IsGalois K L :=
   letI := isSplittingField_X_pow_sub_one n K L
   IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2
-    (IsCyclotomicExtension.ne_zero' n K L).1)
+    (IsCyclotomicExtension.neZero' n K L).1)
 #align is_cyclotomic_extension.is_galois IsCyclotomicExtension.isGalois
 
 /-- If `IsCyclotomicExtension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/

@@ -69,7 +69,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K))
     (hk : p ^ (k + 1) ≠ 2) : discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ (k + 1) : ℕ).totient / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) := by
-  haveI hne := IsCyclotomicExtension.ne_zero' (p ^ (k + 1)) K L
+  haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   -- Porting note: these two instances are not automatically synthesised and must be constructed
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
   haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable

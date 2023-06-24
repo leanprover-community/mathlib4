@@ -382,9 +382,8 @@ theorem eq_top_iff_forall_lt (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
   constructor
   · rintro rfl n
     exact natCast_lt_top _
-  · -- Porting note: was `contrapose!`
-    contrapose
-    rw [←Ne, ne_top_iff, not_forall]
+  · contrapose!
+    rw [ne_top_iff]
     rintro ⟨n, rfl⟩
     exact ⟨n, irrefl _⟩
 #align part_enat.eq_top_iff_forall_lt PartENat.eq_top_iff_forall_lt
@@ -792,10 +791,8 @@ theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := 
   rw [find_get]
   have h₂ := @Nat.find_spec P _ h₁
   revert h₂
-  contrapose
-  intro h₂
-  rw [not_lt] at h₂
-  exact h _ h₂
+  contrapose!
+  exact h _
 #align part_enat.lt_find PartENat.lt_find
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by

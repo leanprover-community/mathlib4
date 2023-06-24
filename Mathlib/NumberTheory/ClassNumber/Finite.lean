@@ -345,7 +345,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I 
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 #align class_group.exists_mk0_eq_mk0 ClassGroup.exists_mk0_eq_mk0
 
-/-- `class_group.mk_M_mem` is a specialization of `class_group.mk0` to (the finite set of)
+/-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
 ideals that contain `M := ∏ m in finset_approx L f abs, m`.
 By showing this function is surjective, we prove that the class group is finite. -/
 noncomputable def mkMMem [IsDedekindDomain S]
@@ -369,7 +369,7 @@ open scoped Classical
 /-- The main theorem: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
-See also `class_group.fintype_of_admissible_of_finite` where `L` is a finite
+See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
@@ -391,7 +391,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
 finite extension `L` of `K = Frac(R)` is finite if there is an admissible
 absolute value.
 
-See also `class_group.fintype_of_admissible_of_algebraic` where `L` is an
+See also `ClassGroup.fintypeOfAdmissibleOfAlgebraic` where `L` is an
 algebraic extension of `R`, that includes some extra assumptions.
 -/
 noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
