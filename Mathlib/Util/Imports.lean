@@ -27,7 +27,7 @@ def importsOf (env : Environment) (n : Name) : Array Name :=
   if n = env.header.mainModule then
     env.header.imports.map Import.module
   else match env.getModuleIdx? n with
-    | .some idx => env.header.moduleData[idx.toNat]!.imports.map Import.module
+    | .some idx => env.header.moduleData[idx.toNat]!.imports.map Import.module |>.erase `Init
     | .none => #[]
 
 /--
@@ -49,14 +49,12 @@ end Lean.Environment
 
 /--
 Return the redundant imports (i.e. those transitively implied by another import)
-of a specified module (or the current module if `none` is specified).
+amongst a candidate list of imports.
 -/
-def redundantImports (n? : Option Name := none) : CoreM (List Name) := do
-  let env ← getEnv
-  let imports := env.importsOf (n?.getD ((← getEnv).header.mainModule)) |>.erase `Init
+def findRedundantImports (env : Environment) (imports : Array Name) : Array Name := Id.run do
   let run := visit env.importGraph imports
   let (_, seen) := imports.foldl (fun ⟨v, s⟩ n => run v s n) ({}, {})
-  return seen.toList
+  return seen.toArray
 where
   visit (graph) (targets) (visited) (seen) (n) : NameSet × NameSet := Id.run do
     if visited.contains n then
@@ -67,6 +65,15 @@ where
         targets.foldl (fun s t => if imports.contains t then s.insert t else s) seen)
 
 /--
+Return the redundant imports (i.e. those transitively implied by another import)
+of a specified module (or the current module if `none` is specified).
+-/
+def redundantImports (n? : Option Name := none) : CoreM (Array Name) := do
+  let env ← getEnv
+  let imports := env.importsOf (n?.getD ((← getEnv).header.mainModule))
+  return findRedundantImports env imports
+
+/--
 List the imports in this file which can be removed
 because they are transitively implied by another import.
 -/
@@ -75,4 +82,5 @@ elab "#redundant_imports" : command => do
   if redundant.isEmpty then
     logInfo "No transitively redundant imports found."
   else
-    logInfo m!"Found the following transitively redundant imports:\n{Format.joinSep redundant "\n"}"
+    logInfo <| "Found the following transitively redundant imports:\n" ++
+      m!"{Format.joinSep redundant.toList "\n"}"
