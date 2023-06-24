@@ -17,7 +17,7 @@ This file defines pullbacks of smooth vector bundles over a smooth manifold.
 
 ## Main definitions
 
-* `smooth_vector_bundle.pullback`: For a smooth vector bundle `E` over a manifold `B` and a smooth
+* `SmoothVectorBundle.pullback`: For a smooth vector bundle `E` over a manifold `B` and a smooth
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a smooth vector bundle.
 
 -/
