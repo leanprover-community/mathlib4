@@ -763,8 +763,8 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
   haveI :=
     noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
       (ne_of_lt (degree_pos hx')).symm
-  rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq, powerBasis'_gen,
-    ← isAdjoinRootMonic_root_eq_root _ (monic hx'), minpoly_eq]
+  rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
+    AdjoinRoot.powerBasis'_gen, ← isAdjoinRootMonic_root_eq_root _ (monic hx'), minpoly_eq]
   exact irreducible hx'
 #align algebra.adjoin.power_basis'_minpoly_gen Algebra.adjoin.powerBasis'_minpoly_gen
 
