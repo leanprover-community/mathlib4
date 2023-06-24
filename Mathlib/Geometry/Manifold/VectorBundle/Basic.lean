@@ -373,7 +373,6 @@ end VectorBundleCore
 
 /-! ### The trivial smooth vector bundle -/
 
-
 /-- A trivial vector bundle over a smooth manifold is a smooth vector bundle. -/
 instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivial B F) IB where
   smoothOn_coordChange := by
@@ -420,7 +419,6 @@ end WithTopology
 
 /-! ### Prebundle construction for smooth vector bundles -/
 
-
 namespace VectorPrebundle
 
 variable [∀ x, TopologicalSpace (E x)]
@@ -428,7 +426,7 @@ variable [∀ x, TopologicalSpace (E x)]
 /-- Mixin for a `VectorPrebundle` stating smoothness of coordinate changes. -/
 class IsSmooth (a : VectorPrebundle 𝕜 F E) : Prop where
   exists_smoothCoordChange :
-    ∀ (e) (_ : e ∈ a.pretrivializationAtlas) (e') (_ : e' ∈ a.pretrivializationAtlas),
+    ∀ᵉ (e ∈ a.pretrivializationAtlas) (e' ∈ a.pretrivializationAtlas),
       ∃ f : B → F →L[𝕜] F,
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) f (e.baseSet ∩ e'.baseSet) ∧
           ∀ (b : B) (_ : b ∈ e.baseSet ∩ e'.baseSet) (v : F),
@@ -469,7 +467,6 @@ theorem mk_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
 #align vector_prebundle.mk_smooth_coord_change VectorPrebundle.mk_smoothCoordChange
 
 variable (IB)
-
 /-- Make a `SmoothVectorBundle` from a `SmoothVectorPrebundle`. -/
 theorem smoothVectorBundle : @SmoothVectorBundle
     _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
