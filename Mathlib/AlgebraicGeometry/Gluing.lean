@@ -51,6 +51,8 @@ presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
 
+set_option linter.uppercaseLean3 false
+
 noncomputable section
 
 universe u
@@ -195,8 +197,8 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
 
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spacess -/
-def isoCarrier : Iso.{u, u+1}
-    D.glued.carrier
+def isoCarrier :
+    D.glued.carrier ≅
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.toGlueData.glued := by
   /-
   failed to synthesize instance
