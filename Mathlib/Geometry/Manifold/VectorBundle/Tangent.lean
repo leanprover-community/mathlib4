@@ -78,7 +78,7 @@ to the chart `j` at point `x : M` is the derivative of the composite
 E -----> H -----> M --> H --> E
 ```
 within the set `range I ⊆ E` at `I (i x) : E`. -/
-@[simps]
+@[simps indexAt coordChange]
 def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   baseSet i := i.1.source
   isOpen_baseSet i := i.1.open_source
@@ -106,16 +106,17 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hxi, j.1.extend_left_inv I hxj]
     · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I k.2)
-              (subset_maximalAtlas I j.2) hxk hxj).differentiableWithinAt
-          le_top
-    ·
-      exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
-              (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt
-          le_top
+        (subset_maximalAtlas I j.2) hxk hxj).differentiableWithinAt le_top
+    · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
+        (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt le_top
     · intro x _; exact mem_range_self _
     · exact I.unique_diff_at_image
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
 #align tangent_bundle_core tangentBundleCore
+
+-- porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
+@[simp high]
+theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
 
 variable {M}
 
@@ -276,14 +277,16 @@ theorem trivializationAt_symmL {b₀ b : M}
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.trivialization_at_symmL TangentBundle.trivializationAt_symmL
 
-@[simp, mfld_simps]
+-- porting note: `simp` simplifies LHS to `.id _ _`
+@[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
   simpa only [tangentBundleCore_coordChange, mfld_simps] using
     fderivWithin_id uniqueDiffWithinAt_univ
 #align tangent_bundle.coord_change_model_space TangentBundle.coordChange_model_space
 
-@[simp, mfld_simps]
+-- porting note: `simp` simplifies LHS to `.id _ _`
+@[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
   rw [TangentBundle.trivializationAt_symmL, coordChange_model_space]
@@ -291,7 +294,8 @@ theorem symmL_model_space (b b' : F) :
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.symmL_model_space TangentBundle.symmL_model_space
 
-@[simp, mfld_simps]
+-- porting note: `simp` simplifies LHS to `.id _ _`
+@[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by
   rw [TangentBundle.trivializationAt_continuousLinearMapAt, coordChange_model_space]
@@ -423,7 +427,6 @@ theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N �
   simp_rw [inTangentCoordinates, inCoordinates_tangent_bundle_core_model_space]
 #align in_tangent_coordinates_model_space inTangentCoordinates_model_space
 
-#check VectorBundleCore.inCoordinates_eq
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
