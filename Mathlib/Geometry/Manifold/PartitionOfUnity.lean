@@ -104,13 +104,13 @@ subordinate to `U`, see `smooth_bump_covering.exists_is_subordinate`.
 
 This covering can be used, e.g., to construct a partition of unity and to prove the weak
 Whitney embedding theorem. -/
-@[nolint has_nonempty_instance]
+-- porting note: was @[nolint has_nonempty_instance]
 structure SmoothBumpCovering (s : Set M := univ) where
   c : ι → M
   toFun : ∀ i, SmoothBumpFunction I (c i)
   c_mem' : ∀ i, c i ∈ s
-  locally_finite' : LocallyFinite fun i => support (to_fun i)
-  eventuallyEq_one' : ∀ x ∈ s, ∃ i, to_fun i =ᶠ[𝓝 x] 1
+  locally_finite' : LocallyFinite fun i => support (toFun i)
+  eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 #align smooth_bump_covering SmoothBumpCovering
 
 /-- We say that that a collection of functions form a smooth partition of unity on a set `s` if
@@ -121,10 +121,10 @@ structure SmoothBumpCovering (s : Set M := univ) where
 * for all `x`, the sum `∑ᶠ i, f i x` is less than or equal to one. -/
 structure SmoothPartitionOfUnity (s : Set M := univ) where
   toFun : ι → C^∞⟮I, M; 𝓘(ℝ), ℝ⟯
-  locally_finite' : LocallyFinite fun i => support (to_fun i)
-  nonneg' : ∀ i x, 0 ≤ to_fun i x
-  sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, to_fun i x = 1
-  sum_le_one' : ∀ x, ∑ᶠ i, to_fun i x ≤ 1
+  locally_finite' : LocallyFinite fun i => support (toFun i)
+  nonneg' : ∀ i x, 0 ≤ toFun i x
+  sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
+  sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 #align smooth_partition_of_unity SmoothPartitionOfUnity
 
 variable {ι I M}
