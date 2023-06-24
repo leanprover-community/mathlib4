@@ -122,7 +122,8 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
       simp only [MonoidHom.toFun_eq_coe]
       apply AlgEquiv.coe_algHom_injective
       apply (hζ.powerBasis K).algHom_ext
-      simp only [AlgEquiv.coe_algHom, AlgEquiv.map_pow]
+-- Porting note: the proof is slightly different because of coercions.
+      simp only [AlgHom.coe_coe]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by
@@ -184,6 +185,7 @@ noncomputable def galXPowEquivUnitsZMod : (X ^ (n : ℕ) - 1 : K[X]).Gal ≃* (Z
   (AlgEquiv.autCongr
       (IsSplittingField.algEquiv L _ : L ≃ₐ[K] (X ^ (n : ℕ) - 1 : K[X]).SplittingField)).symm.trans
     (IsCyclotomicExtension.autEquivPow L h)
+set_option linter.uppercaseLean3 false
 #align gal_X_pow_equiv_units_zmod galXPowEquivUnitsZMod
 
 end Gal
