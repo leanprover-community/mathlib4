@@ -1392,6 +1392,34 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 #align is_open.closure_div IsOpen.closure_div
 #align is_open.closure_sub IsOpen.closure_sub
 
+@[to_additive]
+theorem IsClosed.mul_left_of_isCompact (hs : IsClosed s) (ht : IsCompact t) : IsClosed (t * s) := by
+  have : ∀ x ∈ t * s, ∃ y ∈ t, y⁻¹ * x ∈ s := by
+    intro x ⟨xt, xs, hxt, hxs, hxts⟩
+    refine ⟨xt, hxt, ?_⟩
+    convert hxs
+    rwa [inv_mul_eq_iff_eq_mul, eq_comm]
+  choose! f hf using this
+  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
+  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, huts, hux⟩
+  have : Ultrafilter.map f u ≤ 𝓟 t :=
+    calc Ultrafilter.map f u = map f u := rfl
+      _ ≤ map f (𝓟 (t * s)) := map_mono (le_principal_iff.mpr huts)
+      _ = 𝓟 (f '' (t * s)) := map_principal
+      _ ≤ 𝓟 t := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
+  rcases ht.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨y, hy, huy⟩
+  suffices y⁻¹ * x ∈ s from
+    ⟨y, y⁻¹ * x, hy, this, mul_inv_cancel_left _ _⟩
+  exact hs.mem_of_tendsto ((Tendsto.inv huy).mul hux)
+    (Eventually.mono huts (fun x hx ↦ (hf x hx).2))
+
+@[to_additive]
+theorem IsClosed.mul_right_of_isCompact (hs : IsClosed s) (ht : IsCompact t) :
+    IsClosed (s * t) := by
+  -- TODO: morally it would be better to use `αᵐᵒᵖ` instead of relying on inversion
+  rw [← inv_inv (s * t), mul_inv_rev]
+  exact (hs.inv.mul_left_of_isCompact ht.inv).inv
+
 end TopologicalGroup
 
 section FilterMul
@@ -1666,7 +1694,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 @[to_additive]
 theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
   calc
-    𝓝 (x * y) = map ((· * ·) x) (map (fun a => a * y) (𝓝 1 * 𝓝 1)) := by simp
+    𝓝 (x * y) = map (x * ·) (map (· * y ) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
     _ = map₂ (fun a b => x * a * (b * y)) (𝓝 1) (𝓝 1) := by simp only [mul_assoc]
     _ = 𝓝 x * 𝓝 y :=

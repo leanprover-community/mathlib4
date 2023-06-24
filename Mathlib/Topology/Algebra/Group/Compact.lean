@@ -32,7 +32,7 @@ variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
 section
 
 /-! Some results about an open set containing the product of two sets in a topological group. -/
-
+-- ??? Why is this here
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
