@@ -130,10 +130,12 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
 instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
-noncomputable instance (J : Type _) : PreservesColimitsOfShape (Discrete J) forgetToSheafedSpace :=
+noncomputable instance (J : Type _) :
+    PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimitOfPreservesColimitCocone (coproductCofanIsColimit G)
-      ((colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
+      ((colimit.isColimit  (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
+        (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts
 
@@ -341,7 +343,8 @@ end HasCoequalizer
 instance : HasColimits LocallyRingedSpace :=
   has_colimits_of_hasCoequalizers_and_coproducts
 
-noncomputable instance : PreservesColimits LocallyRingedSpace.forgetToSheafedSpace :=
+noncomputable instance preservesColimits_forgetToSheafedSpace :
+    PreservesColimits LocallyRingedSpace.forgetToSheafedSpace.{u} :=
   preservesColimitsOfPreservesCoequalizersAndCoproducts _
 
 end LocallyRingedSpace

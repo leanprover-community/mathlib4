@@ -332,7 +332,7 @@ protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : 
     exact Subtype.coe_injective.ne (f.injective.ne ha)
   have h : b = f (f.symm ⟨b, of_not_not <| hb ∘ extendDomain_apply_not_subtype _ _⟩) := by
     rw [apply_symm_apply, Subtype.coe_mk]
-  rw [h] at hb⊢
+  rw [h] at hb ⊢
   simp only [extendDomain_apply_image, Subtype.coe_injective.ne_iff, f.injective.ne_iff] at hb
   exact (ha' hb).extendDomain
 #align equiv.perm.is_cycle.extend_domain Equiv.Perm.IsCycle.extendDomain
@@ -1138,7 +1138,7 @@ theorem support_cycleOf_eq_nil_iff : (f.cycleOf x).support = ∅ ↔ x ∉ f.sup
 theorem support_cycleOf_le (f : Perm α) (x : α) : support (f.cycleOf x) ≤ support f := by
   intro y hy
   rw [mem_support, cycleOf_apply] at hy
-  split_ifs  at hy
+  split_ifs at hy
   · exact mem_support.mpr hy
   · exact absurd rfl hy
 #align equiv.perm.support_cycle_of_le Equiv.Perm.support_cycleOf_le
@@ -1256,7 +1256,7 @@ def cycleFactorsAux [Fintype α] :
               exact hy rfl)
             (h fun h : f y = y => by
               rw [mul_apply, h, Ne.def, inv_eq_iff_eq, cycleOf_apply] at hy
-              split_ifs  at hy <;> tauto))
+              split_ifs at hy <;> tauto))
       ⟨cycleOf f x::m, by
         rw [List.prod_cons, hm₁]
         simp,
@@ -1562,7 +1562,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [Fintype α] {f g : Perm α}
         → cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f}) _ _ _ _
   · simp
   · intro σ hσ f hf
-    simp only [cycleFactorsFinset_eq_singleton_self_iff.mpr hσ, mem_singleton] at hf⊢
+    simp only [cycleFactorsFinset_eq_singleton_self_iff.mpr hσ, mem_singleton] at hf ⊢
     simp [hf]
   · intro σ τ hd _ hσ hτ f
     simp_rw [hd.cycleFactorsFinset_mul_eq_union, mem_union]
@@ -1928,7 +1928,7 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
       s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
   · refine' Set.Subsingleton.pairwise _ _
-    simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs⊢
+    simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs ⊢
     rwa [card_range]
   classical
     rintro m hm n hn hmn

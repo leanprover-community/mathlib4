@@ -1203,14 +1203,18 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
 
 end NonUnitalNonAssocRing
 
-instance [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
+#align matrix.non_unital_ring Matrix.instNonUnitalRing
 
-instance [Fintype n] [DecidableEq n] [NonAssocRing α] : NonAssocRing (Matrix n n α) :=
+instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
+    NonAssocRing (Matrix n n α) :=
   { Matrix.nonAssocSemiring, Matrix.addCommGroup with }
+#align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
   { Matrix.semiring, Matrix.addCommGroup with }
+#align matrix.ring Matrix.instRing
 
 section Semiring
 
@@ -1301,12 +1305,13 @@ variable [Fintype n] [DecidableEq n]
 
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
-instance : Algebra R (Matrix n n α) :=
+instance instAlgebra : Algebra R (Matrix n n α) :=
   { (Matrix.scalar n).comp (algebraMap R α) with
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]
     smul_def' := fun r x => by ext; simp [Matrix.scalar, Algebra.smul_def r] }
+#align matrix.algebra Matrix.instAlgebra
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
