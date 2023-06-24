@@ -15,7 +15,6 @@ import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.Norm
--- import Mathlib.Data.Finset.Basic
 
 /-!
 # Class numbers of global fields
@@ -144,8 +143,8 @@ theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
 -- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
-      b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c = (0 : S) :=
-  by
+      b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
+      (0 : S) := by
   classical
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
       (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
@@ -200,8 +199,8 @@ theorem finsetApprox.zero_not_mem : (0 : R) ∉ finsetApprox bS adm :=
 
 @[simp]
 theorem mem_finsetApprox {x : R} :
-    x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j = x :=
-  by
+    x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j =
+    x := by
   simp only [finsetApprox, Finset.mem_erase, Finset.mem_image]
   constructor
   · rintro ⟨hx, ⟨i, j⟩, _, rfl⟩
@@ -351,6 +350,7 @@ noncomputable def mkMMem [IsDedekindDomain S]
     (J : { J : Ideal S // algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
   ClassGroup.mk0
     ⟨J.1, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.1 J.2)⟩
+set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem ClassGroup.mkMMem
 
 theorem mkMMem_surjective [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) :
@@ -359,6 +359,7 @@ theorem mkMMem_surjective [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) :
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm h ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
+set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem_surjective ClassGroup.mkMMem_surjective
 
 open scoped Classical
