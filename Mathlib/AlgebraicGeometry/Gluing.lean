@@ -25,9 +25,9 @@ Given a family of gluing data of schemes, we may glue them together.
 * `AlgebraicGeometry.Scheme.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 * `AlgebraicGeometry.Scheme.GlueData.isoCarrier`: The isomorphism between the underlying space
   of the glued scheme and the gluing of the underlying topological spaces.
-* `algebraic_geometry.Scheme.open_cover.glue_data`: The glue data associated with an open cover.
-* `algebraic_geometry.Scheme.open_cover.from_glue_data`: The canonical morphism
-  `𝒰.glue_data.glued ⟶ X`. This has an `is_iso` instance.
+* `algebraic_geometry.Scheme.OpenCover.gluedCover`: The glue data associated with an open cover.
+* `algebraic_geometry.Scheme.OpenCover.fromGlued`: The canonical morphism
+  `𝒰.gluedCover.glued ⟶ X`. This has an `is_iso` instance.
 * `AlgebraicGeometry.Scheme.OpenCover.glueMorphisms`: We may glue a family of compatible
   morphisms defined on an open cover of a scheme.
 
@@ -46,7 +46,7 @@ Given a family of gluing data of schemes, we may glue them together.
 
 ## Implementation details
 
-All the hard work is done in `algebraic_geometry/presheafed_space/gluing.lean` where we glue
+All the hard work is done in `AlgebraicGeometry/PresheafedSpace/Gluing.lean` where we glue
 presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
