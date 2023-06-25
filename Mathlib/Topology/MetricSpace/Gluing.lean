@@ -613,10 +613,6 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
 
--- We turn off `relaxedAutoImplicit` in mathlib4,
--- so uppercase single variable implicits need to be declared.
-variable {I}
-
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
