@@ -37,7 +37,7 @@ topological space, group, topological group
 -/
 
 
-open Classical Set Filter TopologicalSpace Function Topology Pointwise
+open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
 
@@ -1252,6 +1252,35 @@ theorem subset_interior_smul : interior s • interior t ⊆ interior (s • t) 
 
 end ContinuousConstSMul
 
+section ContinuousSMul
+
+variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
+  [ContinuousSMul α β] {s : Set α} {t : Set β}
+
+@[to_additive]
+theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+    IsClosed (s • t) := by
+  have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
+    intro x ⟨g, y, hgs, hyt, hgyx⟩
+    refine ⟨g, hgs, ?_⟩
+    convert hyt
+    rwa [inv_smul_eq_iff, eq_comm]
+  choose! f hf using this
+  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
+  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
+  have : Ultrafilter.map f u ≤ 𝓟 s :=
+    calc Ultrafilter.map f u = map f u := rfl
+      _ ≤ map f (𝓟 (s •t )) := map_mono (le_principal_iff.mpr hust)
+      _ = 𝓟 (f '' (s • t)) := map_principal
+      _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
+  rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
+  suffices g⁻¹ • x ∈ t from
+    ⟨g, g⁻¹ • x, hg, this, smul_inv_smul _ _⟩
+  exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
+    (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
+
+end ContinuousSMul
+
 section ContinuousConstSMul
 
 variable [TopologicalSpace α] [Group α] [ContinuousConstSMul α α] {s t : Set α}
@@ -1393,25 +1422,14 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 #align is_open.closure_sub IsOpen.closure_sub
 
 @[to_additive]
-theorem IsClosed.mul_left_of_isCompact (hs : IsClosed s) (ht : IsCompact t) : IsClosed (t * s) := by
-  have : ∀ x ∈ t * s, ∃ y ∈ t, y⁻¹ * x ∈ s := by
-    intro x ⟨xt, xs, hxt, hxs, hxts⟩
-    refine ⟨xt, hxt, ?_⟩
-    convert hxs
-    rwa [inv_mul_eq_iff_eq_mul, eq_comm]
-  choose! f hf using this
-  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
-  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, huts, hux⟩
-  have : Ultrafilter.map f u ≤ 𝓟 t :=
-    calc Ultrafilter.map f u = map f u := rfl
-      _ ≤ map f (𝓟 (t * s)) := map_mono (le_principal_iff.mpr huts)
-      _ = 𝓟 (f '' (t * s)) := map_principal
-      _ ≤ 𝓟 t := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
-  rcases ht.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨y, hy, huy⟩
-  suffices y⁻¹ * x ∈ s from
-    ⟨y, y⁻¹ * x, hy, this, mul_inv_cancel_left _ _⟩
-  exact hs.mem_of_tendsto ((Tendsto.inv huy).mul hux)
-    (Eventually.mono huts (fun x hx ↦ (hf x hx).2))
+theorem IsClosed.mul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) : IsClosed (s * t) :=
+  ht.smul_left_of_isCompact hs
+
+--@[to_additive]
+--theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+--    IsClosed (t * s) := by
+--  convert @IsClosed.smul_left_of_isCompact αᵐᵒᵖ α _ _ _ _ _ _ (Set.op s) t ht sorry using 1
+--  rw [SetLike.smul_def]
 
 @[to_additive]
 theorem IsClosed.mul_right_of_isCompact (hs : IsClosed s) (ht : IsCompact t) :
