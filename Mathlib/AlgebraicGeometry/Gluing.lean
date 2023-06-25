@@ -33,7 +33,7 @@ Given a family of gluing data of schemes, we may glue them together.
 
 ## Main results
 
-* `AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersionCat`: The map `ι i : U i ⟶ glued`
+* `AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersion`: The map `ι i : U i ⟶ glued`
   is an open immersion for each `i : J`.
 * `AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective` : The underlying maps of
   `ι i : U i ⟶ glued` are jointly surjective.
@@ -159,9 +159,9 @@ theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 #align algebraic_geometry.Scheme.glue_data.ι_iso_LocallyRingedSpace_inv AlgebraicGeometry.Scheme.GlueData.ι_isoLocallyRingedSpace_inv
 
-instance ι_isOpenImmersionCat (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
-#align algebraic_geometry.Scheme.glue_data.ι_is_open_immersion AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersionCat
+#align algebraic_geometry.Scheme.glue_data.ι_is_open_immersion AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersion
 
 theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).1.base y = x :=
