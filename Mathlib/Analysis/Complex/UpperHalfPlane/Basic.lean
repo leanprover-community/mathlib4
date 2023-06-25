@@ -246,7 +246,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   ring
 #align upper_half_plane.mul_smul' UpperHalfPlane.mul_smul'
 
-/-- The action of ` GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
+/-- The action of `GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
 instance : MulAction GL(2, ℝ)⁺ ℍ where
   smul := smulAux
   one_smul z := by
@@ -315,11 +315,15 @@ instance subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
 
 end ModularScalarTowers
 
+example {R : Type _} [CommRing R] [Algebra R ℝ] (r : R) : ℝ := algebraMap R ℝ r
+
+-- Porting note: in the statement, we used to have coercions `↑· : ℝ`
+-- rather than `algebraMap R ℝ ·`.
 theorem specialLinearGroup_apply {R : Type _} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     g • z =
       mk
-        ((((↑(↑ₘ[R] g 0 0) : ℝ) : ℂ) * z + ((↑(↑ₘ[R] g 0 1) : ℝ) : ℂ)) /
-          (((↑(↑ₘ[R] g 1 0) : ℝ) : ℂ) * z + ((↑(↑ₘ[R] g 1 1) : ℝ) : ℂ)))
+        (((algebraMap R ℝ (↑ₘ[R] g 0 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 0 1) : ℂ)) /
+          ((algebraMap R ℝ (↑ₘ[R] g 1 0) : ℂ) * z + (algebraMap R ℝ (↑ₘ[R] g 1 1) : ℂ)))
         (g • z).property :=
   rfl
 #align upper_half_plane.special_linear_group_apply UpperHalfPlane.specialLinearGroup_apply
@@ -343,12 +347,15 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
 
+-- Porting note FIXME: this instance isn't being found, but is needed here.
+instance : Fact (Even (Fintype.card (Fin 2))) := sorry
+
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
   change _ / _ = _ / _
   field_simp [denom_ne_zero]
-  simp only [Num, denom, coe_coe, Complex.ofReal_neg, neg_mul, GL_pos.coe_neg_GL, Units.val_neg,
+  simp only [Num, denom, Complex.ofReal_neg, neg_mul, GLPos.coe_neg_GL, Units.val_neg,
     Pi.neg_apply]
   ring_nf
 #align upper_half_plane.neg_smul UpperHalfPlane.neg_smul
@@ -454,20 +461,20 @@ end RealAddAction
 
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
-theorem modular_s_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
+theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg]
-#align upper_half_plane.modular_S_smul UpperHalfPlane.modular_s_smul
+#align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
-theorem modular_t_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
+theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [← Subtype.coe_inj, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk,
     ModularGroup.coe_T_zpow]
   simp only [of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
     head_cons, algebraMap.coe_zero, MulZeroClass.zero_mul, zero_add, div_one]
-#align upper_half_plane.modular_T_zpow_smul UpperHalfPlane.modular_t_zpow_smul
+#align upper_half_plane.modular_T_zpow_smul UpperHalfPlane.modular_T_zpow_smul
 
-theorem modular_t_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
-  simpa only [algebraMap.coe_one] using modular_T_zpow_smul z 1
-#align upper_half_plane.modular_T_smul UpperHalfPlane.modular_t_smul
+theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
+  simpa only [Int.cast_one] using modular_T_zpow_smul z 1
+#align upper_half_plane.modular_T_smul UpperHalfPlane.modular_T_smul
 
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ),
@@ -475,7 +482,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
   ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by rw [specialLinearGroup_apply];
+  suffices ↑a * z * a + b * a = b * a + a * a * z by
+    rw [specialLinearGroup_apply]
     simpa [add_mul]
   ring
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero
