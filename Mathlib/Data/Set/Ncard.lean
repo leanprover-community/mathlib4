@@ -28,7 +28,7 @@ in `set α`) via default arguments.
 
 * `Set.ncard s` is the cardinality of the set `s` as a natural number, provided `s` is Finite.
   If `s` is Infinite, then `Set.ncard s = 0`.
-* `toFinite_tac` is a tactic that tries to synthesize an `Set.Finite s` argument with
+* `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
   `Set.toFinite`. This will work for `s : set α` where there is a `Finite α` instance.
 
 ## Implementation Notes
@@ -677,7 +677,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
   refine' ⟨fun h ↦ Or.inr ⟨x, (singleton_subset_iff.mpr hx).antisymm' fun y hy ↦ h hy hx⟩, _⟩
   rintro (rfl | ⟨a, rfl⟩)
   · exact (not_mem_empty _ hx).elim
-  simp_rw [mem_singleton_iff] at hx⊢; subst hx
+  simp_rw [mem_singleton_iff] at hx ⊢; subst hx
   simp only [forall_eq_apply_imp_iff', imp_self, implies_true]
 #align set.ncard_le_one_iff_eq Set.ncard_le_one_iff_eq
 

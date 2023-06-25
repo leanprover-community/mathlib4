@@ -22,7 +22,7 @@ types, mapping the single object of M to X and an element `m : M` to map `X → 
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
-where M is a group, this category is a groupoid -- the `action groupoid'.
+where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
 
 

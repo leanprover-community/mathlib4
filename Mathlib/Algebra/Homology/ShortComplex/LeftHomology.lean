@@ -66,7 +66,7 @@ namespace LeftHomologyData
 @[simps]
 noncomputable def ofHasKernelOfHasCokernel
     [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.LeftHomologyData where
+    S.LeftHomologyData where
   K := kernel S.g
   H := cokernel (kernel.lift S.g S.f S.zero)
   i := kernel.ι _
@@ -125,8 +125,8 @@ lemma π_descH (k : h.K ⟶ A) (hk : h.f' ≫ k = 0) : h.π ≫ h.descH k hk = k
   h.hπ.fac (CokernelCofork.ofπ k hk) WalkingParallelPair.one
 
 lemma isIso_i (hg : S.g = 0) : IsIso h.i :=
-  ⟨⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
-    by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩⟩
+  ⟨h.liftK (𝟙 S.X₂) (by rw [hg, id_comp]),
+    by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩
 
 lemma isIso_π (hf : S.f = 0) : IsIso h.π := by
   have ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
@@ -148,7 +148,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   wi := by rw [id_comp, hg]
   hi := KernelFork.IsLimit.ofId _ hg
   wπ := CokernelCofork.condition _
-  hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by aesop_cat))
+  hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _))
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
@@ -173,7 +173,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   i := c.ι
   π := 𝟙 _
   wi := KernelFork.condition _
-  hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by aesop_cat))
+  hi := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _))
   wπ := Fork.IsLimit.hom_ext hc (by
     dsimp
     simp only [comp_id, zero_comp, Fork.IsLimit.lift_ι, Fork.ι_ofι, hf])

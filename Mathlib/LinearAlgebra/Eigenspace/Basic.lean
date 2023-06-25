@@ -87,8 +87,15 @@ def Eigenvalues (f : End R M) : Type _ :=
   { μ : R // f.HasEigenvalue μ }
 #align module.End.eigenvalues Module.End.Eigenvalues
 
--- Porting note: this instance does not compile and does not seem to be used in this file
--- instance (f : End R M) : Coe f.Eigenvalues R := coeSubtype
+@[coe]
+def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := Subtype.val
+
+instance Eigenvalues.instCoeOut {f : Module.End R M} : CoeOut (Eigenvalues f) R where
+  coe := Eigenvalues.val f
+
+instance Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
+    DecidableEq (Eigenvalues f) :=
+  inferInstanceAs (DecidableEq (Subtype (fun x : R => HasEigenvalue f x)))
 
 theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
     HasEigenvalue f μ := by
@@ -190,7 +197,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
         _ = 0 := by rw [hl, g.map_zero]
       · exact Dfinsupp.sum_mapRange_index.linearMap
       · congr
-        ext (μ v)
+        ext μ v
         simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply, LinearMap.id_coe,
           id.def, sub_smul, Submodule.subtype_apply, Submodule.coe_sub, Submodule.coe_smul_of_tower,
           LinearMap.sub_apply, mem_eigenspace_iff.1 v.prop, algebraMap_end_apply]

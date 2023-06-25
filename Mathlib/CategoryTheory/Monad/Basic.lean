@@ -197,38 +197,43 @@ initialize_simps_projections ComonadHom (+toNatTrans, -app)
 attribute [reassoc (attr := simp)] MonadHom.app_η MonadHom.app_μ
 attribute [reassoc (attr := simp)] ComonadHom.app_ε ComonadHom.app_δ
 
-
-instance : Category (Monad C) where
+instance : Quiver (Monad C) where
   Hom := MonadHom
-  id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
-  comp f g :=
-    { toNatTrans :=
-        { app := fun X => f.app X ≫ g.app X
-          naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  id_comp _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := MonadHom.ext _ _ (by funext; simp only [assoc])
+
+instance : Quiver (Comonad C) where
+  Hom := ComonadHom
 
 -- porting note: added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext f g h
 
-instance : Category (Comonad C) where
-  Hom := ComonadHom
+-- porting note: added to ease automation
+@[ext]
+lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
+  ComonadHom.ext f g h
+
+instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
+  -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
+  id_comp _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
+  comp_id _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
+  assoc _ _ _ := MonadHom.ext _ _ (by funext; simp only [assoc])
+
+instance : Category (Comonad C) where
+  id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
+  comp f g :=
+    { toNatTrans :=
+        { app := fun X => f.app X ≫ g.app X
+          naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
+  -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
   id_comp _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
   comp_id _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := ComonadHom.ext _ _ (by funext; simp only [assoc])
-
--- porting note: added to ease automation
-@[ext]
-lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
-  ComonadHom.ext f g h
 
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
@@ -262,9 +267,9 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
 direction is a monad morphism. -/
 @[simps]
 def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
-    (f_η : ∀ (X : C), M.η.app X ≫ f.hom.app X = N.η.app X)
+    (f_η : ∀ (X : C), M.η.app X ≫ f.hom.app X = N.η.app X := by aesop_cat)
     (f_μ : ∀ (X : C), M.μ.app X ≫ f.hom.app X =
-    (M.map (f.hom.app X) ≫ f.hom.app (N.obj X)) ≫ N.μ.app X) : M ≅ N where
+    (M.map (f.hom.app X) ≫ f.hom.app (N.obj X)) ≫ N.μ.app X := by aesop_cat) : M ≅ N where
   hom :=
     { toNatTrans := f.hom
       app_η := f_η
@@ -283,9 +288,9 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
 direction is a comonad morphism. -/
 @[simps]
 def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
-    (f_ε : ∀ (X : C), f.hom.app X ≫ N.ε.app X = M.ε.app X)
+    (f_ε : ∀ (X : C), f.hom.app X ≫ N.ε.app X = M.ε.app X := by aesop_cat)
     (f_δ : ∀ (X : C), f.hom.app X ≫ N.δ.app X =
-    M.δ.app X ≫ f.hom.app (M.obj X) ≫ N.map (f.hom.app X)) : M ≅ N where
+    M.δ.app X ≫ f.hom.app (M.obj X) ≫ N.map (f.hom.app X) := by aesop_cat) : M ≅ N where
   hom :=
     { toNatTrans := f.hom
       app_ε := f_ε

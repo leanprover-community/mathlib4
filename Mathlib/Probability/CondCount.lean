@@ -17,7 +17,7 @@ The classical formulation of probability states that the probability of an event
 finite probability space is the ratio of that event to all possible events.
 This notion can be expressed with measure theory using
 the counting measure. In particular, given the sets `s` and `t`, we define the probability of `t`
-occurring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the the probability over
+occurring in `s` to be `|s|⁻¹ * |s ∩ t|`. With this definition, we recover the probability over
 the entire sample space when `s = Set.univ`.
 
 Classical probability is often used in combinatorics and we prove some useful lemmas in this file
@@ -160,7 +160,7 @@ theorem condCount_union (hs : s.Finite) (htu : Disjoint t u) :
     condCount s (t ∪ u) = condCount s t + condCount s u := by
   rw [condCount, cond_apply _ hs.measurableSet, cond_apply _ hs.measurableSet,
     cond_apply _ hs.measurableSet, Set.inter_union_distrib_left, measure_union, mul_add]
-  exacts[htu.mono inf_le_right inf_le_right, (hs.inter_of_left _).measurableSet]
+  exacts [htu.mono inf_le_right inf_le_right, (hs.inter_of_left _).measurableSet]
 #align probability_theory.cond_count_union ProbabilityTheory.condCount_union
 
 theorem condCount_compl (t : Set Ω) (hs : s.Finite) (hs' : s.Nonempty) :
@@ -186,7 +186,7 @@ theorem condCount_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
       ← mul_assoc]
   rw [ENNReal.mul_inv_cancel, ENNReal.mul_inv_cancel, one_mul, one_mul, ← add_mul, ← measure_union,
     Set.union_inter_distrib_right, mul_comm]
-  exacts[hst.mono inf_le_left inf_le_left, (ht.inter_of_left _).measurableSet,
+  exacts [hst.mono inf_le_left inf_le_left, (ht.inter_of_left _).measurableSet,
     Measure.count_ne_zero ht', (Measure.count_apply_lt_top.2 ht).ne, Measure.count_ne_zero hs',
     (Measure.count_apply_lt_top.2 hs).ne]
 #align probability_theory.cond_count_disjoint_union ProbabilityTheory.condCount_disjoint_union

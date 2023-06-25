@@ -44,7 +44,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommCemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -300,8 +300,8 @@ theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.ou
   · rw [mk'_def, mk'_def, le_def]
 #align cardinal.out_embedding Cardinal.out_embedding
 
-theorem lift_mk_le {α : Type u} {β : Type v} :
-    lift.{max v w} (#α) ≤ lift.{max u w} (#β) ↔ Nonempty (α ↪ β) :=
+theorem lift_mk_le {α : Type v} {β : Type w} :
+    lift.{max u w} (#α) ≤ lift.{max u v} (#β) ↔ Nonempty (α ↪ β) :=
   ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 #align cardinal.lift_mk_le Cardinal.lift_mk_le
@@ -311,7 +311,7 @@ Because Lean often can not realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} (#α) ≤ lift.{u} (#β) ↔ Nonempty (α ↪ β) :=
-  lift_mk_le.{u, v, 0}
+  lift_mk_le.{0}
 #align cardinal.lift_mk_le' Cardinal.lift_mk_le'
 
 theorem lift_mk_eq {α : Type u} {β : Type v} :
@@ -330,10 +330,10 @@ theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} (#α) = lift.{u} (#β
 #align cardinal.lift_mk_eq' Cardinal.lift_mk_eq'
 
 @[simp]
-theorem lift_le {a b : Cardinal.{u}} : lift.{v, u} a ≤ lift.{v, u} b ↔ a ≤ b :=
+theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
   inductionOn₂ a b fun α β => by
     rw [← lift_umax]
-    exact lift_mk_le.{u, u, v}
+    exact lift_mk_le.{u}
 #align cardinal.lift_le Cardinal.lift_le
 
 -- Porting note: changed `simps` to `simps!` because the linter told to do so.
@@ -433,7 +433,7 @@ theorem add_def (α β : Type u) : (#α) + (#β) = (#Sum α β) :=
 -- Porting note: Should this be changed to
 -- `⟨fun n => lift (#(Fin n))⟩` in the future?
 instance : NatCast Cardinal.{u} :=
-⟨Nat.unaryCast⟩
+  ⟨Nat.unaryCast⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : (#Sum α β) = lift.{v, u} (#α) + lift.{u, v} (#β) :=
@@ -952,7 +952,7 @@ instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
   small_subset Iio_subset_Iic_self
 
-/-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to an usual ZFC set. -/
+/-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun x h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
@@ -1111,7 +1111,7 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
   inductionOn₂ a b fun α β => by
-    rw [← lift_id (#β), ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{_,_,v}]
+    rw [← lift_id (#β), ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{v}]
     exact fun ⟨f⟩ =>
       ⟨#Set.range f,
         Eq.symm <| lift_mk_eq.{_, _, v}.2
@@ -1406,7 +1406,7 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
   succ_le_iff.1
     (by
-      rw [← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{0, 0, u}]
+      rw [← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
       exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩)
 #align cardinal.nat_lt_aleph_0 Cardinal.nat_lt_aleph0
 
@@ -1784,7 +1784,7 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 #align cardinal.to_nat_lift Cardinal.toNat_lift
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat (#α) = toNat (#β) := by
--- Porting note: Inserted universe hint below
+  -- Porting note: Inserted universe hint below
   rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
 #align cardinal.to_nat_congr Cardinal.toNat_congr
 
@@ -2001,7 +2001,7 @@ theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : (#f '' s) �
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} (#f '' s) ≤ lift.{v} (#s) :=
-  lift_mk_le.{v, u, 0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
 #align cardinal.mk_image_le_lift Cardinal.mk_image_le_lift
 
 theorem mk_range_le {α β : Type u} {f : α → β} : (#range f) ≤ (#α) :=
@@ -2010,7 +2010,7 @@ theorem mk_range_le {α β : Type u} {f : α → β} : (#range f) ≤ (#α) :=
 
 theorem mk_range_le_lift {α : Type u} {β : Type v} {f : α → β} :
     lift.{u} (#range f) ≤ lift.{v} (#α) :=
-  lift_mk_le.{v, u, 0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
 #align cardinal.mk_range_le_lift Cardinal.mk_range_le_lift
 
 theorem mk_range_eq (f : α → β) (h : Injective f) : (#range f) = (#α) :=
@@ -2163,7 +2163,7 @@ theorem mk_sep (s : Set α) (t : α → Prop) : (#({ x ∈ s | t x } : Set α)) 
 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} (#f ⁻¹' s) ≤ lift.{u} (#s) := by
-  rw [lift_mk_le.{u, v, 0}]
+  rw [lift_mk_le.{0}]
   -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
@@ -2171,7 +2171,7 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} (#s) ≤ lift.{v} (#f ⁻¹' s) := by
-  rw [lift_mk_le.{v, u, 0}]
+  rw [lift_mk_le.{0}]
   refine' ⟨⟨_, _⟩⟩
   · rintro ⟨y, hy⟩
     rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
@@ -2248,7 +2248,7 @@ theorem mk_eq_two_iff' (x : α) : (#α) = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨a, b, hne, h⟩
     simp only [eq_univ_iff_forall, mem_insert_iff, mem_singleton_iff] at h
     rcases h x with (rfl | rfl)
-    exacts[⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
+    exacts [⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 #align cardinal.mk_eq_two_iff' Cardinal.mk_eq_two_iff'

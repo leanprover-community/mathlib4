@@ -16,7 +16,7 @@ def hygieneInfoFn : ParserFn := fun c s =>
   let finish pos str trailing s :=
     let info  := SourceInfo.original str pos trailing pos
     let ident := mkIdent info str .anonymous
-    let stx   := mkNode `hygieneInfo' #[ident]
+    let stx   := mkNode hygieneInfoKind #[ident]
     s.pushSyntax stx
   let els s :=
     let str := mkEmptySubstringAt input s.pos
@@ -31,7 +31,7 @@ def hygieneInfoFn : ParserFn := fun c s =>
 
 def hygieneInfoNoAntiquot : Parser := {
   fn   := hygieneInfoFn
-  info := nodeInfo `hygieneInfo' epsilonInfo
+  info := nodeInfo hygieneInfoKind epsilonInfo
 }
 
 @[combinator_formatter hygieneInfoNoAntiquot]
@@ -39,7 +39,7 @@ def hygieneInfoNoAntiquot.formatter : PrettyPrinter.Formatter := goLeft
 @[combinator_parenthesizer hygieneInfoNoAntiquot]
 def hygieneInfoNoAntiquot.parenthesizer : PrettyPrinter.Parenthesizer := goLeft
 @[run_parser_attribute_hooks] def hygieneInfo : Parser :=
-  withAntiquot (mkAntiquot "hygieneInfo" `hygieneInfo' (anonymous := false)) hygieneInfoNoAntiquot
+  withAntiquot (mkAntiquot "hygieneInfo" hygieneInfoKind (anonymous := false)) hygieneInfoNoAntiquot
 
 end deleteme
 

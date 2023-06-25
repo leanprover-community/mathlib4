@@ -123,7 +123,7 @@ end Const
 def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m
     where
   A := Σa₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
-  B a i := Σ(j : _)(b : P.2 a.1 j), (Q j).2 (a.snd j b) i
+  B a i := Σ(j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
 #align mvpfunctor.comp MvPFunctor.comp
 
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}

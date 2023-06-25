@@ -100,6 +100,9 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
+-- This is file, we'd like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 /-! ### Pre-game moves -/
 
 
@@ -556,7 +559,7 @@ instance : IsIrrefl _ (· ⧏ ·) :=
 
 @[trans]
 theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₂⊢
+  rw [← PGame.not_le] at h₂ ⊢
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf PGame.lf_of_le_of_lf
 
@@ -565,7 +568,7 @@ instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
 theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₁⊢
+  rw [← PGame.not_le] at h₁ ⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le PGame.lf_of_lf_of_le
 
@@ -1301,7 +1304,7 @@ theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (to
   by simp
 #align pgame.move_right_neg_symm' PGame.moveRight_neg_symm'
 
-/-- If `x` has the same moves as `y`, then `-x` has the sames moves as `-y`. -/
+/-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
@@ -1733,7 +1736,7 @@ instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
-    rw [← PGame.not_le] at h⊢
+    rw [← PGame.not_le] at h ⊢
     exact mt this h
   fun w =>
   calc

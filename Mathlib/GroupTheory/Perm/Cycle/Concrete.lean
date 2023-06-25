@@ -133,7 +133,7 @@ namespace Cycle
 
 variable [DecidableEq α] (s s' : Cycle α)
 
-/-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as a `Equiv.Perm α`
+/-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as an `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
 def formPerm : ∀ (s : Cycle α) (_ : Nodup s), Equiv.Perm α :=
@@ -441,7 +441,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     obtain ⟨x, -, -, hx, -⟩ := id ht
     have hl : 2 ≤ s.length := by simpa using Cycle.length_nontrivial ht
     simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff, Subtype.coe_mk,
-      Cycle.formPerm_coe] at hn hx⊢
+      Cycle.formPerm_coe] at hn hx ⊢
     apply Subtype.ext
     dsimp
     rw [toCycle_eq_toList _ _ x]

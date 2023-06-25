@@ -153,7 +153,7 @@ def Cospherical (ps : Set P) : Prop :=
 
 /-- The definition of `Cospherical`. -/
 theorem cospherical_def (ps : Set P) :
-    Cospherical ps ↔ ∃ (center : P)(radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
+    Cospherical ps ↔ ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
   Iff.rfl
 #align euclidean_geometry.cospherical_def EuclideanGeometry.cospherical_def
 
