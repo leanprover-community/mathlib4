@@ -23,8 +23,9 @@ infinite. This is also noncomputable, being defined in terms of `Part_ENat.card`
 The theorems for `Set.ncard` can be seen as forming an API for `Nat.card α` in the special case
 where `α` is a subtype arising from a set. It is intended as an alterNative to `Finset.card` and
 `Fintype.card`,  both of which contain data in their definition that can cause awkwardness when
-using `Set.toFinset`.  Using `Set.ncard` allows cardinality computations to avoid `Finset`/`Fintype` completely, staying in `Set` and letting finiteness be handled explicitly, or (where a `Finite α`
-instance is present and the sets are in `set α`) via default arguments.
+using `Set.toFinset`.  Using `Set.ncard` allows cardinality computations to avoid
+`Finset`/`Fintype` completely, staying in `Set` and letting finiteness be handled explicitly,
+or (where a `Finite α` instance is present and the sets are in `set α`) via default arguments.
 
 The API for `Set.encard` is smaller, and contains a number of theorems that relate `encard` to
 `ncard` in the finite case.
@@ -618,7 +619,8 @@ theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ)
 #align set.Infinite.exists_subset_ncard_eq Set.Infinite.exists_subset_ncard_eq
 
 theorem Infinite.exists_supset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : s ⊆ t)
-    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) : ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.Finite ∧ s'.ncard = k := by
+    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) :
+    ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.Finite ∧ s'.ncard = k := by
   obtain ⟨s₁, hs₁, hs₁fin, hs₁card⟩ := (ht.diff hs).exists_subset_ncard_eq (k - s.ncard)
   refine' ⟨s ∪ s₁, subset_union_left _ _, union_subset hst (hs₁.trans (diff_subset _ _)),
     hs.union hs₁fin, _⟩
@@ -924,8 +926,8 @@ theorem Finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : 
   rw [ht.encard_eq, (ht.subset hst).encard_eq, Nat.cast_le] at hts
   exact eq_of_subset_of_ncard_le hst hts ht
 
-theorem Finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
-    s = t :=
+theorem Finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t)
+    (hts : t.encard ≤ s.encard) : s = t :=
   (hs.Finite_of_encard_le hts).eq_of_subset_of_encard_le hst hts
 
 end encard
