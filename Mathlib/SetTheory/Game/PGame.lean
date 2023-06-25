@@ -734,7 +734,8 @@ def Equiv (x y : PGame) : Prop :=
   x ≤ y ∧ y ≤ x
 #align pgame.equiv PGame.Equiv
 
--- Porting note: deleted the scoped notation due to notation overloading with the setoid instance and this causes the the PGame.equiv docstring to not show up on hover.
+-- Porting note: deleted the scoped notation due to notation overloading with the setoid
+-- instance and this causes the the PGame.equiv docstring to not show up on hover.
 
 instance : IsEquiv _ PGame.Equiv where
   refl _ := ⟨le_rfl, le_rfl⟩
@@ -882,11 +883,13 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
 #align pgame.lf_or_equiv_or_gf PGame.lf_or_equiv_or_gf
 
 theorem equiv_congr_left {y₁ y₂ : PGame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
-  ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩, fun h => (h y₁).1 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩,
+   fun h => (h y₁).1 <| equiv_rfl⟩
 #align pgame.equiv_congr_left PGame.equiv_congr_left
 
 theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
-  ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩, fun h => (h x₂).2 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
+   fun h => (h x₂).2 <| equiv_rfl⟩
 #align pgame.equiv_congr_right PGame.equiv_congr_right
 
 theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
