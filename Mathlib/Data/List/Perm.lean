@@ -935,7 +935,7 @@ theorem subperm_singleton_iff {α} {l : List α} {a : α} : [a] <+~ l ↔ a ∈ 
 
 theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx : count x l₁ < count x l₂) :
     x :: l₁ <+~ l₂ := by
-  rw [subperm_ext_iff] at h⊢
+  rw [subperm_ext_iff] at h ⊢
   intro y hy
   by_cases hy' : y = x
   · subst x

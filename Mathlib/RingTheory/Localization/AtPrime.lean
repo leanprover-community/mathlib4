@@ -242,7 +242,7 @@ instance isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+*
   IsLocalRingHom.mk fun x hx => by
     rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
-    rw [AtPrime.isUnit_mk'_iff] at hx⊢
+    rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
 #align localization.is_local_ring_hom_local_ring_hom Localization.isLocalRingHom_localRingHom
 

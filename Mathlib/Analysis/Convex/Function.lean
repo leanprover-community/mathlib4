@@ -729,7 +729,7 @@ theorem ConcaveOn.left_le_of_le_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx :
 theorem ConvexOn.le_right_of_left_le' (hf : ConvexOn 𝕜 s f) {x y : E} {a b : 𝕜} (hx : x ∈ s)
     (hy : y ∈ s) (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) (hfx : f x ≤ f (a • x + b • y)) :
     f (a • x + b • y) ≤ f y := by
-  rw [add_comm] at hab hfx⊢
+  rw [add_comm] at hab hfx ⊢
   exact hf.le_left_of_right_le' hy hx hb ha hab hfx
 #align convex_on.le_right_of_left_le' ConvexOn.le_right_of_left_le'
 
@@ -790,7 +790,7 @@ theorem ConcaveOn.left_lt_of_lt_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx :
 theorem ConvexOn.lt_right_of_left_lt' (hf : ConvexOn 𝕜 s f) {x y : E} {a b : 𝕜} (hx : x ∈ s)
     (hy : y ∈ s) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfx : f x < f (a • x + b • y)) :
     f (a • x + b • y) < f y := by
-  rw [add_comm] at hab hfx⊢
+  rw [add_comm] at hab hfx ⊢
   exact hf.lt_left_of_right_lt' hy hx hb ha hab hfx
 #align convex_on.lt_right_of_left_lt' ConvexOn.lt_right_of_left_lt'
 

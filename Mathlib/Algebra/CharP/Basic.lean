@@ -444,7 +444,7 @@ end frobenius
 
 theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
     Function.Injective (frobenius R p) := fun x h H => by
-  rw [← sub_eq_zero] at H⊢
+  rw [← sub_eq_zero] at H ⊢
   rw [← frobenius_sub] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 #align frobenius_inj frobenius_inj

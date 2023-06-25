@@ -250,7 +250,7 @@ protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b :=
 #align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
-  rw [← nonneg_iff_zero_le] at ha hb⊢; exact Rat.nonneg_mul ha hb
+  rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
 instance : LinearOrderedField ℚ :=

@@ -68,7 +68,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
   refine' ⟨fun h => _, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
-  simp only [eventually_nhdsWithin_iff] at h⊢
+  simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
 
@@ -702,6 +702,10 @@ theorem ContinuousWithinAt.mono_of_mem {f : α → β} {s t : Set α} {x : α}
     (h : ContinuousWithinAt f t x) (hs : t ∈ 𝓝[s] x) : ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_le_of_mem hs)
 #align continuous_within_at.mono_of_mem ContinuousWithinAt.mono_of_mem
+
+theorem continuousWithinAt_congr_nhds {f : α → β} (h : 𝓝[s] x = 𝓝[t] x) :
+    ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
+  simp only [ContinuousWithinAt, h]
 
 theorem continuousWithinAt_inter' {f : α → β} {s t : Set α} {x : α} (h : t ∈ 𝓝[s] x) :
     ContinuousWithinAt f (s ∩ t) x ↔ ContinuousWithinAt f s x := by
