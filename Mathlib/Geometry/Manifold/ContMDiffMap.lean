@@ -69,8 +69,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
--- attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
---   ContMDiffMap.ContinuousMap.hasCoe
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
