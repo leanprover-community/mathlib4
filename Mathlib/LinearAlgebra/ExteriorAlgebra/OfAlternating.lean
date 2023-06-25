@@ -142,8 +142,7 @@ theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, AlternatingMap R M
 @[simp]
 theorem liftAlternating_ιMulti :
     liftAlternating (R := R) (M := M) (N := ExteriorAlgebra R M) (ιMulti R) =
-    (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) :=
-  by
+    (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) := by
   ext v
   dsimp
   induction' v using CliffordAlgebra.left_induction with r x y hx hy x m hx
