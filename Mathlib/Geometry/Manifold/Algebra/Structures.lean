@@ -33,14 +33,15 @@ class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R] [Topo
 #align smooth_ring SmoothRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R]
-    [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] : SmoothMul I R :=
+instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _)
+    [Semiring R] [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] :
+    SmoothMul I R :=
   { h with }
 #align smooth_ring.to_has_smooth_mul SmoothRing.toSmoothMul
 
 -- see Note [lower instance priority]
-instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [Ring R]
-    [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
+instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _)
+    [Ring R] [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
   compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
   smooth_add := smooth_add I
   smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
@@ -49,7 +50,8 @@ instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E
 end SmoothRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) fieldSmoothRing {𝕜 : Type _} [NontriviallyNormedField 𝕜] : SmoothRing 𝓘(𝕜) 𝕜 :=
+instance (priority := 100) fieldSmoothRing {𝕜 : Type _} [NontriviallyNormedField 𝕜] :
+    SmoothRing 𝓘(𝕜) 𝕜 :=
   { normedSpaceLieAddGroup with
     smooth_mul := by
       rw [smooth_iff]
