@@ -32,7 +32,7 @@ mathematically interesting monoid on a topological manifold such that (a) the sp
 `SmoothManifoldWithCorners`; (b) the multiplication is smooth at `(a, b)` in the charts
 `extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
 
-2. Because of `ModelProd` we can't assume, e.g., that a `lie_group` is modelled on `𝓘(𝕜, E)`. So,
+2. Because of `ModelProd` we can't assume, e.g., that a `LieGroup` is modelled on `𝓘(𝕜, E)`. So,
 we formulate the definitions and lemmas for any model.
 
 3. While smoothness of an operation implies its continuity, lemmas like
