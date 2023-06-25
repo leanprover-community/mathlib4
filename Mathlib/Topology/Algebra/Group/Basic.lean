@@ -1279,6 +1279,16 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
     (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
 
+@[to_additive]
+theorem MulAction.isClosedMap_quotient [CompactSpace α] :
+    letI := orbitRel α β
+    IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
+  intro t ht
+  rw [← quotientMap_quotient_mk'.isClosed_preimage, MulAction.quotient_preimage_image_eq_union_mul]
+  convert ht.smul_left_of_isCompact (isCompact_univ (α := α))
+  rw [← biUnion_univ, ← iUnion_smul_left_image]
+  rfl
+
 end ContinuousSMul
 
 section ContinuousConstSMul
@@ -1430,6 +1440,16 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (t * s) := by
   rw [← image_op_smul]
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
+
+@[to_additive]
+theorem QuotientGroup.isClosedMap_coe {H : Subgroup α} (hH : IsCompact (H : Set α)) :
+    IsClosedMap ((↑) : α → α ⧸ H) := by
+  intro t ht
+  rw [← quotientMap_quotient_mk'.isClosed_preimage]
+  convert ht.mul_right_of_isCompact hH
+  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
+  rw [iUnion_subtype, ← iUnion_mul_right_image]
+  rfl
 
 end TopologicalGroup
 
