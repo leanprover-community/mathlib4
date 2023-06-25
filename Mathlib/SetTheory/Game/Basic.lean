@@ -472,11 +472,17 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
       refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;>
       rintro (⟨i, j⟩ | ⟨i, j⟩) <;>
-      { dsimp
+      · dsimp
         apply ((negAddRelabelling _ _).trans _).symm
         apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr
-        -- FIXME not sure what has gone wrong here
-        exact (negMulRelabelling _ _).symm }
+        -- Porting note: we used to just do `<;> exact (negMulRelabelling _ _).symm` from here.
+        exact (negMulRelabelling _ _).symm
+        exact (negMulRelabelling _ _).symm
+        -- Porting note: not sure what has gone wrong here.
+        -- The goal is hideous here, and the `exact` doesn't work,
+        -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
+        change -(mk xl xr xL xR * _) ≡r _
+        exact (negMulRelabelling _ _).symm
   termination_by _ => (x, y)
   decreasing_by pgame_wf_tac
 #align pgame.neg_mul_relabelling PGame.negMulRelabelling
