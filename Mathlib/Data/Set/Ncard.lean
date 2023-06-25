@@ -824,11 +824,6 @@ theorem Finite.ncard_le_ncard_of_encard_le_encard (ht : t.Finite) (h : s.encard 
     s.ncard ≤ t.ncard := by
   rw [ht.encard_eq, encard_le_coe_iff] at h; exact h.2
 
-theorem Finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
-    s = t := by
-  rw [ht.encard_eq, (ht.subset hst).encard_eq, Nat.cast_le] at hts
-  exact eq_of_subset_of_ncard_le hst hts ht
-
 @[simp] theorem encard_eq_zero : s.encard = 0 ↔ s = ∅ := by
   rw [←ENat.coe_zero, encard_eq_coe_iff]
   exact ⟨fun ⟨h,h'⟩ ↦ by rwa [←ncard_eq_zero h],
@@ -918,20 +913,18 @@ by rw [←diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
 theorem encard_union_le (s t : Set α) : (s ∪ t).encard ≤ s.encard + t.encard := by
   rw [←encard_union_add_encard_inter]; exact le_self_add
 
-theorem finite_iff_finite_of_encard_eq_encard (h : s.encard = t.encard) : s.Finite ↔ t.Finite := by
+theorem Finite_iff_Finite_of_encard_eq_encard (h : s.encard = t.encard) : s.Finite ↔ t.Finite := by
   rw [←encard_lt_top_iff_Finite, ←encard_lt_top_iff_Finite, h]
 
-theorem infinite_iff_infinite_of_encard_eq_encard (h : s.encard = t.encard) :
+theorem Infinite_iff_Infinite_of_encard_eq_encard (h : s.encard = t.encard) :
     s.Infinite ↔ t.Infinite := by rw [←encard_eq_top_iff_Infinite, h, encard_eq_top_iff_Infinite]
 
-theorem finite.finite_of_encard_le (ht : t.Finite) (hst : s.encard ≤ t.encard) : s.Finite := by
-  rw [←encard_lt_top_iff_Finite] at *; exact hst.trans_lt ht
+theorem Finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+    s = t := by
+  rw [ht.encard_eq, (ht.subset hst).encard_eq, Nat.cast_le] at hts
+  exact eq_of_subset_of_ncard_le hst hts ht
 
-theorem finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
-    s = t :=
-  eq_of_subset_of_ncard_le hst ((ht.subset hst).ncard_le_ncard_of_encard_le_encard hts) ht
-
-theorem finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+theorem Finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
     s = t :=
   (hs.Finite_of_encard_le hts).eq_of_subset_of_encard_le hst hts
 
