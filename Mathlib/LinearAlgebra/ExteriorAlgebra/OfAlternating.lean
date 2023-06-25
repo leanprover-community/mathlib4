@@ -16,13 +16,13 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 ## Main definitions
 
-* `exterior_algebra.lift_alternating`: construct a linear map out of the exterior algebra
+* `ExteriorAlgebra.liftAlternating`: construct a linear map out of the exterior algebra
   given alternating maps (corresponding to maps out of the exterior powers).
-* `exterior_algebra.lift_alternating_equiv`: the above as a linear equivalence
+* `ExteriorAlgebra.liftAlternatingEquiv`: the above as a linear equivalence
 
 ## Main results
 
-* `exterior_algebra.lhom_ext`: linear maps from the exterior algebra agree if they agree on the
+* `ExteriorAlgebra.lhom_ext`: linear maps from the exterior algebra agree if they agree on the
   exterior powers.
 
 -/
@@ -35,9 +35,9 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
-instance AlternatingMap.moduleAddCommGroup {ι : Type _} : Module R (AlternatingMap R M N ι) := by
+instance AlternatingMap.ModuleAddCommGroup {ι : Type _} : Module R (AlternatingMap R M N ι) := by
   infer_instance
-#align alternating_map.module_add_comm_group AlternatingMap.moduleAddCommGroup
+#align alternating_map.module_add_comm_group AlternatingMap.ModuleAddCommGroup
 
 namespace ExteriorAlgebra
 
@@ -152,7 +152,7 @@ theorem liftAlternating_ιMulti :
       LinearMap.comp_apply, LinearMap.mulLeft_apply, hx]
 #align exterior_algebra.lift_alternating_ι_multi ExteriorAlgebra.liftAlternating_ιMulti
 
-/-- `exterior_algebra.lift_alternating` is an equivalence. -/
+/-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
 @[simps apply symm_apply]
 def liftAlternatingEquiv : (∀ i, AlternatingMap R M N (Fin i)) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
     where
