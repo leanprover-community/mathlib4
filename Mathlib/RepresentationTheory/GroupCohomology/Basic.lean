@@ -8,8 +8,8 @@ Authors: Amelia Livingston
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Homology.Opposite
-import Mathbin.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.Algebra.Homology.Opposite
+import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -101,8 +101,7 @@ open Rep groupCohomology
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
 @[simps]
-def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A
-    where
+def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
   toFun f g :=
     A.ρ (g 0) (f fun i => g i.succ) +
       Finset.univ.Sum fun j : Fin (n + 1) =>
@@ -160,8 +159,7 @@ $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => InhomogeneousCochains.d n A) fun n =>
-    by
+    (fun n => InhomogeneousCochains.d n A) fun n => by
     ext x y
     have := LinearMap.ext_iff.1 ((linear_yoneda_obj_resolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this 
