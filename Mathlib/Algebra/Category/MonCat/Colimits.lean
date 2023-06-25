@@ -87,7 +87,8 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
       (mul (Prequotient.of j x) (Prequotient.of j y))
   | one : ∀ j, Relation (Prequotient.of j 1) one-- Then one relation per argument of each operation
   | mul_1 : ∀ (x x' y) (_ : Relation x x'), Relation (mul x y) (mul x' y)
-  | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')-- And one relation per axiom
+  | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')
+    -- And one relation per axiom
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
