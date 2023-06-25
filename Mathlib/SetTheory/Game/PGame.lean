@@ -100,6 +100,9 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
+-- This is file, we'd like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 /-! ### Pre-game moves -/
 
 

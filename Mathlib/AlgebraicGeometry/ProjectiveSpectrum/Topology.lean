@@ -57,7 +57,7 @@ that are prime and do not contain the irrelevant ideal. -/
 structure ProjectiveSpectrum where
   asHomogeneousIdeal : HomogeneousIdeal 𝒜
   isPrime : asHomogeneousIdeal.toIdeal.IsPrime
-  not_irrelevant_le : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ as_homogeneous_ideal
+  not_irrelevant_le : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ asHomogeneousIdeal
 #align projective_spectrum ProjectiveSpectrum
 
 attribute [instance] ProjectiveSpectrum.isPrime
