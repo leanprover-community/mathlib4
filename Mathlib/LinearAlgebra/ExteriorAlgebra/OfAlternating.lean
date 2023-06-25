@@ -50,8 +50,8 @@ def liftAlternating : (∀ i, AlternatingMap R M N (Fin i)) →ₗ[R] ExteriorAl
     (∀ i, AlternatingMap R M N (Fin i)) →ₗ[R]
       ExteriorAlgebra R M →ₗ[R] ∀ i, AlternatingMap R M N (Fin i) by
     refine' LinearMap.compr₂ this _
-    refine' LinearEquiv.toLinearMap _ ∘ₗ LinearMap.proj 0
-    exact alternating_map.const_linear_equiv_of_is_empty.symm
+    refine' (LinearEquiv.toLinearMap _).comp (LinearMap.proj 0)
+    exact AlternatingMap.constLinearEquivOfIsEmpty.symm
   refine' CliffordAlgebra.foldl _ _ _
   · refine'
       LinearMap.mk₂ R (fun m f i => (f i.succ).curryLeft m) (fun m₁ m₂ f => _) (fun c m f => _)
@@ -70,37 +70,38 @@ def liftAlternating : (∀ i, AlternatingMap R M N (Fin i)) →ₗ[R] ExteriorAl
 
 @[simp]
 theorem liftAlternating_ι (f : ∀ i, AlternatingMap R M N (Fin i)) (m : M) :
-    liftAlternating f (ι R m) = f 1 ![m] := by
-  dsimp [lift_alternating]
+    (@liftAlternating R M N _ _ _ _ _) f (ι R m) = f 1 ![m] := by
+  dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
   congr
 #align exterior_algebra.lift_alternating_ι ExteriorAlgebra.liftAlternating_ι
 
 theorem liftAlternating_ι_mul (f : ∀ i, AlternatingMap R M N (Fin i)) (m : M)
     (x : ExteriorAlgebra R M) :
-    liftAlternating f (ι R m * x) = liftAlternating (fun i => (f i.succ).curryLeft m) x := by
-  dsimp [lift_alternating]
+    (@liftAlternating R M N _ _ _ _ _) f (ι R m * x) =
+    (@liftAlternating R M N _ _ _ _ _) (fun i => (f i.succ).curryLeft m) x := by
+  dsimp [liftAlternating]
   rw [foldl_mul, foldl_ι]
   rfl
 #align exterior_algebra.lift_alternating_ι_mul ExteriorAlgebra.liftAlternating_ι_mul
 
 @[simp]
 theorem liftAlternating_one (f : ∀ i, AlternatingMap R M N (Fin i)) :
-    liftAlternating f (1 : ExteriorAlgebra R M) = f 0 0 := by
-  dsimp [lift_alternating]
+    (@liftAlternating R M N _ _ _ _ _) f (1 : ExteriorAlgebra R M) = f 0 0 := by
+  dsimp [liftAlternating]
   rw [foldl_one]
 #align exterior_algebra.lift_alternating_one ExteriorAlgebra.liftAlternating_one
 
 @[simp]
 theorem liftAlternating_algebraMap (f : ∀ i, AlternatingMap R M N (Fin i)) (r : R) :
-    liftAlternating f (algebraMap _ (ExteriorAlgebra R M) r) = r • f 0 0 := by
-  rw [Algebra.algebraMap_eq_smul_one, map_smul, lift_alternating_one]
+    (@liftAlternating R M N _ _ _ _ _) f (algebraMap _ (ExteriorAlgebra R M) r) = r • f 0 0 := by
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, liftAlternating_one]
 #align exterior_algebra.lift_alternating_algebra_map ExteriorAlgebra.liftAlternating_algebraMap
 
 @[simp]
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i))
-    (v : Fin n → M) : liftAlternating f (ιMulti R n v) = f n v := by
-  rw [ι_multi_apply]
+    (v : Fin n → M) : (@liftAlternating R M N _ _ _ _ _) f (ιMulti R n v) = f n v := by
+  rw [ιMulti_apply]
   induction' n with n ih generalizing f v
   · rw [List.ofFn_zero, List.prod_nil, lift_alternating_one, Subsingleton.elim 0 v]
   · rw [List.ofFn_succ, List.prod_cons, lift_alternating_ι_mul, ih,
@@ -111,35 +112,35 @@ theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N
 
 @[simp]
 theorem liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i)) :
-    (liftAlternating f).compAlternatingMap (ιMulti R n) = f n :=
+    ((@liftAlternating R M N _ _ _ _ _) f).compAlternatingMap (ιMulti R n) = f n :=
   AlternatingMap.ext <| liftAlternating_apply_ιMulti f
 #align exterior_algebra.lift_alternating_comp_ι_multi ExteriorAlgebra.liftAlternating_comp_ιMulti
 
 @[simp]
 theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, AlternatingMap R M N (Fin i)) :
-    (liftAlternating fun i => g.compAlternatingMap (f i)) = g ∘ₗ liftAlternating f := by
+    ((@liftAlternating R M N' _ _ _ _ _) fun i => g.compAlternatingMap (f i)) =
+    g ∘ₗ (@liftAlternating R M N _ _ _ _ _) f := by
   ext v
   rw [LinearMap.comp_apply]
   induction' v using CliffordAlgebra.left_induction with r x y hx hy x m hx generalizing f
-  ·
-    rw [lift_alternating_algebra_map, lift_alternating_algebra_map, map_smul,
+  · rw [liftAlternating_algebraMap, liftAlternating_algebraMap, map_smul,
       LinearMap.compAlternatingMap_apply]
   · rw [map_add, map_add, map_add, hx, hy]
-  · rw [lift_alternating_ι_mul, lift_alternating_ι_mul, ← hx]
+  · rw [liftAlternating_ι_mul, liftAlternating_ι_mul, ← hx]
     simp_rw [AlternatingMap.curryLeft_compAlternatingMap]
 #align exterior_algebra.lift_alternating_comp ExteriorAlgebra.liftAlternating_comp
 
 @[simp]
 theorem liftAlternating_ιMulti :
-    liftAlternating (ι_multi R) = (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) :=
+    (@liftAlternating R M (ExteriorAlgebra R M) _ _ _ _ _) (ιMulti R) =
+    (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) :=
   by
   ext v
   dsimp
   induction' v using CliffordAlgebra.left_induction with r x y hx hy x m hx
-  · rw [lift_alternating_algebra_map, ι_multi_zero_apply, Algebra.algebraMap_eq_smul_one]
+  · rw [liftAlternating_algebraMap, ιMulti_zero_apply, Algebra.algebraMap_eq_smul_one]
   · rw [map_add, hx, hy]
-  ·
-    simp_rw [lift_alternating_ι_mul, ι_multi_succ_curry_left, lift_alternating_comp,
+  · simp_rw [liftAlternating_ι_mul, ιMulti_succ_curryLeft, liftAlternating_comp,
       LinearMap.comp_apply, LinearMap.mulLeft_apply, hx]
 #align exterior_algebra.lift_alternating_ι_multi ExteriorAlgebra.liftAlternating_ιMulti
 
@@ -167,4 +168,3 @@ theorem lhom_ext ⦃f g : ExteriorAlgebra R M →ₗ[R] N⦄
 #align exterior_algebra.lhom_ext ExteriorAlgebra.lhom_ext
 
 end ExteriorAlgebra
-
