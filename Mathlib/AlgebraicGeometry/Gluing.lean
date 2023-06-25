@@ -104,8 +104,20 @@ abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
 #align algebraic_geometry.Scheme.glue_data.to_LocallyRingedSpace_glue_data AlgebraicGeometry.Scheme.GlueData.toLocallyRingedSpaceGlueData
 
+instance (i j : 𝖣.J) :
+    LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.f i j) := by
+  apply GlueData.f_open
+
+instance (i j : 𝖣.J) :
+    SheafedSpace.IsOpenImmersion (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toGlueData.f i j) := by
+  apply GlueData.f_open
+
+instance (i j : 𝖣.J) :
+    PresheafedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData).toGlueData.f i j) := by
+  apply GlueData.f_open
+
 -- Porting note: this was not needed.
-instance (i : (D.toLocallyRingedSpaceGlueData).toGlueData.J) :
+instance (i : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
@@ -192,36 +204,21 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 #align algebraic_geometry.Scheme.glue_data.V_pullback_cone_is_limit AlgebraicGeometry.Scheme.GlueData.vPullbackConeIsLimit
 
+-- set_option pp.universes true
+
+#check PresheafedSpace.forget.{u + 1, u , u}
+
+#check GlueData.gluedIso
+
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spacess -/
 def isoCarrier :
     D.glued.carrier ≅
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.toGlueData.glued := by
-  /-
-  failed to synthesize instance
-  (i j k :
-      (SheafedSpace.GlueData.toPresheafedSpaceGlueData
-            (LocallyRingedSpace.GlueData.toSheafedSpaceGlueData (toLocallyRingedSpaceGlueData D))).toGlueData.J) →
-    PreservesLimit
-      (cospan
-        (f
-          (SheafedSpace.GlueData.toPresheafedSpaceGlueData
-              (LocallyRingedSpace.GlueData.toSheafedSpaceGlueData (toLocallyRingedSpaceGlueData D))).toGlueData
-          i j)
-        (f
-          (SheafedSpace.GlueData.toPresheafedSpaceGlueData
-              (LocallyRingedSpace.GlueData.toSheafedSpaceGlueData (toLocallyRingedSpaceGlueData D))).toGlueData
-          i k))
-      (PresheafedSpace.forget CommRingCat)
-  -/
-  apply (PresheafedSpace.forget _).mapIso ?eq1 ≪≫ ?eq4
-  case eq1 =>
-    apply SheafedSpace.forgetToPresheafedSpace.mapIso ?eq2 ≪≫ SheafedSpace.GlueData.isoPresheafedSpace _
-    case eq2 =>
-      apply LocallyRingedSpace.forgetToSheafedSpace.mapIso ?eq3 ≪≫ LocallyRingedSpace.GlueData.isoSheafedSpace _
-      case eq3 => exact Scheme.GlueData.isoLocallyRingedSpace _
-  case eq4 =>
-    apply GlueData.gluedIso _ (PresheafedSpace.forget _)
+  refine (PresheafedSpace.forget _).mapIso ?_ ≪≫ GlueData.gluedIso _ (PresheafedSpace.forget.{_, _, u} _)
+  refine SheafedSpace.forgetToPresheafedSpace.mapIso ?_ ≪≫ SheafedSpace.GlueData.isoPresheafedSpace _
+  refine LocallyRingedSpace.forgetToSheafedSpace.mapIso ?_ ≪≫ LocallyRingedSpace.GlueData.isoSheafedSpace _
+  exact Scheme.GlueData.isoLocallyRingedSpace _
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
 
 @[simp]
