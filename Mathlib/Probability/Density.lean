@@ -32,7 +32,7 @@ random variables with this distribution.
 * `MeasureTheory.pdf` : If `X` is a random variable that `HasPDF X ℙ μ`, then `pdf X`
   is the measurable function `f` such that the push-forward measure of `ℙ` along `X` equals
   `μ.withDensity f`.
-* `measure_theory.pdf.uniform` : A random variable `X` is said to follow the uniform
+* `MeasureTheory.pdf.IsUniform` : A random variable `X` is said to follow the uniform
   distribution if it has a constant probability density function with a compact, non-null support.
 
 ## Main results
@@ -42,7 +42,7 @@ random variables with this distribution.
   all measurable `g : E → ℝ`.
 * `MeasureTheory.pdf.integral_mul_eq_integral` : A real-valued random variable `X` with
   pdf `f` has expectation `∫ x, x * f x dx`.
-* `measure_theory.pdf.uniform.integral_eq` : If `X` follows the uniform distribution with
+* `MeasureTheory.pdf.IsUniform.integral_eq` : If `X` follows the uniform distribution with
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
 
@@ -242,10 +242,10 @@ section
 
 variable {F : Type _} [MeasurableSpace F] {ν : Measure F}
 
-/-- A random variable that `HasPDF` transformed under a `quasi_measure_preserving`
-map also `HasPDF` if `(map g (map X ℙ)).have_lebesgue_decomposition μ`.
+/-- A random variable that `HasPDF` transformed under a `QuasiMeasurePreserving`
+map also `HasPDF` if `(map g (map X ℙ)).HaveLebesgueDecomposition μ`.
 
-`quasi_measure_preserving_hasPDF'` is more useful in the case we are working with a
+`quasiMeasurePreserving_hasPDF` is more useful in the case we are working with a
 probability measure and a real-valued random variable. -/
 theorem quasiMeasurePreserving_hasPDF {X : Ω → E} [HasPDF X ℙ μ] {g : E → F}
     (hg : QuasiMeasurePreserving g μ ν) (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) :

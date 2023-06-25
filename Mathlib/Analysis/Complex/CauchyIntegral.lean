@@ -29,7 +29,7 @@ Banach space with second countable topology.
 In the following theorems, if the name ends with `off_countable`, then the actual theorem assumes
 differentiability at all but countably many points of the set mentioned below.
 
-* `complex.integral_boundary_rect_of_has_fderiv_within_at_real_off_countable`: If a function
+* `Complex.integral_boundary_rect_of_hasFDerivAt_real_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and *real* differentiable on its interior, then
   its integral over the boundary of this rectangle is equal to the integral of
   `I • f' (x + y * I) 1 - f' (x + y * I) I` over the rectangle, where `f' z w : E` is the derivative
@@ -72,7 +72,7 @@ differentiability at all but countably many points of the set mentioned below.
   on a neighborhood of a point, then it is analytic at this point. In particular, if `f : ℂ → E`
   is differentiable on the whole `ℂ`, then it is analytic at every point `z : ℂ`.
 
-* `differentiable.has_power_series_on_ball`: If `f : ℂ → E` is differentiable everywhere then the
+* `Differentiable.hasFPowerSeriesOnBall`: If `f : ℂ → E` is differentiable everywhere then the
   `cauchyPowerSeries f z R` is a formal power series representing `f` at `z` with infinite
   radius of convergence (this holds for any choice of `0 < R`).
 

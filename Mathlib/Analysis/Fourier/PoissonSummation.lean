@@ -22,17 +22,17 @@ Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
 * For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-See `real.tsum_eq_tsum_fourier_integral` for this formulation.
+See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
-easier-to-use result `real.tsum_eq_tsum_fourier_integral_of_rpow_decay`, in which we assume `f` and
+easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
-`schwartz_map.tsum_eq_tsum_fourier_integral`, where we assume that both `f` and `𝓕 f` are Schwartz
+`SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that both `f` and `𝓕 f` are Schwartz
 functions.
 
 ## TODO
 
-At the moment `schwartz_map.tsum_eq_tsum_fourier_integral` requires separate proofs that both `f`
+At the moment `SchwartzMap.tsum_eq_tsum_fourierIntegral` requires separate proofs that both `f`
 and `𝓕 f` are Schwartz functions. In fact, `𝓕 f` is automatically Schwartz if `f` is; and once
 we have this lemma in the library, we should adjust the hypotheses here accordingly.
 -/
@@ -179,7 +179,6 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
-set_option autoImplicit false in
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : IsBigO atBot f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
     IsBigO atBot (fun x : ℝ => ‖f.restrict (Icc (x + R) (x + S))‖) fun x : ℝ => |x| ^ (-b) := by

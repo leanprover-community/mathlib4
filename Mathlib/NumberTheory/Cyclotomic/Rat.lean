@@ -114,10 +114,10 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       haveI : CharZero ℚ := StrictOrderedSemiring.to_charZero
       rw [IsPrimitiveRoot.subOnePowerBasis_gen,
         map_injective (algebraMap ℤ ℚ) (algebraMap ℤ ℚ).injective_int h₂]
-      exact cyclotomic_prime_pow_comp_x_add_one_isEisensteinAt p _
+      exact cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt p _
     refine'
       adjoin_le _
-        (mem_adjoin_of_smul_prime_pow_smul_of_minpoly_is_eiseinstein_at (n := n)
+        (mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt (n := n)
           (Nat.prime_iff_prime_int.1 hp.out) hint h (by simpa using H) hmin)
     simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     exact Subalgebra.sub_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
