@@ -297,11 +297,7 @@ variable {s : Set M} {U : M → Set M} (fs : SmoothBumpCovering ι I M s)
 instance : CoeFun (SmoothBumpCovering ι I M s) fun x => ∀ i : ι, SmoothBumpFunction I (x.c i) :=
   ⟨toFun⟩
 
-@[simp]
-theorem coe_mk (c : ι → M) (to_fun : ∀ i, SmoothBumpFunction I (c i)) (h₁ h₂ h₃) :
-    ⇑(mk c to_fun h₁ h₂ h₃ : SmoothBumpCovering ι I M s) = to_fun :=
-  rfl
-#align smooth_bump_covering.coe_mk SmoothBumpCovering.coe_mk
+#noalign smooth_bump_covering.coe_mk
 
 /--
 We say that `f : SmoothBumpCovering ι I M s` is *subordinate* to a map `U : M → Set M` if for each
@@ -345,7 +341,7 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   · refine' (mem_iUnion.1 <| hsV hx).imp fun i hi => _
     exact ((f i).updateRIn _ _).eventuallyEq_one_of_dist_lt
       ((f i).support_subset_source <| hVf _ hi) (hr i hi).2
-  · simpa only [coe_mk, SmoothBumpFunction.support_updateRIn, tsupport] using hfU i
+  · simpa only [SmoothBumpFunction.support_updateRIn, tsupport] using hfU i
 #align smooth_bump_covering.exists_is_subordinate SmoothBumpCovering.exists_isSubordinate
 
 variable {I}
