@@ -1425,18 +1425,11 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 theorem IsClosed.mul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) : IsClosed (s * t) :=
   ht.smul_left_of_isCompact hs
 
---@[to_additive]
---theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
---    IsClosed (t * s) := by
---  convert @IsClosed.smul_left_of_isCompact αᵐᵒᵖ α _ _ _ _ _ _ (Set.op s) t ht sorry using 1
---  rw [SetLike.smul_def]
-
 @[to_additive]
-theorem IsClosed.mul_right_of_isCompact (hs : IsClosed s) (ht : IsCompact t) :
-    IsClosed (s * t) := by
-  -- TODO: morally it would be better to use `αᵐᵒᵖ` instead of relying on inversion
-  rw [← inv_inv (s * t), mul_inv_rev]
-  exact (hs.inv.mul_left_of_isCompact ht.inv).inv
+theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+    IsClosed (t * s) := by
+  rw [← image_op_smul]
+  exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
 
 end TopologicalGroup
 

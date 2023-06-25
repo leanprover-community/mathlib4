@@ -421,6 +421,11 @@ theorem op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t :=
 #align set.op_smul_set_subset_mul Set.op_smul_set_subset_mul
 #align set.op_vadd_set_subset_add Set.op_vadd_set_subset_add
 
+@[to_additive]
+theorem image_op_smul : (op '' s) • t = t * s := by
+  rw [← image2_smul, ← image2_mul, image2_image_left, image2_swap]
+  rfl
+
 @[to_additive (attr := simp)]
 theorem iUnion_op_smul_set (s t : Set α) : (⋃ a ∈ t, MulOpposite.op a • s) = s * t :=
   iUnion_image_right _
