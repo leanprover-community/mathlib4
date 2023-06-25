@@ -1269,8 +1269,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   refine isClosed_of_closure_subset (fun x hx ↦ ?_)
   rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
   have : Ultrafilter.map f u ≤ 𝓟 s :=
-    calc Ultrafilter.map f u = map f u := rfl
-      _ ≤ map f (𝓟 (s •t )) := map_mono (le_principal_iff.mpr hust)
+    calc Ultrafilter.map f u ≤ map f (𝓟 (s • t)) := map_mono (le_principal_iff.mpr hust)
       _ = 𝓟 (f '' (s • t)) := map_principal
       _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
   rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
