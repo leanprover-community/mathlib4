@@ -154,7 +154,7 @@ instance stringCoeMiustr : Coe String Miustr :=
 -/
 
 
--- Porting note: Added a lot of `(show Miustr from _)`
+-- Porting note: Added a lot of `↑` to coerce `List MiuAtom` to `Miustr`
 /--
 The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
@@ -162,11 +162,10 @@ corresponds to the one of Hofstadter's rules of inference.
 -/
 inductive Derivable : Miustr → Prop
   | mk : Derivable "MI"
-  | r1 {x} : Derivable (x ++ (show Miustr from [I])) → Derivable (x ++ (show Miustr from [I, U]))
+  | r1 {x} : Derivable (x ++ ↑[I]) → Derivable (x ++ ↑[I, U])
   | r2 {x} : Derivable (M :: x) → Derivable (M :: x ++ x)
-  | r3 {x y} :
-    Derivable (x ++ (show Miustr from [I, I, I]) ++ y) → Derivable (x ++ (show Miustr from U :: y))
-  | r4 {x y} : Derivable (x ++ (show Miustr from [U, U]) ++ y) → Derivable (x ++ y)
+  | r3 {x y} : Derivable (x ++ ↑[I, I, I] ++ y) → Derivable (x ++ ↑(U :: y))
+  | r4 {x y} : Derivable (x ++ ↑[U, U] ++ y) → Derivable (x ++ y)
 #align miu.derivable Miu.Derivable
 
 /-!
