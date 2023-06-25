@@ -24,9 +24,6 @@ section SmoothRing
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
--- porting note: unsupported option set_option default_priority 100
-
--- see Note [default priority]
 -- See note [Design choices about smooth algebraic structures]
 /-- A smooth (semi)ring is a (semi)ring `R` where addition and multiplication are smooth.
 If `R` is a ring, then negation is automatically smooth, as it is multiplication with `-1`. -/
@@ -35,12 +32,14 @@ class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R] [Topo
   smooth_mul : Smooth (I.prod I) I fun p : R × R => p.1 * p.2
 #align smooth_ring SmoothRing
 
-instance SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R]
+-- see Note [lower instance priority]
+instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type _) [Semiring R]
     [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] : SmoothMul I R :=
   { h with }
 #align smooth_ring.to_has_smooth_mul SmoothRing.toSmoothMul
 
-instance SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [Ring R]
+-- see Note [lower instance priority]
+instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [Ring R]
     [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
   compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
   smooth_add := smooth_add I
@@ -49,7 +48,8 @@ instance SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type _) [
 
 end SmoothRing
 
-instance fieldSmoothRing {𝕜 : Type _} [NontriviallyNormedField 𝕜] : SmoothRing 𝓘(𝕜) 𝕜 :=
+-- see Note [lower instance priority]
+instance (priority := 100) fieldSmoothRing {𝕜 : Type _} [NontriviallyNormedField 𝕜] : SmoothRing 𝓘(𝕜) 𝕜 :=
   { normedSpaceLieAddGroup with
     smooth_mul := by
       rw [smooth_iff]
@@ -67,4 +67,3 @@ see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_smooth [Semiring R] [SmoothRing I R] : TopologicalSemiring R :=
   { continuousMul_of_smooth I, continuousAdd_of_smooth I with }
 #align topological_semiring_of_smooth topologicalSemiring_of_smooth
-
