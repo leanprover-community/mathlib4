@@ -50,7 +50,7 @@ open scoped Manifold
 the addition and negation operations are smooth. -/
 class LieAddGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
-    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends HasSmoothAdd I G : Prop where
+    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothAdd I G : Prop where
   smooth_neg : Smooth I I fun a : G => -a
 #align lie_add_group LieAddGroup
 
@@ -60,7 +60,7 @@ the multiplication and inverse operations are smooth. -/
 @[to_additive]
 class LieGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
-    [Group G] [TopologicalSpace G] [ChartedSpace H G] extends HasSmoothMul I G : Prop where
+    [Group G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothMul I G : Prop where
   smooth_inv : Smooth I I fun a : G => a⁻¹
 #align lie_group LieGroup
 
@@ -219,7 +219,7 @@ instance {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [Topologica
     [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} {G' : Type _} [TopologicalSpace G'] [ChartedSpace H' G']
     [Group G'] [LieGroup I' G'] : LieGroup (I.prod I') (G × G') :=
-  { HasSmoothMul.prod _ _ _ _ with smooth_inv := smooth_fst.inv.prod_mk smooth_snd.inv }
+  { SmoothMul.prod _ _ _ _ with smooth_inv := smooth_fst.inv.prod_mk smooth_snd.inv }
 
 end ProdLieGroup
 
