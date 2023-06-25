@@ -18,15 +18,16 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # The upper half plane and its automorphisms
 
-This file defines `upper_half_plane` to be the upper half plane in `ℂ`.
+This file defines `UpperHalfPlane` to be the upper half plane in `ℂ`.
 
-We furthermore equip it with the structure of an `GL_pos 2 ℝ` action by
+We furthermore equip it with the structure of an `GLPos 2 ℝ` action by
 fractional linear transformations.
 
 We define the notation `ℍ` for the upper half plane available in the locale
-`upper_half_plane` so as not to conflict with the quaternions.
+`UpperHalfPlane` so as not to conflict with the quaternions.
 -/
 
+set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -245,7 +246,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   ring
 #align upper_half_plane.mul_smul' UpperHalfPlane.mul_smul'
 
-/-- The action of ` GL_pos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
+/-- The action of ` GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
 instance : MulAction GL(2, ℝ)⁺ ℍ where
   smul := smulAux
   one_smul z := by
