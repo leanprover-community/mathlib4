@@ -35,23 +35,23 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 
 ## Main definitions
 
-* `group_cohomology.linear_yoneda_obj_resolution A`: a complex whose objects are the representation
+* `GroupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
 morphisms $\mathrm{Hom}(k[G^{n + 1}], A)$ and whose cohomology is the group cohomology
 $\mathrm{H}^n(G, A)$.
-* `group_cohomology.inhomogeneous_cochains A`: a complex whose objects are
+* `GroupCohomology.inhomogeneousCochains A`: a complex whose objects are
 $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
-* `group_cohomology.inhomogeneous_cochains_iso A`: an isomorphism between the above two complexes.
+* `GroupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
 * `group_cohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
-second complex, `inhomogeneous_cochains A`.
-* `group_cohomology_iso_Ext A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneous_cochains_iso A`.
+second complex, `inhomogeneousCochains A`.
+* `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
+(where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
 ## Implementation notes
 
 Group cohomology is typically stated for `G`-modules, or equivalently modules over the group ring
 `ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
 Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `module (monoid_algebra k G) A` so that we do not run into
+definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
 possible scalar action diamonds.
 
 ## TODO
@@ -59,7 +59,7 @@ possible scalar action diamonds.
 * API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
 the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
-* Upgrading `group_cohomology_iso_Ext` to an isomorphism of derived functors.
+* Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
 Longer term:
@@ -121,7 +121,7 @@ variable [Group G] (n) (A : Rep k G)
 set_option maxHeartbeats 1600000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
-and the homogeneous `linear_yoneda_obj_resolution`. -/
+and the homogeneous `linearYonedaObjResolution`. -/
 theorem d_eq :
     d n A =
       (diagonalHomEquiv n A).toModuleIso.inv ≫
