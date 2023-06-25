@@ -599,20 +599,22 @@ theorem quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = �
 /-- `x * 1` has the same moves as `x`. -/
 def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    -- FIXME was this the original mathlib3 proof!?
+    -- Porting note: the next four lines were just `unfold has_one.one,`
     show _ * One.one ≡r _
     unfold One.one
     unfold instOnePGame
-    simp
-    refine' ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
-      (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), _, _⟩ <;>
-    try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩) <;>
-    try intro i <;>
-    dsimp <;>
-    apply (relabelling.sub_congr (relabelling.refl _) (mulZeroRelabelling _)).trans <;>
-    rw [sub_zero] <;>
-    exact (addZeroRelabelling _).trans
-      (((mulOneRelabelling _).addCongr (mulZeroRelabelling _)).trans <| addZeroRelabelling _)
+    change mk _ _ _ _ * mk _ _ _ _ ≡r _
+    -- Porting note: changed `refine'` to `refine`,
+    -- otherwise there are typeclass inference failures.
+    refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
+      (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
+    (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
+    { (try intro i)
+      dsimp
+      apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
+      rw [sub_zero]
+      exact (addZeroRelabelling _).trans <|
+        (((mulOneRelabelling _).addCongr (mulZeroRelabelling _)).trans <| addZeroRelabelling _) }
 #align pgame.mul_one_relabelling PGame.mulOneRelabelling
 
 @[simp]
