@@ -22,7 +22,7 @@ We prove various versions of the formula for the Gaussian integral:
 * `integral_gaussian_complex`: for complex `b` with `0 < re b` we have
   `∫ x:ℝ, exp (-b * x^2) = (π / b) ^ (1 / 2)`.
 * `integral_gaussian_Ioi` and `integral_gaussian_complex_Ioi`: variants for integrals over `Ioi 0`.
-* `complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
+* `Complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
 
 We also prove, more generally, that the Fourier transform of the Gaussian is another Gaussian:
 
@@ -33,11 +33,11 @@ We also prove, more generally, that the Fourier transform of the Gaussian is ano
 * `fourier_transform_gaussian_pi`: a variant with `b` and `t` scaled to give a more symmetric
   statement, and formulated in terms of the Fourier transform operator `𝓕`.
 
-As an application, in `real.tsum_exp_neg_mul_int_sq` and `complex.tsum_exp_neg_mul_int_sq`, we use
+As an application, in `Real.tsum_exp_neg_mul_int_sq` and `cCmplex.tsum_exp_neg_mul_int_sq`, we use
 Poisson summation to prove the identity
 `∑' (n : ℤ), exp (-π * a * n ^ 2) = 1 / a ^ (1 / 2) * ∑' (n : ℤ), exp (-π / a * n ^ 2)`
 for positive real `a`, or complex `a` with positive real part. (See also
-`number_theory.modular_forms.jacobi_theta`.)
+`NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
@@ -224,45 +224,36 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
   refine' (sq_eq_sq _ (sqrt_nonneg _)).1 _
   · exact integral_nonneg fun x => (exp_pos _).le
-  rw [← ofReal_inj, ofReal_pow, sq_sqrt (div_pos pi_pos hb).le, ofReal_div]
-  convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) using 1
-  -- Porting note: the following `convert` statements were plain rewrites before, but the rewriter
-  -- no longer seems to correctly identify the relevant terms
-  congr 1
-  convert (@integral_ofReal ℝ _ _ _ _ _).symm using 2
-  ext1 x
-  convert (ofReal_exp _).symm
-  push_cast
-  rfl
+  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, ← integral_ofReal,
+    sq_sqrt (div_pos pi_pos hb).le, ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
+  convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
+  rw [ofReal_exp, ofReal_mul, ofReal_pow, ofReal_neg]
 #align integral_gaussian integral_gaussian
 
 theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
-    ContinuousAt (fun c : ℂ => ∫ x : ℝ, cexp (-c * x ^ 2)) b := by
-  let f : ℂ → ℝ → ℂ := fun (c : ℂ) (x : ℝ) => cexp (-c * x ^ 2)
+    ContinuousAt (fun c : ℂ => ∫ x : ℝ, cexp (-c * (x : ℂ) ^ 2)) b := by
+  let f : ℂ → ℝ → ℂ := fun (c : ℂ) (x : ℝ) => cexp (-c * (x : ℂ) ^ 2)
   obtain ⟨d, hd, hd'⟩ := exists_between hb
-  have f_meas : ∀ c : ℂ, ae_strongly_measurable (f c) volume := fun c => by
+  have f_meas : ∀ c : ℂ, AEStronglyMeasurable (f c) volume := fun c => by
     apply Continuous.aestronglyMeasurable
-    exact complex.continuous_exp.comp (continuous_const.mul (continuous_of_real.pow 2))
-  have f_int : integrable (f b) volume := by
-    simp_rw [← integrable_norm_iff (f_meas b), norm_cexp_neg_mul_sq b]
-    exact integrable_exp_neg_mul_sq hb
+    exact Complex.continuous_exp.comp (continuous_const.mul (continuous_ofReal.pow 2))
   have f_cts : ∀ x : ℝ, ContinuousAt (fun c => f c x) b := fun x =>
-    (complex.continuous_exp.comp (continuous_id'.neg.mul continuous_const)).ContinuousAt
+    (Complex.continuous_exp.comp (continuous_id'.neg.mul continuous_const)).continuousAt
   have f_le_bd : ∀ᶠ c : ℂ in 𝓝 b, ∀ᵐ x : ℝ, ‖f c x‖ ≤ exp (-d * x ^ 2) := by
-    refine' eventually_of_mem ((continuous_re.is_open_preimage _ isOpen_Ioi).mem_nhds hd') _
+    refine' eventually_of_mem ((continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds hd') _
     refine' fun c hc => ae_of_all _ fun x => _
     rw [norm_cexp_neg_mul_sq, exp_le_exp]
     exact mul_le_mul_of_nonneg_right (neg_le_neg (le_of_lt hc)) (sq_nonneg _)
   exact
-    continuous_at_of_dominated (eventually_of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
+    continuousAt_of_dominated (eventually_of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
       (ae_of_all _ f_cts)
 #align continuous_at_gaussian_integral continuousAt_gaussian_integral
 
 theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
-    ∫ x : ℝ, cexp (-b * x ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
+    ∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   have nv : ∀ {b : ℂ}, 0 < re b → b ≠ 0 := by intro b hb; contrapose! hb; rw [hb]; simp
   refine'
-    (convex_halfspace_re_gt 0).IsPreconnected.eq_of_sq_eq _ _ (fun c hc => _) (fun c hc => _)
+    (convex_halfspace_re_gt 0).isPreconnected.eq_of_sq_eq _ _ (fun c hc => _) (fun c hc => _)
       (by simp : 0 < re (1 : ℂ)) _ hb
   ·-- integral is continuous
     exact ContinuousAt.continuousOn continuousAt_gaussian_integral
