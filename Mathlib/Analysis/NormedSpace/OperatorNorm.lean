@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 
 ! This file was ported from Lean 3 source module analysis.normed_space.operator_norm
-! leanprover-community/mathlib commit 91862a6001a8b6ae3f261cdd8eea42f6ac596886
+! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -201,7 +201,7 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, MulZeroClass.mul_zero] at hC⊢
+  · rwa [h, MulZeroClass.mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact (div_le_iff hlt).mp
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
@@ -211,12 +211,16 @@ theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := b
   simp_rw [dist_eq_norm, ← map_sub, f.le_op_norm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_op_norm
 
+theorem le_of_op_norm_le_of_le {x} {a b : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) :
+    ‖f x‖ ≤ a * b :=
+  (f.le_op_norm x).trans <| by gcongr; exact (op_norm_nonneg f).trans hf
+
 theorem le_op_norm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
-  le_trans (f.le_op_norm x) (mul_le_mul_of_nonneg_left h f.op_norm_nonneg)
+  f.le_of_op_norm_le_of_le le_rfl h
 #align continuous_linear_map.le_op_norm_of_le ContinuousLinearMap.le_op_norm_of_le
 
 theorem le_of_op_norm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : E) : ‖f x‖ ≤ c * ‖x‖ :=
-  (f.le_op_norm x).trans (mul_le_mul_of_nonneg_right h (norm_nonneg x))
+  f.le_of_op_norm_le_of_le h le_rfl
 #align continuous_linear_map.le_of_op_norm_le ContinuousLinearMap.le_of_op_norm_le
 
 theorem ratio_le_op_norm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
@@ -352,10 +356,10 @@ protected theorem tmp_closedBall_div_subset {a b : ℝ} (ha : 0 < a) (hb : 0 < b
     closedBall (0 : E →SL[σ₁₂] F) (a / b) ⊆
       { f | ∀ x ∈ closedBall (0 : E) b, f x ∈ closedBall (0 : F) a } := by
   intro f hf x hx
-  rw [mem_closedBall_zero_iff] at hf hx⊢
+  rw [mem_closedBall_zero_iff] at hf hx ⊢
   calc
     ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-    _ ≤ a / b * b := (mul_le_mul hf hx (norm_nonneg _) (div_pos ha hb).le)
+    _ ≤ a / b * b := by gcongr
     _ = a := div_mul_cancel a hb.ne.symm
 #align continuous_linear_map.tmp_closed_ball_div_subset ContinuousLinearMap.tmp_closedBall_div_subset
 
@@ -611,6 +615,12 @@ theorem le_op_norm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL
   (f x).le_of_op_norm_le (f.le_op_norm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_op_norm₂
 
+-- porting note: new theorem
+theorem le_of_op_norm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
+    {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c)  :
+    ‖f x y‖ ≤ a * b * c :=
+  (f x).le_of_op_norm_le_of_le (f.le_of_op_norm_le_of_le hf hx) hy
+
 end
 
 @[simp]
@@ -717,25 +727,39 @@ theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x
 
 variable [RingHomIsometric σ₂₃]
 
+lemma norm_mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ)
+    (h : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) (x : E) :
+    ‖(f x).mkContinuous (C * ‖x‖) (h x)‖ ≤ max C 0 * ‖x‖ :=
+  (mkContinuous_norm_le' (f x) (h x)).trans_eq <| by
+    rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
+
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
-map and a bound on the norm of the image. The linear map can be constructed using
-`LinearMap.mk₂`. -/
-def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
-    E →SL[σ₁₃] F →SL[σ₂₃] G :=
-  LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) (hC x)
+map and existence of a bound on the norm of the image. The linear map can be constructed using
+`LinearMap.mk₂`.
+
+If you have an explicit bound, use `LinearMap.mkContinuous₂` instead, as a norm estimate will
+follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
+def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
+    (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
+  LinearMap.mkContinuousOfExistsBound
+    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
       map_add' := fun x y => by
         ext z
-        rw [ContinuousLinearMap.add_apply, mkContinuous_apply, mkContinuous_apply,
-          mkContinuous_apply, map_add, add_apply]
+        rw [ContinuousLinearMap.add_apply, mkContinuousOfExistsBound_apply,
+          mkContinuousOfExistsBound_apply, mkContinuousOfExistsBound_apply, map_add, add_apply]
       map_smul' := fun c x => by
         ext z
-        rw [ContinuousLinearMap.smul_apply, mkContinuous_apply, mkContinuous_apply, map_smulₛₗ,
-          smul_apply] }
-    (max C 0) fun x => by
-      dsimp
-      exact (mkContinuous_norm_le' _ _).trans_eq <| by
-        rw [max_mul_of_nonneg _ _ (norm_nonneg x), MulZeroClass.zero_mul]
+        rw [ContinuousLinearMap.smul_apply, mkContinuousOfExistsBound_apply,
+          mkContinuousOfExistsBound_apply, map_smulₛₗ, smul_apply] } <|
+    let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
+
+/-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
+map and a bound on the norm of the image. The linear map can be constructed using
+`LinearMap.mk₂`. Lemmas `LinearMap.mkContinuous₂_norm_le'` and `LinearMap.mkContinuous₂_norm_le`
+provide estimates on the norm of an operator constructed using this function. -/
+def mkContinuous₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ) (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) :
+    E →SL[σ₁₃] F →SL[σ₂₃] G :=
+  mkContinuousOfExistsBound₂ f ⟨C, hC⟩
 #align linear_map.mk_continuous₂ LinearMap.mkContinuous₂
 
 @[simp]
@@ -746,7 +770,7 @@ theorem mkContinuous₂_apply (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G
 
 theorem mkContinuous₂_norm_le' (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ}
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ max C 0 :=
-  mkContinuous_norm_le _ (le_max_iff.2 <| Or.inr le_rfl) _
+  mkContinuous_norm_le _ (le_max_iff.2 <| Or.inr le_rfl) (norm_mkContinuous₂_aux f C hC)
 #align linear_map.mk_continuous₂_norm_le' LinearMap.mkContinuous₂_norm_le'
 
 theorem mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
@@ -1510,7 +1534,7 @@ open Filter
 variable {E' : Type _} [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHomIsometric σ₁₂]
 
 /-- Construct a bundled continuous (semi)linear map from a map `f : E → F` and a proof of the fact
-that it belongs to the closure of the image of a bounded set `s : set (E →SL[σ₁₂] F)` under coercion
+that it belongs to the closure of the image of a bounded set `s : Set (E →SL[σ₁₂] F)` under coercion
 to function. Coercion to function of the result is definitionally equal to `f`. -/
 @[simps! (config := { fullyApplied := false }) apply]
 def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : Bounded s)
@@ -1976,52 +2000,6 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
   exact ContinuousLinearMap.homothety_norm _ fun y =>
     homothety_inverse _ hx _ (toSpanNonzeroSingleton_homothety 𝕜 x h) _
 #align continuous_linear_equiv.coord_norm ContinuousLinearEquiv.coord_norm
-
-variable {𝕜} {𝕜₄ : Type _} [NontriviallyNormedField 𝕜₄]
-
-variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜₄ H] [NormedSpace 𝕜₃ G]
-
-variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
-
-variable {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃}
-
-variable {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄}
-
-variable [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
-
-variable [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
-
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-
-variable [RingHomIsometric σ₁₄] [RingHomIsometric σ₂₃]
-
-variable [RingHomIsometric σ₄₃] [RingHomIsometric σ₂₄]
-
-variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁₂]
-
-variable [RingHomIsometric σ₃₄]
-
-/-- A pair of continuous (semi)linear equivalences generates an continuous (semi)linear equivalence
-between the spaces of continuous (semi)linear maps. -/
-@[simps apply symm_apply]
-def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-  {e₁₂.arrowCongrEquiv e₄₃ with -- given explicitly to help `simps`
-    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
-    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
-    continuous_toFun := (continuous_id.clm_comp_const _).const_clm_comp _
-    continuous_invFun := (continuous_id.clm_comp_const _).const_clm_comp _ }
-set_option linter.uppercaseLean3 false in
-#align continuous_linear_equiv.arrow_congrSL ContinuousLinearEquiv.arrowCongrSL
-
-/-- A pair of continuous linear equivalences generates an continuous linear equivalence between
-the spaces of continuous linear maps. -/
-def arrowCongr {F H : Type _} [NormedAddCommGroup F] [NormedAddCommGroup H] [NormedSpace 𝕜 F]
-    [NormedSpace 𝕜 G] [NormedSpace 𝕜 H] (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
-    (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
-  arrowCongrSL e₁ e₂
-#align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
 
 end
 

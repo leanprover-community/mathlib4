@@ -65,7 +65,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt
 
-/-- We prefer to use the bundled `revAt` over unbundled `revAtfun`. -/
+/-- We prefer to use the bundled `revAt` over unbundled `revAtFun`. -/
 @[simp]
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl

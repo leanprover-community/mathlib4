@@ -150,7 +150,7 @@ theorem prod_assoc_symm_preimage {α β γ} {s : Set α} {t : Set β} {u : Set �
   simp [and_assoc]
 #align equiv.prod_assoc_symm_preimage Equiv.prod_assoc_symm_preimage
 
--- `@[simp]` doesn't like these lemmas, as it uses `set.image_congr'` to turn `equiv.prod_assoc`
+-- `@[simp]` doesn't like these lemmas, as it uses `Set.image_congr'` to turn `Equiv.prodAssoc`
 -- into a lambda expression and then unfold it.
 theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ '' (s ×ˢ t) ×ˢ u = s ×ˢ t ×ˢ u := by
@@ -275,7 +275,7 @@ protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
 
-/-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ punit`. -/
+/-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ Sum s PUnit.{u + 1} :=
   calc
@@ -404,7 +404,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       sumCongr (Equiv.refl _)
         (by
           refine' (Set.union' (· ∉ s) _ _).symm
-          exacts[fun x hx => hx.2, fun x hx => not_not_intro hx.1])
+          exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_diff] }
@@ -704,7 +704,7 @@ noncomputable def Set.BijOn.equiv {α : Type _} {β : Type _} {s : Set α} {t : 
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- porting note: replace `s : set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {p : α → Prop}
     (e : β ≃ Subtype p)

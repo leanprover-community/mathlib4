@@ -16,7 +16,7 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Equal and mixed characteristic
 
-In commutative algebra, some statments are simpler when working over a `ℚ`-algebra `R`, in which
+In commutative algebra, some statements are simpler when working over a `ℚ`-algebra `R`, in which
 case one also says that the ring has "equal characteristic zero". A ring that is not a
 `ℚ`-algebra has either positive characteristic or there exists a prime ideal `I ⊂ R` such that
 the quotient `R ⧸ I` has positive characteristic `p > 0`. In this case one speaks of
@@ -51,7 +51,7 @@ characteristic case for convenience:
 
 We use the terms `EqualCharZero` and `AlgebraRat` despite not being such definitions in mathlib.
 The former refers to the statement `∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)`, the latter
-refers to the existance of an instance `[Algebra ℚ R]`. The two are shown to be
+refers to the existence of an instance `[Algebra ℚ R]`. The two are shown to be
 equivalent conditions.
 
 ## TODO
@@ -358,7 +358,7 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
 #align split_by_characteristic split_by_characteristic
 
 /--
-In a `IsDomain R`, split any `Prop` over `R` into the three cases:
+In an `IsDomain R`, split any `Prop` over `R` into the three cases:
 - *prime* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.

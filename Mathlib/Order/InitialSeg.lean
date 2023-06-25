@@ -116,7 +116,7 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
-    simp at h⊢
+    simp at h ⊢
     rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 #align initial_seg.trans InitialSeg.trans
@@ -422,7 +422,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
-/-- Principal segment from the empty relation on `pempty` to the empty relation on `punit`. -/
+/-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
 @[reducible]
 def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false

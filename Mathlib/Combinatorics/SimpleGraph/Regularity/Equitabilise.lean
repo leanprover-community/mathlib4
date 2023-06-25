@@ -99,7 +99,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
-  push_neg  at h
+  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
@@ -121,7 +121,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       refine'
         (card_le_of_subset fun i => _).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined diferently
+      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id.def, not_or]
       exact fun hi₁ hi₂ hi₃ =>

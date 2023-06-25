@@ -488,7 +488,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
         ext ⟨f, hf⟩
         apply t.2.to_sieveCompatible _ }
   left_inv α := by
-    ext (X⟨_, _⟩)
+    ext X ⟨_, _⟩
     rfl
   right_inv := by
     rintro ⟨x, hx⟩
@@ -665,7 +665,7 @@ theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sie
 #align category_theory.presieve.is_sheaf_for_top_sieve CategoryTheory.Presieve.isSheafFor_top_sieve
 
 /-- If `P` is a sheaf for `S`, and it is iso to `P'`, then `P'` is a sheaf for `S`. This shows that
-"being a sheaf for a presieve" is a mathematical or hygenic property.
+"being a sheaf for a presieve" is a mathematical or hygienic property.
 -/
 theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') : IsSheafFor P R → IsSheafFor P' R := by
   intro h x hx
@@ -818,13 +818,6 @@ variable (P R)
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
   hom t Y f hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
-  hom_inv_id := by
-    funext
-    ext
-    simp
-  inv_hom_id := by
-    funext
-    apply Limits.Types.Limit.lift_π_apply'
 #align category_theory.equalizer.first_obj_eq_family CategoryTheory.Equalizer.firstObjEqFamily
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
@@ -854,7 +847,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v₁ u₁ :=
-  ∏ fun f : Σ(Y Z : _)(_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}
@@ -885,8 +878,7 @@ def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
 #align category_theory.equalizer.sieve.second_map CategoryTheory.Equalizer.Sieve.secondMap
 
 theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
-  apply limit.hom_ext
-  rintro ⟨Y, Z, g, f, hf⟩
+  ext
   simp [firstMap, secondMap, forkMap]
 #align category_theory.equalizer.sieve.w CategoryTheory.Equalizer.Sieve.w
 
@@ -944,7 +936,7 @@ variable [HasPullbacks C]
 /-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
-def SecondObj : Type max v₁ u₁ :=
+@[simp] def SecondObj : Type max v₁ u₁ :=
   ∏ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.equalizer.presieve.second_obj CategoryTheory.Equalizer.Presieve.SecondObj
@@ -963,8 +955,8 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
-  apply limit.hom_ext
-  rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
+  dsimp
+  ext
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
   rw [← P.map_comp, ← op_comp, pullback.condition]

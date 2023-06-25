@@ -70,7 +70,7 @@ theorem seq_pos_lt_seq_of_le_of_lt (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h�
 theorem seq_lt_seq_of_lt_of_le (hf : Monotone f) (n : ℕ) (h₀ : x 0 < y 0)
     (hx : ∀ k < n, x (k + 1) < f (x k)) (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n < y n := by
   cases n
-  exacts[h₀, hf.seq_pos_lt_seq_of_lt_of_le (Nat.zero_lt_succ _) h₀.le hx hy]
+  exacts [h₀, hf.seq_pos_lt_seq_of_lt_of_le (Nat.zero_lt_succ _) h₀.le hx hy]
 #align monotone.seq_lt_seq_of_lt_of_le Monotone.seq_lt_seq_of_lt_of_le
 
 theorem seq_lt_seq_of_le_of_lt (hf : Monotone f) (n : ℕ) (h₀ : x 0 < y 0)
@@ -239,7 +239,7 @@ theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone
 #align monotone.monotone_iterate_of_le_map Monotone.monotone_iterate_of_le_map
 
 /-- If `f` is a monotone map and `f x ≤ x` at some point `x`, then the iterates `f^[n] x` form
-a antitone sequence. -/
+an antitone sequence. -/
 theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n => (f^[n]) x :=
   hf.dual.monotone_iterate_of_le_map hx
 #align monotone.antitone_iterate_of_map_le Monotone.antitone_iterate_of_map_le

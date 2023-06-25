@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 
 ! This file was ported from Lean 3 source module analysis.special_functions.log.basic
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
+! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -146,10 +146,18 @@ theorem log_le_log (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := b
   rw [← exp_le_exp, exp_log h, exp_log h₁]
 #align real.log_le_log Real.log_le_log
 
+@[gcongr]
 theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
   intro h
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
+
+@[gcongr]
+theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
+  intro hxy
+  by_cases h_eq : x = y
+  case pos => simp [h_eq]
+  case neg => exact le_of_lt <| log_lt_log hx <| lt_of_le_of_ne hxy h_eq
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]
@@ -218,6 +226,13 @@ theorem strictAntiOn_log : StrictAntiOn log (Set.Iio 0) := by
 theorem log_injOn_pos : Set.InjOn log (Set.Ioi 0) :=
   strictMonoOn_log.injOn
 #align real.log_inj_on_pos Real.log_injOn_pos
+
+theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := by
+  have h : log x ≠ 0
+  · rwa [← log_one, log_injOn_pos.ne_iff hx1]
+    exact mem_Ioi.mpr zero_lt_one
+  linarith [add_one_lt_exp_of_nonzero h, exp_log hx1]
+#align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
 
 theorem eq_one_of_pos_of_log_eq_zero {x : ℝ} (h₁ : 0 < x) (h₂ : log x = 0) : x = 1 :=
   log_injOn_pos (Set.mem_Ioi.2 h₁) (Set.mem_Ioi.2 zero_lt_one) (h₂.trans Real.log_one.symm)

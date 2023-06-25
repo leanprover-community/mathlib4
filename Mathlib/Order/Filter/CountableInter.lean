@@ -18,9 +18,9 @@ In this file we define `CountableInterFilter` to be the class of filters with th
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
 Two main examples are the `residual` filter defined in `Mathlib.Topology.GDelta` and
-the `measure.ae` filter defined in `measure_theory.measure_space`.
+the `MeasureTheory.Measure.ae` filter defined in `MeasureTheory.MeasureSpace`.
 
-We reformulate the definition in terms of indexed intersection and in terms of `filter.eventually`
+We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,
 `Filter.comap`, `Inf.inf`). We also provide a custom constructor `Filter.ofCountableInter`
 that deduces two axioms of a `Filter` from the countable intersection property.
@@ -131,8 +131,7 @@ theorem EventuallyEq.countable_bInter {ι : Type _} {S : Set ι} (hS : S.Countab
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
 def Filter.ofCountableInter (l : Set (Set α))
     (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
-    (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α
-    where
+    (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
   sets := l
   univ_sets := @sInter_empty α ▸ hp _ countable_empty (empty_subset _)
   sets_of_superset := h_mono _ _
@@ -178,10 +177,10 @@ instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
   refine' ⟨fun S hSc hS => _⟩
-  simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS⊢
+  simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
-/-- Infimum of two `countable_Inter_filter`s is a `countable_Inter_filter`. This is useful, e.g.,
+/-- Infimum of two `CountableInterFilter`s is a `CountableInterFilter`. This is useful, e.g.,
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
@@ -194,11 +193,11 @@ instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter 
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 #align countable_Inter_filter_inf countableInterFilter_inf
 
-/-- Supremum of two `countable_Inter_filter`s is a `countable_Inter_filter`. -/
+/-- Supremum of two `CountableInterFilter`s is a `CountableInterFilter`. -/
 instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
   refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (countable_sInter_mem hSc).2 fun s hs => _
-  exacts[(hS s hs).1, (hS s hs).2]
+  exacts [(hS s hs).1, (hS s hs).2]
 #align countable_Inter_filter_sup countableInterFilter_sup
 
 namespace Filter

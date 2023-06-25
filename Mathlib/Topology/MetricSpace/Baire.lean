@@ -174,7 +174,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   have hK_subset : (⋂ n, (K n).carrier : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
     simp only [mem_iInter] at hx
-    simp only [mem_inter_iff, mem_inter] at hx⊢
+    simp only [mem_inter_iff, mem_inter] at hx ⊢
     refine' ⟨hK₀ <| hx 0, _⟩
     simp only [mem_iInter]
     exact fun n => (hK_decreasing n (hx (n + 1))).1
@@ -229,7 +229,7 @@ theorem dense_iInter_of_open [Encodable β] {f : β → Set α} (ho : ∀ s, IsO
 #align dense_Inter_of_open dense_iInter_of_open
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
-theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _)(_ : t ⊆ s), IsGδ t ∧ Dense t := by
+theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t := by
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩

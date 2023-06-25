@@ -45,7 +45,7 @@ obligations in inductive proofs relying on this relation.
 
 ## Order properties
 
-Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `preorder`. The
+Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `Preorder`. The
 relation `0 < x` means that `x` can always be won by Left, while `0 ≤ x` means that `x` can be won
 by Left as the second player.
 
@@ -60,7 +60,7 @@ Statements like `zero_le_lf`, `zero_lf_le`, etc. unfold these definitions. The t
 The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no moves.
 
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
-`antisymmetrization` of `PGame`.
+`Antisymmetrization` of `PGame`.
 
 ## Algebraic structures
 
@@ -100,6 +100,9 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
+-- This is file, we'd like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 /-! ### Pre-game moves -/
 
 
@@ -113,9 +116,7 @@ open Function Relation
 inductive PGame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → PGame) → (β → PGame) → PGame
 #align pgame PGame
-
--- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
-noncomputable section
+compile_inductive% PGame
 
 namespace PGame
 
@@ -422,7 +423,7 @@ theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
 
 /-- Definition of `x ≤ y` on pre-games, in terms of `⧏`.
 
-The ordering here is chosen so that `and.left` refer to moves by Left, and `and.right` refer to
+The ordering here is chosen so that `And.left` refer to moves by Left, and `And.right` refer to
 moves by Right. -/
 theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
@@ -558,7 +559,7 @@ instance : IsIrrefl _ (· ⧏ ·) :=
 
 @[trans]
 theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₂⊢
+  rw [← PGame.not_le] at h₂ ⊢
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf PGame.lf_of_le_of_lf
 
@@ -567,7 +568,7 @@ instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
 theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₁⊢
+  rw [← PGame.not_le] at h₁ ⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le PGame.lf_of_lf_of_le
 
@@ -612,7 +613,7 @@ theorem mk_lf {xl xr} (xL : xl → PGame) (xR : xr → PGame) (j) : mk xl xr xL 
   @lf_moveRight (mk _ _ _ _) j
 #align pgame.mk_lf PGame.mk_lf
 
-/-- This special case of `pgame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
+/-- This special case of `PGame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
 preferred over `⧏`. -/
 theorem le_of_forall_lt {x y : PGame} (h₁ : ∀ i, x.moveLeft i < y) (h₂ : ∀ j, x < y.moveRight j) :
     x ≤ y :=
@@ -1303,7 +1304,7 @@ theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (to
   by simp
 #align pgame.move_right_neg_symm' PGame.moveRight_neg_symm'
 
-/-- If `x` has the same moves as `y`, then `-x` has the sames moves as `-y`. -/
+/-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
@@ -1735,7 +1736,7 @@ instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
-    rw [← PGame.not_le] at h⊢
+    rw [← PGame.not_le] at h ⊢
     exact mt this h
   fun w =>
   calc

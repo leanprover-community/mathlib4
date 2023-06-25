@@ -54,12 +54,12 @@ variable (R)
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree ≤ `n`. -/
 def degreeLE (n : WithBot ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ _h : ↑k > n, LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ _ : ↑k > n, LinearMap.ker (lcoeff R k)
 #align polynomial.degree_le Polynomial.degreeLE
 
 /-- The `R`-submodule of `R[X]` consisting of polynomials of degree < `n`. -/
 def degreeLT (n : ℕ) : Submodule R R[X] :=
-  ⨅ k : ℕ, ⨅ (_h : k ≥ n), LinearMap.ker (lcoeff R k)
+  ⨅ k : ℕ, ⨅ (_ : k ≥ n), LinearMap.ker (lcoeff R k)
 #align polynomial.degree_lt Polynomial.degreeLT
 
 variable {R}
@@ -447,15 +447,15 @@ section ModByMonic
 
 variable {q : R[X]}
 
-theorem mem_ker_mod_by_monic (hq : q.Monic) {p : R[X]} :
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
-#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_mod_by_monic
+#align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
 @[simp]
 theorem ker_modByMonicHom (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_mod_by_monic hq).trans Ideal.mem_span_singleton.symm
+  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 #align polynomial.ker_mod_by_monic_hom Polynomial.ker_modByMonicHom
 
 end ModByMonic
@@ -589,7 +589,7 @@ theorem mem_leadingCoeffNth_zero (x) : x ∈ I.leadingCoeffNth 0 ↔ C x ∈ I :
 
 theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤ I.leadingCoeffNth n := by
   intro r hr
-  simp only [SetLike.mem_coe, mem_leadingCoeffNth] at hr⊢
+  simp only [SetLike.mem_coe, mem_leadingCoeffNth] at hr ⊢
   rcases hr with ⟨p, hpI, hpdeg, rfl⟩
   refine' ⟨p * X ^ (n - m), I.mul_mem_right _ hpI, _, leadingCoeff_mul_X_pow⟩
   refine' le_trans (degree_mul_le _ _) _
@@ -755,7 +755,7 @@ theorem prime_C_iff : Prime (C r) ↔ Prime r :=
   ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, by
     intro hr
     have := hr.1
-    rw [← Ideal.span_singleton_prime] at hr⊢
+    rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
       apply Ideal.isPrime_map_C_of_isPrime hr
     · intro h; apply (this (C_eq_zero.mp h))
@@ -1212,7 +1212,7 @@ namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  haveI : NormalizationMonoid D:= Inhabited.default
+  haveI : NormalizationMonoid D := Inhabited.default
   haveI := toNormalizedGCDMonoid D
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid

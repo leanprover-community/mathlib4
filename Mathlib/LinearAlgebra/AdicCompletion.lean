@@ -24,7 +24,7 @@ with respect to an ideal `I`:
 - `IsPrecomplete I M`: this says that every Cauchy sequence converges.
 - `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
 - `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
-- `adicCcompletion I M`: if `I` is finitely generated, then this is the universal complete module
+- `adicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
   (TODO) with a map from `M`. This map is injective iff `M` is Hausdorff and surjective iff `M` is
   precomplete.
 
@@ -309,7 +309,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
     intro n
     specialize hL n
-    rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL⊢
+    rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
     rw [sub_zero]
     suffices (1 - x * y) * f n - 1 ∈ I ^ n by
       convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1

@@ -19,7 +19,7 @@ This file provides basic results about all the `Finset.Ixx`, which are defined i
 
 ## TODO
 
-This file was originally only about `finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
+This file was originally only about `Finset.Ico a b` where `a b : ℕ`. No care has yet been taken to
 generalize these lemmas properly and many lemmas about `Icc`, `Ioc`, `Ioo` are missing. In general,
 what's to do is taking the lemmas in `Data.X.Intervals` and abstract away the concrete structure.
 

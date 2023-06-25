@@ -15,7 +15,7 @@ import Mathlib.RingTheory.IntegralClosure
 
 This file defines the minimal polynomial of an element `x` of an `A`-algebra `B`,
 under the assumption that x is integral over `A`, and derives some basic properties
-such as ireducibility under the assumption `B` is a domain.
+such as irreducibility under the assumption `B` is a domain.
 
 -/
 
@@ -32,7 +32,7 @@ variable (A) [CommRing A] [Ring B] [Algebra A B]
 
 The minimal polynomial `minpoly A x` of `x`
 is a monic polynomial with coefficients in `A` of smallest degree that has `x` as its root,
-if such exists (`is_integral A x`) or zero otherwise.
+if such exists (`IsIntegral A x`) or zero otherwise.
 
 For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V →ₗ[𝕜] V` then
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
@@ -152,7 +152,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
     have hr0 : r ≠ 0 := by
       rintro rfl
       exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
-    apply_fun natDegree  at hr
+    apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left
     rw [add_zero]
@@ -200,7 +200,7 @@ theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A 
 #align minpoly.degree_pos minpoly.degree_pos
 
 /-- If `B/A` is an injective ring extension, and `a` is an element of `A`,
-then the minimal polynomial of `algebra_map A B a` is `X - C a`. -/
+then the minimal polynomial of `algebraMap A B a` is `X - C a`. -/
 theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMap A B)) :
     minpoly A (algebraMap A B a) = X - C a := by
   nontriviality A
@@ -209,7 +209,7 @@ theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMa
   simp_rw [or_iff_not_imp_left]
   intro q hl h0
   rw [← natDegree_lt_natDegree_iff h0, natDegree_X_sub_C, Nat.lt_one_iff] at hl
-  rw [eq_C_of_natDegree_eq_zero hl] at h0⊢
+  rw [eq_C_of_natDegree_eq_zero hl] at h0 ⊢
   rwa [aeval_C, map_ne_zero_iff _ hf, ← C_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C_of_algebra_map_inj minpoly.eq_X_sub_C_of_algebraMap_inj

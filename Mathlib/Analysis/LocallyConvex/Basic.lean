@@ -361,7 +361,7 @@ theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) :
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
-    exacts[subset_union_left _ _, ⟨0, Or.inl rfl⟩]
+    exacts [subset_union_left _ _, ⟨0, Or.inl rfl⟩]
   · rw [← image_smul, image_union]
     apply union_subset_union
     · rw [image_zero, smul_zero]
@@ -406,7 +406,7 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
-    rw [balanced_iff_smul_mem] at hs⊢
+    rw [balanced_iff_smul_mem] at hs ⊢
     refine' fun a ha x hx => convexHull_min _ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha

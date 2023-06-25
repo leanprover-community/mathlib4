@@ -14,10 +14,10 @@ import Mathlib.Topology.Sets.Opens
 # Properties of maps that are local at the target.
 
 We show that the following properties of continuous maps are local at the target :
-- `inducing`
-- `embedding`
-- `open_embedding`
-- `closed_embedding`
+- `Inducing`
+- `Embedding`
+- `OpenEmbedding`
+- `ClosedEmbedding`
 
 -/
 
@@ -33,7 +33,7 @@ variable {s : Set β} {ι : Type _} {U : ι → Opens β} (hU : iSup U = ⊤)
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
   simp_rw [inducing_subtype_val.inducing_iff, inducing_iff_nhds, restrictPreimage,
-    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h⊢
+    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h ⊢
   intro a
   rw [← h, ← inducing_subtype_val.nhds_eq_comap]
 #align set.restrict_preimage_inducing Set.restrictPreimage_inducing

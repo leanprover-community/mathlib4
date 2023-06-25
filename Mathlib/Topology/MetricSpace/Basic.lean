@@ -144,7 +144,7 @@ theorem PseudoMetricSpace.ext {α : Type _} {m m' : PseudoMetricSpace α}
   cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
   obtain rfl : d = d' := h
   congr
-  · ext (x y) : 2
+  · ext x y : 2
     rw [hed, hed']
   · exact uniformSpace_eq (hU.trans hU'.symm)
   · ext : 2
@@ -274,21 +274,20 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 #align dist_nonneg dist_nonneg
 
-/-
-section
+namespace Mathlib.Meta.Positivity
 
-open Tactic Tactic.Positivity
--- porting note: todo: restore `positivity` plugin
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
-@[positivity]
-unsafe def _root_.tactic.positivity_dist : expr → tactic strictness
-  | q(dist $(a) $(b)) => nonnegative <$> mk_app `` dist_nonneg [a, b]
-  | _ => failed
-#align tactic.positivity_dist tactic.positivity_dist
+@[positivity Dist.dist _ _]
+def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (.app _ a) b ← whnfR e | throwError "not dist"
+  let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
+  pure (.nonnegative p)
 
-end
--/
+end Mathlib.Meta.Positivity
+
+example {x y : α} : 0 ≤ dist x y := by positivity
 
 @[simp] theorem abs_dist {a b : α} : |dist a b| = dist a b := abs_of_nonneg dist_nonneg
 #align abs_dist abs_dist
@@ -793,7 +792,7 @@ protected theorem mk_uniformity_basis_le {β : Type _} {p : β → Prop} {f : β
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_setOf.2 hx.le)⟩
 #align metric.mk_uniformity_basis_le Metric.mk_uniformity_basis_le
 
-/-- Contant size closed neighborhoods of the diagonal form a basis
+/-- Constant size closed neighborhoods of the diagonal form a basis
 of the uniformity filter. -/
 theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=
@@ -864,7 +863,7 @@ theorem totallyBounded_iff {s : Set α} :
 space from finitely many data. -/
 theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
-        ∃ (β : Type u)(_ : Fintype β)(F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
+        ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
   cases' s.eq_empty_or_nonempty with hs hs
   · rw [hs]
@@ -892,7 +891,7 @@ theorem finite_approx_of_totallyBounded {s : Set α} (hs : TotallyBounded s) :
 theorem tendstoUniformlyOnFilter_iff {ι : Type _} {F : ι → β → α} {f : β → α} {p : Filter ι}
     {p' : Filter β} :
     TendstoUniformlyOnFilter F f p p' ↔
-      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ᶠ p', dist (f n.snd) (F n.fst n.snd) < ε := by
+      ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
   refine' ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
   refine' (H ε εpos).mono fun n hn => hε hn
@@ -960,7 +959,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 in a pseudo-metric space.-/
 theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} {x₀ : α}
     {p : α × ι → Prop} :
-    (∀ᶠ x in 𝓝 x₀ ×ᶠ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
   simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left, and_imp]
@@ -970,7 +969,7 @@ theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space.-/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
-    (∀ᶠ x in f ×ᶠ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
+    (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
   rw [eventually_swap_iff, Metric.eventually_nhds_prod_iff]
   constructor <;>
@@ -1236,15 +1235,10 @@ See Note [forgetful inheritance].
 -/
 @[reducible]
 def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α where
-  toDist := m.toDist
-  dist_self := dist_self
-  dist_comm := dist_comm
-  dist_triangle := dist_triangle
-  edist := edist
-  edist_dist := edist_dist
-  toUniformSpace := U
-  uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
+  { m with
+    toUniformSpace := U
+    uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist }
 #align pseudo_metric_space.replace_uniformity PseudoMetricSpace.replaceUniformity
 
 theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
@@ -1252,6 +1246,11 @@ theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : P
   ext
   rfl
 #align pseudo_metric_space.replace_uniformity_eq PseudoMetricSpace.replaceUniformity_eq
+
+-- ensure that the bornology is unchanged when replacing the uniformity.
+example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) :
+  (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := rfl
 
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
@@ -1321,6 +1320,11 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
   ext
   rfl
 #align pseudo_metric_space.replace_bornology_eq PseudoMetricSpace.replaceBornology_eq
+
+-- ensure that the uniformity is unchanged when replacing the bornology.
+example {α} [B : Bornology α] (m : PseudoMetricSpace α)
+    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
+  (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := rfl
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
 which satisfy a bound of the form `dist (u n) (u m) < B N` for all `n m ≥ N` are
@@ -1510,8 +1514,8 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 #align metric.cauchy_seq_iff' Metric.cauchySeq_iff'
 
 -- see Note [nolint_ge]
-/-- In a pseudometric space, unifom Cauchy sequences are characterized by the fact that, eventually,
-the distance between all its elements is uniformly, arbitrarily small -/
+/-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
+eventually, the distance between all its elements is uniformly, arbitrarily small -/
 -- porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type _} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
@@ -2422,7 +2426,7 @@ theorem bounded_range_iff {f : β → α} : Bounded (range f) ↔ ∃ C, ∀ x y
 #align metric.bounded_range_iff Metric.bounded_range_iff
 
 theorem bounded_range_of_tendsto_cofinite_uniformity {f : β → α}
-    (hf : Tendsto (Prod.map f f) (cofinite ×ᶠ cofinite) (𝓤 α)) : Bounded (range f) := by
+    (hf : Tendsto (Prod.map f f) (.cofinite ×ˢ .cofinite) (𝓤 α)) : Bounded (range f) := by
   rcases (hasBasis_cofinite.prod_self.tendsto_iff uniformity_basis_dist).1 hf 1 zero_lt_one with
     ⟨s, hsf, hs1⟩
   rw [← image_univ, ← union_compl_self s, image_union, bounded_union]
@@ -2766,32 +2770,29 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
 
 end Diam
 
-theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
+theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
   simp_rw [← closedBall_diff_ball] at hf1
-  exact (isCompact_closedBall a r).exists_local_min_mem_open ball_subset_closedBall hf hz hf1
+  exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_local_min_mem_ball
+#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
 
 end Metric
 
-/-
-Porting note: restore positivity extension
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
+open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
-@[positivity]
-unsafe def positivity_diam : expr → tactic strictness
-  | q(Metric.diam $(s)) => nonnegative <$> mk_app `` Metric.diam_nonneg [s]
-  | e => pp e >>= fail ∘ format.bracket "The expression " " is not of the form `metric.diam s`"
-#align tactic.positivity_diam tactic.positivity_diam
+@[positivity Metric.diam _]
+def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app _ s ← whnfR e | throwError "not Metric.diam"
+  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
+  pure (.nonnegative p)
 
-end Tactic
--/
+end Mathlib.Meta.Positivity
 
 theorem comap_dist_right_atTop_le_cocompact (x : α) :
     comap (fun y => dist y x) atTop ≤ cocompact α := by

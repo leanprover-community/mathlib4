@@ -345,7 +345,25 @@ theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, 
 
 end Homotopic
 
+/-- A path `Path x₀ x₁` generates a homotopy between constant functions `fun _ ↦ x₀` and
+`fun _ ↦ x₁`. -/
+@[simps!]
+def toHomotopyConst (p : Path x₀ x₁) :
+    (ContinuousMap.const Y x₀).Homotopy (ContinuousMap.const Y x₁) where
+  toContinuousMap := p.toContinuousMap.comp ContinuousMap.fst
+  map_zero_left _ := p.source
+  map_one_left _ := p.target
+
 end Path
+
+/-- Two constant continuous maps with nonempty domain are homotopic if and only if their values are
+joined by a path in the codomain. -/
+@[simp]
+theorem ContinuousMap.homotopic_const_iff [Nonempty Y] :
+    (ContinuousMap.const Y x₀).Homotopic (ContinuousMap.const Y x₁) ↔ Joined x₀ x₁ := by
+  inhabit Y
+  refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,
+    fun ⟨p⟩ ↦ ⟨p.toHomotopyConst⟩⟩ <;> simp
 
 namespace ContinuousMap.Homotopy
 

@@ -36,14 +36,14 @@ open Function OrderDual Set
 
 
 /-- A function `f` between preorders is left order continuous if it preserves all suprema.  We
-define it using `is_lub` instead of `Sup` so that the proof works both for complete lattices and
+define it using `IsLUB` instead of `sSup` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsLUB s x → IsLUB (f '' s) (f x)
 #align left_ord_continuous LeftOrdContinuous
 
 /-- A function `f` between preorders is right order continuous if it preserves all infima.  We
-define it using `is_glb` instead of `Inf` so that the proof works both for complete lattices and
+define it using `IsGLB` instead of `sInf` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def RightOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsGLB s x → IsGLB (f '' s) (f x)
@@ -215,7 +215,7 @@ theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y �
 
 variable (f)
 
-/-- Convert an injective left order continuous function to a `order_embedding`. -/
+/-- Convert an injective left order continuous function to an `OrderEmbedding`. -/
 def toOrderEmbedding (hf : RightOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 #align right_ord_continuous.to_order_embedding RightOrdContinuous.toOrderEmbedding

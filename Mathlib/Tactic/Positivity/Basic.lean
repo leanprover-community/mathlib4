@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Basic
@@ -392,3 +393,9 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
 def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
   let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.succ"
   pure (.positive (q(Nat.succ_pos $a) : Expr))
+
+/-- Extension for Nat.factorial. -/
+@[positivity Nat.factorial _]
+def evalFactorial : PositivityExt where eval {_ _} _ _ e := do
+  let .app _ (a : Q(Nat)) ← whnfR e | throwError "not Nat.factorial"
+  pure (.positive (q(Nat.factorial_pos $a) : Expr))

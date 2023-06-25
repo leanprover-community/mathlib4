@@ -544,7 +544,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     intro h
     replace h := congr_arg (coeff R (single s 1)) h
     rw [coeff_X, if_pos rfl, coeff_X] at h
-    split_ifs  at h with H
+    split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
       cases' H with H H
       · exact H.1
@@ -808,7 +808,7 @@ variable [Ring R]
 
 /-
 The inverse of a multivariate formal power series is defined by
-well-founded recursion on the coeffients of the inverse.
+well-founded recursion on the coefficients of the inverse.
 -/
 /-- Auxiliary definition that unifies
  the totalised inverse formal power series `(_)⁻¹` and
@@ -820,7 +820,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     else
       -a *
         ∑ x in n.antidiagonal, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
-  termination_by' ⟨_, Finsupp.lt_wf σ⟩
+termination_by _ n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
@@ -2005,10 +2005,10 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     · rw [ih j hj, MulZeroClass.mul_zero]
     by_cases hi : i < m
     · specialize hm₂ _ hi
-      push_neg  at hm₂
+      push_neg at hm₂
       rw [hm₂, MulZeroClass.zero_mul]
     rw [Finset.Nat.mem_antidiagonal] at hij
-    push_neg  at hi hj
+    push_neg at hi hj
     suffices m < i by
       have : m + n < i + j := add_lt_add_of_lt_of_le this hj
       exfalso

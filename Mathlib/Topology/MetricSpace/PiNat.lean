@@ -366,7 +366,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 #align pi_nat.is_open_cylinder PiNat.isOpen_cylinder
 
 theorem isTopologicalBasis_cylinders :
-    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n)(n : ℕ), s = cylinder x n } := by
+    IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
   apply isTopologicalBasis_of_open_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder
@@ -515,7 +515,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
   have B := Nat.find_spec A
-  contrapose! B; rw [not_lt] at B -- porting note: why this `rw` is needed?
+  contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
   refine' ⟨y, hy, _⟩
   rw [mem_cylinder_comm]
@@ -661,7 +661,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
           apply firstDiff_le_longestPrefix hs xs ys
-        rw [fs y ys] at hfxfy⊢
+        rw [fs y ys] at hfxfy ⊢
         rwa [← fx, I2, ← mem_cylinder_iff_eq, mem_cylinder_iff_le_firstDiff hfxfy] at I
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
@@ -684,7 +684,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg  at H
+        · push_neg at H
           have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2

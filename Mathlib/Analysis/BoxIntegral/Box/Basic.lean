@@ -9,6 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Basic
@@ -70,7 +71,7 @@ variable {ι : Type _}
 -/
 
 
-/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Repesents the product
+/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type _) where
   (lower upper : ι → ℝ)
@@ -177,7 +178,7 @@ theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
   simp only [Subset.antisymm_iff, coe_subset_coe, le_iff_bounds] at h
   congr
-  exacts[le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
+  exacts [le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
 #align box_integral.box.injective_coe BoxIntegral.Box.injective_coe
 
 @[simp, norm_cast]
@@ -291,7 +292,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 #align box_integral.box.is_some_iff BoxIntegral.Box.isSome_iff
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
-    (⋃ (J : Box ι) (_hJ : ↑J = I), (J : Set (ι → ℝ))) = I := by
+    (⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ))) = I := by
   induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
 #align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
 
@@ -535,8 +536,7 @@ theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.
     calc
       dist x y ≤ dist I.lower I.upper := Real.dist_le_of_mem_pi_Icc hx hy
       _ ≤ I.distortion * (I.upper i - I.lower i) := (I.dist_le_distortion_mul i)
-      _ ≤ c * (I.upper i - I.lower i) :=
-        mul_le_mul_of_nonneg_right h (sub_nonneg.2 (I.lower_le_upper i))
+      _ ≤ c * (I.upper i - I.lower i) := by gcongr; exact sub_nonneg.2 (I.lower_le_upper i)
 #align box_integral.box.diam_Icc_le_of_distortion_le BoxIntegral.Box.diam_Icc_le_of_distortion_le
 
 end Distortion

@@ -20,7 +20,7 @@ admits a `Fintype` instance.
 
 ## Implementation details
 To construct the `Fintype` instance, a function lifting a `Multiset α`
-to the `Finset (list α)` that can construct it is provided.
+to the `Finset (List α)` that can construct it is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 In general, a `DecidableEq` instance is not necessary to define this function,
