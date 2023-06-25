@@ -64,13 +64,13 @@ variable (d d' : Module.Dual R M)
 def contractLeftAux (d : Module.Dual R M) :
     M →ₗ[R] CliffordAlgebra Q × CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
-  d.smul_right (LinearMap.fst _ (CliffordAlgebra Q) (CliffordAlgebra Q)) -
+  d.smulRight (LinearMap.fst _ (CliffordAlgebra Q) (CliffordAlgebra Q)) -
     v_mul.compl₂ (LinearMap.snd _ (CliffordAlgebra Q) _)
 #align clifford_algebra.contract_left_aux CliffordAlgebra.contractLeftAux
 
 theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : CliffordAlgebra Q) :
     contractLeftAux Q d v (ι Q v * x, contractLeftAux Q d v (x, fx)) = Q v • fx := by
-  simp only [contract_left_aux_apply_apply]
+  simp only [contractLeftAux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← sub_add, mul_smul_comm, sub_self,
     zero_add]
 #align clifford_algebra.contract_left_aux_contract_left_aux CliffordAlgebra.contractLeftAux_contractLeftAux
@@ -86,21 +86,23 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
+      dsimp only
       rw [LinearMap.add_apply]
       induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
-      · simp_rw [foldr'_algebra_map, smul_zero, zero_add]
+      · simp_rw [foldr'_algebraMap, smul_zero, zero_add]
       · rw [map_add, map_add, map_add, add_add_add_comm, hx, hy]
       · rw [foldr'_ι_mul, foldr'_ι_mul, foldr'_ι_mul, hx]
-        dsimp only [contract_left_aux_apply_apply]
+        dsimp only [contractLeftAux_apply_apply]
         rw [sub_add_sub_comm, mul_add, LinearMap.add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
+      dsimp only
       rw [LinearMap.smul_apply, RingHom.id_apply]
       induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
-      · simp_rw [foldr'_algebra_map, smul_zero]
+      · simp_rw [foldr'_algebraMap, smul_zero]
       · rw [map_add, map_add, smul_add, hx, hy]
       · rw [foldr'_ι_mul, foldr'_ι_mul, hx]
-        dsimp only [contract_left_aux_apply_apply]
+        dsimp only [contractLeftAux_apply_apply]
         rw [LinearMap.smul_apply, smul_assoc, mul_smul_comm, smul_sub]
 #align clifford_algebra.contract_left CliffordAlgebra.contractLeft
 
@@ -384,4 +386,3 @@ def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlg
 #align clifford_algebra.equiv_exterior CliffordAlgebra.equivExterior
 
 end CliffordAlgebra
-
