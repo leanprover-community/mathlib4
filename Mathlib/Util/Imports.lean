@@ -111,4 +111,3 @@ elab "#minimize_imports" : command => do
     |>.toList.map (fun n => "import " ++ n.toString)
   logInfo <| Format.joinSep imports "\n"
 
-#minimize_imports
