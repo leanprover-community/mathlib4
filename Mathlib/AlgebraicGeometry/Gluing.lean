@@ -130,13 +130,10 @@ instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
-instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop := by
-  delta forgetToTop LocallyRingedSpace.forgetToTop
-  -- stuck at solving universe constraint
-  infer_instance
-
-  -- apply Limits.compPreservesColimit forgetToLocallyRingedSpace
-  --   (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget.{u + 1, u , u} CommRingCat)
+-- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
+instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
+  inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
 
 instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
