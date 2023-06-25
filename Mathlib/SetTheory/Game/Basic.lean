@@ -598,7 +598,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         rw[quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
   termination_by _ => (x, y, z)
-  decreasing_by { simp [invImage, InvImage]; pgame_wf_tac}
+  decreasing_by pgame_wf_tac
 #align pgame.quot_left_distrib PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
