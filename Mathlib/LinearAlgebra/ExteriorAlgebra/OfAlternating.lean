@@ -106,9 +106,13 @@ theorem liftAlternating_algebraMap (f : ∀ i, AlternatingMap R M N (Fin i)) (r 
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, AlternatingMap R M N (Fin i))
     (v : Fin n → M) : (@liftAlternating R M N _ _ _ _ _) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
-  induction' n with n ih generalizing f v
-  · rw [List.ofFn_zero, List.prod_nil, lift_alternating_one, Subsingleton.elim 0 v]
-  · rw [List.ofFn_succ, List.prod_cons, lift_alternating_ι_mul, ih,
+  -- porting note: `v` is generalized automatically so it was removed from the next line
+  induction' n with n ih generalizing f
+  · -- porting note: Lean does not automatically synthesize the instance
+    -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.
+    letI : Subsingleton (Fin 0 → M) := by infer_instance
+    rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
+  · rw [List.ofFn_succ, List.prod_cons, liftAlternating_ι_mul, ih,
       AlternatingMap.curryLeft_apply_apply]
     congr
     exact Matrix.cons_head_tail _
