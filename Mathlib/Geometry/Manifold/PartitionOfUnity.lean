@@ -16,34 +16,34 @@ import Mathlib.Topology.ShrinkingLemma
 /-!
 # Smooth partition of unity
 
-In this file we define two structures, `smooth_bump_covering` and `smooth_partition_of_unity`. Both
+In this file we define two structures, `SmoothBumpCovering` and `SmoothPartitionOfUnity`. Both
 structures describe coverings of a set by a locally finite family of supports of smooth functions
 with some additional properties. The former structure is mostly useful as an intermediate step in
 the construction of a smooth partition of unity but some proofs that traditionally deal with a
-partition of unity can use a `smooth_bump_covering` as well.
+partition of unity can use a `SmoothBumpCovering` as well.
 
-Given a real manifold `M` and its subset `s`, a `smooth_bump_covering ι I M s` is a collection of
-`smooth_bump_function`s `f i` indexed by `i : ι` such that
+Given a real manifold `M` and its subset `s`, a `SmoothBumpCovering ι I M s` is a collection of
+`SmoothBumpFunction`s `f i` indexed by `i : ι` such that
 
 * the center of each `f i` belongs to `s`;
 * the family of sets `support (f i)` is locally finite;
 * for each `x ∈ s`, there exists `i : ι` such that `f i =ᶠ[𝓝 x] 1`.
-In the same settings, a `smooth_partition_of_unity ι I M s` is a collection of smooth nonnegative
+In the same settings, a `SmoothPartitionOfUnity ι I M s` is a collection of smooth nonnegative
 functions `f i : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯`, `i : ι`, such that
 
 * the family of sets `support (f i)` is locally finite;
 * for each `x ∈ s`, the sum `∑ᶠ i, f i x` equals one;
 * for each `x`, the sum `∑ᶠ i, f i x` is less than or equal to one.
 
-We say that `f : smooth_bump_covering ι I M s` is *subordinate* to a map `U : M → set M` if for each
+We say that `f : SmoothBumpCovering ι I M s` is *subordinate* to a map `U : M → Set M` if for each
 index `i`, we have `tsupport (f i) ⊆ U (f i).c`. This notion is a bit more general than
 being subordinate to an open covering of `M`, because we make no assumption about the way `U x`
 depends on `x`.
 
 We prove that on a smooth finitely dimensional real manifold with `σ`-compact Hausdorff topology,
-for any `U : M → set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `smooth_bump_covering ι I M s`
+for any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. Then we use this fact to prove a similar statement about smooth partitions of
-unity, see `smooth_partition_of_unity.exists_is_subordinate`.
+unity, see `SmoothPartitionOfUnity.exists_isSubordinate`.
 
 Finally, we use existence of a partition of unity to prove lemma
 `exists_smooth_forall_mem_convex_of_local` that allows us to construct a globally defined smooth
@@ -77,21 +77,21 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 /-!
 ### Covering by supports of smooth bump functions
 
-In this section we define `smooth_bump_covering ι I M s` to be a collection of
-`smooth_bump_function`s such that their supports is a locally finite family of sets and for each `x
+In this section we define `SmoothBumpCovering ι I M s` to be a collection of
+`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each `x
 ∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering of
 this type is useful to construct a smooth partition of unity and can be used instead of a partition
 of unity in some proofs.
 
 We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
-any `U : M → set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `smooth_bump_covering ι I M s`
+any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
 compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
 
 
 variable (ι M)
 
-/-- We say that a collection of `smooth_bump_function`s is a `smooth_bump_covering` of a set `s` if
+/-- We say that a collection of `SmoothBumpFunction`s is a `SmoothBumpCovering` of a set `s` if
 
 * `(f i).c ∈ s` for all `i`;
 * the family `λ i, support (f i)` is locally finite;
@@ -99,8 +99,8 @@ variable (ι M)
   in other words, `x` belongs to the interior of `{y | f i y = 1}`;
 
 If `M` is a finite dimensional real manifold which is a `σ`-compact Hausdorff topological space,
-then for every covering `U : M → set M`, `∀ x, U x ∈ 𝓝 x`, there exists a `smooth_bump_covering`
-subordinate to `U`, see `smooth_bump_covering.exists_is_subordinate`.
+then for every covering `U : M → Set M`, `∀ x, U x ∈ 𝓝 x`, there exists a `SmoothBumpCovering`
+subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 
 This covering can be used, e.g., to construct a partition of unity and to prove the weak
 Whitney embedding theorem. -/
@@ -181,7 +181,7 @@ theorem smooth_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), SmoothAt I
   f.contMDiff_smul hg
 #align smooth_partition_of_unity.smooth_smul SmoothPartitionOfUnity.smooth_smul
 
-/-- If `f` is a smooth partition of unity on a set `s : set M` and `g : ι → M → F` is a family of
+/-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is $C^n$ smooth at every point of the topological support of `f i`, then
 the sum `λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem contMDiff_finsum_smul {g : ι → M → F}
@@ -191,7 +191,7 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 #align smooth_partition_of_unity.cont_mdiff_finsum_smul SmoothPartitionOfUnity.contMDiff_finsum_smul
 
-/-- If `f` is a smooth partition of unity on a set `s : set M` and `g : ι → M → F` is a family of
+/-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is smooth at every point of the topological support of `f i`, then the sum
 `λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem smooth_finsum_smul {g : ι → M → F}
@@ -222,8 +222,8 @@ theorem isSubordinate_toPartitionOfUnity :
 alias isSubordinate_toPartitionOfUnity ↔ _ IsSubordinate.toPartitionOfUnity
 #align smooth_partition_of_unity.is_subordinate.to_partition_of_unity SmoothPartitionOfUnity.IsSubordinate.toPartitionOfUnity
 
-/-- If `f` is a smooth partition of unity on a set `s : set M` subordinate to a family of open sets
-`U : ι → set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
+/-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
+`U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
 `U i`, then the sum `λ x, ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
 theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, ContMDiffOn I 𝓘(ℝ, F) n (g i) (U i)) :
@@ -231,8 +231,8 @@ theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubor
   f.contMDiff_finsum_smul fun i _ hx => (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
 #align smooth_partition_of_unity.is_subordinate.cont_mdiff_finsum_smul SmoothPartitionOfUnity.IsSubordinate.contMDiff_finsum_smul
 
-/-- If `f` is a smooth partition of unity on a set `s : set M` subordinate to a family of open sets
-`U : ι → set M` and `g : ι → M → F` is a family of functions such that `g i` is smooth on `U i`,
+/-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
+`U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is smooth on `U i`,
 then the sum `λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem IsSubordinate.smooth_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, SmoothOn I 𝓘(ℝ, F) (g i) (U i)) :
@@ -256,13 +256,13 @@ theorem smooth_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSp
 
 variable {s : Set M}
 
-/-- A `bump_covering` such that all functions in this covering are smooth generates a smooth
+/-- A `BumpCovering` such that all functions in this covering are smooth generates a smooth
 partition of unity.
 
-In our formalization, not every `f : bump_covering ι M s` with smooth functions `f i` is a
-`smooth_bump_covering`; instead, a `smooth_bump_covering` is a covering by supports of
-`smooth_bump_function`s. So, we define `bump_covering.to_smooth_partition_of_unity`, then reuse it
-in `smooth_bump_covering.to_smooth_partition_of_unity`. -/
+In our formalization, not every `f : BumpCovering ι M s` with smooth functions `f i` is a
+`SmoothBumpCovering`; instead, a `SmoothBumpCovering` is a covering by supports of
+`SmoothBumpFunction`s. So, we define `BumpCovering.toSmoothPartitionOfUnity`, then reuse it
+in `SmoothBumpCovering.toSmoothPartitionOfUnity`. -/
 def toSmoothPartitionOfUnity (f : BumpCovering ι M s) (hf : ∀ i, Smooth I 𝓘(ℝ) (f i)) :
     SmoothPartitionOfUnity ι I M s :=
   { f.toPartitionOfUnity with
@@ -304,7 +304,7 @@ theorem coe_mk (c : ι → M) (to_fun : ∀ i, SmoothBumpFunction I (c i)) (h₁
 #align smooth_bump_covering.coe_mk SmoothBumpCovering.coe_mk
 
 /--
-We say that `f : smooth_bump_covering ι I M s` is *subordinate* to a map `U : M → set M` if for each
+We say that `f : SmoothBumpCovering ι I M s` is *subordinate* to a map `U : M → Set M` if for each
 index `i`, we have `tsupport (f i) ⊆ U (f i).c`. This notion is a bit more general than
 being subordinate to an open covering of `M`, because we make no assumption about the way `U x`
 depends on `x`.
@@ -322,7 +322,7 @@ variable (I)
 
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
-in `M` and `U : M → set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
+in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
 Then there exists a smooth bump covering of `s` that is subordinate to `U`. -/
 theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
@@ -394,15 +394,15 @@ theorem mem_extChartAt_ind_source (x : M) (hx : x ∈ s) :
   fs.mem_extChartAt_source_of_eq_one (fs.apply_ind x hx)
 #align smooth_bump_covering.mem_ext_chart_at_ind_source SmoothBumpCovering.mem_extChartAt_ind_source
 
-/-- The index type of a `smooth_bump_covering` of a compact manifold is finite. -/
+/-- The index type of a `SmoothBumpCovering` of a compact manifold is finite. -/
 protected def fintype [CompactSpace M] : Fintype ι :=
   fs.locallyFinite.fintypeOfCompact fun i => (fs i).nonempty_support
 #align smooth_bump_covering.fintype SmoothBumpCovering.fintype
 
 variable [T2Space M]
 
-/-- Reinterpret a `smooth_bump_covering` as a continuous `bump_covering`. Note that not every
-`f : bump_covering ι M s` with smooth functions `f i` is a `smooth_bump_covering`. -/
+/-- Reinterpret a `SmoothBumpCovering` as a continuous `BumpCovering`. Note that not every
+`f : BumpCovering ι M s` with smooth functions `f i` is a `SmoothBumpCovering`. -/
 def toBumpCovering : BumpCovering ι M s where
   toFun i := ⟨fs i, (fs i).continuous⟩
   locallyFinite' := fs.locallyFinite
@@ -420,7 +420,7 @@ theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M �
 alias isSubordinate_toBumpCovering ↔ _ IsSubordinate.toBumpCovering
 #align smooth_bump_covering.is_subordinate.to_bump_covering SmoothBumpCovering.IsSubordinate.toBumpCovering
 
-/-- Every `smooth_bump_covering` defines a smooth partition of unity. -/
+/-- Every `SmoothBumpCovering` defines a smooth partition of unity. -/
 def toSmoothPartitionOfUnity : SmoothPartitionOfUnity ι I M s :=
   fs.toBumpCovering.toSmoothPartitionOfUnity fun i => (fs i).smooth
 #align smooth_bump_covering.to_smooth_partition_of_unity SmoothBumpCovering.toSmoothPartitionOfUnity
@@ -488,8 +488,8 @@ theorem exists_smooth_zero_one_of_closed [T2Space M] [SigmaCompactSpace M] {s t 
 
 namespace SmoothPartitionOfUnity
 
-/-- A `smooth_partition_of_unity` that consists of a single function, uniformly equal to one,
-defined as an example for `inhabited` instance. -/
+/-- A `SmoothPartitionOfUnity` that consists of a single function, uniformly equal to one,
+defined as an example for `Inhabited` instance. -/
 def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
   (BumpCovering.single i s).toSmoothPartitionOfUnity fun j => by
     rcases eq_or_ne j i with (rfl | h)
@@ -503,7 +503,7 @@ instance [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s
 variable [T2Space M] [SigmaCompactSpace M]
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
-`s`, then there exists a `bump_covering ι X s` that is subordinate to `U`. -/
+`s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (ho : ∀ i, IsOpen (U i))
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locally_compact
@@ -522,7 +522,7 @@ end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → set F`
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
 `y ∈ U`. Then there exists a $C^n$ smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
@@ -541,7 +541,7 @@ theorem exists_cont_mdiff_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t 
   exact interior_subset (hf _ <| subset_closure hi)
 #align exists_cont_mdiff_forall_mem_convex_of_local exists_cont_mdiff_forall_mem_convex_of_local
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → set F`
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
 Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
@@ -553,7 +553,7 @@ theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
   exists_cont_mdiff_forall_mem_convex_of_local I ht Hloc
 #align exists_smooth_forall_mem_convex_of_local exists_smooth_forall_mem_convex_of_local
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → set F` be
+/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
 `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.  See also
@@ -565,10 +565,10 @@ theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (
     ⟨_, hc, fun _ => c, smoothOn_const, fun _ => id⟩
 #align exists_smooth_forall_mem_convex_of_local_const exists_smooth_forall_mem_convex_of_local_const
 
-/-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → set M` be a locally
-finite family of closed sets, let `U : ι → set M` be a family of open sets such that `K i ⊆ U i` for
+/-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
+finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
 all `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and
-`x ∈ K i`, we have `emetric.closed_ball x (δ x) ⊆ U i`. -/
+`x ∈ K i`, we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
 theorem Emetric.exists_smooth_forall_closedBall_subset {M} [EMetricSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
@@ -581,10 +581,10 @@ theorem Emetric.exists_smooth_forall_closedBall_subset {M} [EMetricSpace M] [Cha
       (EMetric.exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
 #align emetric.exists_smooth_forall_closed_ball_subset Emetric.exists_smooth_forall_closedBall_subset
 
-/-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → set M` be a locally finite
-family of closed sets, let `U : ι → set M` be a family of open sets such that `K i ⊆ U i` for all
+/-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
+family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
 `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and `x ∈ K i`,
-we have `metric.closed_ball x (δ x) ⊆ U i`. -/
+we have `Metric.closedBall x (δ x) ⊆ U i`. -/
 theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
