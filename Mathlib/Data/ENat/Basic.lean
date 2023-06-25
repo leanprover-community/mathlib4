@@ -214,4 +214,10 @@ theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ 
   . exact A _
 #align enat.nat_induction ENat.nat_induction
 
+theorem le_coe_iff {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+  WithTop.le_coe_iff
+
+theorem exists_eq_top_or_coe (n : ℕ∞) : n = ⊤ ∨ ∃ (n₀ : ℕ), n = n₀ := by
+  obtain (rfl | n) := n; exact Or.inl rfl; exact Or.inr ⟨_,rfl⟩
+
 end ENat

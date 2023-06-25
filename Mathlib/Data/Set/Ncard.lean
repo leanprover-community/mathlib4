@@ -14,22 +14,29 @@ import Mathlib.Algebra.BigOperators.Finprod
 /-!
 # Noncomputable Set Cardinality
 
-We define the cardinality `Set.ncard s` of a set `s` as a natural number. This function is
-noncomputable (being defined in terms of `Nat.card`) and takes the value `0` if `s` is Infinite.
+We define the cardinality `Set.ncard s` of a set `s` as a Natural number. This function is
+noncomputable (being defined in terms of `Nat.card`) and takes the value `0` if `s` is infinite.
 
-This can be seen as an API for `Nat.card α` in the special case where `α` is a subtype arising from
-a set. It is intended as an alternative to `Finset.card` and `Fintype.card`,  both of which contain
-data in their definition that can cause awkwardness when using `Set.toFinset`.  Using `Set.ncard`
-allows cardinality computations to avoid `Finset`/`Fintype` completely, staying in `Set` and letting
-Finiteness be handled explicitly, or (where a `Finite α` instance is present and the sets are
-in `set α`) via default arguments.
+We also define `Set.encard s : ℕ∞` as an extended natural number, which has value `⊤` if `s` is
+infinite. This is also noncomputable, being defined in terms of `Part_ENat.card`.
+
+The theorems for `Set.ncard` can be seen as forming an API for `Nat.card α` in the special case
+where `α` is a subtype arising from a set. It is intended as an alterNative to `Finset.card` and
+`Fintype.card`,  both of which contain data in their definition that can cause awkwardness when
+using `Set.toFinset`.  Using `Set.ncard` allows cardinality computations to avoid `Finset`/`Fintype` completely, staying in `Set` and letting finiteness be handled explicitly, or (where a `Finite α`
+instance is present and the sets are in `set α`) via default arguments.
+
+The API for `Set.encard` is smaller, and contains a number of theorems that relate `encard` to
+`ncard` in the finite case.
 
 ## Main Definitions
 
-* `Set.ncard s` is the cardinality of the set `s` as a natural number, provided `s` is Finite.
-  If `s` is Infinite, then `Set.ncard s = 0`.
+* `Set.ncard s` is the cardinality of the Set `s` as a Natural number, provided `s` is Finite.
+  If `s` is infinite, then `Set.ncard s = 0`.
+* `Set.encard s` is the cardinality of the Set `s` as an extended natural number, taking the value
+  `⊤` for infinite sets.
 * `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
-  `Set.toFinite`. This will work for `s : set α` where there is a `Finite α` instance.
+  `Set.toFinite`. This will work for `s : Set α` where there is a `Finite α` instance.
 
 ## Implementation Notes
 
@@ -37,12 +44,12 @@ The theorems in this file are very similar to those in `Data.Finset.Card`, but w
 instead of `Finset`; most of the proofs invoke their `Finset` analogues. Nearly all the theorems
 require finiteness of one or more of their arguments. We provide this assumption with a
 default argument of the form `(hs : s.Finite := by toFinite_tac)`, where `toFinite_tac` will find
-a `Finite s` term in the cases where `s` is a set in a `Finite` type.
+a `Finite s` term in the cases where `s` is a Set in a `Finite` type.
 
-Often, where there are two set arguments `s` and `t`, the Finiteness of one follows from the other
-in the context of the theorem, in which case we only include the ones that are needed, and derive
-the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
-finiteness arguments; they are are true by coincidence due to junk values.
+Often, where there are two Set arguments `s` and `t` for an `ncard` theorem, the finiteness of one
+follows from the other in the context of the theorem, in which case we only include the ones that
+are needed, and derive the other inside the proof. A few of the theorems, such as `ncard_union_le`
+do not require finiteness arguments; they are are true by coincidence due to junk values.
 -/
 
 open BigOperators
@@ -299,7 +306,7 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
   convert (ncard_image_ofInjective univ Subtype.coe_injective).symm using 1
   · rw [ncard_univ]
   simp
-#align set.nat.card_coe_set_eq Set.Nat.card_coe_set_eq
+#align set.ncardat.card_coe_set_eq Set.Nat.card_coe_set_eq
 
 theorem ncard_inter_le_ncard_left (s t : Set α) (hs : s.Finite := by toFinite_tac) :
     (s ∩ t).ncard ≤ s.ncard :=
@@ -572,35 +579,33 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 
 end Lattice
 
-/-- Given a set `t` and a set `s` inside it, we can shrink `t` to any appropriate size, and keep `s`
+/-- Given a Set `t` and a Set `s` inside it, we can shrink `t` to any appropriate size, and keep `s`
     inside it. -/
-theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t) :
-    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
-  cases' t.finite_or_infinite with ht ht
-  · rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
-    rw [ncard_eq_toFinset_card t ht] at h₁
-    obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h₁ (by simpa)
-    exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
-  rw [ht.ncard] at h₁
-  have h₁' := Nat.eq_zero_of_le_zero h₁
-  rw [add_eq_zero_iff] at h₁'
-  refine' ⟨t, h₂, rfl.subset, _⟩
-  rw [h₁'.2, h₁'.1, ht.ncard, add_zero]
+theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t)
+    (ht : t.Finite := by toFinite_tac) : ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
+  rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
+  rw [ncard_eq_toFinset_card t ht] at h₁
+  obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h₁ (by simpa)
+  exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
 #align set.exists_intermediate_set Set.exists_intermediate_Set
 
-theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
+theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard)
+    (h : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
     ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := by
   obtain ⟨r, hsr, hrt, hc⟩ :=
-    exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h
+    exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h ht
   rw [tsub_add_cancel_of_le hs] at hc
   exact ⟨r, hsr, hrt, hc⟩
 #align set.exists_intermediate_set' Set.exists_intermediate_Set'
 
 /-- We can shrink `s` to any smaller size. -/
 theorem exists_smaller_Set (s : Set α) (i : ℕ) (h₁ : i ≤ s.ncard) :
-    ∃ t : Set α, t ⊆ s ∧ t.ncard = i :=
-  (exists_intermediate_Set i (by simpa) (empty_subset s)).imp fun t ht ↦
-    ⟨ht.2.1, by simpa using ht.2.2⟩
+    ∃ t : Set α, t ⊆ s ∧ t.Finite ∧ t.ncard = i := by
+  obtain (hs | hs) := s.finite_or_infinite
+  · obtain ⟨r, -, hrs, h⟩ := exists_intermediate_Set i (by simpa) (empty_subset s) hs
+    exact ⟨r, hrs, hs.subset hrs, by simp [h]⟩
+  rw [hs.ncard, le_zero_iff] at h₁
+  exact ⟨∅, empty_subset s, finite_empty, by simp [h₁]⟩
 #align set.exists_smaller_set Set.exists_smaller_Set
 
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
@@ -613,9 +618,10 @@ theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ)
 #align set.Infinite.exists_subset_ncard_eq Set.Infinite.exists_subset_ncard_eq
 
 theorem Infinite.exists_supset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : s ⊆ t)
-    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) : ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.ncard = k := by
+    (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) : ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.Finite ∧ s'.ncard = k := by
   obtain ⟨s₁, hs₁, hs₁fin, hs₁card⟩ := (ht.diff hs).exists_subset_ncard_eq (k - s.ncard)
-  refine' ⟨s ∪ s₁, subset_union_left _ _, union_subset hst (hs₁.trans (diff_subset _ _)), _⟩
+  refine' ⟨s ∪ s₁, subset_union_left _ _, union_subset hst (hs₁.trans (diff_subset _ _)),
+    hs.union hs₁fin, _⟩
   rwa [ncard_union_eq (disjoint_of_subset_right hs₁ disjoint_sdiff_right) hs hs₁fin, hs₁card,
     add_tsub_cancel_of_le]
 #align set.infinite.exists_supset_ncard_eq Set.Infinite.exists_supset_ncard_eq
@@ -632,7 +638,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 #align set.exists_subset_or_subset_of_two_mul_lt_ncard
   Set.exists_subset_or_subset_of_two_mul_lt_ncard
 
-/-! ### Explicit description of a set from its cardinality -/
+/-! ### Explicit description of a Set from its cardinality -/
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
   refine' ⟨fun h ↦ _, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
@@ -766,5 +772,169 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   rw [mem_insert_iff, mem_singleton_iff]
   tauto
 #align set.ncard_eq_three Set.ncard_eq_three
+
+section encard
+
+/-- The cardinality of a `Set` as an term in `ENat`. Infinite sets have cardinality `⊤`  -/
+noncomputable def encard (s : Set α) : ℕ∞ := PartENat.withTopEquiv (PartENat.card s)
+
+theorem Finite.encard_eq (hs : s.Finite) : s.encard = (s.ncard : ℕ∞) := by
+  obtain ⟨s, rfl⟩ := hs.exists_finset_coe; simp [encard]
+
+theorem Infinite.encard_eq (hs : s.Infinite) : s.encard = ⊤ := by
+  have := hs.to_subtype; simp [encard]
+
+@[simp] theorem encard_toNat_eq (s : Set α) : ENat.toNat s.encard = s.ncard :=
+  s.finite_or_infinite.elim (fun h ↦ by simp [h.encard_eq]) (fun h ↦ by simp [h.encard_eq, h.ncard])
+
+@[simp] theorem encard_eq_top_iff_Infinite : s.encard = ⊤ ↔ s.Infinite :=
+  ⟨fun h hfin ↦ by simp [hfin.encard_eq] at h, Infinite.encard_eq⟩
+
+@[simp] theorem encard_lt_top_iff_Finite : s.encard < ⊤ ↔ s.Finite := by
+  rw [lt_top_iff_ne_top, ←not_infinite, ←encard_eq_top_iff_Infinite]
+
+theorem encard_ne_top_iff_Finite : s.encard ≠ ⊤ ↔ s.Finite := by
+  simp
+
+theorem encard_eq_coe_iff {k : ℕ} : s.encard = k ↔ s.Finite ∧ s.ncard = k := by
+  rw [←encard_ne_top_iff_Finite, ←encard_toNat_eq]
+  exact ⟨fun h ↦ by simp [h], fun ⟨h1,h2⟩ ↦ by rwa [←@Nat.cast_inj ℕ∞, ENat.coe_toNat h1] at h2⟩
+
+theorem encard_eq_iff_ncard_eq_of_ne_zero {k : ℕ} (hk : k ≠ 0) : s.encard = k ↔ s.ncard = k := by
+  rw [encard_eq_coe_iff, and_iff_right_iff_imp]
+  exact fun h ↦ Finite_of_ncard_pos ((Nat.pos_of_ne_zero hk).trans_eq h.symm)
+
+theorem encard_eq_succ_iff_ncard_eq_succ {k : ℕ} : s.encard = k + 1 ↔ s.ncard = k + 1 :=
+  encard_eq_iff_ncard_eq_of_ne_zero (Nat.succ_ne_zero _)
+
+theorem Finite.encard_lt_top (hs : s.Finite) : s.encard < ⊤ :=
+  encard_lt_top_iff_Finite.mpr hs
+
+theorem Finite.encard_ne_top (hs : s.Finite) : s.encard ≠ ⊤ :=
+  encard_ne_top_iff_Finite.mpr hs
+
+theorem Finite_of_encard_le_coe {n : ℕ} (h : s.encard ≤ n) : s.Finite :=
+  encard_lt_top_iff_Finite.mp (h.trans_lt (WithTop.coe_lt_top _))
+
+theorem encard_le_coe_iff {n : ℕ} : s.encard ≤ n ↔ s.Finite ∧ s.ncard ≤ n := by
+  simp_rw [ENat.le_coe_iff, encard_eq_coe_iff]
+  exact ⟨fun ⟨n₀, he, hle⟩ ↦ ⟨he.1, he.2.trans_le hle⟩, fun ⟨h, h'⟩ ↦ ⟨_, ⟨h, rfl⟩, h'⟩⟩
+
+theorem Finite.ncard_le_ncard_of_encard_le_encard (ht : t.Finite) (h : s.encard ≤ t.encard) :
+    s.ncard ≤ t.ncard := by
+  rw [ht.encard_eq, encard_le_coe_iff] at h; exact h.2
+
+theorem Finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+    s = t := by
+  rw [ht.encard_eq, (ht.subset hst).encard_eq, Nat.cast_le] at hts
+  exact eq_of_subset_of_ncard_le hst hts ht
+
+@[simp] theorem encard_eq_zero : s.encard = 0 ↔ s = ∅ := by
+  rw [←ENat.coe_zero, encard_eq_coe_iff]
+  exact ⟨fun ⟨h,h'⟩ ↦ by rwa [←ncard_eq_zero h],
+    fun h ↦ (by simp only [h, finite_empty, ncard_empty, and_self])⟩
+
+@[simp] theorem encard_empty : (∅ : Set α).encard = 0 := by
+  rw [encard_eq_zero]
+
+@[simp] theorem encard_singleton (x : α) : ({x} : Set α).encard = 1 := by
+  rw [(finite_singleton x).encard_eq, ncard_singleton, ENat.coe_one]
+
+theorem ncard_eq_ncard_of_encard_eq_encard (h : s.encard = t.encard) :
+  s.ncard = t.ncard := by rw [←encard_toNat_eq, h, encard_toNat_eq]
+
+theorem Finite.encard_eq_encard_of_ncard_eq_ncard (hs : s.Finite) (ht : t.Finite)
+(h : s.ncard = t.ncard) : s.encard = t.encard := by rw [hs.encard_eq, ht.encard_eq, h]
+
+theorem Finite.Finite_of_encard_le (hs : s.Finite) (h : t.encard ≤ s.encard) : t.Finite := by
+  rw [←encard_lt_top_iff_Finite] at *; exact h.trans_lt hs
+
+theorem encard_insert_of_not_mem (h : x ∉ s) : (insert x s).encard = s.encard + 1 := by
+  obtain (hs | hs) := s.finite_or_infinite
+  · rw [hs.encard_eq, (hs.insert _).encard_eq, ncard_insert_of_not_mem h hs, Nat.cast_add,
+      Nat.cast_one]
+  · rw [hs.encard_eq, (hs.mono (subset_insert _ _)).encard_eq]; rfl
+
+theorem encard_eq_ite (s : Set α) [Decidable (s.Finite)] :
+    s.encard = if s.Finite then (s.ncard : ℕ∞) else ⊤ := by
+  obtain (h | h) := s.finite_or_infinite
+  · rw [h.encard_eq, if_pos h]
+  rw [h.encard_eq, if_neg h]
+
+theorem encard_subset_le (hst : s ⊆ t) : s.encard ≤ t.encard := by
+  obtain (ht | ht) := t.finite_or_infinite
+  · rw [ht.encard_eq, (ht.subset hst).encard_eq, Nat.cast_le]
+    exact ncard_le_of_subset hst ht
+  exact le_top.trans_eq ht.encard_eq.symm
+
+theorem encard_mono : Monotone (encard : Set α → ℕ∞) :=
+  fun _ _ ↦ encard_subset_le
+
+theorem exists_supset_subset_encard_eq {k : ℕ∞} (hs : s.encard ≤ k) (ht : k ≤ t.encard)
+    (hst : s ⊆ t) : ∃ r, s ⊆ r ∧ r ⊆ t ∧ r.encard = k := by
+  obtain (rfl | ⟨k,rfl⟩) := k.exists_eq_top_or_coe
+  · exact ⟨t, hst, rfl.subset, ht.antisymm' le_top⟩
+  simp_rw [encard_eq_coe_iff]
+  obtain (htfin | htinf) := t.finite_or_infinite
+  · rw [Finite.encard_eq, Nat.cast_le] at hs ht
+    · obtain ⟨r, hsr, hrt, rfl⟩ := exists_intermediate_Set' hs ht hst htfin
+      exact ⟨r, hsr, hrt, htfin.subset hrt, rfl⟩
+    · exact htfin
+    exact htfin.subset hst
+  have hsfin := Finite_of_encard_le_coe hs
+  rw [hsfin.encard_eq, Nat.cast_le] at hs
+  exact htinf.exists_supset_ncard_eq hst hsfin hs
+
+theorem exists_subset_encard_eq {k : ℕ∞} (h : k ≤ s.encard) : ∃ r, r ⊆ s ∧ r.encard = k :=
+  let ⟨r, _, h'⟩ := exists_supset_subset_encard_eq (encard_empty.trans_le (zero_le k)) h
+    (empty_subset s)
+  ⟨r, h'⟩
+
+theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
+  obtain (hf | hi) := (s ∪ t).finite_or_infinite
+  · obtain ⟨hs, ht⟩ := finite_union.mp hf
+    rw [hf.encard_eq, hs.encard_eq, ht.encard_eq, ←Nat.cast_add, Nat.cast_inj,
+      ncard_union_eq h hs ht]
+  rw [hi.encard_eq]
+  obtain (h | h) := infinite_union.mp hi
+  · simp [h.encard_eq]
+  simp [h.encard_eq]
+
+theorem encard_diff_add_encard_inter (s t : Set α) :
+    (s \ t).encard + (s ∩ t).encard = s.encard := by
+  rw [←encard_union_eq (disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left),
+    diff_union_inter]
+
+theorem encard_diff_add_encard_of_subset (h : s ⊆ t) :
+   (t \ s).encard + s.encard = t.encard := by
+  nth_rewrite 1 [←encard_diff_add_encard_inter t s]
+  rw [inter_eq_self_of_subset_right h]
+
+theorem encard_union_add_encard_inter (s t : Set α) :
+  (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard :=
+by rw [←diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
+  encard_diff_add_encard_inter]
+
+theorem encard_union_le (s t : Set α) : (s ∪ t).encard ≤ s.encard + t.encard := by
+  rw [←encard_union_add_encard_inter]; exact le_self_add
+
+theorem finite_iff_finite_of_encard_eq_encard (h : s.encard = t.encard) : s.Finite ↔ t.Finite := by
+  rw [←encard_lt_top_iff_Finite, ←encard_lt_top_iff_Finite, h]
+
+theorem infinite_iff_infinite_of_encard_eq_encard (h : s.encard = t.encard) :
+    s.Infinite ↔ t.Infinite := by rw [←encard_eq_top_iff_Infinite, h, encard_eq_top_iff_Infinite]
+
+theorem finite.finite_of_encard_le (ht : t.Finite) (hst : s.encard ≤ t.encard) : s.Finite := by
+  rw [←encard_lt_top_iff_Finite] at *; exact hst.trans_lt ht
+
+theorem finite.eq_of_subset_of_encard_le (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+    s = t :=
+  eq_of_subset_of_ncard_le hst ((ht.subset hst).ncard_le_ncard_of_encard_le_encard hts) ht
+
+theorem finite.eq_of_subset_of_encard_le' (hs : s.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
+    s = t :=
+  (hs.Finite_of_encard_le hts).eq_of_subset_of_encard_le hst hts
+
+end encard
 
 end Set
