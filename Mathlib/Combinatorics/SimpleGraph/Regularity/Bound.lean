@@ -74,11 +74,11 @@ local notation3 (prettyPrint := false)
 local notation3 (prettyPrint := false)
   "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
 
-namespace Mathlib.Meta.Positivity
+namespace SzemerediRegularity.Positivity
 
 open Lean Meta Qq Function
 
-private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ 4 ^ n * ε ^ 5) : 0 < ε :=
+private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
@@ -88,25 +88,35 @@ private theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
 proof of Szemerédi's regularity lemma. -/
-@[positivity]
-def positivitySzemerediRegularity : PositivityExt where eval {_ _} _zα _pα e := do
-| `(%%n / stepBound (Finpartition.parts %%P).card) := do
-    p ← to_expr
-      ``((Finpartition.parts %%P).card * 16^(Finpartition.parts %%P).card ≤ %%n)
-      >>= find_assumption,
-    positive <$> mk_app ``m_pos [p]
-| ε := do
-    typ ← infer_type ε,
-    unify typ `(ℝ),
-    p ← to_expr ``(100 ≤ 4 ^ _ * %%ε ^ 5) >>= find_assumption,
-    positive <$> mk_app ``eps_pos [p]
+-- Porting note: positivity extensions must now be global, and this did not seem like a good
+-- match for positivity anymore, so I wrote a new tactic (kmill)
+scoped macro "sz_positivity" : tactic =>
+  `(tactic|
+      { try have := m_pos ‹_›
+        try have := eps_pos ‹_›
+        positivity })
 
-end Mathlib.Meta.Positivity
+-- Original meta code
+-- @[positivity]
+-- def positivitySzemerediRegularity : PositivityExt where eval {_ _} _zα _pα e := do
+-- | `(%%n / stepBound (Finpartition.parts %%P).card) := do
+--     p ← to_expr
+--       ``((Finpartition.parts %%P).card * 16^(Finpartition.parts %%P).card ≤ %%n)
+--       >>= find_assumption,
+--     positive <$> mk_app ``m_pos [p]
+-- | ε := do
+--     typ ← infer_type ε,
+--     unify typ `(ℝ),
+--     p ← to_expr ``(100 ≤ 4
+
+end SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
+open scoped SzemerediRegularity.Positivity
+
 theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m := by
-  positivity
+  sz_positivity
 #align szemeredi_regularity.m_pos SzemerediRegularity.m_pos
 
 theorem coe_m_add_one_pos : 0 < (m : ℝ) + 1 := by positivity
@@ -116,16 +126,16 @@ theorem one_le_m_coe [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ 
   Nat.one_le_cast.2 <| m_pos hPα
 #align szemeredi_regularity.one_le_m_coe SzemerediRegularity.one_le_m_coe
 
-theorem eps_pow_five_pos (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : ↑0 < ε ^ 5 :=
+theorem eps_pow_five_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : ↑0 < ε ^ 5 :=
   pos_of_mul_pos_right ((by norm_num : (0 : ℝ) < 100).trans_le hPε) <| pow_nonneg (by norm_num) _
 #align szemeredi_regularity.eps_pow_five_pos SzemerediRegularity.eps_pow_five_pos
 
-theorem eps_pos (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : 0 < ε :=
+theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp (eps_pow_five_pos hPε)
 #align szemeredi_regularity.eps_pos SzemerediRegularity.eps_pos
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
-    (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
+    (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans
     (by
       norm_cast
@@ -134,10 +144,10 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
-    (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
+    (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
   exact_mod_cast
     (hundred_div_ε_pow_five_le_m hPα hPε).trans'
-      (le_div_self (by norm_num) (by positivity) <| pow_le_one _ (by positivity) hε)
+      (le_div_self (by norm_num) (by sz_positivity) <| pow_le_one _ (by sz_positivity) hε)
 #align szemeredi_regularity.hundred_le_m SzemerediRegularity.hundred_le_m
 
 theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
