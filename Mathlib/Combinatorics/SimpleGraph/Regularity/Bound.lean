@@ -21,10 +21,10 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 ## Main declarations
 
-* `szemeredi_regularity.step_bound`: During the inductive step, a partition of size `n` is blown to
-  size at most `step_bound n`.
-* `szemeredi_regularity.initial_bound`: The size of the partition we start the induction with.
-* `szemeredi_regularity.bound`: The upper bound on the size of the partition produced by our version
+* `SzemerediRegularity.stepBound`: During the inductive step, a partition of size `n` is blown to
+  size at most `stepBound n`.
+* `SzemerediRegularity.initialBound`: The size of the partition we start the induction with.
+* `SzemerediRegularity.bound`: The upper bound on the size of the partition produced by our version
   of Szemerédi's regularity lemma.
 
 ## References
@@ -35,12 +35,14 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 open BigOperators
 
 namespace SzemerediRegularity
 
 /-- Auxiliary function for Szemerédi's regularity lemma. Blowing up a partition of size `n` during
-the induction results in a partition of size at most `step_bound n`. -/
+the induction results in a partition of size at most `stepBound n`. -/
 def stepBound (n : ℕ) : ℕ :=
   n * 4 ^ n
 #align szemeredi_regularity.step_bound SzemerediRegularity.stepBound
@@ -66,65 +68,40 @@ open SzemerediRegularity
 variable {α : Type _} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
   {u : Finset α} {ε : ℝ}
 
--- mathport name: exprm
-local notation "m" => (card α / stepBound P.parts.card : ℕ)
+local notation3 (prettyPrint := false)
+  "m" => (card α / stepBound P.parts.card : ℕ)
 
--- mathport name: expra
-local notation "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
+local notation3 (prettyPrint := false)
+  "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
-open Positivity
+open Lean Meta Qq Function
 
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ 4 ^ n * ε ^ 5) : 0 < ε :=
-  pow_bit1_pos_iff.1 <| pos_of_mul_pos_right (h.trans_lt' <| by norm_num) <| by positivity
-#align tactic.eps_pos tactic.eps_pos
+  (Odd.pow_pos_iff (by norm_num)).mp
+    (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m :=
   Nat.div_pos ((Nat.mul_le_mul_left _ <| Nat.pow_le_pow_of_le_left (by norm_num) _).trans hPα) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
-#align tactic.m_pos tactic.m_pos
 
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      Local extension for the `positivity` tactic: A few facts that are needed many times for the
-      proof of Szemerédi's regularity lemma. -/
-    unsafe
-  def
-    positivity_szemeredi_regularity
-    : expr → tactic strictness
-    |
-        q( $ ( n ) / stepBound ( Finpartition.parts $ ( P ) ) . card )
-        =>
-        do
-          let
-              p
-                ←
-                to_expr
-                    `
-                      `(
-                        ( Finpartition.parts $ ( P ) ) . card
-                            *
-                            16 ^ ( Finpartition.parts $ ( P ) ) . card
-                          ≤
-                          $ ( n )
-                        )
-                  >>=
-                  find_assumption
-            positive <$> mk_app ` ` m_pos [ p ]
-      |
-        ε
-        =>
-        do
-          let typ ← infer_type ε
-            unify typ q( ℝ )
-            let p ← to_expr ` `( 100 ≤ 4 ^ _ * $ ( ε ) ^ 5 ) >>= find_assumption
-            positive <$> mk_app ` ` eps_pos [ p ]
-#align tactic.positivity_szemeredi_regularity tactic.positivity_szemeredi_regularity
+/-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
+proof of Szemerédi's regularity lemma. -/
+@[positivity]
+def positivitySzemerediRegularity : PositivityExt where eval {_ _} _zα _pα e := do
+| `(%%n / stepBound (Finpartition.parts %%P).card) := do
+    p ← to_expr
+      ``((Finpartition.parts %%P).card * 16^(Finpartition.parts %%P).card ≤ %%n)
+      >>= find_assumption,
+    positive <$> mk_app ``m_pos [p]
+| ε := do
+    typ ← infer_type ε,
+    unify typ `(ℝ),
+    p ← to_expr ``(100 ≤ 4 ^ _ * %%ε ^ 5) >>= find_assumption,
+    positive <$> mk_app ``eps_pos [p]
 
-end Tactic
-
-attribute [local positivity] tactic.positivity_szemeredi_regularity
+end Mathlib.Meta.Positivity
 
 namespace SzemerediRegularity
 
@@ -139,26 +116,25 @@ theorem one_le_m_coe [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ 
   Nat.one_le_cast.2 <| m_pos hPα
 #align szemeredi_regularity.one_le_m_coe SzemerediRegularity.one_le_m_coe
 
-theorem eps_pow_five_pos (hPε : 100 ≤ 4 ^ P.parts.card * ε ^ 5) : 0 < ε ^ 5 :=
+theorem eps_pow_five_pos (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : ↑0 < ε ^ 5 :=
   pos_of_mul_pos_right ((by norm_num : (0 : ℝ) < 100).trans_le hPε) <| pow_nonneg (by norm_num) _
 #align szemeredi_regularity.eps_pow_five_pos SzemerediRegularity.eps_pow_five_pos
 
-theorem eps_pos (hPε : 100 ≤ 4 ^ P.parts.card * ε ^ 5) : 0 < ε :=
-  pow_bit1_pos_iff.1 <| eps_pow_five_pos hPε
+theorem eps_pos (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : 0 < ε :=
+  (Odd.pow_pos_iff (by norm_num)).mp (eps_pow_five_pos hPε)
 #align szemeredi_regularity.eps_pos SzemerediRegularity.eps_pos
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
-    (hPε : 100 ≤ 4 ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
+    (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_nonneg_of_le_mul (eps_pow_five_pos hPε).le (by positivity) hPε).trans
     (by
       norm_cast
-      rwa [Nat.le_div_iff_mul_le'
-          (stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos),
-        stepBound, mul_left_comm, ← mul_pow])
+      rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
+        univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow])
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
-    (hPε : 100 ≤ 4 ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
+    (hPε : 100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
   exact_mod_cast
     (hundred_div_ε_pow_five_le_m hPα hPε).trans'
       (le_div_self (by norm_num) (by positivity) <| pow_le_one _ (by positivity) hε)
@@ -166,8 +142,9 @@ theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ 
 
 theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   have h : 1 ≤ 4 ^ P.parts.card := one_le_pow_of_one_le (by norm_num) _
-  rw [stepBound, ← Nat.div_div_eq_div_mul, ← Nat.le_sub_iff_right h, tsub_le_iff_left, ←
-    Nat.add_sub_assoc h]
+  rw [stepBound, ← Nat.div_div_eq_div_mul]
+  conv_rhs => rw [← Nat.sub_add_cancel h]
+  rw [add_le_add_iff_right, tsub_le_iff_left, ← Nat.add_sub_assoc h]
   exact Nat.le_pred_of_lt (Nat.lt_div_mul_add h)
 #align szemeredi_regularity.a_add_one_le_four_pow_parts_card SzemerediRegularity.a_add_one_le_four_pow_parts_card
 
@@ -217,9 +194,9 @@ theorem initialBound_pos : 0 < initialBound ε l :=
 #align szemeredi_regularity.initial_bound_pos SzemerediRegularity.initialBound_pos
 
 theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
-    100 < 4 ^ initialBound ε l * ε ^ 5 := by
+    100 < ↑4 ^ initialBound ε l * ε ^ 5 := by
   rw [← rpow_nat_cast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
-    div_lt_iff, initial_bound, Nat.cast_max, Nat.cast_max]
+    div_lt_iff, initialBound, Nat.cast_max, Nat.cast_max]
   · push_cast
     exact lt_max_of_lt_right (lt_max_of_lt_right <| Nat.lt_floor_add_one _)
   · exact log_pos (by norm_num)
@@ -251,8 +228,8 @@ variable {ι 𝕜 : Type _} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)
     (hs' : (s.card : 𝕜) ≠ 0) : (s.card : 𝕜) * x ^ 2 ≤ ∑ i in t, f i ^ 2 :=
   (mul_le_mul_of_nonneg_left (hs.trans sum_div_card_sq_le_sum_sq_div_card) <|
-        Nat.cast_nonneg _).trans <|
-    (mul_div_cancel' _ hs').le.trans <| sum_le_sum_of_subset_of_nonneg hst fun i _ _ => sq_nonneg _
+    Nat.cast_nonneg _).trans <| (mul_div_cancel' _ hs').le.trans <|
+      sum_le_sum_of_subset_of_nonneg hst fun _ _ _ => sq_nonneg _
 #align szemeredi_regularity.mul_sq_le_sum_sq SzemerediRegularity.mul_sq_le_sum_sq
 
 theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
@@ -264,41 +241,46 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   have htcard : (0 : 𝕜) < t.card := hscard.trans_le (Nat.cast_le.2 (card_le_of_subset hst))
   have h₁ : x ^ 2 ≤ ((∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card) ^ 2 :=
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
-  have h₂ : x ^ 2 ≤ ((∑ i in s, f i - (∑ j in t, f j) / t.card) / s.card) ^ 2 := by
+  have h₂ : x ^ 2 ≤ ((∑ i in s, (f i - (∑ j in t, f j) / t.card)) / s.card) ^ 2 := by
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left _ hscard.ne']
   apply (add_le_add_right ht _).trans
   rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel _ htcard.ne']
-  have h₃ := mul_sq_le_sum_sq hst (fun i => f i - (∑ j in t, f j) / t.card) h₂ hscard.ne'
+  have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j in t, f j) / t.card)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
-  simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,
-    mul_pow, div_le_iff (sq_pos_of_ne_zero _ htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul, ←
-    mul_sum]
-  ring_nf
+  -- Porting note: was
+  -- `simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
+  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero _ htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul, ←`
+  -- `  mul_sum]`
+  simp_rw [sub_div' _ _ _ htcard.ne']
+  conv_lhs => enter [2, 2, x]; rw [div_pow]
+  rw [div_pow, ← sum_div, ← mul_div_right_comm _ (t.card : 𝕜), ← add_div,
+    div_le_iff (sq_pos_of_ne_zero _ htcard.ne')]
+  simp_rw [sub_sq, sum_add_distrib, sum_const, nsmul_eq_mul, sum_sub_distrib, mul_pow, ← sum_mul,
+    ← mul_sum, ← sum_mul]
+  ring_nf; rfl
 #align szemeredi_regularity.add_div_le_sum_sq_div_card SzemerediRegularity.add_div_le_sum_sq_div_card
 
 end SzemerediRegularity
 
 namespace Tactic
 
-open Positivity SzemerediRegularity
+open Lean.Meta Qq
 
-/-- Extension for the `positivity` tactic: `szemeredi_regularity.initial_bound` and
-`szemeredi_regularity.bound` are always positive. -/
-@[positivity]
-unsafe def positivity_szemeredi_regularity_bound : expr → tactic strictness
-  | q(SzemerediRegularity.initialBound $(ε) $(l)) => positive <$> mk_app `` initial_bound_pos [ε, l]
-  | q(SzemerediRegularity.bound $(ε) $(l)) => positive <$> mk_app `` bound_pos [ε, l]
-  | e =>
-    pp e >>=
-      fail ∘
-        format.bracket "The expression `"
-          "` isn't of the form `szemeredi_regularity.initial_bound ε l` nor `szemeredi_regularity.bound ε l`"
-#align tactic.positivity_szemeredi_regularity_bound tactic.positivity_szemeredi_regularity_bound
+/-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
+@[positivity SzemerediRegularity.initialBound _ _]
+def evalInitialBound : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+  let (.app (.app _ (ε : Q(ℝ))) (l : Q(ℕ))) ← whnfR e | throwError "not initialBound"
+  pure (.positive (q(SzemerediRegularity.initialBound_pos $ε $l) : Lean.Expr))
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by positivity
+
+/-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
+@[positivity SzemerediRegularity.bound _ _]
+def evalBound : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+  let (.app (.app _ (ε : Q(ℝ))) (l : Q(ℕ))) ← whnfR e | throwError "not bound"
+  pure (.positive (q(SzemerediRegularity.bound_pos $ε $l) : Lean.Expr))
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.bound ε l := by positivity
 
 end Tactic
-
