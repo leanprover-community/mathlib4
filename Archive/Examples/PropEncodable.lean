@@ -14,8 +14,8 @@ import Mathlib.Data.Fin.VecNotation
 /-!
 # W types
 
-The file `data/W.lean` shows that if `α` is an an encodable fintype and for every `a : α`,
-`β a` is encodable, then `W β` is encodable.
+The file `Mathlib/Data/W/Basic.lean` shows that if `α` is an an encodable fintype and for every
+`a : α`, `β a` is encodable, then `W β` is encodable.
 
 As an example of how this can be used, we show that the type of propositional formulas with
 variables labeled from an encodable type is encodable.
@@ -42,7 +42,7 @@ inductive PropForm (α : Type _)
 
 /-!
 The next three functions make it easier to construct functions from a small
-`fin`.
+`Fin`.
 -/
 
 -- porting note: using `![_, _]` notation instead
