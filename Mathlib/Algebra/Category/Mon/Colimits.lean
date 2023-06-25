@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of monoids has all colimits.
@@ -100,8 +100,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F)
-    where
+def colimitSetoid : Setoid (Prequotient F) where
   R := Relation F
   iseqv := ⟨Relation.refl, Relation.symm, Relation.trans⟩
 #align Mon.colimits.colimit_setoid MonCat.Colimits.colimitSetoid
@@ -115,8 +114,7 @@ def ColimitType : Type v :=
 deriving Inhabited
 #align Mon.colimits.colimit_type MonCat.Colimits.ColimitType
 
-instance monoidColimitType : Monoid (ColimitType F)
-    where
+instance monoidColimitType : Monoid (ColimitType F) where
   mul := by
     fapply @Quot.lift _ _ (colimit_type F → colimit_type F)
     · intro x
@@ -180,8 +178,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 #align Mon.colimits.cocone_fun MonCat.Colimits.coconeFun
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F
-    where
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_one' := Quot.sound (Relation.one _)
   map_mul' x y := Quot.sound (Relation.mul _ _ _)
@@ -189,8 +186,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ coconeMorphism F j' = coconeMorphism F j :=
-  by
+    F.map f ≫ coconeMorphism F j' = coconeMorphism F j := by
   ext
   apply Quot.sound
   apply Relation.Map
@@ -217,8 +213,7 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
 #align Mon.colimits.desc_fun_lift MonCat.Colimits.descFunLift
 
 /-- The function from the colimit monoid to the cone point of any other cocone. -/
-def descFun (s : Cocone F) : ColimitType F → s.pt :=
-  by
+def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact desc_fun_lift F s
   · intro x y r
@@ -248,16 +243,14 @@ def descFun (s : Cocone F) : ColimitType F → s.pt :=
 #align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
 /-- The monoid homomorphism from the colimit monoid to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt
-    where
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
   map_one' := rfl
   map_mul' x y := by induction x <;> induction y <;> rfl
 #align Mon.colimits.desc_morphism MonCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
-def colimitIsColimit : IsColimit (colimitCocone F)
-    where
+def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext
