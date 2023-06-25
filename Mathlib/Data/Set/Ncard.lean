@@ -581,33 +581,35 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 end Lattice
 
 /-- Given a Set `t` and a Set `s` inside it, we can shrink `t` to any appropriate size, and keep `s`
-    inside it. -/
-theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t)
-    (ht : t.Finite := by toFinite_tac) : ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
-  rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
-  rw [ncard_eq_toFinset_card t ht] at h₁
-  obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h₁ (by simpa)
-  exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
+    inside it. Happens to hold for infinite `t` via junk values. -/
+theorem exists_intermediate_Set (i : ℕ) (h : i + s.ncard ≤ t.ncard) (hst : s ⊆ t) :
+    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
+  obtain (ht | ht) := t.finite_or_infinite
+  · rw [ncard_eq_toFinset_card _ (ht.subset hst)] at h ⊢
+    rw [ncard_eq_toFinset_card t ht] at h
+    obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h (by simpa)
+    exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
+  rw [ht.ncard, Nat.le_zero, add_eq_zero] at h
+  exact ⟨t, hst, rfl.subset, by rw [h.1, h.2, ht.ncard, add_zero]⟩
+
 #align set.exists_intermediate_set Set.exists_intermediate_Set
 
-theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard)
-    (h : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
     ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := by
   obtain ⟨r, hsr, hrt, hc⟩ :=
-    exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h ht
+    exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h
   rw [tsub_add_cancel_of_le hs] at hc
   exact ⟨r, hsr, hrt, hc⟩
 #align set.exists_intermediate_set' Set.exists_intermediate_Set'
 
 /-- We can shrink `s` to any smaller size. -/
-theorem exists_smaller_Set (s : Set α) (i : ℕ) (h₁ : i ≤ s.ncard) :
+theorem exists_smaller_Set (s : Set α) (i : ℕ) (h : i ≤ s.ncard) :
     ∃ t : Set α, t ⊆ s ∧ t.Finite ∧ t.ncard = i := by
   obtain (hs | hs) := s.finite_or_infinite
-  · obtain ⟨r, -, hrs, h⟩ := exists_intermediate_Set i (by simpa) (empty_subset s) hs
-    exact ⟨r, hrs, hs.subset hrs, by simp [h]⟩
-  rw [hs.ncard, le_zero_iff] at h₁
-  exact ⟨∅, empty_subset s, finite_empty, by simp [h₁]⟩
-#align set.exists_smaller_set Set.exists_smaller_Set
+  · obtain ⟨r, -, hrs, hr⟩ := exists_intermediate_Set i (by simpa) (empty_subset s)
+    exact ⟨r, hrs, hs.subset hrs, by simp [hr]⟩
+  rw [hs.ncard, le_zero_iff] at h
+  exact ⟨∅, empty_subset s, finite_empty, by simp [h]⟩
 
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
     ∃ t, t ⊆ s ∧ t.Finite ∧ t.ncard = k := by
@@ -874,7 +876,7 @@ theorem exists_supset_subset_encard_eq {k : ℕ∞} (hs : s.encard ≤ k) (ht : 
   simp_rw [encard_eq_coe_iff]
   obtain (htfin | htinf) := t.finite_or_infinite
   · rw [Finite.encard_eq, Nat.cast_le] at hs ht
-    · obtain ⟨r, hsr, hrt, rfl⟩ := exists_intermediate_Set' hs ht hst htfin
+    · obtain ⟨r, hsr, hrt, rfl⟩ := exists_intermediate_Set' hs ht hst
       exact ⟨r, hsr, hrt, htfin.subset hrt, rfl⟩
     · exact htfin
     exact htfin.subset hst
