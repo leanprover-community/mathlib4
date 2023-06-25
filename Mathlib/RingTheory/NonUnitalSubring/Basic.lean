@@ -149,7 +149,6 @@ instance : NonUnitalSubringClass (NonUnitalSubring R) R
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
 
-@[simp]
 theorem mem_carrier {s : NonUnitalSubring R} {x : R} : x ∈ s.toNonUnitalSubsemiring ↔ x ∈ s :=
   Iff.rfl
 
@@ -343,6 +342,16 @@ theorem mem_toAddSubgroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toAddSubgro
 
 @[simp]
 theorem coe_toAddSubgroup (s : NonUnitalSubring R) : (s.toAddSubgroup : Set R) = s :=
+  rfl
+
+@[simp]
+theorem mem_toNonUnitalSubsemiring {s : NonUnitalSubring R} {x : R} :
+    x ∈ s.toNonUnitalSubsemiring ↔ x ∈ s :=
+  Iff.rfl
+
+@[simp]
+theorem coe_toNonUnitalSubsemiring (s : NonUnitalSubring R) :
+    (s.toNonUnitalSubsemiring : Set R) = s :=
   rfl
 
 /-! ## top -/

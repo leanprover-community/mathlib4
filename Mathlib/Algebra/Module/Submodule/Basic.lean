@@ -198,7 +198,7 @@ protected def subtype : S' →ₗ[R] M where
 #align submodule_class.subtype SMulMemClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected theorem coeSubtype : (SMulMemClass.subtype S' (R := R) : S' → M) = Subtype.val :=
   rfl
 #align submodule_class.coe_subtype SMulMemClass.coeSubtype
 
