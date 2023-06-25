@@ -173,20 +173,22 @@ inductive Derivable : Miustr → Prop
 -/
 
 
+-- Porting note: All of these examples originally used `change A with B`. These tactics were
+-- replaced by `rw [(by rfl : A = B)]`.
 example (h : Derivable "UMI") : Derivable "UMIU" := by
-  change ("UMIU" : Miustr) with [U, M] ++ [I, U]
+  rw [(by rfl : ("UMIU" : Miustr) = [U, M] ++ [I, U])]
   exact Derivable.r1 h -- Rule 1
 
 example (h : Derivable "MIIU") : Derivable "MIIUIIU" := by
-  change ("MIIUIIU" : Miustr) with M :: [I, I, U] ++ [I, I, U]
+  rw [(by rfl : ("MIIUIIU" : Miustr) = M :: [I, I, U] ++ [I, I, U])]
   exact Derivable.r2 h -- Rule 2
 
 example (h : Derivable "UIUMIIIMMM") : Derivable "UIUMUMMM" := by
-  change ("UIUMUMMM" : Miustr) with [U, I, U, M] ++ U :: [M, M, M]
+  rw [(by rfl : ("UIUMUMMM" : Miustr) = [U, I, U, M] ++ U :: [M, M, M])]
   exact Derivable.r3 h -- Rule 3
 
 example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
-  change ("MIMIMIIM" : Miustr) with [M, I, M, I, M] ++ [I, I, M]
+  rw [(by rfl : ("MIMIMIIM" : Miustr) = [M, I, M, I, M] ++ [I, I, M])]
   exact Derivable.r4 h -- Rule 4
 
 /-!
@@ -195,22 +197,22 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 
 
 private theorem MIU_der : Derivable "MIU" := by
-  change ("MIU" : Miustr) with [M] ++ [I, U]
-  apply Derivable.r1 -- reduce to deriving "MI",
+  rw [(by rfl : ("MIU" : Miustr) = [M] ++ [I, U])]
+  apply Derivable.r1 -- reduce to deriving `"MI"`,
   constructor -- which is the base of the inductive construction.
 
 example : Derivable "MIUIU" := by
-  change ("MIUIU" : Miustr) with M :: [I, U] ++ [I, U]
+  rw [(by rfl : ("MIUIU" : Miustr) = M :: [I, U] ++ [I, U])]
   exact Derivable.r2 MIU_der -- `"MIUIU"` can be derived as `"MIU"` can.
 
 example : Derivable "MUI" := by
   have h₂ : Derivable "MII" := by
-    change ("MII" : Miustr) with M :: [I] ++ [I]
+    rw [(by rfl : ("MII" : Miustr) = M :: [I] ++ [I])]
     exact Derivable.r2 Derivable.mk
   have h₃ : Derivable "MIIII" := by
-    change ("MIIII" : Miustr) with M :: [I, I] ++ [I, I]
+    rw [(by rfl : ("MIIII" : Miustr) = M :: [I, I] ++ [I, I])]
     exact Derivable.r2 h₂
-  change ("MUI" : Miustr) with [M] ++ U :: [I]
+  rw [(by rfl : ("MUI" : Miustr) = [M] ++ U :: [I])]
   exact Derivable.r3 h₃ -- We prove our main goal using rule 3
 
 end Miu
