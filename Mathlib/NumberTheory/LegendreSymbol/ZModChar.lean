@@ -137,13 +137,17 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
 set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
-@[simps]
+-- @[simps?] --Porting note: TODO
 def χ₈ : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, -1, 0, -1, 0, 1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
   map_nonunit' := by decide
 #align zmod.χ₈ ZMod.χ₈
+
+
+theorem χ₈_apply (a : Fin 8) :
+  χ₈ a = Matrix.vecCons 0 ![1, 0, -1, 0, -1, 0, 1] a := rfl
 
 /-- `χ₈` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
