@@ -156,13 +156,13 @@ theorem liftAlternating_ιMulti :
 @[simps apply symm_apply]
 def liftAlternatingEquiv : (∀ i, AlternatingMap R M N (Fin i)) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
     where
-  toFun := liftAlternating
+  toFun := @liftAlternating R _ _ _ _ _ _ _
   map_add' := map_add _
   map_smul' := map_smul _
   invFun F i := F.compAlternatingMap (ιMulti R i)
   left_inv f := funext fun i => liftAlternating_comp_ιMulti _
   right_inv F :=
-    (liftAlternating_comp _ _).trans <| by rw [lift_alternating_ι_multi, LinearMap.comp_id]
+    (liftAlternating_comp _ _).trans <| by rw [liftAlternating_ιMulti, LinearMap.comp_id]
 #align exterior_algebra.lift_alternating_equiv ExteriorAlgebra.liftAlternatingEquiv
 
 /-- To show that two linear maps from the exterior algebra agree, it suffices to show they agree on
