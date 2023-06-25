@@ -255,6 +255,8 @@ instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p �
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure $ iff iff_iff_and_or_not_and_not h
 
+variable {var : String}
+
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
     Testable (NamedBinder var $ ∀ h, β h) where
   run := λ cfg min => do

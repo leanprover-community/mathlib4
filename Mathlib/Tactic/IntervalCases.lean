@@ -32,6 +32,8 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 -/
 
 set_option linter.unusedVariables false
+-- In this file we would like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
 
 namespace Mathlib.Tactic
 

@@ -3,7 +3,8 @@ import Lake
 open Lake DSL
 
 def moreServerArgs := #[
-  "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
+  "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
+  "-DrelaxedAutoImplicit=false"
 ]
 
 -- These settings only apply during `lake build`, but not in VSCode editor.
