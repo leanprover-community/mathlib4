@@ -5,6 +5,7 @@ import Counterexamples.DirectSumIsInternal
 import Counterexamples.Girard
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
+import Counterexamples.Phillips
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras

@@ -202,7 +202,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  ext (f m); simp
+  ext f m; simp
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
 theorem trace_prodMap :
@@ -241,7 +241,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
-  ext (f m g n)
+  ext f m g n
   simp only [AlgebraTensorModule.curry_apply, toFun_eq_coe, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
@@ -253,7 +253,7 @@ theorem trace_comp_comm :
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
-  ext (g m f n)
+  ext g m f n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
     compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]

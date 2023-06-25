@@ -658,7 +658,7 @@ def liftRingHom :
       simp [AddMonoidHom.comp_apply]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
-    ext (xi xv)
+    ext xi xv
     exact toAddMonoid_of (fun _ => f.1) xi xv
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective

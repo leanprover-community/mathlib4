@@ -501,7 +501,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
         dsimp
         rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
       · intro y y' h h'
-        dsimp at h h'⊢
+        dsimp at h h' ⊢
         rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
         -- no longer works for some reason
     smul_def' := fun r x => by
@@ -1094,7 +1094,7 @@ def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := 
     simp only [homTensorHomMap_apply, TensorProduct.map_mul]
   · intro r
     simp only [homTensorHomMap_apply]
-    ext (m n)
+    ext m n
     simp [smul_tmul]
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 

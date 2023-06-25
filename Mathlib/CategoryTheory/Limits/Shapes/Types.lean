@@ -48,8 +48,6 @@ open CategoryTheory Limits
 
 namespace CategoryTheory.Limits.Types
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type u} (f : β → Type u) {P : Type u} (s : ∀ b, P ⟶ f b) (b : β)
@@ -197,9 +195,9 @@ noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor 
   refine' NatIso.ofComponents (fun X => _) (fun _ => _)
   · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
-    . apply Limits.prod.hom_ext <;> dsimp <;> simp <;> rfl
+    . apply Limits.prod.hom_ext <;> simp <;> rfl
   . ext : 2
-    apply Limits.prod.hom_ext <;> dsimp <;> simp <;> rfl
+    apply Limits.prod.hom_ext <;> simp <;> rfl
 #align category_theory.limits.types.binary_product_iso_prod CategoryTheory.Limits.Types.binaryProductIsoProd
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/

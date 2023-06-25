@@ -335,7 +335,7 @@ theorem map_aeval_eq_aeval_map {S T U : Type _} [CommSemiring S] [CommSemiring T
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
-  rw [aeval_def, ← eval_map] at h₂⊢
+  rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
 #align polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero Polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero
 
