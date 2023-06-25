@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathbin.LinearAlgebra.CliffordAlgebra.Fold
-import Mathbin.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Contraction in Clifford Algebras
@@ -69,8 +69,7 @@ def contractLeftAux (d : Module.Dual R M) :
 #align clifford_algebra.contract_left_aux CliffordAlgebra.contractLeftAux
 
 theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : CliffordAlgebra Q) :
-    contractLeftAux Q d v (ι Q v * x, contractLeftAux Q d v (x, fx)) = Q v • fx :=
-  by
+    contractLeftAux Q d v (ι Q v * x, contractLeftAux Q d v (x, fx)) = Q v • fx := by
   simp only [contract_left_aux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← sub_add, mul_smul_comm, sub_self,
     zero_add]
@@ -83,8 +82,7 @@ variable {Q}
 Note that $v ⌋ x$ is spelt `contract_left (Q.associated v) x`.
 
 This includes [grinberg_clifford_2016][] Theorem 10.75 -/
-def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q
-    where
+def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q where
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
@@ -195,8 +193,7 @@ theorem contractRight_one : (1 : CliffordAlgebra Q)⌊d = 0 := by
 variable {Q}
 
 /-- This is [grinberg_clifford_2016][] Theorem 7 -/
-theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 :=
-  by
+theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [contract_left_algebra_map, map_zero]
   · rw [map_add, map_add, hx, hy, add_zero]
@@ -211,8 +208,7 @@ theorem contractRight_contractRight (x : CliffordAlgebra Q) : x⌊d⌊d = 0 := b
 #align clifford_algebra.contract_right_contract_right CliffordAlgebra.contractRight_contractRight
 
 /-- This is [grinberg_clifford_2016][] Theorem 8 -/
-theorem contractLeft_comm (x : CliffordAlgebra Q) : d⌋(d'⌋x) = -(d'⌋(d⌋x)) :=
-  by
+theorem contractLeft_comm (x : CliffordAlgebra Q) : d⌋(d'⌋x) = -(d'⌋(d⌋x)) := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [contract_left_algebra_map, map_zero, neg_zero]
   · rw [map_add, map_add, map_add, map_add, hx, hy, neg_add]
@@ -243,8 +239,7 @@ def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] 
 #align clifford_algebra.change_form_aux CliffordAlgebra.changeFormAux
 
 theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlgebra Q) :
-    changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x :=
-  by
+    changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [change_form_aux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, map_sub, contract_left_ι_mul, ← sub_add, sub_sub_sub_comm,
     ← Algebra.smul_def, BilinForm.toLin_apply, sub_self, sub_zero, contract_left_contract_left,
@@ -264,8 +259,7 @@ This is $\lambda_B$ from [bourbaki2007][] $9 Lemma 2. -/
 def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q' :=
   foldr Q (changeFormAux Q' B)
     (fun m x =>
-      (changeFormAux_changeFormAux Q' B m x).trans <|
-        by
+      (changeFormAux_changeFormAux Q' B m x).trans <| by
         dsimp [← BilinForm.toQuadraticForm_apply]
         rw [h, QuadraticForm.sub_apply, sub_sub_cancel])
     1
@@ -318,8 +312,7 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
-    changeForm h (d⌋x) = d⌋changeForm h x :=
-  by
+    changeForm h (d⌋x) = d⌋changeForm h x := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp only [contract_left_algebra_map, change_form_algebra_map, map_zero]
   · rw [map_add, map_add, map_add, map_add, hx, hy]
@@ -327,8 +320,7 @@ theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
     rw [← hx, contract_left_comm, ← sub_add, sub_neg_eq_add, ← hx]
 #align clifford_algebra.change_form_contract_left CliffordAlgebra.changeForm_contractLeft
 
-theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm changeForm.zero_proof x = x :=
-  by
+theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm changeForm.zero_proof x = x := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [change_form_algebra_map]
   · rw [map_add, hx, hy]
@@ -345,8 +337,7 @@ theorem changeForm_self :
 
 /-- This is [bourbaki2007][] $9 Lemma 3. -/
 theorem changeForm_changeForm (x : CliffordAlgebra Q) :
-    changeForm h' (changeForm h x) = changeForm (changeForm.add_proof h h') x :=
-  by
+    changeForm h' (changeForm h x) = changeForm (changeForm.add_proof h h') x := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [change_form_algebra_map]
   · rw [map_add, map_add, map_add, hx, hy]
