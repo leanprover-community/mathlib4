@@ -74,6 +74,10 @@ theorem liftAlternating_ι (f : ∀ i, AlternatingMap R M N (Fin i)) (m : M) :
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
   congr
+  -- porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
+  -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
+  -- line is provided.
+  rw [Matrix.zero_empty]
 #align exterior_algebra.lift_alternating_ι ExteriorAlgebra.liftAlternating_ι
 
 theorem liftAlternating_ι_mul (f : ∀ i, AlternatingMap R M N (Fin i)) (m : M)
