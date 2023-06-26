@@ -11,6 +11,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Ruleset
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Vector.Snoc
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -91,31 +92,30 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 #align bitvec.add_lsb_eq_twice_add_one Bitvec.addLsb_eq_twice_add_one
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
-    v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse]; rfl
+    v.toNat = v.reverse.toList.foldr (flip addLsb) 0 := by
+  rw [Vector.toList, Vector.reverse, List.foldr_reverse]
+  rfl
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
--- theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
---   suffices : v.toNat + 1 ≤ 2 ^ n; simpa
---   rw [toNat_eq_foldr_reverse]
---   cases' v with xs h
---   dsimp [Bitvec.toNat, bitsToNat]
---   rw [← List.length_reverse] at h
---   generalize xs.reverse = ys at h
---   induction' ys with head tail ih generalizing n
---   · simp [← h]
---   · simp only [← h, pow_add, flip, List.length, List.foldr, pow_one]
---     rw [addLsb_eq_twice_add_one]
---     trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 tail + 2 * 1
---     -- Porting note: removed `ac_mono`, `mono` calls
---     · rw [add_assoc]
---       apply Nat.add_le_add_left
---       cases head <;> simp only
---     · rw [← left_distrib]
---       rw [mul_comm _ 2]
---       apply Nat.mul_le_mul_left
---       sorry
-      -- exact ih rfl
--- #align bitvec.to_nat_lt Bitvec.toNat_lt
+theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
+  suffices : v.toNat + 1 ≤ 2 ^ n; simpa
+  rw[toNat_eq_foldr_reverse]
+  dsimp [Bitvec.toNat, bitsToNat, toList]
+  induction v using Vector.revInductionOn
+  next => rfl
+  next tail head ih =>
+    simp only [Vector.reverse_snoc, Vector.toList_cons, Nat.pow_succ, flip, List.foldr]
+    generalize Vector.toList (Vector.reverse tail) = tail at *
+    rw [addLsb_eq_twice_add_one]
+    trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 tail + 2 * 1
+    · rw [add_assoc]
+      apply Nat.add_le_add_left
+      cases head <;> simp only
+    · rw [← left_distrib]
+      rw [mul_comm _ 2]
+      apply Nat.mul_le_mul_left
+      apply ih
+#align bitvec.to_nat_lt Bitvec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
   cases b <;>
