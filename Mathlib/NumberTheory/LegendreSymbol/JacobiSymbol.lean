@@ -145,6 +145,8 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 theorem one_left (b : ℕ) : J(1 | b) = 1 :=
   List.prod_eq_one fun z hz => by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
+    -- porting note: The line 150 was added because Lean does not synthesize the instance
+    -- `[Fact (Nat.Prime p)]` automatically (it is needed for `legendreSym.at_one`)
     letI : Fact (Nat.Prime p) := ⟨prime_of_mem_factors hp⟩
     rw [← he, legendreSym.at_one]
 #align jacobi_sym.one_left jacobiSym.one_left
