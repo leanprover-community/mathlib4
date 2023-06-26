@@ -41,7 +41,7 @@ namespace PGame
 birthdays of its left and right games. It may be thought as the "step" in which a certain game is
 constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
-  | ⟨xl, xr, xL, xR⟩ =>
+  | ⟨_, _, xL, xR⟩ =>
     max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
 #align pgame.birthday PGame.birthday
 
@@ -57,8 +57,8 @@ theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) : (x.moveLeft i).birt
 #align pgame.birthday_move_left_lt PGame.birthday_moveLeft_lt
 
 theorem birthday_moveRight_lt {x : PGame} (i : x.RightMoves) :
-    (x.moveRight i).birthday < x.birthday := by cases x; rw [birthday];
-  exact lt_max_of_lt_right (lt_lsub _ i)
+    (x.moveRight i).birthday < x.birthday := by
+  cases x; rw [birthday]; exact lt_max_of_lt_right (lt_lsub _ i)
 #align pgame.birthday_move_right_lt PGame.birthday_moveRight_lt
 
 theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
@@ -70,12 +70,12 @@ theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
     intro h
     cases' lt_max_iff.1 h with h' h'
     · left
-      rwa [lt_lsub_iff] at h' 
+      rwa [lt_lsub_iff] at h'
     · right
-      rwa [lt_lsub_iff] at h' 
+      rwa [lt_lsub_iff] at h'
   · rintro (⟨i, hi⟩ | ⟨i, hi⟩)
-    · exact hi.trans_lt (birthday_move_left_lt i)
-    · exact hi.trans_lt (birthday_move_right_lt i)
+    · exact hi.trans_lt (birthday_moveLeft_lt i)
+    · exact hi.trans_lt (birthday_moveRight_lt i)
 #align pgame.lt_birthday_iff PGame.lt_birthday_iff
 
 theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthday x = birthday y
@@ -86,11 +86,11 @@ theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthda
       apply lsub_eq_of_range_eq.{u, u, u}
       ext i; constructor
     all_goals rintro ⟨j, rfl⟩
-    · exact ⟨_, (r.move_left j).birthday_congr.symm⟩
-    · exact ⟨_, (r.move_left_symm j).birthday_congr⟩
-    · exact ⟨_, (r.move_right j).birthday_congr.symm⟩
-    · exact ⟨_, (r.move_right_symm j).birthday_congr⟩
-decreasing_by pgame_wf_tac
+    · exact ⟨_, (r.moveLeft j).birthday_congr.symm⟩
+    · exact ⟨_, (r.moveLeftSymm j).birthday_congr⟩
+    · exact ⟨_, (r.moveRight j).birthday_congr.symm⟩
+    · exact ⟨_, (r.moveRightSymm j).birthday_congr⟩
+termination_by birthday_congr x y _ => (x, y)
 #align pgame.relabelling.birthday_congr PGame.Relabelling.birthday_congr
 
 @[simp]
@@ -100,7 +100,7 @@ theorem birthday_eq_zero {x : PGame} :
 #align pgame.birthday_eq_zero PGame.birthday_eq_zero
 
 @[simp]
-theorem birthday_zero : birthday 0 = 0 := by simp [PEmpty.isEmpty]
+theorem birthday_zero : birthday 0 = 0 := by simp [inferInstanceAs (IsEmpty PEmpty)]
 #align pgame.birthday_zero PGame.birthday_zero
 
 @[simp]
@@ -121,9 +121,11 @@ theorem neg_birthday : ∀ x : PGame, (-x).birthday = x.birthday
 @[simp]
 theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
-  rw [to_pgame_def, PGame.birthday]
+  rw [toPGame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
-  nth_rw 1 [← lsub_typein o]
+  -- nth_rw 1 [← lsub_typein o]
+  conv_rhs =>
+    rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
 #align pgame.to_pgame_birthday PGame.toPGame_birthday
@@ -146,8 +148,8 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     rw [birthday_def, nadd_def]
-    simp only [birthday_add, lsub_sum, mk_add_move_left_inl, move_left_mk, mk_add_move_left_inr,
-      mk_add_move_right_inl, move_right_mk, mk_add_move_right_inr]
+    simp only [birthday_add, lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
+      mk_add_moveRight_inl, moveRight_mk, mk_add_moveRight_inr]
     rw [max_max_max_comm]
     congr <;> apply le_antisymm
     any_goals
@@ -162,7 +164,7 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     · exact lt_max_of_lt_right ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_left ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_right ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
-decreasing_by pgame_wf_tac
+termination_by birthday_add a b => (a, b)
 #align pgame.birthday_add PGame.birthday_add
 
 theorem birthday_add_zero : (a + 0).birthday = a.birthday := by simp
@@ -190,4 +192,3 @@ theorem birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by 
 #align pgame.birthday_nat_add PGame.birthday_nat_add
 
 end PGame
-
