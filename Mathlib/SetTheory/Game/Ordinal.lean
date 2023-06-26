@@ -8,8 +8,8 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.Basic
-import Mathbin.SetTheory.Ordinal.NaturalOps
+import Mathlib.SetTheory.Game.Basic
+import Mathlib.SetTheory.Ordinal.NaturalOps
 
 /-!
 # Ordinals as games
@@ -125,8 +125,7 @@ theorem toPgame_lf {a b : Ordinal} (h : a < b) : a.toPgame ⧏ b.toPgame := by
   convert move_left_lf (to_left_moves_to_pgame ⟨a, h⟩); rw [to_pgame_move_left]
 #align ordinal.to_pgame_lf Ordinal.toPgame_lf
 
-theorem toPgame_le {a b : Ordinal} (h : a ≤ b) : a.toPgame ≤ b.toPgame :=
-  by
+theorem toPgame_le {a b : Ordinal} (h : a ≤ b) : a.toPgame ≤ b.toPgame := by
   refine' le_iff_forall_lf.2 ⟨fun i => _, isEmptyElim⟩
   rw [to_pgame_move_left']
   exact to_pgame_lf ((to_left_moves_to_pgame_symm_lt i).trans_le h)
@@ -171,8 +170,7 @@ theorem toPgame_eq_iff {a b : Ordinal} : a.toPgame = b.toPgame ↔ a = b :=
 
 /-- The order embedding version of `to_pgame`. -/
 @[simps]
-noncomputable def toPgameEmbedding : Ordinal.{u} ↪o PGame.{u}
-    where
+noncomputable def toPgameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   toFun := Ordinal.toPgame
   inj' := toPgame_injective
   map_rel_iff' := @toPgame_le_iff
@@ -180,8 +178,7 @@ noncomputable def toPgameEmbedding : Ordinal.{u} ↪o PGame.{u}
 
 /-- The sum of ordinals as games corresponds to natural addition of ordinals. -/
 theorem toPgame_add : ∀ a b : Ordinal.{u}, a.toPgame + b.toPgame ≈ (a ♯ b).toPgame
-  | a, b =>
-    by
+  | a, b => by
     refine' ⟨le_of_forall_lf (fun i => _) isEmptyElim, le_of_forall_lf (fun i => _) isEmptyElim⟩
     · apply left_moves_add_cases i <;> intro i <;> let wf := to_left_moves_to_pgame_symm_lt i <;>
             try rw [add_move_left_inl] <;> try rw [add_move_left_inr] <;>
