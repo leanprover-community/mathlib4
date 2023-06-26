@@ -142,12 +142,14 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   simp only [id_comp, comp_id]
   rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
   -- Porting note: need to use `erw` here.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [expComparison_ev]
   rw [prod.map_id_comp, assoc, ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
   -- Porting note: need to use `erw` here.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [exp.ev_coev]
   rw [F.map_id (A ⨯ L.obj B), comp_id]
-  apply prod.hom_ext
+  ext
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
     simp
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]

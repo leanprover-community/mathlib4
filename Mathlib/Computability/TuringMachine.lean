@@ -1324,7 +1324,7 @@ theorem stmts₁_self {q : Stmt₁} : q ∈ stmts₁ q := by
 
 theorem stmts₁_trans {q₁ q₂ : Stmt₁} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
   intro h₁₂ q₀ h₀₁
-  induction' q₂ with _ q IH _ q IH _ q IH <;> simp only [stmts₁] at h₁₂⊢ <;>
+  induction' q₂ with _ q IH _ q IH _ q IH <;> simp only [stmts₁] at h₁₂ ⊢ <;>
     simp only [Finset.mem_insert, Finset.mem_union, Finset.mem_singleton] at h₁₂
   iterate 3
     rcases h₁₂ with (rfl | h₁₂)
@@ -1547,9 +1547,9 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
     cases' q' with q' v'
-    simp only [trStmts, Finset.mem_coe] at h₂⊢
-    rw [Finset.mem_product] at h₂⊢
-    simp only [Finset.mem_univ, and_true_iff] at h₂⊢
+    simp only [trStmts, Finset.mem_coe] at h₂ ⊢
+    rw [Finset.mem_product] at h₂ ⊢
+    simp only [Finset.mem_univ, and_true_iff] at h₂ ⊢
     cases q'; · exact Multiset.mem_cons_self _ _
     simp only [tr, Option.mem_def] at h₁
     have := TM1.stmts_supportsStmt ss h₂
@@ -1850,7 +1850,8 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
   rfl
 #align turing.TM1to1.step_aux_read Turing.TM1to1.stepAux_read
 
-theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ trCfg enc enc₀ c₁ = c₂ :=
+theorem tr_respects {enc₀} :
+    Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ trCfg enc enc₀ c₁ = c₂ :=
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
     obtain ⟨L, R, rfl⟩ := T.exists_mk'
     cases' l₁ with l₁
@@ -1924,25 +1925,25 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     intro q hs hw
     induction q
     case move d q IH =>
-      unfold writes at hw⊢
+      unfold writes at hw ⊢
       replace IH := IH hs hw; refine' ⟨_, IH.2⟩
       cases d <;> simp only [trNormal, iterate, supportsStmt_move, IH]
     case write f q IH =>
-      unfold writes at hw⊢
+      unfold writes at hw ⊢
       simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and_iff]
-        at hw⊢
+        at hw ⊢
       replace IH := IH hs fun q hq ↦ hw q (Or.inr hq)
       refine' ⟨supportsStmt_read _ fun a _ s ↦ hw _ (Or.inl ⟨_, rfl⟩), fun q' hq ↦ _⟩
       rcases hq with (⟨a, q₂, rfl⟩ | hq)
       · simp only [tr, supportsStmt_write, supportsStmt_move, IH.1]
       · exact IH.2 _ hq
     case load a q IH =>
-      unfold writes at hw⊢
+      unfold writes at hw ⊢
       replace IH := IH hs hw
       refine' ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     case branch p q₁ q₂ IH₁ IH₂ =>
-      unfold writes at hw⊢
-      simp only [Finset.mem_union] at hw⊢
+      unfold writes at hw ⊢
+      simp only [Finset.mem_union] at hw ⊢
       replace IH₁ := IH₁ hs.1 fun q hq ↦ hw q (Or.inl hq)
       replace IH₂ := IH₂ hs.2 fun q hq ↦ hw q (Or.inr hq)
       exact ⟨supportsStmt_read _ fun _ ↦ ⟨IH₁.1, IH₂.1⟩, fun q ↦ Or.rec (IH₁.2 _) (IH₂.2 _)⟩
@@ -2194,7 +2195,7 @@ theorem stmts₁_self {q : Stmt₂} : q ∈ stmts₁ q := by
 
 theorem stmts₁_trans {q₁ q₂ : Stmt₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
   intro h₁₂ q₀ h₀₁
-  induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;> simp only [stmts₁] at h₁₂⊢ <;>
+  induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;> simp only [stmts₁] at h₁₂ ⊢ <;>
     simp only [Finset.mem_insert, Finset.mem_singleton, Finset.mem_union] at h₁₂
   iterate 4
     rcases h₁₂ with (rfl | h₁₂)
@@ -2566,6 +2567,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
     refine'
       ⟨_, fun k' ↦ _, by
         -- Porting note: `rw [...]` to `erw [...]; rfl`.
+        -- https://github.com/leanprover-community/mathlib4/issues/5164
         erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
         rfl⟩
@@ -2800,7 +2802,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         exact ⟨IH₁, fun _ _ ↦ hret⟩
       · exact IH₂ _ h
     · intro _ _ IH ss' sub -- load
-      unfold TM2to1.trStmts₁ at ss' sub⊢
+      unfold TM2to1.trStmts₁ at ss' sub ⊢
       exact IH ss' sub
     · intro _ _ _ IH₁ IH₂ ss' sub -- branch
       unfold TM2to1.trStmts₁ at sub

@@ -1996,7 +1996,7 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
       intro o ho H
       rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
       congr
-      ext (b hb)
+      ext b hb
       exact H b hb⟩
 #align ordinal.is_normal.eq_iff_zero_and_succ Ordinal.IsNormal.eq_iff_zero_and_succ
 
@@ -2053,7 +2053,7 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     have Hf : ∀ x, f (g x) =
         typein ((· < ·) : (succ (#ι)).ord.out.α → (succ (#ι)).ord.out.α → Prop) x :=
       fun a => Classical.choose_spec (H a)
-    apply_fun f  at h'
+    apply_fun f at h'
     rwa [Hf, Hf, typein_inj] at h'
   convert Cardinal.mk_le_of_injective hg
   rw [Cardinal.mk_ord_out (succ (#ι))]
