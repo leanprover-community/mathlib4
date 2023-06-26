@@ -75,7 +75,7 @@ controlled norm. The norm control for the original element follows by rescaling.
 theorem SemilinearMapClass.bound_of_continuous [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
     (hf : Continuous f) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ :=
   let φ : E →ₛₗ[σ₁₂] F := ⟨⟨f, map_add f⟩, map_smulₛₗ f⟩
-  ((normSeminorm 𝕜₂ F).comp φ).bound_of_continuous_normed_space (continuous_norm.comp hf)
+  ((normSeminorm 𝕜₂ F).comp φ).bound_of_continuous_normedSpace (continuous_norm.comp hf)
 #align semilinear_map_class.bound_of_continuous SemilinearMapClass.bound_of_continuous
 
 end
