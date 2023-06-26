@@ -113,7 +113,7 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 is the same as the Jacobi symbol `J(a | p)`. -/
 theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
   by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
-#align legendre_sym.to_jacobi_sym legendreSym.to_jacobiSym
+#align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
 theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
@@ -130,13 +130,14 @@ theorem mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
 
 /-- The Jacobi symbol takes only the values `0`, `1` and `-1`. -/
 theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
-  ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by rw [Set.pair_comm];
-        exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
-    (by
-      intro _ ha'
-      rcases list.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
-      haveI : Fact p.prime := ⟨prime_of_mem_factors hp⟩
-      exact quadraticChar_isQuadratic (ZMod p) a)
+  ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by
+    rw [Set.pair_comm];
+    exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
+      (by
+        intro _ ha'
+        rcases List.mem_pmap.mp ha' with ⟨p, hp, rfl⟩
+        haveI : Fact p.Prime := ⟨prime_of_mem_factors hp⟩
+        exact quadraticChar_isQuadratic (ZMod p) a)
 #align jacobi_sym.trichotomy jacobiSym.trichotomy
 
 /-- The symbol `J(1 | b)` has the value `1`. -/
@@ -144,6 +145,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 theorem one_left (b : ℕ) : J(1 | b) = 1 :=
   List.prod_eq_one fun z hz => by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
+    letI : Fact (Nat.Prime p) := ⟨prime_of_mem_factors hp⟩
     rw [← he, legendreSym.at_one]
 #align jacobi_sym.one_left jacobiSym.one_left
 
@@ -157,8 +159,10 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
   List.prod_eq_zero_iff.trans
     (by
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
-      simp_rw [legendreSym.eq_zero_iff, int_coe_zmod_eq_zero_iff_dvd, mem_factors (NeZero.ne b), ←
-        Int.coe_nat_dvd_left, Int.coe_nat_dvd, exists_prop, and_assoc', and_comm'])
+      -- porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
+      -- been deprecated so we replace them with `and_assoc` and `and_comm`
+      simp_rw [legendreSym.eq_zero_iff, int_cast_zmod_eq_zero_iff_dvd, mem_factors (NeZero.ne b), ←
+        Int.coe_nat_dvd_left, Int.coe_nat_dvd, exists_prop, and_assoc, and_comm])
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
@@ -284,7 +288,7 @@ open jacobiSym
 /-- If `J(a | b)` is `-1`, then `a` is not a square modulo `b`. -/
 theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1) :
     ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ => by
-  rw [← r.coe_valMinAbs, ← Int.cast_mul, int_coe_eq_int_coe_iff', ← sq] at ha
+  rw [← r.coe_valMinAbs, ← Int.cast_mul, int_cast_eq_int_cast_iff', ← sq] at ha
   apply (by norm_num : ¬(0 : ℤ) ≤ -1)
   rw [← h, mod_left, ha, ← mod_left, pow_left]
   apply sq_nonneg
@@ -292,7 +296,8 @@ theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1
 
 /-- If `p` is prime, then `J(a | p)` is `-1` iff `a` is not a square modulo `p`. -/
 theorem nonsquare_iff_jacobiSym_eq_neg_one {a : ℤ} {p : ℕ} [Fact p.Prime] :
-    J(a | p) = -1 ↔ ¬IsSquare (a : ZMod p) := by rw [← legendreSym.to_jacobiSym];
+    J(a | p) = -1 ↔ ¬IsSquare (a : ZMod p) := by
+  rw [← legendreSym.to_jacobiSym];
   exact legendreSym.eq_neg_one_iff p
 #align zmod.nonsquare_iff_jacobi_sym_eq_neg_one ZMod.nonsquare_iff_jacobiSym_eq_neg_one
 
