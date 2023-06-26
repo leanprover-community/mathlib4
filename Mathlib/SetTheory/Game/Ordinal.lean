@@ -17,7 +17,7 @@ import Mathlib.SetTheory.Ordinal.NaturalOps
 We define the canonical map `Ordinal → PGame`, where every ordinal is mapped to the game whose left
 set consists of all previous ordinals.
 
-The map to surreals is defined in `ordinal.to_surreal`.
+The map to surreals is defined in `Ordinal.toSurreal`.
 
 # Main declarations
 
@@ -177,7 +177,7 @@ theorem toPGame_eq_iff {a b : Ordinal} : a.toPGame = b.toPGame ↔ a = b :=
   toPGame_injective.eq_iff
 #align ordinal.to_pgame_eq_iff Ordinal.toPGame_eq_iff
 
-/-- The order embedding version of `to_pgame`. -/
+/-- The order embedding version of `toPGame`. -/
 @[simps]
 noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   toFun := Ordinal.toPGame
