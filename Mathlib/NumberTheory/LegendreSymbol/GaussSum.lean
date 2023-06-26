@@ -21,25 +21,25 @@ character of a finite field and prove some results about them.
 ## Main definition
 
 Let `R` be a finite commutative ring and let `R'` be another commutative ring.
-If `χ` is a multiplicative character `R → R'` (type `mul_char R R'`) and `ψ`
-is an additive character `R → R'` (type `add_char R R'`, which abbreviates
-`(multiplicative R) →* R'`), then the *Gauss sum* of `χ` and `ψ` is `∑ a, χ a * ψ a`.
+If `χ` is a multiplicative character `R → R'` (type `MulChar R R'`) and `ψ`
+is an additive character `R → R'` (type `AddChar R R'`, which abbreviates
+`(Multiplicative R) →* R'`), then the *Gauss sum* of `χ` and `ψ` is `∑ a, χ a * ψ a`.
 
 ## Main results
 
 Some important results are as follows.
 
-* `gauss_sum_mul_gauss_sum_eq_card`: The product of the Gauss
+* `gaussSum_mul_gaussSum_eq_card`: The product of the Gauss
   sums of `χ` and `ψ` and that of `χ⁻¹` and `ψ⁻¹` is the cardinality
   of the source ring `R` (if `χ` is nontrivial, `ψ` is primitive and `R` is a field).
-* `gauss_sum_sq`: The square of the Gauss sum is `χ(-1)` times
+* `gaussSum_sq`: The square of the Gauss sum is `χ(-1)` times
   the cardinality of `R` if in addition `χ` is a quadratic character.
-* `quad_gauss_sum_frob`: For a quadratic character `χ`, raising
+* `MulChar.IsQuadratic.gaussSum_frob`: For a quadratic character `χ`, raising
   the Gauss sum to the `p`th power (where `p` is the characteristic of
   the target ring `R'`) multiplies it by `χ p`.
-* `char.card_pow_card`: When `F` and `F'` are finite fields and `χ : F → F'`
+* `Char.card_pow_card`: When `F` and `F'` are finite fields and `χ : F → F'`
   is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ (#F')`.
-* `finite_field.two_pow_card`: For every finite field `F` of odd characteristic,
+* `FiniteField.two_pow_card`: For every finite field `F` of odd characteristic,
   we have `2^(#F/2) = χ₈(#F)` in `F`.
 
 This machinery can be used to derive (a generalization of) the Law of
@@ -75,7 +75,7 @@ def gaussSum (χ : MulChar R R') (ψ : AddChar R R') : R' :=
   ∑ a, χ a * ψ a
 #align gauss_sum gaussSum
 
-/-- Replacing `ψ` by `mul_shift ψ a` and multiplying the Gauss sum by `χ a` does not change it. -/
+/-- Replacing `ψ` by `mulShift ψ a` and multiplying the Gauss sum by `χ a` does not change it. -/
 theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
     χ a * gaussSum χ (mulShift ψ a) = gaussSum χ ψ := by
   simp only [gaussSum, mulShift_apply, Finset.mul_sum]
@@ -95,9 +95,9 @@ section GaussSumProd
 -- In the following, we need `R` to be a finite field and `R'` to be a domain.
 variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
 
--- A helper lemma for `gauss_sum_mul_gauss_sum_eq_card` below
+-- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
 -- Is this useful enough in other contexts to be public?
-private theorem gauss_sum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ : AddChar R R')
+private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ : AddChar R R')
     (b : R) : ∑ a, χ (a * b⁻¹) * ψ (a - b) = ∑ c, χ c * ψ (b * (c - 1)) := by
   cases' eq_or_ne b 0 with hb hb
   · -- case `b = 0`
@@ -108,27 +108,25 @@ private theorem gauss_sum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (�
     refine' (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => _).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
-/-- We have `gauss_sum χ ψ * gauss_sum χ⁻¹ ψ⁻¹ = fintype.card R`
+/-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
 when `χ` is nontrivial and `ψ` is primitive (and `R` is a field). -/
 theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : IsNontrivial χ) {ψ : AddChar R R'}
     (hψ : IsPrimitive ψ) : gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R := by
   simp only [gaussSum, AddChar.inv_apply, Finset.sum_mul, Finset.mul_sum, MulChar.inv_apply']
   conv =>
     lhs; congr; next => skip
-    ext ; congr; next => skip
+    ext; congr; next => skip
     ext
     rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
---  conv in _ * _ * (_ * _) => rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
-  simp_rw [gauss_sum_mul_aux hχ ψ]
+  simp_rw [gaussSum_mul_aux hχ ψ]
   rw [Finset.sum_comm]
-  classical
-  -- to get `[decidable_eq R]` for `sum_mul_shift`
+  classical -- to get `[DecidableEq R]` for `sum_mulShift`
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
   simp only [Finset.mem_univ, map_one, one_mul, if_true]
 #align gauss_sum_mul_gauss_sum_eq_card gaussSum_mul_gaussSum_eq_card
 
-/-- When `χ` is a nontrivial quadratic character, then the square of `gauss_sum χ ψ`
+/-- When `χ` is a nontrivial quadratic character, then the square of `gaussSum χ ψ`
 is `χ(-1)` times the cardinality of `R`. -/
 theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : IsNontrivial χ) (hχ₂ : IsQuadratic χ)
     {ψ : AddChar R R'} (hψ : IsPrimitive ψ) : gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R := by
@@ -278,7 +276,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have FFp := hchar.subst hp
   haveI := Fact.mk FFp
   have hFF := ne_of_eq_of_ne hchar.symm hF
-  -- `ring_char FF ≠ 2`
+  -- `ringChar FF ≠ 2`
   have hu : IsUnit (ringChar FF : ZMod 8) := by
     rw [isUnit_iff_not_dvd_char, ringChar_zmod_n]
     rw [Ne, ← Nat.prime_dvd_prime_iff_eq FFp Nat.prime_two] at hFF
@@ -305,62 +303,55 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have hg : gaussSum χ ψ₈.char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     have _ := congr_arg (· ^ 2) (Fin.sum_univ_eight fun x => (χ₈ x : FF) * τ ^ x.1)
     have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈.char a)) := by
-      -- Porting note: TODO
-      -- original proof: ext; congr; apply pow_one
+      -- Porting note: was `ext; congr; apply pow_one`
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈.char]; congr 2;
       rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
-    have h₂ :
-      (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
-        8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) :=
-      by ring
+    have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
+        8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
     have h₃ : 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) = ↑8 := by
       rw [τ_spec]; norm_num
     have h₄ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 = ↑8 := by
       rw [← h₃, ← h₂]
     have h₅ :
-  --    (fun x : FF => x ^ 2)
-          (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
-                ↑(χ₈ 5) * τ ^ 5 +
-              ↑(χ₈ 6) * τ ^ 6 +
-            ↑(χ₈ 7) * τ ^ 7) ^ 2 = 8 := by
-      -- Porting note: TODO
-      --  simp [← h₄, χ₈_apply, Matrix.cons_val_zero, algebraMap.coe_zero, MulZeroClass.zero_mul,
-      --    Matrix.cons_val_one, Matrix.head_cons, algebraMap.coe_one, Matrix.cons_vec_bit0_eq_alt0,
-      --    Matrix.cons_vecAppend, Matrix.cons_vecAlt0, Matrix.cons_vec_bit1_eq_alt1,
-      --    Matrix.cons_vecAlt1, Int.cast_neg]
-          simp_rw [χ₈_apply]
-          rw [← h₄]
-          dsimp only
-          congr
-          · rw [Matrix.cons_val_zero]; simp
-          · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
-              zero_lt_two, pow_eq_zero_iff]
-            left
-            rw [← Int.cast_zero (R := FF)]
-            refine congr_arg Int.cast ?_
-            rfl
-          · simp only [Matrix.vecCons]
-            rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
-            refine congr_arg Int.cast ?_
-            rfl
-          · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
-              zero_lt_two, pow_eq_zero_iff]
-            left
-            rw [← Int.cast_zero (R := FF)]
-            refine congr_arg Int.cast ?_
-            rfl
-          · simp only [Matrix.vecCons]
-            rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
-            refine congr_arg Int.cast ?_
-            rfl
-          · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
-              zero_lt_two, pow_eq_zero_iff]
-            left
-            rw [← Int.cast_zero (R := FF)]
-            refine congr_arg Int.cast ?_
-            rfl
-    -- Porting note: TODO
-    -- simpa only [hχ, one_mul, card, gaussSum, ← h₅, h₁] using h
+        (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
+        ↑(χ₈ 5) * τ ^ 5 + ↑(χ₈ 6) * τ ^ 6 + ↑(χ₈ 7) * τ ^ 7) ^ 2 = 8 := by
+      -- Porting note: was
+      -- `simp [← h₄, χ₈_apply, Matrix.cons_val_zero, algebraMap.coe_zero, MulZeroClass.zero_mul,`
+      -- `Matrix.cons_val_one, Matrix.head_cons, algebraMap.coe_one, Matrix.cons_vec_bit0_eq_alt0,`
+      -- `Matrix.cons_vecAppend, Matrix.cons_vecAlt0, Matrix.cons_vec_bit1_eq_alt1,`
+      -- `Matrix.cons_vecAlt1, Int.cast_neg]`
+      simp_rw [χ₈_apply]
+      rw [← h₄]
+      dsimp only
+      congr
+      · rw [Matrix.cons_val_zero]; simp
+      · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
+          zero_lt_two, pow_eq_zero_iff]
+        left
+        rw [← Int.cast_zero (R := FF)]
+        refine congr_arg Int.cast ?_
+        rfl
+      · simp only [Matrix.vecCons]
+        rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
+        refine congr_arg Int.cast ?_
+        rfl
+      · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
+          zero_lt_two, pow_eq_zero_iff]
+        left
+        rw [← Int.cast_zero (R := FF)]
+        refine congr_arg Int.cast ?_
+        rfl
+      · simp only [Matrix.vecCons]
+        rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
+        refine congr_arg Int.cast ?_
+        rfl
+      · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
+          zero_lt_two, pow_eq_zero_iff]
+        left
+        rw [← Int.cast_zero (R := FF)]
+        refine congr_arg Int.cast ?_
+        rfl
+    -- Porting note: was `simpa only [hχ, one_mul, card, gaussSum, ← h₅, h₁] using h`
     rw [gaussSum, hχ, one_mul, ZMod.card, Nat.cast_ofNat]
     rw [← h₅]
     simp_rw [← h₁]
