@@ -125,13 +125,13 @@ theorem ncard_ne_zero_of_mem (h : a ∈ s) (hs : s.Finite := by toFinite_tac) : 
   ((ncard_pos hs).mpr ⟨a, h⟩).ne.symm
 #align set.ncard_ne_zero_of_mem Set.ncard_ne_zero_of_mem
 
-theorem Finite_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Finite :=
+theorem finite_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Finite :=
   s.finite_or_infinite.elim id fun h ↦ (hs h.ncard).elim
-#align set.finite_of_ncard_ne_zero Set.Finite_of_ncard_ne_zero
+#align set.finite_of_ncard_ne_zero Set.finite_of_ncard_ne_zero
 
-theorem Finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
-  Finite_of_ncard_ne_zero hs.ne.symm
-#align set.finite_of_ncard_pos Set.Finite_of_ncard_pos
+theorem finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
+  finite_of_ncard_ne_zero hs.ne.symm
+#align set.finite_of_ncard_pos Set.finite_of_ncard_pos
 
 theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; simp at hs
@@ -274,15 +274,15 @@ theorem ncard_image_iff (hs : s.Finite := by toFinite_tac) :
   ⟨fun h ↦ injOn_of_ncard_image_eq h hs, ncard_image_of_injOn⟩
 #align set.ncard_image_iff Set.ncard_image_iff
 
-theorem ncard_image_ofInjective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
+theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
   ncard_image_of_injOn fun _ _ _ _ h ↦ H h
-#align set.ncard_image_of_injective Set.ncard_image_ofInjective
+#align set.ncard_image_of_injective Set.ncard_image_of_injective
 
-theorem ncard_preimage_ofInjective_subset_range {s : Set β} (H : f.Injective)
+theorem ncard_preimage_of_injective_subset_range {s : Set β} (H : f.Injective)
   (hs : s ⊆ Set.range f) :
     (f ⁻¹' s).ncard = s.ncard := by
-  rw [← ncard_image_ofInjective _ H, image_preimage_eq_iff.mpr hs]
-#align set.ncard_preimage_of_injective_subset_range Set.ncard_preimage_ofInjective_subset_range
+  rw [← ncard_image_of_injective _ H, image_preimage_eq_iff.mpr hs]
+#align set.ncard_preimage_of_injective_subset_range Set.ncard_preimage_of_injective_subset_range
 
 theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite_tac) :
     { x ∈ s | f x = y }.ncard ≠ 0 ↔ y ∈ f '' s := by
@@ -293,18 +293,18 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
 #align set.fiber_ncard_ne_zero_iff_mem_image Set.fiber_ncard_ne_zero_iff_mem_image
 
 @[simp] theorem ncard_map (f : α ↪ β) : (f '' s).ncard = s.ncard :=
-  ncard_image_ofInjective _ f.inj'
+  ncard_image_of_injective _ f.inj'
 #align set.ncard_map Set.ncard_map
 
 @[simp] theorem ncard_subtype (P : α → Prop) (s : Set α) :
     { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ setOf P).ncard := by
-  convert (ncard_image_ofInjective _ (@Subtype.coe_injective _ P)).symm
+  convert (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
   ext x
   simp [←and_assoc, exists_eq_right]
 #align set.ncard_subtype Set.ncard_subtype
 
 @[simp] theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
-  convert (ncard_image_ofInjective univ Subtype.coe_injective).symm using 1
+  convert (ncard_image_of_injective univ Subtype.coe_injective).symm using 1
   · rw [ncard_univ]
   simp
 #align set.ncardat.card_coe_set_eq Set.Nat.card_coe_set_eq
@@ -358,7 +358,7 @@ theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
 #align set.ncard_strict_mono Set.ncard_strictMono
 
-theorem ncard_eq_ofBijective {n : ℕ} (f : ∀ i, i < n → α)
+theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j)
     (hs : s.Finite := by toFinite_tac) :
@@ -366,7 +366,7 @@ theorem ncard_eq_ofBijective {n : ℕ} (f : ∀ i, i < n → α)
   rw [ncard_eq_toFinset_card _ hs]
   apply Finset.card_eq_of_bijective
   all_goals simpa
-#align set.ncard_eq_of_bijective Set.ncard_eq_ofBijective
+#align set.ncard_eq_of_bijective Set.ncard_eq_of_bijective
 
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
     (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b)
@@ -594,13 +594,13 @@ theorem exists_intermediate_Set (i : ℕ) (h : i + s.ncard ≤ t.ncard) (hst : s
 
 #align set.exists_intermediate_set Set.exists_intermediate_Set
 
-theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
+theorem exists_intermediate_set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
     ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := by
   obtain ⟨r, hsr, hrt, hc⟩ :=
     exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h
   rw [tsub_add_cancel_of_le hs] at hc
   exact ⟨r, hsr, hrt, hc⟩
-#align set.exists_intermediate_set' Set.exists_intermediate_Set'
+#align set.exists_intermediate_set' Set.exists_intermediate_set'
 
 /-- We can shrink `s` to any smaller size. -/
 theorem exists_smaller_Set (s : Set α) (i : ℕ) (h : i ≤ s.ncard) :
@@ -616,7 +616,7 @@ theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ)
   have := hs.to_subtype
   obtain ⟨t', -, rfl⟩ := @Infinite.exists_subset_card_eq s univ infinite_univ k
   refine' ⟨Subtype.val '' (t' : Set s), by simp, Finite.image _ (by simp), _⟩
-  rw [ncard_image_ofInjective _ Subtype.coe_injective]
+  rw [ncard_image_of_injective _ Subtype.coe_injective]
   simp
 #align set.Infinite.exists_subset_ncard_eq Set.Infinite.exists_subset_ncard_eq
 
@@ -633,7 +633,7 @@ theorem Infinite.exists_supset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : 
 theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s ∪ t).ncard) :
     ∃ r : Set α, n < r.ncard ∧ (r ⊆ s ∨ r ⊆ t) := by
   classical
-  have hu := Finite_of_ncard_ne_zero ((Nat.zero_le _).trans_lt hst).ne.symm
+  have hu := finite_of_ncard_ne_zero ((Nat.zero_le _).trans_lt hst).ne.symm
   rw [ncard_eq_toFinset_card _ hu,
     Finite.toFinset_union (hu.subset (subset_union_left _ _))
       (hu.subset (subset_union_right _ _))] at hst
@@ -646,7 +646,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
   refine' ⟨fun h ↦ _, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
-  have hft := (Finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
+  have hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
   simp_rw [ncard_eq_toFinset_card', @Finset.card_eq_one _ (toFinset s)] at h
   refine' h.imp fun a ha ↦ _
   simp_rw [Set.ext_iff, mem_singleton_iff]
@@ -698,7 +698,7 @@ theorem ncard_le_one_iff_subset_singleton [Nonempty α]
     Finite.toFinset_subset, Finset.coe_singleton]
 #align set.ncard_le_one_iff_subset_singleton Set.ncard_le_one_iff_subset_singleton
 
-/-- A `set` of a subsingleton type has cardinality at most one. -/
+/-- A `Set` of a subsingleton type has cardinality at most one. -/
 theorem ncard_le_one_of_subsingleton [Subsingleton α] (s : Set α) : s.ncard ≤ 1 := by
   rw [ncard_eq_toFinset_card]
   exact Finset.card_le_one_of_subsingleton _
@@ -726,7 +726,7 @@ theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
 #align set.two_lt_card Set.two_lt_ncard
 
 theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
-  have hsf := (Finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm)
+  have hsf := (finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm)
   rw [ncard_eq_toFinset_card _ hsf] at hs
   simpa only [Finite.mem_toFinset] using Finset.exists_ne_of_one_lt_card hs a
 #align set.exists_ne_of_one_lt_ncard Set.exists_ne_of_one_lt_ncard
@@ -734,10 +734,9 @@ theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s �
 theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
     ∃ a t, a ∉ t ∧ insert a t = s ∧ t.ncard = n := by
   classical
-  have hsf := Finite_of_ncard_pos (n.zero_lt_succ.trans_eq h.symm)
+  have hsf := finite_of_ncard_pos (n.zero_lt_succ.trans_eq h.symm)
   rw [ncard_eq_toFinset_card _ hsf, Finset.card_eq_succ] at h
   obtain ⟨a, t, hat, hts, rfl⟩ := h
-
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
   refine' ⟨a, t, hat, _, _⟩
   · simp only [Finset.mem_coe, ext_iff, mem_insert_iff]
