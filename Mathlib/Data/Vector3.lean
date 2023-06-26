@@ -45,10 +45,9 @@ def nil : Vector3 α 0 :=
 
 /-- The vector cons operation -/
 @[match_pattern]
-def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
-  refine' i.cases' _ _
-  exact a
-  exact v
+def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun
+  | .fz   => a
+  | .fs i => v i
 #align vector3.cons Vector3.cons
 
 section

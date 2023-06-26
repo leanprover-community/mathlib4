@@ -9,6 +9,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.Vector3
 import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
@@ -40,13 +41,14 @@ universe u v w
 
 /-- n-tuples of types, as a category -/
 def TypeVec (n : ℕ) :=
-  Fin2 n → Type _
+  Vector3 (Type u) n
 #align typevec TypeVec
 
 instance {n} : Inhabited (TypeVec.{u} n) :=
   ⟨fun _ => PUnit⟩
 
 namespace TypeVec
+  open Vector3
 
 variable {n : ℕ}
 
@@ -94,20 +96,20 @@ theorem comp_assoc {α β γ δ : TypeVec n} (h : γ ⟹ δ) (g : β ⟹ γ) (f 
 #align typevec.comp_assoc TypeVec.comp_assoc
 
 /-- Support for extending a `TypeVec` by one element. -/
-def append1 (α : TypeVec n) (β : Type _) : TypeVec (n + 1)
-  | Fin2.fs i => α i
-  | Fin2.fz => β
+def append1 (α : TypeVec n) (β : Type _) : TypeVec (n + 1) :=
+  Vector3.cons β α
 #align typevec.append1 TypeVec.append1
 
 @[inherit_doc] infixl:67 " ::: " => append1
 
 /-- retain only a `n-length` prefix of the argument -/
-def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
+def drop : TypeVec.{u} (n + 1) → TypeVec n :=
+  Vector3.tail
 #align typevec.drop TypeVec.drop
 
 /-- take the last value of a `(n+1)-length` vector -/
-def last (α : TypeVec.{u} (n + 1)) : Type _ :=
-  α Fin2.fz
+def last : TypeVec.{u} (n + 1) → Type u :=
+  Vector3.head
 #align typevec.last TypeVec.last
 
 instance last.inhabited (α : TypeVec (n + 1)) [Inhabited (α Fin2.fz)] : Inhabited (last α) :=
@@ -128,7 +130,7 @@ theorem last_append1 {α : TypeVec n} {β : Type _} : last (append1 α β) = β 
 
 @[simp]
 theorem append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
-  funext fun i => by cases i <;> rfl
+  Vector3.cons_head_tail α
 #align typevec.append1_drop_last TypeVec.append1_drop_last
 
 /-- cases on `(n+1)-length` vectors -/
