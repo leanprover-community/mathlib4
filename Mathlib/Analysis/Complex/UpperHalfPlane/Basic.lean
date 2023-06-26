@@ -270,8 +270,9 @@ instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
 
+-- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
+    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
   rfl
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
 
@@ -286,8 +287,9 @@ instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
+-- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
+    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
@@ -364,12 +366,14 @@ section SLModularAction
 
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
+-- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 @[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
   rfl
 #align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
 
-theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+-- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
+theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
   rfl
 #align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb
 
