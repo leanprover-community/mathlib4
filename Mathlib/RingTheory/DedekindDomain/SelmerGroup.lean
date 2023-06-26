@@ -35,7 +35,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 
 ## Main definitions
 
- * `is_dedekind_domain.selmer_group`: the Selmer group.
+ * `IsDedekindDomain.selmerGroup`: the Selmer group.
  * TODO: maps in the sequence.
 
 ## Main statements
