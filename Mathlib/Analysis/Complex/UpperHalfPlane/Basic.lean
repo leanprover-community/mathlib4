@@ -357,8 +357,7 @@ theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
   change _ / _ = _ / _
   field_simp [denom_ne_zero]
-  simp only [Num, denom, Complex.ofReal_neg, neg_mul, GLPos.coe_neg_GL, Units.val_neg,
-    Pi.neg_apply]
+  simp only [num, denom, Complex.ofReal_neg, neg_mul, GLPos.coe_neg_GL, Units.val_neg, neg_apply]
   ring_nf
 #align upper_half_plane.neg_smul UpperHalfPlane.neg_smul
 
@@ -384,7 +383,8 @@ theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • 
 
 @[simp]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
-  simp only [coe_GL_pos_neg, sl_moeb, coe_coe, coe_int_neg, neg_smul]
+  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul]
+  apply neg_smul -- Porting note: should be unneeded once `SMul.smul` hack is fixed
 #align upper_half_plane.SL_neg_smul UpperHalfPlane.SL_neg_smul
 
 theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
@@ -393,19 +393,20 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
   let d := (↑ₘg 1 1 : ℝ)
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by simp [Complex.normSq] <;> ring
+    _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
+nonrec
 theorem SpecialLinearGroup.im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z) :=
   by
-  convert im_smul_eq_div_norm_sq g z
-  simp only [coe_coe, general_linear_group.coe_det_apply, coe_GL_pos_coe_GL_coe_matrix,
-    Int.coe_castRingHom, (g : SL(2, ℝ)).Prop, one_mul]
+  convert im_smul_eq_div_normSq g z
+  simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
+    Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul]
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  simp
+  simp [denom]
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
 
 end SLModularAction
@@ -441,8 +442,8 @@ section RealAddAction
 
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
-  zero_vadd z := Subtype.ext <| by simp
-  add_vadd x y z := Subtype.ext <| by simp [add_assoc]
+  zero_vadd _ := Subtype.ext <| by simp [HVAdd.hVAdd]
+  add_vadd x y z := Subtype.ext <| by simp [HVAdd.hVAdd, add_assoc]
 
 variable (x : ℝ) (z : ℍ)
 
@@ -513,7 +514,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ); · norm_cast; assumption
   field_simp
-  linear_combination (-(z * ↑c ^ 2) - ↑c * ↑d) * h
+  linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
 
 end UpperHalfPlane
