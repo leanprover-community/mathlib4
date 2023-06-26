@@ -14,15 +14,15 @@ import Mathlib.SetTheory.Ordinal.NaturalOps
 /-!
 # Ordinals as games
 
-We define the canonical map `ordinal → pgame`, where every ordinal is mapped to the game whose left
+We define the canonical map `Ordinal → PGame`, where every ordinal is mapped to the game whose left
 set consists of all previous ordinals.
 
 The map to surreals is defined in `ordinal.to_surreal`.
 
 # Main declarations
 
-- `ordinal.to_pgame`: The canonical map between ordinals and pre-games.
-- `ordinal.to_pgame_embedding`: The order embedding version of the previous map.
+- `Ordinal.toPGame`: The canonical map between ordinals and pre-games.
+- `Ordinal.toPGameEmbedding`: The order embedding version of the previous map.
 -/
 
 
@@ -69,7 +69,7 @@ instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves
   rw [toPGame_rightMoves]; infer_instance
 #align ordinal.is_empty_to_pgame_right_moves Ordinal.isEmpty_toPGame_rightMoves
 
-/-- Converts an ordinal less than `o` into a move for the `pgame` corresponding to `o`, and vice
+/-- Converts an ordinal less than `o` into a move for the `PGame` corresponding to `o`, and vice
 versa. -/
 noncomputable def toLeftMovesToPGame {o : Ordinal} : Set.Iio o ≃ o.toPGame.LeftMoves :=
   (enumIsoOut o).toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
