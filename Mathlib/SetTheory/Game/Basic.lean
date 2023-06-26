@@ -340,28 +340,28 @@ theorem mul_moveRight_inr {x y : PGame} {i j} :
   rfl
 #align pgame.mul_move_right_inr PGame.mul_moveRight_inr
 
--- @[simp] -- Porting note: removed
+-- @[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yR j - xL i * yR j) :=
   rfl
 #align pgame.neg_mk_mul_move_left_inl PGame.neg_mk_mul_moveLeft_inl
 
--- @[simp] -- Porting note: removed
+-- @[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yL j - xR i * yL j) :=
   rfl
 #align pgame.neg_mk_mul_move_left_inr PGame.neg_mk_mul_moveLeft_inr
 
--- @[simp] -- Porting note: removed
+-- @[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yL j - xL i * yL j) :=
   rfl
 #align pgame.neg_mk_mul_move_right_inl PGame.neg_mk_mul_moveRight_inl
 
--- @[simp] -- Porting note: removed
+-- @[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yR j - xR i * yR j) :=
