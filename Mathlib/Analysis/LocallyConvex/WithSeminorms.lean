@@ -51,7 +51,7 @@ seminorm, locally convex
 -/
 
 
-open NormedField Set Seminorm TopologicalSpace
+open NormedField Set Seminorm TopologicalSpace Filter
 
 open BigOperators NNReal Pointwise Topology
 
@@ -584,7 +584,8 @@ set_option linter.uppercaseLean3 false in
 
 end NontriviallyNormedField
 
-section ContinuousBounded
+-- TODO: the names in this section are not very predictable
+section continuous_of_bounded
 
 namespace Seminorm
 
@@ -660,7 +661,11 @@ theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [Normed
 
 end Seminorm
 
-end ContinuousBounded
+end continuous_of_bounded
+
+section bounded_of_continuous
+
+end bounded_of_continuous
 
 section LocallyConvexSpace
 
