@@ -1460,6 +1460,9 @@ instance NonUnitalSubringClass.zsmulMemClass {S R : Type _} [NonUnitalRing R] [S
         SMulMemClass.smul_mem _ hx
 #align non_unital_subring_class.zsmul_mem_class NonUnitalSubringClass.zsmulMemClass
 
+variable {S R : Type _} [NonUnitalRing R] [SetLike S R] [NonUnitalSubringClass S R]
+#synth SMulMemClass S ℕ R
+#check NonUnitalSubsemiringClass.nsmulMemClass
 /-- A non-unital subring is a `ℤ`-non_unital_subalgebra. -/
 def nonUnitalSubalgebraOfNonUnitalSubring (S : NonUnitalSubring R) : NonUnitalSubalgebra ℤ R :=
   { S with
