@@ -15,8 +15,8 @@ import Mathlib.Tactic.Abel
 # Combinatorial games.
 
 In this file we define the quotient of pre-games by the equivalence relation
-`p ≈ q ↔ p ≤ q ∧ q ≤ p` (its `antisymmetrization`), and construct an instance `add_comm_group game`,
-as well as an instance `partial_order game`.
+`p ≈ q ↔ p ≤ q ∧ q ≤ p` (its `antisymmetrization`), and construct an instance
+`OrderedAddCommGroup Game`, as well as an instance `PartialOrder Game`.
 
 ## Multiplication on pre-games
 
@@ -39,7 +39,7 @@ universe u
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a combinatorial pre-game is built
   inductively from two families of combinatorial games indexed over any type
-  in Type u. The resulting type `pgame.{u}` lives in `Type (u+1)`,
+  in Type u. The resulting type `PGame.{u}` lives in `Type (u+1)`,
   reflecting that it is a proper class in ZFC.
   A combinatorial game is then constructed by quotienting by the equivalence
   `x ≈ y ↔ x ≤ y ∧ y ≤ x`. -/
@@ -106,17 +106,16 @@ def Lf : Game → Game → Prop :=
   Quotient.lift₂ PGame.Lf fun _ _ _ _ hx hy => propext (lf_congr hx hy)
 #align game.lf Game.Lf
 
--- mathport name: «expr ⧏ »
 local infixl:50 " ⧏ " => Lf
 
-/-- On `game`, simp-normal inequalities should use as few negations as possible. -/
+/-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
 theorem not_le : ∀ {x y : Game}, ¬x ≤ y ↔ y ⧏ x := by
   rintro ⟨x⟩ ⟨y⟩
   exact PGame.not_le
 #align game.not_le Game.not_le
 
-/-- On `game`, simp-normal inequalities should use as few negations as possible. -/
+/-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
 theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   rintro ⟨x⟩ ⟨y⟩
@@ -131,8 +130,8 @@ instance : IsTrichotomous Game Lf :=
     rw [Quotient.eq]
     apply lf_or_equiv_or_gf⟩
 
-/-! It can be useful to use these lemmas to turn `pgame` inequalities into `game` inequalities, as
-the `add_comm_group` structure on `game` often simplifies many proofs. -/
+/-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
+the `AddCommGroup` structure on `Game` often simplifies many proofs. -/
 
 -- porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
@@ -160,7 +159,6 @@ def Fuzzy : Game → Game → Prop :=
   Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
 #align game.fuzzy Game.Fuzzy
 
--- mathport name: «expr ‖ »
 local infixl:50 " ‖ " => Fuzzy
 
 theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ ‖ ⟦y⟧ :=
@@ -345,7 +343,7 @@ theorem mul_moveRight_inr {x y : PGame} {i j} :
   rfl
 #align pgame.mul_move_right_inr PGame.mul_moveRight_inr
 
-@[simp]
+-- @[simp] -- Porting note: simp normal form is `neg_mk_mul_moveLeft_inl'`
 theorem neg_mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yR j - xL i * yR j) :=
@@ -353,6 +351,14 @@ theorem neg_mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.neg_mk_mul_move_left_inl PGame.neg_mk_mul_moveLeft_inl
 
 @[simp]
+theorem neg_mk_mul_moveLeft_inl' {xl xr yl yr} {xL xR yL yR} {i j} :
+    -(mk xl xr xL xR * mk yl yr yL yR).moveRight
+    (@FunLike.coe _ _ (fun _ => RightMoves (mk xl xr xL xR * mk yl yr yL yR))
+      Equiv.instFunLikeEquiv toLeftMovesNeg.symm (Sum.inl (i, j))) =
+    -(xL i * mk yl yr yL yR + mk xl xr xL xR * yR j - xL i * yR j) :=
+  rfl
+
+-- @[simp] -- Porting note: simp normal form is `neg_mk_mul_moveLeft_inr'`
 theorem neg_mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yL j - xR i * yL j) :=
@@ -360,6 +366,14 @@ theorem neg_mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.neg_mk_mul_move_left_inr PGame.neg_mk_mul_moveLeft_inr
 
 @[simp]
+theorem neg_mk_mul_moveLeft_inr' {xl xr yl yr} {xL xR yL yR} {i j} :
+    -(mk xl xr xL xR * mk yl yr yL yR).moveRight
+    (@FunLike.coe _ _ (fun _ => RightMoves (mk xl xr xL xR * mk yl yr yL yR))
+      Equiv.instFunLikeEquiv toLeftMovesNeg.symm (Sum.inr (i, j))) =
+    -(xR i * mk yl yr yL yR + mk xl xr xL xR * yL j - xR i * yL j) :=
+  rfl
+
+-- @[simp] -- Porting note: simp normal form is `neg_mk_mul_moveRight_inl'`
 theorem neg_mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yL j - xL i * yL j) :=
@@ -367,11 +381,27 @@ theorem neg_mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
 #align pgame.neg_mk_mul_move_right_inl PGame.neg_mk_mul_moveRight_inl
 
 @[simp]
+theorem neg_mk_mul_moveRight_inl' {xl xr yl yr} {xL xR yL yR} {i j} :
+    -(mk xl xr xL xR * mk yl yr yL yR).moveLeft
+    (@FunLike.coe _ _ (fun _ => LeftMoves (mk xl xr xL xR * mk yl yr yL yR))
+      Equiv.instFunLikeEquiv toRightMovesNeg.symm (Sum.inl (i, j))) =
+    -(xL i * mk yl yr yL yR + mk xl xr xL xR * yL j - xL i * yL j) :=
+  rfl
+
+-- @[simp] -- Porting note: simp normal form is `neg_mk_mul_moveRight_inr'`
 theorem neg_mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yR j - xR i * yR j) :=
   rfl
 #align pgame.neg_mk_mul_move_right_inr PGame.neg_mk_mul_moveRight_inr
+
+@[simp]
+theorem neg_mk_mul_moveRight_inr' {xl xr yl yr} {xL xR yL yR} {i j} :
+    -(mk xl xr xL xR * mk yl yr yL yR).moveLeft
+    (@FunLike.coe _ _ (fun _ => LeftMoves (mk xl xr xL xR * mk yl yr yL yR))
+      Equiv.instFunLikeEquiv toRightMovesNeg.symm (Sum.inr (i, j))) =
+    -(xR i * mk yl yr yL yR + mk xl xr xL xR * yR j - xR i * yR j) :=
+  rfl
 
 theorem leftMoves_mul_cases {x y : PGame} (k) {P : (x * y).LeftMoves → Prop}
     (hl : ∀ ix iy, P <| toLeftMovesMul (Sum.inl ⟨ix, iy⟩))
@@ -527,7 +557,6 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
           solve_by_elim (config := { maxDepth := 6 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;> rfl
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
-
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_left_distrib reference below, because otherwise the decreasing_by block
     -- failed. Previously, each branch ended with: `simp[quot_left_distrib]; abel`
@@ -696,7 +725,6 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
           solve_by_elim (config := { maxDepth := 8 }) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;> rfl
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
-
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_mul_assoc reference below, because otherwise the decreasing_by block
     -- failed. Each branch previously ended with: `simp[quot_mul_assoc]; abel`
@@ -833,7 +861,7 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
 
 /-- Because the two halves of the definition of `inv` produce more elements
 on each side, we have to define the two families inductively.
-This is the indexing set for the function, and `inv_val` is the function part. -/
+This is the indexing set for the function, and `invVal` is the function part. -/
 inductive InvTy (l r : Type u) : Bool → Type u
   | zero : InvTy l r false
   | left₁ : r → InvTy l r false → InvTy l r false
@@ -858,7 +886,7 @@ instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r 
 
 /-- Because the two halves of the definition of `inv` produce more elements
 of each side, we have to define the two families inductively.
-This is the function part, defined by recursion on `inv_ty`. -/
+This is the function part, defined by recursion on `InvTy`. -/
 def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : r → PGame) :
     ∀ {b}, InvTy l r b → PGame
   | _, InvTy.zero => 0
