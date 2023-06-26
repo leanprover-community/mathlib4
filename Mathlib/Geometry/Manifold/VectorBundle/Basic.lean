@@ -271,11 +271,12 @@ topological vector bundle over `B` with fibers isomorphic to `F`, then `SmoothVe
 registers that the bundle is smooth, in the sense of having smooth transition functions.
 This is a mixin, not carrying any new data. -/
 class SmoothVectorBundle : Prop where
-  smoothOn_coordChangeL :
+  protected smoothOn_coordChangeL :
     ∀ (e e' : Trivialization F (π E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
       SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
         (e.baseSet ∩ e'.baseSet)
 #align smooth_vector_bundle SmoothVectorBundle
+#align smooth_vector_bundle.smooth_on_coord_change SmoothVectorBundle.smoothOn_coordChangeL
 
 variable [SmoothVectorBundle F E IB]
 
