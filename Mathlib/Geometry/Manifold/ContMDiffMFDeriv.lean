@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Geometry.Manifold.Mfderiv
-import Mathlib.Geometry.Manifold.ContMdiffMap
+import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.ContMDiffMap
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
