@@ -60,11 +60,11 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 -/
 theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
-  cases h2
+  cases' h2 with h2 h2
   · rw [h2]; exact h1
-  · cases h1
+  · cases' h1 with h1 h1
     · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
-    · left; simpa [h2, mul_mod, h1]
+    · left; simp [h2, mul_mod, h1]
 #align miu.mod3_eq_1_or_mod3_eq_2 Miu.mod3_eq_1_or_mod3_eq_2
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
@@ -73,8 +73,8 @@ is 1 or 2 modulo 3.
 theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 := by
   intro h
-  induction h
-  · left; apply mod_def
+  induction' h with _ _ h_ih _ _ h_ih _ _ _ h_ih _ _ _ h_ih
+  · left; apply Nat.mod_eq
   any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
   · left; simp only [count_append]; rfl
   · right; simp only [count, countp, count_append, if_false, two_mul]
@@ -104,8 +104,9 @@ string to be derivable, namely that the string must start with an M and contain 
 -/
 def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ ¬M ∈ List.tail xs
-deriving DecidablePred
 #align miu.goodm Miu.Goodm
+
+instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
@@ -121,33 +122,32 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
-theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
-    Goodm (xs ++ [I, U]) := by
+theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : Goodm (xs ++ ↑[I])) :
+    Goodm (xs ++ ↑[I, U]) := by
   cases' h₂ with mhead nmtail
-  have : xs ≠ nil := by intro h; rw [h] at *; rw [nil_append, head] at mhead ; contradiction
+  have : xs ≠ nil := by rintro rfl; contradiction
   constructor
   · rwa [head_append] at * <;> exact this
-  · change [I, U] with [I] ++ [U]
+  · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
-    · simp only [mem_append, nmtail, false_or_iff, mem_singleton, not_false_iff]
+    · simp_rw [mem_append, not_or, and_true]; exact nmtail
     · exact append_ne_nil_of_ne_nil_left _ _ this
 #align miu.goodm_of_rule1 Miu.goodm_of_rule1
 
-theorem goodm_of_rule2 (xs : Miustr) (h₁ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
-    Goodm (M :: xs ++ xs) := by
+theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
+    Goodm (↑(M :: xs) ++ xs) := by
   constructor
   · rfl
   · cases' h₂ with mhead mtail
     contrapose! mtail
-    rw [cons_append] at mtail 
-    rw [tail] at *
+    rw [cons_append] at mtail
     exact (or_self_iff _).mp (mem_append.mp mtail)
 #align miu.goodm_of_rule2 Miu.goodm_of_rule2
 
-theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
-    (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ U :: bs) := by
+theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))
+    (h₂ : Goodm (as ++ ↑[I, I, I] ++ bs)) : Goodm (as ++ ↑(U :: bs)) := by
   cases' h₂ with mhead nmtail
-  have k : as ≠ nil := by intro h; rw [h] at mhead ; rw [nil_append] at mhead ; contradiction
+  have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · revert mhead; simp only [append_assoc, head_append _ k]; exact id
   · contrapose! nmtail
@@ -162,10 +162,10 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs
 -/
 
 
-theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
-    (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
+theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs))
+    (h₂ : Goodm (as ++ ↑[U, U] ++ bs)) : Goodm (as ++ bs) := by
   cases' h₂ with mhead nmtail
-  have k : as ≠ nil := by intro h; rw [h] at mhead ; rw [nil_append] at mhead ; contradiction
+  have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · revert mhead; simp only [append_assoc, head_append _ k]; exact id
   · contrapose! nmtail
@@ -199,8 +199,9 @@ that `en` has no `M` in its tail. We automatically derive that this is a decidab
 -/
 def Decstr (en : Miustr) :=
   Goodm en ∧ (count I en % 3 = 1 ∨ count I en % 3 = 2)
-deriving DecidablePred
 #align miu.decstr Miu.Decstr
+
+instance : DecidablePred Decstr := by unfold Decstr; infer_instance
 
 /-- Suppose `en : miustr`. If `en` is `derivable`, then the condition `decstr en` holds.
 -/
@@ -212,4 +213,3 @@ theorem decstr_of_der {en : Miustr} : Derivable en → Decstr en := by
 #align miu.decstr_of_der Miu.decstr_of_der
 
 end Miu
-
