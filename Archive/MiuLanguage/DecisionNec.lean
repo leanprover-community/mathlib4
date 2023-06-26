@@ -74,13 +74,15 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 := by
   intro h
   induction' h with _ _ h_ih _ _ h_ih _ _ _ h_ih _ _ _ h_ih
-  · left; apply Nat.mod_eq
+  · left; rfl
   any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
-  · left; simp only [count_append]; rfl
-  · right; simp only [count, countp, count_append, if_false, two_mul]
-  · left; simp only [count, count_append, countp, if_false, if_pos]
-    rw [add_right_comm, add_mod_right]
-  · left; simp only [count, countp, countp_append, if_false, add_zero]
+  -- Porting note: `simp_rw [count_append]` usually doesn't work
+  · left; rw [count_append, count_append]; rfl
+  · right; simp_rw [count_append, count_cons, if_false, two_mul]
+  · left; rw [count_append, count_append, count_append]
+    simp_rw [count_cons_self, count_nil, count_cons, ite_false, add_right_comm, add_mod_right]
+  · left; rw [count_append, count_append, count_append]
+    simp only [ne_eq, count_cons_of_ne, count_nil, add_zero]
 #align miu.count_equiv_one_or_two_mod3_of_derivable Miu.count_equiv_one_or_two_mod3_of_derivable
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
