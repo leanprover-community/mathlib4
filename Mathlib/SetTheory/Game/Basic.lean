@@ -525,6 +525,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_left_distrib reference below, because otherwise the decreasing_by block
     -- failed. Previously, each branch ended with: `simp [quot_left_distrib]; abel`
+    -- See https://github.com/leanprover/lean4/issues/2288
     · rintro (⟨i, j | k⟩ | ⟨i, j | k⟩)
       · change
           ⟦xL i * (y + z) + x * (yL j + z) - xL i * (yL j + z)⟧ =
@@ -693,6 +694,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_mul_assoc reference below, because otherwise the decreasing_by block
     -- failed. Each branch previously ended with: `simp [quot_mul_assoc]; abel`
+    -- See https://github.com/leanprover/lean4/issues/2288
     · rintro (⟨⟨i, j⟩ | ⟨i, j⟩, k⟩ | ⟨⟨i, j⟩ | ⟨i, j⟩, k⟩)
       · change
           ⟦(xL i * y + x * yL j - xL i * yL j) * z + x * y * zL k -
