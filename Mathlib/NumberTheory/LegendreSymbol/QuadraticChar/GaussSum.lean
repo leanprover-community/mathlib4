@@ -61,7 +61,7 @@ theorem FiniteField.isSquare_two_iff :
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    decide -- Porting note: was `decide!`
+    intros; interval_cases n <;> simp_all -- Porting note: was `decide!`
 #align finite_field.is_square_two_iff FiniteField.isSquare_two_iff
 
 /-- The value of the quadratic character at `-2` -/
@@ -91,7 +91,7 @@ theorem FiniteField.isSquare_neg_two_iff :
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    decide -- Porting note: was `decide!`
+    intros; interval_cases n <;> simp_all -- Porting note: was `decide!`
 #align finite_field.is_square_neg_two_iff FiniteField.isSquare_neg_two_iff
 
 /-- The relation between the values of the quadratic character of one field `F` at the
