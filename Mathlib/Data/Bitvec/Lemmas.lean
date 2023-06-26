@@ -131,21 +131,22 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
 #align bitvec.to_bool_add_lsb_mod_two Bitvec.decide_addLsb_mod_two
 
 theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
+  rw[←(@Vector.reverse_reverse _ _ v)]
   cases' v with xs h
   -- Porting note: was `ext1`, but that now applies `Vector.ext` rather than `Subtype.ext`.
   apply Subtype.ext
-  change Vector.toList _ = xs
-  dsimp [Bitvec.toNat, bitsToNat]
+  dsimp [Bitvec.toNat, bitsToNat, Vector.reverse, toList]
   rw [← List.length_reverse] at h
-  rw [← List.reverse_reverse xs, List.foldl_reverse]
-  generalize xs.reverse = ys at h⊢; clear xs
+  rw [List.foldl_reverse, ←Vector.toList]
+  generalize xs.reverse = ys at h⊢;
+  clear xs
   induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]
   · simp only [← Nat.succ_eq_add_one, List.length] at h
     subst n
     simp only [Bitvec.ofNat, Vector.toList_cons, Vector.toList_nil, List.reverse_cons,
-      Vector.toList_append, List.foldr]
+                Vector.toList_append, List.foldr]
     erw [addLsb_div_two, decide_addLsb_mod_two]
     congr
     apply ys_ih
