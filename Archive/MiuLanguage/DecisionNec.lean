@@ -16,7 +16,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Decision procedure: necessary condition
 
-We introduce a condition `decstr` and show that if a string `en` is `derivable`, then `decstr en`
+We introduce a condition `Decstr` and show that if a string `en` is `Derivable`, then `Decstr en`
 holds.
 
 Using this, we give a negative answer to the question: is `"MU"` derivable?
@@ -34,16 +34,16 @@ open MiuAtom Nat List
 /-!
 ### Numerical condition on the `I` count
 
-Suppose `st : miustr`. Then `count I st` is the number of `I`s in `st`. We'll show, if
-`derivable st`, then `count I st` must be 1 or 2 modulo 3. To do this, it suffices to show that if
-the `en : miustr` is derived from `st`, then `count I en` moudulo 3 is either equal to or is twice
+Suppose `st : Miustr`. Then `count I st` is the number of `I`s in `st`. We'll show, if
+`Derivable st`, then `count I st` must be 1 or 2 modulo 3. To do this, it suffices to show that if
+the `en : Miustr` is derived from `st`, then `count I en` moudulo 3 is either equal to or is twice
 `count I st`, modulo 3.
 -/
 
 
-/-- Given `st en : miustr`, the relation `count_equiv_or_equiv_two_mul_mod3 st en` holds if `st` and
+/-- Given `st en : Miustr`, the relation `CountEquivOrEquivTwoMulMod3 st en` holds if `st` and
 `en` either have equal `count I`, modulo 3, or `count I en` is twice `count I st`, modulo 3.
- -/
+-/
 def CountEquivOrEquivTwoMulMod3 (st en : Miustr) : Prop :=
   let a := count I st
   let b := count I en
@@ -84,7 +84,7 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
 #align miu.count_equiv_one_or_two_mod3_of_derivable Miu.count_equiv_one_or_two_mod3_of_derivable
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
-Once we have proved that `derivable` is an instance of `decidable_pred`, this will follow
+Once we have proved that `Derivable` is an instance of `DecidablePred`, this will follow
 immediately from `dec_trivial`.
 -/
 theorem not_derivable_mu : ¬Derivable "MU" := by
@@ -100,7 +100,7 @@ string to be derivable, namely that the string must start with an M and contain 
 -/
 
 
-/-- `goodm xs` holds if `xs : miustr` begins with `M` and has no `M` in its tail.
+/-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ ¬M ∈ List.tail xs
@@ -118,7 +118,7 @@ theorem goodmi : Goodm [M, I] := by
 
 /-!
 We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st` and if
-`goodm st` holds, then so does `goodm en`.
+`Goodm st` holds, then so does `Goodm en`.
 -/
 
 
@@ -158,7 +158,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++
 #align miu.goodm_of_rule3 Miu.goodm_of_rule3
 
 /-!
- The proof of the next lemma is identical, on the tactic level, to the previous proof.
+The proof of the next lemma is identical, on the tactic level, to the previous proof.
 -/
 
 
@@ -188,13 +188,13 @@ theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
 #align miu.goodm_of_derivable Miu.goodm_of_derivable
 
 /-!
-We put togther our two conditions to give one necessary condition `decstr` for an `miustr` to be
+We put togther our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
 derivable.
 -/
 
 
 /--
-`decstr en` is the condition that `count I en` is 1 or 2 modulo 3, that `en` starts with `M`, and
+`Decstr en` is the condition that `count I en` is 1 or 2 modulo 3, that `en` starts with `M`, and
 that `en` has no `M` in its tail. We automatically derive that this is a decidable predicate.
 -/
 def Decstr (en : Miustr) :=
@@ -203,7 +203,7 @@ def Decstr (en : Miustr) :=
 
 instance : DecidablePred Decstr := by unfold Decstr; infer_instance
 
-/-- Suppose `en : miustr`. If `en` is `derivable`, then the condition `decstr en` holds.
+/-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/
 theorem decstr_of_der {en : Miustr} : Derivable en → Decstr en := by
   intro h
