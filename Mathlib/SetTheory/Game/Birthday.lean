@@ -148,6 +148,8 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     rw [birthday_def, nadd_def]
+    -- Porting note: `simp` doesn't apply
+    erw [lsub_sum, lsub_sum]
     simp only [birthday_add, lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
       mk_add_moveRight_inl, moveRight_mk, mk_add_moveRight_inr]
     rw [max_max_max_comm]
@@ -155,10 +157,10 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     any_goals
       exact
         max_le_iff.2
-          ⟨lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_move_left_lt i),
-            lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_move_right_lt i)⟩
+          ⟨lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveLeft_lt _),
+            lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveRight_lt _)⟩
     all_goals
-      apply blsub_le_iff.2 fun i hi => _
+      refine blsub_le_iff.2 fun i hi => ?_
       rcases lt_birthday_iff.1 hi with (⟨j, hj⟩ | ⟨j, hj⟩)
     · exact lt_max_of_lt_left ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_right ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
