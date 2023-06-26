@@ -29,7 +29,7 @@ an explicit list of primes is provided which covers the remaining cases.
 
 As in the [Metamath implementation](carneiro2015arithmetic), we rely on some optimizations from
 [Shigenori Tochiori](tochiori_bertrand). In particular we use the cleaner bound on the central
-binomial coefficient given in `nat.four_pow_lt_mul_central_binom`.
+binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 ## References
 
@@ -51,7 +51,7 @@ open Real
 
 namespace Bertrand
 
-/-- A reified version of the `bertrand.main_inequality` below.
+/-- A reified version of the `Bertrand.main_inequality` below.
 This is not best possible: it actually holds for 464 ≤ x.
 -/
 theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
@@ -69,6 +69,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
+  -- porting note: the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     apply ConcaveOn.add
@@ -89,11 +90,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
-
-  . -- O ≤ f 18
-    -- rw [hf, log_nonneg_iff (hf' 18 _), this] <;> norm_num1
-    have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    -- . rw [sqrt_eq_iff_mul_self_eq_of_pos] <;> norm_num1
+  . have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonneg_iff, this]
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
@@ -102,13 +99,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     apply rpow_pos_of_pos ; norm_num1
     apply hf' 18 ; norm_num1
     norm_num1
-
-  . -- f 512 ≤ 0
-    /- rw [hf, log_nonpos_iff (hf' _ _), this,
-        div_le_one (rpow_pos_of_pos four_pos _), ←
-        rpow_le_rpow_iff _ (rpow_pos_of_pos four_pos _).le three_pos,
-        ← rpow_mul] <;> norm_num1 -/
-    have : sqrt (2 * 512) = 32 :=
+  . have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
     have : (512 : ℝ) = 2 ^ (9 : ℕ)
@@ -171,7 +162,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
 #align central_binom_factorization_small centralBinom_factorization_small
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
-The bound splits the prime factors of `central_binom n` into those
+The bound splits the prime factors of `centralBinom n` into those
 1. At most `sqrt (2 * n)`, which contribute at most `2 * n` for each such prime.
 2. Between `sqrt (2 * n)` and `2 * n / 3`, which contribute at most `4^(2 * n / 3)` in total.
 3. Between `2 * n / 3` and `n`, which do not exist.
