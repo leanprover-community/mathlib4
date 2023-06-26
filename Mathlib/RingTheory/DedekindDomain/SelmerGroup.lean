@@ -66,7 +66,7 @@ https://doc.sagemath.org/html/en/reference/number_fields/sage/rings/number_field
 class group, selmer group, unit group
 -/
 
-set_option quotPrecheck false in
+set_option quotPrecheck false
 local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
 
 namespace IsDedekindDomain
@@ -98,71 +98,63 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
-  have :  ∀ a : R, (v.intValuation) a = if (a = 0) then 0
-      else
-      ↑(Multiplicative.ofAdd (-((Associates.mk v.asIdeal).count
-      (Associates.mk (Ideal.span {a})).factors : ℤ))) := by exact fun a ↦ rfl
-  sorry
-#exit
-  rw [show ((intValuation v) : R →* ℤₘ₀) _ = if _ then _ else _ by rfl]
---  dsimp only [intValuationDef]
---  rw [intValuation]
---  rw [show  _ = ite _ _ _ * (ite ((↑) _ = _) _ _)⁻¹ by rfl]
---  change _ = ite _ _ _ * (ite ((↑) _ = _) _ _)⁻¹
-  rw [IsLocalization.toLocalizationMap_sec,
-    if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
-    if_neg <| nonZeroDivisors.coe_ne_zero _]
-  any_goals exact IsDomain.to_nontrivial R
+  change _ = ite _ _ _ * (ite _ _ _)⁻¹
+  rw [IsLocalization.toLocalizationMap_sec]
+  rw [if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero, if_neg ?_]
   rfl
+  exact nonZeroDivisors.coe_ne_zero _
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun_eq
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
   toFun := v.valuationOfNeZeroToFun
-  map_one' := by rw [← WithZero.coe_inj, valuation_of_ne_zero_to_fun_eq]; exact map_one _
+  map_one' := by rw [← WithZero.coe_inj, valuationOfNeZeroToFun_eq]; exact map_one _
   map_mul' _ _ := by
     rw [← WithZero.coe_inj, WithZero.coe_mul]
-    simp only [valuation_of_ne_zero_to_fun_eq]; exact map_mul _ _ _
+    simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero IsDedekindDomain.HeightOneSpectrum.valuationOfNeZero
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.Valuation (x : K) :=
+theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation (x : K) :=
   valuationOfNeZeroToFun_eq v x
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZero_eq
 
 @[simp]
 theorem valuation_of_unit_eq (x : Rˣ) :
     v.valuationOfNeZero (Units.map (algebraMap R K : R →* K) x) = 1 := by
-  rw [← WithZero.coe_inj, valuation_of_ne_zero_eq, Units.coe_map, eq_iff_le_not_lt]
+  rw [← WithZero.coe_inj, valuationOfNeZero_eq, Units.coe_map, eq_iff_le_not_lt]
   constructor
   · exact v.valuation_le_one x
   · cases' x with x _ hx _
     change ¬v.valuation (algebraMap R K x) < 1
-    apply_fun v.int_valuation at hx
+    apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
-    rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebra_map,
+    rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
       mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
     exact v.int_valuation_le_one _
 #align is_dedekind_domain.height_one_spectrum.valuation_of_unit_eq IsDedekindDomain.HeightOneSpectrum.valuation_of_unit_eq
 
-attribute [local semireducible] MulOpposite
+-- Porting note: invalid attribute 'semireducible', declaration is in an imported module
+-- attribute [local semireducible] MulOpposite
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
   (Int.quotientZmultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
-    QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range (AddSubgroup.zmultiples (n : ℤ)).toSubgroup
+    QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
+      (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
       v.valuationOfNeZero
       (by
         rintro _ ⟨x, rfl⟩
         exact
-          ⟨v.valuation_of_ne_zero x, by simpa only [powMonoidHom_apply, map_pow, Int.toAdd_pow]⟩)
+          ⟨v.valuationOfNeZero x, by simp only [powMonoidHom_apply, map_pow, Int.toAdd_pow]; rfl⟩)
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_mod IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroMod
 
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
     v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
-  rw [valuation_of_ne_zero_mod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
-    QuotientGroup.map_mk', valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
+  rw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
+    QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
+    valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
 #align is_dedekind_domain.height_one_spectrum.valuation_of_unit_mod_eq IsDedekindDomain.HeightOneSpectrum.valuation_of_unit_mod_eq
 
 end HeightOneSpectrum
@@ -172,18 +164,18 @@ end HeightOneSpectrum
 
 variable {S S' : Set <| HeightOneSpectrum R} {n : ℕ}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:638:2: warning: expanding binder collection (v «expr ∉ » S) -/
 /-- The Selmer group `K⟮S, n⟯`. -/
 def selmerGroup : Subgroup <| K/n where
   carrier := {x : K/n | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuationOfNeZeroMod n x = 1}
   one_mem' _ _ := by rw [map_one]
-  mul_mem' _ _ hx hy v hv := by rw [map_mul, hx v hv, hy v hv, one_mul]
-  inv_mem' _ hx v hv := by rw [map_inv, hx v hv, inv_one]
+  mul_mem' hx hy v hv := by rw [map_mul, hx v hv, hy v hv, one_mul]
+  inv_mem' hx v hv := by rw [map_inv, hx v hv, inv_one]
 #align is_dedekind_domain.selmer_group IsDedekindDomain.selmerGroup
 
-scoped[SelmerGroup] notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
+-- Porting note: was `scoped[SelmerGroup]` but that does not work even using `open SelmerGroup`
+local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
 
-namespace SelmerGroup
+namespace selmerGroup
 
 theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
 #align is_dedekind_domain.selmer_group.monotone IsDedekindDomain.selmerGroup.monotone
