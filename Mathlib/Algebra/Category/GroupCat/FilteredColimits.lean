@@ -9,7 +9,7 @@ Authors: Justus Springer
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
-import Mathlib.Algebra.Category.Mon.FilteredColimits
+import Mathlib.Algebra.Category.MonCat.FilteredColimits
 
 /-!
 # The forgetful functor from (commutative) (additive) groups preserves filtered colimits.

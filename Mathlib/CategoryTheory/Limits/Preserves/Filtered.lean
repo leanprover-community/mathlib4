@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Filtered
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
-(although not general colimits). See e.g. `Algebra/Category/Mon/FilteredColimits`.
+(although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
 
 ## Future work
 This could be generalised to allow diagrams in lower universes.
