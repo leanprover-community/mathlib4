@@ -97,17 +97,17 @@ scoped macro "sz_positivity" : tactic =>
         positivity })
 
 -- Original meta code
--- @[positivity]
--- def positivitySzemerediRegularity : PositivityExt where eval {_ _} _zα _pα e := do
--- | `(%%n / stepBound (Finpartition.parts %%P).card) := do
---     p ← to_expr
---       ``((Finpartition.parts %%P).card * 16^(Finpartition.parts %%P).card ≤ %%n)
---       >>= find_assumption,
---     positive <$> mk_app ``m_pos [p]
--- | ε := do
---     typ ← infer_type ε,
---     unify typ `(ℝ),
---     p ← to_expr ``(100 ≤ 4
+/- meta def positivity_szemeredi_regularity : expr → tactic strictness
+| `(%%n / step_bound (finpartition.parts %%P).card) := do
+    p ← to_expr
+      ``((finpartition.parts %%P).card * 16^(finpartition.parts %%P).card ≤ %%n)
+      >>= find_assumption,
+    positive <$> mk_app ``m_pos [p]
+| ε := do
+    typ ← infer_type ε,
+    unify typ `(ℝ),
+    p ← to_expr ``(100 ≤ 4 ^ _ * %%ε ^ 5) >>= find_assumption,
+    positive <$> mk_app ``eps_pos [p] -/
 
 end SzemerediRegularity.Positivity
 
