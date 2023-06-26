@@ -18,7 +18,8 @@ until the desired number of heartbeats is hit.
 Warning: this function relies on interpreter / compiler
 behaviour that is not guaranteed to function in the way that is relied upon here.
 As such this function is not to be considered reliable, especially after future updates to Lean.
-This should be used with caution and basically only for demo / testing purposes and not in compiled code without further testing. -/
+This should be used with caution and basically only for demo / testing purposes
+and not in compiled code without further testing. -/
 def sleepAtLeastHeartbeats (n : Nat) : IO Unit := do
   let i ← IO.getNumHeartbeats
   while (← IO.getNumHeartbeats) < i + n do
