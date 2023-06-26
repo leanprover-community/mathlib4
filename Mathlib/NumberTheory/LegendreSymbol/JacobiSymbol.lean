@@ -8,7 +8,7 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # The Jacobi Symbol
@@ -114,8 +114,7 @@ theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legen
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
 theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
-    J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) :=
-  by
+    J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) := by
   rw [jacobiSym, ((perm_factors_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append, List.prod_append]
   exacts [rfl, fun p hp => (list.mem_append.mp hp).elim prime_of_mem_factors prime_of_mem_factors]
 #align jacobi_sym.mul_right' jacobiSym.mul_right'
@@ -160,8 +159,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
-protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 :=
-  by
+protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
   cases' eq_zero_or_neZero b with hb
   · rw [hb, zero_right]
     exact one_ne_zero
@@ -195,8 +193,7 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
 #align jacobi_sym.pow_left jacobiSym.pow_left
 
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
-theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e :=
-  by
+theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction' e with e ih
   · rw [pow_zero, pow_zero, one_right]
   · cases' eq_zero_or_neZero b with hb
@@ -232,15 +229,13 @@ theorem mod_left' {a₁ a₂ : ℤ} {b : ℕ} (h : a₁ % b = a₂ % b) : J(a₁
 /-- If `p` is prime, `J(a | p) = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide
 `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p) = -1) {x y : ℤ}
-    (hxy : ↑p ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y :=
-  by
+    (hxy : ↑p ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
   rw [← legendreSym.to_jacobiSym] at h 
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 #align jacobi_sym.prime_dvd_of_eq_neg_one jacobiSym.prime_dvd_of_eq_neg_one
 
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
-theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.Prod | n) = (l.map fun a => J(a | n)).Prod :=
-  by
+theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.Prod | n) = (l.map fun a => J(a | n)).Prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, List.map_nil, one_left]
   · rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
@@ -248,8 +243,7 @@ theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.Prod | n) = (l.map fun a =
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
-    J(a | l.Prod) = (l.map fun n => J(a | n)).Prod :=
-  by
+    J(a | l.Prod) = (l.map fun n => J(a | n)).Prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, one_right, List.map_nil]
   · have hn := hl n (List.mem_cons_self n l')
@@ -263,8 +257,7 @@ theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
 
 /-- If `J(a | n) = -1`, then `n` has a prime divisor `p` such that `J(a | p) = -1`. -/
 theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a | n) = -1) :
-    ∃ (p : ℕ) (hp : p.Prime), p ∣ n ∧ J(a | p) = -1 :=
-  by
+    ∃ (p : ℕ) (hp : p.Prime), p ∣ n ∧ J(a | p) = -1 := by
   have hn₀ : n ≠ 0 := by
     rintro rfl
     rw [zero_right, eq_neg_self_iff] at h 
@@ -283,8 +276,7 @@ open jacobiSym
 
 /-- If `J(a | b)` is `-1`, then `a` is not a square modulo `b`. -/
 theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1) :
-    ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ =>
-  by
+    ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ => by
   rw [← r.coe_val_min_abs, ← Int.cast_mul, int_coe_eq_int_coe_iff', ← sq] at ha 
   apply (by norm_num : ¬(0 : ℤ) ≤ -1)
   rw [← h, mod_left, ha, ← mod_left, pow_left]
@@ -316,8 +308,7 @@ namespace jacobiSym
 then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
 theorem value_at (a : ℤ) {R : Type _} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime) (h2 : p ≠ 2), @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
-    J(a | b) = χ b :=
-  by
+    J(a | b) = χ b := by
   conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]
   congr 1; apply List.pmap_congr
@@ -405,8 +396,7 @@ namespace jacobiSym
 
 /-- The Law of Quadratic Reciprocity for the Jacobi symbol, version with `qr_sign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
-    J(a | b) = qrSign b a * J(b | a) :=
-  by
+    J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
@@ -447,16 +437,14 @@ theorem quadratic_reciprocity_one_mod_four' {a b : ℕ} (ha : Odd a) (hb : b % 4
 /-- The Law of Quadratic Reciprocityfor the Jacobi symbol: if `a` and `b` are natural numbers
 both congruent to `3` mod `4`, then `J(a | b) = -J(b | a)`. -/
 theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : b % 4 = 3) :
-    J(a | b) = -J(b | a) :=
-  by
+    J(a | b) = -J(b | a) := by
   let nop := @neg_one_pow_div_two_of_three_mod_four
   rw [quadratic_reciprocity, pow_mul, nop ha, nop hb, neg_one_mul] <;>
     rwa [odd_iff, odd_of_mod_four_eq_three]
 #align jacobi_sym.quadratic_reciprocity_three_mod_four jacobiSym.quadratic_reciprocity_three_mod_four
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a` (version for `a : ℕ`). -/
-theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) :=
-  by
+theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
   · rw [MulZeroClass.mul_zero, mod_zero]
   have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by norm_num) _)
@@ -478,8 +466,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
 #align jacobi_sym.mod_right' jacobiSym.mod_right'
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a`. -/
-theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) :=
-  by
+theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
   cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.nat_abs hb
   · have hb' : Odd (b % (4 * a.nat_abs)) := hb.mod_even (Even.mul_right (by norm_num) _)
