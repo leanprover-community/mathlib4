@@ -115,6 +115,6 @@ example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
 internal call to `apply_assumption`. -/
 example {ι : Type _} (i k : ι) (hik : i ≠ k) : Measurable (id : α → α) := by measurability
 
-/-- This search problem loops (StronglyMeasurable -> Measurable -> StronglyMeasurable) but fails
-quickly nevertheless. -/
+--This search problem loops (StronglyMeasurable -> Measurable -> StronglyMeasurable) but fails
+--quickly nevertheless.
 --example (f : ℝ → ℝ) : StronglyMeasurable f := by measurability
