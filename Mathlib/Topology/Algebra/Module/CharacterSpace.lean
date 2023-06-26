@@ -25,10 +25,10 @@ C⋆-algebras.
 ## Implementation notes
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the
-correct topology on the space. We then define `to_alg_hom` which provides the algebra homomorphism
-corresponding to any element. We also provide `to_clm` which provides the element as a
-continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of `A →L[𝕜] 𝕜`, this is
-often more convenient.)
+correct topology on the space. We then define `WeakDual.CharacterSpace.toAlgHom` which provides the
+algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toClm`
+which provides the element as a continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of
+`A →L[𝕜] 𝕜`, this is often more convenient.)
 
 ## Tags
 
@@ -200,7 +200,7 @@ theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ke
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)
-  · rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
+  rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
 #align weak_dual.character_space.ext_ker WeakDual.CharacterSpace.ext_ker
 
 end Ring

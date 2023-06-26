@@ -9,6 +9,7 @@ import Archive.Imo.Imo1972Q5
 import Archive.Imo.Imo1975Q1
 import Archive.Imo.Imo1977Q6
 import Archive.Imo.Imo1981Q3
+import Archive.Imo.Imo1987Q1
 import Archive.Imo.Imo1994Q1
 import Archive.Imo.Imo2001Q2
 import Archive.Imo.Imo2001Q6
@@ -24,11 +25,19 @@ import Archive.Imo.Imo2019Q1
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
+import Archive.MiuLanguage.Basic
+import Archive.Sensitivity
+import Archive.Wiedijk100Theorems.AbelRuffini
 import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
+import Archive.Wiedijk100Theorems.BallotProblem
+import Archive.Wiedijk100Theorems.BirthdayProblem
+import Archive.Wiedijk100Theorems.CubingACube
+import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
 import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
+import Archive.Wiedijk100Theorems.SolutionOfCubic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges

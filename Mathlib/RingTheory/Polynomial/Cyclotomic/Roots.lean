@@ -72,7 +72,7 @@ theorem _root_.IsPrimitiveRoot.isRoot_cyclotomic (hpos : 0 < n) {μ : R} (h : Is
   rwa [← mem_primitiveRoots hpos] at h
 #align is_primitive_root.is_root_cyclotomic IsPrimitiveRoot.isRoot_cyclotomic
 
-private theorem is_root_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K} [NeZero (n : K)] :
+private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K} [NeZero (n : K)] :
     IsRoot (cyclotomic n K) μ ↔ IsPrimitiveRoot μ n := by
   -- in this proof, `o` stands for `orderOf μ`
   have hnpos : 0 < n := (NeZero.of_neZero_natCast K).out.bot_lt
@@ -110,7 +110,7 @@ theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
   haveI : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
   rw [← isRoot_map_iff hf, ← IsPrimitiveRoot.map_iff_of_injective hf, map_cyclotomic, ←
-    is_root_cyclotomic_iff']
+    isRoot_cyclotomic_iff']
 #align polynomial.is_root_cyclotomic_iff Polynomial.isRoot_cyclotomic_iff
 
 theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup := by

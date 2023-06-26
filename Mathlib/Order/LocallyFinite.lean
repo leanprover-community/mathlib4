@@ -750,16 +750,16 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
     cases' h₁ with h₁_finset_Icc h₁_finset_Ico h₁_finset_Ioc h₁_finset_Ioo
       h₁_finset_mem_Icc h₁_finset_mem_Ico h₁_finset_mem_Ioc h₁_finset_mem_Ioo
     have hIcc : h₀_finset_Icc = h₁_finset_Icc := by
-      ext (a b x)
+      ext a b x
       rw [h₀_finset_mem_Icc, h₁_finset_mem_Icc]
     have hIco : h₀_finset_Ico = h₁_finset_Ico := by
-      ext (a b x)
+      ext a b x
       rw [h₀_finset_mem_Ico, h₁_finset_mem_Ico]
     have hIoc : h₀_finset_Ioc = h₁_finset_Ioc := by
-      ext (a b x)
+      ext a b x
       rw [h₀_finset_mem_Ioc, h₁_finset_mem_Ioc]
     have hIoo : h₀_finset_Ioo = h₁_finset_Ioo := by
-      ext (a b x)
+      ext a b x
       rw [h₀_finset_mem_Ioo, h₁_finset_mem_Ioo]
     simp_rw [hIcc, hIco, hIoc, hIoo]
 
