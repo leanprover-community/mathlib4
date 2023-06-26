@@ -26,11 +26,11 @@ Bohr-Mollerup theorem must agree with the limit in the Euler limit formula, so t
 such function; then we show that `Γ` satisfies these conditions.
 
 Since most of the auxiliary lemmas for the Bohr-Mollerup theorem are of no relevance outside the
-context of this proof, we place them in a separate namespace `real.bohr_mollerup` to avoid clutter.
+context of this proof, we place them in a separate namespace `Real.BohrMollerup` to avoid clutter.
 (This includes the logarithmic form of the Euler limit formula, since later we will prove a more
 general form of the Euler limit formula valid for any real or complex `x`; see
-`real.Gamma_seq_tendsto_Gamma` and `complex.Gamma_seq_tendsto_Gamma` in the file
-`analysis.special_functions.gamma.beta`.)
+`Real.Gamma_seq_tendsto_Gamma` and `Complex.Gamma_seq_tendsto_Gamma` in the file
+`Mathlib/Analysis/SpecialFunctions/Gamma/Beta.lean`.)
 
 As an application of the Bohr-Mollerup theorem we prove the Legendre doubling formula for the
 Gamma function for real positive `s` (which will be upgraded to a proof for all complex `s` in a
@@ -405,8 +405,8 @@ theorem Gamma_two : Gamma 2 = 1 := by simpa [one_add_one_eq_two] using Gamma_nat
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
-  -- `analysis.special_functions.gaussian`, but we give a self-contained proof using log-convexity
-  -- to avoid unnecessary imports.
+  -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
+  -- log-convexity to avoid unnecessary imports.
   have A : (0 : ℝ) < 3 / 2 := by norm_num
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
@@ -515,16 +515,16 @@ theorem doublingGamma_eq_Gamma {s : ℝ} (hs : 0 < s) : doublingGamma s = Gamma 
 #align real.doubling_Gamma_eq_Gamma Real.doublingGamma_eq_Gamma
 
 /-- Legendre's doubling formula for the Gamma function, for positive real arguments. Note that
-we shall later prove this for all `s` as `real.Gamma_mul_Gamma_add_half` (superseding this result)
+we shall later prove this for all `s` as `Real.Gamma_mul_Gamma_add_half` (superseding this result)
 but this result is needed as an intermediate step. -/
-theorem gamma_mul_gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
+theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * 2 ^ (1 - 2 * s) * sqrt π := by
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
   field_simp [(sqrt_pos_of_pos pi_pos).ne', (rpow_pos_of_pos two_pos (2 * s - 1)).ne']
   ring
-#align real.Gamma_mul_Gamma_add_half_of_pos Real.gamma_mul_gamma_add_half_of_pos
+#align real.Gamma_mul_Gamma_add_half_of_pos Real.Gamma_mul_Gamma_add_half_of_pos
 
 end Doubling
 
