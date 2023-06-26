@@ -82,6 +82,7 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
 #align ordinal.to_left_moves_to_pgame_symm_lt Ordinal.toLeftMovesToPGame_symm_lt
 
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
+    have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
     HEq o.toPGame.moveLeft fun x : o.out.α => (typein (· < ·) x).toPGame := by
   rw [toPGame]
   rfl
@@ -90,7 +91,7 @@ theorem toPGame_moveLeft_hEq {o : Ordinal} :
 @[simp]
 theorem toPGame_moveLeft' {o : Ordinal} (i) :
     o.toPGame.moveLeft i = (toLeftMovesToPGame.symm i).val.toPGame :=
-  (congr_heq toPGame_moveLeft_hEq.symm (cast_hEq _ i)).symm
+  (congr_heq toPGame_moveLeft_hEq.symm (cast_heq _ i)).symm
 #align ordinal.to_pgame_move_left' Ordinal.toPGame_moveLeft'
 
 theorem toPGame_moveLeft {o : Ordinal} (i) :
@@ -108,12 +109,13 @@ noncomputable instance uniqueOneToPgameLeftMoves : Unique (toPGame 1).LeftMoves 
 
 @[simp]
 theorem one_toPGame_leftMoves_default_eq :
-    (default : (toPGame 1).LeftMoves) = @toLeftMovesToPGame 1 ⟨0, zero_lt_one⟩ :=
+    (default : (toPGame 1).LeftMoves) = @toLeftMovesToPGame 1 ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ :=
   rfl
 #align ordinal.one_to_pgame_left_moves_default_eq Ordinal.one_toPGame_leftMoves_default_eq
 
 @[simp]
-theorem to_leftMoves_one_toPGame_symm (i) : (@toLeftMovesToPGame 1).symm i = ⟨0, zero_lt_one⟩ := by
+theorem to_leftMoves_one_toPGame_symm (i) :
+    (@toLeftMovesToPGame 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
   simp
 #align ordinal.to_left_moves_one_to_pgame_symm Ordinal.to_leftMoves_one_toPGame_symm
 
@@ -161,7 +163,9 @@ theorem toPGame_lt_iff {a b : Ordinal} : a.toPGame < b.toPGame ↔ a < b :=
 
 @[simp]
 theorem toPGame_equiv_iff {a b : Ordinal} : (a.toPGame ≈ b.toPGame) ↔ a = b := by
-  rw [PGame.Equiv, le_antisymm_iff, to_pgame_le_iff, to_pgame_le_iff]
+  -- Porting note: was `rw [PGame.Equiv]`
+  change _ ≤_ ∧ _ ≤ _ ↔ _
+  rw [le_antisymm_iff, toPGame_le_iff, toPGame_le_iff]
 #align ordinal.to_pgame_equiv_iff Ordinal.toPGame_equiv_iff
 
 theorem toPGame_injective : Function.Injective Ordinal.toPGame := fun _ _ h =>
