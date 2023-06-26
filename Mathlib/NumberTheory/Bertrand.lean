@@ -238,7 +238,6 @@ theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Pri
   exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
 #align nat.exists_prime_lt_and_le_two_mul_succ Nat.exists_prime_lt_and_le_two_mul_succ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than
 it, but no more than twice as large.
@@ -253,17 +252,12 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   replace h : n < 521 := h.trans_lt (by norm_num1)
   revert h
   -- For small `n`, supply a list of primes to cover the initial cases.
-  -- porting note: this used to be `run_tac` with `mapM'` on the list of those numbers
-  refine' exists_prime_lt_and_le_two_mul_succ 317 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 163 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 83 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 43 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 23 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 13 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 7 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 5 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 3 (by norm_num) (by norm_num) _
-  refine' exists_prime_lt_and_le_two_mul_succ 2 (by norm_num) (by norm_num) _
+  open Lean Elab Tactic in
+  run_tac do
+    for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
+      let i : Term := quote i
+      evalTactic
+        (← `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num) (by norm_num) _))
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
