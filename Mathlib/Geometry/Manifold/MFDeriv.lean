@@ -65,9 +65,9 @@ of `f` in these charts.
 Due to the fact that we are working in a model with corners, with an additional embedding `I` of the
 model space `H` in the model vector space `E`, the charts taking values in `E` are not the original
 charts of the manifold, but those ones composed with `I`, called extended charts. We define
-`written_in_ext_chart I I' x f` for the function `f` written in the preferred extended charts. Then
+`writtenInExtChartAt I I' x f` for the function `f` written in the preferred extended charts. Then
 the manifold derivative of `f`, at `x`, is just the usual derivative of
-`written_in_ext_chart I I' x f`, at the point `(extChartAt I x) x`.
+`writtenInExtChartAt I I' x f`, at the point `(extChartAt I x) x`.
 
 There is a subtelty with respect to continuity: if the function is not continuous, then the image
 of a small open set around `x` will not be contained in the source of the preferred chart around
@@ -933,10 +933,8 @@ theorem mfderiv_congr {f' : M → M'} (h : f = f') :
 
 /-! ### Composition lemmas -/
 
-
-theorem written_in_ext_chart_comp (h : ContinuousWithinAt f s x) :
-    {y |
-        writtenInExtChartAt I I'' x (g ∘ f) y =
+theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
+    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
           (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
       𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
   apply
@@ -944,7 +942,7 @@ theorem written_in_ext_chart_comp (h : ContinuousWithinAt f s x) :
       (extChartAt_preimage_mem_nhdsWithin I x
         (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _)))
   mfld_set_tac
-#align written_in_ext_chart_comp written_in_ext_chart_comp
+#align written_in_ext_chart_comp writtenInExtChartAt_comp
 
 variable (x)
 
@@ -971,7 +969,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     simp only [mfld_simps] at hy
     have : f (((chartAt H x).symm : H → M) (I.symm y)) ∈ u := hst hy.1.1
     simp only [hy, this, mfld_simps]
-  apply A.congr_of_eventuallyEq (written_in_ext_chart_comp hf.1)
+  apply A.congr_of_eventuallyEq (writtenInExtChartAt_comp hf.1)
   simp only [mfld_simps]
 #align has_mfderiv_within_at.comp HasMFDerivWithinAt.comp
 
@@ -1091,10 +1089,10 @@ alias uniqueMDiffOn_iff_uniqueDiffOn ↔ UniqueMDiffOn.uniqueDiffOn UniqueDiffOn
 #align unique_mdiff_on.unique_diff_on UniqueMDiffOn.uniqueDiffOn
 #align unique_diff_on.unique_mdiff_on UniqueDiffOn.uniqueMDiffOn
 
-@[simp, mfld_simps]
-theorem written_in_ext_chart_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
+-- porting note: was `@[simp, mfld_simps]` but `simp` can prove it
+theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
-#align written_in_ext_chart_model_space written_in_ext_chart_model_space
+#align written_in_ext_chart_model_space writtenInExtChartAt_model_space
 
 theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
     HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f' ↔ HasFDerivWithinAt f f' s x := by
