@@ -74,8 +74,8 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance funLike : FunLike (MulChar R R') R (fun _ => R') := by
-  refine ⟨fun χ => χ.toFun,
+instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
+  ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply  MonoidHom.ext (fun _ => congr_fun h _)⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
@@ -84,7 +84,7 @@ class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
 
-initialize_simps_projections MulChar (toMonoidHom_toFun → apply, -toMonoidHom)
+initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 
 attribute [simp] MulCharClass.map_nonunit
 

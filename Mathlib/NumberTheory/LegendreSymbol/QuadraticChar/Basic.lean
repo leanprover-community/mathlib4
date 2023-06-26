@@ -145,20 +145,20 @@ theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
 
 -- @[simp] -- Porting note: simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
-  simp only [isUnit_zero_iff, zero_ne_one, MulChar.map_nonunit]
+  simp only [quadraticChar_apply, quadraticCharFun_zero]
 #align quadratic_char_zero quadraticChar_zero
 
 /-- For nonzero `a : F`, `quadraticChar F a = 1 ↔ IsSquare a`. -/
 theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
     quadraticChar F a = 1 ↔ IsSquare a := by
-  simp only [quadraticChar_toFun, quadraticCharFun, ha, ite_false, ite_eq_left_iff,
-    imp_false, not_not]
+  simp only [quadraticChar_apply, quadraticCharFun, ha, (by decide : (-1 : ℤ) ≠ 1), if_false,
+    ite_eq_left_iff, imp_false, Classical.not_not]
 #align quadratic_char_one_iff_is_square quadraticChar_one_iff_isSquare
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
-  simp only [map_pow, quadraticChar_toFun, quadraticCharFun, ha, ite_false, ite_pow, one_pow,
-    neg_sq, ite_self]
+  simp only [quadraticCharFun, ha, pow_eq_zero_iff, Nat.succ_pos', IsSquare_sq, if_true, if_false,
+    quadraticChar_apply]
 #align quadratic_char_sq_one' quadraticChar_sq_one'
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
@@ -212,7 +212,7 @@ theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
     (quadraticChar F a : F) = a ^ (Fintype.card F / 2) := by
   by_cases ha : a = 0
   · have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card two_pos
-    simp only [ha, isUnit_zero_iff, zero_ne_one, MulChar.map_nonunit, Int.cast_zero, zero_pow this]
+    simp only [ha, zero_pow this, quadraticChar_apply, quadraticCharFun_zero, Int.cast_zero]
   · rw [quadraticChar_eq_pow_of_char_ne_two hF ha]
     by_cases ha' : a ^ (Fintype.card F / 2) = 1
     · simp only [ha', eq_self_iff_true, if_true, Int.cast_one]
@@ -310,8 +310,7 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
   set n := Fintype.card F / 2
   cases' Nat.even_or_odd n with h₂ h₂
   · simp only [Even.neg_one_pow h₂, eq_self_iff_true, if_true]
-  · simp only [Odd.neg_one_pow h₂, ite_eq_right_iff, Ring.neg_one_ne_one_of_char_ne_two hF]
-    tauto
+  · simp only [Odd.neg_one_pow h₂, Ring.neg_one_ne_one_of_char_ne_two hF, ite_false]
 #align quadratic_char_neg_one quadraticChar_neg_one
 
 /-- `-1` is a square in `F` iff `#F` is not congruent to `3` mod `4`. -/

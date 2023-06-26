@@ -118,6 +118,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : IsNontrivial χ
     ext; congr; next => skip
     ext
     rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
+--  conv in _ * _ * (_ * _) => rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
   simp_rw [gaussSum_mul_aux hχ ψ]
   rw [Finset.sum_comm]
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
@@ -162,6 +163,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
+-- Porting note: TODO
 nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
@@ -302,7 +304,8 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have hg : gaussSum χ ψ₈.char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     have _ := congr_arg (· ^ 2) (Fin.sum_univ_eight fun x => (χ₈ x : FF) * τ ^ x.1)
     have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈.char a)) := by
-      -- Porting note: was `ext; congr; apply pow_one`
+      -- Porting note: TODO
+      -- original proof: ext; congr; apply pow_one
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈.char]; congr 2;
       rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
@@ -323,8 +326,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
       rw [← h₄]
       dsimp only
       congr
-      · simp only [isUnit_zero_iff, not_false_eq_true, MulChar.map_nonunit, Int.cast_zero, ne_eq,
-          Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, pow_zero, mul_one]
+      · rw [Matrix.cons_val_zero]; simp
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
           zero_lt_two, pow_eq_zero_iff]
         left
