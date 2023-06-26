@@ -21,28 +21,28 @@ for (Fréchet) derivatives. It is denoted by `mfderiv I I' f x`, where "m" stand
 
 ## Main definitions
 
-* `unique_mdiff_on I s` : predicate saying that, at each point of the set `s`, a function can have
+* `UniqueMDiffOn I s` : predicate saying that, at each point of the set `s`, a function can have
   at most one derivative. This technical condition is important when we define
-  `mfderiv_within` below, as otherwise there is an arbitrary choice in the derivative,
+  `mfderivWithin` below, as otherwise there is an arbitrary choice in the derivative,
   and many properties will fail (for instance the chain rule). This is analogous to
-  `unique_diff_on 𝕜 s` in a vector space.
+  `UniqueDiffOn 𝕜 s` in a vector space.
 
 Let `f` be a map between smooth manifolds. The following definitions follow the `fderiv` API.
 
 * `mfderiv I I' f x` : the derivative of `f` at `x`, as a continuous linear map from the tangent
   space at `x` to the tangent space at `f x`. If the map is not differentiable, this is `0`.
-* `mfderiv_within I I' f s x` : the derivative of `f` at `x` within `s`, as a continuous linear map
+* `mfderivWithin I I' f s x` : the derivative of `f` at `x` within `s`, as a continuous linear map
   from the tangent space at `x` to the tangent space at `f x`. If the map is not differentiable
   within `s`, this is `0`.
-* `mdifferentiable_at I I' f x` : Prop expressing whether `f` is differentiable at `x`.
-* `mdifferentiable_within_at 𝕜 f s x` : Prop expressing whether `f` is differentiable within `s`
+* `MDifferentiableAt I I' f x` : Prop expressing whether `f` is differentiable at `x`.
+* `MDifferentiableWithinAt 𝕜 f s x` : Prop expressing whether `f` is differentiable within `s`
   at `x`.
-* `has_mfderiv_at I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative at `x`.
-* `has_mfderiv_within_at I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative
+* `HasMFDerivAt I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative at `x`.
+* `HasMFDerivWithinAt I I' f s x f'` : Prop expressing whether `f` has `f'` as a derivative
   within `s` at `x`.
-* `mdifferentiable_on I I' f s` : Prop expressing that `f` is differentiable on the set `s`.
-* `mdifferentiable I I' f` : Prop expressing that `f` is differentiable everywhere.
-* `tangent_map I I' f` : the derivative of `f`, as a map from the tangent bundle of `M` to the
+* `MDifferentiableOn I I' f s` : Prop expressing that `f` is differentiable on the set `s`.
+* `MDifferentiable I I' f` : Prop expressing that `f` is differentiable everywhere.
+* `tangentMap I I' f` : the derivative of `f`, as a map from the tangent bundle of `M` to the
   tangent bundle of `M'`.
 
 We also establish results on the differential of the identity, constant functions, charts, extended
@@ -67,7 +67,7 @@ model space `H` in the model vector space `E`, the charts taking values in `E` a
 charts of the manifold, but those ones composed with `I`, called extended charts. We define
 `written_in_ext_chart I I' x f` for the function `f` written in the preferred extended charts. Then
 the manifold derivative of `f`, at `x`, is just the usual derivative of
-`written_in_ext_chart I I' x f`, at the point `(ext_chart_at I x) x`.
+`written_in_ext_chart I I' x f`, at the point `(extChartAt I x) x`.
 
 There is a subtelty with respect to continuity: if the function is not continuous, then the image
 of a small open set around `x` will not be contained in the source of the preferred chart around
@@ -78,12 +78,12 @@ definition, differentiability implies continuity).
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
 restriction to the subtype  `N` is smooth). Then, in the whole manifold `M`, the property
-`mdifferentiable_on I I' f N` holds. However, `mfderiv_within I I' f N` is not uniquely defined
+`MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
 (what values would one choose for vectors that are transverse to `N`?), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
 differential of `f` in all directions. This is in contrast to the case where `N` would be an open
 subset, or a submanifold with boundary of maximal dimension, where this issue does not appear.
-The predicate `unique_mdiff_on I N` indicates that the derivative along `N` is unique if it exists,
+The predicate `UniqueMDiffOn I N` indicates that the derivative along `N` is unique if it exists,
 and is an assumption in most statements requiring a form of uniqueness.
 
 On a vector space, the manifold derivative and the usual derivative are equal. This means in
@@ -114,7 +114,7 @@ map from the tangent space to `M` at `x`, to the tangent space to `M'` at `f x`.
 the tangent space using one specific chart, the formula for the derivative is written in terms of
 this specific chart.
 
-We use the names `mdifferentiable` and `mfderiv`, where the prefix letter `m` means "manifold".
+We use the names `MDifferentiable` and `mfderiv`, where the prefix letter `m` means "manifold".
 -/
 
 
@@ -190,13 +190,13 @@ def UniqueMDiffOn (s : Set M) :=
   ∀ x ∈ s, UniqueMDiffWithinAt I s x
 #align unique_mdiff_on UniqueMDiffOn
 
-/-- `mdifferentiable_within_at I I' f s x` indicates that the function `f` between manifolds
+/-- `MDifferentiableWithinAt I I' f s x` indicates that the function `f` between manifolds
 has a derivative at the point `x` within the set `s`.
-This is a generalization of `differentiable_within_at` to manifolds.
+This is a generalization of `DifferentiableWithinAt` to manifolds.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `written_in_ext_chart_at I I' x f` could be differentiable, while
+and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
   ContinuousWithinAt f s x ∧
@@ -209,13 +209,13 @@ theorem mdifferentiableWithinAt_iff_liftPropWithinAt (f : M → M') (s : Set M) 
   by rfl
 #align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff_liftPropWithinAt
 
-/-- `mdifferentiable_at I I' f x` indicates that the function `f` between manifolds
+/-- `MDifferentiableAt I I' f x` indicates that the function `f` between manifolds
 has a derivative at the point `x`.
-This is a generalization of `differentiable_at` to manifolds.
+This is a generalization of `DifferentiableAt` to manifolds.
 
 We require continuity in the definition, as otherwise points close to `x` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `written_in_ext_chart_at I I' x f` could be differentiable, while
+and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def MDifferentiableAt (f : M → M') (x : M) :=
   ContinuousAt f x ∧
@@ -231,16 +231,16 @@ theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
     simp [DifferentiableWithinAtProp, Set.univ_inter]; rfl
 #align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff_liftPropAt
 
-/-- `mdifferentiable_on I I' f s` indicates that the function `f` between manifolds
+/-- `MDifferentiableOn I I' f s` indicates that the function `f` between manifolds
 has a derivative within `s` at all points of `s`.
-This is a generalization of `differentiable_on` to manifolds. -/
+This is a generalization of `DifferentiableOn` to manifolds. -/
 def MDifferentiableOn (f : M → M') (s : Set M) :=
   ∀ x ∈ s, MDifferentiableWithinAt I I' f s x
 #align mdifferentiable_on MDifferentiableOn
 
-/-- `mdifferentiable I I' f` indicates that the function `f` between manifolds
+/-- `MDifferentiable I I' f` indicates that the function `f` between manifolds
 has a derivative everywhere.
-This is a generalization of `differentiable` to manifolds. -/
+This is a generalization of `Differentiable` to manifolds. -/
 def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 #align mdifferentiable MDifferentiable
@@ -252,16 +252,16 @@ def LocalHomeomorph.MDifferentiable (f : LocalHomeomorph M M') :=
 
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 
-/-- `has_mfderiv_within_at I I' f s x f'` indicates that the function `f` between manifolds
+/-- `HasMFDerivWithinAt I I' f s x f'` indicates that the function `f` between manifolds
 has, at the point `x` and within the set `s`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
-This is a generalization of `has_fderiv_within_at` to manifolds (as indicated by the prefix `m`).
+This is a generalization of `HasFDerivWithinAt` to manifolds (as indicated by the prefix `m`).
 The order of arguments is changed as the type of the derivative `f'` depends on the choice of `x`.
 
 We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `written_in_ext_chart_at I I' x f` could be differentiable, while
+and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
@@ -270,20 +270,20 @@ def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 #align has_mfderiv_within_at HasMFDerivWithinAt
 
-/-- `has_mfderiv_at I I' f x f'` indicates that the function `f` between manifolds
+/-- `HasMFDerivAt I I' f x f'` indicates that the function `f` between manifolds
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
 We require continuity in the definition, as otherwise points close to `x` `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
-and in particular by coincidence `written_in_ext_chart_at I I' x f` could be differentiable, while
+and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f' (range I) ((extChartAt I x) x)
 #align has_mfderiv_at HasMFDerivAt
 
-/-- Let `f` be a function between two smooth manifolds. Then `mfderiv_within I I' f s x` is the
+/-- Let `f` be a function between two smooth manifolds. Then `mfderivWithin I I' f s x` is the
 derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
 tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
@@ -385,7 +385,7 @@ theorem uniqueMDiffOn_univ : UniqueMDiffOn I (univ : Set M) :=
   isOpen_univ.uniqueMDiffOn
 #align unique_mdiff_on_univ uniqueMDiffOn_univ
 
-/- We name the typeclass variables related to `smooth_manifold_with_corners` structure as they are
+/- We name the typeclass variables related to `SmoothManifoldWithCorners` structure as they are
 necessary in lemmas mentioning the derivative, but not in lemmas about differentiability, so we
 want to include them or omit them when necessary. -/
 variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
@@ -393,7 +393,7 @@ variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I
   {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
   {g' : TangentSpace I' (f x) →L[𝕜] TangentSpace I'' (g (f x))}
 
-/-- `unique_mdiff_within_at` achieves its goal: it implies the uniqueness of the derivative. -/
+/-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
   -- porting note: didn't need `convert` because of finding instances by unification
@@ -919,13 +919,13 @@ theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
   exact hL.mfderivWithin_eq (uniqueMDiffWithinAt_univ I) A
 #align filter.eventually_eq.mfderiv_eq Filter.EventuallyEq.mfderiv_eq
 
-/-- A congruence lemma for `mfderiv`, (ab)using the fact that `tangent_space I' (f x)` is
+/-- A congruence lemma for `mfderiv`, (ab)using the fact that `TangentSpace I' (f x)` is
 definitionally equal to `E'`. -/
 theorem mfderiv_congr_point {x' : M} (h : x = x') :
     @Eq (E →L[𝕜] E') (mfderiv I I' f x) (mfderiv I I' f x') := by subst h; rfl
 #align mfderiv_congr_point mfderiv_congr_point
 
-/-- A congruence lemma for `mfderiv`, (ab)using the fact that `tangent_space I' (f x)` is
+/-- A congruence lemma for `mfderiv`, (ab)using the fact that `TangentSpace I' (f x)` is
 definitionally equal to `E'`. -/
 theorem mfderiv_congr {f' : M → M'} (h : f = f') :
     @Eq (E →L[𝕜] E') (mfderiv I I' f x) (mfderiv I I' f' x) := by subst h; rfl
@@ -1116,7 +1116,7 @@ alias hasMFDerivAt_iff_hasFDerivAt ↔ HasMFDerivAt.hasFDerivAt HasFDerivAt.hasM
 #align has_mfderiv_at.has_fderiv_at HasMFDerivAt.hasFDerivAt
 #align has_fderiv_at.has_mfderiv_at HasFDerivAt.hasMFDerivAt
 
-/-- For maps between vector spaces, `mdifferentiable_within_at` and `fdifferentiable_within_at`
+/-- For maps between vector spaces, `MDifferentiableWithinAt` and `fdifferentiable_within_at`
 coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
     MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
@@ -1129,7 +1129,7 @@ alias mdifferentiableWithinAt_iff_differentiableWithinAt ↔
 #align mdifferentiable_within_at.differentiable_within_at MDifferentiableWithinAt.differentiableWithinAt
 #align differentiable_within_at.mdifferentiable_within_at DifferentiableWithinAt.mdifferentiableWithinAt
 
-/-- For maps between vector spaces, `mdifferentiable_at` and `differentiable_at` coincide -/
+/-- For maps between vector spaces, `MDifferentiableAt` and `DifferentiableAt` coincide -/
 theorem mdifferentiableAt_iff_differentiableAt :
     MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x ↔ DifferentiableAt 𝕜 f x := by
   simp only [MDifferentiableAt, differentiableWithinAt_univ, mfld_simps]
@@ -1141,7 +1141,7 @@ alias mdifferentiableAt_iff_differentiableAt ↔ MDifferentiableAt.differentiabl
 #align mdifferentiable_at.differentiable_at MDifferentiableAt.differentiableAt
 #align differentiable_at.mdifferentiable_at DifferentiableAt.mdifferentiableAt
 
-/-- For maps between vector spaces, `mdifferentiable_on` and `differentiable_on` coincide -/
+/-- For maps between vector spaces, `MDifferentiableOn` and `DifferentiableOn` coincide -/
 theorem mdifferentiableOn_iff_differentiableOn :
     MDifferentiableOn 𝓘(𝕜, E) 𝓘(𝕜, E') f s ↔ DifferentiableOn 𝕜 f s := by
   simp only [MDifferentiableOn, DifferentiableOn,
@@ -1153,7 +1153,7 @@ alias mdifferentiableOn_iff_differentiableOn ↔ MDifferentiableOn.differentiabl
 #align mdifferentiable_on.differentiable_on MDifferentiableOn.differentiableOn
 #align differentiable_on.mdifferentiable_on DifferentiableOn.mdifferentiableOn
 
-/-- For maps between vector spaces, `mdifferentiable` and `differentiable` coincide -/
+/-- For maps between vector spaces, `MDifferentiable` and `Differentiable` coincide -/
 theorem mdifferentiable_iff_differentiable :
     MDifferentiable 𝓘(𝕜, E) 𝓘(𝕜, E') f ↔ Differentiable 𝕜 f := by
   simp only [MDifferentiable, Differentiable, mdifferentiableAt_iff_differentiableAt]
@@ -1164,7 +1164,7 @@ alias mdifferentiable_iff_differentiable ↔ MDifferentiable.differentiable
 #align mdifferentiable.differentiable MDifferentiable.differentiable
 #align differentiable.mdifferentiable Differentiable.mdifferentiable
 
-/-- For maps between vector spaces, `mfderiv_within` and `fderiv_within` coincide -/
+/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
 @[simp]
 theorem mfderivWithin_eq_fderivWithin :
     mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E') f s x = fderivWithin 𝕜 f s x := by
@@ -1561,7 +1561,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
   Note that to state this (without casts) we need to be able to see through the definition of
-  `tangent_space`. -/
+  `TangentSpace`. -/
 theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
@@ -1588,8 +1588,8 @@ section Arithmetic
 
 /-! #### Arithmetic
 
-Note that in the in `has_mfderiv_at` lemmas there is an abuse of the defeq between `E'` and
-`tangent_space 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
+Note that in the in `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
+`TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
  -/
 
@@ -1996,7 +1996,7 @@ theorem trans (he' : e'.MDifferentiable I' I'') : (e.trans e').MDifferentiable I
 
 end LocalHomeomorph.MDifferentiable
 
-/-! ### Differentiability of `ext_chart_at` -/
+/-! ### Differentiability of `extChartAt` -/
 
 section extChartAt
 
@@ -2038,7 +2038,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddC
   [SmoothManifoldWithCorners I' M'] {s : Set M}
 
 /-- If `s` has the unique differential property at `x`, `f` is differetiable within `s` at x` and
-its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
+its derivative has Dense range, then `f '' s` has the Unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
     (hd : DenseRange f') : UniqueMDiffWithinAt I' (f '' s) (f x) := by
@@ -2086,7 +2086,7 @@ theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : Local
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
     UniqueDiffOn 𝕜 ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) := by
-  -- this is just a reformulation of `unique_mdiff_on.unique_mdiff_on_preimage`, using as `e`
+  -- this is just a reformulation of `UniqueMDiffOn.uniqueMDiffOn_preimage`, using as `e`
   -- the local chart at `x`.
   apply UniqueMDiffOn.uniqueDiffOn
   rw [← LocalEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
