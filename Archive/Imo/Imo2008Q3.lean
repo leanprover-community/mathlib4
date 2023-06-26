@@ -8,12 +8,12 @@ Authors: Manuel Candales
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Basic
-import Mathbin.Data.Real.Sqrt
-import Mathbin.Data.Nat.Prime
-import Mathbin.NumberTheory.PrimesCongruentOne
-import Mathbin.NumberTheory.LegendreSymbol.QuadraticReciprocity
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Nat.Prime
+import Mathlib.NumberTheory.PrimesCongruentOne
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2008 Q3
@@ -37,8 +37,7 @@ open Real
 namespace imo2008_q3
 
 theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) (hp_gt_20 : p > 20) :
-    ∃ n : ℕ, p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) :=
-  by
+    ∃ n : ℕ, p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   haveI := Fact.mk hpp
   have hp_mod_4_ne_3 : p % 4 ≠ 3 := by linarith [show p % 4 = 1 from hp_mod_4_eq_1]
   obtain ⟨y, hy⟩ := zmod.exists_sq_eq_neg_one_iff.mpr hp_mod_4_ne_3
@@ -65,12 +64,10 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hreal₁ : (k : ℝ) = p - 2 * n := by assumption_mod_cast
   have hreal₂ : (p : ℝ) > 20 := by assumption_mod_cast
   have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
-  have hreal₅ : (k : ℝ) > 4 :=
-    by
+  have hreal₅ : (k : ℝ) > 4 := by
     refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
     linarith only [hreal₂, hreal₃]
-  have hreal₆ : (k : ℝ) > sqrt (2 * n) :=
-    by
+  have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
     refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
     linarith only [hreal₁, hreal₃, hreal₅]
@@ -83,8 +80,7 @@ open imo2008_q3
 
 theorem imo2008_q3 :
     ∀ N : ℕ,
-      ∃ n : ℕ, n ≥ N ∧ ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) :=
-  by
+      ∃ n : ℕ, n ≥ N ∧ ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   intro N
   obtain ⟨p, hpp, hineq₁, hpmod4⟩ := Nat.exists_prime_gt_modEq_one (N ^ 2 + 20) four_ne_zero
   obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linarith [hineq₁, Nat.zero_le (N ^ 2)])
