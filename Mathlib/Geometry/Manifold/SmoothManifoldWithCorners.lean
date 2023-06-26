@@ -1091,10 +1091,21 @@ theorem mem_extChartAt_source : x ∈ (extChartAt I x).source := by
   simp only [extChartAt_source, mem_chart_source]
 #align mem_ext_chart_source mem_extChartAt_source
 
+theorem mem_extChartAt_target : extChartAt I x x ∈ (extChartAt I x).target :=
+  (extChartAt I x).map_source <| mem_extChartAt_source _ _
+
 theorem extChartAt_target (x : M) :
     (extChartAt I x).target = I.symm ⁻¹' (chartAt H x).target ∩ range I :=
   extend_target _ _
 #align ext_chart_at_target extChartAt_target
+
+theorem uniqueDiffOn_extChartAt_target (x : M) : UniqueDiffOn 𝕜 (extChartAt I x).target := by
+  rw [extChartAt_target]
+  exact I.unique_diff_preimage (chartAt H x).open_target
+
+theorem uniqueDiffWithinAt_extChartAt_target (x : M) :
+    UniqueDiffWithinAt 𝕜 (extChartAt I x).target (extChartAt I x x) :=
+  uniqueDiffOn_extChartAt_target I x _ <| mem_extChartAt_target I x
 
 theorem extChartAt_to_inv : (extChartAt I x).symm ((extChartAt I x) x) = x :=
   (extChartAt I x).left_inv (mem_extChartAt_source I x)
