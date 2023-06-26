@@ -313,7 +313,7 @@ theorem mem_orbit_conjAct {g h : G} : g ∈ orbit (ConjAct G) h ↔ IsConj g h :
 #align conj_act.mem_orbit_conj_act ConjAct.mem_orbit_conjAct
 
 theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
-  funext₂ fun g h => by rw [orbit_rel_apply, mem_orbit_conj_act]
+  funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 #align conj_act.orbit_rel_conj_act ConjAct.orbitRel_conjAct
 
 theorem stabilizer_eq_centralizer (g : G) : stabilizer (ConjAct G) g = (zpowers g).centralizer :=
