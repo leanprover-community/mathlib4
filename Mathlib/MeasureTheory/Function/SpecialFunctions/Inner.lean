@@ -53,14 +53,16 @@ theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMe
 
 set_option linter.unusedVariables false in
 @[measurability]
-theorem AEMeasurable.const_inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
-    [TopologicalSpace.SecondCountableTopology E] {μ : MeasureTheory.Measure α} {f : α → E} {c : E}
-    (hf : AEMeasurable f μ) : AEMeasurable (fun x => ⟪c, f x⟫) μ :=
+theorem AEMeasurable.const_inner {m : MeasurableSpace α} [MeasurableSpace E]
+    [OpensMeasurableSpace E] [TopologicalSpace.SecondCountableTopology E]
+    {μ : MeasureTheory.Measure α} {f : α → E} {c : E} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => ⟪c, f x⟫) μ :=
   AEMeasurable.inner aemeasurable_const hf
 
 set_option linter.unusedVariables false in
 @[measurability]
-theorem AEMeasurable.inner_const {m : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
-    [TopologicalSpace.SecondCountableTopology E] {μ : MeasureTheory.Measure α} {f : α → E} {c : E}
-    (hf : AEMeasurable f μ) : AEMeasurable (fun x => ⟪f x, c⟫) μ :=
+theorem AEMeasurable.inner_const {m : MeasurableSpace α} [MeasurableSpace E]
+    [OpensMeasurableSpace E] [TopologicalSpace.SecondCountableTopology E]
+    {μ : MeasureTheory.Measure α} {f : α → E} {c : E} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => ⟪f x, c⟫) μ :=
   AEMeasurable.inner hf aemeasurable_const

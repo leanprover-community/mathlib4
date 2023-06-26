@@ -346,7 +346,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
 
 /-- If the measure is sigma-finite, all strongly measurable functions are
   `FinStronglyMeasurable`. -/
-@[aesop safe forward (rule_sets [Measurable])]
+@[aesop 5% apply (rule_sets [Measurable])]
 protected theorem finStronglyMeasurable [TopologicalSpace β] [Zero β] {m0 : MeasurableSpace α}
     (hf : StronglyMeasurable f) (μ : Measure α) [SigmaFinite μ] : FinStronglyMeasurable f μ :=
   hf.finStronglyMeasurable_of_set_sigmaFinite MeasurableSet.univ (by simp)
@@ -354,7 +354,7 @@ protected theorem finStronglyMeasurable [TopologicalSpace β] [Zero β] {m0 : Me
 #align measure_theory.strongly_measurable.fin_strongly_measurable MeasureTheory.StronglyMeasurable.finStronglyMeasurable
 
 /-- A strongly measurable function is measurable. -/
-@[aesop safe forward (rule_sets [Measurable])]
+@[aesop 5% apply (rule_sets [Measurable])]
 protected theorem measurable {_ : MeasurableSpace α} [TopologicalSpace β] [PseudoMetrizableSpace β]
     [MeasurableSpace β] [BorelSpace β] (hf : StronglyMeasurable f) : Measurable f :=
   measurable_of_tendsto_metrizable (fun n => (hf.approx n).measurable)
@@ -362,7 +362,7 @@ protected theorem measurable {_ : MeasurableSpace α} [TopologicalSpace β] [Pse
 #align measure_theory.strongly_measurable.measurable MeasureTheory.StronglyMeasurable.measurable
 
 /-- A strongly measurable function is almost everywhere measurable. -/
-@[aesop safe forward (rule_sets [Measurable])]
+@[aesop 5% apply (rule_sets [Measurable])]
 protected theorem aemeasurable {_ : MeasurableSpace α} [TopologicalSpace β]
     [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β] {μ : Measure α}
     (hf : StronglyMeasurable f) : AEMeasurable f μ :=

@@ -47,22 +47,15 @@ example (hf : Measurable f) (hs₁ : MeasurableSet s₁) (ht₂ : MeasurableSet 
 -- Strong measurability
 section strong_measurability
 
-variable [MetricSpace β] [BorelSpace β]
+variable [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
 
 -- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
-example : BorelSpace β := inferInstance
-
-set_option trace.aesop true in
-lemma blah (hF : StronglyMeasurable f) : Measurable f := by
-  --have hf' := StronglyMeasurable.measurable hF
-  aesop (add safe forward StronglyMeasurable.measurable)
-  --exact hF.measurable
-
-
-set_option trace.aesop true in
 example  {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
   measurability
+
+example [Zero β] {F : ℕ → α → β} (hF : ∀ i, AEFinStronglyMeasurable (F i) μ) :
+    AEMeasurable (F 0) μ := by measurability
 
 example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, MeasurableSet (S₁ i))
     (hS₂ : ∀ i, MeasurableSet (S₂ i)) : MeasurableSet (⋃ i, (S₁ i) ∪ (S₂ i)) := by measurability
@@ -121,3 +114,7 @@ example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
 /-- An older version of the tactic failed in the presence of a negated hypothesis due to an
 internal call to `apply_assumption`. -/
 example {ι : Type _} (i k : ι) (hik : i ≠ k) : Measurable (id : α → α) := by measurability
+
+/-- This search problem loops (StronglyMeasurable -> Measurable -> StronglyMeasurable) but fails
+quickly nevertheless. -/
+--example (f : ℝ → ℝ) : StronglyMeasurable f := by measurability
