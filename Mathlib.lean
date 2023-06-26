@@ -2373,6 +2373,7 @@ import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.SumFourSquares
+import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
