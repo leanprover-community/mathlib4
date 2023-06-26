@@ -340,8 +340,8 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     intro s hs
     obtain ⟨n₂, hn₂⟩ := h s hs
     refine' ⟨max n₁ n₂, fun m hm => _⟩
-    rw [hn₁ m ((le_max_left _ _).trans hm.le)]
-    exact hn₂ m ((le_max_right _ _).trans hm.le)
+    rw [hn₁ m ((le_max_left _ _).trans hm)]
+    exact hn₂ m ((le_max_right _ _).trans hm)
 #align measure_theory.strongly_measurable.fin_strongly_measurable_of_set_sigma_finite MeasureTheory.StronglyMeasurable.finStronglyMeasurable_of_set_sigmaFinite
 
 /-- If the measure is sigma-finite, all strongly measurable functions are

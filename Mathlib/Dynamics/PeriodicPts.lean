@@ -299,7 +299,7 @@ theorem iterate_mod_minimalPeriod_eq : f^[n % minimalPeriod f x] x = f^[n] x :=
 #align function.iterate_mod_minimal_period_eq Function.iterate_mod_minimalPeriod_eq
 
 theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < minimalPeriod f x := by
-  simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1.lt]
+  simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1]
 #align function.minimal_period_pos_of_mem_periodic_pts Function.minimalPeriod_pos_of_mem_periodicPts
 
 theorem minimalPeriod_eq_zero_of_nmem_periodicPts (hx : x ∉ periodicPts f) :

@@ -90,7 +90,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) := by
       -- This proof takes 5 lines because we can't import `specific_limits` here
       rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
-      have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
+      have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.ne', ENNReal.coe_ne_top⟩
       rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩
       refine' ⟨n, Subset.trans (ball_subset_ball _) hε⟩
       simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le

@@ -93,7 +93,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
   replace h3 : DiffContOnCl ℂ f (ball z₀ ρ)
   exact ⟨h3.differentiableOn.mono ball_subset_closedBall,
-    (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
+    (closure_ball z₀ hρ.ne').symm ▸ h3.continuousOn⟩
   let r := ρ ⊓ R
   have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left

@@ -115,7 +115,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ
   by_cases hδi : δ = ∞
   · simp only [hδi, imp_true_iff, le_top, exists_const]
   lift δ to ℝ≥0 using hδi
-  rw [gt_iff_lt, ENNReal.coe_pos, ← NNReal.coe_pos] at hδ
+  rw [ENNReal.coe_pos, ← NNReal.coe_pos] at hδ
   obtain ⟨t, _, ht, hunif⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hg hfg hδ
   rw [ENNReal.ofReal_coe_nnreal] at ht
   rw [Metric.tendstoUniformlyOn_iff] at hunif

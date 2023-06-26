@@ -237,7 +237,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
           hδ _ (I.mapsTo_insertNth_face_Icc hd <| Hsub hx) _
             (I.mapsTo_insertNth_face_Icc (hc _) <| Hsub hx) ?_
       rw [Fin.dist_insertNth_insertNth, dist_self, dist_comm]
-      exact max_le hk.le δpos.lt.le
+      exact max_le hk.le δpos.le
     _ ≤ ε := by
       rw [Box.Icc_def, Real.volume_Icc_pi_toReal ((J k).face i).lower_le_upper,
         ← le_div_iff (hvol_pos _)]

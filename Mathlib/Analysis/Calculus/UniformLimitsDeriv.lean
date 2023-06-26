@@ -142,7 +142,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
       exact lt_of_lt_of_le hy (min_le_left _ _)
     have hxyε : ∀ y : E, y ∈ Metric.ball x r → ε * ‖y - x‖ < ε := by
       intro y hy
-      exact (mul_lt_iff_lt_one_right hε.lt).mpr (hxy y hy)
+      exact (mul_lt_iff_lt_one_right hε).mpr (hxy y hy)
     -- With a small ball in hand, apply the mean value theorem
     refine'
       eventually_prod_iff.mpr
@@ -202,7 +202,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
     intro ε hε
     obtain ⟨q, hqpos, hq⟩ : ∃ q : ℝ, 0 < q ∧ q * r < ε := by
       simp_rw [mul_comm]
-      exact exists_pos_mul_lt hε.lt r
+      exact exists_pos_mul_lt hε r
     apply (hf' q hqpos.gt).mono
     intro n hn y hy
     simp_rw [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg] at hn ⊢
@@ -466,7 +466,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero,
     Metric.tendstoUniformlyOnFilter_iff] at hf' ⊢
   intro ε hε
-  obtain ⟨q, hq, hq'⟩ := exists_between hε.lt
+  obtain ⟨q, hq, hq'⟩ := exists_between hε
   apply (hf' q hq).mono
   intro n hn
   refine' lt_of_le_of_lt _ hq'
@@ -514,7 +514,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) := by
     rw [Metric.tendstoUniformlyOnFilter_iff] at hf' ⊢
     intro ε hε
-    obtain ⟨q, hq, hq'⟩ := exists_between hε.lt
+    obtain ⟨q, hq, hq'⟩ := exists_between hε
     apply (hf' q hq).mono
     intro n hn
     refine' lt_of_le_of_lt _ hq'

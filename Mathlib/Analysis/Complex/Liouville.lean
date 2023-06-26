@@ -104,7 +104,7 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
   calc
     ‖deriv f c‖ ≤ C / (C / ε) :=
       norm_deriv_le_of_forall_mem_sphere_norm_le (div_pos C₀ ε₀) hf.diffContOnCl fun z _ => hC z
-    _ = ε := div_div_cancel' C₀.lt.ne'
+    _ = ε := div_div_cancel' C₀.ne'
 #align complex.liouville_theorem_aux Complex.liouville_theorem_aux
 
 end Complex

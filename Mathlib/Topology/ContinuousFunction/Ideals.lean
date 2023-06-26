@@ -208,7 +208,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ((idealOfSet_closed 𝕜 <| setOfIdeal I).closure_subset_iff.mpr fun f hf x hx =>
         not_mem_setOfIdeal.mp hx hf)
   refine' (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => _)
-  lift ε to ℝ≥0 using hε.lt.le
+  lift ε to ℝ≥0 using hε.le
   replace hε := show (0 : ℝ≥0) < ε from hε
   simp_rw [dist_nndist]
   norm_cast

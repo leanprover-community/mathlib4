@@ -105,7 +105,7 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurabl
     ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n) := by
   have ⟨N, hN⟩ := (ENNReal.tendsto_atTop ENNReal.zero_ne_top).1
     (measure_notConvergentSeq_tendsto_zero hf hg hsm hs hfg n) (ENNReal.ofReal (ε * 2⁻¹ ^ n)) (by
-      rw [gt_iff_lt, ENNReal.ofReal_pos]
+      rw [ENNReal.ofReal_pos]
       exact mul_pos hε (pow_pos (by norm_num) n))
   rw [zero_add] at hN
   exact ⟨N, (hN N le_rfl).2⟩
