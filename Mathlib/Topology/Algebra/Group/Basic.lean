@@ -1724,7 +1724,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 @[to_additive]
 theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
   calc
-    𝓝 (x * y) = map (x * ·) (map (· * y ) (𝓝 1 * 𝓝 1)) := by simp
+    𝓝 (x * y) = map (x * ·) (map (· * y) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
     _ = map₂ (fun a b => x * a * (b * y)) (𝓝 1) (𝓝 1) := by simp only [mul_assoc]
     _ = 𝓝 x * 𝓝 y :=
