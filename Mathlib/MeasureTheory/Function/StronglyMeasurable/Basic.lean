@@ -1034,6 +1034,8 @@ protected theorem tendsto_approx : ∀ x, Tendsto (fun n => hf.approx n x) atTop
 
 end sequence
 
+/-- A finitely strongly measurable function is strongly measurable. -/
+@[aesop 5% apply (rule_sets [Measurable])]
 protected theorem stronglyMeasurable [Zero β] [TopologicalSpace β]
     (hf : FinStronglyMeasurable f μ) : StronglyMeasurable f :=
   ⟨hf.approx, hf.tendsto_approx⟩
@@ -1072,6 +1074,7 @@ section Arithmetic
 
 variable [TopologicalSpace β]
 
+@[aesop safe 20 (rule_sets [Measurable])]
 protected theorem mul [MonoidWithZero β] [ContinuousMul β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f * g) μ := by
   refine'
@@ -1081,6 +1084,7 @@ protected theorem mul [MonoidWithZero β] [ContinuousMul β] (hf : FinStronglyMe
   exact (measure_mono (support_mul_subset_left _ _)).trans_lt (hf.fin_support_approx n)
 #align measure_theory.fin_strongly_measurable.mul MeasureTheory.FinStronglyMeasurable.mul
 
+@[aesop safe 20 (rule_sets [Measurable])]
 protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f + g) μ :=
   ⟨fun n => hf.approx n + hg.approx n, fun n =>
@@ -1090,6 +1094,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasura
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.add MeasureTheory.FinStronglyMeasurable.add
 
+@[measurability]
 protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine' ⟨fun n => -hf.approx n, fun n => _, fun x => (hf.tendsto_approx x).neg⟩
@@ -1098,6 +1103,7 @@ protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : FinStronglyMe
   exact hf.fin_support_approx n
 #align measure_theory.fin_strongly_measurable.neg MeasureTheory.FinStronglyMeasurable.neg
 
+@[measurability]
 protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f - g) μ :=
   ⟨fun n => hf.approx n - hg.approx n, fun n =>
@@ -1107,6 +1113,7 @@ protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurab
     fun x => (hf.tendsto_approx x).sub (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.sub MeasureTheory.FinStronglyMeasurable.sub
 
+@[measurability]
 protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [AddMonoid β] [Monoid 𝕜]
     [DistribMulAction 𝕜 β] [ContinuousSMul 𝕜 β] (hf : FinStronglyMeasurable f μ) (c : 𝕜) :
     FinStronglyMeasurable (c • f) μ := by
@@ -1121,6 +1128,7 @@ section Order
 
 variable [TopologicalSpace β] [Zero β]
 
+@[aesop safe 20 (rule_sets [Measurable])]
 protected theorem sup [SemilatticeSup β] [ContinuousSup β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f ⊔ g) μ := by
   refine'
@@ -1130,6 +1138,7 @@ protected theorem sup [SemilatticeSup β] [ContinuousSup β] (hf : FinStronglyMe
   exact measure_union_lt_top_iff.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩
 #align measure_theory.fin_strongly_measurable.sup MeasureTheory.FinStronglyMeasurable.sup
 
+@[aesop safe 20 (rule_sets [Measurable])]
 protected theorem inf [SemilatticeInf β] [ContinuousInf β] (hf : FinStronglyMeasurable f μ)
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f ⊓ g) μ := by
   refine'
