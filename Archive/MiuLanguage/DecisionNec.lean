@@ -129,7 +129,11 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : G
   cases' h₂ with mhead nmtail
   have : xs ≠ nil := by rintro rfl; contradiction
   constructor
-  · rwa [head_append] at * <;> exact this
+  · -- Porting note: Original proof was `rwa [head_append] at * <;> exact this`.
+    -- However, there is no `headI_append`
+    cases xs
+    · contradiction
+    exact mhead
   · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
     · simp_rw [mem_append, not_or, and_true]; exact nmtail
@@ -151,7 +155,9 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
-  · revert mhead; simp only [append_assoc, head_append _ k]; exact id
+  · cases as
+    · contradiction
+    exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp only [cons_append, tail, mem_append, mem_cons_iff, false_or_iff, mem_nil_iff,
@@ -169,7 +175,9 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
-  · revert mhead; simp only [append_assoc, head_append _ k]; exact id
+  · cases as
+    · contradiction
+    exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
     simp only [cons_append, tail, mem_append, mem_cons_iff, false_or_iff, mem_nil_iff,
