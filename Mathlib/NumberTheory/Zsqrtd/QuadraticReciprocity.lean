@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Zsqrtd.GaussianInt
-import Mathbin.NumberTheory.LegendreSymbol.QuadraticReciprocity
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -37,16 +37,13 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
   hp.1.eq_two_or_odd.elim
     (fun hp2 =>
       absurd hpi
-        (mt irreducible_iff_prime.2 fun ⟨hu, h⟩ =>
-          by
+        (mt irreducible_iff_prime.2 fun ⟨hu, h⟩ => by
           have := h ⟨1, 1⟩ ⟨1, -1⟩ (hp2.symm ▸ rfl)
           rw [← norm_eq_one_iff, ← norm_eq_one_iff] at this 
           exact absurd this (by decide)))
     fun hp1 =>
-    by_contradiction fun hp3 : p % 4 ≠ 3 =>
-      by
-      have hp41 : p % 4 = 1 :=
-        by
+    by_contradiction fun hp3 : p % 4 ≠ 3 => by
+      have hp41 : p % 4 = 1 := by
         rw [← Nat.mod_mul_left_mod p 2 2, show 2 * 2 = 4 from rfl] at hp1 
         have := Nat.mod_lt p (show 0 < 4 by decide)
         revert this hp3 hp1
