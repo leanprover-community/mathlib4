@@ -5,6 +5,13 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Tactic
 import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+open scoped BigOperators
+open MeasureTheory TopologicalSpace
 
 variable {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
   {f g : α → β} {s₁ s₂ : Set α} {t₁ t₂ : Set β} {μ ν : MeasureTheory.Measure α}
@@ -37,7 +44,30 @@ example {ι} [Encodable ι] {S : ι → Set α} (hs : ∀ i, MeasurableSet (S i)
 example (hf : Measurable f) (hs₁ : MeasurableSet s₁) (ht₂ : MeasurableSet t₂) :
     MeasurableSet ((f ⁻¹' t₂) ∩ s₁) := by measurability
 
-/- Porting note: TODO Uncomment these
+-- Strong measurability
+section strong_measurability
+
+variable [MetricSpace β] [BorelSpace β]
+
+-- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
+
+example : BorelSpace β := inferInstance
+
+set_option trace.aesop true in
+lemma blah (hF : StronglyMeasurable f) : Measurable f := by
+  --have hf' := StronglyMeasurable.measurable hF
+  aesop (add safe forward StronglyMeasurable.measurable)
+  --exact hF.measurable
+
+
+set_option trace.aesop true in
+example  {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
+  measurability
+
+example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, MeasurableSet (S₁ i))
+    (hS₂ : ∀ i, MeasurableSet (S₂ i)) : MeasurableSet (⋃ i, (S₁ i) ∪ (S₂ i)) := by measurability
+
+end strong_measurability
 
 /-- `ℝ` is a good test case because it verifies many assumptions, hence many lemmas apply and we
 are more likely to detect a bad lemma. In a previous version of the tactic, `measurability` got
@@ -59,7 +89,11 @@ example [Div β] [MeasurableDiv₂ β] (hf : Measurable f) (hg : Measurable g)
     (ht : MeasurableSet t₂): MeasurableSet ((fun x => f x / g x) ⁻¹' t₂) := by measurability
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i in s, (λ x, F (i+1) x + F i x)) μ := by
+    (hF : ∀ i, Measurable (F i)) : Measurable (∑ i in s, (fun x => F (i+1) x + F i x)) := by
+  measurability
+
+example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
+    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i in s, (fun x => F (i+1) x + F i x)) μ := by
   measurability
 
 -- even with many assumptions, the tactic is not trapped by a bad lemma
@@ -69,7 +103,20 @@ example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpac
   measurability
 
 example : Measurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability
--/
+
+example : StronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability
+
+example {γ : MeasureTheory.Measure ℝ} :
+  AEMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+
+example {γ : MeasureTheory.Measure ℝ} :
+  AEStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+
+example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
+  FinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
+
+example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
+  AEFinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner x 3)) γ := by measurability
 
 /-- An older version of the tactic failed in the presence of a negated hypothesis due to an
 internal call to `apply_assumption`. -/
