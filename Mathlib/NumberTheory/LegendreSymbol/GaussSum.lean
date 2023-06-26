@@ -162,7 +162,6 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
--- Porting note: TODO
 nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
@@ -324,7 +323,8 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
       rw [← h₄]
       dsimp only
       congr
-      · rw [Matrix.cons_val_zero]; simp
+      · simp only [isUnit_zero_iff, not_false_eq_true, MulChar.map_nonunit, Int.cast_zero, ne_eq,
+          Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, pow_zero, mul_one]
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
           zero_lt_two, pow_eq_zero_iff]
         left

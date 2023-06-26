@@ -83,12 +83,9 @@ theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
 theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 2) := by
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
-  -- Porting note: `nth_rw` didn't work here anymore. artificial workaround
-  conv =>
-    rhs; congr; next => skip
-    rw [← Nat.div_add_mod n 4]
-    congr; congr; congr
-    rw [(by norm_num : 4 = 2 * 2)]
+  conv_rhs => -- Porting note: was `nth_rw`
+    arg 2; rw [← Nat.div_add_mod n 4]
+    enter [1, 1, 1]; rw [(by norm_num : 4 = 2 * 2)]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ (by norm_num : 0 < 2), pow_add, pow_mul,
     neg_one_sq, one_pow, mul_one]
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → ite (m = 1) (1 : ℤ) (-1) = (-1) ^ (m / 2) := by decide
@@ -137,17 +134,13 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
 set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
--- @[simps?] --Porting note: TODO
+@[simps]
 def χ₈ : MulChar (ZMod 8) ℤ where
   toFun := (![0, 1, 0, -1, 0, -1, 0, 1] : ZMod 8 → ℤ)
   map_one' := rfl
   map_mul' := by decide
   map_nonunit' := by decide
 #align zmod.χ₈ ZMod.χ₈
-
-
-theorem χ₈_apply (a : Fin 8) :
-  χ₈ a = Matrix.vecCons 0 ![1, 0, -1, 0, -1, 0, 1] a := rfl
 
 /-- `χ₈` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
