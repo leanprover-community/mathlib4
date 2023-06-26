@@ -9,7 +9,7 @@ Authors: Gihan Marasingha
 ! if you have ported upstream changes.
 -/
 import Archive.MiuLanguage.DecisionNec
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # Decision procedure - sufficient condition and decidability
@@ -63,7 +63,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   -- base case
   · rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
     -- inductive step
-    exact derivable.r2 hk
+    exact Derivable.r2 hk
 
 /-!
 ## Converting `I`s to `U`s
@@ -87,18 +87,18 @@ an even number of `U`s and `z` is any `miustr`.
 Any number of successive occurrences of `"UU"` can be removed from the end of a `derivable` `miustr`
 to produce another `derivable` `miustr`.
 -/
-theorem der_of_der_append_replicate_u_even {z : Miustr} {m : ℕ}
-    (h : Derivable (z ++ replicate (m * 2) U)) : Derivable z := by
+theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
+    (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
   induction' m with k hk
   · revert h
-    simp only [List.replicate, MulZeroClass.zero_mul, append_nil, imp_self]
+    rw [replicate, append_nil]; exact id
   · apply hk
-    simp only [succ_mul, replicate_add] at h 
-    change replicate 2 U with [U, U] at h 
-    rw [← append_nil (z ++ replicate (k * 2) U)]
-    apply derivable.r4
-    simp only [append_nil, append_assoc, h]
-#align miu.der_of_der_append_replicate_U_even Miu.der_of_der_append_replicate_u_even
+    simp only [succ_mul, replicate_add] at h
+    rw [← append_nil ↑(z ++ ↑(replicate (k * 2) U))]
+    apply Derivable.r4
+    rwa [append_nil, append_assoc]
+set_option linter.uppercaseLean3 false in
+#align miu.der_of_der_append_replicate_U_even Miu.der_of_der_append_replicate_U_even
 
 /-!
 In fine-tuning my application of `simp`, I issued the following commend to determine which lemmas
@@ -111,32 +111,25 @@ In fine-tuning my application of `simp`, I issued the following commend to deter
 /-- We may replace several consecutive occurrences of  `"III"` with the same number of `"U"`s.
 In application of the following lemma, `xs` will either be `[]` or `[U]`.
 -/
-theorem der_cons_replicate_i_replicate_u_append_of_der_cons_replicate_i_append (c k : ℕ)
-    (hc : c % 3 = 1 ∨ c % 3 = 2) (xs : Miustr)
-    (hder : Derivable (M :: replicate (c + 3 * k) I ++ xs)) :
-    Derivable (M :: (replicate c I ++ replicate k U) ++ xs) := by
+theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (c k : ℕ)
+    (_ : c % 3 = 1 ∨ c % 3 = 2) (xs : Miustr)
+    (hder : Derivable (↑(M :: replicate (c + 3 * k) I) ++ xs)) :
+    Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
   revert xs
   induction' k with a ha
-  ·
-    simp only [List.replicate, MulZeroClass.mul_zero, add_zero, append_nil, forall_true_iff,
-      imp_self]
+  · simp only [replicate, zero_eq, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
   · intro xs
     specialize ha (U :: xs)
     intro h₂
     simp only [succ_eq_add_one, replicate_add]
-    -- We massage the goal
-    rw [← append_assoc, ← cons_append]
-    -- into a form amenable
-    change replicate 1 U with [U]
-    -- to the application of
-    rw [append_assoc, singleton_append]
-    -- ha.
+    -- We massage the goal into a form amenable to the application of `ha`.
+    rw [← append_assoc, ← cons_append, replicate_one, append_assoc, singleton_append]
     apply ha
-    apply derivable.r3
-    change [I, I, I] with replicate 3 I
-    simp only [cons_append, ← replicate_add]
-    convert h₂
-#align miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append Miu.der_cons_replicate_i_replicate_u_append_of_der_cons_replicate_i_append
+    apply Derivable.r3
+    change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
+    rwa [cons_append, ← replicate_add, add_assoc]
+set_option linter.uppercaseLean3 false in
+#align miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append Miu.der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append
 
 /-!
 ### Arithmetic
@@ -168,10 +161,10 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
   · use g; exact ⟨hp, hgmod⟩
   refine' ⟨g + 2, _, _⟩
   · rw [mul_succ, ← add_assoc, pow_add]
-    change 2 ^ 2 with 1 + 3; rw [mul_add (2 ^ g) 1 3, mul_one]
+    change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
     linarith [hkg, one_le_two_pow g]
   · rw [pow_add, ← mul_one c]
-    exact modeq.mul hgmod rfl
+    exact ModEq.mul hgmod rfl
 
 /-- If `a` is 1 or 2 modulo 3, then exists `k` a power of 2 for which `a ≤ k` and `a ≡ k [MOD 3]`.
 -/
@@ -188,7 +181,7 @@ end Arithmetic
 
 theorem replicate_pow_minus_append {m : ℕ} :
     M :: replicate (2 ^ m - 1) I ++ [I] = M :: replicate (2 ^ m) I := by
-  change [I] with replicate 1 I
+  change M :: replicate (2 ^ m - 1) I ++ replicate 1 I = M :: replicate (2 ^ m) I
   rw [cons_append, ← replicate_add, tsub_add_cancel_of_le (one_le_pow' m 1)]
 #align miu.replicate_pow_minus_append Miu.replicate_pow_minus_append
 
@@ -196,64 +189,65 @@ theorem replicate_pow_minus_append {m : ℕ} :
 `der_replicate_I_of_mod3` states that `M::y` is `derivable` if `y` is any `miustr` consisiting just
 of `I`s, where `count I y` is 1 or 2 modulo 3.
 -/
-theorem der_replicate_i_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
+theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     Derivable (M :: replicate c I) := by
   -- From `der_cons_replicate`, we can derive the `miustr` `M::w` described in the introduction.
   cases' le_pow2_and_pow2_eq_mod3 c h with m hm
   -- `2^m` will be  the number of `I`s in `M::w`
-  have hw₂ : derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
+  have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
     ·-- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · rw [h_one, ← replicate_pow_minus_append, append_assoc]
       -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
-      apply derivable.r1
+      apply Derivable.r1
       rw [replicate_pow_minus_append]
       exact der_cons_replicate m
   have hw₃ :
-    derivable
+    Derivable
       (M :: replicate c I ++ replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) :=
     by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
-    convert hw₂
+    convert hw₂ using 4
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
-    · exact (modeq_iff_dvd' hm.1).mp hm.2.symm
-  rw [append_assoc, ← replicate_add _ _] at hw₃ 
+    · exact (modEq_iff_dvd' hm.1).mp hm.2.symm
+  rw [append_assoc, ← replicate_add _ _] at hw₃
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
-  rw [ht] at hw₃ 
+  rw [ht] at hw₃
   exact der_of_der_append_replicate_U_even hw₃
-#align miu.der_replicate_I_of_mod3 Miu.der_replicate_i_of_mod3
+set_option linter.uppercaseLean3 false in
+#align miu.der_replicate_I_of_mod3 Miu.der_replicate_I_of_mod3
 
 example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I) := by
   -- From `der_cons_replicate`, we can derive the `miustr` `M::w` described in the introduction.
   cases' le_pow2_and_pow2_eq_mod3 c h with m hm
   -- `2^m` will be  the number of `I`s in `M::w`
-  have hw₂ : derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
+  have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
     ·-- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
     · rw [h_one, ← replicate_pow_minus_append, append_assoc]
       -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
-      apply derivable.r1
+      apply Derivable.r1
       rw [replicate_pow_minus_append]
       exact der_cons_replicate m
   have hw₃ :
-    derivable
+    Derivable
       (M :: replicate c I ++ replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) :=
     by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
-    convert hw₂
+    convert hw₂ using 4
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
-    · exact (modeq_iff_dvd' hm.1).mp hm.2.symm
-  rw [append_assoc, ← replicate_add _ _] at hw₃ 
+    · exact (modEq_iff_dvd' hm.1).mp hm.2.symm
+  rw [append_assoc, ← replicate_add _ _] at hw₃
   cases' add_mod2 ((2 ^ m - c) / 3) with t ht
-  rw [ht] at hw₃ 
+  rw [ht] at hw₃
   exact der_of_der_append_replicate_U_even hw₃
 
 /-!
@@ -271,7 +265,7 @@ conditions under which  `count I ys = length ys`.
 
 /-- If an `miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
-theorem count_i_eq_length_of_count_u_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
+theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
     (hm : M ∉ ys) : count I ys = length ys := by
   induction' ys with x xs hxs
   · rfl
@@ -283,25 +277,23 @@ theorem count_i_eq_length_of_count_u_zero_and_neg_mem {ys : Miustr} (hu : count 
       apply hxs
       · simpa only [count]
       · simp only [mem_cons_iff, false_or_iff] at hm ; exact hm
-    · exfalso; simp only [count, countp_cons_of_pos] at hu 
+    · exfalso; simp only [count, countp_cons_of_pos] at hu
       -- case `x = U` gives a contradiction.
       exact succ_ne_zero _ hu
-#align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_i_eq_length_of_count_u_zero_and_neg_mem
+set_option linter.uppercaseLean3 false in
+#align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
 
 /-- `base_case_suf` is the base case of the sufficiency result.
 -/
 theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
-    intro k; simp only [k, count, countp, if_false, zero_mod, zero_ne_one, false_or_iff] at hi 
-    contradiction
+    intro k; simp only [k, count, countp, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
-  rw [head] at mhead 
-  rw [mhead] at *
+  rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
   · exact der_replicate_I_of_mod3 c hc
-  · simp only [count] at *
-    use count I ys
+  · use count I ys
     refine' And.intro _ hi
     apply replicate_count_eq_of_count_eq_length
     exact count_I_eq_length_of_count_U_zero_and_neg_mem hu nmtail
@@ -313,7 +305,7 @@ relate to `count U`.
 -/
 
 
-theorem mem_of_count_u_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
+theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
   · exfalso; rw [count] at h ; contradiction
   · simp only [mem_cons_iff]
@@ -322,25 +314,27 @@ theorem mem_of_count_u_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k)
       right;
       apply hzs; simp only [count, countp, if_false] at h ; rw [← h]; rfl
     · left; rfl
-#align miu.mem_of_count_U_eq_succ Miu.mem_of_count_u_eq_succ
+set_option linter.uppercaseLean3 false in
+#align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
 -- case `z = U`
-theorem eq_append_cons_u_of_count_u_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
-    ∃ as bs : Miustr, zs = as ++ U :: bs :=
-  mem_split (mem_of_count_u_eq_succ h)
-#align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_u_of_count_u_pos
+theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
+    ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
+  mem_split (mem_of_count_U_eq_succ h)
+set_option linter.uppercaseLean3 false in
+#align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
  -/
 theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :
     ∃ as bs : Miustr,
       ys = M :: as ++ U :: bs ∧
-        count U (M :: as ++ [I, I, I] ++ bs) = k ∧ Decstr (M :: as ++ [I, I, I] ++ bs) := by
+      count U (↑(M :: as) ++ ↑[I, I, I] ++ bs : Miustr) = k ∧
+      Decstr (↑(M :: as) ++ ↑[I, I, I] ++ bs) := by
   rcases hdec with ⟨⟨mhead, nmtail⟩, hic⟩
-  have : ys ≠ nil := by intro k;
-    simp only [k, count, countp, zero_mod, false_or_iff, zero_ne_one] at hic ; contradiction
+  have : ys ≠ nil := by rintro rfl; contradiction
   rcases exists_cons_of_ne_nil this with ⟨z, zs, rfl⟩
-  rw [head] at mhead 
+  rw [head] at mhead
   rw [mhead] at *
   simp only [count, countp, cons_append, if_false, countp_append] at *
   rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, hab⟩
@@ -366,12 +360,12 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   revert en
   -- Crucially, we need the induction hypothesis to quantify over `en`
   induction' n with k hk
-  · exact base_case_suf
+  · exact base_case_suf _
   · intro ys hdec hus
     rcases ind_hyp_suf k ys hus hdec with ⟨as, bs, hyab, habuc, hdecab⟩
-    have h₂ : derivable (M :: as ++ [I, I, I] ++ bs) := hk hdecab habuc
+    have h₂ : Derivable (↑(M :: as) ++ ↑[I, I, I] ++ bs) := hk hdecab habuc
     rw [hyab]
-    exact derivable.r3 h₂
+    exact Derivable.r3 h₂
 #align miu.der_of_decstr Miu.der_of_decstr
 
 /-!
@@ -381,7 +375,7 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
 
 /-- Finally, we have the main result, namely that `derivable` is a decidable predicate.
 -/
-instance : DecidablePred Derivable := fun en => decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
+instance : DecidablePred Derivable := fun _ => decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
 
 /-!
 By decidability, we can automatically determine whether any given `miustr` is `derivable`.
@@ -393,4 +387,3 @@ example : ¬Derivable "MU" := by decide
 example : Derivable "MUIUIUIIIIIUUUIUII" := by decide
 
 end Miu
-
