@@ -278,6 +278,9 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
   fun _ hx => hx.elim
 #align unique_diff_on_empty uniqueDiffOn_empty
 
+theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
+    UniqueDiffWithinAt 𝕜 s y := hy ▸ h
+
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
   simp only [uniqueDiffWithinAt_iff] at *
