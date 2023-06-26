@@ -511,6 +511,10 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
+theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e:= by
+  rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
+#align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
+
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   refine ⟨le_of_lt_add_one, fun h => ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
@@ -520,6 +524,10 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   -- Porting note: was `apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h`
   norm_cast; apply Nat.lt_succ_of_le; norm_cast at h
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
+
+lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n :=
+by rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
+#align part_enat.lt_coe_succ_iff_le PartENat.lt_coe_succ_iff_le
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   refine PartENat.casesOn a ?_ ?_

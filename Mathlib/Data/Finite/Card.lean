@@ -193,6 +193,17 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
 
 end Finite
 
+namespace PartENat
+
+theorem card_eq_coe_nat_card (α : Type _) [Finite α] : card α = Nat.card α := by
+  unfold PartENat.card
+  apply symm
+  rw [Cardinal.natCast_eq_toPartENat_iff]
+  exact Finite.cast_card_eq_mk
+#align part_enat.card_of_finite PartENat.card_eq_coe_nat_card
+
+end PartENat
+
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
@@ -206,4 +217,3 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
 #align set.card_union_le Set.card_union_le
 
 end Set
-
