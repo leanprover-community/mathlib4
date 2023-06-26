@@ -40,11 +40,12 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 open scoped Pointwise NNReal
 
 variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
+  [BorelSpace G] --{μ : Measure G}
+  {Γ : Subgroup G}
 
-/-- Measurability of the action of the topological group `G` on the left-coset space `G/Γ`. -/
+/-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
 @[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
-  space `G/Γ`."]
+  space `G / Γ`."]
 instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
@@ -52,9 +53,40 @@ instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
-variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
+--variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
 
-variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
+variable {μ : Measure (G ⧸ Γ)}
+
+local notation "π" => @QuotientGroup.mk G _ Γ
+
+-- set_option linter.unusedVariables false in
+-- class QuotientVolumeEqVolumePreimage' [MeasureSpace (G ⧸ Γ)] : Prop where
+--   projection_respects_measure : ∀ (t : Set G)
+--   (fund_dom_t : IsFundamentalDomain (Subgroup.opposite Γ) t)
+--     (meas_t : MeasurableSet t) (U : Set (G ⧸ Γ)) (meas_U : MeasurableSet U),
+--     volume U = volume (π ⁻¹' U ∩ t)
+
+
+variable [Countable Γ] [MeasureSpace G] [MeasureSpace (G ⧸ Γ)]
+  [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ]
+--[BorelSpace (G ⧸ Γ)]
+
+
+-- more beuatiful theorem: if you ahve ameasure speace downstairs and the downstairs one is smul invariant
+-- then fund dom independent
+
+/-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
+  invariant measure on `G` to is a `G`-invariant measure on `G ⧸ Γ`. -/
+@[to_additive "The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and
+  right-invariant measure on an additive topological group `G` to a fundamental domain `𝓕` is a
+  `G`-invariant measure on `G ⧸ Γ`."]
+theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeftInvariant]
+    [μ.IsMulRightInvariant] :
+    SMulInvariantMeasure G (G ⧸ Γ) (Measure.map QuotientGroup.mk (μ.restrict 𝓕)) where
+
+
+#exit
+
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
   invariant measure on `G` to a fundamental domain `𝓕` is a `G`-invariant measure on `G ⧸ Γ`. -/

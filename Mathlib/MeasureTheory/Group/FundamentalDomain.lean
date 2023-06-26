@@ -734,6 +734,11 @@ noncomputable def _root_.Set.quotientMeasure (s : Set α) (μ : Measure α)
   convert μ.m_iUnion meas_ff disjoint_ff using 1
   simp [iUnion_inter]
 
+-- noncomputable def _root_.Set.quotientMeasureSpace (s : Set α) (μ : Measure α)
+--     (hs : MeasurableSet s) : MeasureSpace (Quotient α_mod_G) :=
+--   { Quotient.instMeasurableSpace with
+--     volume := s.quotientMeasure μ hs }
+
 lemma _root_.Set.quotientMeasure_apply (s : Set α) (μ : Measure α)
     (hs : MeasurableSet s) {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U) :
     (s.quotientMeasure μ hs) U = μ ((π ⁻¹' U) ∩ s) :=
@@ -754,64 +759,39 @@ lemma _root_.Set.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s 
     simp only
     ext x
     have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x
-    · sorry
+    · apply Quotient.sound
+      use g
     aesop
 
 
 end FundamentalDomainMeasure
 
-section HasFundamentalDomain
+section QuotientVolumeEqVolume
 
--- STOPPED HERE 6/23/23
+variable (G α : Type _) [Group G] [MulAction G α] [MeasureSpace α]
 
-/-- We say a quotient of `α` by `G` `has_fundamental_domain` if there is a measurable set `s` for
-  which `is_fundamental_domain G s` holds -/
-class has_fundamental_domain (G : Type*) (α : Type*) [has_one G] [has_smul G α]
-  [measure_space α] : Prop :=
-(has_fundamental_domain_characterization :
-  ∃ (s : set α), is_fundamental_domain G s ∧ measurable_set s)
+local notation "α_mod_G" => MulAction.orbitRel G α
 
-variables [group G] [mul_action G α] [measure_space α]
+local notation "π" => @Quotient.mk _ α_mod_G
 
-local notation `α_mod_G` := mul_action.orbit_rel G α
+set_option linter.unusedVariables false in
+class QuotientVolumeEqVolumePreimage (μ : Measure (Quotient α_mod_G)) --[MeasureSpace (Quotient α_mod_G)]
+: Prop where
+  projection_respects_measure : ∀ (t : Set α) (fund_dom_t : IsFundamentalDomain G t)
+    (meas_t : MeasurableSet t) (U : Set (Quotient α_mod_G)) (meas_U : MeasurableSet U),
+    μ U = volume (π ⁻¹' U ∩ t)
 
-local notation `π` := @quotient.mk _ α_mod_G
+/-- If you want to make an instance of the typeclass, you can do it starting from any given
+  fundamental domain -/
+lemma Set.quotientMeasureSpace.instQuotientVolumeEqVolumePreimage [Countable G] [MeasurableSpace G]
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
+    (fund_dom_s : IsFundamentalDomain G s) :
+    @QuotientVolumeEqVolumePreimage G α _ _ _ (s.quotientMeasure volume meas_s) :=
+  { projection_respects_measure := by
+      intro t fund_dom_t meas_t U meas_U
+      rw [quotientMeasure_invariant fund_dom_s fund_dom_t meas_s meas_t,
+        quotientMeasure_apply _ _ _ meas_U] }
 
-noncomputable instance [has_fund_dom : has_fundamental_domain G α] :
-  measure_space (quotient α_mod_G) :=
-{ volume := begin
-    let s := has_fund_dom.has_fundamental_domain_characterization.some,
-    have fund_dom_s : is_fundamental_domain G s :=
-      has_fund_dom.has_fundamental_domain_characterization.some_spec.1,
-    have meas_s : measurable_set s :=
-      has_fund_dom.has_fundamental_domain_characterization.some_spec.2,
-    exact quotient_measure_s s fund_dom_s meas_s,
-  end,
-  .. quotient.measurable_space }
-
-lemma volume_eq_quotient_measure [countable G] [measurable_space G]
-  [smul_invariant_measure G α volume] [has_measurable_smul G α]
-  [has_fund_dom : has_fundamental_domain G α]
-  (t : set α) (fund_dom_t : is_fundamental_domain G t)
-  (meas_t : measurable_set t) : volume = quotient_measure_s t fund_dom_t meas_t :=
-begin
-  apply quotient_measure_s_invariant,
-  exact has_fund_dom.has_fundamental_domain_characterization.some_spec.1,
-end
-
-lemma quotient_volume_eq_volume_preimage [countable G] [measurable_space G]
-  [smul_invariant_measure G α volume] [has_measurable_smul G α]
-  [has_fund_dom : has_fundamental_domain G α]
-  (t : set α) (fund_dom_t : is_fundamental_domain G t)
-  (meas_t : measurable_set t) (U : set (quotient α_mod_G)) (meas_U : measurable_set U) :
-  volume U = volume (π ⁻¹' U ∩ t) :=
-begin
-  rw volume_eq_quotient_measure t fund_dom_t meas_t,
-  exact quotient_measure_s_apply t fund_dom_t meas_t meas_U,
-end
-
-end has_fundamental_domain
-
-
+end QuotientVolumeEqVolume
 
 end MeasureTheory
