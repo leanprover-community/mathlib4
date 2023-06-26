@@ -230,7 +230,7 @@ theorem Char.card_pow_card {F : Type _} [Field F] [Fintype F] {F' : Type _} [Fie
   haveI := Fact.mk hp'
   haveI := Fact.mk (hchar.subst hp')
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
-  -- Porting note: original proof is below and noted above `FF'` needs to
+  -- Porting note: original proof is below and, as noted above, `FF'` needs to
   -- be replaced by its definition before unification to avoid time out
   --  exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
   --      (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
@@ -261,6 +261,8 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
+-- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
+-- See  https://github.com/leanprover-community/mathlib4/issues/5028
 set_option maxHeartbeats 1800000 in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈(#F)` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
@@ -304,8 +306,8 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have hg : gaussSum χ ψ₈.char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     have _ := congr_arg (· ^ 2) (Fin.sum_univ_eight fun x => (χ₈ x : FF) * τ ^ x.1)
     have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈.char a)) := by
-      -- Porting note: TODO
-      -- original proof: ext; congr; apply pow_one
+      -- Porting note: original proof
+      -- ext; congr; apply pow_one
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈.char]; congr 2;
       rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
@@ -317,11 +319,11 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
     have h₅ :
         (↑(χ₈ 0) * τ ^ 0 + ↑(χ₈ 1) * τ ^ 1 + ↑(χ₈ 2) * τ ^ 2 + ↑(χ₈ 3) * τ ^ 3 + ↑(χ₈ 4) * τ ^ 4 +
         ↑(χ₈ 5) * τ ^ 5 + ↑(χ₈ 6) * τ ^ 6 + ↑(χ₈ 7) * τ ^ 7) ^ 2 = 8 := by
-      -- Porting note: was
-      -- `simp [← h₄, χ₈_apply, Matrix.cons_val_zero, algebraMap.coe_zero, MulZeroClass.zero_mul,`
-      -- `Matrix.cons_val_one, Matrix.head_cons, algebraMap.coe_one, Matrix.cons_vec_bit0_eq_alt0,`
-      -- `Matrix.cons_vecAppend, Matrix.cons_vecAlt0, Matrix.cons_vec_bit1_eq_alt1,`
-      -- `Matrix.cons_vecAlt1, Int.cast_neg]`
+      -- Porting note: original proof
+      --  simp [← h₄, χ₈_apply, Matrix.cons_val_zero, algebraMap.coe_zero, MulZeroClass.zero_mul,
+      -- Matrix.cons_val_one, Matrix.head_cons, algebraMap.coe_one, Matrix.cons_vec_bit0_eq_alt0,
+      -- Matrix.cons_vecAppend, Matrix.cons_vecAlt0, Matrix.cons_vec_bit1_eq_alt1,
+      -- Matrix.cons_vecAlt1, Int.cast_neg]
       simp_rw [χ₈_apply]
       rw [← h₄]
       dsimp only
@@ -331,31 +333,26 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
           zero_lt_two, pow_eq_zero_iff]
         left
         rw [← Int.cast_zero (R := FF)]
-        refine congr_arg Int.cast ?_
-        rfl
+        exact congr_arg Int.cast rfl
       · simp only [Matrix.vecCons]
         rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
-        refine congr_arg Int.cast ?_
-        rfl
+        exact congr_arg Int.cast rfl
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
           zero_lt_two, pow_eq_zero_iff]
         left
         rw [← Int.cast_zero (R := FF)]
-        refine congr_arg Int.cast ?_
-        rfl
+        exact congr_arg Int.cast rfl
       · simp only [Matrix.vecCons]
         rw [show (-1 : FF) = ↑(- 1 : ℤ) by simp only [Int.cast_neg, Int.cast_one]]
-        refine congr_arg Int.cast ?_
-        rfl
+        exact congr_arg Int.cast rfl
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,
           zero_lt_two, pow_eq_zero_iff]
         left
         rw [← Int.cast_zero (R := FF)]
-        refine congr_arg Int.cast ?_
-        rfl
-    -- Porting note: was `simpa only [hχ, one_mul, card, gaussSum, ← h₅, h₁] using h`
-    rw [gaussSum, hχ, one_mul, ZMod.card, Nat.cast_ofNat]
-    rw [← h₅]
+        exact congr_arg Int.cast rfl
+    -- Porting note: original proof
+    -- simpa only [hχ, one_mul, card, gaussSum, ← h₅, h₁] using h
+    rw [gaussSum, hχ, one_mul, ZMod.card, Nat.cast_ofNat, ← h₅]
     simp_rw [← h₁]
     rw [Fin.sum_univ_eight]
     rfl
