@@ -15,24 +15,24 @@ import Mathlib.Tactic.Linarith
 # Decision procedure - sufficient condition and decidability
 
 We give a sufficient condition for a string to be derivable in the MIU language. Together with the
-necessary condition, we use this to prove that `derivable` is an instance of `decidable_pred`.
+necessary condition, we use this to prove that `Derivable` is an instance of `DecidablePred`.
 
-Let `count I st` and `count U st` denote the number of `I`s (respectively `U`s) in `st : miustr`.
+Let `count I st` and `count U st` denote the number of `I`s (respectively `U`s) in `st : Miustr`.
 
 We'll show that `st` is derivable if it has the form `M::x` where `x` is a string of `I`s and `U`s
 for which `count I x` is congruent to 1 or 2 modulo 3.
 
-To prove this, it suffices to show `derivable M::y` where `y` is any `miustr` consisting only of
+To prove this, it suffices to show `Derivable M::y` where `y` is any `Miustr` consisting only of
 `I`s such that the number of `I`s in `y` is `a+3b`, where `a = count I x` and `b = count U x`.
 This suffices because Rule 3 permits us to change any string of three consecutive `I`s into a `U`.
 
 As `count I y = (count I x) + 3*(count U x) ≡ (count I x) [MOD 3]`, it suffices to show
-`derivable M::z` where `z` is an `miustr` of `I`s such that `count I z` is congruent to
+`Derivable M::z` where `z` is an `Miustr` of `I`s such that `count I z` is congruent to
 1 or 2 modulo 3.
 
-Let `z` be such an `miustr` and let `c` denote `count I z`, so `c ≡ 1 or 2 [MOD 3]`.
-To derive such an `miustr`, it suffices to derive an `miustr` `M::w`, where again w is an
-`miustr` of only `I`s with the additional conditions that `count I w` is a power of 2, that
+Let `z` be such an `Miustr` and let `c` denote `count I z`, so `c ≡ 1 or 2 [MOD 3]`.
+To derive such an `Miustr`, it suffices to derive an `Miustr` `M::w`, where again `w` is an
+`Miustr` of only `I`s with the additional conditions that `count I w` is a power of 2, that
 `count I w ≥ c` and that `count I w ≡ c [MOD 3]`.
 
 To see that this suffices, note that we can remove triples of `I`s from the end of `M::w`,
@@ -54,38 +54,38 @@ namespace Miu
 
 open MiuAtom List Nat
 
-/-- We start by showing that an `miustr` `M::w` can be derived, where `w` consists only of `I`s and
+/-- We start by showing that an `Miustr` `M::w` can be derived, where `w` consists only of `I`s and
 where `count I w` is a power of 2.
 -/
 private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n) I) := by
   induction' n with k hk
-  · constructor
-  -- base case
-  · rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
-    -- inductive step
+  · -- base case
+    constructor
+  · -- inductive step
+    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
 /-!
 ## Converting `I`s to `U`s
 
-For any given natural number `c ≡ 1 or 2 [MOD 3]`, we need to show that can derive an `miustr`
-`M::w` where `w` consists only of `I`s,  where `d = count I w` is a power of 2, where `d ≥ c` and
+For any given natural number `c ≡ 1 or 2 [MOD 3]`, we need to show that can derive an `Miustr`
+`M::w` where `w` consists only of `I`s, where `d = count I w` is a power of 2, where `d ≥ c` and
 where `d ≡ c [MOD 3]`.
 
 Given the above lemmas, the desired result reduces to an arithmetic result, given in the file
 `arithmetic.lean`.
 
-We'll use this result to show we can derive an `miustr` of the form `M::z` where `z` is an string
+We'll use this result to show we can derive an `Miustr` of the form `M::z` where `z` is an string
 consisting only of `I`s such that `count I z ≡ 1 or 2 [MOD 3]`.
 
-As an intermediate step, we show that derive `z` from `zt`, where `t` is aN `miustr` consisting of
-an even number of `U`s and `z` is any `miustr`.
+As an intermediate step, we show that derive `z` from `zt`, where `t` is an `Miustr` consisting of
+an even number of `U`s and `z` is any `Miustr`.
 -/
 
 
 /--
-Any number of successive occurrences of `"UU"` can be removed from the end of a `derivable` `miustr`
-to produce another `derivable` `miustr`.
+Any number of successive occurrences of `"UU"` can be removed from the end of a `Derivable` `Miustr`
+to produce another `Derivable` `Miustr`.
 -/
 theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     (h : Derivable (z ++ ↑(replicate (m * 2) U))) : Derivable z := by
@@ -108,7 +108,7 @@ In fine-tuning my application of `simp`, I issued the following commend to deter
 -/
 
 
-/-- We may replace several consecutive occurrences of  `"III"` with the same number of `"U"`s.
+/-- We may replace several consecutive occurrences of `"III"` with the same number of `"U"`s.
 In application of the following lemma, `xs` will either be `[]` or `[U]`.
 -/
 theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (c k : ℕ)
@@ -121,9 +121,9 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
   · intro xs
     specialize ha (U :: xs)
     intro h₂
-    simp only [succ_eq_add_one, replicate_add]
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [← append_assoc, ← cons_append, replicate_one, append_assoc, singleton_append]
+    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
+      singleton_append]
     apply ha
     apply Derivable.r3
     change Derivable (↑(M :: replicate (c + 3 * a) I) ++ ↑(replicate 3 I) ++ xs)
@@ -144,10 +144,8 @@ section Arithmetic
 /-- For every `a`, the number `a + a % 2` is even.
 -/
 theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
-  simp only [mul_comm _ 2]
-  -- write `t*2` as `2*t`
-  apply dvd_of_mod_eq_zero
-  -- it suffices to prove `(a + a % 2) % 2 = 0`
+  simp only [mul_comm _ 2] -- write `t*2` as `2*t`
+  apply dvd_of_mod_eq_zero -- it suffices to prove `(a + a % 2) % 2 = 0`
   rw [add_mod, mod_mod, ← two_mul, mul_mod_right]
 #align miu.add_mod2 Miu.add_mod2
 
@@ -186,27 +184,24 @@ theorem replicate_pow_minus_append {m : ℕ} :
 #align miu.replicate_pow_minus_append Miu.replicate_pow_minus_append
 
 /--
-`der_replicate_I_of_mod3` states that `M::y` is `derivable` if `y` is any `miustr` consisiting just
+`der_replicate_I_of_mod3` states that `M::y` is `Derivable` if `y` is any `Miustr` consisiting just
 of `I`s, where `count I y` is 1 or 2 modulo 3.
 -/
 theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     Derivable (M :: replicate c I) := by
-  -- From `der_cons_replicate`, we can derive the `miustr` `M::w` described in the introduction.
-  cases' le_pow2_and_pow2_eq_mod3 c h with m hm
-  -- `2^m` will be  the number of `I`s in `M::w`
+  -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
+  cases' le_pow2_and_pow2_eq_mod3 c h with m hm -- `2^m` will be the number of `I`s in `M::w`
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
-    ·-- `(2^m - c)/3 ≡ 0 [MOD 2]`
+    · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
-    · rw [h_one, ← replicate_pow_minus_append, append_assoc]
-      -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
+    · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
+      rw [h_one, ← replicate_pow_minus_append, append_assoc]
       apply Derivable.r1
       rw [replicate_pow_minus_append]
       exact der_cons_replicate m
-  have hw₃ :
-    Derivable
-      (M :: replicate c I ++ replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) :=
-    by
+  have hw₃ : Derivable (M :: replicate c I ++
+      replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
     convert hw₂ using 4
@@ -222,22 +217,19 @@ set_option linter.uppercaseLean3 false in
 #align miu.der_replicate_I_of_mod3 Miu.der_replicate_I_of_mod3
 
 example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I) := by
-  -- From `der_cons_replicate`, we can derive the `miustr` `M::w` described in the introduction.
-  cases' le_pow2_and_pow2_eq_mod3 c h with m hm
-  -- `2^m` will be  the number of `I`s in `M::w`
+  -- From `der_cons_replicate`, we can derive the `Miustr` `M::w` described in the introduction.
+  cases' le_pow2_and_pow2_eq_mod3 c h with m hm -- `2^m` will be the number of `I`s in `M::w`
   have hw₂ : Derivable (M :: replicate (2 ^ m) I ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     cases' mod_two_eq_zero_or_one ((2 ^ m - c) / 3) with h_zero h_one
-    ·-- `(2^m - c)/3 ≡ 0 [MOD 2]`
+    · -- `(2^m - c)/3 ≡ 0 [MOD 2]`
       simp only [der_cons_replicate m, append_nil, List.replicate, h_zero]
-    · rw [h_one, ← replicate_pow_minus_append, append_assoc]
-      -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
+    · -- case `(2^m - c)/3 ≡ 1 [MOD 2]`
+      rw [h_one, ← replicate_pow_minus_append, append_assoc]
       apply Derivable.r1
       rw [replicate_pow_minus_append]
       exact der_cons_replicate m
-  have hw₃ :
-    Derivable
-      (M :: replicate c I ++ replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) :=
-    by
+  have hw₃ : Derivable (M :: replicate c I ++
+      replicate ((2 ^ m - c) / 3) U ++ replicate ((2 ^ m - c) / 3 % 2) U) := by
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
     convert hw₂ using 4
@@ -251,34 +243,34 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
   exact der_of_der_append_replicate_U_even hw₃
 
 /-!
-### `decstr` is a sufficient condition
+### `Decstr` is a sufficient condition
 
-The remainder of this file sets up the proof that `dectstr en` is sufficent to ensure
-`derivable en`. Decidability of `derivable en` is an easy consequence.
+The remainder of this file sets up the proof that `Decstr en` is sufficent to ensure
+`Derivable en`. Decidability of `Derivable en` is an easy consequence.
 
 The proof proceeds by induction on the `count U` of `en`.
 
 We tackle first the base case of the induction. This requires auxiliary results giving
-conditions under which  `count I ys = length ys`.
+conditions under which `count I ys = length ys`.
 -/
 
 
-/-- If an `miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
+/-- If an `Miustr` has a zero `count U` and contains no `M`, then its `count I` is its length.
 -/
 theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
     (hm : M ∉ ys) : count I ys = length ys := by
   induction' ys with x xs hxs
   · rfl
   · cases x
-    · exfalso; exact hm (mem_cons_self M xs)
-    -- case `x = M` gives a contradiction.
-    · rw [count_cons, if_pos rfl, length, succ_eq_add_one, succ_inj']
-      -- case `x = I`
+    · -- case `x = M` gives a contradiction.
+      exfalso; exact hm (mem_cons_self M xs)
+    · -- case `x = I`
+      rw [count_cons, if_pos rfl, length, succ_eq_add_one, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
-    · exfalso; simp only [count, countp_cons_of_pos] at hu
-      -- case `x = U` gives a contradiction.
+    · -- case `x = U` gives a contradiction.
+      exfalso; simp only [count, countp_cons_of_pos] at hu
       exact succ_ne_zero _ hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
@@ -314,7 +306,6 @@ theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k)
 set_option linter.uppercaseLean3 false in
 #align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
--- case `z = U`
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
   mem_split (mem_of_count_U_eq_succ h)
@@ -322,7 +313,7 @@ set_option linter.uppercaseLean3 false in
 #align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 
 /-- `ind_hyp_suf` is the inductive step of the sufficiency result.
- -/
+-/
 theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : Decstr ys) :
     ∃ as bs : Miustr,
       ys = M :: as ++ U :: bs ∧
@@ -346,15 +337,14 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
     rw [add_right_comm, add_mod_right]; exact hic
 #align miu.ind_hyp_suf Miu.ind_hyp_suf
 
-/-- `der_of_decstr` states that `derivable en` follows from `decstr en`.
+/-- `der_of_decstr` states that `Derivable en` follows from `Decstr en`.
 -/
 theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   /- The next three lines have the effect of introducing `count U en` as a variable that can be used
    for induction -/
   have hu : ∃ n, count U en = n := exists_eq'
   cases' hu with n hu
-  revert en
-  -- Crucially, we need the induction hypothesis to quantify over `en`
+  revert en -- Crucially, we need the induction hypothesis to quantify over `en`
   induction' n with k hk
   · exact base_case_suf _
   · intro ys hdec hus
@@ -365,16 +355,16 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
 #align miu.der_of_decstr Miu.der_of_decstr
 
 /-!
-### Decidability of `derivable`
+### Decidability of `Derivable`
 -/
 
 
-/-- Finally, we have the main result, namely that `derivable` is a decidable predicate.
+/-- Finally, we have the main result, namely that `Derivable` is a decidable predicate.
 -/
 instance : DecidablePred Derivable := fun _ => decidable_of_iff _ ⟨der_of_decstr, decstr_of_der⟩
 
 /-!
-By decidability, we can automatically determine whether any given `miustr` is `derivable`.
+By decidability, we can automatically determine whether any given `Miustr` is `Derivable`.
 -/
 
 
