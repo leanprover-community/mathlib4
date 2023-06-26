@@ -9,9 +9,9 @@ Authors: Gihan Marasingha
 ! if you have ported upstream changes.
 -/
 import Archive.MiuLanguage.Basic
-import Mathbin.Data.List.Count
-import Mathbin.Data.Nat.Modeq
-import Mathbin.Tactic.Ring
+import Mathlib.Data.List.Count
+import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Ring
 
 /-!
 # Decision procedure: necessary condition
@@ -59,8 +59,7 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 /-- If `a` is 1 or 2 mod 3 and if `b` is `a` or twice `a` mod 3, then `b` is 1 or 2 mod 3.
 -/
 theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
-    (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 :=
-  by
+    (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
   cases h2
   · rw [h2]; exact h1
   · cases h1
@@ -72,8 +71,7 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
 is 1 or 2 modulo 3.
 -/
 theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
-    Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 :=
-  by
+    Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 := by
   intro h
   induction h
   · left; apply mod_def
@@ -147,8 +145,7 @@ theorem goodm_of_rule2 (xs : Miustr) (h₁ : Derivable (M :: xs)) (h₂ : Goodm 
 #align miu.goodm_of_rule2 Miu.goodm_of_rule2
 
 theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
-    (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ U :: bs) :=
-  by
+    (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ U :: bs) := by
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by intro h; rw [h] at mhead ; rw [nil_append] at mhead ; contradiction
   constructor
@@ -166,8 +163,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs
 
 
 theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
-    (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) :=
-  by
+    (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
   cases' h₂ with mhead nmtail
   have k : as ≠ nil := by intro h; rw [h] at mhead ; rw [nil_append] at mhead ; contradiction
   constructor
@@ -181,8 +177,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
 
 /-- Any derivable string must begin with `M` and have no `M` in its tail.
 -/
-theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en :=
-  by
+theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
   intro h
   induction h
   · exact goodmi
@@ -209,8 +204,7 @@ deriving DecidablePred
 
 /-- Suppose `en : miustr`. If `en` is `derivable`, then the condition `decstr en` holds.
 -/
-theorem decstr_of_der {en : Miustr} : Derivable en → Decstr en :=
-  by
+theorem decstr_of_der {en : Miustr} : Derivable en → Decstr en := by
   intro h
   constructor
   · exact goodm_of_derivable en h
