@@ -25,8 +25,13 @@ import Archive.Imo.Imo2019Q1
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
+import Archive.MiuLanguage.Basic
+import Archive.MiuLanguage.DecisionNec
+import Archive.Sensitivity
+import Archive.Wiedijk100Theorems.AbelRuffini
 import Archive.Wiedijk100Theorems.AreaOfACircle
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
+import Archive.Wiedijk100Theorems.BallotProblem
 import Archive.Wiedijk100Theorems.BirthdayProblem
 import Archive.Wiedijk100Theorems.CubingACube
 import Archive.Wiedijk100Theorems.FriendshipGraphs

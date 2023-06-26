@@ -548,7 +548,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
-    push_neg  at hn_min
+    push_neg at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
   rintro (l : ℕ) (hl : l < n)
@@ -1855,7 +1855,7 @@ theorem frequently_iff_seq_frequently {ι : Type _} {l : Filter ι} {p : ι → 
     rw [tendsto_principal] at hx_p
     exact hx_p.frequently
   · obtain ⟨x, hx_tendsto, hx_freq⟩ := h_exists_freq
-    simp_rw [Filter.Frequently, Filter.Eventually] at hx_freq⊢
+    simp_rw [Filter.Frequently, Filter.Eventually] at hx_freq ⊢
     have : { n : ℕ | ¬p (x n) } = { n | x n ∈ { y | ¬p y } } := rfl
     rw [this, ← mem_map'] at hx_freq
     exact mt (@hx_tendsto _) hx_freq
