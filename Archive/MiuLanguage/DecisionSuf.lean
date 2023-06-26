@@ -276,7 +276,7 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       -- case `x = I`
       apply hxs
       · simpa only [count]
-      · simp only [mem_cons_iff, false_or_iff] at hm ; exact hm
+      · rw [mem_cons, not_or] at hm; exact hm.2
     · exfalso; simp only [count, countp_cons_of_pos] at hu
       -- case `x = U` gives a contradiction.
       exact succ_ne_zero _ hu
@@ -308,12 +308,9 @@ relate to `count U`.
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
   · exfalso; rw [count] at h ; contradiction
-  · simp only [mem_cons_iff]
-    cases z
-    repeat'-- cases `z = M` and `z=I`
-      right;
-      apply hzs; simp only [count, countp, if_false] at h ; rw [← h]; rfl
-    · left; rfl
+  · rw [mem_cons]
+    cases z <;> try exact Or.inl rfl
+    all_goals right; simp only [count_cons, if_false] at h; exact hzs h
 set_option linter.uppercaseLean3 false in
 #align miu.mem_of_count_U_eq_succ Miu.mem_of_count_U_eq_succ
 
@@ -334,8 +331,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   rcases hdec with ⟨⟨mhead, nmtail⟩, hic⟩
   have : ys ≠ nil := by rintro rfl; contradiction
   rcases exists_cons_of_ne_nil this with ⟨z, zs, rfl⟩
-  rw [head] at mhead
-  rw [mhead] at *
+  rcases mhead
   simp only [count, countp, cons_append, if_false, countp_append] at *
   rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, hab⟩
   rw [hab] at *
