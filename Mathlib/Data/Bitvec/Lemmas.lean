@@ -193,8 +193,6 @@ section CheckedArith
       cases n <;> simp[checkedSub]
       split_ifs <;> simp[Bitvec.sub]
 
-    #check List.foldlM_eq_foldl
-
     /-- If `checkedSub` returns `some ..`, then the result is the same as `sub` -/
     @[simp]
     theorem checkedMul_sound : checkedMul x y nuw nsw = some z → x.mul y = z := by
@@ -210,12 +208,30 @@ section CheckedArith
         from this 0 y
 
       simp[bind, Option.bind, Option.map]
-      induction x, z using Vector.inductionOn₂
-      next => simp
-      next x₀ z₀ x z ih =>
-        intro c y h
+
+      rcases x with ⟨x, h⟩;
+      simp
+      clear h
+
+      induction x
+      next =>
+        simp; rintro _ ⟨⟩; rfl
+      next x₀ x ih =>
+        intro c y
         simp_all only [List.foldlM, List.foldl, bind, Option.bind]
-        sorry
+        cases h_c2 : checkedAdd c c nuw nsw
+        case none => simp
+        case some c2 =>
+          simp
+          cases h_c2_plus_y : checkedAdd c2 y nuw nsw
+          case none => simp
+          case some c2_plus_y =>
+            have h₁ : c2 = c.add c :=
+              Eq.symm <| checkedAdd_sound _ _ _ _ _ h_c2
+            have h₂ : c2_plus_y = c2.add y :=
+              Eq.symm <| checkedAdd_sound _ _ _ _ _ h_c2_plus_y
+            simp only [h₁, h₂]
+            apply ih
 
   end Sound
 
