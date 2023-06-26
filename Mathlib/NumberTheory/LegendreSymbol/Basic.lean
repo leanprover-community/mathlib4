@@ -181,7 +181,8 @@ theorem sq_one {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p a ^ 2 = 1 :=
 
 /-- The Legendre symbol of `a^2` at `p` is 1 if `p ∤ a`. -/
 theorem sq_one' {a : ℤ} (ha : (a : ZMod p) ≠ 0) : legendreSym p (a ^ 2) = 1 := by
-  exact_mod_cast quadraticChar_sq_one' ha
+  have := quadraticChar_sq_one' ha
+  simp_all [legendreSym]
 #align legendre_sym.sq_one' legendreSym.sq_one'
 
 /-- The Legendre symbol depends only on `a` mod `p`. -/
