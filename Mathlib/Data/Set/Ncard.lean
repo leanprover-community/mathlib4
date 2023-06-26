@@ -125,13 +125,13 @@ theorem ncard_ne_zero_of_mem (h : a ∈ s) (hs : s.Finite := by toFinite_tac) : 
   ((ncard_pos hs).mpr ⟨a, h⟩).ne.symm
 #align set.ncard_ne_zero_of_mem Set.ncard_ne_zero_of_mem
 
-theorem finite_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Finite :=
+theorem Finite_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Finite :=
   s.finite_or_infinite.elim id fun h ↦ (hs h.ncard).elim
-#align set.finite_of_ncard_ne_zero Set.finite_of_ncard_ne_zero
+#align set.finite_of_ncard_ne_zero Set.Finite_of_ncard_ne_zero
 
-theorem finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
-  finite_of_ncard_ne_zero hs.ne.symm
-#align set.finite_of_ncard_pos Set.finite_of_ncard_pos
+theorem Finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
+  Finite_of_ncard_ne_zero hs.ne.symm
+#align set.finite_of_ncard_pos Set.Finite_of_ncard_pos
 
 theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; simp at hs
@@ -594,13 +594,13 @@ theorem exists_intermediate_Set (i : ℕ) (h : i + s.ncard ≤ t.ncard) (hst : s
 
 #align set.exists_intermediate_set Set.exists_intermediate_Set
 
-theorem exists_intermediate_set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
+theorem exists_intermediate_Set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
     ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := by
   obtain ⟨r, hsr, hrt, hc⟩ :=
     exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h
   rw [tsub_add_cancel_of_le hs] at hc
   exact ⟨r, hsr, hrt, hc⟩
-#align set.exists_intermediate_set' Set.exists_intermediate_set'
+#align set.exists_intermediate_set' Set.exists_intermediate_Set'
 
 /-- We can shrink `s` to any smaller size. -/
 theorem exists_smaller_Set (s : Set α) (i : ℕ) (h : i ≤ s.ncard) :
@@ -633,7 +633,7 @@ theorem Infinite.exists_supset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : 
 theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s ∪ t).ncard) :
     ∃ r : Set α, n < r.ncard ∧ (r ⊆ s ∨ r ⊆ t) := by
   classical
-  have hu := finite_of_ncard_ne_zero ((Nat.zero_le _).trans_lt hst).ne.symm
+  have hu := Finite_of_ncard_ne_zero ((Nat.zero_le _).trans_lt hst).ne.symm
   rw [ncard_eq_toFinset_card _ hu,
     Finite.toFinset_union (hu.subset (subset_union_left _ _))
       (hu.subset (subset_union_right _ _))] at hst
@@ -646,7 +646,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
   refine' ⟨fun h ↦ _, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
-  have hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
+  have hft := (Finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
   simp_rw [ncard_eq_toFinset_card', @Finset.card_eq_one _ (toFinset s)] at h
   refine' h.imp fun a ha ↦ _
   simp_rw [Set.ext_iff, mem_singleton_iff]
@@ -726,7 +726,7 @@ theorem two_lt_ncard (hs : s.Finite := by toFinite_tac) :
 #align set.two_lt_card Set.two_lt_ncard
 
 theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
-  have hsf := (finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm)
+  have hsf := (Finite_of_ncard_ne_zero (zero_lt_one.trans hs).ne.symm)
   rw [ncard_eq_toFinset_card _ hsf] at hs
   simpa only [Finite.mem_toFinset] using Finset.exists_ne_of_one_lt_card hs a
 #align set.exists_ne_of_one_lt_ncard Set.exists_ne_of_one_lt_ncard
@@ -734,7 +734,7 @@ theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s �
 theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
     ∃ a t, a ∉ t ∧ insert a t = s ∧ t.ncard = n := by
   classical
-  have hsf := finite_of_ncard_pos (n.zero_lt_succ.trans_eq h.symm)
+  have hsf := Finite_of_ncard_pos (n.zero_lt_succ.trans_eq h.symm)
   rw [ncard_eq_toFinset_card _ hsf, Finset.card_eq_succ] at h
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
