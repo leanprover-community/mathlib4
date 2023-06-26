@@ -453,8 +453,8 @@ def doublingGamma (s : ℝ) : ℝ :=
   Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / sqrt π
 #align real.doubling_Gamma Real.doublingGamma
 
-theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) : doublingGamma (s + 1) = s * doublingGamma s :=
-  by
+theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
+    doublingGamma (s + 1) = s * doublingGamma s := by
   rw [doublingGamma, doublingGamma, (by abel : s + 1 - 1 = s - 1 + 1), add_div, add_assoc,
     add_halves (1 : ℝ), Gamma_add_one (div_ne_zero hs two_ne_zero), rpow_add two_pos, rpow_one]
   ring
