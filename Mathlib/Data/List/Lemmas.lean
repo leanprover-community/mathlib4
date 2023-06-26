@@ -82,4 +82,29 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
     (foldl_range_subset_of_range_subset hfg.ge a)
 #align list.foldl_range_eq_of_range_eq List.foldl_range_eq_of_range_eq
 
+
+
+
+
+/-! ## Reverse Induction-/
+section RevInduction
+
+  /--
+    Do a *reverse* induction on a list. That is, break the list down right-to-left, instead of the
+    default induction principle that works from left-to-right
+  -/
+  @[elab_as_elim]
+  def revInductionOn {α : Type u} {motive : List α → Sort v}
+                      (xs : List α)
+                      (nil : motive [])
+                      (snoc : (xs : List α) → (x : α) → motive xs → motive (xs ++ [x])) :
+      motive xs :=
+    cast (by simp) <|
+      List.recOn (motive := fun xs => motive xs.reverse)
+                  xs.reverse
+                  nil
+                  (fun x xs (ih : motive xs.reverse) => cast (by simp) <| snoc xs.reverse x ih)
+
+end RevInduction
+
 end List
