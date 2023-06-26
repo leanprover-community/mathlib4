@@ -334,8 +334,8 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.act_right_one' Bimod.TensorBimod.actRight_one'
 
 theorem right_assoc' :
-    (𝟙 _ ⊗ T.mul) ≫ actRight P Q = (α_ _ T.X T.X).inv ≫ (actRight P Q ⊗ 𝟙 T.X) ≫ actRight P Q :=
-  by
+    (𝟙 _ ⊗ T.mul) ≫ actRight P Q =
+      (α_ _ T.X T.X).inv ≫ (actRight P Q ⊗ 𝟙 T.X) ≫ actRight P Q := by
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp [X]
   -- porting note: had to replace some `rw` by `erw`
@@ -960,8 +960,8 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_assoc_Bimod Bimod.whisker_assoc_bimod
 
 theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
-    (g : P ⟶ Q) : tensorHom (𝟙 M) g ≫ tensorHom f (𝟙 Q) = tensorHom f (𝟙 P) ≫ tensorHom (𝟙 N) g :=
-  by
+    (g : P ⟶ Q) : tensorHom (𝟙 M) g ≫ tensorHom f (𝟙 Q) =
+      tensorHom f (𝟙 P) ≫ tensorHom (𝟙 N) g := by
   dsimp [tensorHom]
   ext
   apply coequalizer.hom_ext
