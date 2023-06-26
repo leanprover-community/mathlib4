@@ -44,9 +44,7 @@ open Finpartition Finset Fintype Rel Nat
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
-open scoped BigOperators Classical
-
-open scoped SzemerediRegularity.Positivity
+open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
@@ -508,17 +506,17 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
           (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts :=
         product_subset_product star_subset_chunk star_subset_chunk
       have hε : 0 ≤ ε := by sz_positivity
-      have ppp : ∀ (a b : Finset (Finset α)), a.product b = a ×ˢ b := fun a b => rfl
+      have sp : ∀ (a b : Finset (Finset α)), a.product b = a ×ˢ b := fun a b => rfl
       have := add_div_le_sum_sq_div_card t (fun x => (G.edgeDensity x.1 x.2 : ℝ))
         ((G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25) (show 0 ≤ 3 / 4 * ε by linarith) ?_ ?_
-      · simp_rw [ppp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow, cast_pow, mul_pow,
+      · simp_rw [sp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow, cast_pow, mul_pow,
           div_pow, ← mul_assoc] at this
         norm_num at this
         exact this
-      · simp_rw [ppp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow]
+      · simp_rw [sp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow]
         norm_num
         exact edgeDensity_star_not_uniform hPα hPε hε₁ hUVne hUV
-      · rw [ppp, card_product]
+      · rw [sp, card_product]
         apply (edgeDensity_chunk_aux hPα hPε hU hV).trans
         rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
         norm_num; rfl
