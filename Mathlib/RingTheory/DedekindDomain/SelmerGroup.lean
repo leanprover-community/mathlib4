@@ -184,7 +184,7 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
   map_one' := funext fun v => map_one _
-  map_mul' x y := funext fun v => map_mul _ x y
+  map_mul' x y := by simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; rfl
 #align is_dedekind_domain.selmer_group.valuation IsDedekindDomain.selmerGroup.valuation
 
 theorem valuation_ker_eq :
@@ -203,8 +203,9 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
   toFun x :=
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
-  map_one' := by simpa only [map_one]
-  map_mul' _ _ := by simpa only [map_mul]
+  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one_iff]
+  map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, MonoidHom.mem_range,
+    powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
@@ -213,8 +214,8 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
   constructor
   · intro hx
     rcases(QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
-    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr_arg Units.val hx
-    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr_arg Units.inv hx
+    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact congr_arg Units.val hx
+    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
     rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ v _ hn.out
@@ -226,27 +227,29 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi
     rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at iv
     rw [Units.val_mk, ← map_pow] at hv
-    exact
-      ⟨⟨v', i', vi, iv⟩, by
-        simpa only [Units.ext_iff, powMonoidHom_apply, Units.val_pow_eq_pow_val] using
-          NoZeroSMulDivisors.algebraMap_injective R K hv⟩
-  · rintro ⟨_, hx⟩
+    exact ⟨⟨v', i', vi, iv⟩, by
+      simpa only [Units.ext_iff, powMonoidHom_apply, Units.val_pow_eq_pow_val] using
+         NoZeroSMulDivisors.algebraMap_injective R K hv⟩
+  · rintro ⟨x, hx⟩
     rw [← hx]
-    exact
-      subtype.mk_eq_mk.mpr
-        ((QuotientGroup.eq_one_iff _).mpr ⟨_, by simp only [powMonoidHom_apply, map_pow]⟩)
+    exact Subtype.mk_eq_mk.mpr <| (QuotientGroup.eq_one_iff _).mpr ⟨Units.map (algebraMap R K) x,
+      by simp only [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
 #align is_dedekind_domain.selmer_group.from_unit_ker IsDedekindDomain.selmerGroup.fromUnit_ker
 
 /-- The injection induced by the natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=
-  (QuotientGroup.kerLift _).comp (QuotientGroup.quotientMulEquivOfEq fromUnit_ker).symm.toMonoidHom
+  (QuotientGroup.kerLift _).comp
+    (QuotientGroup.quotientMulEquivOfEq (fromUnit_ker (R := R))).symm.toMonoidHom
 #align is_dedekind_domain.selmer_group.from_unit_lift IsDedekindDomain.selmerGroup.fromUnitLift
 
 theorem fromUnitLift_injective [Fact <| 0 < n] :
-    Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ :=
-  Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
+    Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ := by
+  dsimp only [fromUnitLift, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom]
+  exact Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
 #align is_dedekind_domain.selmer_group.from_unit_lift_injective IsDedekindDomain.selmerGroup.fromUnitLift_injective
 
-end SelmerGroup
+end selmerGroup
+
+end
 
 end IsDedekindDomain
