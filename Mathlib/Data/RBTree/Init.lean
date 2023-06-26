@@ -12,10 +12,16 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Align
 import Std.Data.RBMap.Basic
 
+/-!
+
+# Align statements for RBTree
+
 -- This file used to be a part of `prelude`
 
 -- Porting note: this file has essentially been ported to `Std`.
 -- See `Std.Data.RBMap.Basic`
+
+-/
 
 #align rbnode Std.RBNode
 #align rbnode.color Std.RBColor
