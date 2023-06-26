@@ -8,8 +8,8 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-import Mathbin.NumberTheory.LegendreSymbol.GaussSum
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+import Mathlib.NumberTheory.LegendreSymbol.GaussSum
 
 /-!
 # Quadratic characters of finite fields
@@ -102,8 +102,7 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
     quadraticChar F (Fintype.card F') = quadraticChar F' (quadraticChar F (-1) * Fintype.card F) :=
   by
   let χ := (quadraticChar F).ringHomComp (algebraMap ℤ F')
-  have hχ₁ : χ.is_nontrivial :=
-    by
+  have hχ₁ : χ.is_nontrivial := by
     obtain ⟨a, ha⟩ := quadraticChar_exists_neg_one hF
     have hu : IsUnit a := by
       contrapose ha
@@ -123,8 +122,7 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
 /-- The value of the quadratic character at an odd prime `p` different from `ring_char F`. -/
 theorem quadraticChar_odd_prime [DecidableEq F] (hF : ringChar F ≠ 2) {p : ℕ} [Fact p.Prime]
     (hp₁ : p ≠ 2) (hp₂ : ringChar F ≠ p) :
-    quadraticChar F p = quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) :=
-  by
+    quadraticChar F p = quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) := by
   rw [← quadraticChar_neg_one hF]
   have h :=
     quadraticChar_card_card hF (ne_of_eq_of_ne (ring_char_zmod_n p) hp₁)
