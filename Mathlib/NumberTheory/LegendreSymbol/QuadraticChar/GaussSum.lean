@@ -57,11 +57,11 @@ theorem FiniteField.isSquare_two_iff :
     simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne.def, (by decide : (-1 : ℤ) ≠ 1),
       imp_false, Classical.not_not]
   all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h 
+    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    decide!
+    decide -- Porting note: was `decide!`
 #align finite_field.is_square_two_iff FiniteField.isSquare_two_iff
 
 /-- The value of the quadratic character at `-2` -/
@@ -87,11 +87,11 @@ theorem FiniteField.isSquare_neg_two_iff :
     simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne.def, (by decide : (-1 : ℤ) ≠ 1),
       imp_false, Classical.not_not]
   all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h 
+    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
-    decide!
+    decide -- Porting note: was `decide!`
 #align finite_field.is_square_neg_two_iff FiniteField.isSquare_neg_two_iff
 
 /-- The relation between the values of the quadratic character of one field `F` at the
@@ -99,38 +99,36 @@ cardinality of another field `F'` and of the quadratic character of `F'` at the 
 of `F`. -/
 theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Type _} [Field F']
     [Fintype F'] [DecidableEq F'] (hF' : ringChar F' ≠ 2) (h : ringChar F' ≠ ringChar F) :
-    quadraticChar F (Fintype.card F') = quadraticChar F' (quadraticChar F (-1) * Fintype.card F) :=
-  by
+    quadraticChar F (Fintype.card F') =
+    quadraticChar F' (quadraticChar F (-1) * Fintype.card F) := by
   let χ := (quadraticChar F).ringHomComp (algebraMap ℤ F')
-  have hχ₁ : χ.is_nontrivial := by
+  have hχ₁ : χ.IsNontrivial := by
     obtain ⟨a, ha⟩ := quadraticChar_exists_neg_one hF
     have hu : IsUnit a := by
       contrapose ha
       exact ne_of_eq_of_ne (map_nonunit (quadraticChar F) ha) (mt zero_eq_neg.mp one_ne_zero)
     use hu.unit
-    simp only [IsUnit.unit_spec, ring_hom_comp_apply, eq_intCast, Ne.def, ha]
+    simp only [IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne.def, ha]
     rw [Int.cast_neg, Int.cast_one]
     exact Ring.neg_one_ne_one_of_char_ne_two hF'
-  have hχ₂ : χ.is_quadratic := is_quadratic.comp (quadraticChar_isQuadratic F) _
+  have hχ₂ : χ.IsQuadratic := IsQuadratic.comp (quadraticChar_isQuadratic F) _
   have h := Char.card_pow_card hχ₁ hχ₂ h hF'
-  rw [← quadraticChar_eq_pow_of_char_ne_two' hF'] at h 
-  exact
-    (is_quadratic.eq_of_eq_coe (quadraticChar_isQuadratic F') (quadraticChar_isQuadratic F) hF'
-        h).symm
+  rw [← quadraticChar_eq_pow_of_char_ne_two' hF'] at h
+  exact (IsQuadratic.eq_of_eq_coe (quadraticChar_isQuadratic F')
+    (quadraticChar_isQuadratic F) hF' h).symm
 #align quadratic_char_card_card quadraticChar_card_card
 
-/-- The value of the quadratic character at an odd prime `p` different from `ring_char F`. -/
+/-- The value of the quadratic character at an odd prime `p` different from `ringChar F`. -/
 theorem quadraticChar_odd_prime [DecidableEq F] (hF : ringChar F ≠ 2) {p : ℕ} [Fact p.Prime]
     (hp₁ : p ≠ 2) (hp₂ : ringChar F ≠ p) :
     quadraticChar F p = quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) := by
   rw [← quadraticChar_neg_one hF]
-  have h :=
-    quadraticChar_card_card hF (ne_of_eq_of_ne (ring_char_zmod_n p) hp₁)
-      (ne_of_eq_of_ne (ring_char_zmod_n p) hp₂.symm)
-  rwa [card p] at h 
+  have h := quadraticChar_card_card hF (ne_of_eq_of_ne (ringChar_zmod_n p) hp₁)
+    (ne_of_eq_of_ne (ringChar_zmod_n p) hp₂.symm)
+  rwa [card p] at h
 #align quadratic_char_odd_prime quadraticChar_odd_prime
 
-/-- An odd prime `p` is a square in `F` iff the quadratic character of `zmod p` does not
+/-- An odd prime `p` is a square in `F` iff the quadratic character of `ZMod p` does not
 take the value `-1` on `χ₄(#F) * #F`. -/
 theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fact p.Prime]
     (hp : p ≠ 2) :
@@ -140,13 +138,8 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
   · rw [show (p : F) = 0 by rw [← hFp]; exact ringChar.Nat.cast_ringChar]
     simp only [isSquare_zero, Ne.def, true_iff_iff, map_mul]
     obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
-    have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ring_char_zmod_n p).symm
-    conv =>
-      congr
-      lhs
-      congr
-      skip
-      rw [hc, Nat.cast_pow, map_pow, hchar, map_ring_char]
+    have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
+    conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
     simp only [zero_pow n.pos, MulZeroClass.mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
   · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
       quadraticChar_odd_prime hF hp]
@@ -154,4 +147,3 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
 #align finite_field.is_square_odd_prime_iff FiniteField.isSquare_odd_prime_iff
 
 end SpecialValues
-
