@@ -397,8 +397,8 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
 nonrec
-theorem SpecialLinearGroup.im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z) :=
-  by
+theorem SpecialLinearGroup.im_smul_eq_div_normSq :
+    (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
   simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul]
