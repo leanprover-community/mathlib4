@@ -8,9 +8,9 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rbtree.Init
-import Mathbin.Logic.IsEmpty
-import Mathbin.Tactic.Interactive
+import Mathlib.Data.Rbtree.Init
+import Mathlib.Logic.IsEmpty
+import Mathlib.Tactic.Interactive
 
 universe u
 
@@ -59,8 +59,7 @@ section IsSearchableLemmas
 variable {lt : α → α → Prop}
 
 theorem lo_lt_hi {t : Rbnode α} {lt} [IsTrans α lt] :
-    ∀ {lo hi}, IsSearchable lt t lo hi → Lift lt lo hi :=
-  by
+    ∀ {lo hi}, IsSearchable lt t lo hi → Lift lt lo hi := by
   induction t <;> intro lo hi hs
   case leaf => cases hs; assumption
   all_goals
@@ -74,8 +73,7 @@ theorem lo_lt_hi {t : Rbnode α} {lt} [IsTrans α lt] :
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_of_isSearchable_of_incomp [IsStrictWeakOrder α lt] {t} :
     ∀ {lo hi hi'} (hc : ¬lt hi' hi ∧ ¬lt hi hi') (hs : IsSearchable lt t lo (some hi)),
-      IsSearchable lt t lo (some hi') :=
-  by
+      IsSearchable lt t lo (some hi') := by
   classical
   induction t <;> intros <;>
     run_tac
@@ -87,8 +85,7 @@ theorem isSearchable_of_isSearchable_of_incomp [IsStrictWeakOrder α lt] {t} :
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_of_incomp_of_isSearchable [IsStrictWeakOrder α lt] {t} :
     ∀ {lo lo' hi} (hc : ¬lt lo' lo ∧ ¬lt lo lo') (hs : IsSearchable lt t (some lo) hi),
-      IsSearchable lt t (some lo') hi :=
-  by
+      IsSearchable lt t (some lo') hi := by
   classical
   induction t <;> intros <;>
     run_tac
@@ -100,8 +97,7 @@ theorem isSearchable_of_incomp_of_isSearchable [IsStrictWeakOrder α lt] {t} :
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_some_low_of_isSearchable_of_lt {t} [IsTrans α lt] :
     ∀ {lo hi lo'} (hlt : lt lo' lo) (hs : IsSearchable lt t (some lo) hi),
-      IsSearchable lt t (some lo') hi :=
-  by
+      IsSearchable lt t (some lo') hi := by
   induction t <;> intros <;>
     run_tac
       is_searchable_tactic
@@ -111,8 +107,7 @@ theorem isSearchable_some_low_of_isSearchable_of_lt {t} [IsTrans α lt] :
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_none_low_of_isSearchable_some_low {t} :
-    ∀ {y hi} (hlt : IsSearchable lt t (some y) hi), IsSearchable lt t none hi :=
-  by
+    ∀ {y hi} (hlt : IsSearchable lt t (some y) hi), IsSearchable lt t none hi := by
   induction t <;> intros <;>
     run_tac
       is_searchable_tactic
@@ -123,8 +118,7 @@ theorem isSearchable_none_low_of_isSearchable_some_low {t} :
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_some_high_of_isSearchable_of_lt {t} [IsTrans α lt] :
     ∀ {lo hi hi'} (hlt : lt hi hi') (hs : IsSearchable lt t lo (some hi)),
-      IsSearchable lt t lo (some hi') :=
-  by
+      IsSearchable lt t lo (some hi') := by
   induction t <;> intros <;>
     run_tac
       is_searchable_tactic
@@ -134,8 +128,7 @@ theorem isSearchable_some_high_of_isSearchable_of_lt {t} [IsTrans α lt] :
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic rbnode.is_searchable_tactic -/
 theorem isSearchable_none_high_of_isSearchable_some_high {t} :
-    ∀ {lo y} (hlt : IsSearchable lt t lo (some y)), IsSearchable lt t lo none :=
-  by
+    ∀ {lo y} (hlt : IsSearchable lt t lo (some y)), IsSearchable lt t lo none := by
   induction t <;> intros <;>
     run_tac
       is_searchable_tactic
@@ -184,23 +177,20 @@ theorem range [IsStrictWeakOrder α lt] {t : Rbnode α} {x} :
 #align rbnode.range Rbnode.range
 
 theorem lt_of_mem_left [IsStrictWeakOrder α lt] {y : α} {t l r : Rbnode α} :
-    ∀ {lo hi}, IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {x}, Mem lt x l → lt x y :=
-  by
+    ∀ {lo hi}, IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {x}, Mem lt x l → lt x y := by
   intro _ _ hs hn x hm; cases hn <;> cases hs
   all_goals exact (range hs_hs₁ hm).2
 #align rbnode.lt_of_mem_left Rbnode.lt_of_mem_left
 
 theorem lt_of_mem_right [IsStrictWeakOrder α lt] {y : α} {t l r : Rbnode α} :
-    ∀ {lo hi}, IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {z}, Mem lt z r → lt y z :=
-  by
+    ∀ {lo hi}, IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {z}, Mem lt z r → lt y z := by
   intro _ _ hs hn z hm; cases hn <;> cases hs
   all_goals exact (range hs_hs₂ hm).1
 #align rbnode.lt_of_mem_right Rbnode.lt_of_mem_right
 
 theorem lt_of_mem_left_right [IsStrictWeakOrder α lt] {y : α} {t l r : Rbnode α} :
     ∀ {lo hi},
-      IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {x z}, Mem lt x l → Mem lt z r → lt x z :=
-  by
+      IsSearchable lt t lo hi → IsNodeOf t l y r → ∀ {x z}, Mem lt x l → Mem lt z r → lt x z := by
   intro _ _ hs hn x z hm₁ hm₂; cases hn <;> cases hs
   all_goals
     have h₁ := range hs_hs₁ hm₁
@@ -222,8 +212,7 @@ inductive IsRedBlack : Rbnode α → Color → Nat → Prop
 
 open IsRedBlack
 
-theorem depth_min : ∀ {c n} {t : Rbnode α}, IsRedBlack t c n → n ≤ depth min t :=
-  by
+theorem depth_min : ∀ {c n} {t : Rbnode α}, IsRedBlack t c n → n ≤ depth min t := by
   intro c n' t h
   induction h
   case leaf_rb => exact le_refl _
@@ -245,8 +234,7 @@ private theorem upper_le : ∀ c n, upper c n ≤ 2 * n + 1
   | red, n => le_refl _
   | black, n => by apply le_succ
 
-theorem depth_max' : ∀ {c n} {t : Rbnode α}, IsRedBlack t c n → depth max t ≤ upper c n :=
-  by
+theorem depth_max' : ∀ {c n} {t : Rbnode α}, IsRedBlack t c n → depth max t ≤ upper c n := by
   intro c n' t h
   induction h
   case leaf_rb => simp [max, depth, upper, Nat.mul_zero]
