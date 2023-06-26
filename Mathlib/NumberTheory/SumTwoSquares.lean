@@ -8,8 +8,8 @@ Authors: Chris Hughes, Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathbin.Tactic.LinearCombination
+import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Sums of two squares
@@ -33,8 +33,7 @@ open GaussianInt
 /-- **Fermat's theorem on the sum of two squares**. Every prime not congruent to 3 mod 4 is the sum
 of two squares. Also known as **Fermat's Christmas theorem**. -/
 theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
-    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p :=
-  by
+    ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   apply sq_add_sq_of_nat_prime_of_not_irreducible p
   rwa [PrincipalIdealRing.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
 #align nat.prime.sq_add_sq Nat.Prime.sq_add_sq
@@ -78,8 +77,7 @@ section NegOneSquare
 -- because `((-1 : ℤ) : zmod n)` is not the same as `(-1 : zmod n)`.
 /-- If `-1` is a square modulo `n` and `m` divides `n`, then `-1` is also a square modulo `m`. -/
 theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (-1 : ZMod n)) :
-    IsSquare (-1 : ZMod m) :=
-  by
+    IsSquare (-1 : ZMod m) := by
   let f : ZMod n →+* ZMod m := ZMod.castHom hd _
   rw [← RingHom.map_one f, ← RingHom.map_neg]
   exact hs.map f
@@ -88,10 +86,8 @@ theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (
 /-- If `-1` is a square modulo coprime natural numbers `m` and `n`, then `-1` is also
 a square modulo `m*n`. -/
 theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.coprime n) (hm : IsSquare (-1 : ZMod m))
-    (hn : IsSquare (-1 : ZMod n)) : IsSquare (-1 : ZMod (m * n)) :=
-  by
-  have : IsSquare (-1 : ZMod m × ZMod n) :=
-    by
+    (hn : IsSquare (-1 : ZMod n)) : IsSquare (-1 : ZMod (m * n)) := by
+  have : IsSquare (-1 : ZMod m × ZMod n) := by
     rw [show (-1 : ZMod m × ZMod n) = ((-1 : ZMod m), (-1 : ZMod n)) from rfl]
     obtain ⟨x, hx⟩ := hm
     obtain ⟨y, hy⟩ := hn
@@ -102,8 +98,7 @@ theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.coprime n) (hm : IsSquare 
 
 /-- If a prime `p` divides `n` such that `-1` is a square modulo `n`, then `p % 4 ≠ 3`. -/
 theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p.Prime) (hp : p ∣ n)
-    (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 :=
-  by
+    (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
   obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd hp hs
   rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h 
   haveI : Fact p.prime := ⟨hpp⟩
@@ -113,8 +108,7 @@ theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` is not divisible by a prime `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
-    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 :=
-  by
+    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
   refine' ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => _⟩
   induction' n using induction_on_primes with p n hpp ih
   · exact False.elim (hn.ne_zero rfl)
@@ -132,8 +126,7 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
 theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
-    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 :=
-  by
+    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 := by
   have help : ∀ a b : ZMod 4, a ≠ 3 → b ≠ 3 → a * b ≠ 3 := by decide
   rw [ZMod.isSquare_neg_one_iff hn]
   refine' ⟨fun H => induction_on_primes _ _ fun p q hp hq hpq => _, fun H q hq₁ => H⟩
@@ -153,8 +146,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
 
 /-- If `-1` is a square modulo the natural number `n`, then `n` is a sum of two squares. -/
 theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : ZMod n)) :
-    ∃ x y : ℕ, n = x ^ 2 + y ^ 2 :=
-  by
+    ∃ x y : ℕ, n = x ^ 2 + y ^ 2 := by
   induction' n using induction_on_primes with p n hpp ih
   · exact ⟨0, 0, rfl⟩
   · exact ⟨0, 1, rfl⟩
@@ -168,10 +160,8 @@ theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : Z
 /-- If the integer `n` is a sum of two squares of coprime integers,
 then `-1` is a square modulo `n`. -/
 theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n = x ^ 2 + y ^ 2)
-    (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) :=
-  by
-  obtain ⟨u, v, huv⟩ : IsCoprime x n :=
-    by
+    (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
+  obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
     rw [show y ^ 2 = n + -1 * x ^ 2 by rw [h]; ring] at hc2 
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
@@ -186,8 +176,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
 /-- If the natural number `n` is a sum of two squares of coprime natural numbers, then
 `-1` is a square modulo `n`. -/
 theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = x ^ 2 + y ^ 2)
-    (hc : x.coprime y) : IsSquare (-1 : ZMod n) :=
-  by
+    (hc : x.coprime y) : IsSquare (-1 : ZMod n) := by
   zify at *
   exact ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime h hc.is_coprime
 #align zmod.is_square_neg_one_of_eq_sq_add_sq_of_coprime ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime
@@ -195,8 +184,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = 
 /-- A natural number `n` is a sum of two squares if and only if `n = a^2 * b` with natural
 numbers `a` and `b` such that `-1` is a square modulo `b`. -/
 theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
-    (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∃ a b : ℕ, n = a ^ 2 * b ∧ IsSquare (-1 : ZMod b) :=
-  by
+    (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∃ a b : ℕ, n = a ^ 2 * b ∧ IsSquare (-1 : ZMod b) := by
   constructor
   · rintro ⟨x, y, h⟩
     by_cases hxy : x = 0 ∧ y = 0
@@ -228,8 +216,7 @@ every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 (The assumption `0 < n` is not present, since for `n = 0`, both sides are satisfied;
 the right hand side holds, since `padic_val_nat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
-    (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) :=
-  by
+    (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
   · exact ⟨fun H q hq h => (@padicValNat.zero q).symm ▸ even_zero, fun H => ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
