@@ -87,12 +87,13 @@ theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a)
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
-@[simps!]
+@[simps]
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
     map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
 #align tensor_product.algebra_tensor_module.curry TensorProduct.AlgebraTensorModule.curry
+#align tensor_product.algebra_tensor_module.curry_apply TensorProduct.AlgebraTensorModule.curry_apply
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
@@ -195,10 +196,11 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[A] M ⊗[R] N →ₗ[A] P :=
 /-- Heterobasic version of `TensorProduct.mk`:
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
-@[simps!]
+@[simps! apply]
 nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
+#align tensor_product.algebra_tensor_module.mk_apply TensorProduct.AlgebraTensorModule.mk_apply
 
 attribute [local ext high] TensorProduct.ext
 
@@ -1092,7 +1094,7 @@ def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := 
     simp only [homTensorHomMap_apply, TensorProduct.map_mul]
   · intro r
     simp only [homTensorHomMap_apply]
-    ext (m n)
+    ext m n
     simp [smul_tmul]
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 
@@ -1163,8 +1165,9 @@ protected def module : Module (A ⊗[R] B) M where
   smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
   add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
   one_smul m := by
+    -- porting note: was one `simp only` not two in lean 3
     simp only [(· • ·), Algebra.TensorProduct.one_def]
-    simp only [moduleAux_apply, one_smul] -- porting note: was one `simp only` not two in lean 3
+    simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
     refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
     · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
@@ -1175,9 +1178,10 @@ protected def module : Module (A ⊗[R] B) M where
     · intro a b
       simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
+      -- porting note; was one `simp only` not two and a `rw` in mathlib3
       simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
       simp only [moduleAux_apply, mul_smul]
-      rw [smul_comm a₁ b₂] -- porting note; was one `simp only` not two and a `rw` in mathlib3
+      rw [smul_comm a₁ b₂]
     · intro z w hz hw a b
       --porting note: was one `simp only` but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢

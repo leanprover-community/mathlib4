@@ -564,8 +564,7 @@ def galoisInsertionOfIsSplitEpi (f : Y ⟶ X) [IsSplitEpi f] :
 
 theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presieve X) :
     Sieve.generate (R.pullbackArrows f) = (Sieve.generate R).pullback f := by
-  ext W
-  intro g
+  ext W g
   constructor
   · rintro ⟨_, h, k, hk, rfl⟩
     cases' hk with W g hg
@@ -636,8 +635,7 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X)
 
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
-  ext X
-  intro f
+  ext X f
   constructor
   · intro hf
     obtain ⟨X, g, h, hg, rfl⟩ := hf

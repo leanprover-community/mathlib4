@@ -239,7 +239,7 @@ theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone
 #align monotone.monotone_iterate_of_le_map Monotone.monotone_iterate_of_le_map
 
 /-- If `f` is a monotone map and `f x ≤ x` at some point `x`, then the iterates `f^[n] x` form
-a antitone sequence. -/
+an antitone sequence. -/
 theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n => (f^[n]) x :=
   hf.dual.monotone_iterate_of_le_map hx
 #align monotone.antitone_iterate_of_map_le Monotone.antitone_iterate_of_map_le

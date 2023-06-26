@@ -577,11 +577,15 @@ def stalkIso (x : PrimeSpectrum.Top R) :
   hom := stalkToFiberRingHom R x
   inv := localizationToStalk R x
   hom_inv_id :=
+    -- Porting note: We should be able to replace the next two lines with `ext U hxU s`,
+    -- but there seems to be a bug in `ext` whereby
+    -- it will not do multiple introductions for a single lemma, if you name the arguments.
+    -- See https://github.com/leanprover/std4/pull/159
     (structureSheaf R).presheaf.stalk_hom_ext fun U hxU => by
       ext s
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
         CommRingCat.coe_of, Category.comp_id]
-      rw [stalkToFiberRingHom_germ']
+      rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
       obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
         exists_const _ _ s x hxU
       erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
@@ -673,6 +677,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   have := congr_fun (congr_arg Subtype.val h_eq) ⟨p, hfp⟩
   dsimp at this
   -- Porting note : need to tell Lean what `S` is and need to change to `erw`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [IsLocalization.eq (S := Localization.AtPrime p.asIdeal)] at this
   cases' this with r hr
   exact ⟨r.1, hr, r.2⟩

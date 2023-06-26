@@ -42,7 +42,7 @@ syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- An `reorder := ...` option for `to_additive`. -/
+/-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -58,7 +58,7 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
-  of a lower-case letter followed by a upper-case letter.
+  of a lower-case letter followed by an upper-case letter.
 * If multiple strings have the same prefix, they should be grouped by prefix
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
@@ -106,7 +106,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `reorder` attribute is not given manually -/
 register_option linter.toAdditiveReorder : Bool := {
   defValue := true
   descr := "Linter to check that the reorder attribute is not given manually." }
@@ -118,7 +118,7 @@ register_option linter.existingAttributeWarning : Bool := {
   descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
     "doesn't have certain attributes" }
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++

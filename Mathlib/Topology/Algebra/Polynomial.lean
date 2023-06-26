@@ -19,15 +19,15 @@ import Mathlib.Analysis.Normed.Field.Basic
 
 In this file we prove the following lemmas.
 
-* `Polynomial.continuous_eval₂: `Polynomial.eval₂` defines a continuous function.
-* `Polynomial.continuous_aeval: `Polynomial.aeval` defines a continuous function;
+* `Polynomial.continuous_eval₂`: `Polynomial.eval₂` defines a continuous function.
+* `Polynomial.continuous_aeval`: `Polynomial.aeval` defines a continuous function;
   we also prove convenience lemmas `Polynomial.continuousAt_aeval`,
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;
   we also prove convenience lemmas `Polynomial.continuousAt`, `Polynomial.continuousWithinAt`,
   `Polynomial.continuous_on`.
 * `Polynomial.tendsto_norm_atTop`: `λ x, ‖Polynomial.eval (z x) p‖` tends to infinity provided that
-  `λ x, ‖z x‖` tends to infinity and `0 < degree p`;
+  `fun x ↦ ‖z x‖` tends to infinity and `0 < degree p`;
 * `Polynomial.tendsto_abv_eval₂_atTop`, `Polynomial.tendsto_abv_atTop`,
   `Polynomial.tendsto_abv_aeval_atTop`: a few versions of the previous statement for
   `IsAbsoluteValue abv` instead of norm.

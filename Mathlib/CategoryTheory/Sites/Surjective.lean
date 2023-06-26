@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
 
@@ -62,8 +62,7 @@ theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s
 
 theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : F.obj (op U)) :
     imageSieve f (f.app _ s) = ⊤ := by
-  ext V
-  intro i
+  ext V i
   simp only [Sieve.top_apply, iff_true_iff, imageSieve_apply]
   have := elementwise_of% (f.naturality i.op)
   exact ⟨F.map i.op s, this s⟩
@@ -117,7 +116,7 @@ theorem isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f]
   apply isLocallySurjective_of_surjective
   intro U
   apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective]
+  rw [← isIso_iff_bijective, ←forget_map_eq_coe]
   infer_instance
 #align category_theory.is_locally_surjective_of_iso CategoryTheory.isLocallySurjective_of_iso
 
