@@ -323,17 +323,20 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   have : ys ≠ nil := by rintro rfl; contradiction
   rcases exists_cons_of_ne_nil this with ⟨z, zs, rfl⟩
   rcases mhead
-  simp only [count, countp, cons_append, if_false, countp_append] at *
-  rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, hab⟩
-  rw [hab] at *
-  simp only [countp, cons_append, if_pos, if_false, countp_append] at *
+  simp only [count_cons, if_false] at hu
+  rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, rfl⟩
   use as, bs
-  apply And.intro rfl (And.intro (succ.inj hu) _)
-  constructor
+  refine ⟨rfl, ?_, ?_, ?_⟩
+  · -- Porting note: `simp_rw [count_append]` didn't work
+    rw [count_append] at hu; simp_rw [count_cons, if_true, add_succ, succ_inj'] at hu
+    rwa [count_append, count_append]
   · apply And.intro rfl
-    simp only [tail, mem_append, mem_cons_iff, false_or_iff, not_mem_nil, or_false_iff] at *
-    exact nmtail
-  · simp only [count, countp, cons_append, if_false, countp_append, if_pos]
+    rw [cons_append, cons_append]
+    dsimp [tail] at nmtail ⊢
+    rw [mem_append] at nmtail
+    simpa only [mem_append, mem_cons, false_or_iff, or_false_iff] using nmtail
+  · rw [count_append, count_append]; rw [← cons_append, count_append] at hic
+    simp only [count_cons_self, count_nil, count_cons, if_false] at hic ⊢
     rw [add_right_comm, add_mod_right]; exact hic
 #align miu.ind_hyp_suf Miu.ind_hyp_suf
 
