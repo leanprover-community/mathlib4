@@ -19,8 +19,8 @@ positive-real-valued, log-convex function on the positive reals satisfying `f (x
 `f 1 = 1`.
 
 The proof of the Bohr-Mollerup theorem is bound up with the proof of (a weak form of) the Euler
-limit formula, `real.bohr_mollerup.tendsto_log_gamma_seq`, stating that for positive
-real `x` the sequence `x * log n + log n! - ∑ (m : ℕ) in finset.range (n + 1), log (x + m)`
+limit formula, `Real.BohrMollerup.tendsto_logGammaSeq`, stating that for positive
+real `x` the sequence `x * log n + log n! - ∑ (m : ℕ) in Finset.range (n + 1), log (x + m)`
 tends to `log Γ(x)` as `n → ∞`. We prove that any function satisfying the hypotheses of the
 Bohr-Mollerup theorem must agree with the limit in the Euler limit formula, so there is at most one
 such function; then we show that `Γ` satisfies these conditions.
