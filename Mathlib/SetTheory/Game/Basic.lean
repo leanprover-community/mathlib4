@@ -14,9 +14,7 @@ import Mathlib.Tactic.Abel
 /-!
 # Combinatorial games.
 
-In this file we define the quotient of pre-games by the equivalence relation
-`p ≈ q ↔ p ≤ q ∧ q ≤ p` (its `antisymmetrization`), and construct an instance
-`OrderedAddCommGroup Game`, as well as an instance `PartialOrder Game`.
+In this file we construct an instance `OrderedAddCommGroup Game`.
 
 ## Multiplication on pre-games
 
@@ -35,6 +33,8 @@ open PGame
 
 universe u
 
+-- Porting note: moved the setoid instance to PGame.lean
+
 /-- The type of combinatorial games. In ZFC, a combinatorial game is constructed from
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a combinatorial pre-game is built
@@ -43,17 +43,14 @@ universe u
   reflecting that it is a proper class in ZFC.
   A combinatorial game is then constructed by quotienting by the equivalence
   `x ≈ y ↔ x ≤ y ∧ y ≤ x`. -/
-
--- Porting note: moved the setoid instance to PGame.lean
-
 abbrev Game :=
   Quotient PGame.setoid
 #align game Game
 
 namespace Game
 
-
 -- Porting note: added this definition
+/-- Negation of games. -/
 def neg : Game → Game := Quot.lift (fun x => ⟦-x⟧) fun _ _ h => Quot.sound ((neg_equiv_neg_iff).2 h)
 
 instance : AddCommGroupWithOne Game where
@@ -527,72 +524,72 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_left_distrib reference below, because otherwise the decreasing_by block
-    -- failed. Previously, each branch ended with: `simp[quot_left_distrib]; abel`
+    -- failed. Previously, each branch ended with: `simp [quot_left_distrib]; abel`
     · rintro (⟨i, j | k⟩ | ⟨i, j | k⟩)
       · change
           ⟦xL i * (y + z) + x * (yL j + z) - xL i * (yL j + z)⟧ =
             ⟦xL i * y + x * yL j - xL i * yL j + x * z⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_left_distrib (xL i) (yL j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xL i) (yL j) (mk zl zr zL zR)]
         abel
       · change
           ⟦xL i * (y + z) + x * (y + zL k) - xL i * (y + zL k)⟧ =
             ⟦x * y + (xL i * z + x * zL k - xL i * zL k)⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (zL k)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (zL k)]
         abel
       · change
           ⟦xR i * (y + z) + x * (yR j + z) - xR i * (yR j + z)⟧ =
             ⟦xR i * y + x * yR j - xR i * yR j + x * z⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_left_distrib (xR i) (yR j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xR i) (yR j) (mk zl zr zL zR)]
         abel
       · change
           ⟦xR i * (y + z) + x * (y + zR k) - xR i * (y + zR k)⟧ =
             ⟦x * y + (xR i * z + x * zR k - xR i * zR k)⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (zR k)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zR k)]
         abel
     · rintro (⟨i, j | k⟩ | ⟨i, j | k⟩)
       · change
           ⟦xL i * (y + z) + x * (yR j + z) - xL i * (yR j + z)⟧ =
             ⟦xL i * y + x * yR j - xL i * yR j + x * z⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_left_distrib (xL i) (yR j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xL i) (yR j) (mk zl zr zL zR)]
         abel
       · change
           ⟦xL i * (y + z) + x * (y + zR k) - xL i * (y + zR k)⟧ =
             ⟦x * y + (xL i * z + x * zR k - xL i * zR k)⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_left_distrib (xL i) (mk yl yr yL yR) (zR k)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_left_distrib (xL i) (mk yl yr yL yR) (zR k)]
         abel
       · change
           ⟦xR i * (y + z) + x * (yL j + z) - xR i * (yL j + z)⟧ =
             ⟦xR i * y + x * yL j - xR i * yL j + x * z⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_left_distrib (xR i) (yL j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_left_distrib (xR i) (yL j) (mk zl zr zL zR)]
         abel
       · change
           ⟦xR i * (y + z) + x * (y + zL k) - xR i * (y + zL k)⟧ =
             ⟦x * y + (xR i * z + x * zL k - xR i * zL k)⟧
         simp only [quot_sub, quot_add]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
   termination_by _ => (x, y, z)
   decreasing_by pgame_wf_tac
@@ -695,7 +692,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
     -- Porting note: explicitly wrote out arguments to each recursive
     -- quot_mul_assoc reference below, because otherwise the decreasing_by block
-    -- failed. Each branch previously ended with: `simp[quot_mul_assoc]; abel`
+    -- failed. Each branch previously ended with: `simp [quot_mul_assoc]; abel`
     · rintro (⟨⟨i, j⟩ | ⟨i, j⟩, k⟩ | ⟨⟨i, j⟩ | ⟨i, j⟩, k⟩)
       · change
           ⟦(xL i * y + x * yL j - xL i * yL j) * z + x * y * zL k -
@@ -704,13 +701,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xL i * (yL j * z + y * zL k - yL j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
-        rw[quot_mul_assoc (xL i) (yL j) (zL k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
+        rw [quot_mul_assoc (xL i) (yL j) (zL k)]
         abel
       · change
           ⟦(xR i * y + x * yR j - xR i * yR j) * z + x * y * zL k -
@@ -719,13 +716,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xR i * (yR j * z + y * zL k - yR j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (zL k)]
-        rw[quot_mul_assoc (xR i) (yR j) (zL k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (zL k)]
+        rw [quot_mul_assoc (xR i) (yR j) (zL k)]
         abel
       · change
           ⟦(xL i * y + x * yR j - xL i * yR j) * z + x * y * zR k -
@@ -734,13 +731,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xL i * (yR j * z + y * zR k - yR j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (zR k)]
-        rw[quot_mul_assoc (xL i) (yR j) (zR k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (zR k)]
+        rw [quot_mul_assoc (xL i) (yR j) (zR k)]
         abel
       · change
           ⟦(xR i * y + x * yL j - xR i * yL j) * z + x * y * zR k -
@@ -749,13 +746,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xR i * (yL j * z + y * zR k - yL j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (zR k)]
-        rw[quot_mul_assoc (xR i) (yL j) (zR k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zR k)]
+        rw [quot_mul_assoc (xR i) (yL j) (zR k)]
         abel
     · rintro (⟨⟨i, j⟩ | ⟨i, j⟩, k⟩ | ⟨⟨i, j⟩ | ⟨i, j⟩, k⟩)
       · change
@@ -765,13 +762,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xL i * (yL j * z + y * zR k - yL j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (zR k)]
-        rw[quot_mul_assoc (xL i) (yL j) (zR k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zR k)]
+        rw [quot_mul_assoc (xL i) (yL j) (zR k)]
         abel
       · change
           ⟦(xR i * y + x * yR j - xR i * yR j) * z + x * y * zR k -
@@ -780,13 +777,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xR i * (yR j * z + y * zR k - yR j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (zR k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (zR k)]
-        rw[quot_mul_assoc (xR i) (yR j) (zR k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (zR k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (zR k)]
+        rw [quot_mul_assoc (xR i) (yR j) (zR k)]
         abel
       · change
           ⟦(xL i * y + x * yR j - xL i * yR j) * z + x * y * zL k -
@@ -795,13 +792,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xL i * (yR j * z + y * zL k - yR j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (xL i) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yR j) (zL k)]
-        rw[quot_mul_assoc (xL i) (yR j) (zL k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (zL k)]
+        rw [quot_mul_assoc (xL i) (yR j) (zL k)]
         abel
       · change
           ⟦(xR i * y + x * yL j - xR i * yL j) * z + x * y * zL k -
@@ -810,13 +807,13 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
                 xR i * (yL j * z + y * zL k - yL j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
                    quot_left_distrib_sub, quot_left_distrib]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (xR i) (mk yl yr yL yR) (zL k)]
-        rw[quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
-        rw[quot_mul_assoc (xR i) (yL j) (zL k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (zL k)]
+        rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
+        rw [quot_mul_assoc (xR i) (yL j) (zL k)]
         abel
   termination_by _ => (x, y, z)
   decreasing_by pgame_wf_tac
