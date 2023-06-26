@@ -76,8 +76,6 @@ local notation3 (prettyPrint := false)
 
 namespace SzemerediRegularity.Positivity
 
-open Lean Meta Qq Function
-
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by norm_num)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
