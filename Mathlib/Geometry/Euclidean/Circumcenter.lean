@@ -130,8 +130,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
         field_simp [hy0]
         ring
-      ·
-        rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
+      · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp1 hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
           dist_eq_norm_vsub V, Real.norm_eq_abs, abs_div, abs_of_nonneg dist_nonneg,
@@ -395,7 +394,7 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
         hr i (Set.mem_univ _)).symm
 #align affine.simplex.circumcenter_eq_centroid Affine.Simplex.circumcenter_eq_centroid
 
-/-- Reindexing a simplex along an `equiv` of index types does not change the circumsphere. -/
+/-- Reindexing a simplex along an `Equiv` of index types does not change the circumsphere. -/
 @[simp]
 theorem circumsphere_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumsphere = s.circumsphere := by
@@ -404,13 +403,13 @@ theorem circumsphere_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
   · exact (s.reindex e).circumsphere_unique_dist_eq.1.2
 #align affine.simplex.circumsphere_reindex Affine.Simplex.circumsphere_reindex
 
-/-- Reindexing a simplex along an `equiv` of index types does not change the circumcenter. -/
+/-- Reindexing a simplex along an `Equiv` of index types does not change the circumcenter. -/
 @[simp]
 theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumcenter = s.circumcenter := by simp_rw [circumcenter, circumsphere_reindex]
 #align affine.simplex.circumcenter_reindex Affine.Simplex.circumcenter_reindex
 
-/-- Reindexing a simplex along an `equiv` of index types does not change the circumradius. -/
+/-- Reindexing a simplex along an `Equiv` of index types does not change the circumradius. -/
 @[simp]
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
@@ -618,8 +617,7 @@ def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
   | circumcenter_index => 0
 #align affine.simplex.centroid_weights_with_circumcenter Affine.Simplex.centroidWeightsWithCircumcenter
 
-/-- `centroid_weights_with_circumcenter` sums to 1, if the `finset` is
-nonempty. -/
+/-- `centroidWeightsWithCircumcenter` sums to 1, if the `Finset` is nonempty. -/
 @[simp]
 theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))} (h : fs.Nonempty) :
     (∑ i, centroidWeightsWithCircumcenter fs i) = 1 := by
@@ -628,8 +626,7 @@ theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))
   rcongr
 #align affine.simplex.sum_centroid_weights_with_circumcenter Affine.Simplex.sum_centroidWeightsWithCircumcenter
 
-/-- The centroid of some vertices of a simplex, in terms of
-`pointsWithCircumcenter`. -/
+/-- The centroid of some vertices of a simplex, in terms of `pointsWithCircumcenter`. -/
 theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n)
     (fs : Finset (Fin (n + 1))) :
     fs.centroid ℝ s.points =
@@ -645,8 +642,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   congr
 #align affine.simplex.centroid_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.centroid_eq_affineCombination_of_pointsWithCircumcenter
 
-/-- The weights for the circumcenter of a simplex, in terms of
-`pointsWithCircumcenter`. -/
+/-- The weights for the circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
 def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex n → ℝ
   | point_index _ => 0
   | circumcenter_index => 1
@@ -661,8 +657,7 @@ theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
   · simp
 #align affine.simplex.sum_circumcenter_weights_with_circumcenter Affine.Simplex.sum_circumcenterWeightsWithCircumcenter
 
-/-- The circumcenter of a simplex, in terms of
-`pointsWithCircumcenter`. -/
+/-- The circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
 theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) :
     s.circumcenter =
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter

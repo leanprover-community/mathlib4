@@ -75,11 +75,11 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   map_comp f g := by apply Submodule.linearMap_qext; rfl
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
--- TODO:  Once this file is ported, move this file to the right location.
-instance moduleCat_enough_projectives' : EnoughProjectives (ModuleCat.{u} R) :=
+-- Porting note: TODO:  Once this file is ported, move this instance to the right location.
+instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
-#align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enough_projectives'
+#align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enoughProjectives'
 
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
@@ -100,11 +100,11 @@ In this definition we do not assume any special property of the diagram `I`, but
 will be where `I` is (cofinal with) the diagram of powers of a single given ideal.
 
 Below, we give two equivalent (to be shown) definitions of the usual local cohomology with support
-in an ideal `J`, `local_cohomology` and `local_cohomology.of_self_le_radical`.
+in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
 
 TODO: Show that any functor cofinal with `I` gives the same result.
  -/
-/-- `local_cohomology.of_diagram I i` is the functor sending a module `M` over a commutative
+/-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
 def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
@@ -124,25 +124,25 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 #align local_cohomology.ideal_powers_diagram localCohomology.idealPowersDiagram
 
 /-- The full subcategory of all ideals with radical containing `J` -/
-def SelfLeRadical (J : Ideal R) : Type u :=
+def SelfLERadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 --deriving Category
 
 -- Porting note: `deriving Category` is not able to derive this instance
-instance (J : Ideal R) : Category (SelfLeRadical J) :=
+instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
-#align local_cohomology.self_le_radical localCohomology.SelfLeRadical
+#align local_cohomology.self_le_radical localCohomology.SelfLERadical
 
-instance SelfLeRadical.inhabited (J : Ideal R) : Inhabited (SelfLeRadical J)
+instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J)
     where default := ⟨J, Ideal.le_radical⟩
-#align local_cohomology.self_le_radical.inhabited localCohomology.SelfLeRadical.inhabited
+#align local_cohomology.self_le_radical.inhabited localCohomology.SelfLERadical.inhabited
 
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
 This is the "largest" diagram that computes local cohomology with support in `J`. -/
-def selfLeRadicalDiagram (J : Ideal R) : SelfLeRadical J ⥤ Ideal R :=
+def selfLERadicalDiagram (J : Ideal R) : SelfLERadical J ⥤ Ideal R :=
   fullSubcategoryInclusion _
-#align local_cohomology.self_le_radical_diagram localCohomology.selfLeRadicalDiagram
+#align local_cohomology.self_le_radical_diagram localCohomology.selfLERadicalDiagram
 
 end Diagrams
 
@@ -150,7 +150,7 @@ end localCohomology
 
 /-! We give two models for the local cohomology with support in an ideal `J`: first in terms of
 the powers of `J` (`local_cohomology`), then in terms of *all* ideals with radical
-containing `J` (`local_cohomology.of_self_le_radical`). -/
+containing `J` (`local_cohomology.ofSelfLERadical`). -/
 
 
 section ModelsForLocalCohomology
@@ -159,7 +159,7 @@ open localCohomology
 
 variable {R : Type u} [CommRing R]
 
-/-- `local_cohomology J i` is `i`-th the local cohomology module of a module `M` over
+/-- `localCohomology J i` is `i`-th the local cohomology module of a module `M` over
 a commutative ring `R` with support in the ideal `J` of `R`, defined as the direct limit
 of `Ext^i(R/J^t, M)` over all powers `t : ℕ`. -/
 def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
@@ -168,11 +168,11 @@ def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} 
 
 /-- Local cohomology as the direct limit of `Ext^i(R/J', M)` over *all* ideals `J'` with radical
 containing `J`. -/
-def localCohomology.ofSelfLeRadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  ofDiagram.{u} (selfLeRadicalDiagram.{u} J) i
-#align local_cohomology.of_self_le_radical localCohomology.ofSelfLeRadical
+def localCohomology.ofSelfLERadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
+  ofDiagram.{u} (selfLERadicalDiagram.{u} J) i
+#align local_cohomology.of_self_le_radical localCohomology.ofSelfLERadical
 
-/- TODO: Construct `local_cohomology J i ≅ local_cohomology.of_self_le_radical J i`. Use this to
+/- TODO: Construct `localCohomology J i ≅ localCohomology.ofSelfLERadical J i`. Use this to
 show that local cohomology depends only on `J.radical`. -/
 end ModelsForLocalCohomology
 
@@ -182,36 +182,34 @@ open localCohomology
 
 variable {R : Type u} [CommRing R] (I J : Ideal R)
 
-/-- Lifting `ideal_powers_diagram J` from a diagram valued in `ideals R` to a diagram
-valued in `self_le_radical J`. -/
-def localCohomology.idealPowersToSelfLeRadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLeRadical J :=
+/-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
+valued in `SelfLERadical J`. -/
+def localCohomology.idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
     cases' unop k with n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top, Nat.zero_eq]
     · simp only [J.radical_pow _ n.succ_pos, Ideal.le_radical]
-#align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLeRadical
+#align local_cohomology.ideal_powers_to_self_le_radical localCohomology.idealPowersToSelfLERadical
 
-/-- The composition with the inclusion into `ideals R` is isomorphic to `ideal_powers_diagram J`. -/
-def localCohomology.idealPowersToSelfLeRadicalCompInclusion (J : Ideal R) :
-    localCohomology.idealPowersToSelfLeRadical J ⋙ selfLeRadicalDiagram J ≅ idealPowersDiagram J :=
+/-- The composition with the inclusion into `ideals R` is isomorphic to `idealPowersDiagram J`. -/
+def localCohomology.idealPowersToSelfLERadicalCompInclusion (J : Ideal R) :
+    localCohomology.idealPowersToSelfLERadical J ⋙ selfLERadicalDiagram J ≅ idealPowersDiagram J :=
   FullSubcategory.lift_comp_inclusion _ _ _
-#align local_cohomology.ideal_powers_to_self_le_radical_comp_inclusion localCohomology.idealPowersToSelfLeRadicalCompInclusion
+#align local_cohomology.ideal_powers_to_self_le_radical_comp_inclusion localCohomology.idealPowersToSelfLERadicalCompInclusion
 
-/-- The lemma below essentially says that `ideal_powers_to_self_le_radical I` is initial in
-`self_le_radical_diagram I`.
+/-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
+`selfLERadicalDiagram I`.
 
-PORTING NOTE: This lemma should probably be moved to `ring_theory/finiteness.lean`
-to be near `ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
-theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
+Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness.lean`
+to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
+theorem Ideal.exists_pow_le_of_le_radical_of_fg (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
   use k
   calc
     I ^ k ≤ J.radical ^ k := Ideal.pow_mono hIJ _
     _ ≤ J := hk
-    
-#align ideal.exists_pow_le_of_le_radical_of_fg Ideal.exists_pow_le_of_le_radical_of_fG
+#align ideal.exists_pow_le_of_le_radical_of_fg Ideal.exists_pow_le_of_le_radical_of_fg
 
 end LocalCohomologyEquiv
-
