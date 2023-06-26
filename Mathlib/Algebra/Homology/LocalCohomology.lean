@@ -75,7 +75,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   map_comp f g := by apply Submodule.linearMap_qext; rfl
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
--- Porting note: TODO:  Once this file is ported, move this file to the right location.
+-- Porting note: TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
@@ -201,7 +201,7 @@ def localCohomology.idealPowersToSelfLERadicalCompInclusion (J : Ideal R) :
 /-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
 `selfLERadicalDiagram I`.
 
-PORTING NOTE: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness.lean`
+Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness.lean`
 to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fg (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
