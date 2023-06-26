@@ -72,18 +72,19 @@ universe u v w
 
 section Basic
 
-variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalRing R]
+variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocRing R]
 
 section NonUnitalSubringClass
 
 /-- `NonUnitalSubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class NonUnitalSubringClass (S : Type _) (R : Type u) [NonUnitalRing R] [SetLike S R] extends
-    NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
+class NonUnitalSubringClass (S : Type _) (R : Type u) [NonUnitalNonAssocRing R]
+    [SetLike S R] extends NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type _) (R : Type u)
-    [SetLike S R] [NonUnitalRing R] [h : NonUnitalSubringClass S R] : AddSubgroupClass S R :=
+    [SetLike S R] [NonUnitalNonAssocRing R] [h : NonUnitalSubringClass S R] :
+    AddSubgroupClass S R :=
   { h with }
 
 variable [SetLike S R] [hSR : NonUnitalSubringClass S R] (s : S)
@@ -92,7 +93,14 @@ namespace NonUnitalSubringClass
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance (priority := 75) toNonUnitalRing : NonUnitalRing s :=
+instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s :=
+  Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+
+-- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
+/-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
+instance (priority := 75) toNonUnitalRing {R : Type _} [NonUnitalRing R] [SetLike S R]
+    [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s :=
   Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -117,12 +125,12 @@ end NonUnitalSubringClass
 
 end NonUnitalSubringClass
 
-variable [NonUnitalRing S] [NonUnitalRing T]
+variable [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
 
 /-- `NonUnitalSubring R` is the type of non-unital subrings of `R`. A non-unital subring of `R`
 is a subset `s` that is a multiplicative subsemigroup and an additive subgroup. Note in particular
 that it shares the same 0 as R. -/
-structure NonUnitalSubring (R : Type u) [NonUnitalRing R] extends
+structure NonUnitalSubring (R : Type u) [NonUnitalNonAssocRing R] extends
   NonUnitalSubsemiring R, AddSubgroup R
 
 /-- Reinterpret a `NonUnitalSubring` as a `NonUnitalSubsemiring`. -/
@@ -282,18 +290,19 @@ protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum �
 
 /-- Sum of a multiset of elements in an `NonUnitalSubring` of a `NonUnitalRing` is
 in the `NonUnitalSubring`. -/
-protected theorem multiset_sum_mem {R} [NonUnitalRing R] (s : NonUnitalSubring R) (m : Multiset R) :
-    (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
+protected theorem multiset_sum_mem {R} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
+    (m : Multiset R) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
   multiset_sum_mem _
 
 /-- Sum of elements in a `NonUnitalSubring` of a `NonUnitalRing` indexed by a `Finset`
 is in the `NonUnitalSubring`. -/
-protected theorem sum_mem {R : Type _} [NonUnitalRing R] (s : NonUnitalSubring R) {ι : Type _}
-    {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+protected theorem sum_mem {R : Type _} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
+    {ι : Type _} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance toNonUnitalRing : NonUnitalRing s :=
+instance toNonUnitalRing {R : Type _} [NonUnitalRing R] (s : NonUnitalSubring R) :
+    NonUnitalRing s :=
   Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -382,14 +391,14 @@ section Hom
 namespace NonUnitalSubring
 
 variable {F : Type w} {R : Type u} {S : Type v} {T : Type _} {SR : Type _}
-  [NonUnitalRing R] [NonUnitalRing S] [NonUnitalRing T]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   [NonUnitalRingHomClass F R S] (s : NonUnitalSubring R)
 
 /-! ## comap -/
 
 
 /-- The preimage of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def comap {F : Type w} {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S]
+def comap {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring S) : NonUnitalSubring R :=
   { s.toSubsemigroup.comap (f : R →ₙ* S), s.toAddSubgroup.comap (f : R →+ S) with
     carrier := f ⁻¹' s.carrier }
@@ -409,7 +418,7 @@ theorem comap_comap (s : NonUnitalSubring T) (g : S →ₙ+* T) (f : R →ₙ+* 
 /-! ## map -/
 
 /-- The image of a `NonUnitalSubring` along a ring homomorphism is a `NonUnitalSubring`. -/
-def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S]
+def map {F : Type w} {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     [NonUnitalRingHomClass F R S] (f : F) (s : NonUnitalSubring R) : NonUnitalSubring S :=
   { s.toSubsemigroup.map (f : R →ₙ* S), s.toAddSubgroup.map (f : R →+ S) with
     carrier := f '' s.carrier }
@@ -456,15 +465,15 @@ end NonUnitalSubring
 namespace NonUnitalRingHom
 
 variable {R : Type u} {S : Type v} {T : Type _}
-  [NonUnitalRing R] [NonUnitalRing S] [NonUnitalRing T]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   (g : S →ₙ+* T) (f : R →ₙ+* S)
 
 /-! ## range -/
 
 /-- The range of a ring homomorphism, as a `NonUnitalSubring` of the target.
 See Note [range copy pattern]. -/
-def range {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] (f : R →ₙ+* S) :
-    NonUnitalSubring S :=
+def range {R : Type u} {S : Type v} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    (f : R →ₙ+* S) : NonUnitalSubring S :=
   ((⊤ : NonUnitalSubring R).map f).copy (Set.range f) Set.image_univ.symm
 
 @[simp]
@@ -493,8 +502,10 @@ end NonUnitalRingHom
 
 namespace NonUnitalSubring
 
+section Order
+
 variable {F : Type w} {R : Type u} {S : Type v} {T : Type _}
-  [NonUnitalRing R] [NonUnitalRing S] [NonUnitalRing T]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   [NonUnitalRingHomClass F R S]
   (g : S →ₙ+* T) (f : R →ₙ+* S)
 
@@ -577,9 +588,13 @@ instance : CompleteLattice (NonUnitalSubring R) :=
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
+end Order
+
 /-! ## Center of a ring -/
 
 section
+
+variable {R : Type u} [NonUnitalRing R]
 
 variable (R)
 
@@ -617,6 +632,11 @@ instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
 end
 
 /-! ## `NonUnitalSubring` closure of a subset -/
+
+variable {F : Type w} {R : Type u} {S : Type v} {T : Type _}
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
+  [NonUnitalRingHomClass F R S]
+  (g : S →ₙ+* T) (f : R →ₙ+* S)
 
 /-- The `NonUnitalSubring` generated by a set. -/
 def closure (s : Set R) : NonUnitalSubring R :=
@@ -717,8 +737,8 @@ theorem mem_closure_iff {s : Set R} {x} :
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
-def closureNonUnitalCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
-    NonUnitalCommRing (closure s) :=
+def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
+    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with
     mul_comm := fun x y => by
       ext
@@ -878,7 +898,7 @@ end NonUnitalSubring
 namespace NonUnitalRingHom
 
 variable {F : Type w} {R : Type u} {S : Type v} {T : Type _}
-  [NonUnitalRing R] [NonUnitalRing S] [NonUnitalRing T]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   [NonUnitalRingHomClass F R S]
   (g : S →ₙ+* T) (f : R →ₙ+* S)
   {s : NonUnitalSubring R}
@@ -947,7 +967,7 @@ end NonUnitalRingHom
 namespace NonUnitalSubring
 
 variable {F : Type w} {R : Type u} {S : Type v} {T : Type _}
-  [NonUnitalRing R] [NonUnitalRing S] [NonUnitalRing T]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
   [NonUnitalRingHomClass F R S]
   (g : S →ₙ+* T) (f : R →ₙ+* S)
   {s : NonUnitalSubring R}
@@ -1013,7 +1033,7 @@ end RingEquiv
 namespace NonUnitalSubring
 
 variable {F : Type w} {R : Type u} {S : Type v}
-  [NonUnitalRing R] [NonUnitalRing S]
+  [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
   [NonUnitalRingHomClass F R S]
 
 theorem closure_preimage_le (f : F) (s : Set S) :

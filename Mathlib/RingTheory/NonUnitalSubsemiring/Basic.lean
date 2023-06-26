@@ -14,6 +14,7 @@ import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
 # Bundled non-unital subsemirings
