@@ -153,16 +153,16 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
     rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
--- theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
---   rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt]
---   apply toNat_lt
--- #align bitvec.to_fin_val Bitvec.toFin_val
+theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
+  rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt]
+  apply toNat_lt
+#align bitvec.to_fin_val Bitvec.toFin_val
 
--- theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
---   show (v₀.toFin : ℕ) ≤ v₁.toFin by
---     rw [toFin_val, toFin_val]
---     exact h
--- #align bitvec.to_fin_le_to_fin_of_le Bitvec.toFin_le_toFin_of_le
+theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
+  show (v₀.toFin : ℕ) ≤ v₁.toFin by
+    rw [toFin_val, toFin_val]
+    exact h
+#align bitvec.to_fin_le_to_fin_of_le Bitvec.toFin_le_toFin_of_le
 
 theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j :=
   show (Bitvec.ofNat n i).toNat ≤ (Bitvec.ofNat n j).toNat by
@@ -170,14 +170,14 @@ theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin
     exact h
 #align bitvec.of_fin_le_of_fin_of_le Bitvec.ofFin_le_ofFin_of_le
 
--- theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
---   Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
--- #align bitvec.to_fin_of_fin Bitvec.toFin_ofFin
+theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
+  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+#align bitvec.to_fin_of_fin Bitvec.toFin_ofFin
 
--- theorem ofFin_toFin {n} (v : Bitvec n) : ofFin (toFin v) = v := by
---   dsimp [ofFin]
---   rw [toFin_val, ofNat_toNat]
--- #align bitvec.of_fin_to_fin Bitvec.ofFin_toFin
+theorem ofFin_toFin {n} (v : Bitvec n) : ofFin (toFin v) = v := by
+  dsimp [ofFin]
+  rw [toFin_val, ofNat_toNat]
+#align bitvec.of_fin_to_fin Bitvec.ofFin_toFin
 
 instance : NatCast (Bitvec n) := ⟨Bitvec.ofNat _⟩
 
@@ -218,9 +218,9 @@ theorem toNat_zero : ∀ {n : Nat}, (0 : Bitvec n).toNat = 0
   | 0 => rfl
   | n+1 => by simpa [Bitvec.toNat, toList_zero, bitsToNat] using @toNat_zero n
 
--- @[simp]
--- theorem ofNat_zero : Bitvec.ofNat w 0 = 0 := by
---   rw [← toNat_zero, ofNat_toNat]
+@[simp]
+theorem ofNat_zero : Bitvec.ofNat w 0 = 0 := by
+  rw [← toNat_zero, ofNat_toNat]
 
 theorem toList_one {n : ℕ} : (1 : Bitvec (n + 1)).toList = List.replicate n false ++ [true] := rfl
 
