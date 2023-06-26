@@ -1,9 +1,7 @@
 /-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
+Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module subalgebra
+Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
@@ -39,26 +37,7 @@ open scoped BigOperators
 
 section NonUnitalSubalgebraClass
 
-/-
-/-- `non_unital_subalgebra_class S R` states that `S` is a type of subsets `s ⊆ R` that
-are both a subsemiring and a submodule. -/
-class non_unital_subalgebra_class (S : Type*) (R : out_param (Type*)) (A : Type*) [comm_semiring R]
-  [non_unital_semiring A] [has_smul R A] [set_like S A] extends
-  non_unital_subsemiring_class S A, smul_mem_class S R A : Prop
-
-@[priority 100] -- See note [lower instance priority]
-instance non_unital_subalgebra_class.to_submodule_class (S : Type*) (R : Type*) (A : Type*)
-  [comm_ring R] [non_unital_ring A] [module R A] [set_like S A]
-  [non_unital_subsemiring_class S A] [h : non_unital_subalgebra_class S R A] :
-  submodule_class S R A :=
-{ .. non_unital_subalgebra_class.to_smul_mem_class S R A }
-
--- not a problem because `R` is marked as an `out_param`
-attribute [nolint dangerous_instance] non_unital_subalgebra_class.to_non_unital_subring_class
--/
--- not a problem because `R` is marked as an `out_param` in `smul_mem_class`
---attribute [nolint dangerous_instance] non_unital_subalgebra_class.to_non_unital_subring_class
-variable {S R A : Type _} [CommSemiring R] [NonUnitalSemiring A] [Module R A]
+variable {S R A : Type _} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 variable [SetLike S A] [NonUnitalSubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
@@ -79,8 +58,9 @@ end NonUnitalSubalgebraClass
 end NonUnitalSubalgebraClass
 
 /-- A non-unital subalgebra is a sub(semi)ring that is also a submodule. -/
-structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [NonUnitalSemiring A]
-    [Module R A] extends NonUnitalSubsemiring A, Submodule R A : Type v
+structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
+    [NonUnitalNonAssocSemiring A] [Module R A]
+    extends NonUnitalSubsemiring A, Submodule R A : Type v
 #align non_unital_subalgebra NonUnitalSubalgebra
 
 /-- Reinterpret a `non_unital_subalgebra` as a `non_unital_subsemiring`. -/
@@ -95,9 +75,9 @@ variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C 
 
 variable [CommSemiring R]
 
-variable [NonUnitalSemiring A] [Module R A] [NonUnitalSemiring B] [Module R B]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
 
-variable [NonUnitalSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
+variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
 
 instance : SetLike (NonUnitalSubalgebra R A) A
     where
@@ -332,49 +312,47 @@ def toNonUnitalSubring' {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
 
 section
 
-/-! `non_unital_subalgebra`s inherit structure from their `submodule` coercions. -/
+/-! ### `non_unital_subalgebra`s inherit structure from their `submodule` coercions. -/
 
+-- maybe these next two declarations should be moved?
+-- the first to `SubMulAction`? and the second to `Submodule.Basic`?
+/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
+this to manually derive `SMulMemClass` on specific types. -/
+def SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
+  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+  SMulMemClass S M α :=
+{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
--- TODO: generalize to `non_unital_subalgebra_class` or `submodule_class`
-/- is there any reason we don't want this?
-instance smul_mem_class.of_is_scalar_tower {S M N α : Type*} [set_like S α] [has_smul M N]
-  [has_smul M α] [monoid N] [mul_action N α]
-  [smul_mem_class S N α] [is_scalar_tower M N α] :
-  smul_mem_class S M α :=
-{ smul_mem := λ s m a ha, smul_one_smul N m a ▸ smul_mem_class.smul_mem _ ha }
--/
-/- instance wtf_why {S A : Type*} [add_comm_monoid A]
-  [set_like S A] [add_submonoid_class S A] (s : S) :
-  add_comm_monoid s :=
-add_submonoid_class.to_add_comm_monoid s -/
-/- needs the `smul_mem_class.of_is_scalar_tower` above
-instance foo {S R A : Type*} [comm_semiring R] [non_unital_semiring A] [module R A]
-  [semiring R'] [has_smul R' R] [module R' A] [is_scalar_tower R' R A]
-  [set_like S A] [non_unital_subsemiring_class S A] [smul_mem_class S R A] (s : S) :
-  module R' s :=
-infer_instance
--/
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
-  S.toSubmodule.module'
-#align non_unital_subalgebra.module' NonUnitalSubalgebra.module'
+/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
+this to manually derive `Module` on specific types. -/
+def SMulMemClass.toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    Module R' s :=
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R  A
+  SMulMemClass.toModule s
 
-instance : Module R S :=
-  S.module'
+instance instModule' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+  SMulMemClass.toModule' _ R' R A S
+#align non_unital_subalgebra.module' NonUnitalSubalgebra.instModule'
 
-instance is_scalar_tower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+instance instModule : Module R S :=
+  S.instModule'
+
+instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
     IsScalarTower R' R S :=
   S.toSubmodule.isScalarTower
-#align non_unital_subalgebra.is_scalar_tower' NonUnitalSubalgebra.is_scalar_tower'
+#align non_unital_subalgebra.is_scalar_tower' NonUnitalSubalgebra.instIsScalarTower'
 
 instance [IsScalarTower R A A] : IsScalarTower R S S
     where smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
 
-instance smul_comm_class' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SMulCommClass R' R A] : SMulCommClass R' R S
     where smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
-#align non_unital_subalgebra.smul_comm_class' NonUnitalSubalgebra.smul_comm_class'
+#align non_unital_subalgebra.smul_comm_class' NonUnitalSubalgebra.instSMulCommClass'
 
-instance [SMulCommClass R A A] : SMulCommClass R S S
+instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S
     where smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end
@@ -417,20 +395,18 @@ protected theorem coe_eq_zero {x : S} : (x : A) = 0 ↔ x = 0 :=
   ZeroMemClass.coe_eq_zero
 #align non_unital_subalgebra.coe_eq_zero NonUnitalSubalgebra.coe_eq_zero
 
--- todo: standardize on the names these morphisms
--- compare with submodule.subtype
 @[simp]
-theorem to_non_unital_subsemiring_subtype :
+theorem toNonUnitalSubsemiring_subtype :
     NonUnitalSubsemiringClass.subtype S = NonUnitalSubalgebraClass.subtype (R := R) S :=
   rfl
-#align non_unital_subalgebra.to_non_unital_subsemiring_subtype NonUnitalSubalgebra.to_non_unital_subsemiring_subtype
+#align non_unital_subalgebra.to_non_unital_subsemiring_subtype NonUnitalSubalgebra.toNonUnitalSubsemiring_subtype
 
 @[simp]
-theorem to_subring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A]
+theorem toSubring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A]
     (S : NonUnitalSubalgebra R A) :
     NonUnitalSubringClass.subtype S = NonUnitalSubalgebraClass.subtype (R := R) S :=
   rfl
-#align non_unital_subalgebra.to_subring_subtype NonUnitalSubalgebra.to_subring_subtype
+#align non_unital_subalgebra.to_subring_subtype NonUnitalSubalgebra.toSubring_subtype
 
 /-- Linear equivalence between `S : submodule R A` and `S`. Though these types are equal,
 we define it as a `linear_equiv` to avoid type equalities. -/
@@ -472,8 +448,7 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
   NonUnitalSubsemiring.mem_map
 #align non_unital_subalgebra.mem_map NonUnitalSubalgebra.mem_map
 
--- we don't have the coercion for linear maps?
-theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :
+theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     (map f S).toSubmodule = Submodule.map (f : A →ₗ[R] B) S.toSubmodule :=
   SetLike.coe_injective rfl
 #align non_unital_subalgebra.map_to_submodule NonUnitalSubalgebra.map_toSubmodule
@@ -524,7 +499,7 @@ end NonUnitalSubalgebra
 
 namespace Submodule
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type _} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 variable (p : Submodule R A)
 
@@ -573,9 +548,9 @@ variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C 
 
 variable [CommSemiring R]
 
-variable [NonUnitalSemiring A] [Module R A] [NonUnitalSemiring B] [Module R B]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
 
-variable [NonUnitalSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
+variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
 
 /-- Range of an `non_unital_alg_hom` as a non_unital_subalgebra. -/
 protected def range (φ : F) : NonUnitalSubalgebra R B where
@@ -727,9 +702,9 @@ variable {F : Type _} (R : Type u) {A : Type v} {B : Type w}
 
 variable [CommSemiring R]
 
-variable [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
-variable [NonUnitalSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
 
 variable [NonUnitalAlgHomClass F R A B]
 
@@ -1060,9 +1035,9 @@ variable {F : Type _} {R : Type u} {A : Type v} {B : Type w}
 
 variable [CommSemiring R]
 
-variable [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
-variable [NonUnitalSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
+variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
 
 variable [NonUnitalAlgHomClass F R A B] (S : NonUnitalSubalgebra R A)
 
