@@ -360,7 +360,6 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   ### Checked arithmetic
 -/
 section CheckedArith
-
   /--
     Checked addition of bitvectors, returns `none` on (signed/unsigned) overflow, instead of
     wrapping
@@ -410,9 +409,6 @@ section CheckedArith
             none
           else
             some res
-
-
-  #check Option.bind
 
   /--
     Checked multiplication of bitvectors, returns `none` on (signed/unsigned) overflow, instead of
