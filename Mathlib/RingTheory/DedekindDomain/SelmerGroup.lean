@@ -66,7 +66,7 @@ https://doc.sagemath.org/html/en/reference/number_fields/sage/rings/number_field
 class group, selmer group, unit group
 -/
 
-
+set_option quotPrecheck false in
 local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
 
 namespace IsDedekindDomain
@@ -90,15 +90,25 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
   Multiplicative.ofAdd <|
     (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {hx.fst}).factors : ℤ) -
-      (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {(hx : R)}).factors : ℤ)
+      (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {(hx.snd : R)}).factors : ℤ)
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.Valuation (x : K) := by
-  change _ = _ * _
+    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
+  rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
-  change _ = ite _ _ _ * (ite (coe _ = _) _ _)⁻¹
+  have :  ∀ a : R, (v.intValuation) a = if (a = 0) then 0
+      else
+      ↑(Multiplicative.ofAdd (-((Associates.mk v.asIdeal).count
+      (Associates.mk (Ideal.span {a})).factors : ℤ))) := by exact fun a ↦ rfl
+  sorry
+#exit
+  rw [show ((intValuation v) : R →* ℤₘ₀) _ = if _ then _ else _ by rfl]
+--  dsimp only [intValuationDef]
+--  rw [intValuation]
+--  rw [show  _ = ite _ _ _ * (ite ((↑) _ = _) _ _)⁻¹ by rfl]
+--  change _ = ite _ _ _ * (ite ((↑) _ = _) _ _)⁻¹
   rw [IsLocalization.toLocalizationMap_sec,
     if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
     if_neg <| nonZeroDivisors.coe_ne_zero _]
@@ -128,8 +138,8 @@ theorem valuation_of_unit_eq (x : Rˣ) :
   · exact v.valuation_le_one x
   · cases' x with x _ hx _
     change ¬v.valuation (algebraMap R K x) < 1
-    apply_fun v.int_valuation at hx 
-    rw [map_one, map_mul] at hx 
+    apply_fun v.int_valuation at hx
+    rw [map_one, map_mul] at hx
     rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebra_map,
       mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
     exact v.int_valuation_le_one _
@@ -213,17 +223,17 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     rcases(QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
     have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr_arg Units.val hx
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr_arg Units.inv hx
-    rw [Units.val_pow_eq_pow_val] at hv 
-    rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi 
+    rw [Units.val_pow_eq_pow_val] at hv
+    rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
     rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ v _ hn.out
         (hv.symm ▸ isIntegral_algebraMap) with
       ⟨v', rfl⟩
     rcases@IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow R _ _ _ _ _ _ _ i _ hn.out
         (hi.symm ▸ isIntegral_algebraMap) with
       ⟨i', rfl⟩
-    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi 
-    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at iv 
-    rw [Units.val_mk, ← map_pow] at hv 
+    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi
+    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at iv
+    rw [Units.val_mk, ← map_pow] at hv
     exact
       ⟨⟨v', i', vi, iv⟩, by
         simpa only [Units.ext_iff, powMonoidHom_apply, Units.val_pow_eq_pow_val] using
@@ -248,4 +258,3 @@ theorem fromUnitLift_injective [Fact <| 0 < n] :
 end SelmerGroup
 
 end IsDedekindDomain
-
