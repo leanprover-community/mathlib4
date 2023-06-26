@@ -2378,6 +2378,7 @@ import Mathlib.NumberTheory.Wilson
 import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.NumberTheory.Zsqrtd.ToReal
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
