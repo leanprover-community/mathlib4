@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Regularity.Increment
+import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
 /-!
 # Szemerédi's Regularity Lemma
@@ -77,8 +77,7 @@ variable {α : Type _} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
 theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     ∃ P : Finpartition univ,
-      P.IsEquipartition ∧ l ≤ P.parts.card ∧ P.parts.card ≤ bound ε l ∧ P.IsUniform G ε :=
-  by
+      P.IsEquipartition ∧ l ≤ P.parts.card ∧ P.parts.card ≤ bound ε l ∧ P.IsUniform G ε := by
   obtain hα | hα := le_total (card α) (bound ε l)
   -- If `card α ≤ bound ε l`, then the partition into singletons is acceptable.
   · refine' ⟨⊥, bot_is_equipartition _, _⟩
@@ -143,8 +142,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hεl' : 100 < 4 ^ P.parts.card * ε ^ 5 :=
     (hundred_lt_pow_initial_bound_mul hε l).trans_le
       (mul_le_mul_of_nonneg_right (pow_le_pow (by norm_num) hP₂) <| by positivity)
-  have hi : (i : ℝ) ≤ 4 / ε ^ 5 :=
-    by
+  have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (by exact_mod_cast P.energy_le_one G)
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi 
     norm_num at hi 
