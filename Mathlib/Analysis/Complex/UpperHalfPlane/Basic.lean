@@ -507,12 +507,12 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     rw [specialLinearGroup_apply]
     simpa only [inv_neg, modular_S_smul, Subtype.coe_mk, coe_vadd, Complex.ofReal_mul,
       coe_pos_real_smul, Complex.real_smul, Function.comp_apply, Complex.ofReal_div]
-  replace hc : (c : ℂ) ≠ 0; · norm_cast; assumption
+  replace hc : (c : ℂ) ≠ 0; · norm_cast
   replace h_denom : ↑c * z + d ≠ 0; · simpa using h_denom ⟨z, hz⟩
   have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
     rw [mul_assoc, ← mul_add, add_comm]
     exact mul_ne_zero hc h_denom
-  replace h : (a * d - b * c : ℂ) = (1 : ℂ); · norm_cast; assumption
+  replace h : (a * d - b * c : ℂ) = (1 : ℂ); · norm_cast
   field_simp
   linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
