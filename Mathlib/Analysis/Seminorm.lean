@@ -1259,7 +1259,6 @@ lemma bound_of_shell
     (hf : ∀ x, ε / ‖c‖ ≤ p x → p x < ε → q x ≤ C * p x) {x : E} (hx : p x ≠ 0) :
     q x ≤ C * p x := by
   rcases p.rescale_to_shell hc ε_pos hx with ⟨δ, hδ, δxle, leδx, -⟩
-  have := hf (δ • x) leδx δxle
   simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ)]
     using hf (δ • x) leδx δxle
 
