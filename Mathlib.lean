@@ -1620,6 +1620,7 @@ import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
+import Mathlib.Data.RBTree.Init
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast
@@ -1633,7 +1634,6 @@ import Mathlib.Data.Rat.NNRat
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
-import Mathlib.Data.RBTree.Init
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
