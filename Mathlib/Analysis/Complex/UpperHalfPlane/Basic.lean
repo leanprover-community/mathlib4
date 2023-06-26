@@ -467,13 +467,14 @@ end RealAddAction
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg]
+  rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg, coeToGL]
 #align upper_half_plane.modular_S_smul UpperHalfPlane.modular_S_smul
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
-  rw [← Subtype.coe_inj, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk,
-    ModularGroup.coe_T_zpow]
-  simp only [of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
+  rw [← Subtype.coe_inj, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
+  -- Porting note: added `coeToGL` and merged `rw` and `simp`
+  simp [coeToGL, ModularGroup.coe_T_zpow,
+    of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
     head_cons, algebraMap.coe_zero, MulZeroClass.zero_mul, zero_add, div_one]
 #align upper_half_plane.modular_T_zpow_smul UpperHalfPlane.modular_T_zpow_smul
 
@@ -488,8 +489,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
   refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
   ext1 ⟨z, hz⟩; ext1
   suffices ↑a * z * a + b * a = b * a + a * a * z by
-    rw [specialLinearGroup_apply]
-    simpa [add_mul]
+    -- Porting note: added `coeToGL` and merged `rw` and `simpa`
+    simpa [coeToGL, specialLinearGroup_apply, add_mul]
   ring
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_eq_zero
 
@@ -504,9 +505,9 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
   refine' ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, _⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
-    rw [specialLinearGroup_apply]
-    simpa only [inv_neg, modular_S_smul, Subtype.coe_mk, coe_vadd, Complex.ofReal_mul,
-      coe_pos_real_smul, Complex.real_smul, Function.comp_apply, Complex.ofReal_div]
+    -- Porting note: golfed broken proof
+    simpa only [modular_S_smul, inv_neg, Function.comp_apply, coe_vadd, Complex.ofReal_mul,
+      coe_pos_real_smul, Complex.real_smul, Complex.ofReal_div, coe_mk]
   replace hc : (c : ℂ) ≠ 0; · norm_cast
   replace h_denom : ↑c * z + d ≠ 0; · simpa using h_denom ⟨z, hz⟩
   have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
