@@ -195,8 +195,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       ext1 p
       rw [← Complex.exp_add, mul_add]
     _ = ∫ p in polarCoord.target, p.1 •
-        cexp (-b * ((p.1 * Complex.cos p.2) ^ 2 + (p.1 * Complex.sin p.2) ^ 2)) :=
-      by
+        cexp (-b * ((p.1 * Complex.cos p.2) ^ 2 + (p.1 * Complex.sin p.2) ^ 2)) := by
       rw [← integral_comp_polarCoord_symm]
       simp only [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
     _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * (r : ℂ) ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
@@ -252,84 +251,88 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
 theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   have nv : ∀ {b : ℂ}, 0 < re b → b ≠ 0 := by intro b hb; contrapose! hb; rw [hb]; simp
-  refine'
-    (convex_halfspace_re_gt 0).isPreconnected.eq_of_sq_eq _ _ (fun c hc => _) (fun c hc => _)
-      (by simp : 0 < re (1 : ℂ)) _ hb
-  ·-- integral is continuous
+  apply
+    (convex_halfspace_re_gt 0).isPreconnected.eq_of_sq_eq ?_ ?_ (fun c hc => ?_) (fun {c} hc => ?_)
+      (by simp : 0 < re (1 : ℂ)) ?_ hb
+  · -- integral is continuous
     exact ContinuousAt.continuousOn continuousAt_gaussian_integral
   · -- `(π / b) ^ (1 / 2 : ℂ)` is continuous
     refine'
       ContinuousAt.continuousOn fun b hb =>
-        (continuousAt_cpow_const (Or.inl _)).comp (continuous_at_const.div continuousAt_id (nv hb))
-    rw [div_re, of_real_im, of_real_re, MulZeroClass.zero_mul, zero_div, add_zero]
-    exact div_pos (mul_pos pi_pos hb) (norm_sq_pos.mpr (nv hb))
+        (continuousAt_cpow_const (Or.inl _)).comp (continuousAt_const.div continuousAt_id (nv hb))
+    rw [div_re, ofReal_im, ofReal_re, MulZeroClass.zero_mul, zero_div, add_zero]
+    exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
+  · -- equality at 1
+    have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
+      intro x
+      simp only [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
+    simp_rw [this, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, integral_ofReal,
+      ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap]
+    conv_rhs =>
+      congr
+      · rw [← ofReal_one, ← ofReal_div]
+      · rw [← ofReal_one, ← ofReal_ofNat, ← ofReal_div]
+    rw [← ofReal_cpow, ofReal_inj]
+    convert integral_gaussian (1 : ℝ) using 1
+    · rw [sqrt_eq_rpow]
+    · rw [div_one]; exact pi_pos.le
   · -- squares of both sides agree
     dsimp only [Pi.pow_apply]
     rw [integral_gaussian_sq_complex hc, sq]
     conv_lhs => rw [← cpow_one (↑π / c)]
-    rw [← cpow_add _ _ (div_ne_zero (of_real_ne_zero.mpr pi_ne_zero) (nv hc))]
+    rw [← cpow_add _ _ (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))]
     norm_num
   · -- RHS doesn't vanish
     rw [Ne.def, cpow_eq_zero_iff, not_and_or]
-    exact Or.inl (div_ne_zero (of_real_ne_zero.mpr pi_ne_zero) (nv hc))
-  · -- equality at 1
-    have : ∀ x : ℝ, cexp (-1 * x ^ 2) = exp (-1 * x ^ 2) := by
-      intro x
-      simp only [of_real_exp, neg_mul, one_mul, of_real_neg, of_real_pow]
-    simp_rw [this, integral_ofReal]
-    conv_rhs =>
-      congr
-      rw [← of_real_one, ← of_real_div]
-      skip
-      rw [← of_real_one, ← of_real_bit0, ← of_real_div]
-    rw [← of_real_cpow, of_real_inj]
-    convert integral_gaussian (1 : ℝ)
-    · rwa [sqrt_eq_rpow]
-    · rw [div_one]; exact pi_pos.le
+    exact Or.inl (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))
 #align integral_gaussian_complex integral_gaussian_complex
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for complex `b`.
 theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
-    ∫ x : ℝ in Ioi 0, cexp (-b * x ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by
+    ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by
   have full_integral := integral_gaussian_complex hb
   have : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
   rw [← integral_add_compl this (integrable_cexp_neg_mul_sq hb), compl_Ioi] at full_integral
-  suffices ∫ x : ℝ in Iic 0, cexp (-b * x ^ 2) = ∫ x : ℝ in Ioi 0, cexp (-b * x ^ 2) by
+  suffices ∫ x : ℝ in Iic 0, cexp (-b * (x : ℂ) ^ 2) = ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) by
     rw [this, ← mul_two] at full_integral
     rwa [eq_div_iff]; exact two_ne_zero
-  have : ∀ c : ℝ, ∫ x in 0 ..c, cexp (-b * x ^ 2) = ∫ x in -c..0, cexp (-b * x ^ 2) := by
+  have : ∀ c : ℝ, ∫ x in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2) =
+      ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
     intro c
-    have := @intervalIntegral.integral_comp_sub_left _ _ _ _ 0 c (fun x => cexp (-b * x ^ 2)) 0
+    have :=
+      @intervalIntegral.integral_comp_sub_left _ _ _ _ 0 c (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
     simpa [zero_sub, neg_sq, neg_zero] using this
   have t1 :=
-    interval_integral_tendsto_integral_Ioi _ (integrable_cexp_neg_mul_sq hb).IntegrableOn tendsto_id
+    intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id
   have t2 :
-    tendsto (fun c : ℝ => ∫ x : ℝ in 0 ..c, cexp (-b * x ^ 2)) at_top
-      (𝓝 (∫ x : ℝ in Iic 0, cexp (-b * x ^ 2))) := by
+    Tendsto (fun c : ℝ => ∫ x : ℝ in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2)) atTop
+      (𝓝 (∫ x : ℝ in Iic 0, cexp (-b * (x : ℂ) ^ 2))) := by
     simp_rw [this]
-    refine' interval_integral_tendsto_integral_Iic _ _ tendsto_neg_at_top_at_bot
-    apply (integrable_cexp_neg_mul_sq hb).IntegrableOn
+    refine' intervalIntegral_tendsto_integral_Iic _ _ tendsto_neg_atTop_atBot
+    apply (integrable_cexp_neg_mul_sq hb).integrableOn
   exact tendsto_nhds_unique t2 t1
 #align integral_gaussian_complex_Ioi integral_gaussian_complex_Ioi
 
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
-theorem integral_gaussian_Ioi (b : ℝ) : ∫ x in Ioi 0, exp (-b * x ^ 2) = sqrt (π / b) / 2 := by
+theorem integral_gaussian_Ioi (b : ℝ) :
+    ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = sqrt (π / b) / 2 := by
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
     exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
-    rwa [← integrable_on, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
-  rw [← of_real_inj, ← integral_ofReal]
-  convert integral_gaussian_complex_Ioi (by rwa [of_real_re] : 0 < (b : ℂ).re)
-  · ext1 x; simp
-  · rw [sqrt_eq_rpow, ← of_real_div, of_real_div, of_real_cpow]
+    rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
+  rw [← IsROrC.ofReal_inj (K := ℂ), ← integral_ofReal, ← IsROrC.algebraMap_eq_ofReal,
+    coe_algebraMap]
+  convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
+  · simp
+  · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
     norm_num
     exact (div_pos pi_pos hb).le
 #align integral_gaussian_Ioi integral_gaussian_Ioi
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
-theorem Real.gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
+theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
-  convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1)
+  convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
     refine' set_integral_congr measurableSet_Ioi fun x hx => _
     dsimp only
@@ -338,17 +341,19 @@ theorem Real.gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
       norm_num
       rw [rpow_neg (le_of_lt hx), rpow_one]
     rw [smul_eq_mul, this]
-    field_simp [(ne_of_lt hx).symm]
+    field_simp [(ne_of_lt (show 0 < x from hx)).symm]
     norm_num; ring
   · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel _ (two_ne_zero' ℝ)]
-#align real.Gamma_one_half_eq Real.gamma_one_half_eq
+set_option linter.uppercaseLean3 false in
+#align real.Gamma_one_half_eq Real.Gamma_one_half_eq
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
-theorem Complex.gamma_one_half_eq : Complex.Gamma (1 / 2) = π ^ (1 / 2 : ℂ) := by
-  convert congr_arg coe Real.gamma_one_half_eq
-  · simpa only [one_div, of_real_inv, of_real_bit0] using Gamma_of_real (1 / 2)
-  · rw [sqrt_eq_rpow, of_real_cpow pi_pos.le, of_real_div, of_real_bit0, of_real_one]
-#align complex.Gamma_one_half_eq Complex.gamma_one_half_eq
+theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 : ℂ) := by
+  convert congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
+  · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
+  · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
+set_option linter.uppercaseLean3 false in
+#align complex.Gamma_one_half_eq Complex.Gamma_one_half_eq
 
 namespace GaussianFourier
 
@@ -365,17 +370,18 @@ variable {b : ℂ}
 /-- The integral of the Gaussian function over the vertical edges of a rectangle
 with vertices at `(±T, 0)` and `(±T, c)`.  -/
 def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
-  ∫ y : ℝ in 0 ..c, I * (cexp (-b * (T + y * I) ^ 2) - cexp (-b * (T - y * I) ^ 2))
+  ∫ y : ℝ in (0 : ℝ)..c, I * (cexp (-b * (T + y * I) ^ 2) - cexp (-b * (T - y * I) ^ 2))
 #align gaussian_fourier.vertical_integral GaussianFourier.verticalIntegral
 
 /-- Explicit formula for the norm of the Gaussian function along the vertical
 edges. -/
-theorem norm_cexp_neg_mul_sq_add_mul_i (b : ℂ) (c T : ℝ) :
+theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ = exp (-(b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2)) := by
   rw [Complex.norm_eq_abs, Complex.abs_exp, neg_mul, neg_re, ← re_add_im b]
-  simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, of_real_re, of_real_im, I_re, I_im]
+  simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, ofReal_re, ofReal_im, I_re, I_im]
   ring_nf
-#align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I GaussianFourier.norm_cexp_neg_mul_sq_add_mul_i
+set_option linter.uppercaseLean3 false in
+#align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I
 
 theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ =
@@ -385,11 +391,12 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
       b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) :=
     by field_simp; ring
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
+set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
 
 theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
     ‖verticalIntegral b c T‖ ≤
-      2 * |c| * exp (-(b.re * T ^ 2 - 2 * |b.im| * |c| * T - b.re * c ^ 2)) := by
+      (2 : ℝ) * |c| * exp (-(b.re * T ^ 2 - (2 : ℝ) * |b.im| * |c| * T - b.re * c ^ 2)) := by
   -- first get uniform bound for integrand
   have vert_norm_bound :
     ∀ {T : ℝ},
@@ -397,11 +404,11 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
         ∀ {c y : ℝ},
           |y| ≤ |c| →
             ‖cexp (-b * (T + y * I) ^ 2)‖ ≤
-              exp (-(b.re * T ^ 2 - 2 * |b.im| * |c| * T - b.re * c ^ 2)) := by
+              exp (-(b.re * T ^ 2 - (2 : ℝ) * |b.im| * |c| * T - b.re * c ^ 2)) := by
     intro T hT c y hy
     rw [norm_cexp_neg_mul_sq_add_mul_I b, exp_le_exp, neg_le_neg_iff]
     refine' sub_le_sub (sub_le_sub (le_refl _) (mul_le_mul_of_nonneg_right _ hT)) _
-    · conv_lhs => rw [mul_assoc]; conv_rhs => rw [mul_assoc]
+    · (conv_lhs => rw [mul_assoc]); (conv_rhs => rw [mul_assoc])
       refine' mul_le_mul_of_nonneg_left ((le_abs_self _).trans _) zero_le_two
       rw [abs_mul]
       exact mul_le_mul_of_nonneg_left hy (abs_nonneg _)
@@ -411,7 +418,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
   refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
   pick_goal 3
   · rw [sub_zero]
-    conv_lhs => rw [mul_comm]
+    conv_lhs => simp only [mul_comm _ (|c|)]
     conv_rhs =>
       conv =>
         congr
@@ -419,7 +426,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      rcases le_or_lt 0 c with ⟨⟩
+      rcases le_or_lt 0 c with (h | h)
       · rw [uIoc_of_le h] at hy
         rw [abs_of_nonneg h, abs_of_pos hy.1]
         exact hy.2
@@ -429,7 +436,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
     refine' (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) _)
     rw [← abs_neg y] at absy
-    simpa only [neg_mul, of_real_neg] using vert_norm_bound hT absy
+    simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
 #align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
 
 theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
@@ -439,60 +446,61 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   refine'
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds _
       (eventually_of_forall fun _ => norm_nonneg _)
-      ((eventually_ge_at_top (0 : ℝ)).mp
-        (eventually_of_forall fun T hT => vertical_integral_norm_le hb c hT))
+      ((eventually_ge_atTop (0 : ℝ)).mp
+        (eventually_of_forall fun T hT => verticalIntegral_norm_le hb c hT))
   rw [(by ring : 0 = 2 * |c| * 0)]
-  refine' (tendsto_exp_at_bot.comp (tendsto_neg_at_top_at_bot.comp _)).const_mul _
-  apply tendsto_at_top_add_const_right
+  refine' (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp _)).const_mul _
+  apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]
-  refine' tendsto.at_top_mul_at_top (tendsto_at_top_add_const_right _ _ _) tendsto_id
-  exact (tendsto_const_mul_at_top_of_pos hb).mpr tendsto_id
+  refine' Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ _) tendsto_id
+  exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 #align gaussian_fourier.tendsto_vertical_integral GaussianFourier.tendsto_verticalIntegral
 
-theorem integrable_cexp_neg_mul_sq_add_real_mul_i (hb : 0 < b.re) (c : ℝ) :
+theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
   refine'
-    ⟨(complex.continuous_exp.comp
+    ⟨(Complex.continuous_exp.comp
           (continuous_const.mul
-            ((continuous_of_real.add continuous_const).pow 2))).AEStronglyMeasurable,
+            ((continuous_ofReal.add continuous_const).pow 2))).aestronglyMeasurable,
       _⟩
-  rw [← has_finite_integral_norm_iff]
+  rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq_add_mul_I' hb.ne', neg_sub _ (c ^ 2 * _),
     sub_eq_add_neg _ (b.re * _), Real.exp_add]
-  suffices integrable fun x : ℝ => exp (-(b.re * x ^ 2)) by
-    exact (integrable.comp_sub_right this (b.im * c / b.re)).HasFiniteIntegral.const_mul _
+  suffices Integrable fun x : ℝ => exp (-(b.re * x ^ 2)) by
+    exact (Integrable.comp_sub_right this (b.im * c / b.re)).hasFiniteIntegral.const_mul _
   simp_rw [← neg_mul]
   apply integrable_exp_neg_mul_sq hb
-#align gaussian_fourier.integrable_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integrable_cexp_neg_mul_sq_add_real_mul_i
+set_option linter.uppercaseLean3 false in
+#align gaussian_fourier.integrable_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integrable_cexp_neg_mul_sq_add_real_mul_I
 
-theorem integral_cexp_neg_mul_sq_add_real_mul_i (hb : 0 < b.re) (c : ℝ) :
+theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   refine'
     tendsto_nhds_unique
-      (interval_integral_tendsto_integral (integrable_cexp_neg_mul_sq_add_real_mul_I hb c)
-        tendsto_neg_at_top_at_bot tendsto_id)
+      (intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq_add_real_mul_I hb c)
+        tendsto_neg_atTop_atBot tendsto_id)
       _
   set I₁ := fun T => ∫ x : ℝ in -T..T, cexp (-b * (x + c * I) ^ 2) with HI₁
-  let I₂ := fun T : ℝ => ∫ x : ℝ in -T..T, cexp (-b * x ^ 2)
-  let I₄ := fun T : ℝ => ∫ y : ℝ in 0 ..c, cexp (-b * (T + y * I) ^ 2)
-  let I₅ := fun T : ℝ => ∫ y : ℝ in 0 ..c, cexp (-b * (-T + y * I) ^ 2)
+  let I₂ := fun T : ℝ => ∫ x : ℝ in -T..T, cexp (-b * (x : ℂ) ^ 2)
+  let I₄ := fun T : ℝ => ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (T + y * I) ^ 2)
+  let I₅ := fun T : ℝ => ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (-T + y * I) ^ 2)
   have C : ∀ T : ℝ, I₂ T - I₁ T + I * I₄ T - I * I₅ T = 0 := by
     intro T
     have :=
-      integral_boundary_rect_eq_zero_of_differentiable_on (fun z => cexp (-b * z ^ 2)) (-T)
+      integral_boundary_rect_eq_zero_of_differentiableOn (fun z => cexp (-b * z ^ 2)) (-T)
         (T + c * I)
         (by
           refine' Differentiable.differentiableOn (Differentiable.const_mul _ _).cexp
           exact differentiable_pow 2)
-    simpa only [neg_im, of_real_im, neg_zero, of_real_zero, MulZeroClass.zero_mul, add_zero, neg_re,
-      of_real_re, add_re, mul_re, I_re, MulZeroClass.mul_zero, I_im, tsub_zero, add_im, mul_im,
-      mul_one, zero_add, Algebra.id.smul_eq_mul, of_real_neg] using this
+    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, MulZeroClass.zero_mul, add_zero, neg_re,
+      ofReal_re, add_re, mul_re, I_re, MulZeroClass.mul_zero, I_im, tsub_zero, add_im, mul_im,
+      mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
   simp_rw [id.def, ← HI₁]
-  have : I₁ = fun T : ℝ => I₂ T + vertical_integral b c T := by
+  have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
     ext1 T
     specialize C T
     rw [sub_eq_zero] at C
-    unfold vertical_integral
+    unfold verticalIntegral
     rw [integral_const_mul, intervalIntegral.integral_sub]
     · simp_rw [(fun a b => by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
       change I₁ T = I₂ T + I * (I₄ T - I₅ T)
@@ -500,27 +508,28 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_i (hb : 0 < b.re) (c : ℝ) :
       abel
     all_goals apply Continuous.intervalIntegrable; continuity
   rw [this, ← add_zero ((π / b : ℂ) ^ (1 / 2 : ℂ)), ← integral_gaussian_complex hb]
-  refine' tendsto.add _ (tendsto_vertical_integral hb c)
+  refine' Tendsto.add _ (tendsto_verticalIntegral hb c)
   exact
-    interval_integral_tendsto_integral (integrable_cexp_neg_mul_sq hb) tendsto_neg_at_top_at_bot
+    intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq hb) tendsto_neg_atTop_atBot
       tendsto_id
-#align gaussian_fourier.integral_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integral_cexp_neg_mul_sq_add_real_mul_i
+set_option linter.uppercaseLean3 false in
+#align gaussian_fourier.integral_cexp_neg_mul_sq_add_real_mul_I GaussianFourier.integral_cexp_neg_mul_sq_add_real_mul_I
 
-theorem integral_cexp_neg_mul_sq_add_const (hb : 0 < b.re) (c : ℂ) :
+theorem _root_.integral_cexp_neg_mul_sq_add_const (hb : 0 < b.re) (c : ℂ) :
     ∫ x : ℝ, cexp (-b * (x + c) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   rw [← re_add_im c]
-  simp_rw [← add_assoc, ← of_real_add]
+  simp_rw [← add_assoc, ← ofReal_add]
   rw [integral_add_right_eq_self fun x : ℝ => cexp (-b * (↑x + ↑c.im * I) ^ 2)]
   · apply integral_cexp_neg_mul_sq_add_real_mul_I hb
-  · infer_instance
 #align integral_cexp_neg_mul_sq_add_const integral_cexp_neg_mul_sq_add_const
 
-theorem fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
-    ∫ x : ℝ, cexp (I * t * x) * cexp (-b * x ^ 2) =
+theorem _root_.fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
+    ∫ x : ℝ, cexp (I * t * x) * cexp (-b * (x : ℂ) ^ 2) =
       cexp (-t ^ 2 / (4 * b)) * (π / b) ^ (1 / 2 : ℂ) := by
   have : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   simp_rw [← Complex.exp_add]
-  have : ∀ x : ℂ, I * t * x + -b * x ^ 2 = -t ^ 2 / (4 * b) + -b * (x + -I * t / 2 / b) ^ 2 := by
+  have : ∀ x : ℂ,
+      I * t * x + -b * x ^ 2 = -t ^ 2 / ((4 : ℂ) * b) + -b * (x + -I * t / 2 / b) ^ 2 := by
     intro x
     ring_nf
     rw [I_sq]
@@ -528,12 +537,12 @@ theorem fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
   simp_rw [this, Complex.exp_add, integral_mul_left, integral_cexp_neg_mul_sq_add_const hb]
 #align fourier_transform_gaussian fourier_transform_gaussian
 
-theorem fourier_transform_gaussian_pi (hb : 0 < b.re) :
-    (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2)) = fun t : ℝ =>
-      1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
+theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
+    (𝓕 fun x : ℝ => cexp (-π * b * (x : ℂ) ^ 2)) = fun t : ℝ =>
+      (1 : ℂ) / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t : ℂ) ^ 2) := by
   ext1 t
-  simp_rw [fourier_integral_eq_integral_exp_smul, smul_eq_mul]
-  have h1 : 0 < re (π * b) := by rw [of_real_mul_re]; exact mul_pos pi_pos hb
+  simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul]
+  have h1 : 0 < re (π * b) := by rw [ofReal_mul_re]; exact mul_pos pi_pos hb
   have h2 : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
@@ -541,8 +550,8 @@ theorem fourier_transform_gaussian_pi (hb : 0 < b.re) :
     all_goals push_cast ; ring
   · conv_lhs => rw [mul_comm]
     congr 2
-    · field_simp [of_real_ne_zero.mpr pi_ne_zero]; ring
-    · rw [← div_div, div_self (of_real_ne_zero.mpr pi_ne_zero), one_div, one_div b, inv_cpow]
+    · field_simp [ofReal_ne_zero.mpr pi_ne_zero]; ring
+    · rw [← div_div, div_self (ofReal_ne_zero.mpr pi_ne_zero), one_div, one_div b, inv_cpow]
       rw [Ne.def, arg_eq_pi_iff, not_and_or, not_lt]
       exact Or.inl hb.le
 #align fourier_transform_gaussian_pi fourier_transform_gaussian_pi
@@ -559,65 +568,67 @@ variable {E : Type _} [NormedAddCommGroup E]
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by
   conv in rexp _ => rw [← sq_abs]
-  rw [cocompact_eq, ← comap_abs_at_top,
+  erw [cocompact_eq, ← comap_abs_atTop,
     @tendsto_comap'_iff _ _ _ (fun y => y ^ s * rexp (-a * y ^ 2)) _ _ _
-      (mem_at_top_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
+      (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto
-      (tendsto_exp_at_bot.comp <| tendsto_id.neg_const_mul_at_top (neg_lt_zero.mpr one_half_pos))
+      (tendsto_exp_atBot.comp <| tendsto_id.neg_const_mul_atTop (neg_lt_zero.mpr one_half_pos))
 #align tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
-    (fun x : ℝ => Complex.exp (-a * x ^ 2)) =o[cocompact ℝ] fun x : ℝ => |x| ^ s := by
-  rw [← is_o_norm_left]
+    (fun x : ℝ => Complex.exp (-a * (x : ℂ) ^ 2)) =o[cocompact ℝ] fun x : ℝ => |x| ^ s := by
+  rw [← isLittleO_norm_left]
   simp_rw [norm_cexp_neg_mul_sq]
-  apply is_o_of_tendsto'
-  · refine' eventually.filter_mono cocompact_le_cofinite _
+  apply isLittleO_of_tendsto'
+  · refine' Eventually.filter_mono cocompact_le_cofinite _
     refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x hx h => _)
     exact ((rpow_pos_of_pos (abs_pos.mpr hx) _).ne' h).elim
   · refine'
-      tendsto.congr' (eventually.filter_mono cocompact_le_cofinite _)
+      Tendsto.congr' (Eventually.filter_mono cocompact_le_cofinite _)
         (tendsto_zero_iff_norm_tendsto_zero.mp <|
           tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact ha (-s))
-    refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x hx => _)
+    refine' (eventually_cofinite_ne 0).mp (eventually_of_forall fun x _ => _)
+    dsimp only
     rw [norm_mul, norm_of_nonneg (rpow_nonneg_of_nonneg (abs_nonneg _) _), mul_comm,
       rpow_neg (abs_nonneg x), div_eq_mul_inv, norm_of_nonneg (exp_pos _).le]
 #align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
 
 theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
-    ∑' n : ℤ, cexp (-π * a * n ^ 2) = 1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * n ^ 2) := by
-  let f := fun x : ℝ => cexp (-π * a * x ^ 2)
+    (∑' n : ℤ, cexp (-π * a * (n : ℂ) ^ 2)) =
+      (1 : ℂ) / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n : ℂ) ^ 2) := by
+  let f := fun x : ℝ => cexp (-π * a * (x : ℂ) ^ 2)
   have h1 : 0 < (↑π * a).re := by
-    rw [of_real_mul_re]
+    rw [ofReal_mul_re]
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
-    rw [div_eq_mul_inv, of_real_mul_re, inv_re]
-    refine' mul_pos pi_pos (div_pos ha <| norm_sq_pos.mpr _)
+    rw [div_eq_mul_inv, ofReal_mul_re, inv_re]
+    refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] fun x => |x| ^ (-2 : ℝ) := by
-    convert (isLittleO_exp_neg_mul_sq_cocompact h1 _).IsBigO
-    ext1 x
-    dsimp only [f]
+    convert (isLittleO_exp_neg_mul_sq_cocompact h1 (-2)).isBigO using 2
+    dsimp only
     congr 1
     ring
   have Ff_bd : 𝓕 f =O[cocompact ℝ] fun x => |x| ^ (-2 : ℝ) := by
     rw [fourier_transform_gaussian_pi ha]
-    convert (isLittleO_exp_neg_mul_sq_cocompact h2 _).IsBigO.const_mul_left _
-    ext1 x
+    convert (isLittleO_exp_neg_mul_sq_cocompact h2 (-2)).isBigO.const_mul_left
+      ((1 : ℂ) / a ^ (1 / 2 : ℂ)) using 2
     congr 1
     ring_nf
-  simpa only [fourier_transform_gaussian_pi ha, tsum_mul_left] using
+  simpa only [fourier_transform_gaussian_pi ha, tsum_mul_left, Function.comp] using
     Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
-      (complex.continuous_exp.comp (continuous_const.mul (continuous_of_real.pow 2)) : Continuous f)
+      (Complex.continuous_exp.comp (continuous_const.mul (continuous_ofReal.pow 2)) : Continuous f)
       one_lt_two f_bd Ff_bd
 #align complex.tsum_exp_neg_mul_int_sq Complex.tsum_exp_neg_mul_int_sq
 
 theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :
-    ∑' n : ℤ, exp (-π * a * n ^ 2) = 1 / a ^ (1 / 2 : ℝ) * ∑' n : ℤ, exp (-π / a * n ^ 2) := by
-  simpa only [← of_real_inj, of_real_mul, of_real_tsum, of_real_exp, of_real_div, of_real_pow,
-    of_real_int_cast, of_real_neg, of_real_cpow ha.le, of_real_bit0, of_real_one] using
-    Complex.tsum_exp_neg_mul_int_sq (by rwa [of_real_re] : 0 < (a : ℂ).re)
+    (∑' n : ℤ, exp (-π * a * (n : ℝ) ^ 2)) =
+      (1 : ℝ) / a ^ (1 / 2 : ℝ) * (∑' n : ℤ, exp (-π / a * (n : ℝ) ^ 2)) := by
+  simpa only [← ofReal_inj, ofReal_mul, ofReal_tsum, ofReal_exp, ofReal_div, ofReal_pow,
+    ofReal_int_cast, ofReal_neg, ofReal_cpow ha.le, ofReal_ofNat, ofReal_one] using
+    Complex.tsum_exp_neg_mul_int_sq (by rwa [ofReal_re] : 0 < (a : ℂ).re)
 #align real.tsum_exp_neg_mul_int_sq Real.tsum_exp_neg_mul_int_sq
 
 end GaussianPoisson
