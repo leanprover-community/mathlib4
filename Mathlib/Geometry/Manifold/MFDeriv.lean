@@ -222,7 +222,6 @@ def MDifferentiableAt (f : M → M') (x : M) :=
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x)
 #align mdifferentiable_at MDifferentiableAt
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr «expr ∧ »(_, _)]] -/
 theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ LiftPropAt (DifferentiableWithinAtProp I I') f x := by
   -- porting note: was `congrm ∧`
@@ -1537,8 +1536,8 @@ variable {I I' I''}
 
 theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
     (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :
-    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x = (mfderiv I I' f x).prod (mfderiv I I'' g x) :=
-  by
+    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x =
+      (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
   exact hf.2.fderivWithin_prod hg.2 (I.unique_diff _ (mem_range_self _))
@@ -2137,7 +2136,7 @@ variable (Z)
 
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage' {b : M} (hs : UniqueMDiffWithinAt I s b)
     (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π Z ⁻¹' s) (totalSpaceMk b x) :=
-  hs.smooth_bundle_preimage
+  hs.smooth_bundle_preimage (p := totalSpaceMk b x)
 
 /-- In a smooth fiber bundle, the preimage under the projection of a set with
 unique differential in the basis also has unique differential. -/
