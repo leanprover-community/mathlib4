@@ -49,6 +49,13 @@ namespace Equiv
 --   (vectorEquivFin _ _).trans (array'EquivFin _ _).symm
 #noalign equiv.vector_equiv_array
 
+/-- The natural equivalence between arrays and lists. -/
+def arrayEquivList (α : Type _) : Array α ≃ List α where
+  toFun := Array.toList
+  invFun := List.toArray
+  left_inv a := Array.toList_eq a ▸ Array.toArray_data a
+  right_inv l := Array.toList_eq (l.toArray) ▸ Array.data_toArray l
+
 end Equiv
 
 namespace Array'
@@ -65,13 +72,13 @@ instance : IsLawfulTraversable (Array' n) :=
 
 end Array'
 
-/-- If `α` is encodable, then so is `array n α`. -/
-instance Array'.encodable {α} [Encodable α] {n} : Encodable (Array' n α) :=
-  Encodable.ofEquiv _ (Equiv.arrayEquivFin _ _)
-#align array.encodable Array'.encodable
+/-- If `α` is encodable, then so is `Array α`. -/
 
-/-- If `α` is countable, then so is `array n α`. -/
-instance Array'.countable {α} [Countable α] {n} : Countable (Array' n α) :=
-  Countable.of_equiv _ (Equiv.vectorEquivArray _ _)
-#align array.countable Array'.countable
+instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
+  Encodable.ofEquiv _ (Equiv.arrayEquivList _)
+#align array.encodable Array.encodable
 
+/-- If `α` is countable, then so is `Array α`. -/
+instance Array.countable {α} [Countable α] : Countable (Array α) :=
+  Countable.of_equiv _ (Equiv.arrayEquivList α).symm
+#align array.countable Array.countable
