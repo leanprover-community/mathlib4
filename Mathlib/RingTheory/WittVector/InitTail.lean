@@ -18,15 +18,15 @@ import Mathlib.RingTheory.WittVector.IsPoly
 Given a Witt vector `x`, we are sometimes interested
 in its components before and after an index `n`.
 This file defines those operations, proves that `init` is polynomial,
-and shows how that polynomial interacts with `mv_polynomial.bind₁`.
+and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 
 ## Main declarations
 
-* `witt_vector.init n x`: the first `n` coefficients of `x`, as a Witt vector. All coefficients at
+* `WittVector.init n x`: the first `n` coefficients of `x`, as a Witt vector. All coefficients at
   indices ≥ `n` are 0.
-* `witt_vector.tail n x`: the complementary part to `init`. All coefficients at indices < `n` are 0,
+* `WittVector.tail n x`: the complementary part to `init`. All coefficients at indices < `n` are 0,
   otherwise they are the same as in `x`.
-* `witt_vector.coeff_add_of_disjoint`: if `x` and `y` are Witt vectors such that for every `n`
+* `WittVector.coeff_add_of_disjoint`: if `x` and `y` are Witt vectors such that for every `n`
   the `n`-th coefficient of `x` or of `y` is `0`, then the coefficients of `x + y`
   are just `x.coeff n + y.coeff n`.
 
@@ -41,9 +41,9 @@ and shows how that polynomial interacts with `mv_polynomial.bind₁`.
 
 variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type _} [CommRing R]
 
+-- type as `\bbW`
 local notation "𝕎" => WittVector p
 
--- type as `\bbW`
 namespace Tactic
 
 namespace Interactive
@@ -84,7 +84,7 @@ noncomputable section
 
 section
 
-/-- `witt_vector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
+/-- `WittVector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
 def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
@@ -95,8 +95,8 @@ section Select
 
 variable (P : ℕ → Prop)
 
-/-- The polynomial that witnesses that `witt_vector.select` is a polynomial function.
-`select_poly n` is `X n` if `P n` holds, and `0` otherwise. -/
+/-- The polynomial that witnesses that `WittVector.select` is a polynomial function.
+`selectPoly n` is `X n` if `P n` holds, and `0` otherwise. -/
 def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 #align witt_vector.select_poly WittVector.selectPoly
@@ -159,17 +159,17 @@ theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coe
 
 end Select
 
-/-- `witt_vector.init n x` is the Witt vector of which the first `n` coefficients are those from `x`
+/-- `WittVector.init n x` is the Witt vector of which the first `n` coefficients are those from `x`
 and all other coefficients are `0`.
-See `witt_vector.tail` for the complementary part.
+See `WittVector.tail` for the complementary part.
 -/
 def init (n : ℕ) : 𝕎 R → 𝕎 R :=
   select fun i => i < n
 #align witt_vector.init WittVector.init
 
-/-- `witt_vector.tail n x` is the Witt vector of which the first `n` coefficients are `0`
+/-- `WittVector.tail n x` is the Witt vector of which the first `n` coefficients are `0`
 and all other coefficients are those from `x`.
-See `witt_vector.init` for the complementary part. -/
+See `WittVector.init` for the complementary part. -/
 def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
   select fun i => n ≤ i
 #align witt_vector.tail WittVector.tail
@@ -217,7 +217,7 @@ section
 
 variable (p)
 
-/-- `witt_vector.init n x` is polynomial in the coefficients of `x`. -/
+/-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
 theorem init_isPoly (n : ℕ) : IsPoly p fun R _Rcr => init n :=
   select_isPoly fun i => i < n
 #align witt_vector.init_is_poly WittVector.init_isPoly
