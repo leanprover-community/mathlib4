@@ -8,8 +8,8 @@ Authors: Mario Carneiro, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Hom.Monoid
-import Mathbin.SetTheory.Game.Ordinal
+import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.SetTheory.Game.Ordinal
 
 /-!
 # Surreal numbers
@@ -109,8 +109,7 @@ theorem numeric_rec {C : PGame → Prop}
     H _ _ _ _ h hl hr (fun i => numeric_rec _ (hl i)) fun i => numeric_rec _ (hr i)
 #align pgame.numeric_rec PGame.numeric_rec
 
-theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y :=
-  by
+theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
   induction' x using PGame.moveRecOn with x IHl IHr generalizing y
   apply numeric.mk (fun i j => _) (fun i => _) fun j => _
   · rw [← lt_congr (r.move_left_symm i).Equiv (r.move_right_symm j).Equiv]
@@ -124,8 +123,7 @@ theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ N
   ⟨r.numeric_imp, r.symm.numeric_imp⟩
 #align pgame.relabelling.numeric_congr PGame.Relabelling.numeric_congr
 
-theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x :=
-  by
+theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
   refine' numeric_rec (fun xl xr xL xR hx oxl oxr IHxl IHxr => _) x ox y oy
   refine' numeric_rec fun yl yr yL yR hy oyl oyr IHyl IHyr => _
   rw [mk_lf_mk, mk_lf_mk]; rintro (⟨i, h₁⟩ | ⟨j, h₁⟩) (⟨i, h₂⟩ | ⟨j, h₂⟩)
@@ -176,8 +174,7 @@ theorem lt_of_exists_le {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
 theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x < y ↔
       (∃ i, (∀ i', x.moveLeft i' < y.moveLeft i) ∧ ∀ j, x < (y.moveLeft i).moveRight j) ∨
-        ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' :=
-  by
+        ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' := by
   rw [← lf_iff_lt ox oy, lf_def]
   refine' or_congr _ _ <;> refine' exists_congr fun x_1 => _ <;> refine' and_congr _ _ <;>
       refine' forall_congr' fun i => lf_iff_lt _ _ <;>
@@ -251,8 +248,7 @@ theorem add : ∀ {x y : PGame} (ox : Numeric x) (oy : Numeric y), Numeric (x + 
         exact
           (add_lf_add_of_lf_of_le (mk_lf _ _ jx) (oy.move_left_le iy)).lt (ox.add (oy.move_left iy))
             ((ox.move_right jx).add oy)
-      · exact add_lt_add_left (oy.1 iy jy) ⟨xl, xr, xL, xR⟩,
-      by
+      · exact add_lt_add_left (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
       constructor
       · rintro (ix | iy)
         · exact (ox.move_left ix).add oy
@@ -276,8 +272,7 @@ theorem numeric_nat : ∀ n : ℕ, Numeric n
 #align pgame.numeric_nat PGame.numeric_nat
 
 /-- Ordinal games are numeric. -/
-theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric :=
-  by
+theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
   induction' o using Ordinal.induction with o IH
   apply numeric_of_is_empty_right_moves
   simpa using fun i => IH _ (Ordinal.toLeftMovesToPGame_symm_lt i)
@@ -373,8 +368,7 @@ instance : AddMonoidWithOne Surreal :=
   AddMonoidWithOne.unary
 
 /-- Casts a `surreal` number into a `game`. -/
-def toGame : Surreal →+o Game
-    where
+def toGame : Surreal →+o Game where
   toFun := lift (fun x _ => ⟦x⟧) fun x y ox oy => Quot.sound
   map_zero' := rfl
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
@@ -402,8 +396,7 @@ open Surreal
 namespace Ordinal
 
 /-- Converts an ordinal into the corresponding surreal. -/
-noncomputable def toSurreal : Ordinal ↪o Surreal
-    where
+noncomputable def toSurreal : Ordinal ↪o Surreal where
   toFun o := mk _ (numeric_toPGame o)
   inj' a b h := toPGame_equiv_iff.1 (Quotient.exact h)
   map_rel_iff' := @toPGame_le_iff
