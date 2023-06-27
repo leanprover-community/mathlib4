@@ -13,10 +13,7 @@ import Mathlib.Logic.Equiv.List
 import Mathlib.Control.Traversable.Equiv
 
 /-!
-# Equivalences involving `array`
-
-We keep this separate from the file containing `list`-like equivalences as those have no future
-in mathlib4.
+# Equivalences involving `Array`
 -/
 
 /-
