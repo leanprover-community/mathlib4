@@ -80,7 +80,7 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) :
   · rw [AlgHom.map_zero, mk]; simp only [hi]; rfl
 #align witt_vector.coeff_select WittVector.coeff_select
 
--- Porting note: replaced `@[is_poly]` with `instance`.
+-- Porting note: replaced `@[is_poly]` with `instance`. Made the argument `P` implicit in doing so.
 instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
   use selectPoly P
   rintro R _Rcr x
