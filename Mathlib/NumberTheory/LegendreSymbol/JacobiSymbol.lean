@@ -153,7 +153,10 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
-  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul]; exact List.prod_map_mul
+  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _];
+  exact List.prod_map_mul (α := ℤ) (l := List.attach (factors b))
+    (f := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₁)
+    (g := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₂)
 #align jacobi_sym.mul_left jacobiSym.mul_left
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
@@ -163,8 +166,9 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
       -- porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
-      simp_rw [legendreSym.eq_zero_iff, int_cast_zmod_eq_zero_iff_dvd, mem_factors (NeZero.ne b), ←
-        Int.coe_nat_dvd_left, Int.coe_nat_dvd, exists_prop, and_assoc, and_comm])
+      simp_rw [legendreSym.eq_zero_iff _ _, int_cast_zmod_eq_zero_iff_dvd,
+        mem_factors (NeZero.ne b), ← Int.coe_nat_dvd_left, Int.coe_nat_dvd, exists_prop, and_assoc,
+        and_comm])
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
