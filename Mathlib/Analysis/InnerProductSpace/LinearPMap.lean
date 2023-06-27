@@ -20,26 +20,26 @@ We will develop the basics of the theory of unbounded operators on Hilbert space
 
 ## Main definitions
 
-* `linear_pmap.is_formal_adjoint`: An operator `T` is a formal adjoint of `S` if for all `x` in the
+* `LinearPMap.IsFormalAdjoint`: An operator `T` is a formal adjoint of `S` if for all `x` in the
   domain of `T` and `y` in the domain of `S`, we have that `⟪T x, y⟫ = ⟪x, S y⟫`.
-* `linear_pmap.adjoint`: The adjoint of a map `E →ₗ.[𝕜] F` as a map `F →ₗ.[𝕜] E`.
+* `LinearPMap.adjoint`: The adjoint of a map `E →ₗ.[𝕜] F` as a map `F →ₗ.[𝕜] E`.
 
 ## Main statements
 
-* `linear_pmap.adjoint_is_formal_adjoint`: The adjoint is a formal adjoint
-* `linear_pmap.is_formal_adjoint.le_adjoint`: Every formal adjoint is contained in the adjoint
-* `continuous_linear_map.to_pmap_adjoint_eq_adjoint_to_pmap_of_dense`: The adjoint on
-  `continuous_linear_map` and `linear_pmap` coincide.
+* `LinearPMap.adjoint_isFormalAdjoint`: The adjoint is a formal adjoint
+* `LinearPMap.IsFormalAdjoint.le_adjoint`: Every formal adjoint is contained in the adjoint
+* `ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense`: The adjoint on
+  `ContinuousLinearMap` and `LinearPMap` coincide.
 
 ## Notation
 
 * For `T : E →ₗ.[𝕜] F` the adjoint can be written as `T†`.
-  This notation is localized in `linear_pmap`.
+  This notation is localized in `LinearPMap`.
 
 ## Implementation notes
 
-We use the junk value pattern to define the adjoint for all `linear_pmap`s. In the case that
-`T : E →ₗ.[𝕜] F` is not densely defined the adjoint `T†` is the zero map from `T.adjoint_domain` to
+We use the junk value pattern to define the adjoint for all `LinearPMap`s. In the case that
+`T : E →ₗ.[𝕜] F` is not densely defined the adjoint `T†` is the zero map from `T.adjoint.domain` to
 `E`.
 
 ## References
@@ -86,7 +86,7 @@ variable (T)
 /-- The domain of the adjoint operator.
 
 This definition is needed to construct the adjoint operator and the preferred version to use is
-`T.adjoint.domain` instead of `T.adjoint_domain`. -/
+`T.adjoint.domain` instead of `T.adjointDomain`. -/
 def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
@@ -98,7 +98,7 @@ def adjointDomain : Submodule 𝕜 F where
     exact hx.const_smul (conj a)
 #align linear_pmap.adjoint_domain LinearPMap.adjointDomain
 
-/-- The operator `λ x, ⟪y, T x⟫` considered as a continuous linear operator from `T.adjoint_domain`
+/-- The operator `λ x, ⟪y, T x⟫` considered as a continuous linear operator from `T.adjointDomain`
 to `𝕜`. -/
 def adjointDomainMkClm (y : T.adjointDomain) : T.domain →L[𝕜] 𝕜 :=
   ⟨(innerₛₗ 𝕜 (y : F)).comp T.toFun, y.prop⟩
@@ -113,7 +113,7 @@ variable {T}
 
 variable (hT : Dense (T.domain : Set E))
 
-/-- The unique continuous extension of the operator `adjoint_domain_mk_clm` to `E`. -/
+/-- The unique continuous extension of the operator `adjointDomainMkClm` to `E`. -/
 def adjointDomainMkClmExtend (y : T.adjointDomain) : E →L[𝕜] 𝕜 :=
   (T.adjointDomainMkClm y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
     uniformEmbedding_subtype_val.toUniformInducing
@@ -129,7 +129,7 @@ variable [CompleteSpace E]
 
 /-- The adjoint as a linear map from its domain to `E`.
 
-This is an auxiliary definition needed to define the adjoint operator as a `linear_pmap` without
+This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
 the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkClmExtend hT y)
@@ -231,7 +231,7 @@ variable [CompleteSpace E] [CompleteSpace F]
 
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
-/-- Restricting `A` to a dense submodule and taking the `linear_pmap.adjoint` is the same
+/-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
 as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
