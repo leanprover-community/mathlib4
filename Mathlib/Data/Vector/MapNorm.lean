@@ -134,7 +134,7 @@ namespace Vector
       @[simp]
       theorem map_map (f₁ : β → γ) (f₂ : α → β) :
           map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
-        induction xs <;> simp_all
+        induction xs using Vector.inductionOn <;> simp_all
 
     end Unary
 
@@ -267,9 +267,12 @@ namespace Vector
   for all possible input bits, then the state is redundant and can be optimized out
   -/
   section RedundantState
+    variable (xs : Vector α n) (ys : Vector β n)
+
     @[simp]
     theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
         mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
+      clear ys
       induction xs using revInductionOn <;> simp_all
 
     @[simp]
@@ -289,6 +292,7 @@ namespace Vector
                                                         ) xs s
                                     ((m.fst, m.fst), m.snd)
                                   ) := by
+      clear ys
       induction xs using Vector.revInductionOn generalizing s
       case nil => rfl
       case snoc xs x ih =>
