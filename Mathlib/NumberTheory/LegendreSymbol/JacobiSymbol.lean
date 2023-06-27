@@ -17,43 +17,43 @@ We define the Jacobi symbol and prove its main properties.
 
 ## Main definitions
 
-We define the Jacobi symbol, `jacobi_sym a b`, for integers `a` and natural numbers `b`
-as the product over the prime factors `p` of `b` of the Legendre symbols `legendre_sym p a`.
+We define the Jacobi symbol, `jacobiSym a b`, for integers `a` and natural numbers `b`
+as the product over the prime factors `p` of `b` of the Legendre symbols `legendreSym p a`.
 This agrees with the mathematical definition when `b` is odd.
 
-The prime factors are obtained via `nat.factors`. Since `nat.factors 0 = []`,
-this implies in particular that `jacobi_sym a 0 = 1` for all `a`.
+The prime factors are obtained via `Nat.factors`. Since `Nat.factors 0 = []`,
+this implies in particular that `jacobiSym a 0 = 1` for all `a`.
 
 ## Main statements
 
 We prove the main properties of the Jacobi symbol, including the following.
 
-* Multiplicativity in both arguments (`jacobi_sym.mul_left`, `jacobi_sym.mul_right`)
+* Multiplicativity in both arguments (`jacobiSym.mul_left`, `jacobiSym.mul_right`)
 
 * The value of the symbol is `1` or `-1` when the arguments are coprime
-  (`jacobi_sym.eq_one_or_neg_one`)
+  (`jacobiSym.eq_one_or_neg_one`)
 
 * The symbol vanishes if and only if `b ≠ 0` and the arguments are not coprime
-  (`jacobi_sym.eq_zero_iff`)
+  (`jacobiSym.eq_zero_iff_not_coprime`)
 
-* If the symbol has the value `-1`, then `a : zmod b` is not a square
-  (`zmod.nonsquare_of_jacobi_sym_eq_neg_one`); the converse holds when `b = p` is a prime
-  (`zmod.nonsquare_iff_jacobi_sym_eq_neg_one`); in particular, in this case `a` is a
-  square mod `p` when the symbol has the value `1` (`zmod.is_square_of_jacobi_sym_eq_one`).
+* If the symbol has the value `-1`, then `a : ZMod b` is not a square
+  (`ZMod.nonsquare_of_jacobiSym_eq_neg_one`); the converse holds when `b = p` is a prime
+  (`ZMod.nonsquare_iff_jacobiSym_eq_neg_one`); in particular, in this case `a` is a
+  square mod `p` when the symbol has the value `1` (`ZMod.isSquare_of_jacobiSym_eq_one`).
 
-* Quadratic reciprocity (`jacobi_sym.quadratic_reciprocity`,
-  `jacobi_sym.quadratic_reciprocity_one_mod_four`,
-  `jacobi_sym.quadratic_reciprocity_three_mod_four`)
+* Quadratic reciprocity (`jacobiSym.quadratic_reciprocity`,
+  `jacobiSym.quadratic_reciprocity_one_mod_four`,
+  `jacobiSym.quadratic_reciprocity_three_mod_four`)
 
-* The supplementary laws for `a = -1`, `a = 2`, `a = -2` (`jacobi_sym.at_neg_one`,
-  `jacobi_sym.at_two`, `jacobi_sym.at_neg_two`)
+* The supplementary laws for `a = -1`, `a = 2`, `a = -2` (`jacobiSym.at_neg_one`,
+  `jacobiSym.at_two`, `jacobiSym.at_neg_two`)
 
-* The symbol depends on `a` only via its residue class mod `b` (`jacobi_sym.mod_left`)
-  and on `b` only via its residue class mod `4*a` (`jacobi_sym.mod_right`)
+* The symbol depends on `a` only via its residue class mod `b` (`jacobiSym.mod_left`)
+  and on `b` only via its residue class mod `4*a` (`jacobiSym.mod_right`)
 
 ## Notations
 
-We define the notation `J(a | b)` for `jacobi_sym a b`, localized to `number_theory_symbols`.
+We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 
 ## Tags
 Jacobi symbol, quadratic reciprocity
@@ -69,16 +69,16 @@ We define the Jacobi symbol $\Bigl(\frac{a}{b}\Bigr)$ for integers `a` and natur
 as the product of the Legendre symbols $\Bigl(\frac{a}{p}\Bigr)$, where `p` runs through the
 prime divisors (with multiplicity) of `b`, as provided by `b.factors`. This agrees with the
 Jacobi symbol when `b` is odd and gives less meaningful values when it is not (e.g., the symbol
-is `1` when `b = 0`). This is called `jacobi_sym a b`.
+is `1` when `b = 0`). This is called `jacobiSym a b`.
 
-We define localized notation (locale `number_theory_symbols`) `J(a | b)` for the Jacobi
-symbol `jacobi_sym a b`.
+We define localized notation (locale `NumberTheorySymbols`) `J(a | b)` for the Jacobi
+symbol `jacobiSym a b`.
 -/
 
 
 open Nat ZMod
 
--- Since we need the fact that the factors are prime, we use `list.pmap`.
+-- Since we need the fact that the factors are prime, we use `List.pmap`.
 /-- The Jacobi symbol of `a` and `b` -/
 def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   (b.factors.pmap (fun p pp => @legendreSym p ⟨pp⟩ a) fun _ pf => prime_of_mem_factors pf).prod
@@ -109,7 +109,7 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
   simp only [jacobiSym, factors_one, List.prod_nil, List.pmap]
 #align jacobi_sym.one_right jacobiSym.one_right
 
-/-- The Legendre symbol `legendre_sym p a` with an integer `a` and a prime number `p`
+/-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
 theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
   by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
@@ -307,7 +307,7 @@ theorem nonsquare_iff_jacobiSym_eq_neg_one {a : ℤ} {p : ℕ} [Fact p.Prime] :
   exact legendreSym.eq_neg_one_iff p
 #align zmod.nonsquare_iff_jacobi_sym_eq_neg_one ZMod.nonsquare_iff_jacobiSym_eq_neg_one
 
-/-- If `p` is prime and `J(a | p) = 1`, then `a` is q square mod `p`. -/
+/-- If `p` is prime and `J(a | p) = 1`, then `a` is a square mod `p`. -/
 theorem isSquare_of_jacobiSym_eq_one {a : ℤ} {p : ℕ} [Fact p.Prime] (h : J(a | p) = 1) :
     IsSquare (a : ZMod p) :=
   Classical.not_not.mp <| by rw [← nonsquare_iff_jacobiSym_eq_neg_one, h]; decide
@@ -369,7 +369,7 @@ def qrSign (m n : ℕ) : ℤ :=
 
 namespace qrSign
 
-/-- We can express `qr_sign m n` as a power of `-1` when `m` and `n` are odd. -/
+/-- We can express `qrSign m n` as a power of `-1` when `m` and `n` are odd. -/
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
   rw [qrSign, pow_mul, ← χ₄_eq_neg_one_pow (odd_iff.mp hm)]
@@ -378,28 +378,28 @@ theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
   · rw [χ₄_nat_three_mod_four h, ← χ₄_eq_neg_one_pow (odd_iff.mp hn), jacobiSym.at_neg_one hn]
 #align qr_sign.neg_one_pow qrSign.neg_one_pow
 
-/-- When `m` and `n` are odd, then the square of `qr_sign m n` is `1`. -/
+/-- When `m` and `n` are odd, then the square of `qrSign m n` is `1`. -/
 theorem sq_eq_one {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n ^ 2 = 1 := by
   rw [neg_one_pow hm hn, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
 #align qr_sign.sq_eq_one qrSign.sq_eq_one
 
-/-- `qr_sign` is multiplicative in the first argument. -/
+/-- `qrSign` is multiplicative in the first argument. -/
 theorem mul_left (m₁ m₂ n : ℕ) : qrSign (m₁ * m₂) n = qrSign m₁ n * qrSign m₂ n := by
   simp_rw [qrSign, Nat.cast_mul, map_mul, jacobiSym.mul_left]
 #align qr_sign.mul_left qrSign.mul_left
 
-/-- `qr_sign` is multiplicative in the second argument. -/
+/-- `qrSign` is multiplicative in the second argument. -/
 theorem mul_right (m n₁ n₂ : ℕ) [NeZero n₁] [NeZero n₂] :
     qrSign m (n₁ * n₂) = qrSign m n₁ * qrSign m n₂ :=
   jacobiSym.mul_right (χ₄ m) n₁ n₂
 #align qr_sign.mul_right qrSign.mul_right
 
-/-- `qr_sign` is symmetric when both arguments are odd. -/
+/-- `qrSign` is symmetric when both arguments are odd. -/
 protected theorem symm {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = qrSign n m := by
   rw [neg_one_pow hm hn, neg_one_pow hn hm, mul_comm (m / 2)]
 #align qr_sign.symm qrSign.symm
 
-/-- We can move `qr_sign m n` from one side of an equality to the other when `m` and `n` are odd. -/
+/-- We can move `qrSign m n` from one side of an equality to the other when `m` and `n` are odd. -/
 theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
   refine'
@@ -414,7 +414,7 @@ end qrSign
 
 namespace jacobiSym
 
-/-- The Law of Quadratic Reciprocity for the Jacobi symbol, version with `qr_sign` -/
+/-- The Law of Quadratic Reciprocity for the Jacobi symbol, version with `qrSign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
@@ -457,7 +457,7 @@ theorem quadratic_reciprocity_one_mod_four' {a b : ℕ} (ha : Odd a) (hb : b % 4
   (quadratic_reciprocity_one_mod_four hb ha).symm
 #align jacobi_sym.quadratic_reciprocity_one_mod_four' jacobiSym.quadratic_reciprocity_one_mod_four'
 
-/-- The Law of Quadratic Reciprocityfor the Jacobi symbol: if `a` and `b` are natural numbers
+/-- The Law of Quadratic Reciprocity for the Jacobi symbol: if `a` and `b` are natural numbers
 both congruent to `3` mod `4`, then `J(a | b) = -J(b | a)`. -/
 theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : b % 4 = 3) :
     J(a | b) = -J(b | a) := by
