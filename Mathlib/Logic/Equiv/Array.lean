@@ -66,7 +66,7 @@ end Equiv
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
 instance for `array` was)
 
-2. belong in `Mathlib.Control.Traverse.Instances` instead of this file. -/
+2. belong in `Mathlib.Control.Traversable.Instances` instead of this file. -/
 
 -- namespace Array'
 
