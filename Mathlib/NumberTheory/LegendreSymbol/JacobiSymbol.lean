@@ -147,7 +147,7 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
     -- porting note: The line 150 was added because Lean does not synthesize the instance
     -- `[Fact (Nat.Prime p)]` automatically (it is needed for `legendreSym.at_one`)
-    letI : Fact (Nat.Prime p) := ⟨prime_of_mem_factors hp⟩
+    letI : Fact p.Prime := ⟨prime_of_mem_factors hp⟩
     rw [← he, legendreSym.at_one]
 #align jacobi_sym.one_left jacobiSym.one_left
 
@@ -232,7 +232,7 @@ theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
         -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
         -- `Nat.Prime p` explicitly on line 224 and prove `Fact (Nat.Prime p)` on line 225.
         rintro p hp _ h₂
-        letI : Fact (Nat.Prime p) := ⟨h₂⟩
+        letI : Fact p.Prime := ⟨h₂⟩
         conv_rhs =>
           rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.coe_nat_dvd.2 <| dvd_of_mem_factors hp),
             ← legendreSym.mod])
