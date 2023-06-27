@@ -8,7 +8,7 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rbtree.Init
+import Mathlib.Data.Rbtree.Init
 
 universe u v w
 
