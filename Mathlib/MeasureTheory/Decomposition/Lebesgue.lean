@@ -484,8 +484,8 @@ theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α)
   simp only [Option.mem_def, ENNReal.some_eq_coe]
   constructor <;> intro h <;> rw [← h]; symm
   all_goals
-    set c := ⨆ (k : ℕ) (hk : k ≤ m + 1), f k a with hc
-    set d := f m.succ a ⊔ ⨆ (k : ℕ) (hk : k ≤ m), f k a with hd
+    set c := ⨆ (k : ℕ) (_hk : k ≤ m + 1), f k a with hc
+    set d := f m.succ a ⊔ ⨆ (k : ℕ) (_hk : k ≤ m), f k a with hd
     rw [@le_antisymm_iff ℝ≥0∞, hc, hd]
     -- Specifying the type is weirdly necessary
     refine' ⟨_, _⟩
