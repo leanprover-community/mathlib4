@@ -1624,7 +1624,6 @@ import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
-import Mathlib.Data.RBTree.Init
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast
