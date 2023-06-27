@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Frobenius
-import Mathbin.RingTheory.WittVector.Verschiebung
-import Mathbin.RingTheory.WittVector.MulP
+import Mathlib.RingTheory.WittVector.Frobenius
+import Mathlib.RingTheory.WittVector.Verschiebung
+import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -52,8 +52,7 @@ theorem verschiebung_zMod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
 
 variable (p R)
 
-theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 :=
-  by
+theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 := by
   induction' i with i h
   · simp only [one_coeff_zero, Ne.def, pow_zero]
   ·
@@ -61,8 +60,7 @@ theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 :=
       one_pow]
 #align witt_vector.coeff_p_pow WittVector.coeff_p_pow
 
-theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : (p ^ i : 𝕎 R).coeff j = 0 :=
-  by
+theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : (p ^ i : 𝕎 R).coeff j = 0 := by
   induction' i with i hi generalizing j
   · rw [pow_zero, one_coeff_eq_of_pos]
     exact Nat.pos_of_ne_zero hj
@@ -75,8 +73,7 @@ theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : (p ^ i : �
       · exact ne_of_apply_ne (fun j : ℕ => j.succ) hj
 #align witt_vector.coeff_p_pow_eq_zero WittVector.coeff_p_pow_eq_zero
 
-theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 else 0 :=
-  by
+theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 else 0 := by
   split_ifs with hi
   · simpa only [hi, pow_one] using coeff_p_pow p R 1
   · simpa only [pow_one] using coeff_p_pow_eq_zero p R hi
@@ -107,8 +104,7 @@ theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
   rintro ⟨⟩ <;> ghost_simp [mul_assoc]
 #align witt_vector.verschiebung_mul_frobenius WittVector.verschiebung_mul_frobenius
 
-theorem mul_charP_coeff_zero [CharP R p] (x : 𝕎 R) : (x * p).coeff 0 = 0 :=
-  by
+theorem mul_charP_coeff_zero [CharP R p] (x : 𝕎 R) : (x * p).coeff 0 = 0 := by
   rw [← frobenius_verschiebung, coeff_frobenius_char_p, verschiebung_coeff_zero, zero_pow]
   exact Nat.Prime.pos hp.out
 #align witt_vector.mul_char_p_coeff_zero WittVector.mul_charP_coeff_zero
@@ -118,8 +114,7 @@ theorem mul_charP_coeff_succ [CharP R p] (x : 𝕎 R) (i : ℕ) :
   rw [← frobenius_verschiebung, coeff_frobenius_char_p, verschiebung_coeff_succ]
 #align witt_vector.mul_char_p_coeff_succ WittVector.mul_charP_coeff_succ
 
-theorem verschiebung_frobenius [CharP R p] (x : 𝕎 R) : verschiebung (frobenius x) = x * p :=
-  by
+theorem verschiebung_frobenius [CharP R p] (x : 𝕎 R) : verschiebung (frobenius x) = x * p := by
   ext ⟨i⟩
   · rw [mul_char_p_coeff_zero, verschiebung_coeff_zero]
   · rw [mul_char_p_coeff_succ, verschiebung_coeff_succ, coeff_frobenius_char_p]
@@ -138,8 +133,7 @@ theorem verschiebung_frobenius_comm [CharP R p] :
 open Function
 
 theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
-    ((verschiebung^[n]) x).coeff (k + n) = x.coeff k :=
-  by
+    ((verschiebung^[n]) x).coeff (k + n) = x.coeff k := by
   induction' n with k ih
   · simp
   · rw [iterate_succ_apply', Nat.add_succ, verschiebung_coeff_succ]
@@ -147,8 +141,7 @@ theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
 #align witt_vector.iterate_verschiebung_coeff WittVector.iterate_verschiebung_coeff
 
 theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
-    (verschiebung^[i]) x * y = (verschiebung^[i]) (x * (frobenius^[i]) y) :=
-  by
+    (verschiebung^[i]) x * y = (verschiebung^[i]) (x * (frobenius^[i]) y) := by
   induction' i with i ih generalizing y
   · simp
   · rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
@@ -160,8 +153,7 @@ variable [CharP R p]
 
 theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
     (verschiebung^[i]) x * (verschiebung^[j]) y =
-      (verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y) :=
-  by
+      (verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y) := by
   calc
     _ = (verschiebung^[i]) (x * (frobenius^[i]) ((verschiebung^[j]) y)) := _
     _ = (verschiebung^[i]) (x * (verschiebung^[j]) ((frobenius^[i]) y)) := _
@@ -178,8 +170,7 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
 #align witt_vector.iterate_verschiebung_mul WittVector.iterate_verschiebung_mul
 
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
-    ((frobenius^[i]) x).coeff k = x.coeff k ^ p ^ i :=
-  by
+    ((frobenius^[i]) x).coeff k = x.coeff k ^ p ^ i := by
   induction' i with i ih
   · simp
   · rw [iterate_succ_apply', coeff_frobenius_char_p, ih]
@@ -189,8 +180,7 @@ theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/
 theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     ((verschiebung^[i]) x * (verschiebung^[j]) y).coeff (i + j) =
-      x.coeff 0 ^ p ^ j * y.coeff 0 ^ p ^ i :=
-  by
+      x.coeff 0 ^ p ^ j * y.coeff 0 ^ p ^ i := by
   calc
     _ = ((verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y)).coeff (i + j) := _
     _ = ((frobenius^[j]) x * (frobenius^[i]) y).coeff 0 := _
