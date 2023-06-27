@@ -88,7 +88,7 @@ section
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
 def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
-  mk' p fun n => if P n then x.coeff n else 0
+  mk p fun n => if P n then x.coeff n else 0
 #align witt_vector.select WittVector.select
 
 section Select
@@ -101,16 +101,17 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 #align witt_vector.select_poly WittVector.selectPoly
 
-theorem coeff_select (x : 𝕎 R) (n : ℕ) : (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
-  dsimp [select, select_poly]
+theorem coeff_select (x : 𝕎 R) (n : ℕ) :
+    (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
+  dsimp [select, selectPoly]
   split_ifs with hi
-  · rw [aeval_X]
-  · rw [AlgHom.map_zero]
+  · rw [aeval_X, mk]; simp only [hi]; rfl
+  · rw [AlgHom.map_zero, mk]; simp only [hi]; rfl
 #align witt_vector.coeff_select WittVector.coeff_select
 
 @[is_poly]
 theorem select_isPoly (P : ℕ → Prop) : IsPoly p fun R _Rcr x => select P x := by
-  use select_poly P
+  use selectPoly P
   rintro R _Rcr x
   funext i
   apply coeff_select
@@ -218,7 +219,7 @@ section
 variable (p)
 
 /-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
-theorem init_isPoly (n : ℕ) : IsPoly p fun R _Rcr => init n :=
+theorem init_isPoly (n : ℕ) : IsPoly p fun _R _Rcr => init n :=
   select_isPoly fun i => i < n
 #align witt_vector.init_is_poly WittVector.init_isPoly
 
