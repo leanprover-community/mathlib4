@@ -191,7 +191,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
 variable [TopologicalSpace R] [TopologicalRing R]
 
 theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
-  rw [isAdic_iff] at h⊢
+  rw [isAdic_iff] at h ⊢
   constructor
   · intro m
     rw [← pow_mul]

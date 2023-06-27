@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
+! leanprover-community/mathlib commit eba7871095e834365616b5e43c8c7bb0b37058d0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -854,6 +854,12 @@ theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   simp only [mem_cons, or_imp, forall_and, forall_eq]
 #align finset.forall_mem_cons Finset.forall_mem_cons
+
+/-- Useful in proofs by induction. -/
+theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
+    (h : x ∈ s) : p x :=
+  H _ <| mem_cons.2 <| Or.inr h
+#align finset.forall_of_forall_cons Finset.forall_of_forall_cons
 
 @[simp]
 theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
@@ -2190,7 +2196,7 @@ theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t
 
 theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   refine' Subset.antisymm (sdiff_subset_sdiff (Subset.refl _) (subset_insert _ _)) fun y hy => _
-  simp only [mem_sdiff, mem_insert, not_or] at hy⊢
+  simp only [mem_sdiff, mem_insert, not_or] at hy ⊢
   exact ⟨hy.1, fun hxy => h <| hxy ▸ hy.1, hy.2⟩
 #align finset.sdiff_insert_of_not_mem Finset.sdiff_insert_of_not_mem
 
@@ -3081,6 +3087,12 @@ theorem forall_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → 
     (∀ x, x ∈ insert a s → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   simp only [mem_insert, or_imp, forall_and, forall_eq]
 #align finset.forall_mem_insert Finset.forall_mem_insert
+
+/-- Useful in proofs by induction. -/
+theorem forall_of_forall_insert [DecidableEq α] {p : α → Prop} {a : α} {s : Finset α}
+    (H : ∀ x, x ∈ insert a s → p x) (x) (h : x ∈ s) : p x :=
+  H _ <| mem_insert_of_mem h
+#align finset.forall_of_forall_insert Finset.forall_of_forall_insert
 
 end Finset
 

@@ -1235,7 +1235,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
     exact ne_of_lt (hy.2.trans_le (h₀ _))
   · apply measurableSet_of_mem_nhdsWithin_Ioi_aux h
     simp only [IsTop] at H
-    push_neg  at H
+    push_neg at H
     exact H
 #align measurable_set_of_mem_nhds_within_Ioi measurableSet_of_mem_nhdsWithin_Ioi
 
@@ -1373,7 +1373,7 @@ theorem measurable_cInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countab
 theorem measurable_ciSup {ι : Type _} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i))
     (bdd : ∀ x, BddAbove (range fun i => f i x)) : Measurable fun x => ⨆ i, f i x := by
   change Measurable fun x => sSup (range fun i : ι => f i x)
-  simp_rw [← image_univ] at bdd⊢
+  simp_rw [← image_univ] at bdd ⊢
   refine' measurable_cSup countable_univ hf bdd
 #align measurable_csupr measurable_ciSup
 

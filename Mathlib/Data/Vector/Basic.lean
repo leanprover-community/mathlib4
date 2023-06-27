@@ -147,8 +147,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  cases' i with i hi
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simpa using hi⟩]
+  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
   simp only [get_eq_get]
   congr <;> simp [Fin.heq_ext_iff]
 #align vector.nth_of_fn Vector.get_ofFn
@@ -516,32 +515,27 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
-def casesOn {motive : ∀{n}, Vector α n → Sort _}
-            (v : Vector α m)
-            (nil : motive nil)
-            (cons : ∀{n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
-              motive v :=
-    inductionOn (C:=motive) v nil @fun _ hd tl _ => cons hd tl
+def casesOn {motive : ∀ {n}, Vector α n → Sort _} (v : Vector α m)
+    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+    motive v :=
+  inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n` -/
-def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort _}
-              (v₁ : Vector α m) (v₂ : Vector β m)
+def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort _} (v₁ : Vector α m) (v₂ : Vector β m)
               (nil : motive nil nil)
               (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
                       → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
-                motive v₁ v₂ :=
-    inductionOn₂ (C:=motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+              motive v₁ v₂ :=
+    inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n` -/
-def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort _}
-              (v₁ : Vector α m) (v₂ : Vector β m) (v₃ : Vector γ m)
-              (nil : motive nil nil nil)
+def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort _} (v₁ : Vector α m)
+              (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
               (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
-                        → (zs : Vector γ n)
-                        → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
-                motive v₁ v₂ v₃ :=
-    inductionOn₃ (C:=motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+                        → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
+              motive v₁ v₂ v₃ :=
+    inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -773,8 +767,14 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 --       q(α) q(n) q(x) ih
 -- #align vector.reflect vector.reflect
 
+
+section Simp
+
+variable (xs : Vector α n) (ys : Vector α m)
+
 @[simp]
-theorem replicate_succ : replicate (n+1) val = val ::ᵥ (replicate n val) :=
+theorem replicate_succ (val : α) :
+    replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 @[simp]
@@ -787,22 +787,13 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
   rfl
 
 @[simp]
-theorem append_nil : (append xs nil) = xs :=
-  by cases xs; simp[append]
-
-@[simp]
-theorem append_cons_left (x : α) (xs : Vector α n) (ys : Vector α m) :
-    HEq (append (x ::ᵥ xs) ys) (x ::ᵥ (append xs ys)) := by
-  cases xs
-  cases ys
-  simp[append, Vector.cons]
-  congr <;> simp[Nat.succ_add]
-
-
+theorem append_nil : append xs nil = xs := by
+  cases xs; simp [append]
 
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
+  clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂
   case nil =>
     exact Fin.elim0 i
@@ -812,10 +803,6 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     . simp only [get_zero, head_cons]
     . simp only [get_cons_succ, ih]
 
-theorem get_eq_val_eq {α : Type u} {n : Nat} (x x' : Vector α n) (i : Fin n)
-                      (h : x.toList = x'.toList) :
-    (get x i) = (get x' i) := by
-  rw [Vector.eq x x' h]
-
+end Simp
 
 end Vector

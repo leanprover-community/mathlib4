@@ -10,6 +10,7 @@ Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.List.Basic
+import Mathlib.Init.Data.List.Lemmas
 
 /-! # Some lemmas about lists involving sets
 
@@ -106,5 +107,37 @@ section RevInduction
                   (fun x xs (ih : motive xs.reverse) => cast (by simp) <| snoc xs.reverse x ih)
 
 end RevInduction
+
+
+
+/-!
+  ### MapAccumr and Foldr
+  Some lemmas relation `mapAccumr` and `foldr`
+-/
+section MapAccumr
+
+theorem mapAccumr_eq_foldr (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
+    mapAccumr f as s = List.foldr (fun a s =>
+                                    let r := f a s.1
+                                    (r.1, r.2 :: s.2)
+                                  ) (s, []) as
+  | [], s => rfl
+  | a :: as, s => by
+    simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
+
+theorem mapAccumr₂_eq_foldr (f : α → β → σ → σ × φ) :
+    ∀ (as : List α) (bs : List β) (s : σ),
+    mapAccumr₂ f as bs s = foldr (fun ab s =>
+                              let r := f ab.1 ab.2 s.1
+                              (r.1, r.2 :: s.2)
+                            ) (s, []) (as.zip bs)
+  | [], [], s => rfl
+  | a :: as, [], s => rfl
+  | [], b :: bs, s => rfl
+  | a :: as, b :: bs, s => by
+    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    rfl
+
+end MapAccumr
 
 end List

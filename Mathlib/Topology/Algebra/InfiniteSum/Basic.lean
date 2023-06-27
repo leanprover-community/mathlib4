@@ -707,7 +707,7 @@ theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0
     rwa [← e, mem_decode₂.1 (Option.get_mem (H m hm))] at this
   · intro b h
     refine' ⟨⟨encode b, _⟩, _⟩
-    · simp only [mem_support, encodek₂] at h⊢
+    · simp only [mem_support, encodek₂] at h ⊢
       convert h
       simp [Set.ext_iff, encodek₂]
     · exact Option.get_of_mem _ (encodek₂ _)
@@ -853,7 +853,7 @@ theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :
 theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
     HasSum (f ∘ (↑) : ↑(sᶜ) → α) a₂ ↔ HasSum f (a₁ + a₂) := by
   refine' ⟨fun h => hf.add_compl h, fun h => _⟩
-  rw [hasSum_subtype_iff_indicator] at hf⊢
+  rw [hasSum_subtype_iff_indicator] at hf ⊢
   rw [Set.indicator_compl]
   simpa only [add_sub_cancel'] using h.sub hf
 #align has_sum.has_sum_compl_iff HasSum.hasSum_compl_iff

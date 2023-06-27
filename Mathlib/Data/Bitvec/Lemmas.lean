@@ -137,9 +137,8 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   apply Subtype.ext
   dsimp [Bitvec.toNat, bitsToNat, Vector.reverse, toList]
   rw [← List.length_reverse] at h
-  rw [List.foldl_reverse, ←Vector.toList]
-  generalize xs.reverse = ys at h⊢;
-  clear xs
+  rw [← List.reverse_reverse xs, List.foldl_reverse]
+  generalize xs.reverse = ys at h ⊢; clear xs
   induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]
