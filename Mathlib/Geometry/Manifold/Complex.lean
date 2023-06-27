@@ -21,9 +21,9 @@ now, this file contains just two (closely related) such results:
 
 ## Main results
 
-* `mdifferentiable.is_locally_constant`: A complex-differentiable function on a compact complex
+* `MDifferentiable.isLocallyConstant`: A complex-differentiable function on a compact complex
   manifold is locally constant.
-* `mdifferentiable.exists_eq_const_of_compact_space`: A complex-differentiable function on a compact
+* `MDifferentiable.exists_eq_const_of_compactSpace`: A complex-differentiable function on a compact
   preconnected complex manifold is constant.
 
 ## TODO
