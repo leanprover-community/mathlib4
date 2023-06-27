@@ -273,7 +273,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
 /- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
-/- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
