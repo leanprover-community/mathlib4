@@ -44,17 +44,10 @@ variable {S : Type u'} {T : Type u''} {R : Type u} {M : Type v}
 /-- `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 scalar action of `R` on `M`.
 
-Note that only `R` is marked as an `semiOutParam` here, since `M` is supplied by the `SetLike`
+Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead.
-
-Note further, we don't mark `R` as an `outParam` because, while most of the time the desired `R`
-comes directly from the type (e.g., when `S := Submodule R M`, there are a handful of fixed types
-that we also want to allow for `R`; for instance, `ℕ` and `ℤ` and `ℚ`. See, for example,
-`AddSubmonoidClass.nsmulMemClass` and `AddSubgroupClass.zsmulMemClass` below. If `R` was an
-`outParam`, then the second instance would never fire.),
 -/
-class SMulMemClass (S : Type _) (R : semiOutParam <| Type _) (M : Type _) [SMul R M]
-    [SetLike S M] where
+class SMulMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [SMul R M] [SetLike S M] where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 #align smul_mem_class SMulMemClass
@@ -62,31 +55,14 @@ class SMulMemClass (S : Type _) (R : semiOutParam <| Type _) (M : Type _) [SMul 
 /-- `VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 additive action of `R` on `M`.
 
-Note that only `R` is marked as an `semiOutParam` here, since `M` is supplied by the `SetLike`
-class instead. `R` is not marked as an `outParam` so that it matches `SMulMemClass`. -/
-class VAddMemClass (S : Type _) (R : semiOutParam <| Type _) (M : Type _) [VAdd R M]
-    [SetLike S M] where
+Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
+class instead. -/
+class VAddMemClass (S : Type _) (R : outParam <| Type _) (M : Type _) [VAdd R M] [SetLike S M] where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
 #align vadd_mem_class VAddMemClass
 
 attribute [to_additive] SMulMemClass
-
-/-- `AddSubmonoid`s are closed under scalar multiplication by elements of `ℕ`. This is the class
-version so it applies to any `AddSubmonoidClass`. See note [lower instance priority]. -/
-instance (priority := 100) AddSubmonoidClass.nsmulMemClass {S R : Type _} [AddMonoid R]
-    [SetLike S R] [AddSubmonoidClass S R] : SMulMemClass S ℕ R where
-  smul_mem {s} n x hx := Nat.recOn n ((zero_smul ℕ x).symm ▸ zero_mem s) fun k hk =>
-    (succ_nsmul x k).symm ▸ add_mem hx hk
-
-/-- `AddSubgroup`s are closed under scalar multiplication by elements of `ℤ`. This is the class
-version so it applies to any `AddSubgroupClass`. See note [lower instance priority]. -/
-instance (priority := 100) AddSubgroupClass.zsmulMemClass {S R : Type _} [AddGroup R] [SetLike S R]
-    [AddSubgroupClass S R] : SMulMemClass S ℤ R where
-  smul_mem {s} n x hx := by
-    cases n <;>
-      simpa only [Int.ofNat_eq_coe, coe_nat_zsmul, negSucc_zsmul, neg_mem_iff] using
-        SMulMemClass.smul_mem _ hx
 
 namespace SetLike
 
@@ -247,7 +223,7 @@ protected def subtype : S' →[R] M :=
 #align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' (R := R) : S' → M) = Subtype.val :=
+protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 #align sub_mul_action.smul_mem_class.coe_subtype SubMulAction.SMulMemClass.coeSubtype
 
