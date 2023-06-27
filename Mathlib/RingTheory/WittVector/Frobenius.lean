@@ -230,9 +230,8 @@ variable (p)
 
 /-- `frobeniusFun` is tautologically a polynomial function.
 
-See also `frobenius_isPxjoly`. -/
-@[is_poly]
-theorem frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr :=
+See also `frobenius_isPoly`. -/
+instance frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 #align witt_vector.frobenius_fun_is_poly WittVector.frobeniusFun_isPoly
 
@@ -268,11 +267,8 @@ def frobenius : 𝕎 R →+* 𝕎 R where
         (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
-  map_add' := by sorry
---    ghost_calc _ _ <;> ghost_simp
-  map_mul' := by sorry
---    dsimp only
---    ghost_calc _ _ <;> ghost_simp
+  map_add' := by ghost_calc _ _; ghost_simp
+  map_mul' := by ghost_calc _ _; ghost_simp
 #align witt_vector.frobenius WittVector.frobenius
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
@@ -289,8 +285,7 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
-@[is_poly]
-theorem frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
+instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 #align witt_vector.frobenius_is_poly WittVector.frobenius_isPoly
 
