@@ -255,17 +255,24 @@ The underlying function of this morphism is `witt_vector.frobenius_fun`.
 def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
   map_zero' := by
-    refine'
-      is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.zeroIsPoly)
-        (WittVector.zeroIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
+    -- Porting note: removing the placeholders give an error
+    refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p)  WittVector.zeroIsPoly)
+      (@IsPoly.comp p _ _ WittVector.zeroIsPoly
+      (frobeniusFun_isPoly p)) ?_ _ 0
+    simp only [Function.comp_apply, map_zero, forall_const]
     ghost_simp
   map_one' := by
-    refine'
-      is_poly.ext ((frobenius_fun_is_poly p).comp WittVector.oneIsPoly)
-        (WittVector.oneIsPoly.comp (frobenius_fun_is_poly p)) _ _ 0
+    refine
+      -- Porting note: removing the placeholders give an error
+      IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.oneIsPoly)
+        (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
+    simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
-  map_add' := by ghost_calc _ _ <;> ghost_simp
-  map_mul' := by ghost_calc _ _ <;> ghost_simp
+  map_add' := by
+    ghost_calc _ _ <;> ghost_simp
+  map_mul' := by
+    dsimp only
+    ghost_calc _ _ <;> ghost_simp
 #align witt_vector.frobenius WittVector.frobenius
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
