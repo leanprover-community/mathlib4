@@ -315,8 +315,6 @@ instance subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
 
 end ModularScalarTowers
 
-example {R : Type _} [CommRing R] [Algebra R ℝ] (r : R) : ℝ := algebraMap R ℝ r
-
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
 theorem specialLinearGroup_apply {R : Type _} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
