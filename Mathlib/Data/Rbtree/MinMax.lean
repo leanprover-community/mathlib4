@@ -8,7 +8,7 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rbtree.Basic
+import Mathlib.Data.Rbtree.Basic
 
 universe u
 
@@ -38,8 +38,7 @@ theorem mem_of_max_eq (lt : α → α → Prop) [IsIrrefl α lt] {a : α} {t : R
 
 variable [IsStrictWeakOrder α lt]
 
-theorem eq_leaf_of_min_eq_none {t : Rbnode α} : t.min = none → t = leaf :=
-  by
+theorem eq_leaf_of_min_eq_none {t : Rbnode α} : t.min = none → t = leaf := by
   induction t
   · intros; rfl
   all_goals
@@ -47,8 +46,7 @@ theorem eq_leaf_of_min_eq_none {t : Rbnode α} : t.min = none → t = leaf :=
     all_goals have := t_ih_lchild h; contradiction
 #align rbnode.eq_leaf_of_min_eq_none Rbnode.eq_leaf_of_min_eq_none
 
-theorem eq_leaf_of_max_eq_none {t : Rbnode α} : t.max = none → t = leaf :=
-  by
+theorem eq_leaf_of_max_eq_none {t : Rbnode α} : t.max = none → t = leaf := by
   induction t
   · intros; rfl
   all_goals
