@@ -242,5 +242,6 @@ theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ => init n :=
 
 end
 
-end WittVector
+end
 
+end WittVector
