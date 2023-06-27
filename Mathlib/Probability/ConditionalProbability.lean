@@ -129,7 +129,6 @@ theorem cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t)
   have hcs' : μ s ≠ 0 :=
     (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hci).ne'
   ext u
-  intro
   simp [*, hms.inter hmt, cond_apply, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, mul_comm, ←
     mul_assoc, ENNReal.mul_inv_cancel]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'

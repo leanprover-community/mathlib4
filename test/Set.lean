@@ -31,3 +31,7 @@ example (x : Nat) (h : x - x = 0) : x = x := by
   set! z := y + 1 with ← _eq1
   set! p : x - x = 0 := h with _eq2
   rfl
+
+example : True := by
+  set g : Nat → Int := (fun ε => ε) with h
+  trivial

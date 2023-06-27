@@ -183,8 +183,6 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
     (L X (L Y Z).cone.pt).isLimit
 #align category_theory.limits.binary_fan.associator_of_limit_cone CategoryTheory.Limits.BinaryFan.associatorOfLimitCone
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]

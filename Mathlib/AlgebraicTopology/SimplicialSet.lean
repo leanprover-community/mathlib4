@@ -64,6 +64,12 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
+-- Porting note: added an `ext` lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
+  SimplicialObject.hom_ext _ _ w
+
 /-- The `n`-th standard simplex `Δ[n]` associated with a nonempty finite linear order `n`
 is the Yoneda embedding of `n`. -/
 def standardSimplex : SimplexCategory ⥤ SSet :=
@@ -118,7 +124,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   map {m₁ m₂} f α :=
     ⟨f.unop ≫ (α : Δ[n].obj m₁), by
       intro h; apply α.property
-      rw [Set.eq_univ_iff_forall] at h⊢; intro j
+      rw [Set.eq_univ_iff_forall] at h ⊢; intro j
       apply Or.imp _ id (h j)
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩
@@ -129,8 +135,8 @@ set_option linter.uppercaseLean3 false in
 scoped[Simplicial] notation "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
-def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n]
-    where app m (α : { α : Δ[n].obj m // _ }) := α
+def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
+  app m (α : { α : Δ[n].obj m // _ }) := α
 set_option linter.uppercaseLean3 false in
 #align sSet.horn_inclusion SSet.hornInclusion
 
@@ -165,6 +171,12 @@ instance Truncated.hasLimits : HasLimits (Truncated n) := by
 instance Truncated.hasColimits : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
+
+-- Porting note: added an `ext` lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
+  NatTrans.ext _ _ (funext w)
 
 /-- The skeleton functor on simplicial sets. -/
 def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=

@@ -470,11 +470,11 @@ attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
-  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h⊢
+  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
     exact Finset.sum_eq_zero h
-  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h⊢
+  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h ⊢
     exact Finset.sum_neg h hs
-  · simp_rw [pos_eq_one, sign_eq_one_iff] at h⊢
+  · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
     exact Finset.sum_pos h hs
 #align sign_sum sign_sum
 

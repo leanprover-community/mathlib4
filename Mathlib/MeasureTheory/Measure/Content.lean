@@ -287,7 +287,7 @@ theorem outerMeasure_interior_compacts (K : Compacts G) : μ.outerMeasure (inter
 
 theorem outerMeasure_exists_compact {U : Opens G} (hU : μ.outerMeasure U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.outerMeasure U ≤ μ.outerMeasure K + ε := by
-  rw [μ.outerMeasure_opens] at hU⊢
+  rw [μ.outerMeasure_opens] at hU ⊢
   rcases μ.innerContent_exists_compact hU hε with ⟨K, h1K, h2K⟩
   exact ⟨K, h1K, le_trans h2K <| add_le_add_right (μ.le_outerMeasure_compacts K) _⟩
 #align measure_theory.content.outer_measure_exists_compact MeasureTheory.Content.outerMeasure_exists_compact

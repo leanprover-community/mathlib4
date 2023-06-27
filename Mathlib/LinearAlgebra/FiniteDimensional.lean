@@ -276,7 +276,7 @@ theorem basisUnique.repr_eq_zero_iff {ι : Type _} [Unique ι] {h : finrank K V 
 
 theorem cardinal_mk_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι : Type w} {b : ι → V}
     (h : LinearIndependent K b) : (#ι) ≤ finrank K V := by
-  rw [← lift_le.{_, max v w}]
+  rw [← lift_le.{max v w}]
   simpa [← finrank_eq_rank', -finrank_eq_rank] using
     cardinal_lift_le_rank_of_linearIndependent h
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
@@ -1079,27 +1079,32 @@ end LinearMap
 
 section
 
-/-- A domain that is module-finite as an algebra over a field is a division ring. -/
-noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
-  -- porting note: extracted from the fields below to a `haveI`
-  haveI : ∀ x : K, x ≠ 0 → Function.Surjective (LinearMap.mulLeft F x) := fun x H =>
+lemma FiniteDimensional.exists_mul_eq_one (F : Type _) {K : Type _} [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : ∃ y, x * y = 1 := by
+  have : Function.Surjective (LinearMap.mulLeft F x) :=
     LinearMap.injective_iff_surjective.1 fun y z => ((mul_right_inj' H).1 : x * y = x * z → y = z)
-  { ‹IsDomain K›, ‹Ring K› with
-    inv := fun x => if H : x = 0 then 0 else Classical.choose <| (this _ H) 1
+  exact this 1
+
+/-- A domain that is module-finite as an algebra over a field is a division ring. -/
+noncomputable def divisionRingOfFiniteDimensional (F K : Type _) [Field F] [h : Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
+  { ‹IsDomain K› with
+    toRing := h
+    inv := fun x => if H : x = 0 then 0 else Classical.choose <|
+      FiniteDimensional.exists_mul_eq_one F H
     mul_inv_cancel := fun x hx =>
       show x * dite _ _ _ = _ by
         rw [dif_neg hx]
-        exact (Classical.choose_spec (this _ hx 1) :)
+        exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
     inv_zero := dif_pos rfl }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
-noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [CommRing K] [IsDomain K]
+noncomputable def fieldOfFiniteDimensional (F K : Type _) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
-  { divisionRingOfFiniteDimensional F K, ‹CommRing K› with }
+  { divisionRingOfFiniteDimensional F K with
+    toCommRing := h }
 #align field_of_finite_dimensional fieldOfFiniteDimensional
-
 end
 
 namespace Submodule
@@ -1334,7 +1339,7 @@ theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
   haveI := nontrivial_of_finrank_eq_succ h
   refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
-  rw [← restrictScalars_inj K] at hn⊢
+  rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := finiteDimensional_of_finrank_eq_succ h
   refine' Submodule.eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
