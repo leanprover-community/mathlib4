@@ -1638,6 +1638,9 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
 import Mathlib.Data.Rbmap.Basic
+import Mathlib.Data.Rbtree.Basic
+import Mathlib.Data.Rbtree.DefaultLt
+import Mathlib.Data.Rbtree.Init
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
