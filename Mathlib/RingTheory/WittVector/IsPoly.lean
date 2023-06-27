@@ -146,10 +146,10 @@ coefficient of `f x` is given by evaluating `φₙ` at the coefficients of `x`.
 
 See also `WittVector.IsPoly₂` for the binary variant.
 
-The `ghost_calc` tactic treats `IsPoly` as a type class,
-and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `IsPoly f`.
-For the most part, users are not expected to treat `IsPoly` as a class.
+The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and its instances.
+(In Lean 3, there was an `@[is_poly]` attribute to manage these instances,
+because typeclass resolution did not play well with function composition.
+This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
 class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
@@ -219,11 +219,10 @@ coefficient of `f x y` is given by evaluating `φₙ` at the coefficients of `x`
 
 See also `WittVector.IsPoly` for the unary variant.
 
--- FIXME: this paragraph needs rewriting: @jcommelin.
-The `ghost_calc` tactic treats `IsPoly₂` as a type class,
-and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `IsPoly₂ f`.
-For the most part, users are not expected to treat `IsPoly₂` as a class.
+The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and its instances.
+(In Lean 3, there was an `@[is_poly]` attribute to manage these instances,
+because typeclass resolution did not play well with function composition.
+This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
 class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
