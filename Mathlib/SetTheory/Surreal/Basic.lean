@@ -234,7 +234,7 @@ theorem le_moveRight {x : PGame} (o : Numeric x) (j) : x ≤ x.moveRight j :=
   (o.lt_moveRight j).le
 #align pgame.numeric.le_move_right PGame.Numeric.le_moveRight
 
-theorem add : ∀ {x y : PGame} (ox : Numeric x) (oy : Numeric y), Numeric (x + y)
+theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
@@ -251,6 +251,7 @@ theorem add : ∀ {x y : PGame} (ox : Numeric x) (oy : Numeric y), Numeric (x + 
       · rintro (jx | jy)
         · apply (ox.moveRight jx).add oy
         · apply ox.add (oy.moveRight jy)⟩
+termination_by _ ox oy => by rename_i x y; exact (x, y) -- Porting note: Added `termination_by`
 decreasing_by pgame_wf_tac
 #align pgame.numeric.add PGame.Numeric.add
 
