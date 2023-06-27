@@ -858,7 +858,7 @@ end
 
 theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClosedTopology β] [Zero β]
     [MeasurableSpace β] [OpensMeasurableSpace β] (i : ℕ → β) (f : α → β) (a : α) (hf : Measurable f)
-    (h_zero : (0 : β) = ⊥) : (⨆ n, (approx i f n : α →ₛ β) a) = ⨆ (k) (_h : i k ≤ f a), i k := by
+    (h_zero : (0 : β) = ⊥) : (⨆ n, (approx i f n : α →ₛ β) a) = ⨆ (k) (_ : i k ≤ f a), i k := by
   refine' le_antisymm (iSup_le fun n => _) (iSup_le fun k => iSup_le fun hk => _)
   · rw [approx_apply a hf, h_zero]
     refine' Finset.sup_le fun k _ => _
@@ -916,7 +916,7 @@ theorem iSup_eapprox_apply (f : α → ℝ≥0∞) (hf : Measurable f) (a : α) 
   intro h
   rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
-    (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_h : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
+    (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
     refine' le_iSup_of_le (Encodable.encode q) _
     rw [ennrealRatEmbed_encode q]
     refine' le_iSup_of_le (le_of_lt q_lt) _

@@ -91,6 +91,3 @@ def labelled (attrName : Name) : MetaM (Array Name) := do
   match (← labelExtensionMapRef.get).find? attrName with
   | none => throwError "No extension named {attrName}"
   | some ext => pure <| ext.getState (← getEnv)
-
-/-- A dummy label attribute, to ease testing. -/
-register_label_attr dummy_label_attr

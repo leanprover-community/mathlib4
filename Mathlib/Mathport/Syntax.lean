@@ -111,18 +111,12 @@ estimated difficulty of writing the tactic. The key is as follows:
 * `S`: Possibly easy, because we can just stub it out or replace with something else
 * `?`: uncategorized
 -/
-namespace Lean
-
-namespace Parser.Command
+namespace Mathlib.Tactic
+open Lean Parser.Tactic
 
 /- N -/ elab (name := include) "include" (ppSpace ident)+ : command => pure ()
 /- N -/ elab (name := omit) "omit" (ppSpace ident)+ : command => pure ()
 /- N -/ syntax (name := parameter) "parameter" (ppSpace bracketedBinder)+ : command
-
-end Parser.Command
-
-namespace Parser
-namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
@@ -266,8 +260,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := isBounded_default) "isBounded_default" : tactic
 
-/- N -/ syntax (name := opInduction) "op_induction" (ppSpace colGt term)? : tactic
-
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace colGt term)?
   (" with" (ppSpace binderIdent)+)? : tactic
 
@@ -294,10 +286,6 @@ macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>
 macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
   `(tactic| move_op (·+·) $pats,* $(loc)?)
 
-end Tactic
-
-namespace Attr
-
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 
@@ -312,19 +300,13 @@ namespace Attr
 
 /- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
-end Attr
-
-namespace Command
-
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
-/- S -/ syntax (name := explode) "#explode " ident : command
-
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
-/- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
+/- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command
 
 /- S -/ syntax (name := «where») "#where" : command
 
@@ -336,5 +318,3 @@ namespace Command
 
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
-
-end Command

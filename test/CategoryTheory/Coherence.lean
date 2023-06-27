@@ -6,6 +6,7 @@ universe w v u
 
 section monoidal
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+open scoped MonoidalCategory
 
 -- Internal tactics
 
@@ -57,7 +58,7 @@ by coherence
 example (X Y : C) :
   (𝟙 X ⊗ (λ_ Y).inv) ≫ (α_ X (𝟙_ C) Y).inv = (ρ_ X).inv ⊗ 𝟙 Y :=
 by coherence
-example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (w : false) :
+example (X Y : C) (f : 𝟙_ C ⟶ X) (g : X ⟶ Y) (_w : false) :
   (λ_ (𝟙_ C)).hom ≫ f ≫ 𝟙 X ≫ g = (ρ_ (𝟙_ C)).hom ≫ f ≫ g :=
 by coherence
 
@@ -80,44 +81,48 @@ by coherence
 
 end monoidal
 
--- Porting note: restore the tests for bicategories when
--- `category_theory.bicategory.coherence` is ported.
+section Bicategory
 
--- section Bicategory
+open scoped Bicategory
 
--- variables {B : Type u} [Bicategory.{w v} B] {a b c d e : B}
 
--- example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by coherence
--- example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by coherence
--- example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
---   (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) :=
--- by coherence
--- example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
---   f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
---     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i :=
--- by coherence
--- example (f : a ⟶ b) (g : b ⟶ c) :
---   f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g :=
--- by coherence
--- example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
---   (λ_ (𝟙 a)).hom ≫ η ≫ 𝟙 f ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ :=
--- by coherence
+variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
--- example (f₁ : a ⟶ b) (g₁ : b ⟶ a) (f₂ : b ⟶ c) (g₂ : c ⟶ b) :
---   (α_ (𝟙 a) (𝟙 a) (f₁ ≫ f₂)).hom ≫
---     𝟙 a ◁ (α_ (𝟙 a) f₁ f₂).inv ≫
---       𝟙 a ◁ ((λ_ f₁).hom ≫ (ρ_ f₁).inv) ▷ f₂ ≫
---         𝟙 a ◁ (α_ f₁ (𝟙 b) f₂).hom ≫
---           (α_ (𝟙 a) f₁ (𝟙 b ≫ f₂)).inv ≫
---             ((λ_ f₁).hom ≫ (ρ_ f₁).inv) ▷ (𝟙 b ≫ f₂) ≫
---               (α_ f₁ (𝟙 b) (𝟙 b ≫ f₂)).hom ≫
---                 f₁ ◁ 𝟙 b ◁ ((λ_ f₂).hom ≫ (ρ_ f₂).inv) ≫
---                   f₁ ◁ (α_ (𝟙 b) f₂ (𝟙 c)).inv ≫
---                     f₁ ◁ ((λ_ f₂).hom ≫ (ρ_ f₂).inv) ▷ 𝟙 c ≫
---                       (f₁ ◁ (α_ f₂ (𝟙 c) (𝟙 c)).hom) ≫
---                         (α_ f₁ f₂ (𝟙 c ≫ 𝟙 c)).inv =
---   ((λ_ (𝟙 a)).hom ▷ (f₁ ≫ f₂) ≫ (λ_ (f₁ ≫ f₂)).hom ≫ (ρ_ (f₁ ≫ f₂)).inv) ≫
---     (f₁ ≫ f₂) ◁ (λ_ (𝟙 c)).inv :=
--- by coherence
+example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
+example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
+example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+  (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) :=
+by bicategory_coherence
+example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
+  f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
+    (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i :=
+by bicategory_coherence
+example (f : a ⟶ b) (g : b ⟶ c) :
+  f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g :=
+by bicategory_coherence
 
--- end Bicategory
+example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
+  bicategory_coherence
+
+example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :
+  (λ_ (𝟙 a)).hom ≫ η ≫ θ = (ρ_ (𝟙 a)).hom ≫ η ≫ θ :=
+by coherence
+
+example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
+  (α_ (𝟙 a) (𝟙 a) (f₁ ≫ f₂)).hom ≫
+    𝟙 a ◁ (α_ (𝟙 a) f₁ f₂).inv ≫
+      𝟙 a ◁ ((λ_ f₁).hom ≫ (ρ_ f₁).inv) ▷ f₂ ≫
+        𝟙 a ◁ (α_ f₁ (𝟙 b) f₂).hom ≫
+          (α_ (𝟙 a) f₁ (𝟙 b ≫ f₂)).inv ≫
+            ((λ_ f₁).hom ≫ (ρ_ f₁).inv) ▷ (𝟙 b ≫ f₂) ≫
+              (α_ f₁ (𝟙 b) (𝟙 b ≫ f₂)).hom ≫
+                f₁ ◁ 𝟙 b ◁ ((λ_ f₂).hom ≫ (ρ_ f₂).inv) ≫
+                  f₁ ◁ (α_ (𝟙 b) f₂ (𝟙 c)).inv ≫
+                    f₁ ◁ ((λ_ f₂).hom ≫ (ρ_ f₂).inv) ▷ 𝟙 c ≫
+                      (f₁ ◁ (α_ f₂ (𝟙 c) (𝟙 c)).hom) ≫
+                        (α_ f₁ f₂ (𝟙 c ≫ 𝟙 c)).inv =
+  ((λ_ (𝟙 a)).hom ▷ (f₁ ≫ f₂) ≫ (λ_ (f₁ ≫ f₂)).hom ≫ (ρ_ (f₁ ≫ f₂)).inv) ≫
+    (f₁ ≫ f₂) ◁ (λ_ (𝟙 c)).inv :=
+by coherence
+
+end Bicategory

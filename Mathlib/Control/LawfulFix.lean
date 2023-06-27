@@ -249,7 +249,7 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
-  ext (x y)
+  ext x y
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl

@@ -28,7 +28,7 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`PiLp p α`. The assumpion `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumption `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
 
 We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity
@@ -83,6 +83,10 @@ def PiLp (_p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) : Type _ :=
 
 instance (p : ℝ≥0∞) {ι : Type _} (α : ι → Type _) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
+
+@[ext] -- porting note: new lemma
+protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type _} {α : ι → Type _} {x y : PiLp p  α}
+    (h : ∀ i, x i = y i) : x = y := funext h
 
 namespace PiLp
 
@@ -482,7 +486,7 @@ edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   @EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α) _ Pi.instT0Space
 
-/-- pseudometric space instance on the product of finitely many psuedometric spaces, using the
+/-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>

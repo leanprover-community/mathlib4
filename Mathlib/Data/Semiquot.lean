@@ -212,7 +212,7 @@ def IsPure (q : Semiquot α) : Prop :=
   ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), a = b
 #align semiquot.is_pure Semiquot.IsPure
 
-/-- Extract the value from a `IsPure` semiquotient. -/
+/-- Extract the value from an `IsPure` semiquotient. -/
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get

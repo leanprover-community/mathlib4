@@ -739,8 +739,8 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [TopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}
     (hs : s.topologicalClosure = ⊤) : (s.map f).topologicalClosure = ⊤ := by
-  rw [SetLike.ext'_iff] at hs⊢
-  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs⊢
+  rw [SetLike.ext'_iff] at hs ⊢
+  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image hf hs
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
@@ -1394,18 +1394,6 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 
 end TopologicalGroup
 
-/-- additive group with a neighbourhood around 0.
-Only used to construct a topology and uniform space.
-
-This is currently only available for commutative groups, but it can be extended to
-non-commutative groups too.
--/
-class AddGroupWithZeroNhd (G : Type u) extends AddCommGroup G where
-  z : Filter G
-  zero_z : pure 0 ≤ z
-  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (Z ×ˢ Z) Z
-#align add_group_with_zero_nhd AddGroupWithZeroNhd
-
 section FilterMul
 
 section
@@ -1527,10 +1515,10 @@ section
 
 variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
 
-/-- Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of `1`
+/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
   such that `K * V ⊆ U`. -/
 @[to_additive
-  "Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of
+  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `K + V ⊆ U`."]
 theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), K * V ⊆ U := by
@@ -1555,10 +1543,10 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
 
 open MulOpposite
 
-/-- Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of `1`
+/-- Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of `1`
   such that `V * K ⊆ U`. -/
 @[to_additive
-  "Given a compact set `K` inside an open set `U`, there is a open neighborhood `V` of
+  "Given a compact set `K` inside an open set `U`, there is an open neighborhood `V` of
   `0` such that `V + K ⊆ U`."]
 theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U := by

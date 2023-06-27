@@ -375,7 +375,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   constructor
   · rintro H
     apply H.stablizes_of_iSup_eq
-        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_H : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
+        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), _⟩
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
       congr 1
@@ -408,7 +408,7 @@ variable {F}
 theorem Stable.of_le [IsNoetherianRing R] [h : Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
   haveI := isNoetherian_of_fg_of_noetherian' h.1
-  rw [← submodule_fg_iff_stable] at hF⊢
+  rw [← submodule_fg_iff_stable] at hF ⊢
   any_goals intro i; exact IsNoetherian.noetherian _
   have := isNoetherian_of_fg_of_noetherian _ hF
   rw [isNoetherian_submodule] at this

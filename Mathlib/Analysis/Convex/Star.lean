@@ -9,6 +9,7 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Tactic.GCongr
 
 /-!
 # Star-convex sets
@@ -129,7 +130,7 @@ theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
 theorem starConvex_iUnion {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
-  rw [mem_iUnion] at hy⊢
+  rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
 #align star_convex_Union starConvex_iUnion
@@ -394,10 +395,8 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
     ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b → (a / (a + b)) • x + (b / (a + b)) • y ∈ s :=
   ⟨fun h y hy a b ha hb hab => by
     apply h hy
-    · have ha' := mul_le_mul_of_nonneg_left ha (inv_pos.2 hab).le
-      rwa [MulZeroClass.mul_zero, ← div_eq_inv_mul] at ha'
-    · have hb' := mul_le_mul_of_nonneg_left hb (inv_pos.2 hab).le
-      rwa [MulZeroClass.mul_zero, ← div_eq_inv_mul] at hb'
+    · positivity
+    · positivity
     · rw [← add_div]
       exact div_self hab.ne',
   fun h y hy a b ha hb hab => by
@@ -409,7 +408,7 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
 theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) :
     x ∈ t • s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
-  exact hs.smul_mem hx (inv_nonneg.2 <| zero_le_one.trans ht) (inv_le_one ht)
+  exact hs.smul_mem hx (by positivity) (inv_le_one ht)
 #align star_convex.mem_smul StarConvex.mem_smul
 
 end AddCommGroup
@@ -433,16 +432,16 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
     calc
       x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg hxy hb) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg hxy ha) _
+      a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
     calc
       y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_right (smul_le_smul_of_nonneg hyx ha) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • x + b • x := add_le_add_left (smul_le_smul_of_nonneg hyx hb) _
+      a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _
 #align set.ord_connected.star_convex Set.OrdConnected.starConvex
 

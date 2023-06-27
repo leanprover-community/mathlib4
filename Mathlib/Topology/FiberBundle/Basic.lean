@@ -392,11 +392,11 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
       (ec.restrOpen (Iio d) isOpen_Iio).disjointUnion (ed.restrOpen (Ioi c) isOpen_Ioi)
         (he.mono (inter_subset_right _ _) (inter_subset_right _ _)), fun x hx => _⟩
     rcases hx.2.eq_or_lt with (rfl | hxd)
-    exacts[Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
+    exacts [Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg  at he
+    push_neg at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 #align fiber_bundle.exists_trivialization_Icc_subset FiberBundle.exists_trivialization_Icc_subset
@@ -566,7 +566,7 @@ theorem localTrivAsLocalEquiv_trans (i j : ι) :
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace Z.Fiber) :=
-  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_s_open : IsOpen s),
+  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_ : IsOpen s),
     {(Z.localTrivAsLocalEquiv i).source ∩ Z.localTrivAsLocalEquiv i ⁻¹' s}
 #align fiber_bundle_core.to_topological_space FiberBundleCore.toTopologicalSpace
 
@@ -803,7 +803,7 @@ variable (a : FiberPrebundle F E) {e : Pretrivialization F (π E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace E) :=
-  ⨆ (e : Pretrivialization F (π E)) (_he : e ∈ a.pretrivializationAtlas),
+  ⨆ (e : Pretrivialization F (π E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
 #align fiber_prebundle.total_space_topology FiberPrebundle.totalSpaceTopology
 
@@ -911,6 +911,11 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π E) := by
   exact FiberBundle.continuous_proj F E
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
 
+instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
+    (letI := a.totalSpaceTopology; letI := a.toFiberBundle;
+      MemTrivializationAtlas (a.trivializationOfMemPretrivializationAtlas he₀)) :=
+  letI := a.totalSpaceTopology; letI := a.toFiberBundle; ⟨e₀, he₀, rfl⟩
+
 /-- For a fiber bundle `E` over `B` constructed using the `FiberPrebundle` mechanism,
 continuity of a function `TotalSpace E → X` on an open set `s` can be checked by precomposing at
 each point with the pretrivialization used for the construction at that point. -/
@@ -918,7 +923,7 @@ theorem continuousOn_of_comp_right {X : Type _} [TopologicalSpace X] {f : TotalS
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,
       ContinuousOn (f ∘ (a.pretrivializationAt b).toLocalEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
-    @ContinuousOn _ _ a.totalSpaceTopology _ f ((π E) ⁻¹' s) := by
+    @ContinuousOn _ _ a.totalSpaceTopology _ f (π E ⁻¹' s) := by
   letI := a.totalSpaceTopology
   intro z hz
   let e : Trivialization F (π E) :=

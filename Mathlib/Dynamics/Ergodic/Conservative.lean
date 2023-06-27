@@ -62,7 +62,7 @@ structure Conservative (f : α → α) (μ : Measure α) extends QuasiMeasurePre
 #align measure_theory.conservative MeasureTheory.Conservative
 
 /-- A self-map preserving a finite measure is conservative. -/
-protected theorem MeasurePreserving.conservative [FiniteMeasure μ] (h : MeasurePreserving f μ μ) :
+protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
     Conservative f μ :=
   ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_image_mem hsm h0⟩
 #align measure_theory.measure_preserving.conservative MeasureTheory.MeasurePreserving.conservative
@@ -89,7 +89,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   · apply h0
     simpa using hN 0 le_rfl
   rw [imp_false] at ihN
-  push_neg  at ihN
+  push_neg at ihN
   rcases ihN with ⟨n, hn, hμn⟩
   set T := s ∩ ⋃ n ≥ N + 1, f^[n] ⁻¹' s
   have hT : MeasurableSet T :=

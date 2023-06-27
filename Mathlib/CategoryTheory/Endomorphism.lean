@@ -132,6 +132,11 @@ set_option linter.uppercaseLean3 false in
 
 namespace Aut
 
+-- porting note: added because `Iso.ext` is not triggered automatically
+@[ext]
+lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
+  Iso.ext h
+
 protected instance inhabited : Inhabited (Aut X) := ⟨Iso.refl X⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.inhabited CategoryTheory.Aut.inhabited

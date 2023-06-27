@@ -23,7 +23,7 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
   and the composition is bilinear.
 
 See `ring_theory.derivation.lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form an lie algebra over `R`.
+- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `ring_theory.derivation.to_square_zero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
@@ -274,7 +274,7 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 
 end Scalar
 
-instance (priority := 100) {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
+instance (priority := 100) instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
@@ -316,7 +316,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
   map_smul' r D := by ext; rfl
 #align derivation.llcomp Derivation.llcomp
 
-/-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
+/-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
@@ -403,7 +403,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
     D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp only [smul_smul, h, one_smul, sq]
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
-    
+
 #align derivation.leibniz_of_mul_eq_one Derivation.leibniz_of_mul_eq_one
 
 theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=

@@ -49,8 +49,6 @@ def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
   map {S _} f :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop)) fun I =>
       Multiequalizer.condition (S.unop.index P) (I.map f.unop)
-  map_id S := Multiequalizer.hom_ext _ _ _ (fun I => by aesop_cat)
-  map_comp f g := Multiequalizer.hom_ext _ _ _ (fun I => by aesop_cat)
 #align category_theory.grothendieck_topology.diagram CategoryTheory.GrothendieckTopology.diagram
 
 /-- A helper definition used to define the morphisms for `plus`. -/
@@ -72,7 +70,6 @@ def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X
       erw [Category.assoc, Category.assoc, ← η.naturality, ← η.naturality,
         Multiequalizer.condition_assoc]
       rfl)
-  naturality _ _ _ := Multiequalizer.hom_ext _ _ _ (fun i => by simp)
 #align category_theory.grothendieck_topology.diagram_nat_trans CategoryTheory.GrothendieckTopology.diagramNatTrans
 
 @[simp]
@@ -110,8 +107,6 @@ variable (D)
 def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map η := J.diagramNatTrans η X
-  map_id _ := J.diagramNatTrans_id _ _
-  map_comp _ _ := J.diagramNatTrans_comp _ _ _
 #align category_theory.grothendieck_topology.diagram_functor CategoryTheory.GrothendieckTopology.diagramFunctor
 
 variable {D}
@@ -204,8 +199,6 @@ variable (D)
 def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map η := J.plusMap η
-  map_id _ := plusMap_id _ _
-  map_comp _ _ := plusMap_comp _ _ _
 #align category_theory.grothendieck_topology.plus_functor CategoryTheory.GrothendieckTopology.plusFunctor
 
 variable {D}
@@ -247,7 +240,6 @@ variable (D)
 @[simps]
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
-  naturality _ _ _ := toPlus_naturality _ _
 #align category_theory.grothendieck_topology.to_plus_nat_trans CategoryTheory.GrothendieckTopology.toPlusNatTrans
 
 variable {D}
@@ -334,7 +326,6 @@ theorem plusLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSh
     (γ : J.plusObj P ⟶ Q) (hγ : J.toPlus P ≫ γ = η) : γ = J.plusLift η hQ := by
   dsimp only [plusLift]
   rw [Iso.eq_comp_inv, ← hγ, plusMap_comp]
-  dsimp
   simp
 #align category_theory.grothendieck_topology.plus_lift_unique CategoryTheory.GrothendieckTopology.plusLift_unique
 
