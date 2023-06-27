@@ -233,9 +233,6 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   ext1
   -- Porting note: was `change _ / _ = (_ * (_ / _) + _) * _`
   change _ / _ = (_ * (_ / _) + _) / _
-  conv =>
-    rhs
-    rw [div_eq_mul_inv]
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
   simp only [Matrix.mul, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
