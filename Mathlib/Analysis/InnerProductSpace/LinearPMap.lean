@@ -193,12 +193,12 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
 #align linear_pmap.mem_adjoint_domain_of_exists LinearPMap.mem_adjoint_domain_of_exists
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
-  change (if hT : Dense (T.domain : Set E) then adjoint_aux hT else 0) y = _
+  change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
 #align linear_pmap.adjoint_apply_of_not_dense LinearPMap.adjoint_apply_of_not_dense
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
-  change (if hT : Dense (T.domain : Set E) then adjoint_aux hT else 0) y = _
+  change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 #align linear_pmap.adjoint_apply_of_dense LinearPMap.adjoint_apply_of_dense
 
