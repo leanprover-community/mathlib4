@@ -23,7 +23,7 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 
 ## Main definitions
 
-* `clifford_algebra.star_ring`
+* `CliffordAlgebra.instStarRing`
 
 -/
 
@@ -36,7 +36,7 @@ variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
-instance : StarRing (CliffordAlgebra Q) where
+instance instStarRing : StarRing (CliffordAlgebra Q) where
   -- porting note: cannot infer `Q`
   star x := reverse (Q := Q) (involute x)
   star_involutive x := by

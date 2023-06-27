@@ -38,7 +38,7 @@ We also prove Tonelli's theorem.
   `α × β → ℝ≥0∞` we have `∫⁻ z, f z ∂(μ.prod ν) = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ`. The version
   for functions `α → β → ℝ≥0∞` is reversed, and called `lintegral_lintegral`. Both versions have
   a variant with `_symm` appended, where the order of integration is reversed.
-  The lemma `measurable.lintegral_prod_right'` states that the inner integral of the right-hand side
+  The lemma `Measurable.lintegral_prod_right'` states that the inner integral of the right-hand side
   is measurable.
 
 ## Implementation Notes
