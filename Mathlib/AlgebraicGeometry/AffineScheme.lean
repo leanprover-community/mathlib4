@@ -344,6 +344,13 @@ theorem IsAffineOpen.fromSpec_app_eq {X : Scheme} {U : Opens X} (hU : IsAffineOp
 
 theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) : IsAffineOpen (X.basicOpen f) := by
+  -- Porting note : this instance needs to be manually added, though no explicit argument is
+  -- provided.
+  have o1 : IsOpenImmersion <|
+    Scheme.Spec.map
+      (CommRingCat.ofHom (algebraMap ((X.presheaf.obj <| op U)) (Localization.Away f))).op ≫
+    hU.fromSpec
+  . exact PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance)
   convert
     rangeIsAffineOpenOfOpenImmersion
       (Scheme.Spec.map
@@ -351,30 +358,32 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
         hU.fromSpec)
   ext1
   have :
-    hU.from_Spec.val.base '' (hU.from_Spec.val.base ⁻¹' (X.basic_open f : Set X)) =
-      (X.basic_open f : Set X) := by
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, hU.from_Spec_range]
-    exact Scheme.basic_open_le _ _
-  rw [Scheme.hom.opens_range_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
-  congr 1
-  refine' (congr_arg coe <| Scheme.preimage_basic_open hU.from_Spec f).trans _
+    hU.fromSpec.val.base '' (hU.fromSpec.val.base ⁻¹' (X.basicOpen f : Set X)) =
+      (X.basicOpen f : Set X) := by
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, hU.fromSpec_range]
+    exact Scheme.basicOpen_le _ _
+  rw [Scheme.Hom.opensRange_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
+  -- Porting note : `congr 1` did not work
+  apply congr_arg (_ '' .)
+  refine' (Opens.coe_inj.mpr <| Scheme.preimage_basicOpen hU.fromSpec f).trans _
   refine' Eq.trans _ (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
   congr 1
-  have : (opens.map hU.from_Spec.val.base).obj U = ⊤ := by
+  have : (Opens.map hU.fromSpec.val.base).obj U = ⊤ := by
     ext1
-    change hU.from_Spec.1.base ⁻¹' (U : Set X) = Set.univ
-    rw [← hU.from_Spec_range, ← Set.image_univ]
-    exact Set.preimage_image_eq _ PresheafedSpace.is_open_immersion.base_open.inj
-  refine' Eq.trans _ (basic_open_eq_of_affine f)
-  have lm : ∀ s, (opens.map hU.from_Spec.val.base).obj U ⊓ s = s := fun s => this.symm ▸ top_inf_eq
-  refine' Eq.trans _ (lm _)
+    change hU.fromSpec.1.base ⁻¹' (U : Set X) = Set.univ
+    rw [← hU.fromSpec_range, ← Set.image_univ]
+    exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
+  refine' Eq.trans _ (Opens.coe_inj.mpr <| basicOpen_eq_of_affine f)
+  have lm : ∀ s, (Opens.map hU.fromSpec.val.base).obj U ⊓ s = s := fun s => this.symm ▸ top_inf_eq
+  refine' Opens.coe_inj.mpr <| Eq.trans _ (lm _)
   refine'
     Eq.trans _
       ((Scheme.Spec.obj <| op <| X.presheaf.obj <| op U).basicOpen_res _ (eqToHom this).op)
-  rw [← comp_apply]
+  -- Porting note : changed `rw` to `erw`
+  erw [← comp_apply]
   congr 2
   rw [Iso.eq_inv_comp]
-  erw [hU.Spec_Γ_identity_hom_app_from_Spec]
+  erw [hU.SpecΓIdentity_hom_app_fromSpec]
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpenIsAffine
 
 theorem IsAffineOpen.mapRestrictBasicOpen {X : Scheme} (r : X.presheaf.obj (op ⊤))
