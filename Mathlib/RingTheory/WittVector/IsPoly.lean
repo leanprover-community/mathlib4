@@ -64,11 +64,13 @@ as constant functions and fall under the unary case.
 ## Tactics
 
 There are important metaprograms defined in this file:
-the tactics `ghost_simp` and `ghost_calc` and the attributes `@[is_poly]` and `@[ghost_simps]`.
+the tactics `ghost_simp` and `ghost_calc` and the attribute `@[ghost_simps]`.
 These are used in combination to discharge proofs of identities between polynomial functions.
 
-Any atomic proof of `IsPoly` or `IsPoly₂` (i.e. not taking additional `IsPoly` arguments)
-should be tagged as `@[is_poly]`.
+The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and its instances.
+(In Lean 3, there was an `@[is_poly]` attribute to manage these instances,
+because typeclass resolution did not play well with function composition.
+This no longer seems to be an issue, so that such instances can be defined directly.)
 
 Any lemma doing "ring equation rewriting" with polynomial functions should be tagged
 `@[ghost_simps]`, e.g.
@@ -80,11 +82,9 @@ lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
 
 Proofs of identities between polynomial functions will often follow the pattern
 ```lean
-begin
-  ghost_calc _,
-  <minor preprocessing>,
+  ghost_calc _
+  <minor preprocessing>
   ghost_simp
-end
 ```
 
 ## References
@@ -94,81 +94,14 @@ end
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
-
-/- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-[PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-     [(Command.docComment "/--" "Simplification rules for ghost equations -/")]
-     "register_simp_attr"
-     `ghost_simps)-/-- unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
---/-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
-
-/-  --  porting note: todo later
-namespace Tactic
-
-namespace Interactive
-
-/-- A macro for a common simplification when rewriting with ghost component equations. -/
-unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
-  tactic.try tactic.intro1
-  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
-      (loc.ns [none])
-#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
-
-/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
-Typically, when faced with a goal like
-```lean
-∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
-```
-you can
-1. call `ghost_calc`
-2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
-3. call `ghost_simp`
-
-and this will close the goal.
-
-`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
-You must give it arguments to determine this.
-If you are proving a universally quantified goal like the above,
-call `ghost_calc _ _`.
-If the variables are introduced already, call `ghost_calc x y`.
-In the unary case, use `ghost_calc _` or `ghost_calc x`.
-
-`ghost_calc` is a light wrapper around type class inference.
-All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
-This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
-so it is easier (and prettier) to put it in a tactic script.
--/
-unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
-  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
-  let q(@Eq (WittVector _ $(R)) _ _) ← target
-  match ids with
-    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
-    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
-    | _ => fail "ghost_calc takes one or two arguments"
-  let nm ←
-    match R with
-      | expr.local_const _ nm _ _ => return nm
-      | _ => get_unused_name `R
-  iterate_exactly 2 apply_instance
-  unfreezingI (tactic.clear' tt [R])
-  introsI <| [nm, .str nm "_inst"] ++ ids'
-  skip
-#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
-
-end Interactive
-
-end Tactic
--/
-
 namespace WittVector
 
 universe u
 
 variable {p : ℕ} {R S : Type u} {σ idx : Type _} [CommRing R] [CommRing S]
 
-local notation "𝕎" => WittVector p
+local notation "𝕎" => WittVector p -- type as `\bbW`
 
--- type as `\bbW`
 open MvPolynomial
 
 open Function (uncurry)
@@ -213,10 +146,10 @@ coefficient of `f x` is given by evaluating `φₙ` at the coefficients of `x`.
 
 See also `WittVector.IsPoly₂` for the binary variant.
 
-The `ghost_calc` tactic treats `IsPoly` as a type class,
-and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `IsPoly f`.
-For the most part, users are not expected to treat `IsPoly` as a class.
+The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and its instances.
+(In Lean 3, there was an `@[is_poly]` attribute to manage these instances,
+because typeclass resolution did not play well with function composition.
+This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
 class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
@@ -241,8 +174,7 @@ instance : Inhabited (IsPoly p fun _ _ => id) :=
 variable {p}
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
-    (h :
-      ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
+    (h : ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
         ghostComponent n (f x) = ghostComponent n (g x)) :
     ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
   obtain ⟨φ, hf⟩ := hf
@@ -269,7 +201,8 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
 #align witt_vector.is_poly.ext WittVector.IsPoly.ext
 
 /-- The composition of polynomial functions is polynomial. -/
-theorem comp {g f} (hg : IsPoly p g) (hf : IsPoly p f) :
+-- Porting note: made this an instance
+instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
@@ -286,10 +219,10 @@ coefficient of `f x y` is given by evaluating `φₙ` at the coefficients of `x`
 
 See also `WittVector.IsPoly` for the unary variant.
 
-The `ghost_calc` tactic treats `IsPoly₂` as a type class,
-and the `@[is_poly]` attribute derives certain specialized composition instances
-for declarations of type `IsPoly₂ f`.
-For the most part, users are not expected to treat `IsPoly₂` as a class.
+The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and its instances.
+(In Lean 3, there was an `@[is_poly]` attribute to manage these instances,
+because typeclass resolution did not play well with function composition.
+This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
 class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
@@ -300,19 +233,15 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
-theorem IsPoly₂.comp {h f g} (hh : IsPoly₂ p h) (hf : IsPoly p f) (hg : IsPoly p g) :
+-- Porting note: made this an instance
+instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun R _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
-  refine'
-    ⟨⟨fun n =>
-        bind₁
-          (uncurry <|
-            ![fun k => rename (Prod.mk (0 : Fin 2)) (φ k), fun k =>
-              rename (Prod.mk (1 : Fin 2)) (ψ k)])
-          (χ n),
-        _⟩⟩
+  refine' ⟨⟨fun n ↦ bind₁ (uncurry <|
+    ![fun k ↦ rename (Prod.mk (0 : Fin 2)) (φ k),
+      fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
   intros
   funext n
   simp only [peval, aeval_bind₁, Function.comp, hh, hf, hg, uncurry]
@@ -330,7 +259,8 @@ theorem IsPoly₂.comp {h f g} (hh : IsPoly₂ p h) (hf : IsPoly p f) (hg : IsPo
 #align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
-theorem IsPoly.comp₂ {g f} (hg : IsPoly p g) (hf : IsPoly₂ p f) :
+-- Porting note: made this an instance
+instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun R _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
@@ -339,142 +269,30 @@ theorem IsPoly.comp₂ {g f} (hg : IsPoly p g) (hf : IsPoly₂ p f) :
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 #align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
-/-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
-theorem IsPoly₂.diag {f} (hf : IsPoly₂ p f) : IsPoly p fun R _Rcr x => f x x := by
+/-- The diagonal `λ x, f x x` of a polynomial function `f` is polynomial. -/
+-- Porting note: made this an instance
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
   simp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩;
-  fin_cases i <;> simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one]
+  fin_cases i <;>
+    simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one] <;>
     --  porting note: the end of the proof was added in the port.
-    <;>
     open Matrix in
     simp only [Fin.mk_zero, Fin.mk_one, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
       aeval_X, head_fin_const, cons_val_one]
 #align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
-/-  porting note: port later
-open Tactic
-
-namespace Tactic
-
-/-!
-### The `@[is_poly]` attribute
-
-This attribute is used to derive specialized composition instances
-for `IsPoly` and `IsPoly₂` declarations.
--/
-
-/-- If `n` is the name of a lemma with opened type `∀ vars, IsPoly p _`,
-`mk_poly_comp_lemmas n vars p` adds composition instances to the environment
-`n.comp_i` and `n.comp₂_i`.
--/
-unsafe def mk_poly_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
-  let c ← mk_const n
-  let appd := vars.foldl expr.app c
-  let tgt_bod ←
-    to_expr ``(fun f [hf : IsPoly $(p) f] => IsPoly.comp $(appd) hf) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod
-  let nm := .str n "comp_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-  let tgt_bod ←
-    to_expr ``(fun f [hf : IsPoly₂ $(p) f] => IsPoly.comp₂ $(appd) hf) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod
-  let nm := .str n "comp₂_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-#align witt_vector.tactic.mk_poly_comp_lemmas witt_vector.tactic.mk_poly_comp_lemmas
-
-/-- If `n` is the name of a lemma with opened type `∀ vars, IsPoly₂ p _`,
-`mk_poly₂_comp_lemmas n vars p` adds composition instances to the environment
-`n.comp₂_i` and `n.comp_diag`.
--/
-unsafe def mk_poly₂_comp_lemmas (n : Name) (vars : List expr) (p : expr) : tactic Unit := do
-  let c ← mk_const n
-  let appd := vars.foldl expr.app c
-  let tgt_bod ←
-    to_expr
-          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] => IsPoly₂.comp $(appd) hf hg) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
-  let nm := .str n "comp₂_i"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-  let tgt_bod ←
-    to_expr
-          ``(fun {f g} [hf : IsPoly $(p) f] [hg : IsPoly $(p) g] =>
-            (IsPoly₂.comp $(appd) hf hg).diag) >>=
-        replace_univ_metas_with_univ_params
-  let tgt_bod ← lambdas vars tgt_bod
-  let tgt_tp ← infer_type tgt_bod >>= simp_lemmas.mk.dsimplify
-  let nm := .str n "comp_diag"
-  add_decl <| mk_definition nm tgt_tp tgt_tp tgt_bod
-  set_attribute `instance nm
-#align witt_vector.tactic.mk_poly₂_comp_lemmas witt_vector.tactic.mk_poly₂_comp_lemmas
-
-/-- The `after_set` function for `@[is_poly]`. Calls `mk_poly(₂)_comp_lemmas`.
--/
-unsafe def mk_comp_lemmas (n : Name) : tactic Unit := do
-  let d ← get_decl n
-  let (vars, tp) ← open_pis d.type
-  match tp with
-    | q(IsPoly $(p) _) => mk_poly_comp_lemmas n vars p
-    | q(IsPoly₂ $(p) _) => mk_poly₂_comp_lemmas n vars p
-    | _ => fail "@[is_poly] should only be applied to terms of type `IsPoly _ _` or `IsPoly₂ _ _`"
-#align witt_vector.tactic.mk_comp_lemmas witt_vector.tactic.mk_comp_lemmas
-
-/-- `@[is_poly]` is applied to lemmas of the form `IsPoly f φ` or `IsPoly₂ f φ`.
-These lemmas should *not* be tagged as instances, and only atomic `IsPoly` defs should be tagged:
-composition lemmas should not. Roughly speaking, lemmas that take `IsPoly` proofs as arguments
-should not be tagged.
-
-Type class inference struggles with function composition, and the higher order unification problems
-involved in inferring `IsPoly` proofs are complex. The standard style writing these proofs by hand
-doesn't work very well. Instead, we construct the type class hierarchy "under the hood", with
-limited forms of composition.
-
-Applying `@[is_poly]` to a lemma creates a number of instances. Roughly, if the tagged lemma is a
-proof of `IsPoly f φ`, the instances added have the form
-```lean
-∀ g ψ, [IsPoly g ψ] → IsPoly (f ∘ g) _
-```
-Since `f` is fixed in this instance, it restricts the HO unification needed when the instance is
-applied. Composition lemmas relating `IsPoly` with `IsPoly₂` are also added.
-`idIsPoly` is an atomic instance.
-
-The user-written lemmas are not instances. Users should be able to assemble `is_poly` proofs by hand
-"as normal" if the tactic fails.
--/
-@[user_attribute]
-unsafe def isPolyAttr : user_attribute where
-  Name := `IsPoly
-  descr := "Lemmas with this attribute describe the polynomial structure of functions"
-  after_set := some fun n _ _ => mk_comp_lemmas n
-#align witt_vector.tactic.is_poly_attr WittVector.Tactic.isPolyAttr
-
-end Tactic
--/
-
-/-!
-### `IsPoly` instances
-
-These are not declared as instances at the top level,
-but the `@[is_poly]` attribute adds instances based on each one.
-Users are expected to use the non-instance versions manually.
--/
-
+-- Porting note: Lean 4's typeclass inference is sufficiently more powerful that we no longer
+-- need the `@[is_poly]` attribute. Use of the attribute should just be replaced by changing the
+-- theorem to an `instance`.
 
 /-- The additive negation is a polynomial function on Witt vectors. -/
-@[is_poly]
-theorem negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
+-- Porting note: replaced `@[is_poly]` with `instance`.
+instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
@@ -533,16 +351,16 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
 end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
-@[is_poly]
-theorem addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
+-- Porting note: replaced `@[is_poly]` with `instance`.
+instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
   --  porting note: the proof was
   --  `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 #align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
-@[is_poly]
-theorem mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
+-- Porting note: replaced `@[is_poly]` with `instance`.
+instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   --  porting note: the proof was
   -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
@@ -568,23 +386,24 @@ namespace IsPoly₂
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
+-- Porting note: maybe just drop this now that it works by `inferInstance`
 /-- The composition of a binary polynomial function
  with a unary polynomial function in the first argument is polynomial. -/
-theorem compLeft {g f} (hg : IsPoly₂ p g) (hf : IsPoly p f) :
+theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
     IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
-  hg.comp hf (WittVector.idIsPoly _)
+  inferInstance
 #align witt_vector.is_poly₂.comp_left WittVector.IsPoly₂.compLeft
 
+-- Porting note: maybe just drop this now that it works by `inferInstance`
 /-- The composition of a binary polynomial function
  with a unary polynomial function in the second argument is polynomial. -/
-theorem compRight {g f} (hg : IsPoly₂ p g) (hf : IsPoly p f) :
+theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
     IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
-  hg.comp (WittVector.idIsPoly p) hf
+  inferInstance
 #align witt_vector.is_poly₂.comp_right WittVector.IsPoly₂.compRight
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
-    (h :
-      ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
+    (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
     ∀ (R) [_Rcr : CommRing R] (x y : 𝕎 R), f x y = g x y := by
   obtain ⟨φ, hf⟩ := hf
@@ -638,6 +457,89 @@ attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
 
-end  -- porting note: ends the `noncomputable section`?
+end
+
+namespace Tactic
+open Lean Parser.Tactic Elab.Tactic
+
+/-- A macro for a common simplification when rewriting with ghost component equations. -/
+syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
+
+macro_rules
+  | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp only [← sub_eq_add_neg, ghost_simps, $args,*])
+
+
+/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
+Typically, when faced with a goal like
+```lean
+∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
+```
+you can
+1. call `ghost_calc`
+2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
+3. call `ghost_simp`
+
+and this will close the goal.
+
+`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
+You must give it arguments to determine this.
+If you are proving a universally quantified goal like the above,
+call `ghost_calc _ _`.
+If the variables are introduced already, call `ghost_calc x y`.
+In the unary case, use `ghost_calc _` or `ghost_calc x`.
+
+`ghost_calc` is a light wrapper around type class inference.
+All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
+This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
+so it is easier (and prettier) to put it in a tactic script.
+-/
+syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
+
+private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+  let fvarId ← liftMetaTacticAux fun g => do
+    let (fv, g') ← g.intro n
+    return (fv, [g'])
+  withMainContext do
+    Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
+  return fvarId
+
+private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+  match t with
+    | `(_) => runIntro t `_
+    | `($id:ident) => getFVarId id <|> runIntro id id.getId
+    | _ => Elab.throwUnsupportedSyntax
+
+elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
+  let ids ← ids'.mapM getLocalOrIntro
+  withMainContext do
+  let idsS ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
+  let some (α, lhs, rhs) := (← getMainTarget'').eq?
+    | throwError "ghost_calc expecting target to be an equality"
+  let (``WittVector, #[_, R]) := α.getAppFnArgs
+    | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
+  let instR ← Meta.synthInstance (← Meta.mkAppM ``CommRing #[R])
+  unless instR.isFVar do
+    throwError "{← Meta.inferType instR} instance is not local"
+  let f ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) lhs
+  let g ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) rhs
+  let fS ← Elab.Term.exprToSyntax f
+  let gS ← Elab.Term.exprToSyntax g
+  match idsS with
+    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x))
+    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x $y))
+    | _ => throwError "ghost_calc takes either one or two arguments"
+  let nm ← withMainContext <|
+    if let .fvar fvarId := (R : Expr) then
+      fvarId.getUserName
+    else
+      Meta.getUnusedUserName `R
+  evalTactic <| ← `(tactic| iterate 2 infer_instance)
+  let R := mkIdent nm
+  evalTactic <| ← `(tactic| clear! $R)
+  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident $ids'*)
+
+end Tactic
 
 end WittVector
