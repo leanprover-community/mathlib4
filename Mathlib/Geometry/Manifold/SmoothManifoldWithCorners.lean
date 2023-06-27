@@ -482,6 +482,20 @@ class ModelWithCorners.Boundaryless {𝕜 : Type _} [NontriviallyNormedField �
   range_eq_univ : range I = univ
 #align model_with_corners.boundaryless ModelWithCorners.Boundaryless
 
+theorem ModelWithCorners.range_eq_univ {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
+    range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
+
+/-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
+@[simps (config := {simpRhs := true})]
+def ModelWithCorners.toHomeomorph {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
+  __ := I
+  left_inv := I.left_inv
+  right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
+
 /-- The trivial model with corners has no boundary -/
 instance modelWithCornersSelf_boundaryless (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
