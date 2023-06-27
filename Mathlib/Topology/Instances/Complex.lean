@@ -31,7 +31,7 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     have :=
       (Subalgebra.isSimpleOrder_of_finrank finrank_real_complex).eq_bot_or_eq_top
         (Subfield.toIntermediateField K this).toSubalgebra
-    simp_rw [← SetLike.coe_set_eq] at this⊢
+    simp_rw [← SetLike.coe_set_eq] at this ⊢
     convert this using 2
     simp only [RingHom.coe_fieldRange, Algebra.coe_bot, coe_algebraMap]
     rfl

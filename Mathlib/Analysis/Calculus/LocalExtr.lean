@@ -340,7 +340,7 @@ theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l
       show ∃ c ∈ Ioo a b, deriv f c = 0 from
         exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt)
     fun h : ¬∀ x ∈ Ioo a b, DifferentiableAt ℝ f x =>
-    have h : ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x := by push_neg  at h; exact h
+    have h : ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x := by push_neg at h; exact h
     let ⟨c, hc, hcdiff⟩ := h
     ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩
 #align exists_deriv_eq_zero' exists_deriv_eq_zero'

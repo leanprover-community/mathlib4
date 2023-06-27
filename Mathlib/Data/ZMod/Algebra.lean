@@ -27,7 +27,9 @@ section
 
 variable {n : ℕ} (m : ℕ) [CharP R m]
 
-/-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n` -/
+/-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
+See note [reducible non-instances]. -/
+@[reducible]
 def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with
     smul := fun a r => a * r
