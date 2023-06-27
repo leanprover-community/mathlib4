@@ -1257,10 +1257,6 @@ section ContinuousSMul
 variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
-/- One may expect a version of the following lemma where `t` is compact and `s` is closed,
-but to do that we would need to ensure that, if `x` is fixed, then we can continuously
-map each `y ∈ s • {x}` to some `g ∈ s` such that `y = g • x`. One case where this is true is
-for `NormedAddTorsor`s, but we don't have a really nice way to state it more generally. -/
 @[to_additive]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
@@ -1281,6 +1277,20 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     ⟨g, g⁻¹ • x, hg, this, smul_inv_smul _ _⟩
   exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
     (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
+
+/-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
+closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
+`ℚ` acting on `ℝ` by translation, and let `s : set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
+closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
+closed in `ℝ`.
+To fix the proof, we would need to make two additional assumptions:
+- for any `x ∈ t`, `s • {x}` is closed
+- for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
+  `y ∈ s • {x}`, we have `y = (g y) • x`
+These are fairly specific hypotheses so we don't state this version of the lemmas, but an
+interesting fact is that these two assumptions are verified in the case of a `NormedAddTorsor`
+(or really, any `AddTorsor` with continuous `-ᵥ`). We prove this special case in
+`IsClosed.vadd_right_of_isCompact`. -/
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :
