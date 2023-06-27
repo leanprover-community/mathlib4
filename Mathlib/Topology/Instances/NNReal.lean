@@ -74,6 +74,9 @@ instance : SecondCountableTopology ℝ≥0 :=
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
+instance : CompleteSpace ℝ≥0 :=
+  isClosed_Ici.completeSpace_coe
+
 section coe
 
 variable {α : Type _}
