@@ -64,7 +64,7 @@ instance : CoeOut ℍ ℂ := inferInstanceAs (CoeOut { point : ℂ // 0 < point.
 namespace UpperHalfPlane
 
 @[ext]
-def ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
+theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
 
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
@@ -203,8 +203,6 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
-  set NsqBot := Complex.normSq (denom g z)
-  have : NsqBot ≠ 0 := by simp only [denom_ne_zero g z, map_eq_zero, Ne.def, not_false_iff]
   field_simp [smulAux', num, denom]
   -- porting note: the local notation still didn't work here
   rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
@@ -381,7 +379,7 @@ theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • 
   rfl
 #align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
 
-@[simp]
+-- @[simp] Failed simpNF linter, probably due to the `SMul.smul` hack
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
   simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul]
   apply neg_smul -- Porting note: should be unneeded once `SMul.smul` hack is fixed
