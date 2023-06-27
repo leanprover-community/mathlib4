@@ -61,10 +61,10 @@ open UpperHalfPlane
 -- Porting note: added to replace `deriving`
 instance : CoeOut ℍ ℂ := inferInstanceAs (CoeOut { point : ℂ // 0 < point.im } ℂ)
 
+namespace UpperHalfPlane
+
 @[ext]
 def ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
-
-namespace UpperHalfPlane
 
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
