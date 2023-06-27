@@ -30,7 +30,7 @@ valued structure `IsPicardLindelof`, which holds the long hypotheses of the Pica
 theorem for actual use as part of the public API.
 
 We only prove existence of a solution in this file. For uniqueness see `ODE_solution_unique` and
-related theorems in `analysis.ODE.gronwall`.
+related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 
 ## Tags
 
@@ -290,7 +290,7 @@ theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
       (f.continuous_vComp.stronglyMeasurableAtFilter _ _)
       f.continuous_vComp.continuousWithinAt
-  rw [vComp_apply_coe] at this 
+  rw [vComp_apply_coe] at this
   refine' this.congr_of_eventuallyEq_of_mem _ t.coe_prop
   filter_upwards [self_mem_nhdsWithin] with _ ht'
   rw [v.proj_of_mem ht']
@@ -431,7 +431,7 @@ theorem exists_isPicardLindelof_const_of_contDiffOn_nhds {s : Set E} (hv : ContD
       C_mul_le_R := by
         rw [add_sub_cancel', sub_sub_cancel, max_self, mul_ite, mul_one]
         split_ifs with h
-        · rwa [← h] at hr' 
+        · rwa [← h] at hr'
         · exact (mul_div_cancel' (r / 2) h).le }
 #align exists_is_picard_lindelof_const_of_cont_diff_on_nhds exists_isPicardLindelof_const_of_contDiffOn_nhds
 
@@ -450,7 +450,7 @@ theorem exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds {s : Set E} (hv : ContD
     apply ContinuousAt.preimage_mem_nhds this.continuousAt
     rw [hf1]
     exact hs
-  rw [Metric.mem_nhds_iff] at h 
+  rw [Metric.mem_nhds_iff] at h
   obtain ⟨r, hr1, hr2⟩ := h
   refine ⟨min r ε, lt_min hr1 hε, f, hf1, fun t ht => ⟨?_,
     hf2' t (mem_of_mem_of_subset ht (Ioo_subset_Ioo (sub_le_sub_left (min_le_right _ _) _)
@@ -470,4 +470,3 @@ theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
       (IsOpen.mem_nhds isOpen_univ (mem_univ _))
   ⟨ε, hε, f, hf1, fun t ht => (hf2 t ht).2⟩
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff exists_forall_hasDerivAt_Ioo_eq_of_contDiff
-
