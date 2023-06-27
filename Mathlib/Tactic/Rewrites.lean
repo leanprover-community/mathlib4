@@ -24,6 +24,8 @@ Suggestions are printed as `rw [h]` or `rw [←h]`.
 
 We could try discharging side goals via `assumption` or `solve_by_elim`.
 
+A conv mode version
+
 -/
 
 namespace Mathlib.Tactic.Rewrites
@@ -137,8 +139,8 @@ def rewritesCore (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name 
     (goal : MVarId) (target : Expr) : ListM MetaM RewriteResult := ListM.squash do
 
   -- Get all lemmas which could match some subexpression
-  let candidates := (← lemmas.1.getSubexpressionMatches target)
-    ++ (← lemmas.2.getSubexpressionMatches target)
+  let candidates := (← lemmas.1.getSubexpressionMatchesWithoutLooseBVars target)
+    ++ (← lemmas.2.getSubexpressionMatchesWithoutLooseBVars target)
 
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
@@ -193,7 +195,7 @@ syntax (name := rewrites') "rw?" "!"? (ppSpace location)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rw?%$tk $[!%$lucky]? $[$loc]?) => do
+    `(tactic| rw?%$tk $[!%$lucky]? $[$loc]?) => withMainContext do
   let lems ← rewriteLemmas.get
   reportOutOfHeartbeats `rewrites tk
   let goal ← getMainGoal

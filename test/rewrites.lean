@@ -57,3 +57,18 @@ lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
   rw?! at hyp
   assumption
+
+-- test that we can work with local context variables
+example : (fun x : Nat => x + 1) = fun x : Nat => x + 2 := by
+  ext a
+  rw?
+  sorry
+
+-- test that we don't panic when looking at terms with bvars
+example : (fun x : Nat => x) = id := by
+  rw?
+  sorry
+
+-- test that we do still find rw's under binders when they exist
+example : (fun x : Nat => x + 1) = (fun x : Nat => x + (1 + 0)) := by
+  rw?!

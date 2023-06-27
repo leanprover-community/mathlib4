@@ -32,6 +32,20 @@ and amongst those we return more specific lemmas first.
 -/
 partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Array α) := do
   e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
+/--
+Find keys which match the expression, or some subexpression, skipping those that have loose BVars.
+
+See also `getSubexpressionMatches`
+
+Implementation: we reverse the results from `getMatch`,
+so that we return lemmas matching larger subexpressions first,
+and amongst those we return more specific lemmas first.
+-/
+partial def getSubexpressionMatchesWithoutLooseBVars (d : DiscrTree α s) (e : Expr) :
+  MetaM (Array α) := do
+  let cu ← if e.hasLooseBVars then pure #[] else pure (← d.getMatch e).reverse
+  e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatchesWithoutLooseBVars f)) cu
+
 variable {m : Type → Type} [Monad m]
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
