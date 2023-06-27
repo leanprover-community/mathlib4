@@ -22,14 +22,6 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
   non-unital subalgebra on the larger algebra.
 -/
 
-
-/-- The identity map as a `NonUnitalAlgHom`. -/
-protected def NonUnitalAlgHom.id (R A : Type _) [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] : A →ₙₐ[R] A :=
-  { NonUnitalRingHom.id A with
-    toFun := id
-    map_smul' := fun _ _ => rfl }
-
 universe u u' v v' w w'
 
 open scoped BigOperators
@@ -556,21 +548,6 @@ theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin 
     (Hmul : ∀ x y : A, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) {x : A}, p x → p (r • x)) : p a :=
   Submodule.span_induction h
     (fun _a ha => NonUnitalSubsemiring.closure_induction ha Hs H0 Hadd Hmul) H0 Hadd Hsmul
-
--- TODO: needs to go with submodules
-theorem _root_.Submodule.span_induction₂ {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
-    {a b : M} {s : Set M} {p : M → M → Prop} (ha : a ∈ Submodule.span R s)
-    (hb : b ∈ Submodule.span R s) (Hs : ∀ x : M, x ∈ s → ∀ {y : M}, y ∈ s → p x y)
-    (H0_left : ∀ y : M, p 0 y) (H0_right : ∀ x : M, p x 0)
-    (Hadd_left : ∀ x₁ x₂ y : M, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (Hadd_right : ∀ x y₁ y₂ : M, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (Hsmul_left : ∀ (r : R) (x y : M), p x y → p (r • x) y)
-    (Hsmul_right : ∀ (r : R) (x y : M), p x y → p x (r • y)) : p a b :=
-  Submodule.span_induction ha
-    (fun x hx =>
-      Submodule.span_induction hb (fun _y => Hs x hx) (H0_right x) (Hadd_right x) fun r =>
-        Hsmul_right r x)
-    (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
 
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
     (hb : b ∈ adjoin R s) (Hs : ∀ x : A, x ∈ s → ∀ y : A, y ∈ s → p x y) (H0_left : ∀ y : A, p 0 y)
