@@ -51,6 +51,7 @@ variable (i) [HasFiniteProducts C] [CartesianClosed C]
 class ExponentialIdeal : Prop where
   exp_closed : ∀ {B}, B ∈ i.essImage → ∀ A, (A ⟹ B) ∈ i.essImage
 #align category_theory.exponential_ideal CategoryTheory.ExponentialIdeal
+attribute [nolint docBlame] ExponentialIdeal.exp_closed
 
 /-- To show `i` is an exponential ideal it suffices to show that `A ⟹ iB` is "in" `D` for any `A` in
 `C` and `B` in `D`.
@@ -108,20 +109,22 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
 
 variable (i : D ⥤ C)
 
+-- Porting note: this used to be used as a local instance,
+-- now it can instead be used as a have when needed
+-- we assume HasFiniteProducts D as a hypothesis below
 theorem reflective_products [HasFiniteProducts C] [Reflective i] : HasFiniteProducts D :=
   ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 #align category_theory.reflective_products CategoryTheory.reflective_products
 
-attribute [local instance 10] reflective_products
 
 open CartesianClosed
 
-variable [HasFiniteProducts C] [Reflective i] [CartesianClosed C]
+variable [HasFiniteProducts C] [Reflective i] [CartesianClosed C] [HasFiniteProducts D]
 
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/
-instance (priority := 10) exponentialIdeal_of_preserves_binary_products
+instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) (leftAdjoint i)] : ExponentialIdeal i := by
   let ir := Adjunction.ofRightAdjoint i
   let L : C ⥤ D := leftAdjoint i
@@ -141,7 +144,7 @@ instance (priority := 10) exponentialIdeal_of_preserves_binary_products
     apply IsIso.hom_inv_id_assoc
   haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
-#align category_theory.exponential_ideal_of_preserves_binary_products CategoryTheory.exponentialIdeal_of_preserves_binary_products
+#align category_theory.exponential_ideal_of_preserves_binary_products CategoryTheory.exponentialIdeal_of_preservesBinaryProducts
 
 variable [ExponentialIdeal i]
 
@@ -194,23 +197,30 @@ noncomputable def bijection (A B : C) (X : D) :
       (unitCompPartialBijective _ (ExponentialIdeal.exp_closed (i.obj_mem_essImage _) _))
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⨯ i.obj ((leftAdjoint i).obj B) ⟶ i.obj X) :=
       ((exp.adjunction _).homEquiv _ _).symm
-    _ ≃ (i.obj ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B) ⟶ i.obj X) := by
-      apply Iso.homCongr _ (Iso.refl _)
+    _ ≃ (i.obj ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B) ⟶ i.obj X) :=
       haveI : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
       haveI := preservesSmallestLimitsOfPreservesLimits i
-      exact (PreservesLimitPair.iso _ _ _).symm
+      Iso.homCongr (PreservesLimitPair.iso _ _ _).symm (Iso.refl (i.obj X))
     _ ≃ ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B ⟶ X) := (equivOfFullyFaithful _).symm
 #align category_theory.bijection CategoryTheory.bijection
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
+  -- Porting note: added
+  have : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
+  have := preservesSmallestLimitsOfPreservesLimits i
   dsimp [bijection]
+  -- Porting note: added
+  erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unitCompPartialBijective_symm_apply,
     unitCompPartialBijective_symm_apply, uncurry_natural_left, uncurry_curry,
-    uncurry_natural_left, uncurry_curry, prod.lift_map_assoc, comp_id, prod.lift_map_assoc, comp_id,
-    prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
-    ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc,
-    PreservesLimitPair.iso_hom]
+    uncurry_natural_left, uncurry_curry, prod.lift_map_assoc, comp_id, prod.lift_map_assoc, comp_id]
+  -- Porting note: added
+  dsimp only [Functor.comp_obj]
+  rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
+    ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc]
+  -- Porting note: rw became erw
+  erw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
   apply prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
     apply (Adjunction.ofRightAdjoint i).unit.naturality
@@ -221,6 +231,9 @@ theorem bijection_symm_apply_id (A B : C) :
 theorem bijection_natural (A B : C) (X X' : D) (f : (leftAdjoint i).obj (A ⨯ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]
+  -- Porting note: added
+  erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
+    homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
   rw [i.image_preimage, i.map_comp, i.image_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
     comp_id, Adjunction.homEquiv_naturality_right, ← assoc, curry_natural_right _ (i.map g),
