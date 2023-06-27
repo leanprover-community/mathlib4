@@ -64,9 +64,10 @@ as constant functions and fall under the unary case.
 ## Tactics
 
 There are important metaprograms defined in this file:
-the tactics `ghost_simp` and `ghost_calc` and the attributes `@[is_poly]` and `@[ghost_simps]`.
+the tactics `ghost_simp` and `ghost_calc` and the attribute `@[ghost_simps]`.
 These are used in combination to discharge proofs of identities between polynomial functions.
 
+-- FIXME this sentence needs to be updated: @jcommelin
 Any atomic proof of `IsPoly` or `IsPoly₂` (i.e. not taking additional `IsPoly` arguments)
 should be tagged as `@[is_poly]`.
 
@@ -80,11 +81,10 @@ lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
 
 Proofs of identities between polynomial functions will often follow the pattern
 ```lean
-begin
-  ghost_calc _,
-  <minor preprocessing>,
+by
+  ghost_calc _
+  <minor preprocessing>
   ghost_simp
-end
 ```
 
 ## References
@@ -100,9 +100,8 @@ universe u
 
 variable {p : ℕ} {R S : Type u} {σ idx : Type _} [CommRing R] [CommRing S]
 
-local notation "𝕎" => WittVector p
+local notation "𝕎" => WittVector p -- type as `\bbW`
 
--- type as `\bbW`
 open MvPolynomial
 
 open Function (uncurry)
@@ -175,8 +174,7 @@ instance : Inhabited (IsPoly p fun _ _ => id) :=
 variable {p}
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
-    (h :
-      ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
+    (h : ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R) (n : ℕ),
         ghostComponent n (f x) = ghostComponent n (g x)) :
     ∀ (R : Type u) [_Rcr : CommRing R] (x : 𝕎 R), f x = g x := by
   obtain ⟨φ, hf⟩ := hf
@@ -221,6 +219,7 @@ coefficient of `f x y` is given by evaluating `φₙ` at the coefficients of `x`
 
 See also `WittVector.IsPoly` for the unary variant.
 
+-- FIXME: this paragraph needs rewriting: @jcommelin.
 The `ghost_calc` tactic treats `IsPoly₂` as a type class,
 and the `@[is_poly]` attribute derives certain specialized composition instances
 for declarations of type `IsPoly₂ f`.
@@ -285,9 +284,9 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x 
   simp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩;
-  fin_cases i <;> simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one]
+  fin_cases i <;>
+    simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one] <;>
     --  porting note: the end of the proof was added in the port.
-    <;>
     open Matrix in
     simp only [Fin.mk_zero, Fin.mk_one, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
       aeval_X, head_fin_const, cons_val_one]
@@ -502,7 +501,7 @@ All it does is apply the appropriate extensionality lemma and try to infer the r
 This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
 so it is easier (and prettier) to put it in a tactic script.
 -/
-syntax (name := ghostCalc) "ghost_calc" (ppSpace term:max)* : tactic
+syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
 private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do

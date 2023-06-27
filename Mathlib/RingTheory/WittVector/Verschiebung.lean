@@ -130,7 +130,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
       simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
   map_add' := by
     dsimp
-    ghost_calc _ _; -- FIXME without the semicolon, ghost_calc eats the next tactic
+    ghost_calc _ _
     rintro ⟨⟩ <;> -- Uses the dumb induction principle, hence adding `Nat.zero_eq` to ghost_simps.
       ghost_simp
 #align witt_vector.verschiebung WittVector.verschiebung
