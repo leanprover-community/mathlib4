@@ -242,7 +242,7 @@ theorem mod_left' {a₁ a₂ : ℤ} {b : ℕ} (h : a₁ % b = a₂ % b) : J(a₁
 /-- If `p` is prime, `J(a | p) = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide
 `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p) = -1) {x y : ℤ}
-    (hxy : ↑p ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
+    (hxy : ↑p ∣ ((x ^ 2 - a * y ^ 2) : ℤ)) : ↑p ∣ x ∧ ↑p ∣ y := by
   rw [← legendreSym.to_jacobiSym] at h
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 #align jacobi_sym.prime_dvd_of_eq_neg_one jacobiSym.prime_dvd_of_eq_neg_one
@@ -331,7 +331,9 @@ theorem value_at (a : ℤ) {R : Type _} [CommSemiring R] (χ : R →* ℤ)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
 theorem at_neg_one {b : ℕ} (hb : Odd b) : J(-1 | b) = χ₄ b :=
-  value_at (-1) χ₄ (fun p pp => @legendreSym.at_neg_one p ⟨pp⟩) hb
+  -- porting note: In mathlib3, it was written `χ₄` and Lean could guess that it had to use
+  -- `χ₄.to_monoid_hom`. This is not the case with Lean 4.
+  value_at (-1) χ₄.toMonoidHom (fun p pp => @legendreSym.at_neg_one p ⟨pp⟩) hb
 #align jacobi_sym.at_neg_one jacobiSym.at_neg_one
 
 /-- If `b` is odd, then `J(-a | b) = χ₄ b * J(a | b)`. -/
@@ -341,12 +343,12 @@ protected theorem neg (a : ℤ) {b : ℕ} (hb : Odd b) : J(-a | b) = χ₄ b * J
 
 /-- If `b` is odd, then `J(2 | b)` is given by `χ₈ b`. -/
 theorem at_two {b : ℕ} (hb : Odd b) : J(2 | b) = χ₈ b :=
-  value_at 2 χ₈ (fun p pp => @legendreSym.at_two p ⟨pp⟩) hb
+  value_at 2 χ₈.toMonoidHom (fun p pp => @legendreSym.at_two p ⟨pp⟩) hb
 #align jacobi_sym.at_two jacobiSym.at_two
 
 /-- If `b` is odd, then `J(-2 | b)` is given by `χ₈' b`. -/
 theorem at_neg_two {b : ℕ} (hb : Odd b) : J(-2 | b) = χ₈' b :=
-  value_at (-2) χ₈' (fun p pp => @legendreSym.at_neg_two p ⟨pp⟩) hb
+  value_at (-2) χ₈'.toMonoidHom (fun p pp => @legendreSym.at_neg_two p ⟨pp⟩) hb
 #align jacobi_sym.at_neg_two jacobiSym.at_neg_two
 
 end jacobiSym
@@ -473,10 +475,13 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
     rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
   · rw [mod_left ↑(b % _), mod_left b, Int.coe_nat_mod, Int.emod_emod_of_dvd b]
     simp only [ha₂, Nat.cast_mul, ← mul_assoc]
-    exact dvd_mul_left a' _
-  cases e; · rfl
+    exact dvd_mul_left (a' : ℤ) (↑4 * ↑(2 ^ e))
+  -- porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
+  -- of a name other than e (for the case distinction of line 482) so we indicate the name
+  -- to use explicitly.
+  cases' e with e; · rfl
   · rw [χ₈_nat_mod_eight, χ₈_nat_mod_eight (b % (4 * a)), mod_mod_of_dvd b]
-    use 2 ^ e * a'; rw [ha₂, pow_succ]; ring
+    use 2 ^ e * a'; rw [ha₂, Nat.pow_succ]; ring
 #align jacobi_sym.mod_right' jacobiSym.mod_right'
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a`. -/
