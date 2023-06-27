@@ -95,24 +95,17 @@ end
 -/
 
 
-/- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-[PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-     [(Command.docComment "/--" "Simplification rules for ghost equations -/")]
-     "register_simp_attr"
-     `ghost_simps)-/-- unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
---/-- Simplification rules for ghost equations -/ register_simp_attr ghost_simps
-
-/-  --  porting note: todo later
-namespace Tactic
-
-namespace Interactive
+namespace WittVector.Tactic
+open Lean Parser.Tactic Elab.Tactic
 
 /-- A macro for a common simplification when rewriting with ghost component equations. -/
-unsafe def ghost_simp (lems : parse simp_arg_list) : tactic Unit := do
-  tactic.try tactic.intro1
-  simp none none tt (lems ++ [simp_arg_type.symm_expr ``(sub_eq_add_neg)]) [`ghost_simps]
-      (loc.ns [none])
-#align tactic.interactive.ghost_simp tactic.interactive.ghost_simp
+syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
+
+macro_rules
+  | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp only [$args,* , ← sub_eq_add_neg, ghost_simps])
+
 
 /-- `ghost_calc` is a tactic for proving identities between polynomial functions.
 Typically, when faced with a goal like
@@ -138,27 +131,61 @@ All it does is apply the appropriate extensionality lemma and try to infer the r
 This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
 so it is easier (and prettier) to put it in a tactic script.
 -/
-unsafe def ghost_calc (ids' : parse ident_*) : tactic Unit := do
-  let ids ← ids'.mapM fun n => get_local n <|> tactic.intro n
-  let q(@Eq (WittVector _ $(R)) _ _) ← target
+syntax (name := ghostCalc) "ghost_calc" (ppSpace term)* : tactic
+
+-- Lean 3 code for reference:
+-- meta def ghost_calc (ids' : parse ident_*) : tactic unit :=
+-- do ids ← ids'.mmap $ λ n, get_local n <|> tactic.intro n,
+--    `(@eq (witt_vector _ %%R) _ _) ← target,
+--    match ids with
+--    | [x] := refine ```(is_poly.ext _ _ _ _ %%x)
+--    | [x, y] := refine ```(is_poly₂.ext _ _ _ _ %%x %%y)
+--    | _ := fail "ghost_calc takes one or two arguments"
+--    end,
+--    nm ← match R with
+--    | expr.local_const _ nm _ _ := return nm
+--    | _ := get_unused_name `R
+--    end,
+--    iterate_exactly 2 apply_instance,
+--    unfreezingI (tactic.clear' tt [R]),
+--    introsI $ [nm, nm<.>"_inst"] ++ ids',
+--    skip
+
+private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+  let fvarId ← liftMetaTacticAux fun g => do
+    let (fv, g') ← g.intro n
+    return (fv, [g'])
+  withMainContext do
+    Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
+  return fvarId
+
+private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+  match t with
+    | `(_) => runIntro t `_
+    | `($id:ident) => getFVarId id <|> runIntro id id.getId
+    | _ => Elab.throwUnsupportedSyntax
+
+elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
+  let some (α, _, _) := (← withMainContext <| getMainTarget'').eq?
+    | throwError "ghost_calc expecting target to be an equality"
+  let (``WittVector, #[_, R]) := α.getAppFnArgs
+    | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
+  let ids ← ids'.mapM getLocalOrIntro
+  let ids ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
   match ids with
-    | [x] => refine `(is_poly.ext _ _ _ _ $(x))
-    | [x, y] => refine `(is_poly₂.ext _ _ _ _ $(x) $(y))
-    | _ => fail "ghost_calc takes one or two arguments"
-  let nm ←
-    match R with
-      | expr.local_const _ nm _ _ => return nm
-      | _ => get_unused_name `R
-  iterate_exactly 2 apply_instance
-  unfreezingI (tactic.clear' tt [R])
-  introsI <| [nm, .str nm "_inst"] ++ ids'
-  skip
-#align tactic.interactive.ghost_calc tactic.interactive.ghost_calc
+    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext _ _ _ _ $x))
+    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext _ _ _ _ $x $y))
+    | _ => throwError "ghost_calc takes one or two arguments"
+  let nm ← withMainContext <|
+    if let .fvar fvarId := (R : Expr) then
+      fvarId.getUserName
+    else
+      Meta.getUnusedUserName `R
+  evalTactic <| ← `(tactic| iterate 2 infer_instance)
+  evalTactic <| ← `(tactic| clear! R)
+  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident $ids'*)
 
-end Interactive
-
-end Tactic
--/
+end WittVector.Tactic
 
 namespace WittVector
 
