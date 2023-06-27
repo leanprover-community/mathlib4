@@ -44,35 +44,37 @@ variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type _} [CommRing R]
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
 
-namespace Tactic
+namespace Mathlib.Tactic.WittVector
 
-namespace Interactive
+open Lean Elab Tactic
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:38:34: unsupported: setup_tactic_parser -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
--- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
--- failed to format: unknown constant 'term.pseudo.antiquot'
 /--
-      `init_ring` is an auxiliary tactic that discharges goals factoring `init` over ring operations.
-      -/
-    unsafe
-  def
-    init_ring
-    ( assert : parse ( tk "using" *> parser.pexpr ) ? ) : tactic Unit
-    :=
-      do
-        sorry
-          match
-            assert
-            with
-            | none => skip | some e => do sorry tactic.replace `h `( $ ( e ) p _ h ) sorry
-#align tactic.interactive.init_ring tactic.interactive.init_ring
+`init_ring` is an auxiliary tactic that discharges goals factoring `init` over ring operations.
+-/
+syntax (name := initRing) "init_ring" (" using " term)? : tactic
 
-end Interactive
+elab_rules : tactic
+| `(tactic| init_ring $[ using $a:term]?) => do
+  evalTactic <|← `(tactic|(
+    rw [ext_iff]
+    intro i
+    simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
+    split_ifs with hi <;> try {rfl}
+    ))
+  if let some e := a then
+    evalTactic <|← `(tactic|(
+      simp only [WittVector.add_coeff, WittVector.mul_coeff, WittVector.neg_coeff,
+        WittVector.sub_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff, WittVector.pow_coeff]
+      apply MvPolynomial.eval₂Hom_congr' (RingHom.ext_int _ _) _ rfl
+      rintro ⟨b, k⟩ h -
+      replace h := $e p _ h
+      simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
+      have hk : k < n := by linarith
+      fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
+        WittVector.coeff_mk, Matrix.cons_val_one, WittVector.coeff_mk, hk, if_true]
+    ))
 
-end Tactic
+end Mathlib.Tactic.WittVector
 
 namespace WittVector
 
