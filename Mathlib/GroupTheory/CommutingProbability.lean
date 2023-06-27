@@ -361,24 +361,9 @@ instance myinst (A : Set G) [Infinite A] (n : ℕ) : Infinite (A ^ (n + 1 : ℕ)
 lemma Set.ncard_eq_zero_of_infinite (A : Set G) [hA : Infinite A] : Set.ncard A = 0 :=
   Set.Infinite.ncard (Set.infinite_coe_iff.mp hA)
 
-theorem ncard_congr {s : Set α} {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
-    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
-    s.ncard = t.ncard := by
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
-  have hbij : f'.Bijective := by
-    constructor
-    · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-      simp only [Subtype.mk.injEq] at hxy ⊢
-      exact h₂ _ _ hx hy hxy
-    rintro ⟨y, hy⟩
-    obtain ⟨a, ha, rfl⟩ := h₃ y hy
-    simp only [Subtype.mk.injEq, Subtype.exists]
-    exact ⟨_, ha, rfl⟩
-  exact Nat.card_congr (Equiv.ofBijective f' hbij)
-
 lemma Set.ncard_smul (A : Set G) (g : G) : Set.ncard (g • A) = Set.ncard A := by
   symm
-  apply ncard_congr
+  apply Set.ncard_congr
   . exact fun a => Set.smul_mem_smul_set
   . exact fun a b _ _ h => mul_right_injective g h
   . exact fun b ⟨a, ha, hb⟩ => ⟨a, ha, hb⟩
