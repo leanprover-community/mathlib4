@@ -76,8 +76,8 @@ def IsFormalAdjoint (T : E →ₗ.[𝕜] F) (S : F →ₗ.[𝕜] E) : Prop :=
 
 variable {T : E →ₗ.[𝕜] F} {S : F →ₗ.[𝕜] E}
 
-@[protected]
-theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) : S.IsFormalAdjoint T := fun y _ => by
+protected theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) :
+    S.IsFormalAdjoint T := fun y _ => by
   rw [← inner_conj_symm, ← inner_conj_symm (y : F), h]
 #align linear_pmap.is_formal_adjoint.symm LinearPMap.IsFormalAdjoint.symm
 
@@ -92,7 +92,7 @@ def adjointDomain : Submodule 𝕜 F where
   zero_mem' := by
     rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
     exact continuous_zero
-  add_mem' x y hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
+  add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
     rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
@@ -101,7 +101,7 @@ def adjointDomain : Submodule 𝕜 F where
 /-- The operator `λ x, ⟪y, T x⟫` considered as a continuous linear operator from `T.adjoint_domain`
 to `𝕜`. -/
 def adjointDomainMkClm (y : T.adjointDomain) : T.domain →L[𝕜] 𝕜 :=
-  ⟨(innerₛₗ 𝕜 (y : F)).comp T.toFun, y.Prop⟩
+  ⟨(innerₛₗ 𝕜 (y : F)).comp T.toFun, y.prop⟩
 #align linear_pmap.adjoint_domain_mk_clm LinearPMap.adjointDomainMkClm
 
 theorem adjointDomainMkClm_apply (y : T.adjointDomain) (x : T.domain) :
@@ -116,7 +116,7 @@ variable (hT : Dense (T.domain : Set E))
 /-- The unique continuous extension of the operator `adjoint_domain_mk_clm` to `E`. -/
 def adjointDomainMkClmExtend (y : T.adjointDomain) : E →L[𝕜] 𝕜 :=
   (T.adjointDomainMkClm y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
-    uniformEmbedding_subtype_val.to_uniformInducing
+    uniformEmbedding_subtype_val.toUniformInducing
 #align linear_pmap.adjoint_domain_mk_clm_extend LinearPMap.adjointDomainMkClmExtend
 
 @[simp]
@@ -136,17 +136,30 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   map_add' x y :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
-        adjoint_domain_mk_clm_extend_apply]
+        adjointDomainMkClmExtend_apply]
+      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
+      -- mathlib3 was finished here
+      rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply,
+        adjointDomainMkClmExtend_apply]
+      simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, inner_add_left]
   map_smul' _ _ :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
-        InnerProductSpace.toDual_symm_apply, adjoint_domain_mk_clm_extend_apply]
+        InnerProductSpace.toDual_symm_apply, adjointDomainMkClmExtend_apply]
+      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
+      -- mathlib3 was finished here
+      rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply]
+      simp only [Submodule.coe_smul_of_tower, inner_smul_left]
 #align linear_pmap.adjoint_aux LinearPMap.adjointAux
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
-  simp only [adjoint_aux, LinearMap.coe_mk, InnerProductSpace.toDual_symm_apply,
-    adjoint_domain_mk_clm_extend_apply]
+  simp only [adjointAux, LinearMap.coe_mk, InnerProductSpace.toDual_symm_apply,
+    adjointDomainMkClmExtend_apply]
+  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
+  -- mathlib3 was finished here
+  simp only [AddHom.coe_mk, InnerProductSpace.toDual_symm_apply]
+  rw [adjointDomainMkClmExtend_apply]
 #align linear_pmap.adjoint_aux_inner LinearPMap.adjointAux_inner
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
