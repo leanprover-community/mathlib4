@@ -11,7 +11,6 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 ## Identities between operations on the ring of Witt vectors
