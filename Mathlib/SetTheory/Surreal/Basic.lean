@@ -393,7 +393,7 @@ namespace Ordinal
 /-- Converts an ordinal into the corresponding surreal. -/
 noncomputable def toSurreal : Ordinal ↪o Surreal where
   toFun o := mk _ (numeric_toPGame o)
-  inj' a b h := toPGame_equiv_iff.1 (Quotient.exact h)
+  inj' a b h := toPGame_equiv_iff.1 (by apply Quotient.exact h) -- Porting note: Added `by apply`
   map_rel_iff' := @toPGame_le_iff
 #align ordinal.to_surreal Ordinal.toSurreal
 
