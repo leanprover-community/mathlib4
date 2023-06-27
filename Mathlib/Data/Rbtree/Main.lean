@@ -8,10 +8,10 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rbtree.Find
-import Mathbin.Data.Rbtree.Insert
-import Mathbin.Data.Rbtree.MinMax
-import Mathbin.Order.RelClasses
+import Mathlib.Data.Rbtree.Find
+import Mathlib.Data.Rbtree.Insert
+import Mathlib.Data.Rbtree.MinMax
+import Mathlib.Order.RelClasses
 
 universe u
 
@@ -20,8 +20,7 @@ namespace Rbnode
 variable {α : Type u} {lt : α → α → Prop}
 
 theorem isSearchable_of_wellFormed {t : Rbnode α} [IsStrictWeakOrder α lt] :
-    t.WellFormed lt → IsSearchable lt t none none :=
-  by
+    t.WellFormed lt → IsSearchable lt t none none := by
   intro h; induction h
   · constructor; simp [lift]
   · subst h_n'; apply is_searchable_insert; assumption
@@ -29,8 +28,7 @@ theorem isSearchable_of_wellFormed {t : Rbnode α} [IsStrictWeakOrder α lt] :
 
 open Color
 
-theorem isRedBlack_of_wellFormed {t : Rbnode α} : t.WellFormed lt → ∃ c n, IsRedBlack t c n :=
-  by
+theorem isRedBlack_of_wellFormed {t : Rbnode α} : t.WellFormed lt → ∃ c n, IsRedBlack t c n := by
   intro h; induction h
   · exists black; exists 0; constructor
   · cases' h_ih with c ih; cases' ih with n ih; subst h_n'; apply insert_is_red_black; assumption
@@ -42,8 +40,7 @@ namespace Rbtree
 
 variable {α : Type u} {lt : α → α → Prop}
 
-theorem balanced (t : Rbtree α lt) : t.depth max ≤ 2 * t.depth min + 1 :=
-  by
+theorem balanced (t : Rbtree α lt) : t.depth max ≤ 2 * t.depth min + 1 := by
   cases' t with n p; simp only [depth]
   have := Rbnode.isRedBlack_of_wellFormed p
   cases' this with _ this; cases' this with _ this
@@ -60,8 +57,7 @@ theorem not_mem_of_empty {t : Rbtree α lt} (a : α) : t.Empty = true → a ∉ 
 #align rbtree.not_mem_of_empty Rbtree.not_mem_of_empty
 
 theorem mem_of_mem_of_eqv [IsStrictWeakOrder α lt] {t : Rbtree α lt} {a b : α} :
-    a ∈ t → a ≈[lt]b → b ∈ t :=
-  by
+    a ∈ t → a ≈[lt]b → b ∈ t := by
   cases' t with n p <;> simp [Membership.Mem, Rbtree.Mem] <;> clear p <;> induction n <;>
         simp only [Rbnode.Mem, StrictWeakOrder.Equiv, false_imp_iff] <;>
       intro h₁ h₂ <;>
@@ -76,8 +72,7 @@ section Dec
 
 variable [DecidableRel lt]
 
-theorem insert_ne_mkRbtree (t : Rbtree α lt) (a : α) : t.insert a ≠ mkRbtree α lt :=
-  by
+theorem insert_ne_mkRbtree (t : Rbtree α lt) (a : α) : t.insert a ≠ mkRbtree α lt := by
   cases' t with n p
   simpa [insert, mkRbtree] using Rbnode.insert_ne_leaf lt n a
 #align rbtree.insert_ne_mk_rbtree Rbtree.insert_ne_mkRbtree
@@ -102,8 +97,7 @@ theorem find_correct_exact [IsStrictTotalOrder α lt] (a : α) (t : Rbtree α lt
 #align rbtree.find_correct_exact Rbtree.find_correct_exact
 
 theorem find_insert_of_eqv [IsStrictWeakOrder α lt] (t : Rbtree α lt) {x y} :
-    x ≈[lt]y → (t.insert x).find y = some x :=
-  by
+    x ≈[lt]y → (t.insert x).find y = some x := by
   cases t; intro h; apply Rbnode.find_insert_of_eqv lt h; apply Rbnode.isSearchable_of_wellFormed
   assumption
 #align rbtree.find_insert_of_eqv Rbtree.find_insert_of_eqv
@@ -113,23 +107,20 @@ theorem find_insert [IsStrictWeakOrder α lt] (t : Rbtree α lt) (x) : (t.insert
 #align rbtree.find_insert Rbtree.find_insert
 
 theorem find_insert_of_disj [IsStrictWeakOrder α lt] {x y : α} (t : Rbtree α lt) :
-    lt x y ∨ lt y x → (t.insert x).find y = t.find y :=
-  by
+    lt x y ∨ lt y x → (t.insert x).find y = t.find y := by
   cases t; intro h; apply Rbnode.find_insert_of_disj lt h
   apply Rbnode.isSearchable_of_wellFormed
   assumption
 #align rbtree.find_insert_of_disj Rbtree.find_insert_of_disj
 
 theorem find_insert_of_not_eqv [IsStrictWeakOrder α lt] {x y : α} (t : Rbtree α lt) :
-    ¬x ≈[lt]y → (t.insert x).find y = t.find y :=
-  by
+    ¬x ≈[lt]y → (t.insert x).find y = t.find y := by
   cases t; intro h; apply Rbnode.find_insert_of_not_eqv lt h
   apply Rbnode.isSearchable_of_wellFormed; assumption
 #align rbtree.find_insert_of_not_eqv Rbtree.find_insert_of_not_eqv
 
 theorem find_insert_of_ne [IsStrictTotalOrder α lt] {x y : α} (t : Rbtree α lt) :
-    x ≠ y → (t.insert x).find y = t.find y :=
-  by
+    x ≠ y → (t.insert x).find y = t.find y := by
   cases t; intro h
   have : ¬x ≈[lt]y := fun h' => h (eq_of_eqv_lt h')
   apply Rbnode.find_insert_of_not_eqv lt this
