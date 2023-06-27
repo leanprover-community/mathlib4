@@ -2737,6 +2737,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Defs
+import Mathlib.RingTheory.WittVector.InitTail
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial

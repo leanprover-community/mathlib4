@@ -8,8 +8,8 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Basic
-import Mathbin.RingTheory.WittVector.IsPoly
+import Mathlib.RingTheory.WittVector.Basic
+import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 
@@ -101,8 +101,7 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if P n then X n else 0
 #align witt_vector.select_poly WittVector.selectPoly
 
-theorem coeff_select (x : 𝕎 R) (n : ℕ) : (select P x).coeff n = aeval x.coeff (selectPoly P n) :=
-  by
+theorem coeff_select (x : 𝕎 R) (n : ℕ) : (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, select_poly]
   split_ifs with hi
   · rw [aeval_X]
@@ -110,24 +109,21 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) : (select P x).coeff n = aeval x.coe
 #align witt_vector.coeff_select WittVector.coeff_select
 
 @[is_poly]
-theorem select_isPoly (P : ℕ → Prop) : IsPoly p fun R _Rcr x => select P x :=
-  by
+theorem select_isPoly (P : ℕ → Prop) : IsPoly p fun R _Rcr x => select P x := by
   use select_poly P
   rintro R _Rcr x
   funext i
   apply coeff_select
 #align witt_vector.select_is_poly WittVector.select_isPoly
 
-theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x :=
-  by
+theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   ghost_calc _
   intro n
   simp only [RingHom.map_add]
   suffices
     (bind₁ (select_poly P)) (wittPolynomial p ℤ n) +
         (bind₁ (select_poly fun i => ¬P i)) (wittPolynomial p ℤ n) =
-      wittPolynomial p ℤ n
-    by
+      wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this 
     simpa only [AlgHom.map_add, aeval_bind₁, ← coeff_select]
   simp only [wittPolynomial_eq_sum_c_mul_x_pow, select_poly, AlgHom.map_sum, AlgHom.map_pow,
@@ -142,8 +138,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
 #align witt_vector.select_add_select_not WittVector.select_add_select_not
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
-    (x + y).coeff n = x.coeff n + y.coeff n :=
-  by
+    (x + y).coeff n = x.coeff n + y.coeff n := by
   let P : ℕ → Prop := fun n => y.coeff n = 0
   haveI : DecidablePred P := Classical.decPred P
   set z := mk p fun n => if P n then x.coeff n else y.coeff n with hz
