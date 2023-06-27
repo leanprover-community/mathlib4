@@ -116,14 +116,14 @@ open Std.ExtendedBinder
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-notation3 "∑ᶠ "(...)", "r:(scoped f => finsum f) => r
+notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
 /-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-notation3 "∏ᶠ "(...)", "r:(scoped f => finprod f) => r
+notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
