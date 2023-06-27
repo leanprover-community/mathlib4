@@ -52,10 +52,10 @@ theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p
   ghost_simp [mul_comm]
 #align witt_vector.frobenius_verschiebung WittVector.frobenius_verschiebung
 
-/-- Verschiebung is the same as multiplication by `p` on the ring of Witt vectors of `zmod p`. -/
-theorem verschiebung_zMod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
+/-- Verschiebung is the same as multiplication by `p` on the ring of Witt vectors of `ZMod p`. -/
+theorem verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
   rw [← frobenius_verschiebung, frobenius_zmodp]
-#align witt_vector.verschiebung_zmod WittVector.verschiebung_zMod
+#align witt_vector.verschiebung_zmod WittVector.verschiebung_zmod
 
 variable (p R)
 
