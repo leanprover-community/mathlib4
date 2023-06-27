@@ -770,25 +770,32 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable (xs : Vector α n) (ys : Vector α m)
+variable (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
     replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
-@[simp]
-theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
-  rfl
+section Append
+  variable (ys : Vector α m)
 
-@[simp]
-theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
-  rfl
+  @[simp]
+  theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
+    rfl
 
-@[simp]
-theorem append_nil : append xs nil = xs := by
-  cases xs; simp [append]
+  @[simp]
+  theorem get_append_cons_succ {i : Fin (n + m)} {h} :
+      get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    rfl
+
+  @[simp]
+  theorem append_nil : append xs nil = xs := by
+    cases xs; simp [append]
+
+end Append
+
+variable (ys : Vector β n)
 
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
@@ -802,6 +809,22 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     cases i using Fin.cases
     . simp only [get_zero, head_cons]
     . simp only [get_cons_succ, ih]
+
+
+
+@[simp]
+theorem mapAccumr_cons :  mapAccumr f (x ::ᵥ xs) s
+                          = let r := mapAccumr f xs s
+                            let q := f x r.1
+                            (q.1, q.2 ::ᵥ r.2) :=
+  rfl
+
+@[simp]
+theorem mapAccumr₂_cons : mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
+                          = let r := mapAccumr₂ f xs ys s
+                            let q := f x y r.1
+                            (q.1, q.2 ::ᵥ r.2) :=
+  rfl
 
 end Simp
 

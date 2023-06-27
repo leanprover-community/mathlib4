@@ -13,19 +13,21 @@ import Mathlib.Data.Vector.Basic
   argument is `snoc xs x`.
 
   Also, an alternative, reverse, induction principle is added, that breaks down a vector into
-  `snoc xs x` for its inductive case
+  `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
 namespace Vector
 
+  /-- Append a single element to the end of a vector -/
   def snoc : Vector α n → α → Vector α (n+1) :=
-    fun xs x => xs ++ (x ::ᵥ Vector.nil)
+    fun xs x => append xs (x ::ᵥ Vector.nil)
 
 
   /-!
   ## Simplification lemmas
   -/
   section Simp
+    variable (xs : Vector α n)
 
   @[simp]
   theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
@@ -50,7 +52,9 @@ namespace Vector
     rfl
 
 
-  theorem replicate_succ_to_snoc : replicate (n+1) val = (replicate n val).snoc val := by
+  theorem replicate_succ_to_snoc (val : α) :
+      replicate (n+1) val = (replicate n val).snoc val := by
+    clear xs
     induction n
     case zero => rfl
     case succ n ih =>
@@ -101,7 +105,8 @@ namespace Vector
       v.reverse
       w.reverse
       nil
-      (@fun n x y xs ys (r : C xs.reverse ys.reverse) => cast (by simp) <| snoc xs.reverse ys.reverse x y r)
+      (@fun n x y xs ys (r : C xs.reverse ys.reverse) =>
+        cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
   /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
       separately -/
@@ -120,6 +125,7 @@ namespace Vector
   -/
 
   section Simp
+    variable (xs : Vector α n)
 
 
   @[simp]
@@ -127,18 +133,7 @@ namespace Vector
     induction xs using Vector.inductionOn <;> simp_all
 
   @[simp]
-  theorem map₂_snoc : map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
-    induction xs, ys using Vector.inductionOn₂ <;> simp_all
-
-  @[simp]
   theorem mapAccumr_nil : mapAccumr f Vector.nil s = (s, Vector.nil) :=
-    rfl
-
-  @[simp]
-  theorem mapAccumr_cons :  mapAccumr f (x ::ᵥ xs) s
-                            = let r := mapAccumr f xs s
-                              let q := f x r.1
-                              (q.1, q.2 ::ᵥ r.2) :=
     rfl
 
   @[simp]
@@ -150,20 +145,18 @@ namespace Vector
     . rfl
     . simp[*]
 
+  variable (ys : Vector β n)
+
+  @[simp]
+  theorem map₂_snoc : map₂ f (xs.snoc x) (ys.snoc y) = (map₂ f xs ys).snoc (f x y) := by
+    induction xs, ys using Vector.inductionOn₂ <;> simp_all
+
   @[simp]
   theorem mapAccumr₂_nil : mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil) :=
     rfl
 
   @[simp]
-  theorem mapAccumr₂_cons : mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s =
-                              let r := mapAccumr₂ f xs ys s
-                              let q := f x y r.1
-                              (q.1, q.2 ::ᵥ r.2) :=
-    rfl
-
-  @[simp]
-  theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (xs : Vector α n) (ys : Vector β n)
-                          (x : α) (y : β) :
+  theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
     mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
         = let q := f x y c
           let r := mapAccumr₂ f xs ys q.1
