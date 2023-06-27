@@ -602,6 +602,10 @@ theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I
   rwa [this, mdifferentiableWithinAt_inter hs, mdifferentiableWithinAt_univ] at h
 #align mdifferentiable_within_at.mdifferentiable_at MDifferentiableWithinAt.mdifferentiableAt
 
+theorem MDifferentiableOn.mdifferentiableAt (h : MDifferentiableOn I I' f s) (hx : s ∈ 𝓝 x) :
+    MDifferentiableAt I I' f x :=
+  (h x (mem_of_mem_nhds hx)).mdifferentiableAt hx
+
 theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
     MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
 #align mdifferentiable_on.mono MDifferentiableOn.mono
