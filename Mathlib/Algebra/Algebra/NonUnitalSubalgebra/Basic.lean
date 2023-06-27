@@ -37,7 +37,6 @@ open scoped BigOperators
 section NonUnitalSubalgebraClass
 
 variable {S R A : Type _} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
-
 variable [SetLike S A] [NonUnitalSubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
 namespace NonUnitalSubalgebraClass
@@ -68,11 +67,8 @@ add_decl_doc NonUnitalSubalgebra.toSubmodule
 namespace NonUnitalSubalgebra
 
 variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
-
 variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
 
 instance : SetLike (NonUnitalSubalgebra R A) A
@@ -394,7 +390,6 @@ end NonUnitalSubalgebra
 namespace Submodule
 
 variable {R A : Type _} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
-variable (p : Submodule R A)
 
 /-- A submodule closed under multiplication is a non-unital subalgebra. -/
 def toNonUnitalSubalgebra (p : Submodule R A) (h_mul : ∀ x y, x ∈ p → y ∈ p → x * y ∈ p) :
@@ -796,15 +791,11 @@ open NonUnitalAlgebra
 
 section NonAssoc
 
-variable {F : Type _} {R : Type u} {A : Type v} {B : Type w}
-
+variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R]
-
 variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-
 variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
-
-variable [NonUnitalAlgHomClass F R A B] (S : NonUnitalSubalgebra R A)
+variable (S : NonUnitalSubalgebra R A)
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
