@@ -216,5 +216,6 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
 
 end CharP
 
-end WittVector
+end
 
+end WittVector
