@@ -190,31 +190,31 @@ theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by in
 #align witt_vector.init_init WittVector.init_init
 
 theorem init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
-  init_ring using witt_add_vars
+  init_ring using wittAdd_vars
 #align witt_vector.init_add WittVector.init_add
 
 theorem init_mul (x y : 𝕎 R) (n : ℕ) : init n (x * y) = init n (init n x * init n y) := by
-  init_ring using witt_mul_vars
+  init_ring using wittMul_vars
 #align witt_vector.init_mul WittVector.init_mul
 
 theorem init_neg (x : 𝕎 R) (n : ℕ) : init n (-x) = init n (-init n x) := by
-  init_ring using witt_neg_vars
+  init_ring using wittNeg_vars
 #align witt_vector.init_neg WittVector.init_neg
 
 theorem init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - init n y) := by
-  init_ring using witt_sub_vars
+  init_ring using wittSub_vars
 #align witt_vector.init_sub WittVector.init_sub
 
 theorem init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => witt_nsmul_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n => wittNSMul_vars p m n
 #align witt_vector.init_nsmul WittVector.init_nsmul
 
 theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => witt_zsmul_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n => wittZSMul_vars p m n
 #align witt_vector.init_zsmul WittVector.init_zsmul
 
 theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
-  init_ring using fun p [Fact (Nat.Prime p)] n => witt_pow_vars p m n
+  init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
 #align witt_vector.init_pow WittVector.init_pow
 
 section
