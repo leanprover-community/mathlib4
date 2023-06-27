@@ -355,3 +355,11 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   decEq _ _
+
+instance {n} : HShiftLeft (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.shl⟩
+
+instance {n} : HShiftRight (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.ushr⟩
+
+instance {n} : ShiftLeft (Bitvec n) := ⟨fun x y => x <<< y.toNat⟩
+
+instance {n} : ShiftRight (Bitvec n) := ⟨fun x y => x >>> y.toNat⟩
