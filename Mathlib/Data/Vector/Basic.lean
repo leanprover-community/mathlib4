@@ -767,8 +767,14 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 --       q(α) q(n) q(x) ih
 -- #align vector.reflect vector.reflect
 
+
+section Simp
+
+variable (xs : Vector α n) (ys : Vector α m)
+
 @[simp]
-theorem replicate_succ : replicate (n+1) val = val ::ᵥ (replicate n val) :=
+theorem replicate_succ (val : α) :
+    replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 @[simp]
@@ -787,6 +793,7 @@ theorem append_nil : append xs nil = xs := by
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
+  clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂
   case nil =>
     exact Fin.elim0 i
@@ -796,5 +803,6 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     . simp only [get_zero, head_cons]
     . simp only [get_cons_succ, ih]
 
+end Simp
 
 end Vector
