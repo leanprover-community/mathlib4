@@ -490,24 +490,16 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
   rfl
 #align with_bot.coe_max WithBot.coe_max
 
-theorem wellFounded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
+theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     @WellFounded (WithBot α) (· < ·) :=
-  have acc_bot : Acc ((· < ·) : WithBot α → WithBot α → Prop) ⊥ :=
-    Acc.intro _ fun _ ha => (not_le_of_gt ha bot_le).elim
-  ⟨fun a =>
-    Option.recOn a acc_bot fun a =>
-      Acc.intro _ fun b =>
-        Option.recOn b (fun _ => acc_bot) fun b =>
-          WellFounded.induction h b
-            (show
-              ∀ b : α,
-                (∀ c, c < b → (c : WithBot α) < a → Acc
-                    ((· < ·) : WithBot α → WithBot α → Prop) c) →
-                  (b : WithBot α) < a → Acc ((· < ·) : WithBot α → WithBot α → Prop) b
-              from fun _ ih hba =>
-              Acc.intro _ fun c =>
-                Option.recOn c (fun _ => acc_bot) fun _ hc => ih _
-                  (some_lt_some.1 hc) (lt_trans hc hba))⟩
+  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
+  have acc_bot := ⟨_, by simp [not_lt_bot]⟩
+  .intro fun
+    | ⊥ => acc_bot
+    | (a : α) => (h.1 a).rec fun a _ ih =>
+      .intro _ fun
+        | ⊥, _ => acc_bot
+        | (b : α), hlt => ih _ (some_lt_some.1 hlt)
 #align with_bot.well_founded_lt WithBot.wellFounded_lt
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
@@ -1246,25 +1238,24 @@ theorem coe_max [LinearOrder α] (x y : α) : (↑(max x y) : WithTop α) = max 
   rfl
 #align with_top.coe_max WithTop.coe_max
 
-theorem wellFounded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
+theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     @WellFounded (WithTop α) (· < ·) :=
-  have acc_some : ∀ a : α, Acc ((· < ·) : WithTop α → WithTop α → Prop) (some a) := fun a =>
-    Acc.intro _
-      (WellFounded.induction h a
-        (show
-          ∀ b, (∀ c, c < b → ∀ d : WithTop α, d < some c → Acc (· < ·) d) →
-            ∀ y : WithTop α, y < some b → Acc (· < ·) y
-          from fun _ ih c =>
-          Option.recOn c (fun hc => (not_lt_of_ge le_top hc).elim) fun _ hc =>
-            Acc.intro _ (ih _ (some_lt_some.1 hc))))
-  ⟨fun a =>
-    Option.recOn a (Acc.intro _ fun y => Option.recOn y
-      (fun h => (lt_irrefl _ h).elim) fun _ _ => acc_some _) acc_some⟩
+  have not_top_lt : ∀ a : WithTop α, ¬ ⊤ < a := (fun.)
+  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
+    (h.1 a).rec fun _ _ ih =>
+      .intro _ fun
+        | (b : α), hlt => ih _ (some_lt_some.1 hlt)
+        | ⊤, hlt => nomatch not_top_lt _ hlt
+  .intro fun
+    | (a : α) => acc_some a
+    | ⊤ => .intro _ fun
+      | (b : α), _ => acc_some b
+      | ⊤, hlt => nomatch not_top_lt _ hlt
 #align with_top.well_founded_lt WithTop.wellFounded_lt
 
 open OrderDual
 
-theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithTop α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
@@ -1279,7 +1270,7 @@ theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
     exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
 #align with_top.well_founded_gt WithTop.wellFounded_gt
 
-theorem _root_.WithBot.wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithBot α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
