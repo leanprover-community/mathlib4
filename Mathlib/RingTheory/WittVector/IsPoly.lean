@@ -131,7 +131,7 @@ All it does is apply the appropriate extensionality lemma and try to infer the r
 This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
 so it is easier (and prettier) to put it in a tactic script.
 -/
-syntax (name := ghostCalc) "ghost_calc" (ppSpace term)* : tactic
+syntax (name := ghostCalc) "ghost_calc" (ppSpace term:max)* : tactic
 
 -- Lean 3 code for reference:
 -- meta def ghost_calc (ids' : parse ident_*) : tactic unit :=
@@ -166,15 +166,15 @@ private def getLocalOrIntro (t : Term) : TacticM FVarId := do
     | _ => Elab.throwUnsupportedSyntax
 
 elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
+  let ids ← ids'.mapM getLocalOrIntro
+  let ids ← withMainContext <| ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
   let some (α, _, _) := (← withMainContext <| getMainTarget'').eq?
     | throwError "ghost_calc expecting target to be an equality"
   let (``WittVector, #[_, R]) := α.getAppFnArgs
     | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
-  let ids ← ids'.mapM getLocalOrIntro
-  let ids ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
   match ids with
-    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext _ _ _ _ $x))
-    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext _ _ _ _ $x $y))
+    | #[x] => evalTactic (← `(tactic| refine WittVector.IsPoly.ext _ _ _ _ $x))
+    | #[x, y] => evalTactic (← `(tactic| refine WittVector.IsPoly₂.ext _ _ _ _ $x $y))
     | _ => throwError "ghost_calc takes one or two arguments"
   let nm ← withMainContext <|
     if let .fvar fvarId := (R : Expr) then
