@@ -62,19 +62,26 @@ def arrayEquivList (α : Type _) : Array α ≃ List α where
 
 end Equiv
 
-namespace Array'
+/- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
+`IsLawfulTraversable (Array α)`. Since `Array` is now a core datatype, these would
 
-open Function
+1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
+traversal of some other type transported along an equivalence to `Array α` (as the traversable
+instance for `array` was)
 
-variable {n : ℕ}
+2. belong in `Mathlib.Control.Traverse.Instances` instead of this file. -/
 
-instance : Traversable (Array' n) :=
-  @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
+-- namespace Array'
 
-instance : IsLawfulTraversable (Array' n) :=
-  @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
+-- variable {n : ℕ}
 
-end Array'
+-- instance : Traversable (Array' n) :=
+--   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
+
+-- instance : IsLawfulTraversable (Array' n) :=
+--   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
+
+-- end Array'
 
 /-- If `α` is encodable, then so is `Array α`. -/
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
