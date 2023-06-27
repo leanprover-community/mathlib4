@@ -1363,7 +1363,6 @@ lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (h
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 #align rescale_to_shell rescale_to_shell
 
-
 end normSeminorm
 
 assert_not_exists balancedCore
