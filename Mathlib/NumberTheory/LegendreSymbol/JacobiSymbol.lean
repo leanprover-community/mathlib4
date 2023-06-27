@@ -246,7 +246,7 @@ theorem mod_left' {a₁ a₂ : ℤ} {b : ℕ} (h : a₁ % b = a₂ % b) : J(a₁
 /-- If `p` is prime, `J(a | p) = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide
 `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p) = -1) {x y : ℤ}
-    (hxy : ↑p ∣ ((x ^ 2 - a * y ^ 2) : ℤ)) : ↑p ∣ x ∧ ↑p ∣ y := by
+    (hxy : ↑p ∣ (x ^ 2 - a * y ^ 2 : ℤ)) : ↑p ∣ x ∧ ↑p ∣ y := by
   rw [← legendreSym.to_jacobiSym] at h
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 #align jacobi_sym.prime_dvd_of_eq_neg_one jacobiSym.prime_dvd_of_eq_neg_one
