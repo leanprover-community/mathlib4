@@ -23,7 +23,7 @@ measurable sets `s` of `β`, `a ↦ κ a s` is measurable.
 
 Classes of kernels:
 * `ProbabilityTheory.kernel α β`: kernels from `α` to `β`, defined as the `AddSubmonoid` of the
-  measurable functions in `α → measure β`.
+  measurable functions in `α → Measure β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
 * `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
@@ -36,7 +36,7 @@ Classes of kernels:
 
 Particular kernels:
 * `ProbabilityTheory.kernel.deterministic (f : α → β) (hf : Measurable f)`:
-  kernel `a ↦ measure.dirac (f a)`.
+  kernel `a ↦ Measure.dirac (f a)`.
 * `ProbabilityTheory.kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
 * `ProbabilityTheory.kernel.restrict κ (hs : MeasurableSet s)`: kernel for which the image of
   `a : α` is `(κ a).restrict s`.
@@ -57,7 +57,7 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 namespace ProbabilityTheory
 
 /-- A kernel from a measurable space `α` to another measurable space `β` is a measurable function
-`κ : α → measure β`. The measurable space structure on `MeasureTheory.Measure β` is given by
+`κ : α → Measure β`. The measurable space structure on `MeasureTheory.Measure β` is given by
 `MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → MeasureTheory.Measure β` is measurable
 iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 noncomputable def kernel (α β : Type _) [MeasurableSpace α] [MeasurableSpace β] :

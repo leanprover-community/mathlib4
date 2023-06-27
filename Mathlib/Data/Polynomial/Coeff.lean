@@ -67,7 +67,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp [mem_support_iff] at hi⊢
+  simp [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
@@ -385,7 +385,7 @@ theorem nat_cast_inj {m n : ℕ} {R : Type _} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0  at h
+    apply_fun fun p => p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl
@@ -400,7 +400,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type _} [Ring R] : (i : R[X]).coeff 0
 theorem int_cast_inj {m n : ℤ} {R : Type _} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0  at h
+    apply_fun fun p => p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl
