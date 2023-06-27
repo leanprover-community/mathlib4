@@ -842,18 +842,18 @@ theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Mea
     MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
-@[measurability]
+@[aesop safe 100 apply (rule_sets [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
   measurable_pi_iff.1 measurable_id a
 #align measurable_pi_apply measurable_pi_apply
 
-@[measurability]
+@[aesop safe 100 apply (rule_sets [Measurable])]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 #align measurable.eval Measurable.eval
 
-@[measurability]
+@[aesop safe 100 apply (rule_sets [Measurable])]
 theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
