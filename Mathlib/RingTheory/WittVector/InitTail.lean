@@ -81,12 +81,12 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) :
 #align witt_vector.coeff_select WittVector.coeff_select
 
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance selectIsPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
+instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
   use selectPoly P
   rintro R _Rcr x
   funext i
   apply coeff_select
-#align witt_vector.select_is_poly WittVector.selectIsPoly
+#align witt_vector.select_is_poly WittVector.select_isPoly
 
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   ghost_calc x
