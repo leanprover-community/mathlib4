@@ -25,15 +25,14 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
-
 noncomputable section
 
-open Metric Real Function
+open Metric Real Function AffineMap
 
 namespace EuclideanGeometry
 
 variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] {a b c d x y z : P} {R : ℝ}
+  [NormedAddTorsor V P] {a b c d x y z : P} {r R : ℝ}
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
@@ -41,6 +40,18 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 #align euclidean_geometry.inversion EuclideanGeometry.inversion
+
+/-!
+### Basic properties
+
+In this section we prove that `EuclideanGeometry.inversion c R` is involutive and preserves the
+sphere `Metric.sphere c R`. We also prove that the distance to the center of the image of `x` under
+this inversion is given by `R ^ 2 / dist x c`.
+-/
+
+theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
+    inversion c R x = lineMap c x ((R / dist x c) ^ 2) :=
+  rfl
 
 theorem inversion_vsub_center (c : P) (R : ℝ) (x : P) :
     inversion c R x -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c) :=
@@ -105,6 +116,10 @@ theorem inversion_bijective (c : P) {R : ℝ} (hR : R ≠ 0) : Bijective (invers
   (inversion_involutive c hR).bijective
 #align euclidean_geometry.inversion_bijective EuclideanGeometry.inversion_bijective
 
+/-!
+### Ptolemy's inequality
+-/
+
 /-- Distance between the images of two points under an inversion. -/
 theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
     dist (inversion c R x) (inversion c R y) = R ^ 2 / (dist x c * dist y c) * dist x y := by
@@ -136,5 +151,14 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
   convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
 #align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
+
+/-!
+### Images of spheres and hyperplanes
+-/
+
+theorem image_inversion_sphere_of_ne (h : dist x c ≠ r) :
+    inversion c R '' sphere x r =
+      letI k := R ^ 2 / ((dist x c) ^ 2 - r ^ 2); sphere (lineMap c x k) (r * k) := by
+  refine ?_
 
 end EuclideanGeometry
