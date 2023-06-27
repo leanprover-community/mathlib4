@@ -35,12 +35,12 @@ namespace WittVector
 
 variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
 
+-- type as `\bbW`
 local notation "𝕎" => WittVector p
 
--- type as `\bbW`
 noncomputable section
 
--- Porting note: `simp` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: `simp` and the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   simp
@@ -110,9 +110,17 @@ theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (�
 
 variable {p R}
 
+-- Porting note: `ghost_calc` failure: `simp` and the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
-    verschiebung (x * frobenius y) = verschiebung x * y := by ghost_calc x y;
+    verschiebung (x * frobenius y) = verschiebung x * y := by
+  simp
+  have : IsPoly₂ p fun {R} [Rcr : CommRing R] x y ↦ verschiebung (x * frobenius y) :=
+    IsPoly.comp₂ (hg := verschiebung_isPoly)
+      (hf := IsPoly₂.comp (hh := mulIsPoly₂) (hf := idIsPolyI' p) (hg := frobenius_isPoly p))
+  have : IsPoly₂ p fun {R} [CommRing R] x y ↦ verschiebung x * y :=
+    IsPoly₂.comp (hh := mulIsPoly₂) (hf := verschiebung_isPoly) (hg := idIsPolyI' p)
+  ghost_calc x y
   rintro ⟨⟩ <;> ghost_simp [mul_assoc]
 #align witt_vector.verschiebung_mul_frobenius WittVector.verschiebung_mul_frobenius
 
