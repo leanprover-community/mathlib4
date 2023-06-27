@@ -19,24 +19,35 @@ We keep this separate from the file containing `list`-like equivalences as those
 in mathlib4.
 -/
 
+/-
+
+Porting note:
+
+The following commented-out definitions only made sense for the mathlib3 datatypes `d_array` and
+`array`. `d_array` (a dependent array) does not yet (as of Jun 27 2023) have a corresponding
+datatype in lean4/std4/mathlib4; `array` was length-indexed and therefore more similar to `Vector`,
+which may be reimplemented in terms of `Array` internally anyway in the future.
+
+-/
 
 namespace Equiv
 
-/-- The natural equivalence between length-`n` heterogeneous arrays
-and dependent functions from `fin n`. -/
-def dArrayEquivFin {n : ℕ} (α : Fin n → Type _) : DArray n α ≃ ∀ i, α i :=
-  ⟨DArray.read, DArray.mk, fun ⟨f⟩ => rfl, fun f => rfl⟩
-#align equiv.d_array_equiv_fin Equiv.dArrayEquivFin
 
-/-- The natural equivalence between length-`n` arrays and functions from `fin n`. -/
-def arrayEquivFin (n : ℕ) (α : Type _) : Array' n α ≃ (Fin n → α) :=
-  dArrayEquivFin _
-#align equiv.array_equiv_fin Equiv.arrayEquivFin
+-- /-- The natural equivalence between length-`n` heterogeneous arrays
+-- and dependent functions from `fin n`. -/
+-- def darrayEquivFin {n : ℕ} (α : Fin n → Type _) : DArray n α ≃ ∀ i, α i :=
+--   ⟨DArray.read, DArray.mk, fun ⟨f⟩ => rfl, fun f => rfl⟩
+#noalign equiv.d_array_equiv_fin
 
-/-- The natural equivalence between length-`n` vectors and length-`n` arrays. -/
-def vectorEquivArray (α : Type _) (n : ℕ) : Vector α n ≃ Array' n α :=
-  (vectorEquivFin _ _).trans (arrayEquivFin _ _).symm
-#align equiv.vector_equiv_array Equiv.vectorEquivArray
+-- /-- The natural equivalence between length-`n` arrays and functions from `fin n`. -/
+-- def array'EquivFin (n : ℕ) (α : Type _) : Array' n α ≃ (Fin n → α) :=
+--   darrayEquivFin _
+#noalign equiv.array_equiv_fin
+
+-- /-- The natural equivalence between length-`n` vectors and length-`n` arrays. -/
+-- def vectorEquivArray' (α : Type _) (n : ℕ) : Vector α n ≃ Array' n α :=
+--   (vectorEquivFin _ _).trans (array'EquivFin _ _).symm
+#noalign equiv.vector_equiv_array
 
 end Equiv
 
