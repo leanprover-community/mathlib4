@@ -40,8 +40,14 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 noncomputable section
 
+-- Porting note: `simp` and the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
-theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by ghost_calc x;
+theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
+  simp
+  have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
+    IsPoly.comp (hg := frobenius_isPoly p) (hf := verschiebung_isPoly)
+  have : IsPoly p fun {R} [CommRing R] x ↦ x * p := mulN_isPoly p p
+  ghost_calc x
   ghost_simp [mul_comm]
 #align witt_vector.frobenius_verschiebung WittVector.frobenius_verschiebung
 
