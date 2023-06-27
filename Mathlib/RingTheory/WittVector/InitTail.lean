@@ -44,37 +44,6 @@ variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type _} [CommRing R]
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
 
-namespace Mathlib.Tactic.WittVector
-
-open Lean Elab Tactic
-
-/--
-`init_ring` is an auxiliary tactic that discharges goals factoring `init` over ring operations.
--/
-syntax (name := initRing) "init_ring" (" using " term)? : tactic
-
-elab_rules : tactic
-| `(tactic| init_ring $[ using $a:term]?) => do
-  evalTactic <|← `(tactic|(
-    rw [ext_iff]
-    intro i
-    simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
-    split_ifs with hi <;> try {rfl}
-    ))
-  if let some e := a then
-    evalTactic <|← `(tactic|(
-      simp only [WittVector.add_coeff, WittVector.mul_coeff, WittVector.neg_coeff,
-        WittVector.sub_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff, WittVector.pow_coeff]
-      apply MvPolynomial.eval₂Hom_congr' (RingHom.ext_int _ _) _ rfl
-      rintro ⟨b, k⟩ h -
-      replace h := $e p _ h
-      simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
-      have hk : k < n := by linarith
-      fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
-        WittVector.coeff_mk, Matrix.cons_val_one, WittVector.coeff_mk, hk, if_true]
-    ))
-
-end Mathlib.Tactic.WittVector
 
 namespace WittVector
 
@@ -187,6 +156,34 @@ theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
 #align witt_vector.init_add_tail WittVector.init_add_tail
 
 end
+
+/--
+`init_ring` is an auxiliary tactic that discharges goals factoring `init` over ring operations.
+-/
+syntax (name := initRing) "init_ring" (" using " term)? : tactic
+
+open Lean Elab Tactic in
+elab_rules : tactic
+| `(tactic| init_ring $[ using $a:term]?) => withMainContext <| set_option hygiene false in do
+  evalTactic <|← `(tactic|(
+    rw [WittVector.ext_iff]
+    intro i
+    simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
+    split_ifs with hi <;> try {rfl}
+    ))
+  if let some e := a then
+    evalTactic <|← `(tactic|(
+      simp only [WittVector.add_coeff, WittVector.mul_coeff, WittVector.neg_coeff,
+        WittVector.sub_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff, WittVector.pow_coeff]
+      apply MvPolynomial.eval₂Hom_congr' (RingHom.ext_int _ _) _ rfl
+      rintro ⟨b, k⟩ h -
+      replace h := $e:term p _ h
+      simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
+      have hk : k < n := by linarith
+      fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
+        WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk,
+        hk, if_true]
+    ))
 
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by init_ring
