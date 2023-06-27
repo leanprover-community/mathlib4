@@ -8,9 +8,9 @@ Authors: Moritz Doll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.InnerProductSpace.Adjoint
-import Mathbin.Topology.Algebra.Module.LinearPmap
-import Mathbin.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Topology.Algebra.Module.LinearPmap
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 
@@ -87,8 +87,7 @@ variable (T)
 
 This definition is needed to construct the adjoint operator and the preferred version to use is
 `T.adjoint.domain` instead of `T.adjoint_domain`. -/
-def adjointDomain : Submodule 𝕜 F
-    where
+def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
     rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
@@ -132,8 +131,7 @@ variable [CompleteSpace E]
 
 This is an auxiliary definition needed to define the adjoint operator as a `linear_pmap` without
 the assumption that `T.domain` is dense. -/
-def adjointAux : T.adjointDomain →ₗ[𝕜] E
-    where
+def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkClmExtend hT y)
   map_add' x y :=
     hT.eq_of_inner_left fun _ => by
@@ -181,14 +179,12 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   exact funext fun x => (hw x).symm
 #align linear_pmap.mem_adjoint_domain_of_exists LinearPMap.mem_adjoint_domain_of_exists
 
-theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 :=
-  by
+theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   change (if hT : Dense (T.domain : Set E) then adjoint_aux hT else 0) y = _
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
 #align linear_pmap.adjoint_apply_of_not_dense LinearPMap.adjoint_apply_of_not_dense
 
-theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y :=
-  by
+theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   change (if hT : Dense (T.domain : Set E) then adjoint_aux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 #align linear_pmap.adjoint_apply_of_dense LinearPMap.adjoint_apply_of_dense
@@ -224,8 +220,7 @@ variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 /-- Restricting `A` to a dense submodule and taking the `linear_pmap.adjoint` is the same
 as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
-    (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ :=
-  by
+    (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext
   · simp only [to_linear_map_eq_coe, LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
