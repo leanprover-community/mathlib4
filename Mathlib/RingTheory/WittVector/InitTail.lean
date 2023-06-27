@@ -236,8 +236,8 @@ section
 variable (p)
 
 /-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
-theorem init_isPoly (n : ℕ) : IsPoly p fun _R _Rcr => init n :=
-  select_isPoly fun i => i < n
+theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ => init n :=
+  select_isPoly (P := fun i => i < n)
 #align witt_vector.init_is_poly WittVector.init_isPoly
 
 end
