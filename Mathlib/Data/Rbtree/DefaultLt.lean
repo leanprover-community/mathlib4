@@ -9,8 +9,9 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-unsafe def rbtree.default_lt : tactic Unit :=
-  sorry
-#align rbtree.default_lt rbtree.default_lt
+/-!
+# Porting note: essentially already ported to std4
 
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Mathlib4.20porting.20meeting.20series/near/369848971
+
+-/
