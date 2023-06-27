@@ -60,9 +60,15 @@ variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 := by
   induction' i with i h
-  · simp only [one_coeff_zero, Ne.def, pow_zero]
-  ·
-    rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_char_p, verschiebung_coeff_succ, h,
+  · -- Porting note: needed to move `pow_zero` out of `simp only` and into `rw` for it to fire, and
+    -- had to add the following for this goal. The original
+    -- `simp only [one_coeff_zero, Ne.def, pow_zero]` was no longer needed.
+    rw [pow_zero]
+    simp only [Nat.cast_one, Nat.zero_eq, one_coeff_zero]
+  · rw [pow_succ']
+    -- Porting note: needed to add manual `Nat.cast_mul`, `Nat.cast_pow` manipulations.
+    simp only [Nat.cast_mul, Nat.cast_pow]
+    rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_succ, ← Nat.cast_pow, h,
       one_pow]
 #align witt_vector.coeff_p_pow WittVector.coeff_p_pow
 
