@@ -10,6 +10,7 @@ import Std.Tactic.RCases
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Order.Filter.Basic
+import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
@@ -272,9 +273,7 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
 /- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
-/- M -/ syntax (name := ghostCalc) "ghost_calc" (ppSpace binderIdent)* : tactic
 /- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
-/- E -/ syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
