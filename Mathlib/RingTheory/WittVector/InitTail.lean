@@ -194,6 +194,7 @@ elab_rules : tactic
     ))
 
 -- Porting note: `by init_ring` should suffice; this patches over an issue with `split_ifs`.
+-- See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60split_ifs.60.20boxes.20itself.20into.20a.20corner]
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
   rw [ext_iff]
