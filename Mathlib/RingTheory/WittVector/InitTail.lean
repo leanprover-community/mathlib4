@@ -162,6 +162,8 @@ end
 -/
 syntax (name := initRing) "init_ring" (" using " term)? : tactic
 
+-- Porting note: this tactic requires that we turn hygiene off (note the free `n`).
+-- TODO: make this tactic hygienic.
 open Lean Elab Tactic in
 elab_rules : tactic
 | `(tactic| init_ring $[ using $a:term]?) => withMainContext <| set_option hygiene false in do
@@ -186,6 +188,7 @@ elab_rules : tactic
         hk, if_true]
     ))
 
+-- Porting note: `by init_ring` should suffice; this patches over an issue with `split_ifs`.
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
   rw [ext_iff]
