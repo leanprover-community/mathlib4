@@ -187,7 +187,11 @@ elab_rules : tactic
     ))
 
 @[simp]
-theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by init_ring
+theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
+  rw [ext_iff]
+  intro i
+  simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
+  by_cases hi : i < n <;> simp [hi]
 #align witt_vector.init_init WittVector.init_init
 
 theorem init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
