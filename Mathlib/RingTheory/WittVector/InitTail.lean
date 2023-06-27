@@ -89,16 +89,16 @@ theorem select_isPoly (P : ℕ → Prop) : IsPoly p fun R _Rcr x => select P x :
 #align witt_vector.select_is_poly WittVector.select_isPoly
 
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
-  ghost_calc _
+  ghost_calc x
   intro n
   simp only [RingHom.map_add]
   suffices
-    (bind₁ (select_poly P)) (wittPolynomial p ℤ n) +
-        (bind₁ (select_poly fun i => ¬P i)) (wittPolynomial p ℤ n) =
+    (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
+        (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
       wittPolynomial p ℤ n by
-    apply_fun aeval x.coeff at this 
+    apply_fun aeval x.coeff at this
     simpa only [AlgHom.map_add, aeval_bind₁, ← coeff_select]
-  simp only [wittPolynomial_eq_sum_c_mul_x_pow, select_poly, AlgHom.map_sum, AlgHom.map_pow,
+  simp only [wittPolynomial_eq_sum_c_mul_x_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
     AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
   refine' fun m hm => mul_eq_mul_left_iff.mpr (Or.inl _)
