@@ -286,6 +286,7 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
+-- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 #align witt_vector.frobenius_is_poly WittVector.frobenius_isPoly
