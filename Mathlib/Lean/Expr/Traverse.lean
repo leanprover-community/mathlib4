@@ -23,10 +23,20 @@ def traverseChildren [Applicative M] (f : Expr → M Expr) : Expr → M Expr
   | e@(proj _ _ b)      => e.updateProj! <$> f b
   | e                   => pure e
 
-/-- `e.foldlM f a` folds the monadic function `f` over the subterms of the expression `e`,
+/-- `e.foldlM f a` folds the monadic function `f` over the direct subterms of the expression `e`,
 with initial value `a`. -/
-def foldlM {α : Type} {m} [Monad m] (f : α → Expr → m α) (x : α) (e : Expr) : m α :=
+def foldlM {α : Type} {m} [Monad m] (f : α → Expr → m α) (init : α) (e : Expr) : m α :=
   Prod.snd <$> (StateT.run (e.traverseChildren $ fun e' =>
-      Functor.mapConst e' (get >>= monadLift ∘ flip f e' >>= set)) x : m _)
+      Functor.mapConst e' (get >>= monadLift ∘ flip f e' >>= set)) init : m _)
+
+/-- Implementation of `traverse`. -/
+partial def traverseImpl [Inhabited α] [Monad m] (f : α → Expr → m α) (init : α) (e : Expr) : m α :=
+  e.foldlM (init := init) fun a e => do
+    e.traverseImpl f (← f a e)
+
+/-- Visit all subexpressions of an expression, depth-first. -/
+def traverse [Monad m] (f : α → Expr → m α) (init : α) (e : Expr) : m α :=
+  have : Inhabited α := ⟨init⟩
+  traverseImpl f init e
 
 end Lean.Expr

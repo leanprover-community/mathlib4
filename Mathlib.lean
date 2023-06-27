@@ -2783,6 +2783,7 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.CheckInstances
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
