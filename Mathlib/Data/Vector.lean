@@ -137,6 +137,7 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 #align vector.map_nil Vector.map_nil
 
 /-- `map` is natural with respect to `cons`. -/
+@[simp]
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 #align vector.map_cons Vector.map_cons
@@ -257,5 +258,8 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   cases v
   rfl
 #align vector.to_list_take Vector.toList_take
+
+instance : GetElem (Vector α n) Nat α fun _ i => i < n where
+  getElem := fun x i h => get x ⟨i, h⟩
 
 end Vector
