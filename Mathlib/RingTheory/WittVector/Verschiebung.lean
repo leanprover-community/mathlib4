@@ -119,8 +119,8 @@ This is a additive monoid hom with underlying function `verschiebung_fun`.
 noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun
   map_zero' := by
-    ext ⟨⟩ <;> rw [verschiebung_fun_coeff] <;>
-      simp only [if_true, eq_self_iff_true, zero_coeff, if_t_t]
+    ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
+      simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
   map_add' := by ghost_calc _ _; rintro ⟨⟩ <;> ghost_simp
 #align witt_vector.verschiebung WittVector.verschiebung
 

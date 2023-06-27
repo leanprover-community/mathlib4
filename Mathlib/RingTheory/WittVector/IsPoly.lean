@@ -94,99 +94,6 @@ end
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
-
-namespace WittVector.Tactic
-open Lean Parser.Tactic Elab.Tactic
-
-/-- A macro for a common simplification when rewriting with ghost component equations. -/
-syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
-
-macro_rules
-  | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
-    let args := simpArgs.map (·.getElems) |>.getD #[]
-    `(tactic| simp only [$args,* , ← sub_eq_add_neg, ghost_simps])
-
-
-/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
-Typically, when faced with a goal like
-```lean
-∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
-```
-you can
-1. call `ghost_calc`
-2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
-3. call `ghost_simp`
-
-and this will close the goal.
-
-`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
-You must give it arguments to determine this.
-If you are proving a universally quantified goal like the above,
-call `ghost_calc _ _`.
-If the variables are introduced already, call `ghost_calc x y`.
-In the unary case, use `ghost_calc _` or `ghost_calc x`.
-
-`ghost_calc` is a light wrapper around type class inference.
-All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
-This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
-so it is easier (and prettier) to put it in a tactic script.
--/
-syntax (name := ghostCalc) "ghost_calc" (ppSpace term:max)* : tactic
-
--- Lean 3 code for reference:
--- meta def ghost_calc (ids' : parse ident_*) : tactic unit :=
--- do ids ← ids'.mmap $ λ n, get_local n <|> tactic.intro n,
---    `(@eq (witt_vector _ %%R) _ _) ← target,
---    match ids with
---    | [x] := refine ```(is_poly.ext _ _ _ _ %%x)
---    | [x, y] := refine ```(is_poly₂.ext _ _ _ _ %%x %%y)
---    | _ := fail "ghost_calc takes one or two arguments"
---    end,
---    nm ← match R with
---    | expr.local_const _ nm _ _ := return nm
---    | _ := get_unused_name `R
---    end,
---    iterate_exactly 2 apply_instance,
---    unfreezingI (tactic.clear' tt [R]),
---    introsI $ [nm, nm<.>"_inst"] ++ ids',
---    skip
-
-private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
-  let fvarId ← liftMetaTacticAux fun g => do
-    let (fv, g') ← g.intro n
-    return (fv, [g'])
-  withMainContext do
-    Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
-  return fvarId
-
-private def getLocalOrIntro (t : Term) : TacticM FVarId := do
-  match t with
-    | `(_) => runIntro t `_
-    | `($id:ident) => getFVarId id <|> runIntro id id.getId
-    | _ => Elab.throwUnsupportedSyntax
-
-elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
-  let ids ← ids'.mapM getLocalOrIntro
-  let ids ← withMainContext <| ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
-  let some (α, _, _) := (← withMainContext <| getMainTarget'').eq?
-    | throwError "ghost_calc expecting target to be an equality"
-  let (``WittVector, #[_, R]) := α.getAppFnArgs
-    | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
-  match ids with
-    | #[x] => evalTactic (← `(tactic| refine WittVector.IsPoly.ext _ _ _ _ $x))
-    | #[x, y] => evalTactic (← `(tactic| refine WittVector.IsPoly₂.ext _ _ _ _ $x $y))
-    | _ => throwError "ghost_calc takes one or two arguments"
-  let nm ← withMainContext <|
-    if let .fvar fvarId := (R : Expr) then
-      fvarId.getUserName
-    else
-      Meta.getUnusedUserName `R
-  evalTactic <| ← `(tactic| iterate 2 infer_instance)
-  evalTactic <| ← `(tactic| clear! R)
-  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident $ids'*)
-
-end WittVector.Tactic
-
 namespace WittVector
 
 universe u
@@ -668,5 +575,105 @@ attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map
   forall₃_true_iff
 
 end  -- porting note: ends the `noncomputable section`?
+
+namespace Tactic
+open Lean Parser.Tactic Elab.Tactic
+
+/-- A macro for a common simplification when rewriting with ghost component equations. -/
+syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
+
+macro_rules
+  | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp only [$args,* , ← sub_eq_add_neg, ghost_simps])
+
+
+/-- `ghost_calc` is a tactic for proving identities between polynomial functions.
+Typically, when faced with a goal like
+```lean
+∀ (x y : 𝕎 R), verschiebung (x * frobenius y) = verschiebung x * y
+```
+you can
+1. call `ghost_calc`
+2. do a small amount of manual work -- maybe nothing, maybe `rintro`, etc
+3. call `ghost_simp`
+
+and this will close the goal.
+
+`ghost_calc` cannot detect whether you are dealing with unary or binary polynomial functions.
+You must give it arguments to determine this.
+If you are proving a universally quantified goal like the above,
+call `ghost_calc _ _`.
+If the variables are introduced already, call `ghost_calc x y`.
+In the unary case, use `ghost_calc _` or `ghost_calc x`.
+
+`ghost_calc` is a light wrapper around type class inference.
+All it does is apply the appropriate extensionality lemma and try to infer the resulting goals.
+This is subtle and Lean's elaborator doesn't like it because of the HO unification involved,
+so it is easier (and prettier) to put it in a tactic script.
+-/
+syntax (name := ghostCalc) "ghost_calc" (ppSpace term:max)* : tactic
+
+-- Lean 3 code for reference:
+-- meta def ghost_calc (ids' : parse ident_*) : tactic unit :=
+-- do ids ← ids'.mmap $ λ n, get_local n <|> tactic.intro n,
+--    `(@eq (witt_vector _ %%R) _ _) ← target,
+--    match ids with
+--    | [x] := refine ```(is_poly.ext _ _ _ _ %%x)
+--    | [x, y] := refine ```(is_poly₂.ext _ _ _ _ %%x %%y)
+--    | _ := fail "ghost_calc takes one or two arguments"
+--    end,
+--    nm ← match R with
+--    | expr.local_const _ nm _ _ := return nm
+--    | _ := get_unused_name `R
+--    end,
+--    iterate_exactly 2 apply_instance,
+--    unfreezingI (tactic.clear' tt [R]),
+--    introsI $ [nm, nm<.>"_inst"] ++ ids',
+--    skip
+
+private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+  let fvarId ← liftMetaTacticAux fun g => do
+    let (fv, g') ← g.intro n
+    return (fv, [g'])
+  withMainContext do
+    Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
+  return fvarId
+
+private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+  match t with
+    | `(_) => runIntro t `_
+    | `($id:ident) => getFVarId id <|> runIntro id id.getId
+    | _ => Elab.throwUnsupportedSyntax
+
+elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
+  let ids ← ids'.mapM getLocalOrIntro
+  withMainContext do
+  let idsS ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
+  let some (α, lhs, rhs) := (← getMainTarget'').eq?
+    | throwError "ghost_calc expecting target to be an equality"
+  let (``WittVector, #[_, R]) := α.getAppFnArgs
+    | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
+  let instR ← Meta.synthInstance (← Meta.mkAppM ``CommRing #[R])
+  unless instR.isFVar do
+    throwError "{← Meta.inferType instR} instance is not local"
+  let f ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) lhs
+  let g ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) rhs
+  let fS ← Elab.Term.exprToSyntax f
+  let gS ← Elab.Term.exprToSyntax g
+  match idsS with
+    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x))
+    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x $y))
+    | _ => throwError "ghost_calc takes either one or two arguments"
+  let nm ← withMainContext <|
+    if let .fvar fvarId := (R : Expr) then
+      fvarId.getUserName
+    else
+      Meta.getUnusedUserName `R
+  evalTactic <| ← `(tactic| iterate 2 infer_instance)
+  evalTactic <| ← `(tactic| clear! R)
+  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident $ids'*)
+
+end Tactic
 
 end WittVector
