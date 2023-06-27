@@ -8,8 +8,8 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.Basic
-import Mathbin.Tactic.NthRewrite.Default
+import Mathlib.SetTheory.Game.Basic
+import Mathlib.Tactic.NthRewrite.Default
 
 /-!
 # Basic definitions about impartial (pre-)games
@@ -125,23 +125,20 @@ decreasing_by pgame_wf_tac
 
 variable (G : PGame) [Impartial G]
 
-theorem nonpos : ¬0 < G := fun h =>
-  by
+theorem nonpos : ¬0 < G := fun h => by
   have h' := neg_lt_neg_iff.2 h
   rw [neg_zero, lt_congr_left (neg_equiv_self G).symm] at h' 
   exact (h.trans h').False
 #align pgame.impartial.nonpos PGame.Impartial.nonpos
 
-theorem nonneg : ¬G < 0 := fun h =>
-  by
+theorem nonneg : ¬G < 0 := fun h => by
   have h' := neg_lt_neg_iff.2 h
   rw [neg_zero, lt_congr_right (neg_equiv_self G).symm] at h' 
   exact (h.trans h').False
 #align pgame.impartial.nonneg PGame.Impartial.nonneg
 
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
-theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 :=
-  by
+theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 := by
   rcases lt_or_equiv_or_gt_or_fuzzy G 0 with (h | h | h | h)
   · exact ((nonneg G) h).elim
   · exact Or.inl h
@@ -202,8 +199,7 @@ theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=
   ⟨And.right, fun h => ⟨lf_zero_iff.2 h, h⟩⟩
 #align pgame.impartial.fuzzy_zero_iff_gf PGame.Impartial.fuzzy_zero_iff_gf
 
-theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ (G ≈ 0) :=
-  by
+theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ (G ≈ 0) := by
   refine' ⟨fun hb => _, fun hp i => _⟩
   · rw [equiv_zero_iff_le G, le_zero_lf]
     exact fun i => (hb i).1
@@ -211,8 +207,7 @@ theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ 
     exact hp.1.moveLeft_lf i
 #align pgame.impartial.forall_left_moves_fuzzy_iff_equiv_zero PGame.Impartial.forall_leftMoves_fuzzy_iff_equiv_zero
 
-theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ (G ≈ 0) :=
-  by
+theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ (G ≈ 0) := by
   refine' ⟨fun hb => _, fun hp i => _⟩
   · rw [equiv_zero_iff_ge G, zero_le_lf]
     exact fun i => (hb i).2
@@ -220,16 +215,14 @@ theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) �
     exact hp.2.lf_moveRight i
 #align pgame.impartial.forall_right_moves_fuzzy_iff_equiv_zero PGame.Impartial.forall_rightMoves_fuzzy_iff_equiv_zero
 
-theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 :=
-  by
+theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 := by
   refine' ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_gf G).2 (lf_of_le_move_left hi.2), fun hn => _⟩
   rw [fuzzy_zero_iff_gf G, zero_lf_le] at hn 
   cases' hn with i hi
   exact ⟨i, (equiv_zero_iff_ge _).2 hi⟩
 #align pgame.impartial.exists_left_move_equiv_iff_fuzzy_zero PGame.Impartial.exists_left_move_equiv_iff_fuzzy_zero
 
-theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 :=
-  by
+theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 := by
   refine' ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_lf G).2 (lf_of_move_right_le hi.1), fun hn => _⟩
   rw [fuzzy_zero_iff_lf G, lf_zero_le] at hn 
   cases' hn with i hi
