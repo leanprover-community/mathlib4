@@ -235,13 +235,14 @@ variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
-  ext
-  · simp only [to_linear_map_eq_coe, LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
+  ext x y hxy
+  · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  intro x y hxy
-  refine' LinearPMap.adjoint_apply_eq hp _ fun v => _
-  simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, to_linear_map_eq_coe, coe_coe]
+  refine' LinearPMap.adjoint_apply_eq _ _ fun v => _
+  · -- Porting note: was simply `hp` as an argument above
+    simpa using hp
+  · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
 #align continuous_linear_map.to_pmap_adjoint_eq_adjoint_to_pmap_of_dense ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense
 
 end ContinuousLinearMap
