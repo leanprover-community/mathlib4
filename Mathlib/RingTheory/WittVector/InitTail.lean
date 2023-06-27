@@ -101,11 +101,12 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   simp only [wittPolynomial_eq_sum_c_mul_x_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
     AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
-  refine' fun m hm => mul_eq_mul_left_iff.mpr (Or.inl _)
-  rw [ite_pow, ite_pow, zero_pow (pow_pos hp.out.pos _)]
+  refine' fun m _ => mul_eq_mul_left_iff.mpr (Or.inl _)
+  rw [ite_pow, zero_pow (pow_pos hp.out.pos _)]
   by_cases Pm : P m
-  · rw [if_pos Pm, if_neg _, add_zero]
-    exact not_not.mpr Pm
+  · rw [if_pos Pm, if_neg _, zero_pow, add_zero]
+    · exact Fin.size_positive'
+    · exact not_not_intro Pm
   · rwa [if_neg Pm, if_pos, zero_add]
 #align witt_vector.select_add_select_not WittVector.select_add_select_not
 
