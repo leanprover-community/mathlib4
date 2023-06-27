@@ -361,10 +361,8 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
 #align set.ncard_eq_of_bijective Set.ncard_eq_of_bijective
 
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
-    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b)
-    (hs : s.Finite := by toFinite_tac) :
+    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
     s.ncard = t.ncard := by
-  classical
   set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
   have hbij : f'.Bijective := by
     constructor
@@ -375,11 +373,7 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
     obtain ⟨a, ha, rfl⟩ := h₃ y hy
     simp only [Subtype.mk.injEq, Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  haveI := hs.to_subtype
-  haveI := @Fintype.ofFinite _ (Finite.ofBijective hbij)
-  haveI := Fintype.ofFinite s
-  convert Fintype.card_of_bijective hbij
-  <;> rw [ncard_def, Nat.card_eq_fintype_card]
+  exact Nat.card_congr (Equiv.ofBijective f' hbij)
 #align set.ncard_congr Set.ncard_congr
 
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
