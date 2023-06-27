@@ -28,10 +28,8 @@ open MvPolynomial
 
 variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
--- mathport name: expr𝕎
-local notation "𝕎" => WittVector p
+local notation "𝕎" => WittVector p -- type as `\bbW`
 
--- type as `\bbW`
 noncomputable section
 
 /-- `verschiebungFun x` shifts the coefficients of `x` up by one,
@@ -102,13 +100,22 @@ variable (p)
 
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
-@[is_poly]
-theorem verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
+-- Porting note: replaced `@[is_poly]` with `instance`.
+instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 #align witt_vector.verschiebung_fun_is_poly WittVector.verschiebungFun_isPoly
 
+-- Porting note: we add this example as a verification that Lean 4's instance resolution
+-- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
+example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
+    IsPoly p (λ (R : Type _) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+  inferInstance
+
 variable {p}
+
+-- Porting note: until we change the default induction principle on `Nat`:
+attribute [ghost_simps] Nat.zero_eq
 
 /--
 `verschiebung x` shifts the coefficients of `x` up by one, by inserting 0 as the 0th coefficient.
@@ -121,7 +128,11 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   map_zero' := by
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
       simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
-  map_add' := by ghost_calc _ _; rintro ⟨⟩ <;> ghost_simp
+  map_add' := by
+    dsimp
+    ghost_calc _ _; -- FIXME without the semicolon, ghost_calc eats the next tactic
+    rintro ⟨⟩ <;> -- Uses the dumb induction principle, hence adding `Nat.zero_eq` to ghost_simps.
+      ghost_simp
 #align witt_vector.verschiebung WittVector.verschiebung
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
@@ -189,5 +200,6 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 #align witt_vector.bind₁_verschiebung_poly_witt_polynomial WittVector.bind₁_verschiebungPoly_wittPolynomial
 
+end
 
 end WittVector
