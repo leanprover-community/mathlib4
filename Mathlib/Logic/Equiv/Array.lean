@@ -33,7 +33,6 @@ introduce the "right" equivalence for `Array` (`arrayEquivList`) and align the i
 
 namespace Equiv
 
-
 -- /-- The natural equivalence between length-`n` heterogeneous arrays
 -- and dependent functions from `fin n`. -/
 -- def darrayEquivFin {n : ℕ} (α : Fin n → Type _) : DArray n α ≃ ∀ i, α i :=
@@ -57,7 +56,7 @@ def arrayEquivList (α : Type _) : Array α ≃ List α :=
 end Equiv
 
 /- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
-`IsLawfulTraversable (Array α)`. Since `Array` is now a core datatype, these would
+`IsLawfulTraversable (Array α)`. These would
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
@@ -66,6 +65,8 @@ instance for `array` was)
 2. belong in `Mathlib.Control.Traversable.Instances` instead of this file. -/
 
 -- namespace Array'
+
+-- open Function
 
 -- variable {n : ℕ}
 
