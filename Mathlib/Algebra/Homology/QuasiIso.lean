@@ -73,7 +73,7 @@ section
 variable {W : Type _} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
   [HasZeroObject W] [HasImageMaps W]
 
-/-- An homotopy equivalence is a quasi-isomorphism. -/
+/-- A homotopy equivalence is a quasi-isomorphism. -/
 theorem toQuasiIso {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso e.hom :=
   ⟨fun i => by
     refine' ⟨⟨(homologyFunctor W c i).map e.inv, _⟩⟩
@@ -114,7 +114,7 @@ noncomputable def toSingle₀CokernelAtZeroIso : cokernel (X.d 1 0) ≅ Y :=
 theorem toSingle₀CokernelAtZeroIso_hom_eq [hf : QuasiIso f] :
     f.toSingle₀CokernelAtZeroIso.hom =
       cokernel.desc (X.d 1 0) (f.f 0) (by rw [← f.2 1 0 rfl]; exact comp_zero) := by
-  apply coequalizer.hom_ext
+  ext
   dsimp only [toSingle₀CokernelAtZeroIso, ChainComplex.homologyZeroIso, homologyOfZeroRight,
     homology.mapIso, ChainComplex.homologyFunctor0Single₀, cokernel.map]
   dsimp [asIso]
@@ -164,7 +164,7 @@ noncomputable def fromSingle₀KernelAtZeroIso [hf : QuasiIso f] : kernel (X.d 0
 theorem fromSingle₀KernelAtZeroIso_inv_eq [hf : QuasiIso f] :
     f.fromSingle₀KernelAtZeroIso.inv =
       kernel.lift (X.d 0 1) (f.f 0) (by rw [f.2 0 1 rfl]; exact zero_comp) := by
-  apply equalizer.hom_ext
+  ext
   dsimp only [fromSingle₀KernelAtZeroIso, CochainComplex.homologyZeroIso, homologyOfZeroLeft,
     homology.mapIso, CochainComplex.homologyFunctor0Single₀, kernel.map]
   simp only [Iso.trans_inv, Iso.app_inv, Iso.symm_inv, Category.assoc, equalizer_as_kernel,

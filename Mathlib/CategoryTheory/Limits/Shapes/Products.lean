@@ -167,7 +167,7 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
 
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
-    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂ ) : g₁ = g₂ :=
+    (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
   colimit.hom_ext (fun ⟨j⟩ => h j)
 
 /-- The fan constructed of the projections from the product is limiting. -/
@@ -379,7 +379,7 @@ instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
   HasColimit.mk (colimitCoconeOfUnique f)
 #align category_theory.limits.has_coproduct_unique CategoryTheory.Limits.hasCoproduct_unique
 
-/-- A coproduct over a index type with exactly one term is just the object over that term. -/
+/-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def coproductUniqueIso : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit

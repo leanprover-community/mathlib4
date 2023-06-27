@@ -311,6 +311,14 @@ theorem set_lintegral_mono {s : Set α} {f g : α → ℝ≥0∞} (hf : Measurab
   set_lintegral_mono_ae hf hg (ae_of_all _ hfg)
 #align measure_theory.set_lintegral_mono MeasureTheory.set_lintegral_mono
 
+theorem set_lintegral_mono_ae' {s : Set α} {f g : α → ℝ≥0∞} (hs : MeasurableSet s)
+    (hfg : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
+  lintegral_mono_ae <| (ae_restrict_iff' hs).2 hfg
+
+theorem set_lintegral_mono' {s : Set α} {f g : α → ℝ≥0∞} (hs : MeasurableSet s)
+    (hfg : ∀ x ∈ s, f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
+  set_lintegral_mono_ae' hs (ae_of_all _ hfg)
+
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
   le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
 #align measure_theory.lintegral_congr_ae MeasureTheory.lintegral_congr_ae
@@ -1223,6 +1231,11 @@ theorem lintegral_union {f : α → ℝ≥0∞} {A B : Set α} (hB : MeasurableS
     ∫⁻ a in A ∪ B, f a ∂μ = ∫⁻ a in A, f a ∂μ + ∫⁻ a in B, f a ∂μ := by
   rw [restrict_union hAB hB, lintegral_add_measure]
 #align measure_theory.lintegral_union MeasureTheory.lintegral_union
+
+theorem lintegral_union_le (f : α → ℝ≥0∞) (s t : Set α) :
+    ∫⁻ a in s ∪ t, f a ∂μ ≤ ∫⁻ a in s, f a ∂μ + ∫⁻ a in t, f a ∂μ := by
+  rw [← lintegral_add_measure]
+  exact lintegral_mono' (restrict_union_le _ _) le_rfl
 
 theorem lintegral_inter_add_diff {B : Set α} (f : α → ℝ≥0∞) (A : Set α) (hB : MeasurableSet B) :
     (∫⁻ x in A ∩ B, f x ∂μ + ∫⁻ x in A \ B, f x ∂μ) = ∫⁻ x in A, f x ∂μ := by

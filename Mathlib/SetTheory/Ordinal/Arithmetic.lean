@@ -1122,7 +1122,7 @@ def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingR
   bfamilyOfFamily' WellOrderingRel
 #align ordinal.bfamily_of_family Ordinal.bfamilyOfFamily
 
-/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by an `Type u` using a specified
+/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a specified
 well-ordering. -/
 def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
@@ -1996,7 +1996,7 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
       intro o ho H
       rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
       congr
-      ext (b hb)
+      ext b hb
       exact H b hb⟩
 #align ordinal.is_normal.eq_iff_zero_and_succ Ordinal.IsNormal.eq_iff_zero_and_succ
 

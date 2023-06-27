@@ -1032,10 +1032,10 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
 #align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
-/-- The identity map from an type with zero to itself. -/
+/-- The identity map from a type with zero to itself. -/
 add_decl_doc ZeroHom.id
 
-/-- The identity map from an type with addition to itself. -/
+/-- The identity map from a type with addition to itself. -/
 add_decl_doc AddHom.id
 
 /-- The identity map from an additive monoid to itself. -/
@@ -1079,7 +1079,7 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
 /-- Composition of `ZeroHom`s as a `ZeroHom`. -/
 add_decl_doc ZeroHom.comp
 
-/-- Composition of `AddHom`s as a `AddHom`. -/
+/-- Composition of `AddHom`s as an `AddHom`. -/
 add_decl_doc AddHom.comp
 
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/

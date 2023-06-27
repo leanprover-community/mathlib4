@@ -589,7 +589,7 @@ the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
 theorem Basis.le_span'' {ι : Type _} [Fintype ι] (b : Basis ι R M) {w : Set M} [Fintype w]
     (s : span R w = ⊤) : Fintype.card ι ≤ Fintype.card w := by
-  -- We construct an surjective linear map `(w → R) →ₗ[R] (ι → R)`,
+  -- We construct a surjective linear map `(w → R) →ₗ[R] (ι → R)`,
   -- by expressing a linear combination in `w` as a linear combination in `ι`.
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
@@ -621,7 +621,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
-    convert Cardinal.lift_le.{w, v}.2 (basis_le_span' v hJ)
+    convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
     simp
   · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
