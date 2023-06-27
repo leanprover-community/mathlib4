@@ -8,7 +8,7 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rbtree.Basic
+import Mathlib.Data.Rbtree.Basic
 
 universe u
 
@@ -70,8 +70,7 @@ theorem find_correct {t : Rbnode α} {lt x} [DecidableRel lt] [IsStrictWeakOrder
       · intro hc; right; right; exact Iff.mpr (ih hs_hs₂) hc
 #align rbnode.find_correct Rbnode.find_correct
 
-theorem mem_of_memExact {lt} [IsIrrefl α lt] {x t} : MemExact x t → Mem lt x t :=
-  by
+theorem mem_of_memExact {lt} [IsIrrefl α lt] {x t} : MemExact x t → Mem lt x t := by
   induction t <;> simp [mem_exact, mem, false_imp_iff] <;> intro h
   all_goals
     cases_type* or.1; simp [t_ih_lchild h]; simp [h, irrefl_of lt t_val]
@@ -79,8 +78,7 @@ theorem mem_of_memExact {lt} [IsIrrefl α lt] {x t} : MemExact x t → Mem lt x 
 #align rbnode.mem_of_mem_exact Rbnode.mem_of_memExact
 
 theorem find_correct_exact {t : Rbnode α} {lt x} [DecidableRel lt] [IsStrictWeakOrder α lt] :
-    ∀ {lo hi} (hs : IsSearchable lt t lo hi), MemExact x t ↔ find lt t x = some x :=
-  by
+    ∀ {lo hi} (hs : IsSearchable lt t lo hi), MemExact x t ↔ find lt t x = some x := by
   apply find.induction lt t x <;> intros <;> simp only [mem_exact, find, *]
   iterate 2
     
@@ -119,8 +117,7 @@ theorem find_correct_exact {t : Rbnode α} {lt x} [DecidableRel lt] [IsStrictWea
 #align rbnode.find_correct_exact Rbnode.find_correct_exact
 
 theorem eqv_of_find_some {t : Rbnode α} {lt x y} [DecidableRel lt] :
-    ∀ {lo hi} (hs : IsSearchable lt t lo hi) (he : find lt t x = some y), x ≈[lt]y :=
-  by
+    ∀ {lo hi} (hs : IsSearchable lt t lo hi) (he : find lt t x = some y), x ≈[lt]y := by
   apply find.induction lt t x <;> intros <;> simp_all only [mem, find]
   iterate 2 
     · cases hs; exact ih hs_hs₁ rfl
@@ -129,8 +126,7 @@ theorem eqv_of_find_some {t : Rbnode α} {lt x y} [DecidableRel lt] :
 #align rbnode.eqv_of_find_some Rbnode.eqv_of_find_some
 
 theorem find_eq_find_of_eqv {lt a b} [DecidableRel lt] [IsStrictWeakOrder α lt] {t : Rbnode α} :
-    ∀ {lo hi} (hs : IsSearchable lt t lo hi) (heqv : a ≈[lt]b), find lt t a = find lt t b :=
-  by
+    ∀ {lo hi} (hs : IsSearchable lt t lo hi) (heqv : a ≈[lt]b), find lt t a = find lt t b := by
   apply find.induction lt t a <;> intros <;>
     simp_all [mem, find, StrictWeakOrder.Equiv, true_imp_iff]
   iterate 2
